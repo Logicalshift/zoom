@@ -1210,8 +1210,34 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 // = Warnings/errors =
 - (void) displayWarning: (NSString*) warning {
 	// FIXME
+	NSString* warningString;
+	
+	warningString = [NSString stringWithFormat: @"[ Warning: %@ ]", warning];
+	
+	if ([viewPrefs fatalWarnings]) {
+		[self displayFatalError: warningString];
+		return;
+	}
+	
+	if ([viewPrefs displayWarnings]) {
+		if ([lowerWindows count] <= 0) {
+			NSBeginInformationalAlertSheet(@"Warning", @"OK", nil, nil, [self window], nil, nil, nil, NULL, @"%@", warning);
+			return;
+		}
+		
+		ZStyle* warningStyle = [[ZStyle alloc] init];
+		[warningStyle setBackgroundColour: 4];
+		[warningStyle setForegroundColour: 7];
+		[warningStyle setBold: NO];
+		[warningStyle setFixed: NO];
+		[warningStyle setSymbolic: NO];
+		[warningStyle setUnderline: YES];
+		
+		[[lowerWindows objectAtIndex: 0] writeString: warningString
+										   withStyle: warningStyle];
+	}
 	//NSBeginAlertSheet(@"Warning", @"OK", nil, nil, [self window], nil, nil, nil, NULL, @"%@", warning);
-	NSLog(@"Warning: %@", warning);
+	//NSLog(@"Warning: %@", warning);
 }
 
 - (void) displayFatalError: (NSString*) error {

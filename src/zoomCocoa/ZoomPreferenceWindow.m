@@ -347,15 +347,15 @@ static void appendStyle(NSMutableString* styleName,
 }
 
 - (IBAction) displayWarningsChanged: (id) sender {
-	[prefs setDisplayWarnings: [sender boolValue]];
+	[prefs setDisplayWarnings: [sender state]==NSOnState];
 }
 
 - (IBAction) fatalWarningsChanged: (id) sender {
-	[prefs setFatalWarnings: [sender boolValue]];
+	[prefs setFatalWarnings: [sender state]==NSOnState];
 }
 
 - (IBAction) speakGameTextChanged: (id) sender {
-	[prefs setSpeakGameText: [sender boolValue]];
+	[prefs setSpeakGameText: [sender state]==NSOnState];
 }
 
 @end
