@@ -106,12 +106,11 @@ Compiling Zoom (Cocoa)
    ZoomCocoa.xcode project into Xcode and hit build. Note that Xcode
    seems to have a hard time running Yacc; if the build fails with
    many weird errors, you will have to manually delete the relevant
-   DerivedSources (hidden in various places throughout the build
-   directory that Xcode creates). There also seems to be an occasional
-   problem with precompiled headers that will produce similar problems
-   (errors in Carbon headers this time), but simply restarting the
-   build process will fix this - you are much more likely to see
-   problems with building the Yacc sources, though.
+   DerivedSources (hidden in build/ZoomCocoa.build/ZoomServer.build). 
+   There also seems to be an occasional problem with precompiled headers 
+   that will produce similar problems (errors in Carbon headers this 
+   time), but simply restarting the build process will fix this - you 
+   are much more likely to see problems with building the Yacc sources.
 
 Using Zoom (X-Windows)
 ======================
