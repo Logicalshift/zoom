@@ -65,6 +65,7 @@ EXEEXT = @EXEEXT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LEX = @LEX@
 MINGWWINDRES = @MINGWWINDRES@
+OBJC = @OBJC@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PERL = @PERL@
@@ -99,7 +100,7 @@ zoom_SOURCES = \
 	main.c interp.c file.c options.c zmachine.c zscii.c xdisplay.c \
 	hash.c tokenise.c stream.c font3.c state.c pix.c rc.c rc_parse.y \
 	rc_lex.l menu.c xfont.c windisplay.c winfont.c random.c \
-	layout.c \
+	layout.c cocoadisplay.m \
 	\
 	file.h zmachine.h options.h interp.h zscii.h display.h hash.h \
 	tokenise.h stream.h font3.h state.h pix.h rc.h rcp.h rc_parse.h \
@@ -108,6 +109,7 @@ zoom_SOURCES = \
 
 
 CFLAGS = @CFLAGS@ @X_CFLAGS@ -DDATADIR="\"${pkgdatadir}\""
+OBJCFLAGS = @CFLAGS@ @X_CFLAGS@ -DDATADIR="\"${pkgdatadir}\""
 LIBS = @LIBS@ @X_PRE_LIBS@ @X_LIBS@ @X_EXTRA_LIBS@
 YFLAGS = -d
 subdir = src
@@ -123,7 +125,7 @@ am_zoom_OBJECTS = main.$(OBJEXT) interp.$(OBJEXT) file.$(OBJEXT) \
 	stream.$(OBJEXT) font3.$(OBJEXT) state.$(OBJEXT) pix.$(OBJEXT) \
 	rc.$(OBJEXT) rc_parse.$(OBJEXT) rc_lex.$(OBJEXT) menu.$(OBJEXT) \
 	xfont.$(OBJEXT) windisplay.$(OBJEXT) winfont.$(OBJEXT) \
-	random.$(OBJEXT) layout.$(OBJEXT)
+	random.$(OBJEXT) layout.$(OBJEXT) cocoadisplay.$(OBJEXT)
 zoom_OBJECTS = $(am_zoom_OBJECTS)
 zoom_LDADD = $(LDADD)
 zoom_DEPENDENCIES =
@@ -134,22 +136,28 @@ DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
-@AMDEP_TRUE@DEP_FILES = $(DEPDIR)/file.Po $(DEPDIR)/font3.Po \
-@AMDEP_TRUE@	$(DEPDIR)/hash.Po $(DEPDIR)/interp.Po \
-@AMDEP_TRUE@	$(DEPDIR)/layout.Po $(DEPDIR)/main.Po \
-@AMDEP_TRUE@	$(DEPDIR)/menu.Po $(DEPDIR)/options.Po \
-@AMDEP_TRUE@	$(DEPDIR)/pix.Po $(DEPDIR)/random.Po \
-@AMDEP_TRUE@	$(DEPDIR)/rc.Po $(DEPDIR)/rc_lex.Po \
-@AMDEP_TRUE@	$(DEPDIR)/rc_parse.Po $(DEPDIR)/state.Po \
-@AMDEP_TRUE@	$(DEPDIR)/stream.Po $(DEPDIR)/tokenise.Po \
-@AMDEP_TRUE@	$(DEPDIR)/windisplay.Po $(DEPDIR)/winfont.Po \
-@AMDEP_TRUE@	$(DEPDIR)/xdisplay.Po $(DEPDIR)/xfont.Po \
-@AMDEP_TRUE@	$(DEPDIR)/zmachine.Po $(DEPDIR)/zscii.Po
+@AMDEP_TRUE@DEP_FILES = $(DEPDIR)/cocoadisplay.Po $(DEPDIR)/file.Po \
+@AMDEP_TRUE@	$(DEPDIR)/font3.Po $(DEPDIR)/hash.Po \
+@AMDEP_TRUE@	$(DEPDIR)/interp.Po $(DEPDIR)/layout.Po \
+@AMDEP_TRUE@	$(DEPDIR)/main.Po $(DEPDIR)/menu.Po \
+@AMDEP_TRUE@	$(DEPDIR)/options.Po $(DEPDIR)/pix.Po \
+@AMDEP_TRUE@	$(DEPDIR)/random.Po $(DEPDIR)/rc.Po \
+@AMDEP_TRUE@	$(DEPDIR)/rc_lex.Po $(DEPDIR)/rc_parse.Po \
+@AMDEP_TRUE@	$(DEPDIR)/state.Po $(DEPDIR)/stream.Po \
+@AMDEP_TRUE@	$(DEPDIR)/tokenise.Po $(DEPDIR)/windisplay.Po \
+@AMDEP_TRUE@	$(DEPDIR)/winfont.Po $(DEPDIR)/xdisplay.Po \
+@AMDEP_TRUE@	$(DEPDIR)/xfont.Po $(DEPDIR)/zmachine.Po \
+@AMDEP_TRUE@	$(DEPDIR)/zscii.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 LEXCOMPILE = $(LEX) $(LFLAGS) $(AM_LFLAGS)
+OBJCCOMPILE = $(OBJC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_OBJCFLAGS) $(OBJCFLAGS)
+OBJCLD = $(OBJC)
+OBJCLINK = $(OBJCLD) $(AM_OBJCFLAGS) $(OBJCFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
 YACCCOMPILE = $(YACC) $(YFLAGS) $(AM_YFLAGS)
 DIST_SOURCES = $(zoom_SOURCES)
 DATA = $(pkgdata_DATA)
@@ -161,7 +169,7 @@ SOURCES = $(zoom_SOURCES)
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .l .o .obj .y
+.SUFFIXES: .c .l .m .o .obj .y
 $(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
 	  $(AUTOMAKE) --gnu  src/Makefile
@@ -199,10 +207,10 @@ clean-binPROGRAMS:
 rc_parse.h: rc_parse.c
 @BORLAND_VERSION_TRUE@@WINDOWS_VERSION_FALSE@zoom$(EXEEXT): $(zoom_OBJECTS) $(zoom_DEPENDENCIES) 
 @BORLAND_VERSION_TRUE@@WINDOWS_VERSION_FALSE@	@rm -f zoom$(EXEEXT)
-@BORLAND_VERSION_TRUE@@WINDOWS_VERSION_FALSE@	$(LINK) $(zoom_LDFLAGS) $(zoom_OBJECTS) $(zoom_LDADD) $(LIBS)
+@BORLAND_VERSION_TRUE@@WINDOWS_VERSION_FALSE@	$(OBJCLINK) $(zoom_LDFLAGS) $(zoom_OBJECTS) $(zoom_LDADD) $(LIBS)
 @BORLAND_VERSION_FALSE@@WINDOWS_VERSION_FALSE@zoom$(EXEEXT): $(zoom_OBJECTS) $(zoom_DEPENDENCIES) 
 @BORLAND_VERSION_FALSE@@WINDOWS_VERSION_FALSE@	@rm -f zoom$(EXEEXT)
-@BORLAND_VERSION_FALSE@@WINDOWS_VERSION_FALSE@	$(LINK) $(zoom_LDFLAGS) $(zoom_OBJECTS) $(zoom_LDADD) $(LIBS)
+@BORLAND_VERSION_FALSE@@WINDOWS_VERSION_FALSE@	$(OBJCLINK) $(zoom_LDFLAGS) $(zoom_OBJECTS) $(zoom_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT) core *.core
@@ -210,6 +218,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/cocoadisplay.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/file.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/font3.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/hash.Po@am__quote@
@@ -254,6 +263,19 @@ LEXLIB = @LEXLIB@
 
 .l.c:
 	$(LEXCOMPILE) $< && mv $(LEX_OUTPUT_ROOT).c $@
+
+.m.o:
+@AMDEP_TRUE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(OBJCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(OBJCCOMPILE) -c -o $@ `test -f $< || echo '$(srcdir)/'`$<
+
+.m.obj:
+@AMDEP_TRUE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(OBJCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(OBJCCOMPILE) -c -o $@ `cygpath -w $<`
+OBJCDEPMODE = @OBJCDEPMODE@
 
 .y.c:
 	$(YACCCOMPILE) $< && mv y.tab.c $@
@@ -441,6 +463,13 @@ $(srcdir)/interp.c: interp_gen.h interp_z3.h interp_z4.h interp_z5.h interp_z6.h
 @WINDOWS_VERSION_FALSE@zoom$(EXEEXT): $(zoom_OBJECTS) $(zoom_DEPENDENCIES)
 @WINDOWS_VERSION_FALSE@	@rm -f zoom
 @WINDOWS_VERSION_FALSE@	$(LINK) $(zoom_LDFLAGS) $(zoom_OBJECTS) $(zoom_LDADD) $(LIBS)
+
+# Automakes default rule for Objective C programs doesn't really work very well...
+%.o: %.m
+	source='$<' object='$@' libtool=no \
+	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' \
+	$(CCDEPMODE) $(depcomp) \
+	$(OBJCCOMPILE) -c `test -f $< || echo '$(srcdir)/'`$<
 
 varop.h: $(top_srcdir)/builder/varopdecode.pl
 	 @PERL@ $(top_srcdir)/builder/varopdecode.pl 4 varop >varop.h

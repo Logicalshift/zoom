@@ -20,6 +20,9 @@ AM_PROG_LEX
 AC_PROG_YACC
 AC_PATH_PROG(PERL, perl, noperl)
 
+OBJC="$CC -c"
+AC_SUBST(OBJC)
+
 if test "$PERL" = "noperl"; then
   AC_MSG_ERROR([You must have a copy of perl installed to compile Zoom])
 fi
