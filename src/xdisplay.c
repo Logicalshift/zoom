@@ -112,6 +112,7 @@ static int scrolling     = 0;
 static int win_left, win_top;
 static int win_width, win_height;
 static int click_x, click_y;
+static Time click_time;
 
 static Atom x_prot[5];
 static Atom wmprots;
@@ -1627,6 +1628,8 @@ static int process_events(long int to, int* buf, int buflen)
 	
       if (isevent)
 	{
+	  int doubleclick;
+
 	  XNextEvent(x_display, &ev);
 
 	  switch (ev.type)
@@ -1996,9 +1999,29 @@ static int process_events(long int to, int* buf, int buflen)
 	      break;
 
 	    case ButtonPress:
+	      /* Could be the second of a doubleclick...? */
+	      {
+		int distx, disty, dist;
+		distx = click_x - (ev.xbutton.x-win_left);
+		disty = click_y - (ev.xbutton.y-win_top);
+
+		dist = distx*distx + disty*disty;
+
+		if (click_time > ev.xbutton.time - 500 &&
+		    dist < 24)
+		  {
+		    doubleclick = 253;
+		  }
+		else
+		  {
+		    doubleclick = 254;
+		  }
+	      }
+
 	      /* See if the click was within the scrollbar... */
 	      click_x = ev.xbutton.x-win_left;
 	      click_y = ev.xbutton.y-win_top;
+	      click_time = ev.xbutton.time;
 	      
 	      if (click_x >= win_x+BORDER_SIZE)
 		{
@@ -2045,7 +2068,7 @@ static int process_events(long int to, int* buf, int buflen)
 		      XDefineCursor(x_display, x_mainwin, scrollCursor);
 		    }
 		}
-	      else if (terminating[254] || buf == NULL)
+	      else if (terminating[doubleclick] || buf == NULL)
 		{
 		  if (mousew_h < 0 ||
 		      (click_x > mousew_x && click_y > mousew_y &&
@@ -2053,7 +2076,7 @@ static int process_events(long int to, int* buf, int buflen)
 		       click_y < mousew_y+mousew_h))
 		    {
 		      XDefineCursor(x_display, x_mainwin, clickCursor);
-		      return 254;
+		      return doubleclick;
 		    }
 		  else
 		    {
@@ -2903,15 +2926,15 @@ void display_plot_gtext(const int* text,
 		     xdisplay_get_pixel_value(bg));
       XFillRectangle(x_display, x_pixmap, x_pixgc,
 		     x, y-xfont_get_ascent(font[ft]),
-		     width+0.5,
-		     height+0.5);
+		     width,
+		     height);
     }
   xfont_plot_string(font[ft], x_pixmap, x_pixgc,
 		    x, y,
 		    text, len);
 
   y -= xfont_get_ascent(font[ft]);
-  pixmap_update(x, y, x+width, y+height+0.5);
+  pixmap_update(x, y, x+width, y+height);
 }
 
 void display_plot_rect(int x, int y,

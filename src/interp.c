@@ -949,7 +949,7 @@ static void zcode_op_readchar(ZDWord* pc,
 
   if (chr == 254 || chr == 253)
     {
-      if (machine.heb != NULL && machine.heblen >= 3)
+      if (machine.heb != NULL && machine.heblen >= 2)
 	{
 	  int x,y;
 
@@ -1115,7 +1115,7 @@ static void zcode_op_aread_5678(ZDWord* pc,
 	{
 	  if (res == 254 || res == 253)
 	    {
-	      if (machine.heb != NULL && machine.heblen >= 3)
+	      if (machine.heb != NULL && machine.heblen >= 2)
 		{
 		  int x,y;
 
