@@ -26,12 +26,17 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 	NSEnumerator* filenameEnum = [filenamesToIdents keyEnumerator];
 	NSString* filename;
 	
+	NSLog(@"*** dictionary start");
 	while (filename = [filenameEnum nextObject]) {
 		NSData* encodedId = [NSArchiver archivedDataWithRootObject: [filenamesToIdents objectForKey: filename]];
+		
+		NSLog(@" -- %@", filename);
 		
 		[defaultDictionary setObject: encodedId
 							  forKey: filename];
 	}
+	
+	NSLog(@"*** dictionary end");
 	
 	return defaultDictionary;
 }
@@ -242,7 +247,15 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 
 - (void) addStory: (NSString*) filename
 		withIdent: (ZoomStoryID*) ident
-		 organise: (BOOL) organise {
+		 organise: (BOOL) organise {	
+	[storyLock lock];
+	
+	NSString* oldFilename;
+	ZoomStoryID* oldIdent;
+	
+	oldFilename = [identsToFilenames objectForKey: ident];
+	oldIdent = [filenamesToIdents objectForKey: filename];
+	
 	if (organise) {
 		// Copy to a standard directory, change the filename we're using
 		filename = [filename stringByStandardizingPath];
@@ -263,14 +276,6 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		}
 	}
 	
-	[storyLock lock];
-	
-	NSString* oldFilename;
-	ZoomStoryID* oldIdent;
-	
-	oldFilename = [identsToFilenames objectForKey: ident];
-	oldIdent = [filenamesToIdents objectForKey: filename];
-	
 	if (oldFilename && oldIdent && [oldFilename isEqualToString: filename] && [oldIdent isEqualTo: ident]) {
 		// Nothing to do
 		[storyLock unlock];
@@ -279,13 +284,18 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	
 	if (oldFilename) {
 		[identsToFilenames removeObjectForKey: ident];
+		[filenamesToIdents removeObjectForKey: oldFilename];
 		[storyFilenames removeObject: oldFilename];
 	}
-	
+
 	if (oldIdent) {
 		[filenamesToIdents removeObjectForKey: filename];
+		[identsToFilenames removeObjectForKey: oldIdent];
 		[storyIdents removeObject: oldIdent];
 	}
+	
+	[filenamesToIdents removeObjectForKey: filename];
+	[identsToFilenames removeObjectForKey: ident];
 	
 	NSString* newFilename = [[filename copy] autorelease];
 	NSString* newIdent    = [[ident copy] autorelease];
