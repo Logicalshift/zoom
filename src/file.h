@@ -28,7 +28,7 @@
 
 typedef struct ZFile ZFile;
 
-extern ZFile* open_file      (char*  filename);
+extern ZFile* open_file      (char* filename);
 extern ZFile* open_file_write(char* filename);
 extern void   close_file     (ZFile* file);
 extern ZByte  read_byte      (ZFile* file);

@@ -25,9 +25,112 @@
 #define __DEBUG_H
 
 #include "zmachine.h"
+#include "file.h"
+#include "hash.h"
 
 /* === Debug data structures === */
+
 typedef struct debug_breakpoint debug_breakpoint;
+typedef struct debug_symbols    debug_symbols;
+typedef struct debug_symbol     debug_symbol;
+typedef struct debug_file       debug_file;
+typedef struct debug_line       debug_line;
+
+/* Symbols */
+typedef struct debug_class      debug_class;
+typedef struct debug_object     debug_object;
+typedef struct debug_global     debug_global;
+typedef struct debug_array      debug_array;
+typedef struct debug_attr       debug_attr;
+typedef struct debug_prop       debug_prop;
+typedef struct debug_fakeact    debug_fakeact;
+typedef struct debug_action     debug_action;
+typedef struct debug_routine    debug_routine;
+
+struct debug_file
+{
+  int number;
+  char* name;
+  char* realname;
+};
+
+struct debug_class
+{
+  char* name;
+  
+  int st_fl, st_ln, st_ch;
+  int end_fl, end_ln, end_ch;
+};
+
+struct debug_object
+{
+  int number;
+  char* name;
+  
+  int st_fl, st_ln, st_ch;
+  int end_fl, end_ln, end_ch;
+};
+
+struct debug_global
+{
+  int   number;
+  char* name;
+};
+
+struct debug_array
+{
+  int offset;
+  char* name;
+};
+
+struct debug_attr
+{
+  int   number;
+  char* name;
+};
+
+struct debug_prop
+{
+  int   number;
+  char* name;
+};
+
+struct debug_fakeact
+{
+  int number;
+  char* name;
+};
+
+struct debug_action
+{
+  int number;
+  char* name;
+};
+
+struct debug_line
+{
+  int fl, ln, ch;
+  int address;
+};
+
+struct debug_routine
+{
+  int number;
+  
+  int defn_fl, defn_ln, defn_ch;
+  int start;
+
+  int end;
+  int end_fl, end_ln, end_ch;
+
+  char* name;
+
+  int    nvars;
+  char** var;
+
+  int         nlines;
+  debug_line* line;
+};
 
 struct debug_breakpoint
 {
@@ -35,8 +138,35 @@ struct debug_breakpoint
   int original;
 };
 
+struct debug_symbols
+{
+  hash symbol;
+  hash file;
+
+  debug_routine* routine;
+  int            nroutines;
+  debug_file*    files;
+  int            nfiles;
+};
+
 extern debug_breakpoint* debug_bplist;
 extern int               debug_nbps;
+
+#define DEBUG_EOF_DBR 0
+#define DEBUG_FILE_DBR 1
+#define DEBUG_CLASS_DBR 2
+#define DEBUG_OBJECT_DBR 3
+#define DEBUG_GLOBAL_DBR 4
+#define DEBUG_ATTR_DBR 5
+#define DEBUG_PROP_DBR 6
+#define DEBUG_FAKEACT_DBR 7
+#define DEBUG_ACTION_DBR 8
+#define DEBUG_HEADER_DBR 9
+#define DEBUG_LINEREF_DBR 10
+#define DEBUG_ROUTINE_DBR 11
+#define DEBUG_ARRAY_DBR 12
+#define DEBUG_MAP_DBR 13
+#define DEBUG_ROUTINE_END_DBR 14
 
 /* === Debug functions === */
 
@@ -44,6 +174,9 @@ extern int               debug_nbps;
 int               debug_set_breakpoint  (int address);
 int               debug_clear_breakpoint(int address);
 debug_breakpoint* debug_get_breakpoint  (int address);
+
+/* === Inform debug file functions === */
+void              debug_load_symbols    (char* filename);
 
 #endif
 

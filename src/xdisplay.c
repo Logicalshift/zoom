@@ -219,6 +219,8 @@ static void invalidate_scrollbar(void)
 
 static void draw_caret(void)
 {
+  int ison;
+
   reset_clip();
 
   if (insert)
@@ -232,7 +234,11 @@ static void draw_caret(void)
 		 x_colour[FIRST_ZCOLOUR+CURWIN.back].pixel ^
 		 x_colour[4].pixel);
 
-  if ((caret_on^caret_shown))
+  ison = caret_on;
+  if (more_on)
+    ison = 0;
+
+  if ((ison^caret_shown))
     {
       XDrawLine(x_display, x_mainwin, x_caretgc, 
 		caret_x + BORDER_SIZE, caret_y + BORDER_SIZE,
@@ -517,6 +523,9 @@ static void draw_window()
   Region newregion;
   XRectangle clip;
 
+  int more[] = { '[', 'M', 'O', 'R', 'E', ']' };
+  int morew, moreh;
+
   hide_caret();
 
   resetregion = 0;
@@ -536,6 +545,14 @@ static void draw_window()
       dregion = XCreateRegion();
       XUnionRectWithRegion(&r, dregion, dregion);
     }
+
+  moreh = xfont_get_descent(font[style_font[2]]) + xfont_get_ascent(font[style_font[2]]);
+  morew = xfont_get_text_width(font[style_font[2]], more, 6);
+
+  clip.x = (win_x+BORDER_SIZE*2) - (morew + 2);
+  clip.y = (win_y+BORDER_SIZE*2) - (moreh + 2);
+  clip.width = morew+2; clip.height = moreh+2;
+  XUnionRectWithRegion(&clip, dregion, dregion);
 
   XSetRegion(x_display, x_wingc, dregion);
 #ifdef HAVE_XFT
@@ -865,6 +882,43 @@ static void draw_window()
 	}
     }
 
+  /* MORE */
+  if (more_on)
+    {
+      clip.x = (win_x+BORDER_SIZE*2) - (morew + 2);
+      clip.y = (win_y+BORDER_SIZE*2) - (moreh + 2);
+      clip.width = morew+2; clip.height = moreh+2;
+
+      XSetRegion(x_display, x_wingc, dregion);
+#ifdef HAVE_XFT
+      XftDrawSetClip(xft_drawable, dregion);
+#endif
+
+      XSetForeground(x_display, x_wingc, x_colour[4].pixel);
+      XFillRectangle(x_display, x_mainwin, x_wingc,
+		     clip.x, clip.y, morew+1, moreh+1);
+
+      xfont_set_colours(0+FIRST_ZCOLOUR, 4);
+      xfont_plot_string(font[style_font[2]],
+			x_mainwin, x_wingc,
+			win_x+BORDER_SIZE*2-(morew+1), 
+			win_y+BORDER_SIZE*2-(moreh) +
+			xfont_get_ascent(font[style_font[2]]), 
+			more, 6);
+
+      XSetForeground(x_display, x_wingc, x_colour[6].pixel);
+      XDrawLine(x_display, x_mainwin, x_wingc,
+		clip.x+morew+1, clip.y+moreh+1, clip.x, clip.y+moreh+1);
+      XDrawLine(x_display, x_mainwin, x_wingc,
+		clip.x+morew+1, clip.y+moreh+1, clip.x+morew+1, clip.y);
+
+      XSetForeground(x_display, x_wingc, x_colour[5].pixel);
+      XDrawLine(x_display, x_mainwin, x_wingc,
+		clip.x, clip.y, clip.x+morew+1, clip.y);
+      XDrawLine(x_display, x_mainwin, x_wingc,
+		clip.x, clip.y, clip.x, clip.y+moreh+1);
+  }
+
   /* Free regions */
   XFree(newregion);
   XFree(dregion);
@@ -874,7 +928,8 @@ static void draw_window()
 
   /* Caret */
   caret_shown = 0;
-  draw_input_text();
+  if (!more_on)
+    draw_input_text();
   draw_caret();
 }
 
@@ -884,6 +939,9 @@ static void resize_window()
   int x,y,z;
 
   owin = cur_win;
+
+  size_x = win_x/xfont_x;
+  size_y = win_y/xfont_y;
 
   /* Resize and reformat the overlay windows */
   for (x=1; x<=2; x++)
@@ -1564,9 +1622,18 @@ static int process_events(long int to, int* buf, int buflen)
 	    case MotionNotify:
 	      if (scrolling)
 		{
+		  Window root, child;
+		  int cx, cy;
+		  unsigned int m;
+
+		  XQueryPointer(x_display, x_mainwin, &root, &child,
+				&cx, &cy,
+				&click_x, &click_y,
+				&m);
+
 		  /* Only happens when we've dragged the scrollbar */
-		  click_x = ev.xbutton.x-win_left;
-		  click_y = ev.xbutton.y-win_top;
+		  click_x -= win_left;
+		  click_y -= win_top;
 		  
 		  if (click_x >= win_x+BORDER_SIZE - SCROLLBAR_SIZE && 
 		      click_x <= total_x + SCROLLBAR_SIZE)

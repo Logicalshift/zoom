@@ -208,6 +208,9 @@ int zoom_main(int argc, char** argv)
   display_prints_c("http://www.logicalshift.demon.co.uk/unix/zoom/");
   display_set_style(0);
   display_prints_c(" - check this page for any updates\n\n\n");
+
+  debug_load_symbols("/home/ahunter/infocom/myown/noname/gameinfo.dbg");
+
   display_set_colour(0, 6);
   display_prints_c("[ Press any key to begin ]");
   display_set_colour(0, 7);
