@@ -19,11 +19,10 @@ GENERAL:
  * Cocoa version has the restart bug again (erg)
  * Problem with overwriting things in the upper window? (Beyond Zork)
  * upper window behaviour really needs to change:
-    - when resizing the upper window, need to stop moving the contents of the
-      lower window down (can achieve this by extending it and scrolling to the end,
-      I think)
     - if the upper window is resized over the lower window cursor, the lower window
       cursor should be moved to accomodate it.
+    - Really, upper window things pasted onto the lower window need to have an
+      'attached character', so they move correctly when the window is resized
 
 FUTURE:
  * Sound

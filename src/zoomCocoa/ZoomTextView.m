@@ -43,6 +43,17 @@
     NSRect ourBounds = [self bounds];
     NSRect superBounds = [[self superview] frame];
 
+    // The enclosing ZoomView
+    NSView* superview = [self superview];
+
+    while (![superview isKindOfClass: [ZoomView class]]) {
+        superview = [superview superview];
+        if (superview == nil) break;
+    }
+    ZoomView* zoomView = (ZoomView*) superview;
+
+    double offset = [zoomView upperBufferHeight];
+    
     // Draw pasted lines
     NSEnumerator* lineEnum = [pastedLines objectEnumerator];
     NSArray* line;
@@ -50,6 +61,8 @@
     while (line = [lineEnum nextObject]) {
         NSValue* rect = [line objectAtIndex: 0];
         NSRect   lineRect = [rect rectValue];
+
+        lineRect.origin.y -= offset;
 
         if (NSIntersectsRect(r, lineRect)) {
             NSAttributedString* str = [line objectAtIndex: 1];
@@ -122,6 +135,8 @@
     NSRect ourBounds = [self bounds];
     NSRect containerBounds = [container bounds];
 
+    double offset = [zoomView upperBufferHeight];
+
     double topPoint = NSMaxY(ourBounds) - containerBounds.size.height;
     
     NSSize fixedSize = [@"M" sizeWithAttributes:
@@ -130,6 +145,8 @@
     
     // Perform the pasting
     changed = NO;
+
+    NSRect drawRect = NSZeroRect;
     
     int l;
     for (l=[win length]; l<[lines count]; l++) {
@@ -138,6 +155,7 @@
 
         if ([str length] > 0) {
             r = NSMakeRect(0, topPoint+fixedSize.height*(l-[win length]), 0,0);
+            r.origin.y += offset;
             r.size = [str size];
 
             [pastedLines addObject: [NSArray arrayWithObjects:
@@ -145,9 +163,16 @@
                 str,
                 nil]];
 
-            [self setNeedsDisplayInRect: r];
+            r.origin.y -= offset;
+
+            drawRect = NSUnionRect(drawRect, r);
             changed = YES;
         }
+    }
+
+    if (changed) {
+        // Update the window
+        [self setNeedsDisplayInRect: drawRect];
     }
 
     // Scrub the lines

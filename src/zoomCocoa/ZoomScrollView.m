@@ -82,6 +82,8 @@
     [upperDivider setNeedsDisplay: YES];
 
     // The upper window view
+    [zoomView setUpperBuffer: upperMargin + sepHeight];
+    
     if (upperMargin > 0) {
         // Resize the upper window
         [upperView setFrame: upperFrame];

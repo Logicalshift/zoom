@@ -70,6 +70,7 @@ static NSArray* defaultColours = nil;
 
         [self setAutoresizesSubviews: YES];
 
+        // Set up the scroll view...
         textScroller = [[ZoomScrollView allocWithZone: [self zone]] initWithFrame:
             [self bounds]
                                                                          zoomView:
@@ -81,6 +82,7 @@ static NSArray* defaultColours = nil;
         
         NSSize contentSize = [textScroller contentSize];
 
+        // Now the content view
         textView = [[ZoomTextView allocWithZone: [self zone]] initWithFrame:
             NSMakeRect(0,0,contentSize.width,contentSize.height)];
 
@@ -97,6 +99,13 @@ static NSArray* defaultColours = nil;
 
         [textView setDelegate: self];
         [[textView textStorage] setDelegate: self];
+
+        // Next, a text container used as a 'buffer' - contains the text 'hidden'
+        // by the upper window
+        upperWindowBuffer = [[NSTextContainer allocWithZone: [self zone]] init];
+        [upperWindowBuffer setContainerSize: NSMakeSize(100, 100)];
+        [[textView layoutManager] insertTextContainer: upperWindowBuffer
+                                              atIndex: 0];
 
         // Set up the text view container
         NSTextContainer* container = [textView textContainer];
@@ -128,6 +137,7 @@ static NSArray* defaultColours = nil;
     [moreView release];
     [fonts release];
     [colours release];
+    [upperWindowBuffer release];
 
     [super dealloc];
 }
@@ -591,12 +601,24 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     return height;
 }
 
+- (void) setUpperBuffer: (double) bufHeight {
+    // Update the upper window buffer
+    NSSize contentSize = [textScroller contentSize];
+    [upperWindowBuffer setContainerSize: NSMakeSize(contentSize.width, bufHeight)];
+}
+
+- (double) upperBufferHeight {
+    return [upperWindowBuffer containerSize].height;
+}
+
 - (void) rearrangeUpperWindows {
     int newSize = [self upperWindowSize];
     if (newSize != lastUpperWindowSize) {
+        // Lay things out
         [textScroller tile];
         lastUpperWindowSize = newSize;
 
+        // The place where we need to put the more prompt may have changed
         [self updateMorePrompt];
     }
 

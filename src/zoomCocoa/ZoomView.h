@@ -24,6 +24,7 @@
 
     // Subviews
     ZoomTextView* textView;
+    NSTextContainer* upperWindowBuffer; // Things hidden under the upper window
     ZoomScrollView* textScroller;
 
     int inputPos;
@@ -67,6 +68,8 @@
 - (NSColor*) backgroundColourForStyle: (ZStyle*) style;
 
 - (int)  upperWindowSize;
+- (void) setUpperBuffer: (double) bufHeight;
+- (double) upperBufferHeight;
 - (void) rearrangeUpperWindows;
 - (NSArray*) upperWindows;
 
