@@ -407,7 +407,7 @@ void stream_update_unicode_table(void)
   static int*  unitable = NULL;
   int          x;
   ZByte*       ztable;
-
+  
   if (machine.heblen < 3)
     {
       zscii_unicode = zscii_unicode_table;
@@ -442,7 +442,7 @@ void stream_update_unicode_table(void)
 
   for (x=0; x<ztable[0]; x++)
     {
-      unitable[155+x] = (ztable[2*x]<<8)|ztable[2*x+1];
+      unitable[155+x] = (ztable[2*x+1]<<8)|ztable[2*x+2];
     }
   
   if (unitable[13] == 13)
