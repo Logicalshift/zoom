@@ -2936,6 +2936,7 @@ int main(int argc, char** argv)
 		  &zoomWindow);
 
   SetWindowModified(zoomWindow, true);
+  SetWindowModified(zoomWindow, false);
 
   /* Create the scrollback scrollbar */
   rct.top    = 0;
