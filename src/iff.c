@@ -23,6 +23,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "zmachine.h"
 #include "file.h"
@@ -112,7 +113,7 @@ IffFile* iff_decode_file(ZFile* file)
     {
       IffChunk* lastchunk;
 
-      res->chunk = malloc(sizeof(IffChunk)*(res->nchunks+1));
+      res->chunk = realloc(res->chunk, sizeof(IffChunk)*(res->nchunks+1));
       res->chunk[res->nchunks] = *chunk;
       res->nchunks++;
 

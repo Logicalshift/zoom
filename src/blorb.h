@@ -67,6 +67,9 @@ IffFile*  iff_decode_file      (ZFile*    file);
 /* Blorb-specific routines */
 struct BlorbIndex
 {
+  int offset;
+  int length;
+
   int         npictures;
   BlorbImage* picture;
   int         nsounds;
@@ -109,6 +112,11 @@ struct BlorbFile
   char* game_id;
   
   BlorbResolution reso;
+
+  IffFile* file;
+
+  char* copyright;
+  char* author;
 };
 
 int        blorb_is_blorbfile(ZFile* file);

@@ -89,7 +89,7 @@ void zmachine_load_story(char* filename, ZMachine* machine)
     {
       printf("Blorb...\n");
       machine->blorb_tokens = iff_decode_file(machine->file);
-      printf("%i chunks\n", machine->blorb_tokens->nchunks);
+      blorb_loadfile(machine->file);
       exit(0);
     }
   else
