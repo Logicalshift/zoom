@@ -72,8 +72,8 @@
 #undef  SQUEEZEUNDO  /* Store undo information in a compressed format (slow) */
 #undef  TRACKING     /* Enable object tracking options */
 #define SPEC_10      /*
-		      * Unset if you don't believe me when I say this
-		      * interpreter is conformant to the ZMachine
+		      * Unset if you don`t believe me when I say this
+                      * interpreter is conformant to the ZMachine
 		      * specification v1.0
 		      */
 #define SPEC_11      /* Define to implement spec 1.1 (draft 6) */
@@ -291,6 +291,7 @@ typedef struct ZDictionary
 } ZDictionary;
 
 extern void  zmachine_load_story    (char* filename, ZMachine* machine);
+extern void  zmachine_load_file     (ZFile* file, ZMachine* machine);
 extern void  zmachine_setup_header  (void);
 extern void  zmachine_resize_display(ZDisplay* dis);
 extern void  zmachine_fatal         (char* format, ...);

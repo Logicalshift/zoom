@@ -45,12 +45,163 @@
 # include "carbondisplay.h"
 #endif
 
+void zmachine_load_file(ZFile* file, ZMachine* machine) {
+    ZFrame* frame;
+
+    // machine->story_length must be set already
+    machine->story_offset = 0;
+    machine->file = file;
+
+    if (machine->file == NULL) {
+        zmachine_fatal("Unable to open story file");
+    }
+
+
+    machine->blorb_tokens = NULL;
+    machine->blorb = NULL;
+    if (blorb_is_blorbfile(machine->file))
+    {
+        machine->blorb_file   = machine->file;
+        machine->blorb        = blorb_loadfile(machine->file);
+        machine->blorb_tokens = machine->blorb->file;
+
+        machine->story_offset = machine->blorb->zcode_offset;
+        machine->story_length = machine->blorb->zcode_len;
+
+        rc_set_game("xxxxxx", 65535, 65535);
+
+        if (machine->blorb->zcode_offset < 0)
+        {
+            zmachine_fatal("This blorb file is not executable");
+        }
+
+        machine->memory = read_block(machine->file,
+                                     machine->story_offset,
+                                     machine->story_offset+machine->story_length);
+    }
+    else
+    {
+        machine->memory = read_block(machine->file, 0, machine->story_length);
+    }
+    if (machine->memory == NULL)
+        zmachine_fatal("Unable to read story file");
+    /* close_file(machine->file); */
+
+#ifdef GLOBAL_PC
+    machine->zpc = -1;
+#endif
+
+    if (machine->memory[0] < 3)
+        zmachine_fatal("The game you are trying to load is a version 1 or 2 game: Zoom does not support version 1 or 2 games. You can obtain patches for all known version 1/2 games from http://www.ifarchive.org that will turn them into version 3 or better games");
+
+    machine->stack.stack_size    = 2048;
+    machine->stack.stack_total   = 2048;
+    machine->stack.stack         = malloc(sizeof(ZWord)*2048);
+    machine->stack.stack_top     = machine->stack.stack;
+
+    /*
+     * Topmost frame is a 'fake' frame to make quetzal work properly
+     */
+    frame = machine->stack.current_frame = malloc(sizeof(ZFrame));
+
+    frame->ret          = 0;
+    frame->flags        = 0;
+    frame->storevar     = 0;
+    frame->discard      = 0;
+    frame->frame_size   = 0;
+    frame->last_frame   = NULL;
+    frame->frame_num    = 0;
+    frame->nlocals      = 0;
+    frame->v4read       = NULL;
+    frame->v5read       = NULL;
+
+    machine->header = machine->memory;
+
+    if (machine->header[0] > 8)
+        zmachine_fatal("Not a ZCode file");
+
+    if (machine->memory[0] >= 5)
+        zscii_install_alphabet();
+
+    machine->dynamic_ceiling     = (ZUWord)GetWord(machine->header, ZH_static);
+    machine->buffering           = 1;
+
+    machine->globals             = machine->memory +
+        GetWord(machine->header, ZH_globals);
+    /*machine->objects             = machine->memory +
+        GetWord(machine->header, ZH_objs); */
+    machine->dict                = machine->memory +
+        GetWord(machine->header, ZH_dict);
+
+    machine->cached_dictionaries = hash_create();
+
+    machine->routine_offset = 8*GetWord(machine->header, ZH_routines);
+    machine->string_offset = 8*GetWord(machine->header,
+                                       ZH_staticstrings);
+
+    machine->heb = NULL;
+    machine->heblen = 0;
+    if (machine->header[0] >= 5)
+    {
+        if (GetWord(machine->header, ZH_extntable) > 32 &&
+            GetWord(machine->header, ZH_extntable) < machine->story_length)
+        {
+            machine->heb    = machine->memory + GetWord(machine->header,
+                                                        ZH_extntable);
+            machine->heblen = GetWord(machine->heb, ZHEB_len);
+
+            if (machine->heblen > 32)
+            {
+                zmachine_warning("Dodgy-looking header extension table (%i bytes long?), ignoring", machine->heblen);
+                machine->heb    = NULL;
+                machine->heblen = 0;
+            }
+            else
+                stream_update_unicode_table();
+        }
+        else
+        {
+            zmachine_warning("Dodgy-looking header extension table, ignoring");
+            machine->heb = NULL;
+            machine->heblen = 0;
+        }
+    }
+
+    /* Parse the abbreviations table */
+    {
+        ZByte* abbrev;
+        int*  word;
+        int x, len;
+
+        abbrev = machine->memory + GetWord(machine->header, ZH_abbrevs);
+
+        for (x=0; x<96*2; x+=2)
+        {
+            int y;
+
+            machine->abbrev_addr[x>>1] = ((abbrev[x]<<9)|(abbrev[x+1]<<1));
+            word = zscii_to_unicode(machine->memory +
+                                    ((abbrev[x]<<9)|(abbrev[x+1]<<1)), &len);
+            for (y=0; word[y] != 0; y++);
+            machine->abbrev[x>>1] = malloc(sizeof(int)*(y+1));
+
+            for (y=0; word[y] != 0; y++)
+                machine->abbrev[x>>1][y] = word[y];
+            machine->abbrev[x>>1][y] = 0;
+        }
+    }
+
+    machine->screen_on = 1;
+    machine->transcript_on = 0;
+    machine->transcript_file = NULL;
+    machine->script_on = 0;
+    machine->script_file = NULL;
+    machine->memory_on = 0;
+}
+
 void zmachine_load_story(char* filename, ZMachine* machine)
 {
-#ifdef PAGED_MEMORY
-#else
   ZDWord size;
-  ZFrame* frame;
 
   machine->story_file = filename;
 
@@ -90,147 +241,7 @@ void zmachine_load_story(char* filename, ZMachine* machine)
 	zmachine_fatal("Unable to open story file");
     }
 
-  machine->blorb_tokens = NULL;
-  machine->blorb = NULL;
-  if (blorb_is_blorbfile(machine->file))
-    {
-      machine->blorb_file   = machine->file;
-      machine->blorb        = blorb_loadfile(machine->file);
-      machine->blorb_tokens = machine->blorb->file;
-
-      machine->story_offset = machine->blorb->zcode_offset;
-      machine->story_length = machine->blorb->zcode_len;
-
-      rc_set_game("xxxxxx", 65535, 65535);
-
-      if (machine->blorb->zcode_offset < 0)
-	{
-	  zmachine_fatal("This blorb file is not executable");
-	}
-      
-      machine->memory = read_block(machine->file,
-				   machine->story_offset,
-				   machine->story_offset+machine->story_length);
-    }
-  else
-    {
-      machine->memory = read_block(machine->file, 0, size);
-    }
-  if (machine->memory == NULL)
-    zmachine_fatal("Unable to read story file");
-  /* close_file(machine->file); */
-#endif
-
-#ifdef GLOBAL_PC
-  machine->zpc = -1;
-#endif
-
-  if (machine->memory[0] < 3)
-    zmachine_fatal("The game you are trying to load is a version 1 or 2 game: Zoom does not support version 1 or 2 games. You can obtain patches for all known version 1/2 games from http://www.ifarchive.org that will turn them into version 3 or better games");
-  
-  machine->stack.stack_size    = 2048;
-  machine->stack.stack_total   = 2048;
-  machine->stack.stack         = malloc(sizeof(ZWord)*2048);
-  machine->stack.stack_top     = machine->stack.stack;
-
-  /*
-   * Topmost frame is a 'fake' frame to make quetzal work properly
-   */
-  frame = machine->stack.current_frame = malloc(sizeof(ZFrame));
-
-  frame->ret          = 0;
-  frame->flags        = 0;
-  frame->storevar     = 0;
-  frame->discard      = 0;
-  frame->frame_size   = 0;
-  frame->last_frame   = NULL;
-  frame->frame_num    = 0;
-  frame->nlocals      = 0;
-  frame->v4read       = NULL;
-  frame->v5read       = NULL;
-
-  machine->header = machine->memory;
-
-  if (machine->header[0] > 8)
-    zmachine_fatal("Not a ZCode file");
-    
-  if (machine->memory[0] >= 5)
-    zscii_install_alphabet();
-
-  machine->dynamic_ceiling     = (ZUWord)GetWord(machine->header, ZH_static);
-  machine->buffering           = 1;
-
-  machine->globals             = machine->memory +
-    GetWord(machine->header, ZH_globals);
-  /*machine->objects             = machine->memory +
-    GetWord(machine->header, ZH_objs); */
-  machine->dict                = machine->memory +
-    GetWord(machine->header, ZH_dict);
-
-  machine->cached_dictionaries = hash_create();
-
-  machine->routine_offset = 8*GetWord(machine->header, ZH_routines);
-  machine->string_offset = 8*GetWord(machine->header,
-				     ZH_staticstrings);
-
-  machine->heb = NULL;
-  machine->heblen = 0;
-  if (machine->header[0] >= 5)
-    {
-      if (GetWord(machine->header, ZH_extntable) > 32 &&
-	  GetWord(machine->header, ZH_extntable) < machine->story_length)
-	{
-	  machine->heb    = machine->memory + GetWord(machine->header,
-						      ZH_extntable);
-	  machine->heblen = GetWord(machine->heb, ZHEB_len);
-	  
-	  if (machine->heblen > 32)
-	    {
-	      zmachine_warning("Dodgy-looking header extension table (%i bytes long?), ignoring", machine->heblen);
-	      machine->heb    = NULL;
-	      machine->heblen = 0;
-	    }
-	  else
-	    stream_update_unicode_table();
-	}
-      else
-	{
-	  zmachine_warning("Dodgy-looking header extension table, ignoring");
-	  machine->heb = NULL;
-	  machine->heblen = 0;
-	}
-    }
-
-  /* Parse the abbreviations table */
-  {
-    ZByte* abbrev;
-    int*  word;
-    int x, len;
-
-    abbrev = machine->memory + GetWord(machine->header, ZH_abbrevs);
-
-    for (x=0; x<96*2; x+=2)
-      {
-	int y;
-
-	machine->abbrev_addr[x>>1] = ((abbrev[x]<<9)|(abbrev[x+1]<<1));
-	word = zscii_to_unicode(machine->memory +
-				((abbrev[x]<<9)|(abbrev[x+1]<<1)), &len);
-	for (y=0; word[y] != 0; y++);
-	machine->abbrev[x>>1] = malloc(sizeof(int)*(y+1));
-
-	for (y=0; word[y] != 0; y++)
-	  machine->abbrev[x>>1][y] = word[y];
-	machine->abbrev[x>>1][y] = 0;
-      }
-  }
-
-  machine->screen_on = 1;
-  machine->transcript_on = 0;
-  machine->transcript_file = NULL;
-  machine->script_on = 0;
-  machine->script_file = NULL;
-  machine->memory_on = 0;
+  zmachine_load_file(machine->file, machine);
 }
 
 void zmachine_fatal(char* format, ...)
