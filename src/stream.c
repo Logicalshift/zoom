@@ -31,6 +31,7 @@
 #include "stream.h"
 #include "display.h"
 #include "zscii.h"
+#include "v6display.h"
 
 static int  buffering = 1;
 static int  buflen    = 0;
@@ -96,7 +97,47 @@ int* zscii_to_unicode(ZByte* string, int* len)
 
   return unistring;
 }
-  
+
+static void prints_reformat_width(int len)
+{
+  int* text;
+  int split;
+  ZByte* mem;
+  int x;
+
+  mem = Address(machine.memory_pos[machine.memory_on-1]);
+
+  do 
+    {
+      text = malloc(sizeof(int)*len);
+      for (x=0; x<len; x++)
+	text[x] = mem[x+2];
+      
+      split = v6_split_point(text, len, 
+			     machine.memory_width[machine.memory_on-1]);
+      free(text);
+      
+      if (split != len)
+	{
+	  mem[0] = split>>8;
+	  mem[1] = split;
+	  
+	  for (x=len; x>split; x--)
+	    {
+	      mem[x+1+2] = mem[x-1+2];
+	    }
+	  
+	  machine.memory_pos[machine.memory_on-1] += split+2;
+	  mem += split+2;
+	  len -= split;
+	  
+	  mem[0] = len>>8;
+	  mem[1] = len;
+	}
+    }
+  while (split != len);
+}
+
 static void prints(const int* const s)
 {
   if (machine.memory_on)
@@ -128,14 +169,21 @@ static void prints(const int* const s)
 	      if (s[x] == 10 || s[x] == 13)
 		{
 		  /* Create a newline */
+		  mem[(len++)+2] = ' ';
+
 		  mem[0] = len>>8;
 		  mem[1] = len;
 
-		  mem[(len++)+2] = 0;
-		  mem[(len++)+2] = 0;
+		  prints_reformat_width(len);
+		  mem = Address(machine.memory_pos[machine.memory_on-1]);
+		  len = Word(machine.memory_pos[machine.memory_on-1]);
 
-		  machine.memory_pos[machine.memory_on-1] += len;
-		  mem += len;
+		  machine.memory_pos[machine.memory_on-1] += len+2;
+		  mem += len+2;
+
+		  mem[0] = 0;
+		  mem[1] = 0;
+
 		  len = 0;
 		}
 	      else
@@ -144,6 +192,8 @@ static void prints(const int* const s)
 
 	  mem[0] = len>>8;
 	  mem[1] = len;
+
+	  prints_reformat_width(len);
 	}
       
       return;

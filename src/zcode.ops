@@ -2554,8 +2554,6 @@ OPCODE "get_cursor"    VAR:0x10 ARGS:1        VERSION 6
 OPCODE "output_stream" VAR:0x13 ARGS:3        VERSION 6
 %{
   stream_flush_buffer();
-  if (argblock.n_args > 2)
-    printf("Output_stream with width not yet supported\n");
   zcode_op_output_stream(stack, &argblock);
 %}
 
@@ -2981,7 +2979,7 @@ OPCODE "print_form"    EXT:0x1a               VERSION 6
       int x;
       
       len = (table[0]<<8)|(table[1]);
-      if (!first)
+      if (!first && len > 0)
 	stream_printf("\n");
       first = 0;
 

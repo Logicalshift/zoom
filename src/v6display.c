@@ -135,7 +135,7 @@ void v6_reset_windows(void)
       win[x].fore        = DEFAULT_FORE;
       win[x].back        = DEFAULT_BACK;
       win[x].style       = 0;
-      win[x].line_height = 0;
+      win[x].line_height = display_get_font_height(0);
       win[x].force_fixed = 0;
       win[x].text_amount = 0;
       win[x].no_scroll   = 0;
@@ -144,7 +144,7 @@ void v6_reset_windows(void)
     }
 }
 
-static void scroll_to_height(int height)
+static void scroll_to_height(int height, int change_baseline)
 {
   int oldheight, bg;
 
@@ -186,6 +186,9 @@ static void scroll_to_height(int height)
 		   ACTWIN.text_amount, ACTWIN.no_more?"OFF":"ON");
 #endif
     }
+
+  if (!change_baseline)
+    return;
   
   /* 
    * Need to scroll any existing text on this line down, so
@@ -287,7 +290,7 @@ void v6_prints(const int* text)
       else
 	height = ACTWIN.line_height;
 
-      scroll_to_height(height);
+      scroll_to_height(height, 1);
 
       /* Plot the text */
       display_pixmap_cols(fg, bg);
@@ -335,7 +338,7 @@ void v6_prints(const int* text)
 	    }
 	  ACTWIN.want_more = 0;
 	  
-	  scroll_to_height(display_get_font_height(ACTWIN.style));
+	  scroll_to_height(display_get_font_height(ACTWIN.style), 0);
 
 	  if (more == 2)
 	    return;
@@ -377,13 +380,16 @@ void v6_erase_window(void)
 
   ACTWIN.cury = ACTWIN.ypos;
   ACTWIN.curx = ACTWIN.xpos + ACTWIN.lmargin;
-  ACTWIN.line_height = 0;
+  ACTWIN.line_height = display_get_font_height(ACTWIN.style);
 }
 
 void v6_erase_line(int val)
 {
   if (ACTWIN.line_height == 0)
-    scroll_to_height(display_get_font_height(ACTWIN.style));
+    {
+      scroll_to_height(display_get_font_height(ACTWIN.style), 1);
+      ACTWIN.line_height = display_get_font_height(ACTWIN.style);
+    }
 
   display_pixmap_cols(ACTWIN.back, 0);
   display_plot_rect(ACTWIN.curx, ACTWIN.cury,
@@ -490,6 +496,9 @@ void v6_define_window(int window,
     {
       win[window].line_height = 0;
       win[window].cury = win[window].ypos + win[window].height;
+      
+      if (!ACTWIN.no_scroll)
+	scroll_to_height(display_get_font_height(ACTWIN.style), 0);
     }
 }
 
@@ -568,3 +577,39 @@ void v6_scroll_window(int window, int amount)
     }
 }
 
+int v6_split_point(int* text,
+		   int  text_len,
+		   int  width)
+{
+  float cwidth;
+  int breakpoint, text_pos;
+  int this_word, last_word;
+
+  this_word = last_word = text_pos = 0;
+  cwidth = 0;
+
+  while (cwidth < width &&
+	 text_pos < text_len)
+    {
+      if (text[text_pos] == ' ' ||
+	  text[text_pos] == '-')
+	{
+	  cwidth = display_measure_text(text,
+					text_pos,
+					ACTWIN.style);
+	  
+	  last_word = this_word;
+	  this_word = text_pos + 1;
+	}
+      text_pos++;
+    }
+
+  cwidth = display_measure_text(text,
+				text_pos,
+				ACTWIN.style);
+
+  if (cwidth >= width)
+    return last_word;
+
+  return text_len;
+}

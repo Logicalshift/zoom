@@ -46,6 +46,10 @@ extern void v6_erase_line   (int);
 extern void v6_scroll_window(int window,
 			     int amount);
 
+extern int  v6_split_point  (int* text,
+			     int  text_len,
+			     int  width);
+
 extern int  v6_set_style    (int);
 extern void v6_set_colours  (int fg, int bg);
 extern int  v6_get_window   (void);
