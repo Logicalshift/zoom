@@ -43,6 +43,7 @@ Class Test
 #include "v6tests";
 #include "spec11";
 #include "math";
+#include "misc";
 
 [ Main x i obj;
     print "^^^^";
