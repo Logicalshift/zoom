@@ -254,4 +254,11 @@
 	zView = view;
 }
 
+// = Input styles =
+
+- (oneway void) setInputStyle: (ZStyle*) newInputStyle {
+	if (inputStyle) [inputStyle release];
+	inputStyle = [newInputStyle copy];
+}
+
 @end

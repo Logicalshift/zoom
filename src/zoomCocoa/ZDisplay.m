@@ -368,7 +368,10 @@ int display_readline(int* buf, int len, long int timeout) {
 	
 	// Reset the terminating character
 	[mainMachine inputTerminatedWithCharacter: 0];
-
+	
+	// Send the input style across
+	[[mainMachine windowNumber: zDisplayCurrentWindow] setInputStyle: zDisplayCurrentStyle];
+	
     // Request input
     [[mainMachine inputBuffer] setString: @""];
     
@@ -474,7 +477,10 @@ int display_readchar(long int timeout) {
     // Cycle the autorelease pool
     [displayPool release];
     displayPool = [[NSAutoreleasePool alloc] init];
-
+	
+	// Send the input style across
+	[[mainMachine windowNumber: zDisplayCurrentWindow] setInputStyle: zDisplayCurrentStyle];
+	
     // Request input
     [[mainMachine inputBuffer] setString: @""];
 

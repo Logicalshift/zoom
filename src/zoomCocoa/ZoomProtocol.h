@@ -143,6 +143,11 @@ enum ZValueTypeMasks {
 // Sending data to a window
 - (oneway void) writeString: (in bycopy NSString*) string
                   withStyle: (in bycopy ZStyle*) style;
+
+// Setting the style that text should be input in
+- (oneway void) setInputStyle: (in bycopy ZStyle*) inputStyle;
+- (out bycopy ZStyle*) inputStyle;
+
 @end
 
 @protocol ZUpperWindow<ZWindow>

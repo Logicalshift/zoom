@@ -850,6 +850,13 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     //[text length]-inputPos)];
 
     NSTextStorage* text = [textView textStorage];
+	
+	// Format according to the input style (if required)
+	if ([focusedView inputStyle] != nil) {
+		NSDictionary* inputAttributes = [self attributesForStyle: [focusedView inputStyle]];
+		[text setAttributes: inputAttributes
+					  range: [text editedRange]];
+	}
     
     // Check to see if there's any newlines in the input...
     int newlinePos = -1;

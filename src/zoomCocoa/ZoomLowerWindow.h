@@ -15,6 +15,7 @@
     ZoomView* zoomView;
 	
 	ZStyle* backgroundStyle;
+	ZStyle* inputStyle;
 }
 
 - (id) initWithZoomView: (ZoomView*) zoomView;

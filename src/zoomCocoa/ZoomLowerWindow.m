@@ -25,6 +25,7 @@
 - (void) dealloc {
     // [zoomView release];
 	[backgroundStyle release];
+	[inputStyle release];
     [super dealloc];
 }
 
@@ -91,6 +92,17 @@
 
 - (void) setZoomView: (ZoomView*) view {
 	zoomView = view;
+}
+
+// = Input styles =
+
+- (void) setInputStyle: (ZStyle*) newInputStyle {
+	if (inputStyle) [inputStyle release];
+	inputStyle = [newInputStyle copy];
+}
+
+- (ZStyle*) inputStyle {
+	return inputStyle;
 }
 
 @end

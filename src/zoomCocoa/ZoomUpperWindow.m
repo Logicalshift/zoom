@@ -27,6 +27,7 @@
 - (void) dealloc {
     //[theView release];
     [lines release];
+	[inputStyle release];
     [backgroundColour release];
     [super dealloc];
 }
@@ -257,6 +258,17 @@ static NSString* blankLine(int length) {
 
 - (void) setZoomView: (ZoomView*) view {
 	theView = view;
+}
+
+// = Input styles =
+
+- (oneway void) setInputStyle: (ZStyle*) newInputStyle {
+	if (inputStyle) [inputStyle release];
+	inputStyle = [newInputStyle copy];
+}
+
+- (out bycopy ZStyle*) inputStyle {
+	return inputStyle;
 }
 
 @end

@@ -197,10 +197,14 @@
 	}
 
 	// FOXME: send input styles over from the server
-	ZStyle* style = [[ZStyle alloc] init];
-	[style autorelease];
-	[style setFixed: YES];
-	[style setReversed: YES];
+	ZStyle* style = [activeWindow inputStyle];
+	if (style == nil) {
+		style = [[ZStyle alloc] init];
+		[style autorelease];
+		
+		[style setFixed: YES];
+		[style setReversed: YES];
+	}
 	
 	// Position the input line
 	NSDictionary* styleAttributes = [zoomView attributesForStyle: style];
