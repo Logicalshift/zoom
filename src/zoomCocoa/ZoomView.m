@@ -288,6 +288,7 @@ static void finalizeViews(void) {
 }
 
 // = ZDisplay functions =
+
 - (NSObject<ZLowerWindow>*) createLowerWindow {
 	// Can only have one lower window
 	if ([lowerWindows count] > 0) return [lowerWindows objectAtIndex: 0];
@@ -398,6 +399,19 @@ static void finalizeViews(void) {
     
     receivingCharacters = YES;
 	[self orWaitingForInput];
+	
+	// Position the cursor
+	if (pixmapWindow != nil) {
+		ZStyle* style = [pixmapWindow inputStyle];
+		int fontnum =
+			([style bold]?1:0)|
+			([style underline]?2:0)|
+			([style fixed]?4:0)|
+			([style symbolic]?8:0);
+		
+		[pixmapCursor positionAt: [pixmapWindow inputPos]
+						withFont: [self fontWithStyle: fontnum]];		
+	}
 	
 	// Become the first responder
 	if (pixmapWindow != nil) {
@@ -1417,8 +1431,15 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     if (delegate && [delegate respondsToSelector: @selector(zMachineFinished:)]) {
         [delegate zMachineFinished: self];
     }
-    
-    // Free things up
+	
+	// Cursor is not blinking any more
+	if (pixmapCursor) {
+		[pixmapCursor setBlinking: NO];
+		[pixmapCursor setShown: NO];
+		[pixmapCursor setActive: NO];
+	}
+
+	// Free things up
     [zoomTask release];
     [zoomTaskStdout release];
     [zoomTaskData release];
