@@ -219,3 +219,27 @@ AC_DEFUN(UTIL_CHECK_CFLAG,
       CFLAGS="$ac_OLD_CFLAGS")
   ])
 
+AC_DEFUN(UTIL_CHECK_LDFLAG,
+  [
+    AC_MSG_CHECKING([if the linker supports -$1])
+    ac_OLD_LDFLAGS="$LDFLAGS"
+    LDFLAGS="$LDFLAGS -$1"
+    AC_TRY_LINK([], [ { int x; x = 1; } ],
+      AC_MSG_RESULT(yes),
+      AC_MSG_RESULT(no)
+      LDFLAGS="$ac_OLD_LDFLAGS")
+  ])
+
+# Define a conditional.
+
+AC_DEFUN(AM_CONDITIONAL,
+[AC_SUBST($1_TRUE)
+AC_SUBST($1_FALSE)
+if $2; then
+  $1_TRUE=
+  $1_FALSE='#'
+else
+  $1_TRUE='#'
+  $1_FALSE=
+fi])
+
