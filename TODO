@@ -11,8 +11,10 @@ Hmm, this file was a bit out of date.
  * reset pixmap display on restart under v6
  * XSL documentation
  * FOO.Z5 bug under OS X
- * restarting the game seems to leave some variables intact
+ - restarting the game seems to leave some variables intact
      (eg, pick up the phone booth and die...)
+ * disable quicktime rendering
+ * scroll bar bug
 
  * Sound
  * Internationalisation support

@@ -590,7 +590,7 @@ ZUWord read_rword(ZFile* file)
 void read_block2(ZByte* block, ZFile* file, int start_pos, int end_pos)
 {
   FSReadFork(file->forkref, fsFromStart, start_pos,
-	     start_pos-end_pos, block, NULL);
+	     end_pos-start_pos, block, NULL);
 }
 
 ZDWord get_file_size(char* filename)
