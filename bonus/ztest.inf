@@ -7,7 +7,7 @@
 
 Switches v6;
 
-Array abuf -> 256;
+Array abuf --> 256;
 
 Global standard_interpreter = 0;
 
@@ -41,8 +41,8 @@ Class Test
 	];
 
 #include "v6tests";
-
 #include "spec11";
+#include "math";
 
 [ Main x i obj;
     print "^^^^";
