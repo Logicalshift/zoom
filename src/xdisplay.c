@@ -997,6 +997,8 @@ static void draw_window()
       if (img == NULL)
 	zmachine_fatal("Unable to load image");
 
+      image_resample(img, 5, 2);
+
       xim = image_to_ximage_truecolour(img,
 				       x_display,
 				       DefaultVisual(x_display, 0));
@@ -1004,7 +1006,7 @@ static void draw_window()
       XPutImage(x_display, x_drawable,
 		x_wingc, xim,
 		0, 0, 0, 0,
-		320, 200);
+		image_width(img), image_height(img));
     }
 
   /* Flip buffers */

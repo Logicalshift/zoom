@@ -216,4 +216,102 @@ unsigned char* image_rgb(image_data* data)
   return data->image;
 }
 
+void image_resample(image_data* data, int n, int d)
+{
+  unsigned char* newimage, *ip;
+  int nx, ny;
+  float origx, origy;
+  float step;
+  float halfstep, quarterstep;
+
+  int newwidth, newheight;
+
+  int filter[4][4] =
+    { { 1, 2, 2, 1 },
+      { 2, 4, 4, 2 },
+      { 2, 4, 4, 2 },
+      { 1, 2, 2, 1 } };
+
+  /*
+   * Very simple resampling algorithm
+   */
+
+  if (data->image == NULL)
+    {
+      if (iload(data, data->file, data->offset, 1) == NULL)
+	{
+	  return;
+	}
+    }
+
+  step = (float)d/(float)n;
+  halfstep = step/2.0; quarterstep = step/4.0;
+  
+  origx = 0;
+  origy = 0;
+ 
+  newwidth  = (data->width*n)/d;
+  newheight = (data->height*n)/d;
+
+  ip = newimage = malloc(newwidth*newheight*3);
+  
+  for (ny=0; ny<newheight; ny++)
+    {
+      for (nx=0; nx<newwidth; nx++)
+	{
+	  int rs, gs, bs;
+	  int x, y;
+	  float xp, yp;
+
+	  yp = origy;
+
+	  rs = gs = bs = 0;
+
+	  for (y = 0; y<4; y++)
+	    {
+	      xp = origx;
+	      for (x=0; x<4; x++)
+		{
+		  int xpos, ypos;
+
+		  xpos = (int)xp;
+		  xpos *= 3;
+		  ypos = yp;
+
+		  rs += data->row[ypos][xpos++]*filter[x][y];
+		  gs += data->row[ypos][xpos++]*filter[x][y];
+		  bs += data->row[ypos][xpos++]*filter[x][y];
+
+		  xp += quarterstep;
+		}
+	      yp += quarterstep;
+	    }
+
+	  rs /= 36; gs /= 36; bs /= 36;
+
+	  *(ip++) = rs;
+	  *(ip++) = gs;
+	  *(ip++) = bs;
+
+	  origx += step;
+	}
+
+      origy += step;
+      origx = 0;
+    }
+
+  free(data->image);
+
+  data->image = newimage;
+  data->width = newwidth;
+  data->height = newheight;
+
+  data->row = realloc(data->row, sizeof(png_bytep)*newheight);
+
+  for (ny=0; ny<newheight; ny++)
+    {
+      data->row[ny] = newimage + 3*ny*newwidth;
+    }
+}
+
 #endif
