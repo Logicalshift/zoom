@@ -105,7 +105,7 @@
     random_seed(tv.tv_sec^tv.tv_usec);
 	
     // Some default options
-	rc_load(); // DELETEME: TEST FOR BUG
+	// rc_load(); // DELETEME: TEST FOR BUG
 	rc_hash = hash_create();
 	
 	rc_defgame = malloc(sizeof(rc_game));
