@@ -437,8 +437,8 @@ static const int cacheUpperLimit = 64;
 }
 
 - (void) usedImageInCache: (int) num {
-	[[cache objectForKey: [NSNumber numberWithUnsignedInt: num]]
-		setObject: 
+	//[[cache objectForKey: [NSNumber numberWithUnsignedInt: num]]
+	//	setObject: ];
 }
 
 - (void) cacheImage: (NSImage*) img
