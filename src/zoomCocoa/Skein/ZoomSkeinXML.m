@@ -8,13 +8,62 @@
 
 #import "ZoomSkein.h"
 
+#include <expat.h>
+
 static NSString* idForNode(ZoomSkeinItem* item) {
 	// Unique ID for this item (we use the pointer as the value, as it's guaranteed unique for a unique node)
 	return [NSString stringWithFormat: @"node-%p", item];
 }
 
 static NSString* xmlEncode(NSString* str) {
-	return str;
+	int x;
+	
+	// Grr, Cocoa has no 'append character' thing in NSMutableString, which is daft
+	// To avoid being slower than a turtle embedded in cement, do everything manually
+	static unichar* res = nil;
+	int resLen = 0;
+	int maxLen = 0;
+	
+	inline void append(unichar chr) {
+		while (resLen >= maxLen) {
+			maxLen += 256;
+			res = realloc(res, sizeof(unichar)*maxLen);
+		}
+		
+		res[resLen++] = chr;
+	}
+	inline void appendStr(NSString* str) {
+		int x;
+		for (x=0; x<[str length]; x++) {
+			append([str characterAtIndex: x]);
+		}
+	}
+	
+	// Actually convert the string
+	for (x=0; x<[str length]; x++) {
+		unichar chr = [str characterAtIndex: x];
+		
+		if (chr == '\n') {
+			append('\n');
+		} else if (chr == '&') {
+			appendStr(@"&amp;");
+		} else if (chr == '<') {
+			appendStr(@"&lt;");
+		} else if (chr == '"') {
+			appendStr(@"&quot;");
+		} else if (chr == '\'') {
+			appendStr(@"&apos;");
+		} else if (chr < 0x20) {
+			// Ignore
+		} else {
+			// NOTE/FIXME: Surrogate characters are not handled correctly
+			// May, I suppose, cause a problem with chinese IF
+			append(chr);
+		}
+	}
+	
+	return [NSString stringWithCharacters: res
+								   length: resLen];
 }
 
 @implementation ZoomSkein(ZoomSkeinXML)
@@ -27,6 +76,7 @@ static NSString* xmlEncode(NSString* str) {
 	
 	// <Skein rootNode="<nodeID>" xmlns="http://www.logicalshift.org.uk/IF/Skein">
 	//   <generator>Zoom</generator>
+	//   <activeItem nodeId="<nodeID" />
 	//   <item nodeId="<nodeID>">
 	//     <command/>
 	//     <result/>
@@ -75,13 +125,13 @@ static NSString* xmlEncode(NSString* str) {
 			idForNode(node)];
 		
 		if ([node command] != nil)
-			[result appendFormat: @"    <command>%@</command>\n",
+			[result appendFormat: @"    <command xml:space=\"preserve\">%@</command>\n",
 				xmlEncode([node command])];
 		if ([node result] != nil)
-			[result appendFormat: @"    <result>%@</result>\n",
+			[result appendFormat: @"    <result xml:space=\"preserve\">%@</result>\n",
 				xmlEncode([node result])];
 		if ([node annotation] != nil)
-			[result appendFormat: @"    <annotation>%@</annotation>\n",
+			[result appendFormat: @"    <annotation xml:space=\"preserve\">%@</annotation>\n",
 				xmlEncode([node annotation])];
 		
 		[result appendFormat: @"    <played>%@</played>\n",
@@ -115,6 +165,9 @@ static NSString* xmlEncode(NSString* str) {
 }
 
 // Parsing the XML
-// Have to use expat: 
+// Have to use expat: Apple's own XML parser is not available in Jaguar
+// The Cocoa XML parser is pretty crappy anyway...
+- (void) parseXmlData: (NSData*) data {
+}
 
 @end

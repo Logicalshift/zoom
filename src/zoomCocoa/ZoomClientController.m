@@ -108,6 +108,15 @@
 }
 
 - (void) prepareSavePackage: (ZPackageFile*) file {
+	NSMutableString* skeinXML = [[[self document] skein] xmlData];
+	
+	if (![skeinXML isKindOfClass: [NSMutableString class]]) {
+		skeinXML = [skeinXML mutableCopy];
+	}
+	
+	[skeinXML insertString: @"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+				   atIndex: 0];
+	
 	[file addData: [[[[self document] skein] xmlData] dataUsingEncoding: NSUTF8StringEncoding]
 	  forFilename: @"Skein.xml"];
 }
