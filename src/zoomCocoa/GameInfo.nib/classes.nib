@@ -18,7 +18,7 @@
             SUPERCLASS = NSObject; 
         }, 
         {
-            ACTIONS = {selectGenre = id; showGenreMenu = id; }; 
+            ACTIONS = {activateRating = id; selectGenre = id; showGenreMenu = id; }; 
             CLASS = ZoomGameInfoController; 
             LANGUAGE = ObjC; 
             OUTLETS = {
