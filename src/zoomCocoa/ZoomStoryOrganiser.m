@@ -922,6 +922,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 											 handler: nil];
 			
 			moved = YES;
+			filename = destFile;
 		}
 		
 		// The file might already be organised, but in the wrong directory
@@ -965,6 +966,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 			}
 			
 			moved = YES;
+			filename = destFile;
 		}
 		
 		// If we haven't already moved the file, then
@@ -990,6 +992,9 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	[filenamesToIdents removeObjectForKey: oldFilename];
 	[filenamesToIdents setObject: ident
 						  forKey: filename];
+	
+	[storyFilenames removeObject: oldFilename];
+	[storyFilenames addObject: filename];
 	
 	// Organise the story's resources
 	NSString* resources = [story objectForKey: @"ResourceFilename"];
@@ -1391,6 +1396,10 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 				NSLog(@"Organiser: Failed to move %@ to %@ (rename failed)", oldDirectory, titleDirectory);
 				continue;
 			}
+			
+			// Change the storyFilenames array
+			[storyFilenames removeObject: filename];
+			[storyFilenames addObject: [titleDirectory stringByAppendingPathComponent: [filename lastPathComponent]]];
 
 			[storyLock unlock];
 			
