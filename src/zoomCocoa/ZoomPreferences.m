@@ -343,7 +343,7 @@ static NSArray* DefaultColours(void) {
 	[prefLock lock];
 	NSNumber* autosave = [prefs objectForKey: autosaveGames];
 	
-	BOOL result = YES;
+	BOOL result = NO;			// Changed from 1.0.2beta1 as this was annoying
 	if (autosave) result = [autosave boolValue];
 	[prefLock unlock];
 	
