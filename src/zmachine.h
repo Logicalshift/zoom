@@ -289,9 +289,9 @@ extern ZWord debug_print_var(ZWord val, int var);
 #endif
 
 #define GetVar(y)  DebugVar(((y)==0?pop(stack):(((unsigned char) (y))<16?stack->current_frame->local[(y)]:(machine.globals[((y)<<1)-32]<<8)|machine.globals[((y)<<1)-31])), y)
-#define GetCode(x) machine.memory[(x)]
-#define Word(x)    ((machine.memory[(x)]<<8)|machine.memory[(x)+1])
-#define Byte(x)    (machine.memory[(x)])
+#define GetCode(x)  machine.memory[(x)]
+#define Word(x)     ((machine.memory[(x)]<<8)|machine.memory[(x)+1])
+#define ReadByte(x) (machine.memory[(x)])
 #define GetWord(m, x) ((m[x]<<8)|(m[x+1]))
 #define Address(x) (machine.memory + (x))
 

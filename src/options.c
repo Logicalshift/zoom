@@ -164,7 +164,7 @@ void get_options(int argc, char** argv, arguments* args)
 
   if (optind >= argc || (optind-argc)>2)
     {
-      printf("Usage: %s [OPTION...] story-file [save-file]\n",
+      zmachine_fatal("Usage: %s [OPTION...] story-file [save-file]\n",
 	     argv[0]);
       display_exit(1);
    }
@@ -209,8 +209,7 @@ void get_options(int argc, char** argv, arguments* args)
     }
   else
     {
-      printf_error("Usage: %s story-file [save-file]\n", argv[0]);
-      printf_error_done();
+      zmachine_fatal("Usage: %s story-file [save-file]\n", argv[0]);
       display_exit(1);
     }
 }

@@ -336,7 +336,7 @@ int zstrlen(ZByte* string)
  */
 void zscii_install_alphabet(void)
 {
-  if (Byte(0)>=5)
+  if (ReadByte(0)>=5)
     {
       ZUWord table;
 

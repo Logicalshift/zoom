@@ -52,7 +52,7 @@ extern void    xfont_plot_string   (xfont*,
 				    int, int,
 				    const int*,
 				    int);
-#else
+#elif WINDOW_SYSTEM==2
 extern void xfont_plot_string(xfont*,
 			      HDC,
 			      int, int,
@@ -61,6 +61,11 @@ extern void xfont_plot_string(xfont*,
 
 extern void xfont_choose_new_font(xfont*,
 				  int);
+#elif WINDOW_SYSTEM==3
+extern void xfont_plot_string(xfont*,
+			      int, int,
+			      const int*,
+			      int);
 #endif
 
 #endif

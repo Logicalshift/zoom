@@ -81,7 +81,7 @@ ZDictionary* dictionary_cache(const ZUWord dict_pos)
   dpos      = dict_pos+1+dct[0];
   dct      += 1+dct[0];
 
-  if (Byte(0) <= 3)
+  if (ReadByte(0) <= 3)
     text_len = 4;
   else
     text_len = 6;
@@ -157,7 +157,7 @@ inline ZUWord lookup_word(unsigned char* word,
   printf_debug("'... ");
 #endif
 
-  if (Byte(ZH_version) <= 3)
+  if (ReadByte(ZH_version) <= 3)
     {
       zscii_len = 6;
       text_len = 4;
@@ -173,9 +173,9 @@ inline ZUWord lookup_word(unsigned char* word,
   if (!cached)
     zmachine_fatal("Bad dictionary");
   
-  dct += 1+Byte(dct);
+  dct += 1+ReadByte(dct);
   
-  entry_length = Byte(dct);
+  entry_length = ReadByte(dct);
   no_entries   = Word(dct+1);
   dct += 3;
   
@@ -226,7 +226,7 @@ void tokenise_string(unsigned char* string,
   ZUWord             ent;
   int                zscii_len, text_len;
 
-  if (Byte(ZH_version) <= 3)
+  if (ReadByte(ZH_version) <= 3)
     {
       zscii_len = 6;
       text_len = 4;

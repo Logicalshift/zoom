@@ -37,6 +37,10 @@
 
 #if WINDOW_SYSTEM == 2
 # include <windows.h>
+#elif WINDOW_SYSTEM == 3
+# include <Carbon/Carbon.h>
+
+# include "carbondisplay.h"
 #endif
 
 void zmachine_load_story(char* filename, ZMachine* machine)
@@ -202,6 +206,27 @@ void zmachine_fatal(char* format, ...)
 # endif
       MessageBox(NULL, erm, "Zoom " VERSION " - fatal error",
 		 MB_OK|MB_ICONSTOP|MB_TASKMODAL);
+#elif WINDOW_SYSTEM == 3
+      Str255 erm;
+      Str255 title;
+      SInt16 item;
+      AlertStdAlertParamRec par;
+
+      par.movable = false;
+      par.helpButton = false;
+      par.filterProc = nil;
+      par.defaultText = "\004Quit";
+      par.cancelText = nil;
+      par.otherText = nil;
+      par.defaultButton = kAlertStdAlertOKButton;
+      par.cancelButton = 0;
+      par.position = kWindowAlertPositionOnParentWindow;
+
+      title[0] = strlen("Zoom " VERSION " - fatal error");
+      strcpy(title+1, "Zoom " VERSION " - fatal error");
+      sprintf(erm + 1, "(PC = #%x) %s", machine.zpc, string);
+      erm[0] = strlen(erm+1);
+      StandardAlert(kAlertStopAlert, title, erm, &par, &item);
 #else
       fprintf(stderr, "\nINTERPRETER PANIC - %s", string);
 #ifdef GLOBAL_PC
@@ -248,6 +273,30 @@ void zmachine_warning(char* format, ...)
 # endif
       MessageBox(NULL, erm, "Zoom " VERSION " - warning",
 		 MB_OK|MB_ICONWARNING|MB_TASKMODAL);
+#elif WINDOW_SYSTEM == 3
+      Str255 erm;
+      Str255 title;
+      DialogItemIndex item;
+      AlertStdAlertParamRec par;
+
+      ResetAlertStage();
+
+      par.movable = false;
+      par.helpButton = false;
+      par.filterProc = nil;
+      par.defaultText = "\010Continue";
+      par.cancelText = nil;
+      par.otherText = nil;
+      par.defaultButton = kAlertStdAlertOKButton;
+      par.cancelButton = 0;
+      par.position = 0;
+
+      title[0] = strlen("Zoom " VERSION " - warning");
+      strcpy(title+1, "Zoom " VERSION " - warning");
+      sprintf(erm + 1, "(PC = #%x) %s", machine.zpc, string);
+      erm[0] = strlen(erm+1);
+      
+      StandardAlert(kAlertCautionAlert, title, erm, &par, &item);
 #else
       fprintf(stderr, "[ WARNING - %s", string);
 # ifdef GLOBAL_PC

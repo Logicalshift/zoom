@@ -82,7 +82,7 @@ char* menu_get_story(void)
   gamedir = opendir(dirname);
 
   if (gamedir == NULL)
-    zmachine_fatal("Unable to find game direction '%s'", dirname);
+    zmachine_fatal("Unable to find game directory '%s'", dirname);
 
   chdir(dirname);
   

@@ -212,7 +212,7 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
     }
 
   *len = -1;
-  version = Byte(0);
+  version = ReadByte(0);
 
   pc--; /*
 	 * Quetzal spec is unclear on this... Experience with patched

@@ -46,6 +46,16 @@ else
 zoom$(EXEEXT): $(zoom_OBJECTS) $(zoom_DEPENDENCIES)
 	@rm -f zoom
 	$(LINK) $(zoom_LDFLAGS) $(zoom_OBJECTS) $(zoom_LDADD) $(LIBS)
+if CARBON_VERSION
+	-mkdir zoom.app
+	-mkdir zoom.app/Contents
+	-mkdir zoom.app/Contents/MacOS
+	-mkdir zoom.app/Contents/Resources
+	-mkdir zoom.app/Contents/Resources/English.lproj
+	cp zoom$(EXEEXT) zoom.app/Contents/MacOS
+	cp -Rf $(srcdir)/macos/zoom.nib zoom.app/Contents/Resources/English.lproj
+	cp $(srcdir)/macos/Info.plist $(srcdir)/macos/PkgInfo zoom.app/Contents
+endif
 endif
 
 CFLAGS = @CFLAGS@ @X_CFLAGS@ -DDATADIR="\"${pkgdatadir}\""

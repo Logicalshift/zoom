@@ -208,7 +208,7 @@ void restart_machine(void)
     }
   machine.memory_on = 0;
 
-  if (Byte(0) < 4)
+  if (ReadByte(0) < 4)
     {
       display_set_window(0);
       display_join(0,2);
@@ -385,7 +385,7 @@ static char* tracking_object(ZUWord arg)
   ZByte* prop;
   int len;
 
-  if (Byte(0) <= 3)
+  if (ReadByte(0) <= 3)
     {
       obj = Obj3(arg);
       prop = machine.memory + ((obj[7]<<8)|obj[8]) + 1;
@@ -943,16 +943,16 @@ static void zcode_op_aread_5678(ZDWord* pc,
       tablelen = 0;
 
       for (pos = Word(ZH_termtable);
-	   Byte(pos) != 0;
+	   ReadByte(pos) != 0;
 	   pos++)
 	{
-	  if (Byte(pos) < 129 || (Byte(pos) > 154 &&
-				  Byte(pos) < 252))
+	  if (ReadByte(pos) < 129 || (ReadByte(pos) > 154 &&
+				  ReadByte(pos) < 252))
 	    {
 	      zmachine_warning("Only characters in the range 129-154 (and 252-255) are valid terminating characters");
 	    }
 	  table = realloc(table, tablelen+2);
-	  table[tablelen++] = Byte(pos);
+	  table[tablelen++] = ReadByte(pos);
 	  table[tablelen]   = 0;
 	}
 
@@ -1059,7 +1059,7 @@ static ZDWord scan_table(ZUWord word,
     {
       for (p=0; p<len; p++)
 	{
-	  if (Byte(addr) == word)
+	  if (ReadByte(addr) == word)
 	    return addr;
 	  addr += form&0x7f;
 	}
