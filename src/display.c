@@ -133,8 +133,8 @@ void display_clear(void)
 
 void display_erase_window(void)
 {
-  display_set_scroll_range(0, 0);
   display_set_scroll_region(0);
+  display_set_scroll_range(0, 0);
   display_set_scroll_position(0);
 
   displayed_text = 0;
@@ -521,10 +521,10 @@ void display_split       (int lines, int window)
 
   if (CURWIN.line != NULL)
     {
+      display_set_scroll_region(CURWIN.winly-CURWIN.winsy);
       display_set_scroll_range (CURWIN.line->baseline - CURWIN.line->ascent - 
 				CURWIN.winsy,
 				CURWIN.winly - CURWIN.winsy);
-      display_set_scroll_region(CURWIN.winly-CURWIN.winsy);
     }
   else
     {
