@@ -215,12 +215,14 @@ typedef enum {
 - (out byref NSObject<ZUpperWindow>*) createUpperWindow;
 - (out byref NSObject<ZPixmapWindow>*) createPixmapWindow;
 
-// Requesting user input from
+// Requesting user input
 - (void)		shouldReceiveCharacters;
 - (void)		shouldReceiveText: (in int) maxLength;
 - (void)        stopReceiving;
 
 - (oneway void) setTerminatingCharacters: (in bycopy NSSet*) characters;
+
+- (void) displayMore: (BOOL) shown;
 
 // 'Exclusive' mode - lock the UI so no updates occur while we're sending
 // large blocks of varied text

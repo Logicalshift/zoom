@@ -371,31 +371,33 @@ static void finalizeViews(void) {
 	if (lastAutosave) [lastAutosave release];
 	lastAutosave = [[zMachine createGameSave] retain];
 	
-    [self rearrangeUpperWindows];
-
-    int currentSize = [self upperWindowSize];
-    if (currentSize != lastTileSize) {
-        [textScroller tile];
-        [self updateMorePrompt];
-        lastTileSize = currentSize;
-    }
-    
-    // Paste stuff
-    NSEnumerator* upperEnum = [upperWindows objectEnumerator];
-    ZoomUpperWindow* win;
-    while (win = [upperEnum nextObject]) {
-        [textView pasteUpperWindowLinesFrom: win];
-    }
-	
-	if ([focusedView isKindOfClass: [ZoomUpperWindow class]]) {
-		[[textScroller upperWindowView] setFlashCursor: YES]; 
+	if (pixmapWindow == nil) {
+		[self rearrangeUpperWindows];
+		
+		int currentSize = [self upperWindowSize];
+		if (currentSize != lastTileSize) {
+			[textScroller tile];
+			[self updateMorePrompt];
+			lastTileSize = currentSize;
+		}
+		
+		// Paste stuff
+		NSEnumerator* upperEnum = [upperWindows objectEnumerator];
+		ZoomUpperWindow* win;
+		while (win = [upperEnum nextObject]) {
+			[textView pasteUpperWindowLinesFrom: win];
+		}
+		
+		if ([focusedView isKindOfClass: [ZoomUpperWindow class]]) {
+			[[textScroller upperWindowView] setFlashCursor: YES]; 
+		}
+		
+		// If the more prompt is off, then set up for editing
+		if (!moreOn) {
+			[self resetMorePrompt];
+			[self scrollToEnd];
+		}
 	}
-
-    // If the more prompt is off, then set up for editing
-    if (!moreOn) {
-        [self resetMorePrompt];
-        [self scrollToEnd];
-    }
     
     receivingCharacters = YES;
 	[self orWaitingForInput];
@@ -410,7 +412,9 @@ static void finalizeViews(void) {
 			([style symbolic]?8:0);
 		
 		[pixmapCursor positionAt: [pixmapWindow inputPos]
-						withFont: [self fontWithStyle: fontnum]];		
+						withFont: [self fontWithStyle: fontnum]];
+		
+		[pixmapCursor setShown: !moreOn];
 	}
 	
 	// Become the first responder
@@ -623,6 +627,11 @@ static void finalizeViews(void) {
 									   NSMaxY(endRect) - frame.size.height)];
 }
 
+- (void) displayMore: (BOOL) shown {
+	moreOn = shown;
+	[self setShowsMorePrompt: moreOn];
+}
+
 - (void) displayMoreIfNecessary {
     NSLayoutManager* mgr = [textView layoutManager];
 
@@ -679,6 +688,8 @@ static void finalizeViews(void) {
 }
 
 - (void) updateMorePrompt {
+	if (pixmapWindow) return; // Nothing to do
+	
     // Updates the more prompt to represent the new height of the window
 	NSSize contentSize = [textScroller contentSize];
 	contentSize = [textView convertSize: contentSize
@@ -720,6 +731,7 @@ static void finalizeViews(void) {
         // This technique has one failure, though: when the more prompt moves,
         // bits may get left on the screen as a result of scrolling
         NSRect content = [textView bounds];
+		if (pixmapWindow) content = [self bounds];
         
         [moreView setSize];
         NSSize moreSize = [moreView frame].size;
@@ -733,7 +745,12 @@ static void finalizeViews(void) {
                                       moreSize.width, moreSize.height);
         
         [moreView setFrame: moreFrame];
-        [textView addSubview: moreView];
+		
+		if (pixmapWindow) {
+			[self addSubview: moreView];
+		} else {
+			[textView addSubview: moreView];
+		}
     }
 }
 
@@ -795,7 +812,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 // = Event methods =
 
 - (BOOL)handleKeyDown:(NSEvent *)theEvent {
-    if (moreOn) {
+    if (moreOn && pixmapWindow==nil) {
         // FIXME: maybe only respond to certain keys
         [self page];
         return YES;

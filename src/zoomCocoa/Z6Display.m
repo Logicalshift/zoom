@@ -269,7 +269,13 @@ void display_set_input_pos(int style, int x, int y, int width) {
 																	withStyle: zDisplayCurrentStyle];
 }
 
-extern void  display_wait_for_more   (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
+void display_wait_for_more(void) {
+	[mainMachine flushBuffers];
+	
+	[[mainMachine display] displayMore: YES];
+	display_readchar(0);
+	[[mainMachine display] displayMore: NO];
+}
 
 // = Mouse =
 
