@@ -687,8 +687,6 @@ OPCODE "set_colour"   2OP:0x1b               VERSION 5,7,8
   display_set_colour(convert_colour(arg1), convert_colour(arg2));
 %}
 
-OPCODE "set_colour"   2OP:0x1b REALLYVAR     VERSION 6
-
 OPCODE "throw"        2OP:0x1c CANJUMP       VERSION 5,6,7,8
 %{
   if (stack->current_frame == NULL)
@@ -1454,8 +1452,6 @@ OPCODE "pull"           VAR:0x09 ARGS:1               VERSION 1,2,3,4,5,7,8
   store(stack, argblock.arg[0], val);
 %}
 
-OPCODE "pull"           VAR:0x09 ARGS:1 STORE         VERSION 6
-
 OPCODE "split_window"   VAR:0x0a ARGS:1               VERSION all # 3,4,5,6,7,8
 %{
   stream_flush_buffer();
@@ -1476,7 +1472,7 @@ OPCODE "split_window"   VAR:0x0a ARGS:1               VERSION all # 3,4,5,6,7,8
       display_set_window(0);
       display_join(0, 2);
       display_split(argblock.arg[0], 2);
-      display_no_more(2);
+      display_set_more(2, 0);
       display_set_window(2);
       if (ver == 3)
 	{
@@ -1525,7 +1521,6 @@ OPCODE "set_window"     VAR:0x0b ARGS:1               VERSION 3,4,5,7,8
     }
 %}
 
-OPCODE "set_window"     VAR:0x0b ARGS:1               VERSION 6
 
 OPCODE "call_vs2"       VAR:0x0c   STORE LONG CANJUMP VERSION 4,5,6,7,8
 %{
@@ -1571,8 +1566,6 @@ OPCODE "erase_line"     VAR:0x0e ARGS:1               VERSION 4,5,7,8
   display_erase_line(1);
 %}
 
-OPCODE "erase_line"     VAR:0x0e ARGS:1               VERSION 6
-
 OPCODE "set_cursor"     VAR:0x0f ARGS:2               VERSION 4,5,7,8
 %{
   stream_flush_buffer();
@@ -1583,9 +1576,7 @@ OPCODE "set_cursor"     VAR:0x0f ARGS:2               VERSION 4,5,7,8
     display_set_cursor(argblock.arg[1]-1, argblock.arg[0]-1);
 %}
 
-OPCODE "set_cursor"     VAR:0x0f ARGS:3               VERSION 6
-
-OPCODE "get_cursor"     VAR:0x10 ARGS:1               VERSION 4,5,6,7,8
+OPCODE "get_cursor"     VAR:0x10 ARGS:1               VERSION 4,5,7,8
 %{
   ZByte* dest;
   int x, y;
@@ -1621,8 +1612,6 @@ OPCODE "output_stream"  VAR:0x13 ARGS:2               VERSION 4,5,7,8
 %{
   zcode_op_output_stream(stack, &argblock);
 %}
-
-OPCODE "output_stream"  VAR:0x13 ARGS:3               VERSION 6
 
 OPCODE "input_stream"   VAR:0x14 ARGS:1               VERSION all # 3,4,5,6,7,8
 
@@ -1845,6 +1834,7 @@ OPCODE "check_argcount" VAR:0x1f ARGS:1 BRANCH        VERSION 5,6,7,8
   dobranch;
 %}
 
+####                           ----// 888 \\----                           ####
 # EXT ops
 
 OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
@@ -2029,11 +2019,6 @@ OPCODE "set_font"      EXT:0x04 ARGS:1 STORE  VERSION 5,6,7,8
     }
 %}
 
-OPCODE "draw_picture"  EXT:0x05 ARGS:3        VERSION 6
-OPCODE "picture_data"  EXT:0x06 BRANCH        VERSION 6
-OPCODE "erase_picture" EXT:0x07               VERSION 6
-OPCODE "set_margins"   EXT:0x08 ARGS:3        VERSION 6
-
 OPCODE "save_undo"     EXT:0x09 ARGS:0 STORE CANJUMP VERSION 5,6,7,8
 %{
 #ifdef CAN_UNDO
@@ -2083,19 +2068,6 @@ OPCODE "restore_undo"  EXT:0x0a ARGS:0 STORE CANJUMP VERSION 5,6,7,8
 
 OPCODE "print_unicode" EXT:0x0b ARGS:1        VERSION 5,7,8
 OPCODE "check_unicode" EXT:0x0c ARGS:1 STORE  VERSION 5,7,8
-OPCODE "move_window"   EXT:0x10               VERSION 6
-OPCODE "window_size"   EXT:0x11               VERSION 6
-OPCODE "window_style"  EXT:0x12               VERSION 6
-OPCODE "get_wind_prop" EXT:0x13        STORE  VERSION 6
-OPCODE "scroll_window" EXT:0x14               VERSION 6
-OPCODE "pop_stack"     EXT:0x15               VERSION 6
-OPCODE "read_mouse"    EXT:0x16               VERSION 6
-OPCODE "mouse_window"  EXT:0x17               VERSION 6
-OPCODE "push_stack"    EXT:0x18        BRANCH VERSION 6
-OPCODE "put_wind_prop" EXT:0x19               VERSION 6
-OPCODE "print_form"    EXT:0x1a               VERSION 6
-OPCODE "make_menu"     EXT:0x1b        BRANCH VERSION 6
-OPCODE "picture_table" EXT:0x1c               VERSION 6
 
 # Our own extensions - benchmarking/profiling operations
 OPCODE "start_timer"   EXT:0x80               VERSION 4,5,6,7,8
@@ -2126,3 +2098,371 @@ OPCODE "print_timer"   EXT:0x83      	      VERSION 4,5,6,7,8
   stream_printf("%i.%02i secs", (signed int) (now/CLOCKS_PER_SEC),
 		(signed int) ((now*100)/CLOCKS_PER_SEC)%100);
 %}
+
+####                           ----// 888 \\----                           ####
+# Version 6 opcodes
+
+OPCODE "set_colour"    2OP:0x1b REALLYVAR     VERSION 6
+%{
+  int win, working;
+
+  working = display_get_window();
+  if (argblock.n_args > 2)
+    {
+      win = display_get_window();
+      display_set_window(argblock.arg[2]);
+      working = argblock.arg[2];
+    }
+  
+  display_set_colour(convert_colour(argblock.arg[0]),
+		     convert_colour(argblock.arg[1]));
+  windows[working].colour = argblock.arg[0]|(argblock.arg[1]<<8);
+  
+  if (argblock.n_args > 2)
+    {
+      display_set_window(win);
+    }
+%}
+
+OPCODE "pull"          VAR:0x09 ARGS:1 STORE  VERSION 6
+%{
+  if (argblock.arg[0] != 0)
+    {
+      ZByte* us;
+      ZByte* val;
+      ZUWord len;
+      
+      /* User stack */
+      us = Address(argblock.arg[0]);
+      len = (us[0]<<8)|us[1];
+      len++;
+      us[0] = len>>8; us[1] = len;
+      val = us + len*2;
+      
+      store(stack, st, (val[0]<<8)|val[1]);
+    }
+  else
+    {
+      /* Game stack */
+      store(stack, st, pop(stack));
+    }
+%}
+
+OPCODE "erase_line"    VAR:0x0e ARGS:1        VERSION 6
+%{
+  display_erase_line(argblock.arg[0]);
+%}
+
+OPCODE "set_window"    VAR:0x0b ARGS:1        VERSION 6
+%{
+  stream_flush_buffer();
+
+  zcode_setup_window(argblock.arg[0]);
+%}
+
+OPCODE "set_cursor"    VAR:0x0f ARGS:3        VERSION 6
+%{
+  int owin;
+
+  if (argblock.n_args < 3)
+    argblock.arg[2] = display_get_window();
+
+  printf("Moving cursor to %x, %x (window %i)\n", argblock.arg[0], argblock.arg[1], argblock.arg[2]);
+
+  owin = display_get_window();
+  display_set_window(argblock.arg[2]);
+  display_set_gcursor(argblock.arg[0] + windows[argblock.arg[2]].x,
+		      argblock.arg[1] + windows[argblock.arg[2]].y);
+  display_set_window(owin);
+%}
+
+OPCODE "get_cursor"    VAR:0x10 ARGS:1        VERSION 6
+%{
+  ZByte* dest;
+  int x, y;
+  int win;
+
+  win = display_get_window();
+
+  dest = Address((ZUWord)argblock.arg[0]);
+  x = display_get_gcur_x()-windows[win].x;
+  y = display_get_gcur_y()-windows[win].y;
+
+  dest[0] = y>>8;
+  dest[1] = y;
+  dest[2] = x>>8;
+  dest[3] = x;  
+%}
+
+OPCODE "output_stream" VAR:0x13 ARGS:3        VERSION 6
+%{
+  zcode_op_output_stream(stack, &argblock);
+%}
+
+OPCODE "draw_picture"  EXT:0x05 ARGS:3        VERSION 6
+
+OPCODE "picture_data"  EXT:0x06 BRANCH        VERSION 6
+%{
+  ZByte* d;
+  ZUWord width, height;
+
+  d = Address((ZUWord)argblock.arg[1]);
+
+  width = pix_width((ZUWord)argblock.arg[0]);
+  height = pix_height((ZUWord)argblock.arg[0]);
+
+  d[0] = height>>8;
+  d[1] = height;
+  d[2] = width>>8;
+  d[3] = width;
+%}
+
+OPCODE "erase_picture" EXT:0x07               VERSION 6
+
+OPCODE "set_margins"   EXT:0x08 ARGS:3        VERSION 6
+%{
+  int win, yp;
+
+  if (argblock.n_args < 3)
+    argblock.arg[2] = display_get_window();
+  win = display_get_window();
+  display_set_window(argblock.arg[2]);
+
+  windows[argblock.arg[2]].leftmar  = argblock.arg[0];
+  windows[argblock.arg[2]].rightmar = argblock.arg[1];
+
+  printf("Margins of window %i set to %i, %i\n", argblock.arg[2], argblock.arg[0], argblock.arg[1]);
+  
+  zcode_setup_window(argblock.arg[2]);
+  if (display_get_gcur_x() < windows[argblock.arg[2]].x+
+                             windows[argblock.arg[2]].leftmar)
+    {
+      yp = display_get_gcur_y();
+    
+      display_set_gcursor(windows[argblock.arg[2]].x+
+                            windows[argblock.arg[2]].leftmar,
+                          yp);
+    }
+  display_set_window(win);
+%}
+
+OPCODE "move_window"   EXT:0x10               VERSION 6
+%{
+  int xmove, ymove;
+  int win;
+  
+  win = display_get_window();
+  display_set_window(argblock.arg[0]);
+
+  xmove = argblock.arg[2]-windows[argblock.arg[0]].x;
+  ymove = argblock.arg[1]-windows[argblock.arg[0]].y;
+
+  display_set_gcursor(display_get_gcur_x()+xmove,
+                      display_get_gcur_y()+ymove);
+
+  windows[argblock.arg[0]].x = argblock.arg[2];
+  windows[argblock.arg[0]].y = argblock.arg[1];
+  windows[argblock.arg[0]].leftmar = 0;
+  windows[argblock.arg[0]].rightmar = 0;
+  
+  zcode_setup_window(argblock.arg[0]);
+  display_set_window(win);
+%}
+
+OPCODE "window_size"   EXT:0x11               VERSION 6
+%{
+  windows[argblock.arg[0]].xsize = argblock.arg[2];
+  windows[argblock.arg[0]].ysize = argblock.arg[1];
+  windows[argblock.arg[0]].leftmar = 0;
+  windows[argblock.arg[0]].rightmar = 0;
+
+  {
+    int win;
+    win = display_get_window();
+    zcode_setup_window(argblock.arg[0]);
+    display_set_window(win);
+  }
+%}
+
+OPCODE "window_style"  EXT:0x12               VERSION 6
+%{
+  StyleSet(windows[argblock.arg[0]].wrapping,   argblock.arg[1]&1);
+  StyleSet(windows[argblock.arg[0]].scrolling,  argblock.arg[1]&2);
+  StyleSet(windows[argblock.arg[0]].transcript, argblock.arg[1]&4);
+  StyleSet(windows[argblock.arg[0]].buffering,  argblock.arg[1]&8);
+%}
+
+OPCODE "get_wind_prop" EXT:0x13        STORE  VERSION 6
+%{
+  int win;
+
+  win = display_get_window();
+  display_set_window(argblock.arg[0]);
+  switch(argblock.arg[1])
+    {
+    case 0:
+      store(stack, st, windows[argblock.arg[0]].y);
+      break;
+    case 1:
+      store(stack, st, windows[argblock.arg[0]].x);
+      break;
+    case 2:
+      store(stack, st, windows[argblock.arg[0]].ysize);
+      break;
+    case 3:
+      store(stack, st, windows[argblock.arg[0]].xsize);
+      break;
+    case 4:
+      store(stack, st, display_get_gcur_x()-windows[argblock.arg[0]].x);
+      break;
+    case 5:
+      store(stack, st, display_get_gcur_y()-windows[argblock.arg[0]].y);
+      break;
+    case 6:
+      store(stack, st, windows[argblock.arg[0]].leftmar);
+      break;
+    case 7:
+      store(stack, st, windows[argblock.arg[0]].rightmar);
+      break;
+    case 8:
+      store(stack, st, windows[argblock.arg[0]].newline_routine);
+      break;
+    case 9:
+      store(stack, st, windows[argblock.arg[0]].countdown);
+      break;
+    case 10:
+      store(stack, st, windows[argblock.arg[0]].style);
+      break;
+    case 11:
+      store(stack, st, windows[argblock.arg[0]].colour);
+      break;
+    case 12:
+      store(stack, st, windows[argblock.arg[0]].font_num);
+      break;
+    case 13:
+      store(stack, st, windows[argblock.arg[0]].font_size);
+      break;
+    case 14:
+      store(stack, st,
+	    windows[argblock.arg[0]].wrapping|
+	    (windows[argblock.arg[0]].scrolling<<1)|
+	    (windows[argblock.arg[0]].transcript<<2)|
+	    (windows[argblock.arg[0]].buffering<<3));
+      break;
+    case 15:
+      store(stack, st,
+	    windows[argblock.arg[0]].line_count);
+      break;
+
+    default:
+      zmachine_fatal("Attempt to access out of range window property %i", argblock.arg[1]);
+   }
+  display_set_window(win);
+%}
+
+OPCODE "scroll_window" EXT:0x14               VERSION 6
+
+OPCODE "pop_stack"     EXT:0x15               VERSION 6
+%{
+  if (argblock.arg[1] == 0)
+    {
+      int x;
+
+      for (x=0; x<(ZUWord) argblock.arg[0]; x++)
+	pop(stack);
+    }
+  else
+    {
+      ZByte* s;
+      ZUWord len;
+
+      s = Address(argblock.arg[1]);
+      len = (s[0]<<8)|s[1];
+      len += argblock.arg[0];
+      s[0] = len>>8;
+      s[1] = len;
+    }
+%}
+
+OPCODE "read_mouse"    EXT:0x16               VERSION 6
+OPCODE "mouse_window"  EXT:0x17               VERSION 6
+
+OPCODE "push_stack"    EXT:0x18        BRANCH VERSION 6
+%{
+  result = zcode_v6_push_stack(stack, argblock.arg[1], argblock.arg[0]);
+  dobranch;
+%}
+
+OPCODE "put_wind_prop" EXT:0x19               VERSION 6
+%{
+  int win;
+
+  win = display_get_window();
+  display_set_window(argblock.arg[0]);
+  switch(argblock.arg[1])
+    {
+    case 0:
+      zmachine_warning("Bad put_wind_prop: should use move_window instead");
+      windows[argblock.arg[0]].y = argblock.arg[2];
+      break;
+    case 1:
+      zmachine_warning("Bad put_wind_prop: should use move_window instead");
+      windows[argblock.arg[0]].x = argblock.arg[2];
+      break;
+    case 2:
+      zmachine_warning("Bad put_wind_prop: should use window_size instead");
+      windows[argblock.arg[0]].ysize = argblock.arg[2];
+      break;
+    case 3:
+      zmachine_warning("Bad put_wind_prop: should use window_size instead");
+      windows[argblock.arg[0]].xsize = argblock.arg[2];
+      break;
+    case 4:
+      zmachine_warning("Bad put_wind_prop: should use set_cursor instead");
+      display_set_gcursor(display_get_gcur_x(), argblock.arg[2]);
+      break;
+    case 5:
+      zmachine_warning("Bad put_wind_prop: should use set_cursor instead");
+      display_set_gcursor(argblock.arg[2], display_get_gcur_y());
+      break;
+    case 6:
+      windows[argblock.arg[0]].leftmar = argblock.arg[2];
+      break;
+    case 7:
+      windows[argblock.arg[0]].rightmar = argblock.arg[2];
+      break;
+    case 8:
+      windows[argblock.arg[0]].newline_routine = argblock.arg[2];
+      break;
+    case 9:
+      windows[argblock.arg[0]].countdown = argblock.arg[2];
+      break;
+    case 10:
+      zmachine_warning("Bad put_wind_prop: should use set_text_style instead");
+      break;
+    case 11:
+      zmachine_warning("Bad put_wind_prop: should use set_colour instead");
+      break;
+    case 12:
+      zmachine_warning("Bad put_wind_prop: should use set_font instead");
+      break;
+    case 13:
+      zmachine_warning("Bad put_wind_prop: should use set_font instead");
+      break;
+    case 14:
+      zmachine_warning("Bad put_wind_prop: should use window_style instead");
+      break;
+    case 15:
+      windows[argblock.arg[0]].line_count = argblock.arg[2];
+      break;
+
+    default:
+      zmachine_fatal("Attempt to access out of range window property %i", argblock.arg[1]);
+   }
+  display_set_window(win);  
+%}
+
+OPCODE "print_form"    EXT:0x1a               VERSION 6
+OPCODE "make_menu"     EXT:0x1b        BRANCH VERSION 6
+OPCODE "picture_table" EXT:0x1c               VERSION 6
+

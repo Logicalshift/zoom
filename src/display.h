@@ -91,7 +91,8 @@ extern int  display_set_font    (int font);
 extern int  display_set_style   (int style);
 extern void display_set_window  (int window);
 extern int  display_get_window  (void);
-extern void display_no_more     (int window);
+extern void display_set_more    (int window,
+				 int more);
 extern void display_erase_window(void);
 extern void display_erase_line  (int val);
 extern void display_force_fixed (int window, int val);

@@ -446,7 +446,7 @@ static void new_line(int more)
 		}
 	      CURWIN.text_amount = 0;
 	    }
-	  if (more == 1)
+	  if (more == 1 && !CURWIN.no_more)
 	    display_more();
 	  
 	  /* Need to scroll window */
@@ -549,7 +549,9 @@ static void outputs(const char* string, int font, int len, int split)
 		  new_line(more);
 
 		  if (more == 2)
-		    return;
+		    {
+		      return;
+		    }
 		  
 		  outputs(string + total_len,
 			  font, len - total_len, 1);
@@ -1497,8 +1499,8 @@ void display_set_cursor(int x, int y)
 
 void display_set_gcursor(int x, int y)
 {
-  CURWIN.xpos = CURWIN.winsx+x;
-  CURWIN.ypos = CURWIN.winsy+y;
+  CURWIN.xpos = x;
+  CURWIN.ypos = y;
   
   if (CURWIN.xpos > CURWIN.winlx)
     CURWIN.xpos = CURWIN.winlx;
@@ -1519,12 +1521,12 @@ void display_set_gcursor(int x, int y)
 
 int display_get_gcur_x(void)
 {
-  return CURWIN.xpos-CURWIN.winsx;
+  return CURWIN.xpos;
 }
 
 int display_get_gcur_y(void)
 {
-  return CURWIN.ypos-CURWIN.winsy;
+  return CURWIN.ypos;
 }
 
 int display_get_cur_x(void)
@@ -1537,9 +1539,9 @@ int display_get_cur_y(void)
   return (CURWIN.ypos-CURWIN.winsy)/font_y;
 }
 
-void display_no_more(int window)
+void display_set_more(int window, int more)
 {
-  text_win[window].no_more = 1;
+  text_win[window].no_more = !more;
 }
 
 extern void display_force_fixed (int window, int val)
@@ -1558,12 +1560,12 @@ void display_window_define(int window,
   text_win[window].winlx = x + width;
   text_win[window].winly = y + height;
 
-  if (text_win[window].xpos < x || text_win[window].xpos > x+width ||
+  /* if (text_win[window].xpos < x || text_win[window].xpos > x+width ||
       text_win[window].ypos < y || text_win[window].ypos > y+height)
     {
       text_win[window].xpos = x;
       text_win[window].ypos = y;
-    }
+      } */
 }
 
 void display_set_newline_function(int (*func)(const char* remaining,

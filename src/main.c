@@ -147,7 +147,7 @@ int main(int argc, char** argv)
 #ifdef SUPPORT_VERSION_3
     case 3:
       display_split(1, 1);
-      display_no_more(1);
+      display_set_more(1, 0);
 
       display_set_colour(0, 7); display_set_font(0);
       display_set_window(0);

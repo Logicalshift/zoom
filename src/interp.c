@@ -903,6 +903,177 @@ static void zcode_op_sread_4(ZDWord* pc,
 }
 
 /***                           ----// 888 \\----                           ***/
+/* Version 6 utilities */
+#ifdef SUPPORT_VERSION_6
+#include "pix.h"
+
+#define StyleSet(x, y) switch (argblock.arg[2]) { case 0: x = (y)!=0; \
+   break; case 1: if ((y)!=0) x=1; break; case 2: if ((y)==0) x=0; break; \
+   case 3: x ^= (y)!=0; }
+
+static struct v6_wind
+{
+  int wrapping, scrolling, transcript, buffering;
+
+  int x, y;
+  int xsize, ysize;
+  int xcur, ycur;
+  int leftmar, rightmar;
+  ZUWord newline_routine;
+  ZWord countdown;
+  int style;
+  ZUWord colour;
+  int font_num;
+  ZUWord font_size;
+
+  ZWord line_count;
+} windows[8];
+
+static int newline_function(const char* remaining, int rem_len);
+
+void zcode_v6_initialise(void)
+{
+  int x;
+
+  for (x=0; x<8; x++)
+    {
+      windows[x].wrapping   = 0;
+      windows[x].scrolling  = 1;
+      windows[x].buffering  = 1;
+      windows[x].transcript = 0;
+      windows[x].x = windows[x].y = 0;
+      windows[x].xsize = windows[x].ysize = 100;
+    }
+
+  windows[0].wrapping = 1;
+
+  display_set_newline_function(newline_function);
+
+  pix_open_file("/home/ahunter/infocom/zorkzero/ZORK0/ZORK0.EG1");
+}
+
+static char* pending_text = NULL;
+static int   pending_len;
+
+static void newline_return(ZDWord* pc,
+			   ZStack* stack,
+			   ZArgblock args,
+			   int st)
+{
+  printf("-- Newline return\n");
+  if (pending_text != NULL)
+    {
+      char* oldtext;
+
+      oldtext = pending_text; pending_text = NULL;
+      display_prints(oldtext);
+      free(oldtext);
+    }
+
+  display_set_newline_function(newline_function);
+}
+
+static int newline_function(const char* remaining,
+			    int   rem_len)
+{
+  int win;
+
+  win = display_get_window();
+
+  display_set_newline_function(NULL);
+
+  if (windows[win].countdown > 0)
+    {
+      windows[win].countdown--;
+
+      if (windows[win].countdown == 0)
+	{
+	  ZFrame* newframe;
+
+	  if (pending_text != NULL)
+	    zmachine_fatal("Programmer is a spoon");
+
+	  pending_text = malloc(rem_len+1);
+	  pending_len  = rem_len;
+	  memcpy(pending_text, remaining, rem_len);
+	  pending_text[rem_len] = 0;
+
+	  printf("Calling newline_return\n");
+
+	  newframe = call_routine(&machine.pc, &machine.stack,
+				  UnpackR(windows[win].newline_routine));
+	  newframe->storevar = 255;
+	  newframe->discard  = 1;
+	  newframe->v5read   = newline_return;
+	  
+	  return 2;
+	}
+
+      if (windows[win].line_count > -999)
+	{
+	  display_set_newline_function(newline_function);
+	  windows[win].line_count--;
+	  if (windows[win].line_count == 0)
+	    return 1;
+	  return 0;
+	}
+      else if (windows[win].line_count == -999)
+	{
+	  display_set_newline_function(newline_function);
+	  return 0;
+	}
+    }
+  display_set_newline_function(newline_function);
+  return -1;
+}
+
+static inline void zcode_setup_window(int window)
+{
+  display_set_window(window);
+  display_window_define(window,
+			windows[window].x+windows[window].leftmar,
+			windows[window].y,
+			windows[window].xsize-windows[window].leftmar-windows[window].rightmar,
+			windows[window].ysize);
+  display_set_scroll(windows[window].scrolling);
+  display_set_more(window, windows[window].scrolling);
+  if (windows[window].line_count == -999)
+    display_set_more(window, 0);
+  stream_buffering(windows[window].buffering);
+}
+static inline int zcode_v6_push_stack(ZStack* stack,
+				      ZUWord  stk,
+				      ZUWord  value)
+{
+  ZByte* s;
+  ZByte* val;
+  ZUWord len;
+  
+  if (stk == 0)
+    {
+      push(stack, value);
+      return 1;
+    }
+
+  s = Address(stk);
+  len = (s[0]<<8)|s[1];
+
+  if (len <= 1)
+    return 0;
+
+  val = s + (len*2);
+  val[0] = value>>8;
+  val[1] = value;
+  
+  len--;
+  s[0] = len>>8;
+  s[1] = len;
+
+  return 1;
+}
+#endif
+
+/***                           ----// 888 \\----                           ***/
 /* The interpreter itself */
 
 #include "varop.h"

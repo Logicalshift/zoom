@@ -1,4 +1,10 @@
+2000-11-09  Andrew Hunter    <andrew@logicalshift.co.uk>
+
+	* V6 support improved... ZorkZero looks slightly better
+
 2000-11-08  Andrew Hunter    <andrew@logicalshift.co.uk>
+	
+	* version changed to 0.9.99dev5
 
 	* changed builder to new format. Now uses gotos rather than calling
 	subroutines. This is a manual inlining of the functions - we get the
