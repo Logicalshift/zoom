@@ -231,4 +231,32 @@ void display_reset_windows       (void)
 {
 }
 
+ZDisplay* display_get_info(void)
+{
+  static ZDisplay dis;
+
+  dis.status_line   = 1;
+  dis.can_split     = 1;
+  dis.variable_font = 1;
+  dis.colours       = 1;
+  dis.boldface      = 1;
+  dis.italic        = 1;
+  dis.fixed_space   = 1;
+  dis.sound_effects = 0;
+  dis.timed_input   = 1;
+  dis.mouse         = 0;
+  
+  dis.lines         = 25;
+  dis.columns       = 80;
+  dis.width         = 80;
+  dis.height        = 25;
+  dis.font_width    = 1;
+  dis.font_height   = 1;
+  dis.pictures      = 0;
+  dis.fore          = 0;
+  dis.back          = 7;
+
+  return &dis;
+}
+
 #endif
