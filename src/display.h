@@ -22,9 +22,8 @@
  */
 
 /*
- * Just to pre-empt you, yes I am aware of the existence of the glk
- * standard for displays. As this is quite a nice display library, I
- * may port it at some point...
+ * Ah, this was once a great ole display library. Unfortunately, my 
+ * changing demands made it a bit of a mess.
  */
 
 #ifndef __DISPLAY_H
@@ -46,6 +45,38 @@ extern void display_exit(int code);
 
 /***                           ----// 888 \\----                           ***/
 
+/* Architecture-independant functions (display.c/format.c) */
+
+/* Output functions */
+extern void display_clear     (void);
+extern void display_prints    (const int*);
+extern void display_prints_c  (const char*);
+extern void display_printc    (int);
+extern void display_printf    (const char*, ...);
+
+extern void display_sanitise  (void);
+extern void display_desanitise(void);
+
+/* Version 1-5 display */
+extern void display_is_v6       (void);
+extern void display_erase_window(void);
+extern void display_erase_line  (int val);
+extern int  display_set_font    (int font);
+extern int  display_set_style   (int style);
+extern void display_set_colour  (int fore, int back);
+extern void display_split       (int lines, int window);
+extern void display_join        (int win1, int win2);
+extern void display_set_window  (int window);
+extern int  display_get_window  (void);
+extern void display_set_cursor  (int x, int y);
+extern int  display_get_cur_x   (void);
+extern int  display_get_cur_y   (void);
+extern void display_force_fixed (int window, int val);
+
+/***                           ----// 888 \\----                           ***/
+
+/* Architecture-dependant functions */
+
 /* Misc functions */
 extern void display_initialise  (void); /* Called on startup */
 extern void display_reinitialise(void); /* Called on startup */
@@ -54,15 +85,7 @@ extern void display_finalise    (void); /* Called on shutdown */
 /***                           ----// 888 \\----                           ***/
 
 /* Output functions */
-extern void display_clear     (void);
-extern void display_prints    (const int*);
-extern void display_prints_c  (const char*);
-extern void display_printc    (int);
-extern void display_printf    (const char*, ...);
 extern int  display_check_char(int);
-
-extern void display_sanitise  (void);
-extern void display_desanitise(void);
 
 /* Input functions */
 extern int  display_readline(int*, int, long int);
@@ -100,23 +123,6 @@ extern void display_set_title(const char* title);
 extern void display_update   (void);
 
 /* Version 1-5 display */
-extern void display_is_v6       (void);
-extern void display_set_colour  (int fore, int back);
-extern void display_split       (int lines, int window);
-extern void display_join        (int win1, int win2);
-extern void display_set_cursor  (int x, int y);
-extern void display_set_scroll  (int scroll);
-extern int  display_get_cur_x   (void);
-extern int  display_get_cur_y   (void);
-extern int  display_set_font    (int font);
-extern int  display_set_style   (int style);
-extern void display_set_window  (int window);
-extern int  display_get_window  (void);
-extern void display_set_more    (int window,
-				 int more);
-extern void display_erase_window(void);
-extern void display_erase_line  (int val);
-extern void display_force_fixed (int window, int val);
 extern void display_beep        (void);
 
 extern void display_terminating (unsigned char* table);

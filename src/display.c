@@ -665,24 +665,6 @@ void display_set_cursor  (int x, int y)
     }
 }
 
-void display_set_gcursor (int x, int y)
-{
-  NOTV6;
-  display_set_cursor(x, y);
-}
-
-int  display_get_gcur_x  (void)
-{
-  NOTV6;
-  return CURWIN.xpos;
-}
-
-int  display_get_gcur_y  (void)
-{
-  NOTV6;
-  return CURWIN.ypos;
-}
-
 int  display_get_cur_x   (void)
 {
   NOTV6;

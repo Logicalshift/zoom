@@ -18,6 +18,8 @@ Hmm, this file was a bit out of date.
  X drag and drop support for file loading
  X warning for non-fixed font set as fixed font
  X bug with Jaguar/carbon_display_message?
+ * [More] and recorded scripts broken?
+ * Option to turn on debugging mode for Mac OS X
  * heirarchical fonts
  * reset pixmap display on restart under v6
  * XSL documentation

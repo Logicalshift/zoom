@@ -2670,19 +2670,6 @@ void display_update(void)
 
 /***                           ----// 888 \\----                           ***/
 
-void display_set_more    (int window,
-				 int more)
-{
-}
-
-/***                           ----// 888 \\----                           ***/
-
-void display_set_scroll  (int scroll)
-{
-}
-
-/***                           ----// 888 \\----                           ***/
-
 void display_beep        (void)
 {
 }

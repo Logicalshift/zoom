@@ -2499,15 +2499,7 @@ int display_get_pix_mouse_b(void)
   return click_b;
 }
 
-void display_set_more(int window, int more)
-{
-}
-
 void display_beep(void)
-{
-}
-
-void display_set_scroll(int scroll)
 {
 }
 

@@ -323,8 +323,6 @@ int stream_readline(int* buf, int len, long int timeout)
 	      fclose(machine.script_file);
 	      machine.script_file = NULL;
 	      
-	      display_set_more(0, 1);
-	      
 	      return stream_readline(buf, len, timeout);
 	    }
 	  
