@@ -12,6 +12,7 @@
 @interface ZoomiFButton : NSImageView {
 	IBOutlet NSImage* pushedImage;
 	NSImage* unpushedImage;
+	NSImage* disabledImage;
 	
 	NSTrackingRectTag theTrackingRect;
 	BOOL inside;

@@ -11,11 +11,13 @@
 
 @implementation ZoomiFButton
 
+/*
 static NSImage* disabledImage;
 
 + (void) initialize {
 	disabledImage = [[NSImage imageNamed: @"disabledButton"] retain];
 }
+*/
 
 - (id)initWithFrame:(NSRect)frame {
     self = [super initWithFrame:frame];
@@ -29,6 +31,7 @@ static NSImage* disabledImage;
 - (void) dealloc {
 	if (pushedImage) [pushedImage release];
 	if (unpushedImage) [unpushedImage release];
+	if (disabledImage) [disabledImage release];
 	
 	[super dealloc];
 }
@@ -36,6 +39,26 @@ static NSImage* disabledImage;
 - (void) setPushedImage: (NSImage*) newPushedImage {
 	if (pushedImage) [pushedImage release];
 	pushedImage = [newPushedImage retain];
+	
+	// Generate a greyed-out image
+	NSRect imgRect = NSMakeRect(0,0,0,0);
+	imgRect.size = [[self image] size];
+	
+	if (disabledImage) [disabledImage release];
+	disabledImage = [[self image] copy];
+	
+	NSImage* tempImage = [[[NSImage alloc] initWithSize: [[self image] size]] autorelease];
+	[tempImage lockFocus];
+	[[NSColor whiteColor] set];
+	NSRectFill(imgRect);
+	[tempImage unlockFocus];
+	
+	[disabledImage lockFocus];
+	[tempImage drawInRect: imgRect
+				 fromRect: imgRect
+				operation: NSCompositeSourceAtop
+				 fraction: 0.4];
+	[disabledImage unlockFocus];
 }
 
 - (void) mouseDown: (NSEvent*) theEvent {
@@ -54,6 +77,8 @@ static NSImage* disabledImage;
 }
 
 - (void) mouseEntered: (NSEvent*) theEvent {
+	if (![self isEnabled]) return;
+
 	if (unpushedImage) {
 		[self setImage: pushedImage];
 		inside = YES;
@@ -61,6 +86,8 @@ static NSImage* disabledImage;
 }
 
 - (void) mouseExited: (NSEvent*) theEvent {	
+	if (![self isEnabled]) return;
+
 	if (unpushedImage) {
 		[self setImage: unpushedImage];
 		inside = NO;
@@ -85,6 +112,8 @@ static NSImage* disabledImage;
 }
 
 - (void) mouseDragged: (NSEvent*) theEvent {
+	if (![self isEnabled]) return;
+	
 	// If the mouse has moved outside, then unpush ourselves
 	// If the mouse has moved inside, then push ourselves
 	NSPoint where = [self convertPoint: [theEvent locationInWindow] fromView: nil];
