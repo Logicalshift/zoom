@@ -56,6 +56,7 @@
 
 // Sets the input focus to this window
 - (void) setFocus {
+	[zoomView setFocusedView: self];
 }
 
 // Sending data to a window

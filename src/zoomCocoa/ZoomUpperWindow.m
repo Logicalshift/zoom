@@ -43,6 +43,7 @@
 
 // Sets the input focus to this window
 - (void) setFocus {
+	[theView setFocusedView: self];
 }
 
 // Sending data to a window

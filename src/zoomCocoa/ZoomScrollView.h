@@ -27,5 +27,6 @@
 
 - (void) setScaleFactor: (float) factor;
 - (void) updateUpperWindows;
+- (ZoomUpperWindowView*) upperWindowView;
 
 @end

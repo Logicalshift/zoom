@@ -16,8 +16,19 @@
     self = [super initWithFrame:frame];
     if (self) {
         zoomView = view;
+		flasher = nil;
+		cursorFlashing = cursorShown = NO;
     }
     return self;
+}
+
+- (void) dealloc {
+	if (flasher) {
+		[flasher invalidate];
+		[flasher release];
+	}
+	
+	[super dealloc];
 }
 
 - (void)drawRect:(NSRect)rect {
@@ -66,6 +77,95 @@
 
 - (BOOL) isFlipped {
     return YES;
+}
+
+// = Flashing the cursor =
+- (void) makeTimer {
+	if (flasher) {
+		[flasher invalidate];
+		[flasher release];
+		flasher = nil;
+	}
+
+	if (cursorFlashing) {
+		flasher = [NSTimer timerWithTimeInterval: 0.7
+										  target: self
+										selector: @selector(flashCursor)
+										userInfo: nil
+										 repeats: YES];
+		[[NSRunLoop currentRunLoop] addTimer: flasher
+									 forMode: NSDefaultRunLoopMode];
+		[flasher retain];
+	}
+}
+
+- (void) updateCursor {
+	ZoomUpperWindow* activeWindow = (ZoomUpperWindow*)[zoomView focusedView];
+	
+	if (![activeWindow isKindOfClass: [ZoomUpperWindow class]]) {
+		// Can't update
+		return;
+	}
+	
+	// Font size
+    NSSize fixedSize = [@"M" sizeWithAttributes:
+        [NSDictionary dictionaryWithObjectsAndKeys:
+            [zoomView fontWithStyle:ZFixedStyle], NSFontAttributeName, nil]];
+	
+	// Get the cursor position
+	NSPoint cursorPos = [activeWindow cursorPosition];
+	int xp = cursorPos.x;
+	int yp = cursorPos.y;
+	
+	[self lockFocus];
+	
+    NSEnumerator* upperEnum = [[zoomView upperWindows] objectEnumerator];
+	
+    ZoomUpperWindow* win;
+	int startY = 0;
+    while (win = [upperEnum nextObject]) {
+		if (win == activeWindow) {			
+			// Draw the line
+			NSArray* lines = [win lines];
+			
+			NSRect winRect = NSMakeRect(0,
+										fixedSize.height * (yp + startY),
+										[self bounds].size.width,
+										fixedSize.height);
+			[[win backgroundColour] set];
+			NSRectFill(winRect);			
+			
+			if (yp < [lines count] && yp < [win length]) {
+				[[lines objectAtIndex: yp] drawAtPoint: NSMakePoint(0, fixedSize.height*(yp+startY))];
+			}
+			
+			// Draw the cursor
+			if (cursorShown) {
+				[[NSColor selectedTextBackgroundColor] set];
+			
+				NSRect cursorRect = NSMakeRect(fixedSize.width * xp, fixedSize.height * (yp + startY), fixedSize.width, fixedSize.height);
+				NSRectFill(cursorRect);
+			}
+		}
+		
+		startY += [win length];
+	}
+			
+	[self unlockFocus];
+	[[self window] flushWindow];
+}
+
+- (void) setFlashCursor: (BOOL) flash {
+	cursorFlashing = flash;
+	cursorShown = NO;
+	
+	[self updateCursor];
+	[self makeTimer];
+}
+
+- (void) flashCursor {
+	cursorShown = !cursorShown;
+	[self updateCursor];
 }
 
 @end

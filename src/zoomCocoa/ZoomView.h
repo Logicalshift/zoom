@@ -72,6 +72,9 @@ extern NSString* ZoomStyleAttributeName;
 	NSMutableArray* commandHistory;
 	int				historyPos;
 	
+	// View with input focus
+	NSObject<ZWindow>* focusedView;
+	
 	// Autosave
 	NSData* lastAutosave;
 	int		upperWindowsToRestore;
@@ -112,6 +115,10 @@ extern NSString* ZoomStyleAttributeName;
                             withStyle: (ZStyle*) style;
 
 - (ZoomTextView*) textView;
+
+// Setting the focussed view
+- (void) setFocusedView: (NSObject<ZWindow>*) view;
+- (NSObject<ZWindow>*) focusedView;
 
 // Fonts, colours, etc
 - (NSFont*) fontWithStyle: (int) style;

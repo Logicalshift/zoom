@@ -127,4 +127,8 @@
 	[self tile];
 }
 
+- (ZoomUpperWindowView*) upperWindowView {
+	return upperView;
+}
+
 @end

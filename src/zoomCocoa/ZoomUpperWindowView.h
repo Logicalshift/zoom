@@ -12,6 +12,15 @@
 @class ZoomView;
 @interface ZoomUpperWindowView : NSView {
     ZoomView* zoomView;
+	
+	BOOL cursorFlashing;
+	BOOL cursorShown;
+	
+	NSTimer* flasher;
 }
+
+- (void) updateCursor;
+- (void) setFlashCursor: (BOOL) flash;
+- (void) flashCursor;
 
 @end

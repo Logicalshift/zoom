@@ -298,8 +298,12 @@ static void finalizeViews(void) {
     while (win = [upperEnum nextObject]) {
         [textView pasteUpperWindowLinesFrom: win];
     }
+	
+	if ([focusedView isKindOfClass: [ZoomUpperWindow class]]) {
+		[[textScroller upperWindowView] setFlashCursor: YES]; 
+	}
 
-    // If the more prompt is off, then set up for editting
+    // If the more prompt is off, then set up for editing
     if (!moreOn) {
         [self resetMorePrompt];
         [self scrollToEnd];
@@ -330,7 +334,7 @@ static void finalizeViews(void) {
         [textView pasteUpperWindowLinesFrom: win];
     }
     
-    // If the more prompt is off, then set up for editting
+    // If the more prompt is off, then set up for editing
     if (!moreOn) {
         [textView setEditable: YES];
 
@@ -346,6 +350,7 @@ static void finalizeViews(void) {
     receiving = NO;
     receivingCharacters = NO;
     [textView setEditable: NO];
+	[[textScroller upperWindowView] setFlashCursor: NO]; 
 }
 
 - (void) dimensionX: (out int*) xSize
@@ -1717,6 +1722,15 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		NSLog(@"Breakpoint without handler");
 		[zMachine continueFromBreakpoint];
 	}
+}
+
+// = Focused view =
+- (void) setFocusedView: (NSObject<ZWindow>*) view {
+	focusedView = view;
+}
+
+- (NSObject<ZWindow>*) focusedView {
+	return focusedView;
 }
 
 @end
