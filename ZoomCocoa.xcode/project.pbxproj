@@ -2711,6 +2711,9 @@
 			fileRef = 4BC3B03506AE8563008FCD35;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		4BC3B03806AE8563008FCD35 = {
@@ -2730,6 +2733,18 @@
 			isa = PBXBuildFile;
 			settings = {
 			};
+		};
+		4BC3B48006B02C7C008FCD35 = {
+			containerPortal = 4B1E3F4B050F7AD000A8E303;
+			isa = PBXContainerItemProxy;
+			proxyType = 1;
+			remoteGlobalIDString = 4B1E3F5B050F7B2500A8E303;
+			remoteInfo = ZoomServer;
+		};
+		4BC3B48106B02C7C008FCD35 = {
+			isa = PBXTargetDependency;
+			target = 4B1E3F5B050F7B2500A8E303;
+			targetProxy = 4BC3B48006B02C7C008FCD35;
 		};
 		4BCB09620615D0D800CDFB98 = {
 			fileEncoding = 4;
@@ -3642,6 +3657,7 @@
 				WRAPPER_EXTENSION = framework;
 			};
 			dependencies = (
+				4BC3B48106B02C7C008FCD35,
 			);
 			isa = PBXFrameworkTarget;
 			name = ZoomView;
