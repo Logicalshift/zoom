@@ -786,39 +786,6 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     
     if (receivingCharacters) {
         NSString* chars = [theEvent characters];
-        int key = -1;
-
-        // Deal with special keys
-        switch ([chars characterAtIndex: 0]) {
-            case NSUpArrowFunctionKey: key = 129; break;
-            case NSDownArrowFunctionKey: key = 130; break;
-            case NSLeftArrowFunctionKey: key = 131; break;
-            case NSRightArrowFunctionKey: key = 132; break;
-            case 10: key = 13; break;
-            case NSDeleteFunctionKey: key = 8; break;
-
-            case NSF1FunctionKey: key = 133; break;
-            case NSF2FunctionKey: key = 134; break;
-            case NSF3FunctionKey: key = 135; break;
-            case NSF4FunctionKey: key = 136; break;
-            case NSF5FunctionKey: key = 137; break;
-            case NSF6FunctionKey: key = 138; break;
-            case NSF7FunctionKey: key = 139; break;
-            case NSF8FunctionKey: key = 140; break;
-            case NSF9FunctionKey: key = 141; break;
-            case NSF10FunctionKey: key = 142; break;
-            case NSF11FunctionKey: key = 143; break;
-            case NSF12FunctionKey: key = 144; break;
-        }
-
-        // If there's a special key...
-        if (key >= 0) {
-            unichar chrs[2];
-            chrs[0] = key;
-
-            chars = [NSString stringWithCharacters: chrs
-                                            length: 1];
-        }
         
         [zMachine inputText: chars];
 		[self orInputCharacter: chars];

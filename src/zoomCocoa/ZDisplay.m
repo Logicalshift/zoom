@@ -15,6 +15,7 @@
 #include "v6display.h"
 #include "zmachine.h"
 #include "blorb.h"
+#include "zscii.h"
 
 #ifdef DEBUG
 # define NOTE(x) NSLog(@"ZDisplay: %@", x)
@@ -434,6 +435,60 @@ int display_readchar(long int timeout) {
     } else {
         NSMutableString* inputBuffer = [mainMachine inputBuffer];
         theChar = [inputBuffer characterAtIndex: 0];
+		
+		// Convert the character to ZSCII
+		unichar badChar = '?';
+		unichar key = 0;
+		
+        // Deal with special keys (ie, convert to ZSCII)
+        switch (theChar) {
+			// Arrow keys
+            case NSUpArrowFunctionKey: key = 129; break;
+            case NSDownArrowFunctionKey: key = 130; break;
+            case NSLeftArrowFunctionKey: key = 131; break;
+            case NSRightArrowFunctionKey: key = 132; break;
+
+			// Delete/return
+            case 10: key = 13; break;
+            case NSDeleteFunctionKey: key = 8; break;
+			
+			// Function keys
+            case NSF1FunctionKey: key = 133; break;
+            case NSF2FunctionKey: key = 134; break;
+            case NSF3FunctionKey: key = 135; break;
+            case NSF4FunctionKey: key = 136; break;
+            case NSF5FunctionKey: key = 137; break;
+            case NSF6FunctionKey: key = 138; break;
+            case NSF7FunctionKey: key = 139; break;
+            case NSF8FunctionKey: key = 140; break;
+            case NSF9FunctionKey: key = 141; break;
+            case NSF10FunctionKey: key = 142; break;
+            case NSF11FunctionKey: key = 143; break;
+            case NSF12FunctionKey: key = 144; break;
+				
+			// Numeric keypad
+			case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
+			case '8': case '9':
+				/*
+				if ([event modifierFlags]&NSNumericPadKeyMask) {
+					// Report this as a numeric keypad event
+					key = 145 + (chr-'0');
+				}
+				 */
+				break;
+				
+			default:
+				// Unicode/other characters
+				if (theChar >= 127) {
+					// The character must be in the equivalence table...
+					key = zscii_get_char(theChar);
+					
+					if (key <= 0) key = badChar;
+				}
+				break;
+        }
+		
+		if (key > 0) theChar = key;
     }
 
 #ifdef DEBUG
