@@ -208,6 +208,7 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	[teaserView setRichText: NO];
     [[teaserView textContainer] setWidthTracksTextView: YES];
     [[teaserView textContainer] setContainerSize: NSMakeSize(1e8, 1e8)];	
+	[[teaserView layoutManager] setBackgroundLayoutEnabled: NO];
 	
 	[commentView setMaxSize: NSMakeSize(1e8, 1e8)];
     [commentView setHorizontallyResizable: NO];
@@ -215,6 +216,7 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	[commentView setRichText: NO];
     [[commentView textContainer] setWidthTracksTextView: YES];
     [[commentView textContainer] setContainerSize: NSMakeSize(1e8, 1e8)];	
+	[[commentView layoutManager] setBackgroundLayoutEnabled: NO];
 	
 	[teaserView setDelegate: self];
 	[commentView setDelegate: self];
@@ -753,6 +755,9 @@ int tableSorter(id a, id b, void* context) {
 				byExtendingSelection: YES];
 		}
 	}
+	
+	// Tidy up (prevents a dumb infinite loop possibility)
+	[[NSRunLoop currentRunLoop] cancelPerformSelectorsWithTarget: self];	
 }
 
 - (int)numberOfRowsInTableView:(NSTableView *)aTableView {

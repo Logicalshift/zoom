@@ -2035,6 +2035,19 @@
 			settings = {
 			};
 		};
+		4BAE0EF6062ADA19009426D5 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.icns;
+			path = iFiction.icns;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BAE0EF7062ADA1A009426D5 = {
+			fileRef = 4BAE0EF6062ADA19009426D5;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		4BB515B405BC615F00D00C96 = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.nib;
@@ -2293,6 +2306,7 @@
 				4BCB09690615D67C00CDFB98,
 				4BCB096A0615D67C00CDFB98,
 				4BCB096B0615D67C00CDFB98,
+				4BAE0EF7062ADA1A009426D5,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2419,10 +2433,14 @@
 			<array>
 				<string>iFiction</string>
 			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>iFiction.icns</string>
 			<key>CFBundleTypeName</key>
 			<string>iFiction metadata</string>
 			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
+			<string>Editor</string>
+			<key>NSDocumentClass</key>
+			<string>ZoomIFiction</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -2541,6 +2559,7 @@
 				4BCF3F44050FB21C00A8E303,
 				4BCF3F45050FB21C00A8E303,
 				4BCF3F46050FB21C00A8E303,
+				4BAE0EF6062ADA19009426D5,
 				4B418DE40594FC3B009C44DE,
 				4B418DE50594FC3B009C44DE,
 				4B418DE60594FC3B009C44DE,
