@@ -11,6 +11,12 @@
 
 @implementation ZoomiFButton
 
+static NSImage* disabledImage;
+
++ (void) initialize {
+	disabledImage = [[NSImage imageNamed: @"disabledButton"] retain];
+}
+
 - (id)initWithFrame:(NSRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
@@ -33,6 +39,8 @@
 }
 
 - (void) mouseDown: (NSEvent*) theEvent {
+	if (![self isEnabled]) return;
+	
 	if (!unpushedImage) {
 		unpushedImage = [[self image] retain];
 		[self setImage: pushedImage];
@@ -60,6 +68,8 @@
 }
 
 - (void) mouseUp: (NSEvent *) theEvent {
+	if (![self isEnabled]) return;
+
 	if (unpushedImage) {
 		[self setImage: unpushedImage];
 		[unpushedImage release];
@@ -72,6 +82,22 @@
 						  to: [self target]];
 		}
 	}
+}
+
+- (void) setEnabled: (BOOL) enabled {
+	if (!enabled) {
+		if (!unpushedImage) {
+			unpushedImage = [[self image] retain];
+			[self setImage: disabledImage];
+		}
+	} else {
+		if (unpushedImage) {
+			[self setImage: unpushedImage];
+			[unpushedImage release];
+		}
+	}
+	
+	[super setEnabled: enabled];
 }
 
 @end

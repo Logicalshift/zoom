@@ -25,7 +25,12 @@ static ZoomiFictionController* sharedController = nil;
 
 - (void) windowDidLoad {
 	[addButton setPushedImage: [NSImage imageNamed: @"add-in"]];
+	[newgameButton setPushedImage: [NSImage imageNamed: @"newgame-in"]];
+	[continueButton setPushedImage: [NSImage imageNamed: @"continue-in"]];
 	[drawerButton setPushedImage: [NSImage imageNamed: @"drawer-in"]];		
+	
+	[continueButton setEnabled: NO];
+	[newgameButton setEnabled: NO];
 	
 	[[self window] setFrameUsingName: @"iFiction"];
 	[[self window] setExcludedFromWindowsMenu: YES];

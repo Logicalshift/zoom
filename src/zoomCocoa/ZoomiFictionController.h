@@ -11,6 +11,8 @@
 
 @interface ZoomiFictionController : NSWindowController {
 	IBOutlet ZoomiFButton* addButton;
+	IBOutlet ZoomiFButton* newgameButton;
+	IBOutlet ZoomiFButton* continueButton;	
 	IBOutlet ZoomiFButton* drawerButton;
 	
 	IBOutlet NSDrawer* drawer;
