@@ -59,6 +59,45 @@
 	if (isFullscreen) [self playInFullScreen: self];
 }
 
+- (BOOL) useSavePackage {
+	// Using a save package allows us to restore games without needing to restart them first
+	// It also allows us to show a preview in the iFiction window
+	return YES;
+}
+
+- (NSString*) defaultSaveDirectory {
+	ZoomPreferences* prefs = [ZoomPreferences globalPreferences];
+	
+	if ([prefs keepGamesOrganised]) {
+		// Get the directory for this game
+		NSString* gameDir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: [[self document] storyId]
+																				  create: YES];
+		NSString* saveDir = [gameDir stringByAppendingPathComponent: @"Saves"];
+		
+		BOOL isDir = NO;
+		
+		if (![[NSFileManager defaultManager] fileExistsAtPath: saveDir
+												  isDirectory: &isDir]) {
+			if (![[NSFileManager defaultManager] createDirectoryAtPath: saveDir
+															attributes: nil]) {
+				// Couldn't create the directory
+				return nil;
+			}
+			
+			isDir = YES;
+		} else {
+			if (!isDir) {
+				// Some inconsiderate person stuck a file here
+				return nil;
+			}
+		}
+		
+		return saveDir;
+	}
+	
+	return nil;
+}
+
 - (void) showGamePreferences: (id) sender {
 	ZoomPreferenceWindow* gamePrefs;
 	

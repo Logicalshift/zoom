@@ -180,6 +180,8 @@ typedef enum {
 @end
 
 // Some useful standard classes
+
+// File from a handle
 @interface ZHandleFile : NSObject<ZFile> {
     NSFileHandle* handle;
 }
@@ -187,12 +189,40 @@ typedef enum {
 - (id) initWithFileHandle: (NSFileHandle*) handle;
 @end
 
+// File from data stored in memory
 @interface ZDataFile : NSObject<ZFile> {
     NSData* data;
     int pos;
 }
 
 - (id) initWithData: (NSData*) data;
+@end
+
+// File(s) from a package
+@interface ZPackageFile : NSObject<ZFile> {
+	NSFileWrapper* wrapper;
+	BOOL forWriting;
+	NSString* writePath;
+	NSString* defaultFile;
+	
+	NSFileWrapper* data;
+	NSMutableData* writeData;
+	
+	NSDictionary* attributes;
+	
+	int pos;
+}
+
+- (id) initWithPath: (NSString*) path
+		defaultFile: (NSString*) filename
+		 forWriting: (BOOL) write;
+
+- (void) setAttributes: (NSDictionary*) attributes;
+
+- (void) addData: (NSData*) data
+	 forFilename: (NSString*) filename;
+- (NSData*) dataForFile: (NSString*) filename;
+
 @end
 
 // Style attributes

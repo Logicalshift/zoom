@@ -683,3 +683,264 @@ NSString* ZBufferSetWindow   = @"ZBSW";
 
 @end
 
+// = File wrappers =
+@implementation ZPackageFile
+
+- (id) initWithPath: (NSString*) path
+		defaultFile: (NSString*) filename
+		 forWriting: (BOOL) write {
+	self = [super init];
+	
+	if (self) {
+		BOOL failed = NO;
+		
+		forWriting = write;
+		pos = 0;
+		
+		defaultFile = [filename copy];
+		if (defaultFile == nil) defaultFile = @"save.qut";
+		
+		attributes = nil;
+		
+		if (forWriting) {
+			// Setup for writing
+			writePath = [path copy];
+			wrapper = [[NSFileWrapper alloc] initDirectoryWithFileWrappers: [NSDictionary dictionary]];
+			
+			data = nil;
+			writeData = [[NSMutableData alloc] init];
+		} else {
+			// Setup for reading
+			writePath = nil; // No writing!
+			writeData = nil;
+			wrapper = [[NSFileWrapper alloc] initWithPath: path];
+			
+			if (![wrapper isDirectory]) {
+				failed = YES;
+			}
+			
+			data = [[[wrapper fileWrappers] objectForKey: defaultFile] retain];
+			
+			if (![data isRegularFile]) {
+				failed = YES;
+			}
+		}
+		
+		if (wrapper == nil || failed) {
+			// Couldn't open file
+			[self release];
+			return nil;
+		}
+	}
+	
+	return self;
+}
+
+- (void) setAttributes: (NSDictionary*) attr {
+	if (attributes) [attributes release];
+	attributes = [attr copy];
+}
+
+- (void) dealloc {
+	if (wrapper) [wrapper release];
+	if (writePath) [writePath release];
+	if (defaultFile) [defaultFile release];
+
+	if (data) [data release];
+	if (writeData) [writeData release];
+	
+	if (attributes) [attributes release];
+	
+	[super dealloc];
+}
+
+- (int) readByte {
+	if (forWriting) {
+		[NSException raise: @"ZoomFileReadException" format: @"Tried to read from a file open for writing"];
+		return 0;
+	}
+	
+	if (pos >= [[data regularFileContents] length]) return -1;
+	
+	return ((unsigned char*)[[data regularFileContents] bytes])[pos++];
+}
+
+- (unsigned int) readWord {
+	if (forWriting) {
+		[NSException raise: @"ZoomFileReadException" format: @"Tried to read from a file open for writing"];
+		return 0;
+	}
+	
+	if ((pos+1) >= [[data regularFileContents] length]) {
+        return 0xffffffff;
+    }
+	
+    const unsigned char* bytes = [[data regularFileContents] bytes];
+	
+    unsigned int res =  (bytes[pos]<<8) | bytes[pos+1];
+    pos+=2;
+	
+    return res;	
+}
+
+- (unsigned int) readDWord {
+	if (forWriting) {
+		[NSException raise: @"ZoomFileReadException" format: @"Tried to read from a file open for writing"];
+		return 0;
+	}
+
+    if ((pos+3) >= [[data regularFileContents] length]) {
+        return 0xffffffff;
+    }
+	
+    const unsigned char* bytes = [[data regularFileContents] bytes];
+	
+    unsigned int res =  (bytes[pos]<<24) | (bytes[pos+1]<<16) |
+        (bytes[pos+2]<<8) | (bytes[pos+3]);
+    pos+=4;
+	
+    return res;
+}
+
+- (NSData*) readBlock: (int) length {
+	if (forWriting) {
+		[NSException raise: @"ZoomFileReadException" format: @"Tried to read from a file open for writing"];
+		return nil;
+	}
+	
+    const unsigned char* bytes = [[data regularFileContents] bytes];
+	
+    if (pos >= [[data regularFileContents] length]) {
+        return nil;
+    }
+	
+    if ((pos + length) > [[data regularFileContents] length]) {
+        int diff = (pos+length) - [[data regularFileContents] length];
+		
+        length -= diff;
+    }
+	
+    NSData* res =  [NSData dataWithBytes: bytes + pos
+                                  length: length];
+	
+    pos += length;
+	
+    return res;
+}
+
+- (void) seekTo: (int) p {
+	pos = p;
+}
+
+- (void) writeByte: (int) byte {
+	if (!forWriting) {
+		[NSException raise: @"ZoomFileWriteException" format: @"Tried to write to a file open for reading"];
+		return;
+	}
+	
+	unsigned char b = byte;
+	
+	[writeData appendBytes: &b
+					length: 1];
+}
+
+- (void) writeWord: (int) word {
+	if (!forWriting) {
+		[NSException raise: @"ZoomFileWriteException" format: @"Tried to write to a file open for reading"];
+		return;
+	}
+	
+	unsigned char b[2];
+	
+	b[0] = (word>>8)&0xff;
+	b[1] = word&0xff;
+	
+	[writeData appendBytes: b
+					length: 2];
+}
+
+- (void) writeDWord: (unsigned int) dword {
+	if (!forWriting) {
+		[NSException raise: @"ZoomFileWriteException" format: @"Tried to write to a file open for reading"];
+		return;
+	}
+	
+	unsigned char b[4];
+	
+	b[0] = (dword>>24)&0xff;
+	b[1] = (dword>>16)&0xff;
+	b[2] = (dword>>8)&0xff;
+	b[3] = dword&0xff;
+	
+	[writeData appendBytes: b
+					length: 4];
+}
+
+- (void) writeBlock: (NSData*) block {
+	if (!forWriting) {
+		[NSException raise: @"ZoomFileWriteException" format: @"Tried to write to a file open for reading"];
+		return;
+	}
+	
+	[writeData appendData: block];
+}
+
+- (BOOL) sufferedError {
+	return NO;
+}
+
+- (NSString*) errorMessage {
+	return nil;
+}
+
+- (int) fileSize {
+	if (forWriting) {
+		[NSException raise: @"ZoomFileReadException" format: @"Tried to read from a file open for writing"];
+		return nil;
+	}
+	
+	return [[data regularFileContents] length];
+}
+
+- (void) close {
+	if (forWriting) {
+		// Write out the file
+		if ([[wrapper fileWrappers] objectForKey: defaultFile] != nil) {
+			[wrapper removeFileWrapper: [[wrapper fileWrappers] objectForKey: defaultFile]];
+		}
+		
+		[wrapper addRegularFileWithContents: writeData
+						  preferredFilename: defaultFile];
+		
+		[wrapper writeToFile: writePath
+				  atomically: YES
+			 updateFilenames: YES];
+		
+		if (attributes) {
+			[[NSFileManager defaultManager] changeFileAttributes: attributes
+														  atPath: writePath];
+		}
+	}
+}
+
+- (void) addData: (NSData*) data
+	 forFilename: (NSString*) filename {
+	if (!forWriting) {
+		[NSException raise: @"ZoomFileWriteException" format: @"Tried to write to a file open for reading"];
+		return;
+	}
+	
+	[wrapper addRegularFileWithContents: data
+					  preferredFilename: filename];
+}
+
+- (NSData*) dataForFile: (NSString*) filename {
+	if (forWriting) {
+		[NSException raise: @"ZoomFileReadException" format: @"Tried to read from a file open for writing"];
+		return nil;
+	}
+	
+	return [[[wrapper fileWrappers] objectForKey: filename] regularFileContents];
+}
+
+@end

@@ -22,7 +22,7 @@ extern NSString* ZoomStyleAttributeName;
 
 @class ZoomScrollView;
 @class ZoomTextView;
-@interface ZoomView : NSView<ZDisplay> {
+@interface ZoomView : NSView<ZDisplay, NSCoding> {
     NSObject<ZMachine>* zMachine;
 
     // Subviews
@@ -157,5 +157,8 @@ extern NSString* ZoomStyleAttributeName;
 
 - (void) zMachineStarted: (id) sender;
 - (void) zMachineFinished: (id) sender;
+
+- (NSString*) defaultSaveDirectory;
+- (BOOL)      useSavePackage;
 
 @end

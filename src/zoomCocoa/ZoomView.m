@@ -1139,11 +1139,46 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     [[zoomTaskStdout fileHandleForReading] waitForDataInBackgroundAndNotify];
 }
 
+- (BOOL)panel:(id)sender shouldShowFilename:(NSString *)filename {
+	NSSavePanel* panel = sender;
+	
+	if ([[filename pathExtension] isEqualToString: [panel requiredFileType]]) return YES;
+	
+	if ([[panel requiredFileType] isEqualToString: @"zoomQuet"]) {
+		if ([[filename pathExtension] isEqualToString: @"qut"]) {
+			return YES;
+		}
+	}
+	
+	BOOL isDir;
+	
+	if ([[NSFileManager defaultManager] fileExistsAtPath: filename isDirectory: &isDir]) {
+		if (isDir) return YES;
+	}
+	
+	return NO;
+}
+
+- (BOOL)panel:(id)sender isValidFilename:(NSString *)filename {
+	NSSavePanel* panel = sender;
+	
+	if ([[filename pathExtension] isEqualToString: [panel requiredFileType]]) return YES;
+	
+	if ([[panel requiredFileType] isEqualToString: @"zoomQuet"]) {
+		if ([[filename pathExtension] isEqualToString: @"qut"]) {
+			return YES;
+		}
+	}
+	
+	return NO;
+}
+
 // = Prompting for files =
 - (void) setupPanel: (NSSavePanel*) panel
                type: (ZFileType) type {
     BOOL supportsMessage = [panel respondsToSelector: @selector(setMessage:)];
     [panel setCanSelectHiddenExtension: YES];
+	[panel setDelegate: self];
     
     NSString* saveOpen = @"Save as";
     
@@ -1156,15 +1191,25 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     [panel setExtensionHidden: 
         [[[NSUserDefaults standardUserDefaults] objectForKey: 
             @"ZoomHiddenExtension"] boolValue]];
-    
+	
+	BOOL usePackage = NO;
+	
+	if (type == ZFileQuetzal && delegate && [delegate respondsToSelector: @selector(useSavePackage)]) {
+		usePackage = [delegate useSavePackage];
+	}
+		
     switch (type) {
         default:
         case ZFileQuetzal:
-            [panel setRequiredFileType: @"qut"];
+			if (usePackage) {
+				[panel setRequiredFileType: @"zoomQuet"];
+			} else {
+				[panel setRequiredFileType: @"qut"];
+			}
             typeCode = 'IFZS';
             if (supportsMessage) {
                 [panel setMessage: [NSString stringWithFormat: @"%@ savegame (quetzal) file", saveOpen]];
-                [panel setAllowedFileTypes: [NSArray arrayWithObjects: @"qut", nil]];
+                [panel setAllowedFileTypes: [NSArray arrayWithObjects: usePackage?@"zoomQuet":@"qut", nil]];
             }
             break;
             
@@ -1221,47 +1266,91 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     
     [self setupPanel: panel
                 type: type];
+	
+	NSString* directory = nil;
+	
+	if (delegate && [delegate respondsToSelector: @selector(defaultSaveDirectory)]) {
+		directory = [delegate defaultSaveDirectory];
+	}
+	
+	if (directory == nil) {
+		directory = [[NSUserDefaults standardUserDefaults] objectForKey: @"ZoomSavePath"];
+	}
     
-    [panel beginSheetForDirectory: [[NSUserDefaults standardUserDefaults] objectForKey: @"ZoomSavePath"]
+    [panel beginSheetForDirectory: directory
                              file: nil
                    modalForWindow: [self window]
                     modalDelegate: self
                    didEndSelector: @selector(savePanelDidEnd:returnCode:contextInfo:) 
-                      contextInfo: nil];
+                      contextInfo: [[NSNumber numberWithInt: type] retain]];
 }
 
 - (void)savePanelDidEnd: (NSSavePanel *) panel 
              returnCode: (int) returnCode 
             contextInfo: (void*) contextInfo {
+	NSNumber* typeNum = [(NSNumber*)contextInfo autorelease];
+	ZFileType type = [typeNum intValue];
+	
     if (returnCode != NSOKButton) {
         [zMachine filePromptCancelled];
     } else {
         NSString* fn = [panel filename];
         NSFileHandle* file = nil;
+		
+		BOOL usePackage = NO;
         
         [self storePanelPrefs: panel];
+		
+		if (type == ZFileQuetzal && delegate && [delegate respondsToSelector: @selector(useSavePackage)]) {
+			usePackage = [delegate useSavePackage];
+		}
         
-        if ([[NSFileManager defaultManager] createFileAtPath:fn
-                                                        contents:[NSData data]
-                                                      attributes:
-            [NSDictionary dictionaryWithObjectsAndKeys: 
+		if (usePackage) {
+			// We store information about the current screen state in the package
+			ZPackageFile* f = [[ZPackageFile alloc] initWithPath: fn
+													 defaultFile: @"save.qut"
+													  forWriting: YES];
+			
+			if (f) {
+				[f setAttributes: [NSDictionary dictionaryWithObjectsAndKeys: 
+					[NSNumber numberWithLong: creatorCode], NSFileHFSCreatorCode,
+					[NSNumber numberWithLong: typeCode], NSFileHFSTypeCode,
+					[NSNumber numberWithBool: [panel isExtensionHidden]], NSFileExtensionHidden,
+					nil]];
+				
+				[f addData: [NSArchiver archivedDataWithRootObject: [upperWindows objectAtIndex: 0]]
+			   forFilename: @"ZoomPreview.dat"];
+				[f addData: [NSArchiver archivedDataWithRootObject: self]
+			   forFilename: @"ZoomStatus.dat"];
+				
+				[zMachine promptedFileIs: [f autorelease]
+									size: 0];
+			} else {
+				[zMachine filePromptCancelled];				
+			}
+		} else {
+			if ([[NSFileManager defaultManager] createFileAtPath:fn
+														   contents:[NSData data]
+														 attributes:
+			[NSDictionary dictionaryWithObjectsAndKeys: 
                 [NSNumber numberWithLong: creatorCode], NSFileHFSCreatorCode,
                 [NSNumber numberWithLong: typeCode], NSFileHFSTypeCode,
                 [NSNumber numberWithBool: [panel isExtensionHidden]], NSFileExtensionHidden,
                 nil]]) {
-            file = [NSFileHandle fileHandleForWritingAtPath: fn];
-        }
+				file = [NSFileHandle fileHandleForWritingAtPath: fn];
+			}
         
-        if (file) {
-            ZHandleFile* f;
+			if (file) {
+				ZHandleFile* f;
             
-            f = [[ZHandleFile alloc] initWithFileHandle: file];
+				f = [[ZHandleFile alloc] initWithFileHandle: file];
             
-            [zMachine promptedFileIs: [f autorelease]
-                                size: 0];
-        } else {
-            [zMachine filePromptCancelled];
-        }
+				[zMachine promptedFileIs: [f autorelease]
+									size: 0];
+			} else {
+				[zMachine filePromptCancelled];
+			}
+		}
     }
 }
 
@@ -1290,20 +1379,35 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         NSFileHandle* file = nil;
 
         [self storePanelPrefs: panel];
-
-        file = [NSFileHandle fileHandleForReadingAtPath: fn];
+		
+		if ([[fn pathExtension] isEqualToString: @"zoomQuet"]) {
+			ZPackageFile* f;
+			
+			f = [[ZPackageFile alloc] initWithPath: fn
+									   defaultFile: @"save.qut"
+										forWriting: NO];
+			
+			if (f) {
+				[zMachine promptedFileIs: [f autorelease]
+									size: [f fileSize]];
+			} else {
+				[zMachine filePromptCancelled];
+			}
+		} else {
+			file = [NSFileHandle fileHandleForReadingAtPath: fn];
         
-        if (file) {
-            ZDataFile* f;
-            NSData* fData = [file readDataToEndOfFile];
+			if (file) {
+				ZDataFile* f;
+				NSData* fData = [file readDataToEndOfFile];
             
-            f = [[ZDataFile alloc] initWithData: fData];
+				f = [[ZDataFile alloc] initWithData: fData];
             
-            [zMachine promptedFileIs: [f autorelease]
-                                size: [fData length]];
-        } else {
-            [zMachine filePromptCancelled];
-        }
+				[zMachine promptedFileIs: [f autorelease]
+									size: [fData length]];
+			} else {
+				[zMachine filePromptCancelled];
+			}
+		}
     }
 }
 
@@ -1517,6 +1621,75 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	} else {
 		NSLog(@"Unknown autosave version (ignoring)");
 	}
+}
+
+// = NSCoding =
+- (void) encodeWithCoder: (NSCoder*) encoder {
+	int encodingVersion = 100;
+	
+	[encoder encodeValueOfObjCType: @encode(int) 
+								at: &encodingVersion];
+	
+	[encoder encodeObject: upperWindows];
+	[encoder encodeObject: lowerWindows];
+	
+	// The rest of the view state
+	[encoder encodeObject: [textView textStorage]];
+	[encoder encodeObject: commandHistory];
+	
+	// All we need, I think
+}
+
+- (id)initWithCoder:(NSCoder *)decoder {
+	self = [self initWithFrame: NSMakeRect(0,0, 200, 200)];
+	
+    if (self) {
+		int encodingVersion;
+		
+		[decoder decodeValueOfObjCType: @encode(int)
+									at: &encodingVersion];
+		
+		if (encodingVersion == 100) {
+			if (lastAutosave) [lastAutosave release];
+			if (upperWindows) [upperWindows release];
+			if (lowerWindows) [lowerWindows release];
+			if (commandHistory) [commandHistory release];
+			
+			lastAutosave = nil;
+			upperWindows = [[decoder decodeObject] retain];
+			lowerWindows = [[decoder decodeObject] retain];
+			
+			NSTextStorage* storage = [decoder decodeObject];
+			
+			[[textView textStorage] setAttributedString: storage];
+			
+			commandHistory = [[decoder decodeObject] retain];
+			
+			// Final setup
+			upperWindowsToRestore = [upperWindows count];
+			
+			[upperWindows makeObjectsPerformSelector: @selector(setZoomView:)
+										  withObject: self];
+			[lowerWindows makeObjectsPerformSelector: @selector(setZoomView:)
+										  withObject: self];
+			
+			// Load the state into the z-machine
+			if (zMachine) {
+				[zMachine restoreSaveState: lastAutosave];
+			}
+			
+			[self reformatWindow];
+			[self resetMorePrompt];
+			[self scrollToEnd];
+			inputPos = [[textView textStorage] length];
+		} else {
+			NSLog(@"Unknown autosave version (ignoring)");
+			[self release];
+			return nil;
+		}
+    }
+	
+    return self;
 }
 
 @end

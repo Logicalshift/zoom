@@ -2295,6 +2295,22 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>zoomQuet</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>zoom-file.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>Zoom quetzal savegame package</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<true/>
+			<key>NSDocumentClass</key>
+			<string>ZoomClient</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>iFiction</string>
 			</array>
 			<key>CFBundleTypeName</key>
@@ -2394,11 +2410,11 @@
 		4BCF3F41050FB1C300A8E303 = {
 			children = (
 				4BCF3F4B050FB2C500A8E303,
+				4B23C64E053C9C8C00A8E303,
 				4BCF3F53050FB47200A8E303,
 				4BCF3F54050FB47200A8E303,
 				4BCF3F59050FB57A00A8E303,
 				4BCF3F5A050FB57A00A8E303,
-				4B23C64E053C9C8C00A8E303,
 				4B23C64F053C9C8C00A8E303,
 				4B418DC30594FB97009C44DE,
 				4B418DC40594FB97009C44DE,
