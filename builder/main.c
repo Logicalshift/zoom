@@ -468,7 +468,7 @@ void output_interpreter(FILE* dest,
 	  if (op->type == extop && op->versions&vmask)
 	    {
 	      fprintf(dest, "        case 0x%x: /* %s */\n", op->value, op->name);
-	      fprintf(dest, "#ifdef DEBUG\nprintf_debug(\"ExtOp: %s\n\");\n#endif\n", op->name);
+	      fprintf(dest, "#ifdef DEBUG\nprintf_debug(\"ExtOp: %s\\n\");\n#endif\n", op->name);
 	      pcadd = 3;
 	      if (op->flags.islong)
 		{
