@@ -294,7 +294,7 @@ int display_readline(int* buf, int len, long int timeout) {
         displayPool = [[NSAutoreleasePool alloc] init];
         
         [mainLoop acceptInputForMode: NSDefaultRunLoopMode
-                          beforeDate: [NSDate distantFuture]];
+                          beforeDate: when];
     }
 
     [when release];
