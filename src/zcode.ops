@@ -1139,7 +1139,8 @@ OPCODE "restart"     0OP:0x07 CANJUMP VERSION 3,4,5,7,8
   if (ReadByte(0) > 4)
     display_set_cursor(0,0);
   
-  read_block2(machine.memory, machine.file, 0, machine.dynamic_ceiling);
+  read_block2(machine.memory, machine.file, 
+	machine.story_offset, machine.story_offset+machine.dynamic_ceiling);
   pc = Word(ZH_initpc);
 
   restart_machine();  
@@ -2382,7 +2383,8 @@ OPCODE "restart"     0OP:0x07 CANJUMP VERSION 6
       free(oldframe);
     }
   
-  read_block2(machine.memory, machine.file, 0, machine.dynamic_ceiling);
+  read_block2(machine.memory, machine.file, 
+	machine.story_offset, machine.story_offset + machine.dynamic_ceiling);
 
   v6_reset();
 

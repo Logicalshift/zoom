@@ -157,7 +157,9 @@ static inline void xor_memory(void)
       if (x+1024>=machine.dynamic_ceiling)
 	len = machine.dynamic_ceiling-x;
       
-      page = read_block(machine.file, x, x+len);
+      page = read_block(machine.file, 
+			x+machine.story_offset, 
+			x+len+machine.story_offset);
       if (page == NULL)
 	zmachine_fatal("ARgh");
 

@@ -46,6 +46,7 @@
 #include "debug.h"
 
 #include "display.h"
+#include "v6display.h"
 
 #if WINDOW_SYSTEM == 3
 #include <Carbon/Carbon.h>
@@ -366,7 +367,8 @@ int zoom_main(int argc, char** argv)
 #endif
 #ifdef SUPPORT_VERSION_6
     case 6:
-      display_set_cursor(1,1);
+      v6_startup();
+      v6_set_cursor(1,1);
       zmachine_run(6, args.save_file);
       break;
 #endif

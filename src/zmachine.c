@@ -63,6 +63,7 @@ void zmachine_load_story(char* filename, ZMachine* machine)
 	zmachine_fatal("No story file");
 
       machine->story_length = size = get_file_size_fsref(ref);
+      machine->story_offset = 0;
       if (size < 0)
 	zmachine_fatal("Unable to open story file");
       if (size < 64)
@@ -76,6 +77,7 @@ void zmachine_load_story(char* filename, ZMachine* machine)
 #endif
     {
       machine->story_length = size = get_file_size(filename);
+      machine->story_offset = 0;
       if (size < 0)
 	zmachine_fatal("Unable to open story file");
       if (size < 64)
@@ -90,24 +92,23 @@ void zmachine_load_story(char* filename, ZMachine* machine)
   machine->blorb = NULL;
   if (blorb_is_blorbfile(machine->file))
     {
-      int test[] = { 'T', 'e', 's', 't' };
-
-      machine->blorb_file = machine->file;
-      machine->blorb = blorb_loadfile(machine->file);
+      machine->blorb_file   = machine->file;
+      machine->blorb        = blorb_loadfile(machine->file);
       machine->blorb_tokens = machine->blorb->file;
+
+      machine->story_offset = machine->blorb->zcode_offset;
+      machine->story_length = machine->blorb->zcode_len;
 
       rc_set_game("xxxxxx", 65535, 65535);
 
-      display_initialise();
-      display_init_pixmap(640, 480);
-      display_pixmap_cols(0, -1);
-      display_plot_gtext(test, 4, 2, 100, 100);
-      display_plot_image(blorb_findimage(machine->blorb, 21),
-			 100, 100);
-      display_clear();
-      display_prints_c("Hello\n");
-      display_readchar(0);
-      exit(0);
+      if (machine->blorb->zcode_offset < 0)
+	{
+	  zmachine_fatal("This blorb file is not executable");
+	}
+      
+      machine->memory = read_block(machine->file,
+				   machine->story_offset,
+				   machine->story_offset+machine->story_length);
     }
   else
     {

@@ -1333,7 +1333,6 @@ void zcode_v6_initialise(void)
 
   windows[0].wrapping = 1;
 
-  v6_startup();
   v6_set_newline_function(newline_function);
 
   machine.dinfo = display_get_info();
