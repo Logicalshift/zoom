@@ -89,6 +89,8 @@ typedef struct
 
   int pictures;
   int fore, back;
+
+  unsigned int fore_true, back_true;
 } ZDisplay;
 extern ZDisplay* display_get_info(void);
 

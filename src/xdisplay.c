@@ -2795,6 +2795,7 @@ void display_exit(int code)
 ZDisplay* display_get_info(void)
 {
   static ZDisplay dis;
+  XColor col;
 
   /* Return display capabilities */
 
@@ -2818,6 +2819,11 @@ ZDisplay* display_get_info(void)
   dis.pictures      = 1;
   dis.fore          = DEFAULT_FORE;
   dis.back          = DEFAULT_BACK;
+
+  col               = x_colour[FIRST_ZCOLOUR+DEFAULT_FORE];
+  dis.fore_true     = (col.red>>11)|((col.green>>11)<<5)|((col.blue>>11)<<10);
+  col               = x_colour[FIRST_ZCOLOUR+DEFAULT_BACK];
+  dis.back_true     = (col.red>>11)|((col.green>>11)<<5)|((col.blue>>11)<<10);
 
   if (x_pixmap != None)
     {

@@ -418,6 +418,10 @@ void zmachine_warning(char* format, ...)
     (v)?machine.memory[p]|(1<<(f)): \
     machine.memory[p]&~(1<<(f))
 
+#define FlagE(p, f, v) machine.heb[p] = \
+    (v)?machine.heb[p]|(1<<(f)): \
+    machine.heb[p]&~(1<<(f))
+
 void zmachine_setup_header(void)
 {
   machine.dinfo = display_get_info();
@@ -455,6 +459,13 @@ void zmachine_setup_header(void)
 
       machine.memory[ZH_intnumber] = rc_get_interpreter();
       machine.memory[ZH_intvers] = rc_get_revision();
+
+#ifdef SPEC_11
+      if (machine.heblen >= 10)
+	{
+	  FlagE(ZHEB_flags3+1, 2, 1);
+	}
+#endif
       break;
       
     case 8:
@@ -493,6 +504,32 @@ void zmachine_setup_header(void)
 	Flag(ZH_flags2+1, 6, machine.dinfo->colours);
       if (Word(ZH_flags2)&(1<<7))
 	Flag(ZH_flags2+1, 7, machine.dinfo->sound_effects);
+
+#ifdef SPEC_11
+      printf("%i\n", machine.heblen);
+
+      if (machine.heblen >= 4)
+	{
+	  FlagE(ZHEB_flags3+1, 0, 0);
+	  FlagE(ZHEB_flags3+1, 1, 0);
+
+	  machine.heb[ZHEB_flags3] = 0;
+	  machine.heb[ZHEB_flags3] &= ~ 0x7;
+	}
+
+      if (machine.heblen >= 5)
+	{
+	  machine.heb[ZHEB_truefore] = machine.dinfo->fore_true>>8;
+	  machine.heb[ZHEB_truefore] = machine.dinfo->fore_true;
+	}
+
+      if (machine.heblen >= 6)
+	{
+	  machine.heb[ZHEB_trueback] = machine.dinfo->back_true>>8;
+	  machine.heb[ZHEB_trueback] = machine.dinfo->back_true;
+	}
+#endif
+
     case 4:
       Flag(1, 2, machine.dinfo->boldface);
       Flag(1, 3, machine.dinfo->italic);

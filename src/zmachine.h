@@ -137,7 +137,10 @@ enum ZHEB_bytes
   ZHEB_len      = 0,
   ZHEB_xmouse   = 2,
   ZHEB_ymouse   = 4,
-  ZHEB_unitable = 6
+  ZHEB_unitable = 6,
+  ZHEB_flags3   = 8,
+  ZHEB_truefore = 10,
+  ZHEB_trueback = 12
 };
 
 /* Internal data structures */

@@ -2360,6 +2360,7 @@ void display_reset_windows       (void)
 ZDisplay* display_get_info(void)
 {
   static ZDisplay dis;
+  RGBColor col;
 
   dis.status_line   = 1;
   dis.can_split     = 1;
@@ -2381,6 +2382,11 @@ ZDisplay* display_get_info(void)
   dis.pictures      = 1;
   dis.fore          = DEFAULT_FORE;
   dis.back          = DEFAULT_BACK;
+
+  col               = maccolour[FIRST_ZCOLOUR+DEFAULT_FORE];
+  dis.fore_true     = (col.red>>11)|((col.green>>11)<<5)|((col.blue>>11)<<10);
+  col               = maccolour[FIRST_ZCOLOUR+DEFAULT_BACK];
+  dis.back_true     = (col.red>>11)|((col.green>>11)<<5)|((col.blue>>11)<<10);
 
   if (pixmap != NULL)
     {
