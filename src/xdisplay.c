@@ -111,7 +111,7 @@ static int scrolling     = 0;
 
 static int win_left, win_top;
 static int win_width, win_height;
-static int click_x, click_y;
+static int click_x, click_y, click_b;
 static Time click_time;
 
 static Atom x_prot[5];
@@ -2400,6 +2400,26 @@ void display_terminating(unsigned char* table)
     }
 }
 
+/* (Assumes a pixmap is present) */
+void display_read_mouse(void)
+{
+  Window root, child;
+  int cx, cy;
+  unsigned int m;
+  
+  XQueryPointer(x_display, x_mainwin, &root, &child,
+		&cx, &cy,
+		&click_x, &click_y,
+		&m);
+
+  click_b =
+    ((m&Button1Mask)?1:0)|
+    ((m&Button2Mask)?2:0)|
+    ((m&Button3Mask)?4:0)|
+    ((m&Button4Mask)?8:0)|
+    ((m&Button5Mask)?16:0);
+}
+
 int display_get_mouse_x(void)
 {
   return (click_x/xfont_x)+1;
@@ -2418,6 +2438,11 @@ int display_get_pix_mouse_x(void)
 int display_get_pix_mouse_y(void)
 {
   return click_y - (win_y/2-pix_h/2);
+}
+
+int display_get_pix_mouse_b(void)
+{
+  return click_b;
 }
 
 void display_set_more(int window, int more)

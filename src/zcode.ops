@@ -2694,7 +2694,35 @@ OPCODE "picture_data"  EXT:0x06 BRANCH        VERSION 6
 
 OPCODE "erase_picture" EXT:0x07               VERSION 6
 %{
-  printf_debug("erase_picture not implemented\n");
+  int width, height;
+  BlorbImage* img;
+
+  stream_flush_buffer();
+
+  if (machine.blorb != NULL)
+    {
+      img = blorb_findimage(machine.blorb, argblock.arg[0]);
+    }
+  else
+    img = NULL;
+
+  if (img != NULL)
+    {
+      int sc_n, sc_d;
+
+      width = img->width;
+      height = img->height;
+
+      v6_scale_image(img, &sc_n, &sc_d);
+
+      width = (width*sc_n)/sc_d;
+      height = (height*sc_n)/sc_d;
+      
+      display_pixmap_cols(7, 0);
+      display_plot_rect(windows[v6_get_window()].x + argblock.arg[2], 
+	                windows[v6_get_window()].y + argblock.arg[1],
+	                width, height);
+    }
 %}
 
 OPCODE "set_margins"   EXT:0x08 ARGS:3        VERSION 6
@@ -2914,7 +2942,19 @@ OPCODE "pop_stack"     EXT:0x15               VERSION 6
 
 OPCODE "read_mouse"    EXT:0x16               VERSION 6
 %{
-  printf_debug("read_mouse not implemented\n");
+  unsigned char* d;
+
+  d = Address(argblock.arg[0]);
+  display_read_mouse();
+
+  d[0] = display_get_pix_mouse_y()<<8;
+  d[1] = display_get_pix_mouse_y();
+  d[2] = display_get_pix_mouse_x()<<8;
+  d[3] = display_get_pix_mouse_x();
+  d[4] = display_get_pix_mouse_b()<<8;
+  d[5] = display_get_pix_mouse_b();
+  d[6] = 0;
+  d[7] = 0;
 %}
 
 OPCODE "mouse_window"  EXT:0x17               VERSION 6
@@ -3029,12 +3069,13 @@ OPCODE "print_form"    EXT:0x1a               VERSION 6
 
 OPCODE "make_menu"     EXT:0x1b        BRANCH VERSION 6
 %{
+  /* Hum, the spec is unclear on what the branch does... */
   printf_debug("make_menu not implemented\n");
 %}
 
 OPCODE "picture_table" EXT:0x1c               VERSION 6
 %{
-  printf_debug("picture_table not implemented\n");
+  /* Does nothing */
 %}
 
 ####                           ----// 888 \\----                           ####

@@ -120,7 +120,7 @@ static void plot_font_3(Drawable draw, GC gc, int chr, int xpos, int ypos)
 void xfont_initialise(void)
 {
 #ifdef HAVE_T1LIB
-  if (T1_InitLib(LOGFILE|T1_AA_CACHING) == NULL)
+  if (T1_InitLib(T1_AA_CACHING) == NULL)
     zmachine_fatal("Unable to initialise t1lib");
   T1_SetX11Params(x_display, DefaultVisual(x_display, x_screen),
 		  DefaultDepth(x_display, x_screen),

@@ -19,7 +19,8 @@ zoom_SOURCES = \
 	file.h zmachine.h options.h interp.h zscii.h display.h hash.h \
 	tokenise.h stream.h font3.h state.h rc.h rcp.h rc_parse.h \
 	menu.h xdisplay.h xfont.h zoomres.h windisplay.h random.h format.h \
-	carbondisplay.h v6display.h debug.h blorb.h image.h image_ximage.h
+	carbondisplay.h v6display.h debug.h blorb.h image.h image_ximage.h \
+	sound.h
 
 $(srcdir)/interp.c: interp_gen.h interp_z3.h interp_z4.h interp_z5.h interp_z6.h varop.h
 
