@@ -7,7 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ZoomStory.h"
 #import "ZoomStoryID.h"
+
 
 // The story organiser is used to store story locations and identifications
 // (Mainly to build up the iFiction window)
@@ -55,5 +57,11 @@ extern NSString* ZoomStoryOrganiserChangedNotification;
 
 // Story-specific data
 - (NSString*) directoryForIdent: (ZoomStoryID*) ident;
+
+// Organising stories
+- (NSString*) directoryForStory: (ZoomStory*) story;
+- (void)      organiseStory: (NSString*) story;
+- (void)      organiseAllStories;
+- (void)      reorganiseStoriesTo: (NSString*) newStoryDirectory;
 
 @end

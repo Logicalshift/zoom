@@ -43,12 +43,19 @@
         for(x=0; x<3; x++) {
             windowBuffer[x] = [[NSMutableAttributedString alloc] init];
         }
+		
+		[[NSNotificationCenter defaultCenter] addObserver: self
+												 selector: @selector(flushBuffers)
+													 name: ZBufferNeedsFlushingNotification
+												   object: nil];
     }
 
     return self;
 }
 
 - (void) dealloc {
+	[[NSNotificationCenter defaultCenter] removeObserver: self];
+	
     if (windows[0])
         [windows[0] release];
     if (windows[1])

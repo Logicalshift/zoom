@@ -8,6 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
+// Notifications
+extern NSString* ZoomStoryDataHasChangedNotification;
+
 @class ZoomStoryID;
 @interface ZoomStory : NSObject<NSCopying> {
 	struct IFMDStory* story;
@@ -56,5 +59,13 @@
 
 - (void) setObject: (id) value
 			forKey: (NSString*) key;
+
+// Identifying and comparing stories
+- (NSArray*) storyIDs;									// Array of ZoomStoryIDs
+- (BOOL)     hasID: (ZoomStoryID*) storyID;				// Story answers to this ID
+- (BOOL)     isEquivalentToStory: (ZoomStory*) story;   // Stories share an ID
+
+// Sending notifications
+- (void) heyLookThingsHaveChangedOohShiney; // Sends ZoomStoryDataHasChangedNotification
 
 @end

@@ -11,6 +11,8 @@
 
 #include "ifmetadata.h"
 
+NSString* ZoomStoryDataHasChangedNotification = @"ZoomStoryDataHasChangedNotification";
+
 @implementation ZoomStory
 
 + (NSString*) nameForKey: (NSString*) key {
@@ -198,6 +200,8 @@
 	if (newTitle) {
 		story->data.title = IFMakeStrCF((CFStringRef)newTitle);
 	}
+	
+	[self heyLookThingsHaveChangedOohShiney];
 }
 
 - (void) setHeadline: (NSString*) newHeadline {
@@ -209,6 +213,8 @@
 	if (newHeadline) {
 		story->data.headline = IFMakeStrCF((CFStringRef)newHeadline);
 	}
+	
+	[self heyLookThingsHaveChangedOohShiney];
 }
 
 - (void) setAuthor: (NSString*) newAuthor {
@@ -220,6 +226,8 @@
 	if (newAuthor) {
 		story->data.author = IFMakeStrCF((CFStringRef)newAuthor);
 	}
+	
+	[self heyLookThingsHaveChangedOohShiney];
 }
 
 - (void) setGenre: (NSString*) genre {
@@ -231,10 +239,14 @@
 	if (genre) {
 		story->data.genre = IFMakeStrCF((CFStringRef)genre);
 	}
+	
+	[self heyLookThingsHaveChangedOohShiney];
 }
 
 - (void) setYear: (int) year {
 	story->data.year = year;
+	
+	[self heyLookThingsHaveChangedOohShiney];
 }
 
 - (void) setGroup: (NSString*) group {
@@ -246,10 +258,14 @@
 	if (group) {
 		story->data.group = IFMakeStrCF((CFStringRef)group);
 	}
+	
+	[self heyLookThingsHaveChangedOohShiney];
 }
 
 - (void) setZarfian: (unsigned) zarfian {
 	story->data.zarfian = zarfian;
+	
+	[self heyLookThingsHaveChangedOohShiney];
 }
 
 - (void) setTeaser: (NSString*) teaser {
@@ -261,6 +277,8 @@
 	if (teaser) {
 		story->data.teaser = IFMakeStrCF((CFStringRef)teaser);
 	}
+	
+	[self heyLookThingsHaveChangedOohShiney];
 }
 
 - (void) setComment: (NSString*) comment {
@@ -272,10 +290,14 @@
 	if (comment) {
 		story->data.comment = IFMakeStrCF((CFStringRef)comment);
 	}
+	
+	[self heyLookThingsHaveChangedOohShiney];
 }
 
 - (void) setRating: (float) rating {
 	story->data.rating = rating;
+	
+	[self heyLookThingsHaveChangedOohShiney];
 }
 
 // = NSCopying =
@@ -407,6 +429,51 @@
 	
 	// Is true if there are no words left to match
 	return success;
+}
+
+// = Sending notifications =
+- (void) heyLookThingsHaveChangedOohShiney {
+	[[NSNotificationCenter defaultCenter] postNotificationName: ZoomStoryDataHasChangedNotification
+														object: self];
+}
+
+// Identifying and comparing stories
+- (NSArray*) storyIDs {
+	NSMutableArray* idArray = [NSMutableArray array];
+	
+	int ident;
+	
+	for (ident = 0; ident < story->numberOfIdents; ident++) {
+		ZoomStoryID* theId = [[ZoomStoryID alloc] initWithIdent: story->idents[ident]];
+		if (theId) {
+			[idArray addObject: theId];
+			[theId release];
+		}
+	}
+	
+	return idArray;
+}
+
+- (BOOL) hasID: (ZoomStoryID*) storyID {
+	NSArray* ourIds = [self storyIDs];
+	
+	return [ourIds containsObject: storyID];
+}
+
+- (BOOL) isEquivalentToStory: (ZoomStory*) story {
+	if (story == self) return YES; // Shortcut
+	
+	NSArray* theirIds = [story storyIds];
+	NSArray* ourIds = [self storyIds];
+	
+	NSEnumerator* idEnum = [theirIds objectEnumerator];
+	ZoomStoryID* thisId;
+	
+	while (thisId = [idEnum nextObject]) {
+		if ([ourIds containsObject: thisId]) return YES;
+	}
+	
+	return NO;
 }
 
 @end

@@ -1414,7 +1414,9 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	}
 	
 	// Reset the background colour of the lower window
-	[textView setBackgroundColor: [self backgroundColourForStyle: [[lowerWindows objectAtIndex: 0] backgroundStyle]]];
+	if ([lowerWindows count] > 0) {
+		[textView setBackgroundColor: [self backgroundColourForStyle: [[lowerWindows objectAtIndex: 0] backgroundStyle]]];
+	}
 	
 	// Reformat the upper window(s) as necessary
 	[textScroller tile];
@@ -1455,6 +1457,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	
 	// The rest of the view state
 	[encoder encodeObject: [textView textStorage]];
+	[encoder encodeObject: commandHistory];
 	
 	// All we need, I think
 	
@@ -1472,6 +1475,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		if (lastAutosave) [lastAutosave release];
 		if (upperWindows) [upperWindows release];
 		if (lowerWindows) [lowerWindows release];
+		if (commandHistory) [commandHistory release];
 
 		lastAutosave = [[decoder decodeObject] retain];
 		upperWindows = [[decoder decodeObject] retain];
@@ -1480,6 +1484,8 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		NSTextStorage* storage = [decoder decodeObject];
 		
 		[[textView textStorage] setAttributedString: storage];
+		
+		commandHistory = [[decoder decodeObject] retain];
 		
 		// Final setup
 		upperWindowsToRestore = [upperWindows count];

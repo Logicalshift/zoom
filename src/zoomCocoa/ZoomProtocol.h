@@ -23,6 +23,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+extern NSString* ZBufferNeedsFlushingNotification;
+
 @protocol ZMachine;
 @protocol ZDisplay;
 @protocol ZFile;
@@ -224,9 +226,13 @@ extern NSString* ZStyleAttributeName;
 // Buffering
 @interface ZBuffer : NSObject<NSCopying,NSCoding> {
     NSMutableArray* buffer;
+	int bufferCount;
 }
 
 // Buffering
+
+// Notifications
+- (void) addedToBuffer;
 
 // General window routines
 - (void) writeString: (NSString*) string

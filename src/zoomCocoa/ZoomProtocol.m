@@ -1,6 +1,9 @@
 
 #import "ZoomProtocol.h"
 
+#define maxBufferCount 1024
+NSString* ZBufferNeedsFlushingNotification = @"ZBufferNeedsFlushingNotification";
+
 // Implementation of the various standard classes
 @implementation ZHandleFile
 - (id) init {
@@ -524,7 +527,8 @@ NSString* ZBufferSetWindow   = @"ZBSW";
                     NSMutableString* lastString   = [lastTime objectAtIndex: 1];
 
                     [lastString appendString: string];
-                    return;
+					[self addedToBuffer];
+                   return;
                 }
             }
         }
@@ -538,6 +542,7 @@ NSString* ZBufferSetWindow   = @"ZBSW";
             style,
             window,
             nil]];
+	[self addedToBuffer];
 }
 
 - (void) clearWindow: (NSObject<ZWindow>*) window
@@ -548,6 +553,7 @@ NSString* ZBufferSetWindow   = @"ZBSW";
             style,
             window,
             nil]];
+	[self addedToBuffer];
 }
 
 // Upper window routines
@@ -559,6 +565,7 @@ NSString* ZBufferSetWindow   = @"ZBSW";
             [NSValue valueWithPoint: newCursorPos],
             window,
             nil]];
+	[self addedToBuffer];
 }
 
 - (void) eraseLineInWindow: (NSObject<ZUpperWindow>*) window
@@ -569,6 +576,7 @@ NSString* ZBufferSetWindow   = @"ZBSW";
             style,
             window,
             nil]];    
+	[self addedToBuffer];
 }
 
 - (void) setWindow: (NSObject<ZUpperWindow>*) window
@@ -581,6 +589,7 @@ NSString* ZBufferSetWindow   = @"ZBSW";
             [NSNumber numberWithInt: endLine],
             window,
             nil]];
+	[self addedToBuffer];
 }
 
 // Unbuffering
@@ -659,6 +668,17 @@ NSString* ZBufferSetWindow   = @"ZBSW";
             NSLog(@"Unknown buffer type: %@", entryType);
         }
     }
+}
+
+// Notifications
+- (void) addedToBuffer {
+	bufferCount++;
+	
+	if (bufferCount > maxBufferCount) {
+		[[NSNotificationCenter defaultCenter] postNotificationName: ZBufferNeedsFlushingNotification
+															object: self];
+		bufferCount = 0;
+	}
 }
 
 @end
