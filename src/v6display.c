@@ -198,7 +198,7 @@ void v6_prints(const int* text)
 
       if (text[text_pos] == 0 || text[text_pos] == 10)
 	width  = display_measure_text(text + start_pos,
-				      text_pos - start_pos + 1,
+				      text_pos - start_pos,
 				      ACTWIN.style);
 
       /* Back up a word, if necessary */
@@ -209,7 +209,7 @@ void v6_prints(const int* text)
 	  this_word = last_word;
 
 	  width  = display_measure_text(text + start_pos,
-					text_pos - start_pos + 1,
+					text_pos - start_pos,
 					ACTWIN.style);
 	}
 

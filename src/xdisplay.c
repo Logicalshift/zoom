@@ -1983,9 +1983,13 @@ int display_readline(int* buf, int buflen, long int timeout)
 
   displayed_text = 0;
   result = process_events(timeout, buf, buflen);
-  display_prints(buf);
-  display_printc(10);
 
+  if (result == 10)
+    {
+      display_prints(buf);
+      display_printc(10);
+    }
+      
   return result;
 }
 
