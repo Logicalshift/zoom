@@ -565,5 +565,9 @@ void  zmachine_warning(char* format, ...) {
 	
 	fatalBuf[511] = 0;
 	
+#ifdef DEBUG
+	NSLog(@"Warning: %s", fatalBuf);
+#endif
+	
 	[[mainMachine display] displayWarning: [NSString stringWithCString: fatalBuf]];
 }
