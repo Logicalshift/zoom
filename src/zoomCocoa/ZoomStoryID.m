@@ -32,6 +32,32 @@
 	return self;
 }
 
+- (id) initWithZCodeFile: (NSString*) zcodeFile {
+	self = [super init];
+	
+	if (self) {
+		const unsigned char* bytes;
+		
+		NSFileHandle* fh = [NSFileHandle fileHandleForReadingAtPath: zcodeFile];
+		NSData* data = [fh readDataOfLength: 64];
+		[fh closeFile];
+		
+		bytes = [data bytes];
+		
+		ident = IFID_Alloc();
+		needsFreeing = YES;
+		
+		ident->format = ident->dataFormat = IFFormat_ZCode;
+		
+		memcpy(ident->data.zcode.serial, bytes + 0x12, 6);
+		ident->data.zcode.release  = (((int)bytes[0x2])<<8)|((int)bytes[0x3]);
+		ident->data.zcode.checksum = (((int)bytes[0x1c])<<8)|((int)bytes[0x1d]);
+		ident->usesMd5 = 0;
+	}
+	
+	return self;
+}
+
 - (id) initWithData: (NSData*) genericGameData {
 	self = [super init];
 	

@@ -13,6 +13,8 @@
 #import "ZoomAppDelegate.h"
 #import "ZoomGameInfoController.h"
 
+#import "ifmetadata.h"
+
 @implementation ZoomiFictionController
 
 static ZoomiFictionController* sharedController = nil;
@@ -42,6 +44,7 @@ static ZoomiFictionController* sharedController = nil;
 	[newgameButton setPushedImage: [NSImage imageNamed: @"newgame-in"]];
 	[continueButton setPushedImage: [NSImage imageNamed: @"continue-in"]];
 	[drawerButton setPushedImage: [NSImage imageNamed: @"drawer-in"]];		
+	[infoButton setPushedImage: [NSImage imageNamed: @"information-in"]];		
 	
 	[continueButton setEnabled: NO];
 	[newgameButton setEnabled: NO];
@@ -75,6 +78,7 @@ static ZoomiFictionController* sharedController = nil;
 }
 
 // = Useful functions for getting info about the table =
+
 - (ZoomStoryID*) selectedStoryID {
 	if (needsUpdating) [self reloadTableData];
 	
@@ -106,7 +110,35 @@ static ZoomiFictionController* sharedController = nil;
 	
 	return nil;
 }
-   
+
+- (ZoomStory*) createStoryCopy: (ZoomStory*) theStory {
+	// When editing story data, we need to work on a copy in the user metadata area.
+	// By default, we just use the first version we find, which might be in one of the
+	// files loaded from our own application (and hence won't get saved when we finish
+	// up)
+	if ([theStory story]->numberOfIdents <= 0) {
+		NSLog(@"Story has no identification");
+		
+		return nil;
+	}
+
+	ZoomStoryID* theId = [[[ZoomStoryID alloc] initWithIdent: [theStory story]->idents[0]] autorelease];
+	ZoomStory* newStory = [[[NSApp delegate] userMetadata] findStory: theId];
+	if (newStory) return newStory;
+	
+	[[[NSApp delegate] userMetadata] storeStory: [[theStory copy] autorelease]];
+	
+	newStory = [[[NSApp delegate] userMetadata] findStory: theId];
+	
+	if (newStory) {
+		needsUpdating = YES;
+	} else {
+		NSLog(@"Failed to create story copy");
+	}
+	
+	return newStory;
+}
+
 // = IB actions =
 
 - (IBAction) addButtonPressed: (id) sender {
@@ -172,6 +204,10 @@ static ZoomiFictionController* sharedController = nil;
 	if (story == nil) {
 		story = [[[ZoomStory alloc] init] autorelease];
 		[story setTitle: [[filename lastPathComponent] stringByDeletingPathExtension]];
+
+		// If we ever support more formats (Z-Code blorb is probable, GLULX is likely, other are possible)
+		// we need to do this in a more intelligent way.
+		[story addID: [[[ZoomStoryID alloc] initWithZCodeFile: filename] autorelease]];
 	}
 	
 	return story;
@@ -184,8 +220,19 @@ static ZoomiFictionController* sharedController = nil;
 	
 	NSString* cA = [sA objectForKey: sortColumn];
 	NSString* cB = [sB objectForKey: sortColumn];
+
+	if ([cA length] != [cB length]) {
+		if ([cA length] == 0) return 1;
+		if ([cB length] == 0) return -1;
+	}
 	
-	return [cA caseInsensitiveCompare: cB];
+	int res = [cA caseInsensitiveCompare: cB];
+	
+	if (res == 0) {
+		return [[sA title] caseInsensitiveCompare: [sB title]];
+	} else {
+		return res;
+	}
 }
 
 int tableSorter(id a, id b, void* context) {
@@ -344,8 +391,87 @@ int tableSorter(id a, id b, void* context) {
 	}
 }
 
+- (void)tableView:(NSTableView *)tableView 
+   setObjectValue:(id)anObject 
+   forTableColumn:(NSTableColumn*)aTableColumn 
+			  row:(int)rowIndex {
+	if (needsUpdating) [self reloadTableData];
+
+	if (tableView == mainTableView) {
+		ZoomStoryID* ident = [storyList objectAtIndex: [mainTableView selectedRow]];
+		ZoomStory* story = [self storyForID: ident];
+		
+		story = [self createStoryCopy: story];
+		
+		[story setObject: anObject
+				  forKey: [aTableColumn identifier]];
+	}
+}
+
 - (IBAction) updateGameInfo: (id) sender {
 	[self configureFromMainTableSelection];
+}
+
+// = GameInfo window actions =
+
+- (IBAction) infoNameChanged: (id) sender {
+	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
+	[story setTitle: [[ZoomGameInfoController sharedGameInfoController] title]];
+	[self reloadTableData]; [mainTableView reloadData];
+}
+
+- (IBAction) infoHeadlineChanged: (id) sender {
+	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
+	[story setHeadline: [[ZoomGameInfoController sharedGameInfoController] headline]];
+	[self reloadTableData]; [mainTableView reloadData];
+}
+
+- (IBAction) infoAuthorChanged: (id) sender {
+	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
+	[story setAuthor: [[ZoomGameInfoController sharedGameInfoController] author]];
+	[self reloadTableData]; [mainTableView reloadData];
+}
+
+- (IBAction) infoGenreChanged: (id) sender {
+	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
+	[story setGenre: [[ZoomGameInfoController sharedGameInfoController] genre]];
+	[self reloadTableData]; [mainTableView reloadData];
+}
+
+- (IBAction) infoYearChanged: (id) sender {
+	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
+	[story setYear: [[ZoomGameInfoController sharedGameInfoController] year]];
+	[self reloadTableData]; [mainTableView reloadData];
+}
+
+- (IBAction) infoGroupChanged: (id) sender {
+	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
+	[story setGroup: [[ZoomGameInfoController sharedGameInfoController] group]];
+	[self reloadTableData]; [mainTableView reloadData];
+}
+
+- (IBAction) infoCommentsChanged: (id) sender {
+	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
+	[story setComment: [[ZoomGameInfoController sharedGameInfoController] comments]];
+	[self reloadTableData]; [mainTableView reloadData];
+}
+
+- (IBAction) infoTeaserChanged: (id) sender {
+	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
+	[story setTeaser: [[ZoomGameInfoController sharedGameInfoController] teaser]];
+	[self reloadTableData]; [mainTableView reloadData];
+}
+
+- (IBAction) infoZarfRatingChanged: (id) sender {
+	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
+	[story setZarfian: [[ZoomGameInfoController sharedGameInfoController] zarfRating]];
+	[self reloadTableData]; [mainTableView reloadData];
+}
+
+- (IBAction) infoMyRatingChanged: (id) sender {
+	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
+	[story setRating: [[ZoomGameInfoController sharedGameInfoController] rating]];
+	[self reloadTableData]; [mainTableView reloadData];
 }
 
 @end

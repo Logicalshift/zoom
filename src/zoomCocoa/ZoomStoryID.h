@@ -15,6 +15,7 @@
 }
 
 - (id) initWithZCodeStory: (NSData*) gameData;
+- (id) initWithZCodeFile: (NSString*) zcodeFile;
 //- (id) initWithData: (NSData*) genericGameData;
 - (id) initWithIdent: (struct IFMDIdent*) ident;
 

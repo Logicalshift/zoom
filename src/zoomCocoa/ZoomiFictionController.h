@@ -8,12 +8,14 @@
 
 #import <AppKit/AppKit.h>
 #import "ZoomiFButton.h"
+#import "ZoomStory.h"
 
 @interface ZoomiFictionController : NSWindowController {
 	IBOutlet ZoomiFButton* addButton;
 	IBOutlet ZoomiFButton* newgameButton;
 	IBOutlet ZoomiFButton* continueButton;	
 	IBOutlet ZoomiFButton* drawerButton;
+	IBOutlet ZoomiFButton* infoButton;
 	
 	IBOutlet NSTextView*   commentView;
 	IBOutlet NSTextView*   teaserView;
@@ -44,6 +46,8 @@
 - (IBAction) startNewGame: (id) sender;
 - (IBAction) restoreAutosave: (id) sender;
 
+- (ZoomStory*) storyForID: (ZoomStoryID*) ident;
 - (void) configureFromMainTableSelection;
+- (void) reloadTableData;
 
 @end
