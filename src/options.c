@@ -39,7 +39,6 @@ static char args_doc[] = "[story-file] [save-file]";
 static struct argp_option options[] = {
   { "warnings", 'w', 0, 0, "Display interpreter warnings" },
   { "fatal", 'W', 0, 0, "Warnings are fatal" },
-  { "graphical", 'g', 0, 0, "Use a graphical version 5 machine. Not all games support this option" },
   { "debugmode", 'D', 0, 0, "Enable source-level debugger (requires gameinfo.dbg)" },
 #ifdef TRACKING
   { "trackobjs", 'O', 0, 0, "Track object movement" },
@@ -76,10 +75,6 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
       args->debug_mode = 1;
       break;
  
-    case 'g':
-      args->graphical = 1;
-      break;
-      
     case ARGP_KEY_ARG:
       if (state->arg_num >= 2)
 	argp_usage(state);
@@ -146,7 +141,6 @@ void get_options(int argc, char** argv, arguments* args)
 	  printf_info("    -w         display warnings\n");
 	  printf_info("    -W         make all warnings fatal (strict standards compliance)\n");
 	  printf_info("    -D         enable symbolic debug mode (requires gameifo.dbg)\n");
-	  printf_info("    -g         use graphical display mode (if available)\n");
 	  printf_info("Zoom is copyright (C) Andrew Hunter, 2000\n");
 	  printf_info_done();
 	  display_exit(0);
@@ -167,10 +161,6 @@ void get_options(int argc, char** argv, arguments* args)
 
 	case 'w': /* w */
 	  args->warning_level = 1;
-	  break;
-
-	case 'g': /* g */
-	  args->graphical = 1;
 	  break;
 	}
     }

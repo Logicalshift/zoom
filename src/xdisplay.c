@@ -460,6 +460,12 @@ static void draw_caret(void)
     XSetLineAttributes(x_display, x_caretgc, 4, LineSolid,
 		       CapButt, JoinBevel);
 
+  if (!caret_flashing)
+    {
+      XSetLineAttributes(x_display, x_caretgc, 1, LineSolid,
+			 CapButt, JoinBevel);
+    }
+
   XSetForeground(x_display, x_caretgc,
 		 xdisplay_get_pixel_value(CURWIN.back) ^
 		 x_colour[4].pixel);
@@ -470,9 +476,18 @@ static void draw_caret(void)
 
   if ((ison^caret_shown))
     {
-      XDrawLine(x_display, x_mainwin, x_caretgc, 
-		caret_x + BORDER_SIZE, caret_y + BORDER_SIZE,
-		caret_x + BORDER_SIZE, caret_y + caret_height + BORDER_SIZE);
+      if (!caret_flashing)
+	{
+	  XDrawRectangle(x_display, x_mainwin, x_caretgc,
+			 caret_x + BORDER_SIZE - 2, caret_y + BORDER_SIZE,
+			 4, caret_height);
+	}
+      else
+	{
+	  XDrawLine(x_display, x_mainwin, x_caretgc, 
+		    caret_x + BORDER_SIZE, caret_y + BORDER_SIZE,
+		    caret_x + BORDER_SIZE, caret_y + caret_height + BORDER_SIZE);
+	}
 
       caret_shown = !caret_shown;
     }
@@ -1537,6 +1552,11 @@ static int process_events(long int to, int* buf, int buflen)
 
   connection_num = ConnectionNumber(x_display);
 
+  if (!more_on)
+    caret_flashing = 1;
+  else
+    caret_flashing = 0;
+
   move_caret();
   show_caret();
 
@@ -1580,7 +1600,8 @@ static int process_events(long int to, int* buf, int buflen)
 	  next_flash.tv_usec == 0)
 	next_flash = now;
 
-      if ((next_flash.tv_sec < now.tv_sec ||
+      if (caret_flashing &&
+	  (next_flash.tv_sec < now.tv_sec ||
 	   (next_flash.tv_sec == now.tv_sec &&
 	    next_flash.tv_usec <= now.tv_usec)))
 	{
@@ -2183,6 +2204,21 @@ static int process_events(long int to, int* buf, int buflen)
 		XUnionRectWithRegion(&r, dregion, dregion);
 	      }
 	      break;
+
+	    case FocusOut:
+	      hide_caret();
+	      caret_flashing = 0;
+	      if (!more_on)
+		show_caret();
+	      else
+		hide_caret();
+	      break;
+
+	    case FocusIn:
+	      hide_caret();
+	      if (!more_on)
+		caret_flashing = 1;
+	      break;
 	    }
 	}
     }
@@ -2489,7 +2525,7 @@ void display_initialise(void)
   /* Start up the font system */
   xfont_initialise();
   
-  win_attr.event_mask = ExposureMask|KeyPressMask|KeyReleaseMask|StructureNotifyMask|ButtonPressMask|ButtonReleaseMask|ButtonMotionMask;
+  win_attr.event_mask = ExposureMask|KeyPressMask|KeyReleaseMask|StructureNotifyMask|ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|FocusChangeMask;
   win_attr.background_pixel = None;
 
   /* Create the main window */

@@ -96,6 +96,8 @@ struct BlorbImage
   image_data* loaded;
   int in_use;
   int usage_count;
+
+  int is_adaptive;
 };
 
 struct BlorbSound
@@ -143,6 +145,8 @@ struct BlorbFile
   BlorbResolution reso;
 
   IffFile* file;
+
+  IffChunk* APal;
 
   int release;
 

@@ -98,6 +98,7 @@ BlorbFile* blorb_loadfile(ZFile* file)
 
   res->copyright       = NULL;
   res->author          = NULL;
+  res->APal            = NULL;
 
   res->reso.offset     = -1;
   res->reso.length     = -1;
@@ -144,6 +145,8 @@ BlorbFile* blorb_loadfile(ZFile* file)
 	  res->index.picture[res->index.npictures-1].loaded      = NULL;
 	  res->index.picture[res->index.npictures-1].in_use      = 0;
 	  res->index.picture[res->index.npictures-1].usage_count = 0;
+
+	  res->index.picture[res->index.npictures-1].is_adaptive = 0;
 	}
       else if (cmp_token(iff->chunk[x].id, "Rect") &&
 	       iff->chunk[x].length == 8)
@@ -178,6 +181,8 @@ BlorbFile* blorb_loadfile(ZFile* file)
 	  res->index.picture[res->index.npictures-1].in_use      = 0;
 	  res->index.picture[res->index.npictures-1].usage_count = 0;
 
+	  res->index.picture[res->index.npictures-1].is_adaptive = 0;
+
 	  free(data);
 	}
       else if (cmp_token(iff->chunk[x].id, "FORM"))
@@ -196,7 +201,12 @@ BlorbFile* blorb_loadfile(ZFile* file)
 	{
 	  /* Palette chunk */
 	}
-      else if (cmp_token(iff->chunk[x].id, "Reso"))
+      else if (cmp_token(iff->chunk[x].id, "APal"))
+	{
+	  /* Adaptive palette chunk */
+	  res->APal = iff->chunk + x;
+	}
+     else if (cmp_token(iff->chunk[x].id, "Reso"))
 	{
 	  /* Resolution chunk */
 	  res->reso.offset = iff->chunk[x].offset;
@@ -445,11 +455,36 @@ BlorbFile* blorb_loadfile(ZFile* file)
       free(data);
     }
 
+  /* Read the adaptive palette chunk */
+  if (res->APal != NULL)
+    {
+      data = read_block(file, res->APal->offset, res->APal->offset + res->APal->length);
+
+      for (x=0; x<res->APal->length; x+=4)
+	{
+	  int num, y;
+
+	  num = (data[x]<<24)|(data[x+1]<<16)|(data[x+2]<<8)|data[x+3];
+
+	  for (y=0; y<res->index.npictures; y++)
+	    {
+	      if (res->index.picture[y].number == num)
+		{
+		  res->index.picture[y].is_adaptive = 1;
+		  break;
+		}
+	    }
+	}
+
+      free(data);
+    }
+
   return res;
 }
 
 static int         nloaded = 0;
 static BlorbImage* image_queue[MAX_IMAGES];
+static BlorbImage* last_img = NULL; /* Last non-adaptive image */
 
 BlorbImage* blorb_findimage(BlorbFile* blb, int number)
 {
@@ -474,15 +509,62 @@ BlorbImage* blorb_findimage(BlorbFile* blb, int number)
   if (res->file_len == -1)
     return res; /* Fake image */
 
+  if (last_img != NULL && last_img->loaded == NULL)
+    {
+      last_img->loaded = image_load(blb->source,
+				    last_img->file_offset,
+				    last_img->file_len,
+				    NULL);
+    }
+
   if (res->loaded == NULL)
     {
-      res->loaded = image_load(blb->source, res->file_offset, res->file_len);
+      image_data* plte = NULL;
+
+      if (res->is_adaptive && last_img != NULL && last_img->loaded != NULL)
+	plte = last_img->loaded;
+
+      res->loaded = image_load(blb->source, res->file_offset, res->file_len,
+			       plte);
+      res->usage_count++;
+
       if (res->loaded == NULL)
 	return res;
       res->width  = image_width(res->loaded);
       res->height = image_height(res->loaded);
     }
 
+  if (!res->is_adaptive)
+    {
+      if (last_img != NULL)
+	{
+	  if (image_cmp_palette(last_img->loaded, res->loaded) == 0)
+	    {
+	      int x;
+
+	      /* Unload any adaptive images that are currently loaded */
+	      for (x=0; x<blb->index.npictures; x++)
+		{
+		  if (blb->index.picture[x].loaded != NULL &&
+		      blb->index.picture[x].is_adaptive)
+		    {
+		      image_unload(blb->index.picture[x].loaded);
+		      blb->index.picture[x].loaded = NULL;
+		    }
+		}
+	    }
+
+	  /* Last non-adaptive image is no longer in use... */
+	  last_img->usage_count--;
+	  if (last_img->usage_count <= 0)
+	    image_unload(last_img->loaded);
+	}
+      /* Store this as the new non-adaptive image */
+      last_img = res;
+      last_img->usage_count++;
+    }
+
+  /* Delete any old entry for this image in the queue */
   for (x=0; x<nloaded; x++)
     {
       if (image_queue[x] == res)
@@ -495,10 +577,13 @@ BlorbImage* blorb_findimage(BlorbFile* blb, int number)
 	}
     }
 
+  /* Free any images that have dropped off the end of the queue */
   if (nloaded >= MAX_IMAGES)
     {
       nloaded--;
-      image_unload(image_queue[nloaded]->loaded);
+      image_queue[nloaded]->usage_count--;
+      if (image_queue[nloaded]->usage_count <= 0)
+	image_unload(image_queue[nloaded]->loaded);
       image_queue[nloaded]->loaded = NULL;
     }
 

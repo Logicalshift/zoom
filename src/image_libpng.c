@@ -51,6 +51,12 @@ struct image_data
   png_bytep  image;
   png_bytep* row;
 
+  png_colorp  pal;
+  int         pal_size;
+
+  /* Take our palette from this image... */
+  image_data* pal_image;
+
   void (*data_destruct)(image_data*, void*);
   void* data;
 };
@@ -76,7 +82,11 @@ static void image_read(png_structp png_ptr,
   free(stuff);
 }
 
-static image_data* iload(image_data* resin, ZFile* file, int offset, int realread)
+static image_data* iload(image_data* resin,
+			 image_data* palimg,
+			 ZFile*      file, 
+			 int         offset, 
+			 int         realread)
 {
   struct file_data fl;
 
@@ -118,10 +128,14 @@ static image_data* iload(image_data* resin, ZFile* file, int offset, int realrea
     {
       res = malloc(sizeof(image_data));
 
-      res->file   = file;
-      res->offset = offset;
-      res->row    = NULL;
-      res->image  = NULL;
+      res->file      = file;
+      res->offset    = offset;
+      res->row       = NULL;
+      res->image     = NULL;
+
+      res->pal       = NULL;
+      res->pal_size  = -1;
+      res->pal_image = palimg;
       
       res->data          = NULL;
       res->data_destruct = NULL;
@@ -133,16 +147,36 @@ static image_data* iload(image_data* resin, ZFile* file, int offset, int realrea
 	       &res->depth, &res->colour,
 	       NULL, NULL, NULL);
 
+  /* Get the palette if the image has one */
+  if (res->colour == PNG_COLOR_TYPE_PALETTE)
+    {
+      png_colorp pal;
+      int z;
+
+      png_get_PLTE(png, png_info, &pal, &res->pal_size);
+      res->pal = malloc(sizeof(png_color)*res->pal_size);
+
+      for (z=0; z<res->pal_size; z++)
+	{
+	  res->pal[z] = pal[z];
+	}
+    }
+
   /* We want 8-bit RGB data only */
   if (res->colour == PNG_COLOR_TYPE_GRAY ||
       res->colour == PNG_COLOR_TYPE_GRAY_ALPHA)
     png_set_gray_to_rgb(png);
-  if (res->depth <= 8)
-    png_set_expand(png);
-  if (png_get_valid(png, png_info, PNG_INFO_tRNS)) 
-    png_set_expand(png);
-  if (res->depth == 16)
-    png_set_strip_16(png);
+  if (res->colour != PNG_COLOR_TYPE_PALETTE &&
+      palimg != NULL &&
+      palimg->pal != NULL)
+    {
+      if (res->depth <= 8)
+	png_set_expand(png);
+      if (png_get_valid(png, png_info, PNG_INFO_tRNS)) 
+	png_set_expand(png);
+      if (res->depth == 16)
+	png_set_strip_16(png);
+    }
 
   /* Update our information accordingly */
   png_read_update_info(png, png_info);
@@ -163,7 +197,76 @@ static image_data* iload(image_data* resin, ZFile* file, int offset, int realrea
       
       png_read_image(png, res->row);
 
-      if ((res->colour&PNG_COLOR_MASK_ALPHA) == 0)
+      /* Convert from a paletted image */
+      if (res->colour == PNG_COLOR_TYPE_PALETTE)
+	{
+	  unsigned char* realimg;
+	  unsigned char* out;
+	  int x, y, mask;
+	  unsigned char* p;
+	  int bit, shift;
+
+	  png_bytep trans;
+	  int ntrans;
+	  
+	  png_colorp plte;
+
+	  out = realimg = malloc(res->width*res->height*4);
+	  plte = res->pal;
+	  if (palimg != NULL && palimg->pal != NULL)
+	    plte = palimg->pal;
+
+	  ntrans = 0;
+	  png_get_tRNS(png, png_info, &trans, &ntrans, NULL);
+
+	  shift = 8 - res->depth;
+	  mask = (1<<res->depth)-1;
+	  mask <<= shift;
+	  
+	  for (y=0; y<res->height; y++)
+	    {
+	      p = res->row[y];
+	      bit = 8;
+	      for (x=0; x<res->width; x++)
+		{
+		  int pix, z;
+
+		  pix = (*p)&mask;
+		  pix >>= shift;
+		  (*p) <<= res->depth;
+		  
+		  *(out++) = plte[pix].red;
+		  *(out++) = plte[pix].green;
+		  *(out++) = plte[pix].blue;
+
+		  for (z=0; z<ntrans; z++)
+		    if (trans[z] == pix)
+		      {
+			*(out++) = 0;
+			goto trans;
+		      }
+		  *(out++) = 255;
+		trans:
+
+		  bit -= res->depth;
+		  if (bit == 0)
+		    {
+		      p++;
+		      bit = 8;
+		    }
+		}
+	    }
+
+	  free(res->image);
+	  res->image = realimg;
+
+
+	  for (x=0; x<res->height; x++)
+	    {
+	      res->row[x] = res->image + (x*res->width*4);
+	    }
+	}
+      else if ((res->colour&PNG_COLOR_MASK_ALPHA) == 0)
 	{
 	  int old, new;
 
@@ -212,9 +315,9 @@ static image_data* iload(image_data* resin, ZFile* file, int offset, int realrea
   return res;
 }
 
-image_data* image_load(ZFile* file, int offset, int length)
+image_data* image_load(ZFile* file, int offset, int length, image_data* palimg)
 {
-  return iload(NULL, file, offset, 0);
+  return iload(NULL, palimg, file, offset, 0);
 }
 
 void image_unload(image_data* data)
@@ -263,7 +366,7 @@ unsigned char* image_rgb(image_data* data)
 {
   if (data->image == NULL)
     {
-      if (iload(data, data->file, data->offset, 1) == NULL)
+      if (iload(data, data->pal_image, data->file, data->offset, 1) == NULL)
 	{
 	  return NULL;
 	}
@@ -295,7 +398,7 @@ void image_resample(image_data* data, int n, int d)
   
   if (data->image == NULL)
     {
-      if (iload(data, data->file, data->offset, 1) == NULL)
+      if (iload(data, data->pal_image, data->file, data->offset, 1) == NULL)
 	{
 	  return;
 	}
@@ -601,6 +704,31 @@ void image_set_data(image_data* img, void* data,
 void* image_get_data(image_data* img)
 {
   return img->data;
+}
+
+int image_cmp_palette(image_data* img1, image_data* img2)
+{
+  int x;
+
+  if (img1->pal == NULL && img2->pal == NULL)
+    return 1;
+  if (img1->pal == NULL)
+    return 0;
+  if (img2->pal == NULL)
+    return 0;
+
+  if (img1->pal_size != img2->pal_size)
+    return 0;
+
+  for (x=0; x<img1->pal_size; x++)
+    {
+      if (img1->pal[x].red   != img2->pal[x].red   ||
+	  img1->pal[x].green != img2->pal[x].green ||
+	  img1->pal[x].blue  != img2->pal[x].blue)
+	return 0;
+    }
+
+  return 1;
 }
 
 #endif

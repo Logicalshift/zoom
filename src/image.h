@@ -40,19 +40,24 @@
 
 typedef struct image_data image_data; /* Black box data type */
 
-image_data*    image_load      (ZFile* file, int offset, int len);
-void           image_unload    (image_data*);
-void           image_unload_rgb(image_data*);
+image_data*    image_load       (ZFile* file, 
+				 int offset, 
+				 int len,
+				 image_data* palimg);
+void           image_unload     (image_data*);
+void           image_unload_rgb (image_data*);
 
-int            image_width     (image_data*);
-int            image_height    (image_data*);
-unsigned char* image_rgb       (image_data*);
+int            image_cmp_palette(image_data*, image_data*);
 
-void           image_resample  (image_data*, int n, int d);
+int            image_width      (image_data*);
+int            image_height     (image_data*);
+unsigned char* image_rgb        (image_data*);
 
-void           image_set_data  (image_data*, void*,
-				void (*destruct)(image_data*, void*));
-void*          image_get_data  (image_data*);
+void           image_resample   (image_data*, int n, int d);
+
+void           image_set_data   (image_data*, void*,
+				 void (*destruct)(image_data*, void*));
+void*          image_get_data   (image_data*);
 
 #endif
 
