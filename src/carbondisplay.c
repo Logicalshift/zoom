@@ -529,22 +529,59 @@ static void resize_window()
 static void size_window(void)
 {
   Rect bounds;
+  Boolean isvalid;
 
   xfont_x = xfont_get_width(font[style_font[4]]);
   xfont_y = xfont_get_height(font[style_font[4]]);
   
-  win_x = xfont_x*size_x;
-  win_y = xfont_y*size_y;
-  total_x = win_x + BORDERWIDTH*2 + 15;
-  total_y = win_y + BORDERWIDTH*2;
+  bounds.left =
+    CFPreferencesGetAppIntegerValue(CFSTR("winLeft"),
+				    kCFPreferencesCurrentApplication,
+				    &isvalid);
+  if (isvalid)
+    bounds.right =
+      CFPreferencesGetAppIntegerValue(CFSTR("winRight"),
+				      kCFPreferencesCurrentApplication,
+				      &isvalid);
+  if (isvalid)
+    bounds.top =
+      CFPreferencesGetAppIntegerValue(CFSTR("winTop"),
+				      kCFPreferencesCurrentApplication,
+				      &isvalid);
+  if (isvalid)
+    bounds.bottom =
+      CFPreferencesGetAppIntegerValue(CFSTR("winBottom"),
+				      kCFPreferencesCurrentApplication,
+				      &isvalid);
 
-  MoveControl(zoomScroll, total_x - 15, 0);
-  SizeControl(zoomScroll, 15, total_y - 14);
+  if (!isvalid)
+    {
+      win_x = xfont_x*size_x;
+      win_y = xfont_y*size_y;
+      total_x = win_x + BORDERWIDTH*2 + 15;
+      total_y = win_y + BORDERWIDTH*2;
+      
+      MoveControl(zoomScroll, total_x - 15, 0);
+      SizeControl(zoomScroll, 15, total_y - 14);
+      
+      GetWindowBounds(zoomWindow, kWindowContentRgn, &bounds);
+      bounds.right = bounds.left + total_x;
+      bounds.bottom = bounds.top + total_y;
+      SetWindowBounds(zoomWindow, kWindowContentRgn, &bounds);
+    }
+  else
+    {
+      SetWindowBounds(zoomWindow, kWindowContentRgn, &bounds);
+      GetWindowBounds(zoomWindow, kWindowContentRgn, &bounds);
 
-  GetWindowBounds(zoomWindow, kWindowContentRgn, &bounds);
-  bounds.right = bounds.left + total_x;
-  bounds.bottom = bounds.top + total_y;
-  SetWindowBounds(zoomWindow, kWindowContentRgn, &bounds);
+      total_x = bounds.right - bounds.left;
+      total_y = bounds.bottom - bounds.top;
+      win_x = total_x - BORDERWIDTH*2 - 15;
+      win_y = total_y - BORDERWIDTH*2;
+            
+      MoveControl(zoomScroll, total_x - 15, 0);
+      SizeControl(zoomScroll, 15, total_y - 14);
+    }
 }
 
 /* Draw the caret */
@@ -2094,6 +2131,43 @@ void printf_error_done(void)
 
 void display_exit(int code)
 {
+  CFNumberRef cfnum;
+  Rect rct;
+
+  /* Save the window bounds */
+  if (window_available)
+    {
+      int n;
+
+      GetWindowBounds(zoomWindow, kWindowContentRgn, &rct);
+
+      n = rct.left; cfnum = CFNumberCreate(NULL, kCFNumberIntType, &n);
+      CFPreferencesSetAppValue(CFSTR("winLeft"),
+			       cfnum,
+			       kCFPreferencesCurrentApplication);
+      CFRelease(cfnum);
+
+      n = rct.right; cfnum = CFNumberCreate(NULL, kCFNumberIntType, &n);
+      CFPreferencesSetAppValue(CFSTR("winRight"),
+			       cfnum,
+			       kCFPreferencesCurrentApplication);
+      CFRelease(cfnum);
+
+      n = rct.top; cfnum = CFNumberCreate(NULL, kCFNumberIntType, &n);
+      CFPreferencesSetAppValue(CFSTR("winTop"),
+			       cfnum,
+			       kCFPreferencesCurrentApplication);
+      CFRelease(cfnum);
+
+      n = rct.bottom; cfnum = CFNumberCreate(NULL, kCFNumberIntType, &n);
+      CFPreferencesSetAppValue(CFSTR("winBottom"),
+			       cfnum,
+			       kCFPreferencesCurrentApplication);
+      CFRelease(cfnum);
+
+      CFPreferencesAppSynchronize(kCFPreferencesCurrentApplication);
+    }
+
   exit(code);
 }
 
@@ -2616,6 +2690,8 @@ int main(int argc, char** argv)
 		  kWindowStandardHandlerAttribute,
 		  &rct,
 		  &zoomWindow);
+
+  SetWindowModified(zoomWindow, true);
 
   /* Create the scrollback scrollbar */
   rct.top    = 0;

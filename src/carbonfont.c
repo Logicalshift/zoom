@@ -625,9 +625,9 @@ xfont* xfont_load_font(char* font)
       attptr[1] = &xf->data.mac.isbold;
       attptr[2] = &xf->data.mac.isitalic;
       attptr[3] = &xf->data.mac.isunderlined;
-      attptr[4] = &font;
+      attptr[4] = &xf->data.mac.atsref;
 
-      ATSUSetAttributes(xf->data.mac.style, 5, tags, attsz, attptr);
+      ATSUSetAttributes(xf->data.mac.style, 4, tags+1, attsz+1, attptr+1);
 
       ATSUSetFontFeatures(xf->data.mac.style, 1, fe_types, fe_sel);
     }

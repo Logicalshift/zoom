@@ -4,7 +4,7 @@
   <object name="rootObject" class="NSCustomObject" id="1">
     <string name="customClass">NSApplication</string>
   </object>
-  <array count="51" name="allObjects">
+  <array count="53" name="allObjects">
     <object class="IBCarbonMenuItem" id="199">
       <string name="title">About Zoom</string>
       <int name="keyEquivalentModifier">0</int>
@@ -53,7 +53,7 @@
     <reference idRef="211"/>
     <reference idRef="224"/>
     <object class="IBCarbonWindow" id="234">
-      <string name="windowRect">113 139 421 577 </string>
+      <string name="windowRect">81 142 389 580 </string>
       <string name="title">Zoom Preferences</string>
       <object name="rootControl" class="IBCarbonRootControl" id="235">
         <string name="bounds">0 0 308 438 </string>
@@ -87,6 +87,8 @@
                   </object>
                   <object class="IBCarbonSeparator" id="258">
                     <string name="bounds">106 11 111 427 </string>
+                    <ostype name="controlSignature">bar </ostype>
+                    <int name="controlID">200</int>
                   </object>
                   <object class="IBCarbonRadioGroup" id="304">
                     <string name="bounds">137 17 175 197 </string>
@@ -143,6 +145,8 @@
                   </object>
                   <object class="IBCarbonSeparator" id="275">
                     <string name="bounds">110 11 115 427 </string>
+                    <ostype name="controlSignature">bar </ostype>
+                    <int name="controlID">201</int>
                   </object>
                   <object class="IBCarbonEditText" id="276">
                     <string name="bounds">124 114 140 416 </string>
@@ -191,16 +195,19 @@
               </object>
               <object class="IBCarbonUserPane" id="287">
                 <string name="bounds">44 -1 308 439 </string>
-                <array count="3" name="subviews">
+                <array count="4" name="subviews">
                   <object class="IBCarbonCheckBox" id="292">
                     <string name="bounds">62 17 80 231 </string>
                     <ostype name="controlSignature">Fapp</ostype>
                     <int name="controlID">800</int>
                     <string name="title">Applies only to this game</string>
+                    <ostype name="command">Fapp</ostype>
                     <string name="helpTagText">Check this to make the font settings exclusive to this game (uncheck it to make the settings apply to all games)</string>
                   </object>
                   <object class="IBCarbonSeparator" id="293">
                     <string name="bounds">84 11 89 427 </string>
+                    <ostype name="controlSignature">bar </ostype>
+                    <int name="controlID">202</int>
                   </object>
                   <object class="IBCarbonDBListView" id="294">
                     <string name="bounds">92 16 291 422 </string>
@@ -220,12 +227,14 @@
                       <object class="IBCarbonDBListViewColumn">
                         <ostype name="propertyID">Desc</ostype>
                         <ostype name="propertyType">menu</ostype>
+                        <int name="sortOrder">2</int>
                         <int name="maxWidth">226</int>
                         <int name="textAlignment">0</int>
                         <string name="titleString">Font name</string>
                       </object>
                       <object class="IBCarbonDBListViewColumn">
                         <ostype name="propertyID">Size</ostype>
+                        <int name="sortOrder">2</int>
                         <int name="minWidth">60</int>
                         <int name="maxWidth">60</int>
                         <int name="textAlignment">0</int>
@@ -266,6 +275,14 @@
                       </object>
                     </array>
                   </object>
+                  <object class="IBCarbonButton" id="314">
+                    <string name="bounds">61 298 78 419 </string>
+                    <ostype name="controlSignature">ResF</ostype>
+                    <int name="controlID">802</int>
+                    <boolean name="small">TRUE</boolean>
+                    <string name="title">Restore defaults</string>
+                    <ostype name="command">ResF</ostype>
+                  </object>
                 </array>
                 <ostype name="controlSignature">tabs</ostype>
                 <int name="controlID">402</int>
@@ -273,16 +290,19 @@
               </object>
               <object class="IBCarbonUserPane" id="288">
                 <string name="bounds">44 -1 308 439 </string>
-                <array count="3" name="subviews">
+                <array count="4" name="subviews">
                   <object class="IBCarbonCheckBox" id="289">
                     <string name="bounds">62 17 80 214 </string>
                     <ostype name="controlSignature">Capp</ostype>
                     <int name="controlID">900</int>
                     <string name="title">Applies only to this game</string>
+                    <ostype name="command">Capp</ostype>
                     <string name="helpTagText">Check this to make the colour settings apply to only this game (uncheck it to make the settings apply to all games)</string>
                   </object>
                   <object class="IBCarbonSeparator" id="290">
                     <string name="bounds">84 11 89 427 </string>
+                    <ostype name="controlSignature">bar </ostype>
+                    <int name="controlID">203</int>
                   </object>
                   <object class="IBCarbonDBListView" id="291">
                     <string name="bounds">92 16 291 422 </string>
@@ -306,6 +326,14 @@
                         <string name="titleString">Sample</string>
                       </object>
                     </array>
+                  </object>
+                  <object class="IBCarbonButton" id="315">
+                    <string name="bounds">61 298 78 419 </string>
+                    <ostype name="controlSignature">ResC</ostype>
+                    <int name="controlID">902</int>
+                    <boolean name="small">TRUE</boolean>
+                    <string name="title">Restore defaults</string>
+                    <ostype name="command">ResC</ostype>
                   </object>
                 </array>
                 <ostype name="controlSignature">tabs</ostype>
@@ -393,8 +421,8 @@
       </object>
       <boolean name="hasCollapseBox">FALSE</boolean>
       <boolean name="hasHorizontalZoom">FALSE</boolean>
-      <boolean name="isResizable">FALSE</boolean>
       <boolean name="hasVerticalZoom">FALSE</boolean>
+      <boolean name="liveResize">TRUE</boolean>
       <int name="carbonWindowClass">6</int>
       <int name="themeBrush">1</int>
       <int name="windowPosition">0</int>
@@ -442,9 +470,9 @@
             <string name="title">Zoom - a Z-Machine</string>
           </object>
           <object class="IBCarbonStaticText" id="300">
-            <string name="bounds">44 115 60 184 </string>
+            <string name="bounds">44 118 60 181 </string>
             <ostype name="controlSignature">Vers</ostype>
-            <string name="title">1.0.1beta2</string>
+            <string name="title">1.0.1dev3</string>
           </object>
           <object class="IBCarbonStaticText" id="301">
             <string name="bounds">68 20 84 279 </string>
@@ -487,8 +515,10 @@
       </object>
     </object>
     <reference idRef="313"/>
+    <reference idRef="314"/>
+    <reference idRef="315"/>
   </array>
-  <array count="51" name="allParents">
+  <array count="53" name="allParents">
     <reference idRef="208"/>
     <reference idRef="1"/>
     <reference idRef="211"/>
@@ -540,6 +570,8 @@
     <reference idRef="306"/>
     <reference idRef="201"/>
     <reference idRef="296"/>
+    <reference idRef="287"/>
+    <reference idRef="288"/>
   </array>
   <dictionary count="5" name="nameTable">
     <string>AboutBox</string>
@@ -553,5 +585,5 @@
     <string>Preferences</string>
     <reference idRef="234"/>
   </dictionary>
-  <unsigned_int name="nextObjectID">314</unsigned_int>
+  <unsigned_int name="nextObjectID">316</unsigned_int>
 </object>

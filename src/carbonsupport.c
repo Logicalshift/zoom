@@ -941,6 +941,8 @@ ZFile* get_file_write(int* fsize, char* save_fname)
   static NavEventUPP        nvUPP = NULL;
   EventTargetRef target;
 
+  stream_flush_buffer();
+
   if (fileref != NULL)
     free(fileref);
 
@@ -1003,6 +1005,8 @@ ZFile* get_file_read(int* fsize, char* save_fname)
   static NavEventUPP        nvUPP = NULL;
   static NavObjectFilterUPP flUPP = NULL;
   EventTargetRef target;
+
+  stream_flush_buffer();
 
   if (fileref != NULL)
     free(fileref);

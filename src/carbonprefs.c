@@ -419,10 +419,18 @@ static void pref_store(void)
       rc_defgame->n_fonts = font_nfonts;
       rc_defgame->fonts = realloc(rc_defgame->fonts, sizeof(rc_font)*font_nfonts);
       memcpy(rc_defgame->fonts, font_copy, sizeof(rc_font)*font_nfonts);
+
+      for (x=0; x<rc_defgame->n_fonts; x++)
+	{
+	  rc_defgame->fonts[x].name = malloc(strlen(font_copy[x].name)+1);
+	  strcpy(rc_defgame->fonts[x].name, font_copy[x].name);
+	}
     }
 
+  /*
   free(font_copy);
   font_copy = NULL;
+  */
 
   /* ...and the colours */
   cid.signature = CARBON_COLLOC;
@@ -547,6 +555,119 @@ static pascal OSStatus pref_wnd_evt(EventHandlerCallRef handler,
 
   switch (cla)
     {
+    case kEventClassWindow:
+      switch (wha)
+	{
+	case kEventWindowBoundsChanged:
+	  {
+	    const UInt32 toSize[36] =
+	      { 
+		CARBON_FONTLIST, CARBON_FONTLISTID, 3,
+	        CARBON_COLLIST, CARBON_COLLISTID, 3,
+		CARBON_TABS, CARBON_TABSID, 3,
+		CARBON_TABS, 400, 3,
+		CARBON_TABS, 401, 3,
+		CARBON_TABS, 402, 3,
+		CARBON_TABS, 403, 3,
+		CARBON_TABS, 404, 3,
+	        'bar ', 200, 1,
+	        'bar ', 201, 1,
+	        'bar ', 202, 1,
+	        'bar ', 203, 1
+	      };
+
+	    const UInt32 toMove[4] =
+	      {
+		CARBON_RESFONT, CARBON_RESFONTID,
+		CARBON_RESCOLS, CARBON_RESCOLSID
+	      };
+	    int x;
+	    Rect origSize;
+	    Rect newSize;
+
+	    GetEventParameter(event, kEventParamPreviousBounds,
+			      typeQDRectangle, NULL, sizeof(Rect),
+			      NULL, &origSize);
+	    GetEventParameter(event, kEventParamCurrentBounds,
+			      typeQDRectangle, NULL, sizeof(Rect),
+			      NULL, &newSize);
+
+	    printf("%i, %i\n", newSize.right, origSize.right);
+
+	    /* Resize those as need resizing */
+	    for (x=0; x<36; x+=3)
+	      {
+		ControlRef cntl;
+		ControlID  id;
+		Rect cbounds;
+
+		int oldw, oldh;
+		int diffw, diffh;
+
+		id.signature = toSize[x];
+		id.id        = toSize[x+1];
+
+		GetControlByID(carbon_prefdlog, &id, &cntl);
+		
+		GetControlBounds(cntl, &cbounds);
+
+		/* Old height of this control */
+		oldw = cbounds.right - cbounds.left;
+		oldh = cbounds.bottom - cbounds.top;
+
+		/* Difference in the width/height of the window */
+		diffw = (newSize.right - newSize.left) - 
+		  (origSize.right - origSize.left);
+		diffh = (newSize.bottom - newSize.top) - 
+		  (origSize.bottom - origSize.top);
+
+		/* Don't resize width/height if the control doesn't want it */
+		if ((toSize[x+2]&1) == 0)
+		  diffw = 0;
+		if ((toSize[x+2]&2) == 0)
+		  diffh = 0;
+
+		if (diffw !=0 || diffh != 0)
+		  {
+		    SizeControl(cntl, 
+				oldw + diffw, oldh + diffh);
+		  }
+	      }
+
+	    /* Move those that need moving */
+	    for (x=0; x<4; x+=2)
+	      {
+		ControlRef cntl;
+		ControlID  id;
+		Rect cbounds;
+
+		int diffw, diffh;
+
+		id.signature = toMove[x];
+		id.id        = toMove[x+1];
+
+		GetControlByID(carbon_prefdlog, &id, &cntl);
+		
+		GetControlBounds(cntl, &cbounds);
+
+		/* Difference in the width/height of the window */
+		diffw = (newSize.right - newSize.left) - 
+		  (origSize.right - origSize.left);
+
+		/* Don't resize width/height if the control doesn't want it */
+		diffh = 0;
+
+		if (diffw !=0)
+		  {
+		    MoveControl(cntl, 
+				cbounds.left + diffw, cbounds.top);
+		  }
+	      }
+	  }
+	  break;
+	}
+      break;
+
     case kEventClassMouse:
       switch (wha)
 	{
@@ -664,6 +785,108 @@ static pascal OSStatus pref_wnd_evt(EventHandlerCallRef handler,
 
 	    switch (cmd.commandID)
 	      {
+	      case CARBON_RESFONT:
+		{
+		  ControlID cid;
+		  ControlRef cntl;
+		  
+		  DataBrowserItemID items[40];
+		  
+		  rc_font* fonts;
+		  int      n_fonts;
+		  
+		  int x;
+
+		  fonts = rc_defgame->fonts;
+		  n_fonts = rc_defgame->n_fonts;
+
+		  /* Redo the fonts with the defaults... */
+		  cid.signature = CARBON_FONTLIST;
+		  cid.id        = CARBON_FONTLISTID;
+		  GetControlByID(carbon_prefdlog, &cid, &cntl);
+		  
+		  for (x=0; x<font_nfonts; x++)
+		    {
+		      free(font_copy[x].name);
+		    }
+
+		  font_copy = realloc(font_copy, sizeof(rc_font)*n_fonts);
+		  memcpy(font_copy, fonts, sizeof(rc_font)*n_fonts);
+		  font_nfonts = n_fonts;
+
+		  for (x=0; x < n_fonts; x++)
+		    {
+		      font_copy[x].name = malloc(strlen(fonts[x].name)+1);
+		      strcpy(font_copy[x].name, fonts[x].name);
+		      items[x] = x+1;
+		    }
+		  RemoveDataBrowserItems(cntl, kDataBrowserNoItem, n_fonts, items, 0);
+		  AddDataBrowserItems(cntl, kDataBrowserNoItem, n_fonts, items, 0);
+
+		  /* Mark as using the global fonts... */
+		  cid.signature = CARBON_FONTLOC;
+		  cid.id = CARBON_FONTLOCID;
+		  GetControlByID(carbon_prefdlog, &cid, &cntl);
+		  SetControlValue(cntl, kControlCheckBoxUncheckedValue);
+
+		  /* Deactivate the control */
+		  cid.signature = CARBON_RESFONT;
+		  cid.id = CARBON_RESFONTID;
+		  GetControlByID(carbon_prefdlog, &cid, &cntl);
+		  DeactivateControl(cntl);
+
+		  /* Update */
+		  pref_store();
+		}
+		break;
+
+	      case CARBON_FONTLOC:
+		{
+		  WindowRef lastmsg;
+		  ControlID cid;
+		  ControlRef cntl;
+		  int islocal;
+
+		  lastmsg = carbon_message_win;
+		  carbon_message_win = carbon_prefdlog;
+
+		  cid.signature = CARBON_FONTLOC;
+		  cid.id = CARBON_FONTLOCID;
+		  GetControlByID(carbon_prefdlog, &cid, &cntl);
+
+		  islocal = GetControlValue(cntl)==kControlCheckBoxCheckedValue;
+
+		  if (!islocal)
+		    {
+		      if (!carbon_ask_question("Make these fonts global?",
+					  "You are changing the font settings from applying only to this game to applying to all games: this will make these fonts the default for all games. If you want to revert to the current global settings, use the 'Restore Defaults' button",
+					  "Use these fonts", "Cancel", 2))
+			{
+			  islocal = 1;
+			  SetControlValue(cntl, kControlCheckBoxCheckedValue);
+			}
+		    }
+
+		  cid.signature = CARBON_RESFONT;
+		  cid.id = CARBON_RESFONTID;
+		  GetControlByID(carbon_prefdlog, &cid, &cntl);
+
+		  if (islocal)
+		    {
+		      ActivateControl(cntl);
+		    }
+		  else
+		    {
+		      DeactivateControl(cntl);
+		    }
+		      
+		  carbon_message_win = lastmsg;
+
+		  /* Update... */
+		  pref_store();
+		}
+		break;
+		
 	      case kHICommandOK:
 		if (carbon_questdlog != nil)
 		  {
@@ -781,6 +1004,17 @@ static pascal void colour_draw_cb(ControlRef            browser,
   PaintRect(&prct);
 }
 
+/* No custom tracking wanted... */
+static pascal Boolean colour_track_cb(ControlRef browser,
+				      DataBrowserItemID item,
+				      DataBrowserPropertyID prop,
+				      const Rect* theRect,
+				      Point startPt,
+				      EventModifiers modifiers)
+{
+  return 1;
+}
+
 /* Test to see if the click was in the colour's clickable area */
 static pascal Boolean colour_hit_cb(ControlRef browser,
 				    DataBrowserItemID item,
@@ -832,9 +1066,42 @@ static pascal void colour_data_notify(ControlRef browser,
 
       id[0] = item;
       UpdateDataBrowserItems(browser, kDataBrowserNoItem, 1, id, 0, 'Samp');
+
+      pref_store();
       break;
     }
        
+}
+
+/* Comparason handler for the font list view */
+static pascal Boolean font_compare_cb(ControlRef browser,
+				      DataBrowserItemID item1,
+				      DataBrowserItemID item2,
+				      DataBrowserPropertyID property)
+{
+  carbon_font* fnt1, *fnt2;
+
+  switch (property)
+    {
+    case 'Styl':
+      if (font_copy[item1-1].attributes[0] <
+	  font_copy[item2-1].attributes[0])
+	return true;
+      else
+	return false;
+
+    case 'Size':
+      fnt1 = carbon_parse_font(font_copy[item1-1].name);
+      fnt2 = carbon_parse_font(font_copy[item2-1].name);
+
+      if (fnt1->size < fnt2->size)
+	return true;
+      else
+	return false;
+      break;
+    }
+
+  return false;
 }
 
 /* Data event handler for the font list view */
@@ -848,6 +1115,9 @@ static pascal OSStatus font_data_cb(ControlRef browser,
   char str[256];
   int x;
 
+  if (item <= 0)
+    return noErr;
+
   fnt = carbon_parse_font(font_copy[item-1].name);
 
   switch (property)
@@ -855,14 +1125,12 @@ static pascal OSStatus font_data_cb(ControlRef browser,
     case 'Styl':
       str[0] = '\0';
 
-      if (font_copy[item-1].attributes[0]&1)
-	strcat(str, "bold");
-      if (font_copy[item-1].attributes[0]&2)
+      if (font_copy[item-1].attributes[0]&8)
 	{
 	  if (str[0] != '\0')
-	    strcat(str, "-italic");
+	    strcat(str, "-symbolic");
 	  else
-	    strcat(str, "italic");
+	    strcat(str, "symbolic");
 	}
       if (font_copy[item-1].attributes[0]&4)
 	{
@@ -871,14 +1139,21 @@ static pascal OSStatus font_data_cb(ControlRef browser,
 	  else
 	    strcat(str, "fixed");
 	}
-      if (font_copy[item-1].attributes[0]&8)
+      if (font_copy[item-1].attributes[0]&1)
 	{
 	  if (str[0] != '\0')
-	    strcat(str, "-symbolic");
+	    strcat(str, "-bold");
 	  else
-	    strcat(str, "symbolic");
+	    strcat(str, "bold");
 	}
-      
+      if (font_copy[item-1].attributes[0]&2)
+	{
+	  if (str[0] != '\0')
+	    strcat(str, "-italic");
+	  else
+	    strcat(str, "italic");
+	}
+
       if (str[0] == '\0')
 	strcat(str, "roman");
 
@@ -1032,6 +1307,8 @@ static pascal OSStatus font_data_cb(ControlRef browser,
       strcpy(font_copy[item-1].name, str);
 
       UpdateDataBrowserItems(browser, kDataBrowserNoItem, 1, id, 0, 'Samp');
+
+      pref_store();
     }
 
   return noErr;
@@ -1089,7 +1366,7 @@ static pascal void font_draw_cb(ControlRef            browser,
 
   /* Load it, display it, release it */
   xfnt = xfont_load_font(name);
-  xfont_set_colours(3, 10);
+  xfont_set_colours(0, 7);
 
   offset = (rct->bottom - rct->top)/2 + xfont_get_ascent(xfnt)/2;
 
@@ -1432,17 +1709,32 @@ static void pref_setup(void)
       SetControlValue(cntl, kControlCheckBoxCheckedValue);
       fonts = game->fonts;
       n_fonts = game->n_fonts;
+
+      cid.signature = CARBON_RESFONT;
+      cid.id        = CARBON_RESFONTID;
+      GetControlByID(carbon_prefdlog, &cid, &cntl);
+      ActivateControl(cntl);
     }
   else
     {
       SetControlValue(cntl, kControlCheckBoxUncheckedValue);
       fonts = rc_defgame->fonts;
       n_fonts = rc_defgame->n_fonts;
+
+      cid.signature = CARBON_RESFONT;
+      cid.id        = CARBON_RESFONTID;
+      GetControlByID(carbon_prefdlog, &cid, &cntl);
+      DeactivateControl(cntl);
     }
 
   cid.signature = CARBON_FONTLIST;
   cid.id        = CARBON_FONTLISTID;
   GetControlByID(carbon_prefdlog, &cid, &cntl);
+
+  for (x=0; x<font_nfonts; x++)
+    {
+      free(font_copy[x].name);
+    }
 
   font_copy = realloc(font_copy, sizeof(rc_font)*n_fonts);
   memcpy(font_copy, fonts, sizeof(rc_font)*n_fonts);
@@ -1511,7 +1803,8 @@ void carbon_show_prefs(void)
       EventTypeSpec winspec[] = 
 	{ 
 	  { kEventClassMouse,   kEventMouseDown },
-	  { kEventClassCommand, kEventProcessCommand }
+	  { kEventClassCommand, kEventProcessCommand },
+	  { kEventClassWindow,  kEventWindowBoundsChanged }
 	};
       EventTypeSpec tabspec = { kEventClassControl, kEventControlHit };
       static EventHandlerUPP evhandle = nil;
@@ -1530,7 +1823,7 @@ void carbon_show_prefs(void)
 	prefhandle = NewEventHandlerUPP(pref_wnd_evt);
 
       InstallEventHandler(GetWindowEventTarget(carbon_prefdlog),
-			  prefhandle, 2, winspec, 0, NULL);
+			  prefhandle, 3, winspec, 0, NULL);
 
       /* Install a handler to change the tab panes */
       tab.signature = CARBON_TABS;
@@ -1555,8 +1848,12 @@ void carbon_show_prefs(void)
       InitDataBrowserCallbacks(&dbcb);
 
       dbcb.u.v1.itemDataCallback = NewDataBrowserItemDataUPP(font_data_cb);
+      dbcb.u.v1.itemCompareCallback = NewDataBrowserItemCompareUPP(font_compare_cb);
       
       SetDataBrowserCallbacks(cntl, &dbcb);
+  
+      SetDataBrowserSortProperty(cntl, 'Styl');
+      SetDataBrowserSortOrder(cntl, kDataBrowserOrderIncreasing);
 
       dbcustom.version = kDataBrowserLatestCustomCallbacks;
       InitDataBrowserCustomCallbacks(&dbcustom);
@@ -1591,6 +1888,7 @@ void carbon_show_prefs(void)
       
       dbcustom.u.v1.drawItemCallback = NewDataBrowserDrawItemUPP(colour_draw_cb);
       dbcustom.u.v1.hitTestCallback = NewDataBrowserHitTestUPP(colour_hit_cb);
+      dbcustom.u.v1.trackingCallback = NewDataBrowserTrackingUPP(colour_track_cb);
 
       SetDataBrowserCustomCallbacks(cntl, &dbcustom);
     }

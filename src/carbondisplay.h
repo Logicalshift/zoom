@@ -149,6 +149,8 @@ extern carbon_font* carbon_parse_font(char* name);
 #define CARBON_COLLOC    'Capp' /* Colours global/local */
 #define CARBON_COLLIST   'Clis' /* Colour list */
 #define CARBON_RESFILE   'ReFN' /* Resource filename */
+#define CARBON_RESFONT   'ResF' /* Restore fonts to defaults */
+#define CARBON_RESCOLS   'ResC' /* Restore colours to defaults */
 
 /* Preferences dialog identifiers */
 #define CARBON_TABSID      128
@@ -166,8 +168,10 @@ extern carbon_font* carbon_parse_font(char* name);
 #define CARBON_REVISIONID  706
 #define CARBON_FONTLOCID   800
 #define CARBON_FONTLISTID  801
+#define CARBON_RESFONTID   802
 #define CARBON_COLLOCID    900
 #define CARBON_COLLISTID   901
+#define CARBON_RESCOLSID   902
 #define CARBON_RESFILEID   1000
 
 #endif
