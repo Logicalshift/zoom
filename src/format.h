@@ -90,7 +90,7 @@ struct line
 
 struct cellline
 {
-  int*           cell;
+  int* cell;
   int* fg;
   int* bg;
   unsigned char* font;

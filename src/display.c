@@ -256,6 +256,7 @@ void display_prints(const int* str)
       /* Is an overlay window */
       for (x=0; str[x] != 0; x++)
 	{
+	  printf("%i\n", str[x]);
 	  if (str[x] > 31)
 	    {
 	      if (CURWIN.xpos >= size_x)

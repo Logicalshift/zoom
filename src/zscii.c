@@ -328,7 +328,7 @@ int* zscii_to_unicode(ZByte* string, int* len)
 			      buf = realloc(buf, sizeof(int)*maxlen);
 			    }
 
-			  buf[y++] = ~(((unsigned)string[x]<<8)|(unsigned)string[x+1]);
+			  buf[y++] = (~((((unsigned)string[x])<<8)|((unsigned)string[x+1])))&0xffff;
 			  x += 2;
 			}
 		      
