@@ -38,6 +38,10 @@
 extern XImage* image_to_ximage_truecolour(image_data* img,
 					  Display*    display,
 					  Visual*     visual);
+extern XImage* image_to_mask_truecolour  (XImage*     orig,
+					  image_data* img,
+					  Display*    display,
+					  Visual*     visual);
 
 # endif
 

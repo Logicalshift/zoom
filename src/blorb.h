@@ -27,6 +27,8 @@
 #include "ztypes.h"
 #include "file.h"
 
+#include "image.h"
+
 typedef struct IffChunk IffChunk;
 typedef struct IffForm  IffForm;
 typedef struct IffFile  IffFile;
@@ -89,6 +91,10 @@ struct BlorbImage
   int std_n, std_d;
   int min_n, min_d;
   int max_n, max_d;
+
+  image_data* loaded;
+  int in_use;
+  int usage_count;
 };
 
 struct BlorbSound

@@ -990,24 +990,37 @@ static void draw_window()
     {
       image_data* img;
       XImage*     xim;
-
+      XImage*     mask;
+      
       img = image_load(machine.blorb_file,
-		       machine.blorb->index.picture[0].file_offset,
-		       machine.blorb->index.picture[0].file_len);
+		       machine.blorb->index.picture[20].file_offset,
+		       machine.blorb->index.picture[20].file_len);
 
       if (img == NULL)
 	zmachine_fatal("Unable to load image");
 
-      image_resample(img, 2, 3);
+      image_resample(img, 3, 2);
 
       xim = image_to_ximage_truecolour(img,
 				       x_display,
 				       DefaultVisual(x_display, 0));
+      mask = image_to_mask_truecolour(xim,
+				      img,
+				      x_display,
+				      DefaultVisual(x_display, 0));
 
+      
+      XSetFunction(x_display, x_wingc, GXand);
+      XPutImage(x_display, x_drawable,
+		x_wingc, mask,
+		0, 0, 0, 0,
+		image_width(img), image_height(img));
+      XSetFunction(x_display, x_wingc, GXor);
       XPutImage(x_display, x_drawable,
 		x_wingc, xim,
 		0, 0, 0, 0,
 		image_width(img), image_height(img));
+      XSetFunction(x_display, x_wingc, GXcopy);
     }
 
   /* Flip buffers */

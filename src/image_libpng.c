@@ -147,6 +147,32 @@ static image_data* iload(image_data* resin, ZFile* file, int offset, int realrea
 	}
       
       png_read_image(png, res->row);
+
+      if ((res->colour&PNG_COLOR_MASK_ALPHA) == 0)
+	{
+	  int old, new;
+
+	  /* Add an alpha channel */
+	  /* (png_set_filler seems to cause segfaults) */
+	  res->image = realloc(res->image,
+			       res->width*res->height*4);
+
+	  new = res->width*res->height*4;
+	  for (old = (res->width*res->height-1)*3; old >= 0; old-=3)
+	    {
+	      new-=4;
+
+	      res->image[new]   = res->image[old];
+	      res->image[new+1] = res->image[old+1];
+	      res->image[new+2] = res->image[old+2];
+	      res->image[new+3] = 255;
+	    }
+
+	  for (x=0; x<res->height; x++)
+	    {
+	      res->row[x] = res->image + (x*res->width*4);
+	    }
+	}
       
       png_read_end(png, end_info);
     }
@@ -239,12 +265,18 @@ void image_resample(image_data* data, int n, int d)
   /*
    * Not a very complicated resampling w/filter routine. We use bresenham
    * to generate pixels and a 3x3 filter. The results are usually OK.
+   *
+   * The filtering could *definately* be better, and the resampling
+   * sometimes produces the odd pixel error. Ho-hum. The aliasing
+   * is usually unnoticable - dithering is the place where you'll
+   * see it the most, and it's damn hard to resample dithered areas
+   * properly anyway. At least, it is in reasonable time.
    */
    
   newwidth  = (data->width*n)/d;
   newheight = (data->height*n)/d;
 
-  ip = newimage = malloc(newwidth*newheight*3);
+  ip = newimage = malloc(newwidth*newheight*4);
 
   n *= 3; /* 3x3 filter, y'see */
 
@@ -291,10 +323,10 @@ void image_resample(image_data* data, int n, int d)
 	{
 	  for (dstx = 0; dstx<newwidth; dstx++)
 	    {
-	      int rs, gs, bs;
+	      int rs, gs, bs, as;
 
 	      /* Do the sampling */
-	      rs = gs = bs = 0;
+	      rs = gs = bs = as = 0;
 
 	      for (i=0; i<3; i++)
 		{
@@ -305,6 +337,7 @@ void image_resample(image_data* data, int n, int d)
 		      rs += xp[j][0]*filter[i][j];
 		      gs += xp[j][1]*filter[i][j];
 		      bs += xp[j][2]*filter[i][j];
+		      as += xp[j][3]*filter[i][j];
 		    }
 
 		  /* Next X */
@@ -315,18 +348,19 @@ void image_resample(image_data* data, int n, int d)
 		  else
 		    {
 		      for (j=0; j<3; j++)
-			xp[j] += 3;
+			xp[j] += 4;
 		      dfx += NE;
 		    }
 		}
 
 	      /* Scale the sample */
-	      rs >>= 4; gs >>= 4; bs >>= 4;
+	      rs >>= 4; gs >>= 4; bs >>= 4; as >>= 4;
 
 	      /* store the sample */
 	      (*ip++) = rs;
 	      (*ip++) = gs;
 	      (*ip++) = bs;
+	      (*ip++) = as;
 	    }
 
 	  /* Next 3 y positions */
@@ -428,7 +462,7 @@ void image_resample(image_data* data, int n, int d)
 
 	  for (dstx = 0; dstx<newwidth; dstx++)
 	    {
-	      int rs, gs, bs;
+	      int rs, gs, bs, as;
 
 	      /* Do the sampling */
 	      rs = gs = bs = 0;
@@ -442,6 +476,7 @@ void image_resample(image_data* data, int n, int d)
 		      rs += xp[j][0]*filter[i][j];
 		      gs += xp[j][1]*filter[i][j];
 		      bs += xp[j][2]*filter[i][j];
+		      as += xp[j][3]*filter[i][j];
 		    }
 
 		  /* Next X */
@@ -450,10 +485,10 @@ void image_resample(image_data* data, int n, int d)
 		    {
 		      dfx += NE;
 		      subx++;
-		      if (subx >= 3) { subx = 0; j+=3; }
+		      if (subx >= 3) { subx = 0; j+=4; }
 		    }
 		  subx++;
-		  if (subx >= 3) { subx = 0; j+=3; }
+		  if (subx >= 3) { subx = 0; j+=4; }
 
 		  for (k=0; k<3; k++)
 		    xp[k] += j;
@@ -467,6 +502,7 @@ void image_resample(image_data* data, int n, int d)
 	      (*ip++) = rs;
 	      (*ip++) = gs;
 	      (*ip++) = bs;
+	      (*ip++) = as;
 	    }
 
 	  /* Next 3 y positions */
@@ -502,7 +538,7 @@ void image_resample(image_data* data, int n, int d)
 
   for (ny=0; ny<newheight; ny++)
     {
-      data->row[ny] = newimage + 3*ny*newwidth;
+      data->row[ny] = newimage + 4*ny*newwidth;
     }
 }
 

@@ -203,7 +203,7 @@ XImage* image_to_ximage_truecolour(image_data* img,
 		((imgdata[1]>>gshift2)<<gshift)|
 		((imgdata[2]>>bshift2)<<bshift);
 	      
-	      imgdata += 3;
+	      imgdata += 4;
 	      
 	      for (z=0; z<bytes_per_pixel; z++)
 		{
@@ -238,7 +238,7 @@ XImage* image_to_ximage_truecolour(image_data* img,
 		((imgdata[1]>>gshift2)<<gshift)|
 		((imgdata[2]>>bshift2)<<bshift);
 	      
-	      imgdata += 3;
+	      imgdata += 4;
 	      
 	      for (z=s; z>=0; z--)
 		{
@@ -250,6 +250,78 @@ XImage* image_to_ximage_truecolour(image_data* img,
 	}
     }
   
+  return xim;
+}
+
+XImage* image_to_mask_truecolour(XImage*     orig,
+				 image_data* img,
+				 Display*    display,
+				 Visual*     visual)
+{
+  XImage* xim;
+  
+  int depth, width, height;
+  int bytes_per_pixel;
+
+  int x,y;
+
+  unsigned char* imgdata;
+  
+  depth = DefaultDepth(display, 0);
+
+  width = image_width(img);
+  height = image_height(img);
+
+  xim = XCreateImage(display, visual,
+		     depth,
+		     ZPixmap,
+		     0, NULL, 
+		     width, height,
+		     32,
+		     0);
+
+  if (xim->bits_per_pixel != 16 &&
+      xim->bits_per_pixel != 24 &&
+      xim->bits_per_pixel != 32)
+    {
+      zmachine_warning("Unable to anything useful with your display: switch to a 16- or 32-bpp display (images won't display)");
+      return xim;
+    }
+
+  xim->data = malloc(xim->bytes_per_line * xim->height);
+
+  imgdata = image_rgb(img);
+  bytes_per_pixel = xim->bits_per_pixel/8;
+
+  for (y=0; y<height; y++)
+    {
+      unsigned char* row, *oldrow;
+
+      row = xim->data + (y*xim->bytes_per_line);
+      oldrow = orig->data + (y*orig->bytes_per_line);
+
+      for (x=0; x<width; x++)
+	{
+	  int z;
+
+	  if (imgdata[3] > 128)
+	    {
+	      for (z=0; z<bytes_per_pixel; z++)
+		{
+		  *(row++) = 0;
+		  *(oldrow++) = 0;
+		}
+	    }
+	  else
+	    {
+	      for (z=0; z<bytes_per_pixel; z++)
+		*(row++) = 255;
+	    }
+
+	  imgdata += 4;
+	}
+    }
+
   return xim;
 }
 
