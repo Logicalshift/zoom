@@ -47,6 +47,9 @@ typedef struct debug_fakeact    debug_fakeact;
 typedef struct debug_action     debug_action;
 typedef struct debug_routine    debug_routine;
 
+/* Information structures */
+typedef struct debug_address    debug_address;
+
 struct debug_file
 {
   int number;
@@ -110,7 +113,7 @@ struct debug_action
 struct debug_line
 {
   int fl, ln, ch;
-  int address;
+  ZDWord address;
 };
 
 struct debug_routine
@@ -118,9 +121,9 @@ struct debug_routine
   int number;
   
   int defn_fl, defn_ln, defn_ch;
-  int start;
+  ZDWord start;
 
-  int end;
+  ZDWord end;
   int end_fl, end_ln, end_ch;
 
   char* name;
@@ -132,14 +135,45 @@ struct debug_routine
   debug_line* line;
 };
 
+struct debug_symbol
+{
+  enum
+    {
+      dbg_class,
+      dbg_object,
+      dbg_global,
+      dbg_attr,
+      dbg_prop,
+      dbg_action,
+      dbg_fakeact,
+      dbg_array,
+      dbg_routine
+    }
+  type;
+
+  union
+  {
+    debug_class    class;
+    debug_object   object;
+    debug_global   global;
+    debug_attr     attr;
+    debug_prop     prop;
+    debug_action   action;
+    debug_fakeact  fakeact;
+    debug_array    array;
+    int            routine;
+  } data;
+};
+
 struct debug_breakpoint
 {
-  int address;
-  int original;
+  ZDWord address;
+  ZByte original;
 };
 
 struct debug_symbols
 {
+  int nsymbols;
   hash symbol;
   hash file;
 
@@ -147,10 +181,19 @@ struct debug_symbols
   int            nroutines;
   debug_file*    files;
   int            nfiles;
+
+  ZDWord         codearea;
+};
+
+struct debug_address
+{
+  debug_routine* routine;
+  debug_line*    line;
 };
 
 extern debug_breakpoint* debug_bplist;
 extern int               debug_nbps;
+extern debug_symbols     debug_syms;
 
 #define DEBUG_EOF_DBR 0
 #define DEBUG_FILE_DBR 1
@@ -175,8 +218,15 @@ int               debug_set_breakpoint  (int address);
 int               debug_clear_breakpoint(int address);
 debug_breakpoint* debug_get_breakpoint  (int address);
 
+void              debug_run_breakpoint(ZDWord pc);
+
 /* === Inform debug file functions === */
+
+/* Initialisation/loading */
 void              debug_load_symbols    (char* filename);
+
+/* Information retrieval */
+debug_address     debug_find_address    (int   address);
 
 #endif
 

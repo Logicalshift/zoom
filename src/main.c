@@ -162,9 +162,7 @@ int zoom_main(int argc, char** argv)
     sprintf(save_fname, "%s.qut", name);
     sprintf(script_fname, "%s.txt", name);
   }
- 
-  debug_set_breakpoint(GetWord(machine.header, ZH_initpc));
- 
+  
 #ifdef DEBUG
   {
     int x;
@@ -208,9 +206,6 @@ int zoom_main(int argc, char** argv)
   display_prints_c("http://www.logicalshift.demon.co.uk/unix/zoom/");
   display_set_style(0);
   display_prints_c(" - check this page for any updates\n\n\n");
-
-  debug_load_symbols("/home/ahunter/infocom/myown/noname/gameinfo.dbg");
-
   display_set_colour(0, 6);
   display_prints_c("[ Press any key to begin ]");
   display_set_colour(0, 7);
@@ -220,6 +215,41 @@ int zoom_main(int argc, char** argv)
   machine.graphical = args.graphical;
   
   machine.display_active = 1;
+
+  if (machine.header[0] >= 5)
+    {
+      display_set_cursor(0,0);
+      
+      if (args.debug_mode == 1)
+	{
+	  char* filename;
+	  int x;
+	  debug_symbol* start;
+	  
+	  filename = malloc(strlen(args.story_file) + strlen("gameinfo.dbg") + 1);
+	  strcpy(filename, args.story_file);
+	  
+	  for (x=strlen(filename)-1; x > 0 && filename[x-1] != '/'; x--);
+	  
+	  strcpy(filename + x, "gameinfo.dbg");
+	  
+	  debug_load_symbols(filename);
+	  
+	  start = hash_get(debug_syms.symbol, "main", 4);
+	  if (start == NULL ||
+	      start->type != dbg_routine)
+	    {
+	      debug_set_breakpoint(GetWord(machine.header, ZH_initpc));
+	    }
+	  else
+	    {
+	      debug_routine* routine;
+	      
+	      routine = debug_syms.routine + start->data.routine;
+	      debug_set_breakpoint(routine->start+1);
+	    }
+	}
+    }
 
   switch (machine.header[0])
     {
@@ -240,15 +270,12 @@ int zoom_main(int argc, char** argv)
 #endif
 #ifdef SUPPORT_VERSION_5
     case 5:
-      display_set_cursor(0,0);
       zmachine_run(5, args.save_file);
       break;
     case 7:
-      display_set_cursor(0,0);
       zmachine_run(7, args.save_file);
       break;
     case 8:
-      display_set_cursor(0,0);
       zmachine_run(8, args.save_file);
       break;
 #endif

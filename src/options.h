@@ -35,6 +35,8 @@ typedef struct arguments
   int   track_objs;
   int   track_props;
   int   graphical;
+
+  int   debug_mode;
 } arguments;
 
 extern void get_options(int argc, char** argv, arguments* args);

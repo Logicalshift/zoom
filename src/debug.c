@@ -33,6 +33,70 @@ int               debug_nbps    = 0;
 
 /***                           ----// 888 \\----                           ***/
 
+/* The debugger console */
+
+void debug_run_breakpoint(ZDWord pc)
+{
+  debug_address addr;
+  static int banner = 0;
+  
+  addr = debug_find_address(pc);
+
+  /* Print a quick banner if we're just starting up... */
+  if (banner == 0)
+    {
+      banner = 1;
+      
+      display_printf("= Welcome to Zoom's symbolic debug mode\n");
+      display_printf("= %i symbols, %i known routines, in %i files\n", 
+		     debug_syms.nsymbols,
+		     debug_syms.nroutines,
+		     debug_syms.nfiles);
+      display_printf("= Type 'h' for help\n=\n");
+    }
+  
+  /* Display the location information */
+  if (addr.routine == NULL)
+    {
+      display_printf("== PC=#%05x\n", pc);
+    }
+  else
+    {
+      display_printf("== ");
+      if (addr.routine->defn_fl > 0)
+	display_printf("%s:", debug_syms.files[addr.routine->defn_fl].name);
+      else
+	display_printf("#%05x:", pc);
+		       
+      if (addr.line != NULL)
+	{
+	  display_printf("%i", addr.line->ln);
+	}
+      else
+	{
+	  if (addr.routine->defn_fl == 0)
+	    display_printf("(unknown)");
+	  else
+	    display_printf("#%05x", pc);
+	}
+
+      display_printf(" (%s)\n", addr.routine->name);
+    }
+
+  /* Process commands */
+  while (1)
+    {
+      int cline[128];
+
+      cline[0] = 0;
+      
+      display_printf("= : ");
+      display_readline(cline, 128, 0);
+    }
+}
+
+/***                           ----// 888 \\----                           ***/
+
 /* Breakpoints */
 
 int debug_set_breakpoint(int address)
@@ -76,7 +140,40 @@ debug_breakpoint* debug_get_breakpoint(int address)
 
 /* Debug file */
 
-debug_symbols debug_syms = { NULL, NULL, NULL, 0, NULL, 0 };
+debug_symbols debug_syms = { 
+  0, NULL, NULL, NULL, 0, NULL, 0,
+  0
+};
+
+static void debug_add_symbol(char* name,
+			     debug_symbol* sym)
+{
+  int x;
+  char* storename;
+
+  storename = malloc(sizeof(char)*(strlen(name)+1));
+
+  for (x=0; x<strlen(name); x++)
+    {
+      storename[x] = name[x];
+      if (storename[x] >= 'A' && storename[x] <= 'Z')
+	storename[x] += 32;
+    }
+  storename[x] = 0;
+
+  if (hash_get(debug_syms.symbol, storename, strlen(name)) != NULL)
+    {
+      display_printf("=? Symbol space clash - %s\n", name);
+    }
+  else
+    debug_syms.nsymbols++;
+  hash_store_happy(debug_syms.symbol,
+		   storename,
+		   strlen(name),
+		   sym);
+
+  free(storename);
+}
 
 void debug_load_symbols(char* filename)
 {
@@ -86,14 +183,20 @@ void debug_load_symbols(char* filename)
   int pos;
 
   int done;
+  
+  int x;
 
-  debug_routine* this_routine;
+  debug_routine* this_routine = NULL;
+  debug_symbol* sym;
 
   size = get_file_size(filename);
   file = open_file(filename);
 
   if (file == NULL)
-    return;
+    {
+      display_printf("=! unable to open file '%s'\n", filename);
+      return;
+    }
 
   db_file = read_block(file, 0, size);
 
@@ -102,11 +205,11 @@ void debug_load_symbols(char* filename)
   if (db_file == NULL)
     return;
 
-  display_printf("Debug: loading symbols from %s...\n", filename);
+  display_printf("= loading symbols from '%s'...\n", filename);
 
   if (db_file[0] != 0xde || db_file[1] != 0xbf)
     {
-      display_printf("Debug: Bad debug file\n");
+      display_printf("=! Bad debug file\n");
       free(db_file);
       return;
     }
@@ -114,6 +217,9 @@ void debug_load_symbols(char* filename)
   pos = 6;
 
   done = 0;
+
+  if (debug_syms.symbol == NULL)
+    debug_syms.symbol = hash_create();
 
   while (pos < size && !done)
     {
@@ -139,7 +245,7 @@ void debug_load_symbols(char* filename)
 	    
 	    if (debug_syms.nfiles != fl.number)
 	      {
-		display_printf("Debug: file '%s' doesn't appear in order\n",
+		display_printf("=! file '%s' doesn't appear in order\n",
 			       fl.name);
 		goto failed;
 	      }
@@ -169,6 +275,12 @@ void debug_load_symbols(char* filename)
 	    c.end_ln  = db_file[pos++]<<8;
 	    c.end_ln |= db_file[pos++];
 	    c.end_ch  = db_file[pos++];	    
+
+	    sym             = malloc(sizeof(debug_symbol));
+	    sym->type       = dbg_class;
+	    sym->data.class = c;
+	    debug_add_symbol(c.name,
+			     sym);
 	  }
 	  break;
 
@@ -194,6 +306,12 @@ void debug_load_symbols(char* filename)
 	    o.end_ln  = db_file[pos++]<<8;
 	    o.end_ln |= db_file[pos++];
 	    o.end_ch  = db_file[pos++];	    
+
+	    sym              = malloc(sizeof(debug_symbol));
+	    sym->type        = dbg_object;
+	    sym->data.object = o;
+	    debug_add_symbol(o.name,
+			     sym);
 	  }
 	  break;
 	  
@@ -209,6 +327,12 @@ void debug_load_symbols(char* filename)
 	    g.name = malloc(sizeof(char)*(strlen(db_file + pos) + 1));
 	    strcpy(g.name, db_file + pos);
 	    pos += strlen(db_file + pos) + 1;
+
+	    sym              = malloc(sizeof(debug_symbol));
+	    sym->type        = dbg_global;
+	    sym->data.global = g;
+	    debug_add_symbol(g.name,
+			     sym);
 	  }
 	  break;
 
@@ -224,6 +348,12 @@ void debug_load_symbols(char* filename)
 	    a.name = malloc(sizeof(char)*(strlen(db_file + pos) + 1));
 	    strcpy(a.name, db_file + pos);
 	    pos += strlen(a.name)+1;
+
+	    sym             = malloc(sizeof(debug_symbol));
+	    sym->type       = dbg_attr;
+	    sym->data.attr  = a;
+	    debug_add_symbol(a.name,
+			     sym);
 	  }
 	  break;
 
@@ -239,6 +369,12 @@ void debug_load_symbols(char* filename)
 	    p.name = malloc(sizeof(char)*(strlen(db_file + pos) + 1));
 	    strcpy(p.name, db_file + pos);
 	    pos += strlen(p.name)+1;
+
+	    sym             = malloc(sizeof(debug_symbol));
+	    sym->type       = dbg_prop;
+	    sym->data.prop  = p;
+	    debug_add_symbol(p.name,
+			     sym);
 	  }
 	  break;
 
@@ -254,6 +390,12 @@ void debug_load_symbols(char* filename)
 	    a.name = malloc(sizeof(char)*(strlen(db_file + pos) + 1));
 	    strcpy(a.name, db_file + pos);
 	    pos += strlen(db_file + pos) + 1;
+
+	    sym              = malloc(sizeof(debug_symbol));
+	    sym->type        = dbg_action;
+	    sym->data.action = a;
+	    /* debug_add_symbol(a.name,
+	       sym); */
 	  }
 	  break;
 
@@ -269,6 +411,12 @@ void debug_load_symbols(char* filename)
 	    a.name = malloc(sizeof(char)*(strlen(db_file + pos) + 1));
 	    strcpy(a.name, db_file + pos);
 	    pos += strlen(db_file + pos) + 1;
+
+	    sym               = malloc(sizeof(debug_symbol));
+	    sym->type         = dbg_fakeact;
+	    sym->data.fakeact = a;
+	    /* debug_add_symbol(a.name,
+	       sym); */
 	  }
 	  break;
 
@@ -284,6 +432,12 @@ void debug_load_symbols(char* filename)
 	    a.name = malloc(sizeof(char)*(strlen(db_file + pos) + 1));
 	    strcpy(a.name, db_file + pos);
 	    pos += strlen(db_file + pos) + 1;
+
+	    sym             = malloc(sizeof(debug_symbol));
+	    sym->type       = dbg_array;
+	    sym->data.array = a;
+	    debug_add_symbol(a.name,
+			     sym);
 	  }
 	  break;
 
@@ -309,7 +463,7 @@ void debug_load_symbols(char* filename)
 
 	    if (rno != this_routine->number)
 	      {
-		display_printf("Debug: routine number of line does not match current routine\n");
+		display_printf("=! routine number of line does not match current routine\n");
 		goto failed;
 	      }
 	    
@@ -374,9 +528,20 @@ void debug_load_symbols(char* filename)
 					 (debug_syms.nroutines+1));
 
 	    debug_syms.routine[debug_syms.nroutines] = r;
+	    if (this_routine != NULL &&
+		this_routine->start >= r.start)
+	      {
+		display_printf("=! Out of order routines\n");
+	      }
 	    this_routine = debug_syms.routine + debug_syms.nroutines;
 
 	    debug_syms.nroutines++;
+
+	    sym               = malloc(sizeof(debug_symbol));
+	    sym->type         = dbg_routine;
+	    sym->data.routine = debug_syms.nroutines-1;
+	    debug_add_symbol(this_routine->name,
+			     sym);
 	  }
 	  break;
 	  
@@ -391,7 +556,7 @@ void debug_load_symbols(char* filename)
 
 	    if (rno != this_routine->number)
 	      {
-		display_printf("Debug: routine number of EOR does not match current routine\n");
+		display_printf("=! routine number of EOR does not match current routine\n");
 		goto failed;
 	      }
 
@@ -412,16 +577,44 @@ void debug_load_symbols(char* filename)
 
 	    while (db_file[pos] != 0)
 	      {
-		pos += strlen(db_file + pos) + 1 + 3;
+		char* name;
+		ZDWord address;
+
+		name = db_file + pos;
+		pos += strlen(db_file + pos) + 1;
+
+		address  = db_file[pos++]<<16;
+		address |= db_file[pos++]<<8;
+		address |= db_file[pos++];
+
+		/* Fill in various fields according to what we get... */
+		if (strcmp(name, "code area") == 0)
+		  {
+		    debug_syms.codearea = address;
+		  }
 	      }
 	    pos++;
 	  }
 	  break;
 
 	default:
-	  display_printf("Debug: unknown record type %i\n", db_file[pos]);
+	  display_printf("=! unknown record type %i\n", db_file[pos]);
 	  goto failed;
 	  return;
+	}
+    }
+
+  /* Update addresses of routines/lines */
+  for (x=0; x<debug_syms.nroutines; x++)
+    {
+      int y;
+
+      debug_syms.routine[x].start += debug_syms.codearea;
+      debug_syms.routine[x].end   += debug_syms.codearea;
+
+      for (y=0; y<debug_syms.routine[x].nlines; y++)
+	{
+	  debug_syms.routine[x].line[y].address += debug_syms.codearea;
 	}
     }
 
@@ -430,5 +623,37 @@ void debug_load_symbols(char* filename)
 
  failed:
   free(db_file);
+}
+
+debug_address debug_find_address(int address)
+{
+  debug_address res;
+  int x;
+
+  res.routine = NULL;
+  res.line    = NULL;
+
+  for (x=0; x<debug_syms.nroutines; x++)
+    {
+      if (address > debug_syms.routine[x].start &&
+	  address < debug_syms.routine[x].end)
+	{
+	  res.routine = debug_syms.routine + x;
+	  break;
+	}
+    }
+
+  if (res.routine == NULL)
+    return res;
+
+  for (x=0; x<res.routine->nlines; x++)
+    {
+      if (res.routine->line[x].address > address)
+	break;
+
+      res.line = res.routine->line + x;
+    }
+
+  return res;
 }
 

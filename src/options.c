@@ -40,6 +40,7 @@ static struct argp_option options[] = {
   { "warnings", 'w', 0, 0, "Display interpreter warnings" },
   { "fatal", 'W', 0, 0, "Warnings are fatal" },
   { "graphical", 'g', 0, 0, "Use a graphical version 5 machine. Not all games support this option" },
+  { "debugmode", 'D', 0, 0, "Enable source-level debugger (requires gameinfo.dbg)" },
 #ifdef TRACKING
   { "trackobjs", 'O', 0, 0, "Track object movement" },
   { "trackattrs", 'A', 0, 0, "Track attribute testing/setting" },
@@ -70,7 +71,11 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
     case 'P':
       args->track_props = 1;
       break;
-      
+
+    case 'D':
+      args->debug_mode = 1;
+      break;
+ 
     case 'g':
       args->graphical = 1;
       break;
@@ -105,6 +110,8 @@ void get_options(int argc, char** argv, arguments* args)
   args->track_objs  = 0;
   args->track_attr  = 0;
   args->track_props = 0;
+
+  args->debug_mode  = 0;
    
   argp_parse(&argp, argc, argv, 0, 0, args);
 
@@ -124,8 +131,9 @@ void get_options(int argc, char** argv, arguments* args)
 
   args->warning_level = 0;
   args->graphical = 0;
+  args->debug_mode = 0;
 
-  while ((opt=getopt(argc, argv, "?hVWwg")) != -1)
+  while ((opt=getopt(argc, argv, "?hVWwgD")) != -1)
     {
       switch (opt)
 	{
@@ -137,6 +145,7 @@ void get_options(int argc, char** argv, arguments* args)
 	  printf_info("    -V         display version information\n");
 	  printf_info("    -w         display warnings\n");
 	  printf_info("    -W         make all warnings fatal (strict standards compliance)\n");
+	  printf_info("    -D         enable symbolic debug mode (requires gameifo.dbg)\n");
 	  printf_info("    -g         use graphical display mode (if available)\n");
 	  printf_info("Zoom is copyright (C) Andrew Hunter, 2000\n");
 	  printf_info_done();
@@ -146,6 +155,10 @@ void get_options(int argc, char** argv, arguments* args)
 	case 'V': /* V */
 	  printf("Zoom version " VERSION "\n");
 	  display_exit(0);
+	  break;
+
+	case 'D':
+	  args->debug_mode = 1;
 	  break;
 
 	case 'W': /* W */
@@ -187,6 +200,7 @@ void get_options(int argc, char** argv, arguments* args)
 {
   args->warning_level = 0;
   args->graphical = 0;
+  args->debug_mode = 0;
   
   args->track_objs  = 0;
   args->track_attr  = 0;
