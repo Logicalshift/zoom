@@ -2218,6 +2218,20 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
+		4B7FA9CC06B99EE400EE766A = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			name = NeedDrop.png;
+			path = Resources/NeedDrop.png;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B7FA9CD06B99EE400EE766A = {
+			fileRef = 4B7FA9CC06B99EE400EE766A;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		4B807B9E05BFEE0C00681653 = {
 			children = (
 				4B807BA905BFEE7200681653,
@@ -3048,6 +3062,7 @@
 				4B18850C069873F0004D8501,
 				4B5CBCEF069DD94000C0AA88,
 				4BD81B4E06B6E9F400AD14E1,
+				4B7FA9CD06B99EE400EE766A,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3360,6 +3375,7 @@
 				4BBC1F69062F41E300FE547F,
 				4BBC1F6A062F41E300FE547F,
 				4BBC1F6B062F41E300FE547F,
+				4B7FA9CC06B99EE400EE766A,
 				4BCF3F51050FB42600A8E303,
 				4BCF3F57050FB49F00A8E303,
 				4B418E140594FCDB009C44DE,

@@ -11,6 +11,16 @@
 
 @interface ZoomResourceDrop : NSView {
 	NSString* droppedFilename;
+	NSData*   droppedData;
+	
+	int willOrganise;
+	BOOL enabled;
 }
+
+- (void) setWillOrganise: (BOOL) willOrganise;
+- (BOOL) willOrganise;
+
+- (void) setEnabled: (BOOL) enabled;
+- (BOOL) enabled;
 
 @end

@@ -27,6 +27,7 @@ static void reportLeaks(void) {
 int main(int argc, const char *argv[])
 {
 #ifdef DEBUG_BUILD
+	NSLog(@"Zoom: DEBUG BUILD");
     atexit(reportLeaks);
 #endif
     return NSApplicationMain(argc, argv);

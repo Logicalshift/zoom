@@ -7,6 +7,7 @@
 //
 
 #import "ZoomResourceDrop.h"
+#import "ZoomPreferences.h"
 
 static NSImage* needDropImage;
 static NSImage* blorbImage;
@@ -24,19 +25,25 @@ static NSImage* blorbImage;
     if (self) {
 		droppedFilename = nil;
 		
-		[self registerForDraggedTypes: [NSArray arrayWithObject: NSFilenamesPboardType]];
+		[self registerForDraggedTypes: [NSArray arrayWithObjects: NSFilenamesPboardType, NSFileContentsPboardType, NSURLPboardType, nil]];
+		
+		willOrganise = 2; // Take value from global preferences (default)
+		enabled = YES;
     }
 	
     return self;
 }
 
 - (void) dealloc {
-	[droppedFilename release];
+	if (droppedFilename) [droppedFilename release];
+	if (droppedData) [droppedData release];
 	
 	[super dealloc];
 }
 
 - (void)drawRect:(NSRect)rect {
+	if (![self enabled]) return;
+	
 	NSRect bounds = [self bounds];
 	
 	// Position to draw the image in
@@ -79,6 +86,113 @@ static NSImage* blorbImage;
 				 [NSFont systemFontOfSize: 11], NSFontAttributeName,
 				 paraStyle, NSParagraphStyleAttributeName,
 				 nil]];
+}
+
+- (void) setWillOrganise: (BOOL) wO {
+	willOrganise = wO?1:0;
+}
+
+- (BOOL) willOrganise {
+	if (willOrganise == 1) {
+		return YES;
+	} else if (willOrganise == 0) {
+		return NO;
+	} else {
+		return [[ZoomPreferences globalPreferences] keepGamesOrganised];
+	}
+}
+
+- (void) setEnabled: (BOOL) en {
+	if (en != enabled) {
+		enabled = en;
+		[self setNeedsDisplay: YES];
+	}
+}
+
+- (BOOL) enabled {
+	return enabled;
+}
+
+// = NSDraggingDestination methods =
+
+- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender {
+	if (!enabled) return NSDragOperationNone;
+	
+	if ([self willOrganise]) {
+		return NSDragOperationCopy;
+	} else {
+		if ([[sender draggingPasteboard] dataForType: NSFilenamesPboardType] == nil) return NSDragOperationNone;
+		return NSDragOperationLink;
+	}
+}
+
+- (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender {
+	if (!enabled) return NO;
+
+	if (![self willOrganise] && ([sender draggingSourceOperationMask]&NSDragOperationLink)==0) {
+		// Must be able to link if we're not organising
+		return NO;
+	}
+		
+	NSArray* filenames = [[sender draggingPasteboard] propertyListForType: NSFilenamesPboardType];
+	if (filenames != nil && [filenames isKindOfClass: [NSArray class]]) {
+		// Is a filename array: we can handle one filename, which must be a .blb, .glb or .zlb file
+		if ([filenames count] != 1) goto notAFilename;
+		
+		NSString* filename = [filenames objectAtIndex: 0];
+		if (![filename isKindOfClass: [NSString class]]) goto notAFilename;
+		
+		if (!([[filename pathExtension] isEqualToString: @"blb"] || 
+			  [[filename pathExtension] isEqualToString: @"zlb"] ||
+			  [[filename pathExtension] isEqualToString: @"glb"])) {
+			// MAYBE IMPLEMENT ME: check if this is a blorb file anyway (look for an IFRS file?)
+			goto notAFilename;
+		}
+		
+		return YES;
+	}
+	
+notAFilename:
+	// Deal with the other types - can't link to these
+	if (([sender draggingSourceOperationMask]&NSDragOperationCopy) == 0) return NO;
+			
+	// Default is to reject: require filenames for the moment
+	return NO;
+}
+
+- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender {
+	if (![self willOrganise] && ([sender draggingSourceOperationMask]&NSDragOperationLink)==0) {
+		// Must be able to link if we're not organising
+		return NO;
+	}
+	
+	NSArray* filenames = [[sender draggingPasteboard] propertyListForType: NSFilenamesPboardType];
+	if (filenames != nil && [filenames isKindOfClass: [NSArray class]]) {
+		// Is a filename array: we can handle one filename, which must be a .blb, .glb or .zlb file
+		if ([filenames count] != 1) return NO;
+		
+		NSString* filename = [filenames objectAtIndex: 0];
+		if (![filename isKindOfClass: [NSString class]]) return NO;
+		
+		if (!([[filename pathExtension] isEqualToString: @"blb"] || 
+			  [[filename pathExtension] isEqualToString: @"zlb"] ||
+			  [[filename pathExtension] isEqualToString: @"glb"])) {
+			// MAYBE IMPLEMENT ME: check if this is a blorb file anyway (look for an IFRS file?)
+			return NO;
+		}
+		
+		droppedFilename = [filename copy];
+		[self setNeedsDisplay: YES];
+		
+		return YES;
+	} else {
+		// Deal with the other types - can't link to these
+		if (([sender draggingSourceOperationMask]&NSDragOperationCopy) == 0) return NO;
+		
+		return NO; // Anyway - FIXME
+	}
+	
+	return NO;
 }
 
 @end

@@ -37,7 +37,8 @@
                 zarfRating = NSPopUpButton; 
             }; 
             SUPERCLASS = NSWindowController; 
-        }
+        }, 
+        {CLASS = ZoomResourceDrop; LANGUAGE = ObjC; SUPERCLASS = NSView; }
     ); 
     IBVersion = 1; 
 }
