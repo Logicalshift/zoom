@@ -1362,72 +1362,6 @@ int tableSorter(id a, id b, void* context) {
 					  request);
 }
 
-- (void) confirmDelete:(NSWindow *)sheet 
-			returnCode:(int)returnCode 
-		   contextInfo:(void *)contextInfo {
-	NSMutableArray* storiesToDelete = contextInfo;
-	[storiesToDelete autorelease];
-	
-	if (returnCode != NSAlertAlternateReturn) return;
-	
-	// Delete the selected games from the organiser
-	ZoomStoryID* ident;
-	
-	NSEnumerator* rowEnum = [storiesToDelete objectEnumerator];
-	
-	while (ident = [rowEnum nextObject]) {
-		[[ZoomStoryOrganiser sharedStoryOrganiser] removeStoryWithIdent: ident];
-	}
-	
-	// If the games are kept organised, then ask if the user wants to move games to the trash
-	// (give the option of always doing this)
-	if ([[ZoomPreferences globalPreferences] keepGamesOrganised]) {
-
-#if 1
-		// == Collin
-		// this seems like a bit too much confirmation
-		
-		// this is more a degree of how the user will want iFiction to organize files than
-		// something that I think a user will want to decide dynamically on each story deletion
-		// moving to the trash still gives the user a chance to recover the story
-		
-		// == Andrew
-		// The other reason for doing this was to inform the user that it was still possible to
-		// recover the story
-		
-		[[NSRunLoop currentRunLoop] performSelector: @selector(showTrashConfirm:)
-											 target: self
-										   argument: [storiesToDelete retain]
-											  order: 256
-											  modes: [NSArray arrayWithObject: NSDefaultRunLoopMode]];
-#else
-		[self confirmMoveToTrash: NULL 
-				 returnCode: NSAlertDefaultReturn 
-				contextInfo:[storiesToDelete retain]];
-#endif
-
-	}
-}
-
-- (void) showTrashConfirm: (NSMutableArray*) storiesToDelete {
-	NSString* request = @"Hey, who put spoons in with the trash?";
-	
-	if ([storiesToDelete count] == 1) {
-		request = @"Do you want to move this story's files to the trash?";
-	} else {
-		request = @"Do you want to move these stories' files to the trash?";
-	}
-	
-	NSBeginAlertSheet(@"Move to trash?",
-					  @"OK", @"Leave", nil,
-					  [self window],
-					  self,
-					  @selector(confirmMoveToTrash:returnCode:contextInfo:),
-					  nil,
-					  storiesToDelete,
-					  request);		
-}
-
 - (void) confirmMoveToTrash: (NSWindow *)sheet 
 				 returnCode: (int)returnCode 
 				contextInfo: (void *)contextInfo {
@@ -1455,6 +1389,30 @@ int tableSorter(id a, id b, void* context) {
 			// (make sure it's gone from the organiser)
 			[[ZoomStoryOrganiser sharedStoryOrganiser] removeStoryWithIdent: ident];
 		}
+	}
+}
+
+- (void) confirmDelete:(NSWindow *)sheet 
+			returnCode:(int)returnCode 
+		   contextInfo:(void *)contextInfo {
+	NSMutableArray* storiesToDelete = contextInfo;
+	[storiesToDelete autorelease];
+	
+	if (returnCode != NSAlertAlternateReturn) return;
+	
+	// Delete the selected games from the organiser
+	ZoomStoryID* ident;
+	
+	NSEnumerator* rowEnum = [storiesToDelete objectEnumerator];
+	
+	while (ident = [rowEnum nextObject]) {
+		[[ZoomStoryOrganiser sharedStoryOrganiser] removeStoryWithIdent: ident];
+	}
+	
+	if ([[ZoomPreferences globalPreferences] keepGamesOrganised]) {
+		[self confirmMoveToTrash: NULL 
+				 returnCode: NSAlertDefaultReturn 
+				contextInfo:[storiesToDelete retain]];
 	}
 }
 

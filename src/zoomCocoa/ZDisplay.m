@@ -452,7 +452,7 @@ int display_readline(int* buf, int len, long int timeout) {
 		static int newline[] = { '\n', 0 };
 		
 		display_prints(buf);
-		display_prints(newline);
+		if (termChar == 10 || termChar == 13) display_prints(newline);
 	}
 	
     [inputBuffer deleteCharactersInRange: NSMakeRange(0, realLen)];

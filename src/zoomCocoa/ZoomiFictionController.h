@@ -13,6 +13,7 @@
 #import "ZoomSavePreviewView.h"
 #import "ZoomCollapsingSplitView.h"
 #import "ZoomResourceDrop.h"
+#import "ZoomStoryTableView.h"
 
 @interface ZoomiFictionController : NSWindowController {
 	IBOutlet ZoomiFButton* addButton;
@@ -34,7 +35,7 @@
 	float splitViewPercentage;
 	BOOL splitViewCollapsed;
 	
-	IBOutlet NSTableView* mainTableView;
+	IBOutlet ZoomStoryTableView* mainTableView;
 	IBOutlet NSTableView* filterTable1;
 	IBOutlet NSTableView* filterTable2;
 	
