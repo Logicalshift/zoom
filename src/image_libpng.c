@@ -362,6 +362,31 @@ void image_resample(image_data* data, int n, int d)
 
       int i;
 
+      /*
+       * What's going on here?
+       *
+       * In a word - downscaling. This code won't be executed much...
+       *
+       * Well, bresenham's algorithm only works for slopes <= 1. So, we
+       * consider the mapping this way: Bresenham tells us when we should
+       * move on a pixel in the *smaller* of the two images. Now, matters
+       * are complicated somewhat here, because the 'larger' image we're
+       * considering is in fact 3 times larger than the 'smaller' one
+       * (for the filter).
+       *
+       * So, to find X, the number of pixels to move in the larger image
+       * for one in the smaller, we run bresenham's algorithm until it
+       * moves up a pixel - each iteration indicates to move on a pixel
+       * in the larger image (as above). This event indicates we should
+       * move on a pixel in the smaller image (note: as well as the
+       * larger). A spot of extra code to deal with the whole *3 problem,
+       * and bob's yer uncle.
+       *
+       * Note that, as we aren't considering every pixel in the source image
+       * anymore, we could introduce aliasing. But, the filtering is far
+       * from perfect, so you get some aliasing anyway.
+       */
+
       /* Minor adjustment (ensures we don't overrun) */
       if (newwidth < newheight)
 	{ n = newwidth*3; d = data->width+1; }
@@ -480,109 +505,5 @@ void image_resample(image_data* data, int n, int d)
       data->row[ny] = newimage + 3*ny*newwidth;
     }
 }
-
-#if 0 /* Old image resampling routine */
-void image_resample(image_data* data, int n, int d)
-{
-  unsigned char* newimage, *ip;
-  int nx, ny;
-  float origx, origy;
-  float step;
-  float halfstep, thirdstep;
-
-  int newwidth, newheight;
-
-  int filter[3][3] =
-    { { 1, 2, 1 },
-      { 2, 4, 2 },
-      { 1, 2, 1 } };
-
-  /*
-   * Very simple resampling algorithm; naive, slow
-   */
-
-  if (data->image == NULL)
-    {
-      if (iload(data, data->file, data->offset, 1) == NULL)
-	{
-	  return;
-	}
-    }
-
-  step = (float)d/(float)n;
-  halfstep = step/2.0; thirdstep = step/3.0;
-  
-  origx = 0;
-  origy = 0;
- 
-  newwidth  = (data->width*n)/d;
-  newheight = (data->height*n)/d;
-
-  ip = newimage = malloc(newwidth*newheight*3);
-  
-  for (ny=0; ny<newheight; ny++)
-    {
-      for (nx=0; nx<newwidth; nx++)
-	{
-	  int rs, gs, bs;
-	  int x, y;
-	  float xp, yp;
-	  int xpos[3];
-
-	  yp = origy;
-
-	  rs = gs = bs = 0;
-	  
-	  xp = origx;
-	  for (x=0; x<3; x++)
-	    {
-	      xpos[x] = xp;
-	      xpos[x] *= 3;
-	      xp += thirdstep;
-	    }
-
-	  for (y = 0; y<3; y++)
-	    {
-	      for (x=0; x<3; x++)
-		{
-		  int p, ypos;
-
-		  p = xpos[x];
-		  ypos = yp;
-
-		  rs += data->row[ypos][p++]*filter[x][y];
-		  gs += data->row[ypos][p++]*filter[x][y];
-		  bs += data->row[ypos][p++]*filter[x][y];
-		}
-	      yp += thirdstep;
-	    }
-
-	  rs >>= 4; gs >>= 4; bs >>= 4;
-
-	  *(ip++) = rs;
-	  *(ip++) = gs;
-	  *(ip++) = bs;
-
-	  origx += step;
-	}
-
-      origy += step;
-      origx = 0;
-    }
-
-  free(data->image);
-
-  data->image = newimage;
-  data->width = newwidth;
-  data->height = newheight;
-
-  data->row = realloc(data->row, sizeof(png_bytep)*newheight);
-
-  for (ny=0; ny<newheight; ny++)
-    {
-      data->row[ny] = newimage + 3*ny*newwidth;
-    }
-}
-#endif
 
 #endif
