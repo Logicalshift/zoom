@@ -336,6 +336,15 @@ void v6_prints(const int* text)
 			 (ACTWIN.curx+0.5), 
 			 0.5+ACTWIN.cury+ACTWIN.line_height-display_get_font_descent(ACTWIN.style));
 
+#ifdef DEBUG
+      { int x;
+      printf_debug("V6: printed line >");
+      for (x=start_pos; x<text_pos; x++)
+	printf_debug("%c", text[x]);
+      printf_debug("<\n");
+      }
+#endif
+
       /* Stop plotting if wrapping is off */
       if (ACTWIN.wrapping == 0)
 	{
@@ -348,16 +357,10 @@ void v6_prints(const int* text)
 	{
 	  int more;
 
-#if 0
-	  if (bg >= 0)
-	    {
-	      display_pixmap_cols(bg, 0);
-	      display_plot_rect(ACTWIN.curx+width, ACTWIN.cury,
-				(ACTWIN.xpos+ACTWIN.width-ACTWIN.rmargin)-(ACTWIN.curx+width),
-				ACTWIN.line_height);
-	    }
+#ifdef DEBUG
+	  printf_debug("V6: new line\n");
 #endif
-	  
+
 	  ACTWIN.text_amount += ACTWIN.line_height;
 	  ACTWIN.cury += ACTWIN.line_height;
 	  ACTWIN.line_height = 0;
@@ -375,8 +378,6 @@ void v6_prints(const int* text)
 	    {
 	      more = (nl_func)(text + text_pos + (text[text_pos]==10?1:0),
 			       len - text_pos - (text[text_pos]==10?1:0));
-
-	      ACTWIN.curx = ACTWIN.xpos + ACTWIN.lmargin;
 	    }
 
 	  if (more == 1 && !ACTWIN.no_more)
