@@ -313,8 +313,6 @@ enum ZSVbutton
 }
 
 - (void)drawRect:(NSRect)rect {
-	NSLog(@"ZoomSkeinView: drawing");
-	
 	if (tree == nil) return;
 	
 	if (skeinNeedsLayout) [self layoutSkein];
@@ -604,6 +602,8 @@ enum ZSVbutton
 
 	skeinNeedsLayout = NO;
 	
+	if (skein == nil) return;
+	
 	if (itemForItem) [itemForItem release];
 	itemForItem = [[NSMutableDictionary alloc] init];
 	
@@ -628,13 +628,13 @@ enum ZSVbutton
 				withOffset: 0];
 	
 		// Resize this view
-		NSRect newBounds = [self bounds];
+		NSRect newBounds = [self frame];
 	
 		newBounds.size.width = [[tree objectForKey: ZSfullwidth] floatValue];
 		//newBounds.size.width = globalWidth + globalOffset + itemWidth/2.0;
 		newBounds.size.height = ((float)[levels count]) * itemHeight;
 	
-		[self setFrame: newBounds];
+		[self setFrameSize: newBounds.size];
 	}
 	
 	// View needs redisplaying
