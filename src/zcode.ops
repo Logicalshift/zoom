@@ -175,7 +175,7 @@ OPCODE "set_attr"      2OP:0x0b        VERSION 4,5,6,7,8
     zmachine_fatal("Attribute out of range");
 
 #ifdef DEBUG
-  printf("Setting attribute %x of object #%x\n", uarg2, uarg1);
+  printf_debug("Setting attribute %x of object #%x\n", uarg2, uarg1);
 #endif
 
 #ifdef TRACKING
@@ -225,7 +225,7 @@ OPCODE "clear_attr"    2OP:0x0c        VERSION 4,5,6,7,8
     zmachine_fatal("Attribute out of range");
 
 #ifdef DEBUG
-  printf("Setting attribute %x of object #%x\n", uarg2, uarg1);
+  printf_debug("Setting attribute %x of object #%x\n", uarg2, uarg1);
 #endif
 
 #ifdef TRACKING
@@ -306,7 +306,7 @@ OPCODE "insert_obj"    2OP:0x0e        VERSION 4,5,6,7,8
   ZByte* tmp;
 
 #ifdef DEBUG
-  printf("Inserting object %i into %i\n", uarg1, uarg2);
+  printf_debug("Inserting object %i into %i\n", uarg1, uarg2);
 #endif
   
   if (uarg1 == 0)
@@ -413,7 +413,7 @@ OPCODE "get_prop"      2OP:0x11 STORE  VERSION 4,5,6,7,8
     zmachine_fatal("Property %i out of range", uarg2);
 
 #ifdef DEBUG
-  printf("Get_prop: object %i prop %i\n", uarg1, uarg2);
+  printf_debug("Get_prop: object %i prop %i\n", uarg1, uarg2);
 #endif
 
   p = get_object_prop_4(uarg1, uarg2);
@@ -606,14 +606,14 @@ OPCODE "store"        2OP:0x0d        VERSION all
 OPCODE "loadw"        2OP:0x0f STORE  VERSION all
 %{
 #ifdef DEBUG
-  printf("Loading word at #%x\n", (ZUWord)arg1+((ZUWord)arg2*2));
+  printf_debug("Loading word at #%x\n", (ZUWord)arg1+((ZUWord)arg2*2));
 #endif
   store(stack, st, Word((ZUWord)arg1+((ZUWord)arg2*2)));
 %}
 OPCODE "loadb"        2OP:0x10 STORE  VERSION all
 %{
 #ifdef DEBUG
-  printf("Loading byte at #%x\n", (ZUWord)arg1+(ZUWord)arg2);
+  printf_debug("Loading byte at #%x\n", (ZUWord)arg1+(ZUWord)arg2);
 #endif
   store(stack, st, Byte((ZUWord)arg1+(ZUWord)arg2));
 %}
@@ -693,7 +693,7 @@ OPCODE "call_2n"      2OP:0x1a CANJUMP       VERSION 5,6,7,8
 OPCODE "set_colour"   2OP:0x1b               VERSION 5,7,8
 %{
 #ifdef DEBUG
-  printf("Setting colours to %i, %i\n", arg1, arg2);
+  printf_debug("Setting colours to %i, %i\n", arg1, arg2);
 #endif
   stream_flush_buffer();
   display_set_colour(convert_colour(arg1), convert_colour(arg2));
@@ -846,7 +846,7 @@ OPCODE "inc"          1OP:0x05              VERSION all
   ZWord var;
 
 #ifdef DEBUG
-  printf("Inc: increasing variable %i by 1\n", arg1);
+  printf_debug("Inc: increasing variable %i by 1\n", arg1);
 #endif
   
   var = GetVar(arg1);
@@ -859,7 +859,7 @@ OPCODE "dec"          1OP:0x06              VERSION all
   ZWord var;
 
 #ifdef DEBUG
-  printf("Dec: decreasing variable %i by 1\n", arg1);
+  printf_debug("Dec: decreasing variable %i by 1\n", arg1);
 #endif
   
   var = GetVar(arg1);
@@ -872,7 +872,7 @@ OPCODE "print_addr"   1OP:0x07              VERSION all
   int len;
 
 #ifdef DEBUG
-  printf(">%s<\n", zscii_to_ascii(machine.memory + uarg1, &len));
+  printf_debug(">%s<\n", zscii_to_ascii(machine.memory + uarg1, &len));
 #endif
   
   stream_prints(zscii_to_ascii(machine.memory + uarg1, &len));  
@@ -917,7 +917,7 @@ OPCODE "print_obj"    1OP:0x0a              VERSION 1,2,3
   prop = machine.memory + ((obj[7]<<8)|obj[8]) + 1;
 
 #ifdef DEBUG
-  printf(">%s<\n", zscii_to_ascii(prop, &len));
+  printf_debug(">%s<\n", zscii_to_ascii(prop, &len));
 #endif
 
   stream_prints(zscii_to_ascii(prop, &len));
@@ -933,7 +933,7 @@ OPCODE "print_obj"    1OP:0x0a              VERSION 4,5,6,7,8
   prop = Address((ZUWord)GetPropAddr4(obj)+1);
 
 #ifdef DEBUG
-  printf(">%s<\n", zscii_to_ascii(prop, &len));
+  printf_debug(">%s<\n", zscii_to_ascii(prop, &len));
 #endif
 
   stream_prints(zscii_to_ascii(prop, &len));
@@ -960,9 +960,9 @@ OPCODE "ret"          1OP:0x0b CANJUMP      VERSION all
 
 #ifdef DEBUG
   if (oldframe->discard == 0)
-    printf("Returned %i into V%x\n", arg1, oldframe->storevar);
+    printf_debug("Returned %i into V%x\n", arg1, oldframe->storevar);
   if (stack->current_frame != NULL)
-    printf("Stack: returned, discarded %i outstanding items (stack top now #%x, size %i, frame usage %i)\n",
+    printf_debug("Stack: returned, discarded %i outstanding items (stack top now #%x, size %i, frame usage %i)\n",
 	   oldframe->frame_size, stack->stack_top, stack->stack_size,
 	   stack->current_frame!=NULL?stack->current_frame->frame_size:-1);
 #endif
@@ -978,7 +978,7 @@ OPCODE "print_paddr"  1OP:0x0d              VERSION 1,2,3
   int len;
 
 #ifdef DEBUG
-  printf(">%s<\n", zscii_to_ascii(machine.memory + (((ZDWord)uarg1)<<1), &len));
+  printf_debug(">%s<\n", zscii_to_ascii(machine.memory + (((ZDWord)uarg1)<<1), &len));
 #endif
 
   stream_prints(zscii_to_ascii(machine.memory + (((ZDWord)uarg1)<<1), &len));
@@ -989,7 +989,7 @@ OPCODE "print_paddr"  1OP:0x0d              VERSION 4,5,6,7,8
   int len;
 
 #ifdef DEBUG
-  printf(">%s<\n", zscii_to_ascii(machine.memory + UnpackS(uarg1), &len));
+  printf_debug(">%s<\n", zscii_to_ascii(machine.memory + UnpackS(uarg1), &len));
 #endif
 
   stream_prints(zscii_to_ascii(machine.memory + UnpackS(uarg1), &len));
@@ -1038,7 +1038,7 @@ OPCODE "rfalse"      0OP:0x01 CANJUMP VERSION all
 OPCODE "print"       0OP:0x02 STRING  VERSION all
 %{
 #ifdef DEBUG
-  printf(">%s<\n", string);
+  printf_debug(">%s<\n", string);
 #endif
   stream_prints(string);
 %}
@@ -1046,7 +1046,7 @@ OPCODE "print"       0OP:0x02 STRING  VERSION all
 OPCODE "print_ret"   0OP:0x03 CANJUMP STRING  VERSION all
 %{
 #ifdef DEBUG
-  printf(">%s<\n", string);
+  printf_debug(">%s<\n", string);
 #endif
   stream_prints(string);
   stream_prints("\n");
@@ -1200,7 +1200,7 @@ OPCODE "call"           VAR:0x00        STORE CANJUMP VERSION 1,2,3
   new_routine = 2*(ZUWord)argblock.arg[0];
   
 #ifdef DEBUG
-  printf("CALL $%x -> V%03i\n", new_routine, st);
+  printf_debug("CALL $%x -> V%03i\n", new_routine, st);
 #endif
 
   newframe = call_routine(&pc, stack, new_routine);
@@ -1232,7 +1232,7 @@ OPCODE "call_vs"        VAR:0x00        STORE CANJUMP VERSION 4,5,6,7,8
   new_routine = UnpackR((ZUWord)argblock.arg[0]);
   
 #ifdef DEBUG
-  printf("CALL $%x -> V%03i\n", new_routine, st);
+  printf_debug("CALL $%x -> V%03i\n", new_routine, st);
 #endif
 
   newframe = call_routine(&pc, stack, new_routine);
@@ -1251,7 +1251,7 @@ OPCODE "storew"         VAR:0x01 ARGS:3               VERSION all
   ZByte* mem;
 
 #ifdef DEBUG
-  printf("Storing word value %i at #%x\n",
+  printf_debug("Storing word value %i at #%x\n",
 	 argblock.arg[2],
 	 ((ZUWord) argblock.arg[0] + (ZUWord) (argblock.arg[1]*2))&0xffff);
 #endif
@@ -1288,7 +1288,7 @@ OPCODE "storeb"         VAR:0x02 ARGS:3               VERSION all
   ZByte* mem;
 
 #ifdef DEBUG
-  printf("Storing byte value %i at #%x\n",
+  printf_debug("Storing byte value %i at #%x\n",
 	 argblock.arg[2],
 	 ((ZUWord) argblock.arg[0] + (ZUWord) argblock.arg[1])&0xffff);
 #endif
@@ -1402,7 +1402,7 @@ OPCODE "sread"          VAR:0x04 ARGS:2               VERSION 1,2,3
 	tokbuf = machine.memory + (ZUWord) argblock.arg[1];
 	for (x=0; x<tokbuf[1]; x++)
 	  {
-	    printf("Token $%x%x word at %i, length %i\n",
+	    printf_debug("Token $%x%x word at %i, length %i\n",
 			   tokbuf[2+x*4],
 			   tokbuf[3+x*4],
 			   tokbuf[5+x*4],
@@ -1428,7 +1428,7 @@ OPCODE "aread"          VAR:0x04 ARGS:4 STORE CANJUMP VERSION 5,6,7,8
 OPCODE "print_char"     VAR:0x05 ARGS:1               VERSION all
 %{
 #ifdef DEBUG
-  printf(">%c<\n", argblock.arg[0]);
+  printf_debug(">%c<\n", argblock.arg[0]);
 #endif
   if (argblock.arg[0] == 0)
     argblock.arg[0] = 32;
@@ -1438,7 +1438,7 @@ OPCODE "print_char"     VAR:0x05 ARGS:1               VERSION all
 OPCODE "print_num"      VAR:0x06 ARGS:1               VERSION all
 %{
 #ifdef DEBUG
-  printf(">%i<\n", argblock.arg[0]);
+  printf_debug(">%i<\n", argblock.arg[0]);
 #endif
   stream_printf("%i", argblock.arg[0]);
 %}
@@ -1456,11 +1456,15 @@ OPCODE "random"         VAR:0x07 ARGS:1 STORE         VERSION all
     }
   else
     {
+#ifdef HAVE_GETTIMEOFDAY
       struct timeval tv;
       
       /* Reseed RNG */
       gettimeofday(&tv, NULL);
       srand(tv.tv_sec|tv.tv_usec);
+#else
+      srand((unsigned int) time(NULL));
+#endif
 
       store(stack, st, 0);
     }
@@ -1491,7 +1495,7 @@ OPCODE "split_window"   VAR:0x0a ARGS:1               VERSION all # 3,4,5,6,7,8
       ver = Byte(0);
 
 #ifdef DEBUG
-      printf("Top window bottom is now %i\n", argblock.arg[0]);
+      printf_debug("Top window bottom is now %i\n", argblock.arg[0]);
 #endif
       
       win = display_get_window();
@@ -1597,7 +1601,7 @@ OPCODE "set_cursor"     VAR:0x0f ARGS:2               VERSION 4,5,7,8
 %{
   stream_flush_buffer();
 #ifdef DEBUG
-  printf("Cursor moved to %i, %i\n", argblock.arg[1]-1, argblock.arg[0]-1);
+  printf_debug("Cursor moved to %i, %i\n", argblock.arg[1]-1, argblock.arg[0]-1);
 #endif
   if (display_get_window() == 2)
     { 
@@ -1745,7 +1749,7 @@ OPCODE "call_vn"        VAR:0x19 CANJUMP              VERSION 5,6,7,8
   new_routine = UnpackR((ZUWord)argblock.arg[0]);
   
 #ifdef DEBUG
-  printf("CALL $%x -> V%03i\n", new_routine, st);
+  printf_debug("CALL $%x -> V%03i\n", new_routine, st);
 #endif
 
   newframe = call_routine(&pc, stack, new_routine);
@@ -1788,7 +1792,7 @@ OPCODE "tokenise"       VAR:0x1b ARGS:4               VERSION 5,6,7,8
 	tokbuf = machine.memory + (ZUWord) argblock.arg[1];
 	for (x=0; x<tokbuf[1]; x++)
 	  {
-	    printf("Token $%x%x word at %i, length %i\n",
+	    printf_debug("Token $%x%x word at %i, length %i\n",
 			   tokbuf[2+x*4],
 			   tokbuf[3+x*4],
 			   tokbuf[5+x*4],
@@ -1814,7 +1818,7 @@ OPCODE "copy_table"     VAR:0x1d ARGS:3               VERSION 5,6,7,8
   if (argblock.arg[1] != 0)
     {
 #ifdef DEBUG
-      printf("Copying #%x bytes from #%x to #%x\n", argblock.arg[2],
+      printf_debug("Copying #%x bytes from #%x to #%x\n", argblock.arg[2],
 	     (ZUWord)argblock.arg[0], (ZUWord)argblock.arg[1]);
 #endif
       
@@ -1843,7 +1847,7 @@ OPCODE "copy_table"     VAR:0x1d ARGS:3               VERSION 5,6,7,8
       ZByte* mem;
 
 #ifdef DEBUG
-      printf("Blanking %i bytes from #%x\n", argblock.arg[2], (ZUWord)argblock.arg[0]);
+      printf_debug("Blanking %i bytes from #%x\n", argblock.arg[2], (ZUWord)argblock.arg[0]);
 #endif
       
       mem = Address((ZUWord)argblock.arg[0]);
@@ -1868,7 +1872,7 @@ OPCODE "print_table"    VAR:0x1e                      VERSION 5,6,7,8
     argblock.arg[2] = 1;
 
 #ifdef DEBUG
-  printf("Printing table #%x (%ix%i), offset %i\n", argblock.arg[0], argblock.arg[1], argblock.arg[2], argblock.arg[3]);
+  printf_debug("Printing table #%x (%ix%i), offset %i\n", argblock.arg[0], argblock.arg[1], argblock.arg[2], argblock.arg[3]);
 #endif
   
   table = Address((ZUWord) argblock.arg[0]);
@@ -2402,7 +2406,7 @@ OPCODE "set_margins"   EXT:0x08 ARGS:3        VERSION 6
   windows[argblock.arg[2]].leftmar  = argblock.arg[0];
   windows[argblock.arg[2]].rightmar = argblock.arg[1];
 
-  printf("Margins of window %i set to %i, %i\n", argblock.arg[2], argblock.arg[0], argblock.arg[1]);
+  printf_debug("Margins of window %i set to %i, %i\n", argblock.arg[2], argblock.arg[0], argblock.arg[1]);
   
   zcode_setup_window(argblock.arg[2]);
   if (display_get_gcur_x() < windows[argblock.arg[2]].x+

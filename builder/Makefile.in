@@ -57,10 +57,11 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-CC = @CC@
+BUILDERCC = @BUILDERCC@
 CPP = @CPP@
 LEX = @LEX@
 MAKEINFO = @MAKEINFO@
+MINGWWINDRES = @MINGWWINDRES@
 PACKAGE = @PACKAGE@
 PERL = @PERL@
 RESEXTN = @RESEXTN@
@@ -77,6 +78,9 @@ ZWORD_TYPE = @ZWORD_TYPE@
 EXTRA_DIST = varopdecode.pl
 
 noinst_PROGRAMS = builder
+
+CC = @BUILDERCC@
+CFLAGS = 
 
 builder_SOURCES = main.c gram.y gram.h lex.l operation.h
 LDADD = @LEXLIB@
@@ -101,7 +105,6 @@ builder_DEPENDENCIES =
 builder_LDFLAGS = 
 LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 LEXLIB = @LEXLIB@
-CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
@@ -151,10 +154,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 maintainer-clean-compile:
-
-builder: $(builder_OBJECTS) $(builder_DEPENDENCIES)
-	@rm -f builder
-	$(LINK) $(builder_LDFLAGS) $(builder_OBJECTS) $(builder_LDADD) $(LIBS)
 .l.c:
 	$(LEX) $(AM_LFLAGS) $(LFLAGS) $< && mv $(LEX_OUTPUT_ROOT).c $@
 .y.c:
@@ -318,6 +317,12 @@ uninstall-am uninstall all-redirect all-am all installdirs \
 mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
+
+main.c: gram.c
+
+builder: $(builder_OBJECTS) $(builder_DEPENDENCIES)
+	@rm -f builder
+	$(CC) -o builder $(builder_OBJECTS)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

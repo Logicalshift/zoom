@@ -94,6 +94,7 @@ AC_TRY_RUN([
   ZMACHINE_CONV_WORD=0,
   AC_MSG_RESULT([backwards])
   ZMACHINE_CONV_WORD=1,
+  ZMACHINE_CONV_WORD=1
   AC_MSG_RESULT([unknown - assuming is backwards])
 )
 
@@ -102,6 +103,42 @@ AC_SUBST(ZMACHINE_CONV_WORD)
 UTIL_DISPLAY_SECTION(features)
 
 AC_CYGWIN
+
+if test "$CYGWIN" != "yes"; then
+  MINGW32=yes
+  AC_PATH_PROG(MINGWWINDRES, mingw32-windres)
+  AC_MSG_CHECKING([if we're cross-compiling using mingw32])
+
+  ac_OLD_CFLAGS="$CFLAGS"
+  CFLAGS="$CFLAGS -mwindows"
+  AC_TRY_LINK([], [ { int x; x = 1; } ],
+      , MINGW32=no)
+  CFLAGS="$CFLAGS -mno-cygwin"
+  AC_TRY_LINK([], [ { int x; x = 1; } ],
+      , MINGW32=no)
+
+  AC_TRY_LINK([#include <windows.h>],
+              [ { MessageBox(NULL, "Arg", "Whoops", MB_OK | MB_SYSTEMMODAL); } ],
+	      , MINGW32=no)
+  AC_MSG_RESULT($MINGW32)
+  CFLAGS=$ac_OLD_CFLAGS
+
+  if test "$MINGW32" = "yes"; then
+    UTIL_CHECK_CFLAG(mwindows)
+    UTIL_CHECK_LDFLAG(mwindows)
+    UTIL_CHECK_CFLAG(mno-cygwin)
+    UTIL_CHECK_LDFLAG(mno-cygwin)  
+    AC_PATH_PROG(WINDRES, mingw32-windres)
+
+    RESEXTN=o
+    AC_SUBST(RESEXTN)
+
+    AM_CONDITIONAL(WINDOWS_VERSION, true)
+    AM_CONDITIONAL(BORLAND_VERSION, false)
+
+    AC_DEFINE(WINDOW_SYSTEM, 2)
+  fi
+fi
 
 if test "$CYGWIN" = "yes"; then
   UTIL_CHECK_CFLAG(mwindows)
@@ -116,7 +153,7 @@ if test "$CYGWIN" = "yes"; then
   AM_CONDITIONAL(BORLAND_VERSION, false)
 
   AC_DEFINE(WINDOW_SYSTEM, 2)
-else
+elsif test "$MINGW32" != "yes"
   AC_PATH_XTRA
   if test "$no_x" = "yes"; then
     AC_MSG_CHECKING([for Windows headers & libraries])
@@ -193,6 +230,15 @@ AC_TRY_COMPILE([#include "freetype.h"], [],
   [
     AC_MSG_RESULT(no)
   ])
+
+if test "$cross_compiling" = "yes"; then
+  UTIL_DISPLAY_SECTION([native gcc (as we're X-compiling)])
+  AC_PATH_PROG(BUILDERCC, gcc)
+else
+  BUILDERCC=$CC
+fi
+
+AC_SUBST(BUILDERCC)
 
 UTIL_DISPLAY_INFO(Generating files)
 

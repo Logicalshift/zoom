@@ -1,3 +1,6 @@
+2000-12-06  Andrew Hunter    <andrew@logicalshift.co.uk>
+	* merged windows version back into CVS
+
 2000-11-27  Andrew Hunter    <andrew@logicalshift.co.uk>
 
 	* unicode fixes, unicode table in header extension block now supported

@@ -8,6 +8,8 @@ int yyline;
 int codeline;
 %}
 
+%option noyywrap
+
 %%
 
 #.*\n				yyline++;

@@ -57,18 +57,14 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-BUILDERCC = @BUILDERCC@
 CC = @CC@
 CPP = @CPP@
 LEX = @LEX@
 MAKEINFO = @MAKEINFO@
-MINGWWINDRES = @MINGWWINDRES@
 PACKAGE = @PACKAGE@
 PERL = @PERL@
-RESEXTN = @RESEXTN@
 UTIL_PROG_TPUT = @UTIL_PROG_TPUT@
 VERSION = @VERSION@
-WINDRES = @WINDRES@
 YACC = @YACC@
 ZBYTE_TYPE = @ZBYTE_TYPE@
 ZDWORD_TYPE = @ZDWORD_TYPE@
@@ -76,7 +72,7 @@ ZMACHINE_CONV_WORD = @ZMACHINE_CONV_WORD@
 ZUWORD_TYPE = @ZUWORD_TYPE@
 ZWORD_TYPE = @ZWORD_TYPE@
 
-EXTRA_DIST = util.m4 display.m4
+extra_DIST = zmark.inf
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
@@ -90,7 +86,7 @@ GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu m4/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu bonus/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -102,14 +98,14 @@ TAGS:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 
-subdir = m4
+subdir = bonus
 
 distdir: $(DISTFILES)
 	here=`cd $(top_builddir) && pwd`; \
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu m4/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu bonus/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \

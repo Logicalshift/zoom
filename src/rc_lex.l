@@ -9,6 +9,8 @@
 int _rc_line;
 %}
 
+%option noyywrap
+
 %%
 
 #.*\n				_rc_line++;
