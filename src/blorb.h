@@ -107,7 +107,7 @@ struct BlorbFile
 {
   BlorbIndex index;
 
-  int zcode_offset;
+  int zcode_offset, zcode_len;
   int release_number;
   char* game_id;
   

@@ -101,6 +101,9 @@ BlorbFile* blorb_loadfile(ZFile* file)
 	  /* Index chunk */
 	  res->index.offset = iff->chunk[x].offset;
 	  res->index.length = iff->chunk[x].length;
+
+	  if (x != 0)
+	    zmachine_warning("Blorb: Technically, the index chunk should be the very first chunk in a file. Zoom doesn't care, though");
 	}
       else if (cmp_token(iff->chunk[x].id, "PNG "))
 	{
@@ -176,6 +179,8 @@ BlorbFile* blorb_loadfile(ZFile* file)
       else if (cmp_token(iff->chunk[x].id, "ZCOD"))
 	{
 	  /* Executable chunk */
+	  res->zcode_offset = iff->chunk[x].offset;
+	  res->zcode_len    = iff->chunk[x].length;
 	}
       else
 	{
@@ -245,7 +250,7 @@ BlorbFile* blorb_loadfile(ZFile* file)
 		{
 		  if (iff->chunk[y].offset == offset+8)
 		    {
-		      zmachine_warning("Blorb: picture #%i refers to unknown resource type '%.4s'", number, iff->chunk[y].id);
+		      zmachine_warning("Blorb: picture #%i refers to non-picture resource type '%.4s'", number, iff->chunk[y].id);
 		      picnum = y;
 		      break;
 		    }
@@ -260,7 +265,10 @@ BlorbFile* blorb_loadfile(ZFile* file)
 	}
       else if (cmp_token(data, "Exec"))
 	{
-	  printf("Code resource...\n");
+	  if (number != 0)
+	    zmachine_warning("Blorb: There should not be more than one code resource in a file");
+	  else if (offset+8 != res->zcode_offset)
+	    zmachine_warning("Blorb: Code index does not match code chunk");
 	}
       else
 	{
