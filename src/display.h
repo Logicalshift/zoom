@@ -98,6 +98,7 @@ extern void display_set_title(const char* title);
 extern void display_update   (void);
 
 /* Version 1-5 display */
+extern void display_is_v6       (void);
 extern void display_set_colour  (int fore, int back);
 extern void display_split       (int lines, int window);
 extern void display_join        (int win1, int win2);
@@ -128,14 +129,17 @@ extern void  display_scroll_region  (int x, int y,
 				     int width, int height,
 				     int xoff, int yoff);
 extern void  display_pixmap_cols     (int fg, int bg);
-extern void  display_plot_gtext      (int*, int len, int style, int x, int y);
+extern void  display_plot_gtext      (const int*, int len, 
+				      int style, int x, int y);
 extern void  display_plot_image      (BlorbImage*, int x, int y);
-extern float display_measure_text    (int*, int len, int style);
+extern float display_measure_text    (const int*, int len, int style);
 extern float display_get_font_width  (int style);
 extern float display_get_font_height (int style);
 extern float display_get_font_ascent (int style);
 extern float display_get_font_descent(int style);
 extern void  display_wait_for_more   (void);
+
+extern void  display_set_input_pos   (int style, int x, int y);
 
 /* Version 6 display */
 #if 0 /* Not used any more */

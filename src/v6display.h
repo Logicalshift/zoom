@@ -40,6 +40,7 @@ extern void v6_prints_c     (const char* text);
 extern void v6_erase_window (void);
 extern void v6_erase_line   (int);
 
+extern int  v6_set_style    (int);
 extern void v6_set_colours  (int fg, int bg);
 extern int  v6_get_window   (void);
 extern void v6_set_window   (int window);
@@ -53,6 +54,8 @@ extern void v6_set_cursor   (int x, int y);
 
 extern int  v6_get_cursor_x (void);
 extern int  v6_get_cursor_y (void);
+
+extern void v6_set_caret    (void);
 
 extern void v6_set_newline_function(int (*func)(const int * remaining,
 						int rem_len));

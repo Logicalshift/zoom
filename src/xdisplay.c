@@ -277,41 +277,70 @@ static void draw_caret(void)
     }
 }
 
+static int pix_cstyle = 0;
+static int pix_cx = 0;
+static int pix_cy = 0;
+
+void display_set_input_pos(int style, int x, int y)
+{
+  pix_cstyle = style;
+  pix_cx = x; pix_cy = y;
+}
+
 static void move_caret(void)
 { 
   int last_on = caret_on;
 
+  /* Handled elsewhere for pixmap displays */
+
   caret_on = 0;
   draw_caret();
 
-  if (CURWIN.overlay)
+  if (x_pixmap != None)
     {
-      input_x = caret_x = xfont_x*CURWIN.xpos;
-      input_y = caret_y = xfont_y*CURWIN.ypos;
-      input_y += xfont_get_ascent(font[style_font[(CURSTYLE>>1)&15]]);
-      caret_height = xfont_y;
+      input_x = caret_x = pix_cx;
+      input_y = caret_y = pix_cy;
+      input_y += xfont_get_ascent(font[style_font[(pix_cstyle>>1)&15]]);
+      caret_height = xfont_get_height(font[style_font[(pix_cstyle>>1)&15]]);
+
+      if (text_buf != NULL)
+	{
+	  caret_x += xfont_get_text_width(font[style_font[(pix_cstyle>>1)&15]],
+					  text_buf,
+					  buf_offset);
+	}
     }
   else
     {
-      if (CURWIN.lastline != NULL)
+      if (CURWIN.overlay)
 	{
-	  input_x = caret_x = CURWIN.xpos;
-	  input_y = caret_y = CURWIN.lastline->baseline-scrollpos;
-	  caret_y -= CURWIN.lastline->ascent;
-	  caret_height = CURWIN.lastline->ascent+CURWIN.lastline->descent-1;
+	  input_x = caret_x = xfont_x*CURWIN.xpos;
+	  input_y = caret_y = xfont_y*CURWIN.ypos;
+	  input_y += xfont_get_ascent(font[style_font[(CURSTYLE>>1)&15]]);
+	  caret_height = xfont_y;
 	}
       else
 	{
-	  input_x = input_y = caret_x = caret_y = 0;
-	  caret_height = xfont_y-1;
+	  if (CURWIN.lastline != NULL)
+	    {
+	      input_x = caret_x = CURWIN.xpos;
+	      input_y = caret_y = CURWIN.lastline->baseline-scrollpos;
+	      caret_y -= CURWIN.lastline->ascent;
+	      caret_height = CURWIN.lastline->ascent+CURWIN.lastline->descent-1;
+	    }
+	  else
+	    {
+	      input_x = input_y = caret_x = caret_y = 0;
+	      caret_height = xfont_y-1;
+	    }
 	}
-    } 
 
-  if (text_buf != NULL)
-    {
-      caret_x += xfont_get_text_width(font[style_font[(CURSTYLE>>1)&15]],
-				      text_buf,
-				      buf_offset);
+      if (text_buf != NULL)
+	{
+	  caret_x += xfont_get_text_width(font[style_font[(CURSTYLE>>1)&15]],
+					  text_buf,
+					  buf_offset);
+	}
     }
 
   caret_on = last_on;
@@ -335,6 +364,7 @@ static void draw_input_text(void)
   int w;
   int on;
   int fg, bg;
+  int style;
 
   reset_clip();
 
@@ -350,32 +380,47 @@ static void draw_input_text(void)
   on = caret_on;
   hide_caret();
 
-  if (CURWIN.overlay)
+  move_caret();
+  style = CURSTYLE;
+
+  if (x_pixmap != None)
     {
-      input_x = caret_x = xfont_x*CURWIN.xpos;
-      input_y = caret_y = xfont_y*CURWIN.ypos;
-      input_y += xfont_get_ascent(font[style_font[(CURSTYLE>>1)&15]]);
-      caret_height = xfont_y;
+      style = pix_cstyle;
+
+      input_x = caret_x = pix_cx;
+      input_y = caret_y = pix_cy;
+      input_y += xfont_get_ascent(font[style_font[(pix_cstyle>>1)&15]]);
+      caret_height = xfont_get_height(font[style_font[(pix_cstyle>>1)&15]])-1;
     }
   else
     {
-      if (CURWIN.lastline != NULL)
+      if (CURWIN.overlay)
 	{
-	  input_x = caret_x = CURWIN.xpos;
-	  input_y = caret_y = CURWIN.lastline->baseline-scrollpos;
-	  caret_y -= CURWIN.lastline->ascent;
-	  caret_height = CURWIN.lastline->ascent+CURWIN.lastline->descent-1;
+	  input_x = caret_x = xfont_x*CURWIN.xpos;
+	  input_y = caret_y = xfont_y*CURWIN.ypos;
+	  input_y += xfont_get_ascent(font[style_font[(CURSTYLE>>1)&15]]);
+	  caret_height = xfont_y;
 	}
       else
 	{
-	  input_x = input_y = caret_x = caret_y = 0;
-	  caret_height = xfont_y-1;
+	  if (CURWIN.lastline != NULL)
+	    {
+	      input_x = caret_x = CURWIN.xpos;
+	      input_y = caret_y = CURWIN.lastline->baseline-scrollpos;
+	      caret_y -= CURWIN.lastline->ascent;
+	      caret_height = CURWIN.lastline->ascent+CURWIN.lastline->descent-1;
+	    }
+	  else
+	    {
+	      input_x = input_y = caret_x = caret_y = 0;
+	      caret_height = xfont_y-1;
+	    }
 	}
     }
 
   if (text_buf != NULL)
     {
-      w = xfont_get_text_width(font[style_font[(CURSTYLE>>1)&15]],
+      w = xfont_get_text_width(font[style_font[(style>>1)&15]],
 			       text_buf,
 			       istrlen(text_buf));
 
@@ -384,9 +429,9 @@ static void draw_input_text(void)
 		     input_x + BORDER_SIZE,
 		     caret_y + BORDER_SIZE,
 		     win_x - input_x,
-		     xfont_get_height(font[style_font[(CURSTYLE>>1)&15]]));
+		     xfont_get_height(font[style_font[(style>>1)&15]]));
 
-      caret_x += xfont_get_text_width(font[style_font[(CURSTYLE>>1)&15]],
+      caret_x += xfont_get_text_width(font[style_font[(style>>1)&15]],
 				      text_buf,
 				      buf_offset);
 
@@ -403,7 +448,7 @@ static void draw_input_text(void)
 	  xft_drawable = xft_maindraw;
 	}
 #endif
-      xfont_plot_string(font[style_font[(CURSTYLE>>1)&15]],
+      xfont_plot_string(font[style_font[(style>>1)&15]],
 			x_mainwin, x_wingc,
 			input_x+BORDER_SIZE, input_y+BORDER_SIZE,
 			text_buf,
@@ -1861,7 +1906,7 @@ static int process_events(long int to, int* buf, int buflen)
 void printf_debug(char* format, ...)
 {
   va_list  ap;
-  char     string[512];
+  char     string[8192];
 
   va_start(ap, format);
   vsprintf(string, format, ap);
@@ -1941,6 +1986,10 @@ void display_update_region(XFONT_MEASURE left,
 			   XFONT_MEASURE bottom)
 {
   XRectangle clip;
+
+  if (left == right ||
+      top == bottom)
+    return;
 
   if (dregion == None)
     dregion = XCreateRegion();
@@ -2414,6 +2463,12 @@ ZDisplay* display_get_info(void)
   dis.fore          = DEFAULT_FORE;
   dis.back          = DEFAULT_BACK;
 
+  if (x_pixmap != None)
+    {
+      dis.width = pix_w;
+      dis.height = pix_h;
+    }
+
   return &dis;
 }
 
@@ -2454,7 +2509,7 @@ int display_init_pixmap(int width, int height)
 
   x_pixgc = XCreateGC(x_display, x_pixmap, 0, NULL);
 
-  XSetForeground(x_display, x_pixgc, x_colour[4].pixel);
+  XSetForeground(x_display, x_pixgc, x_colour[FIRST_ZCOLOUR+1].pixel);
   XFillRectangle(x_display, x_pixmap, x_pixgc, 0,0, width, height);
 
   XResizeWindow(x_display, x_mainwin,
@@ -2482,9 +2537,11 @@ void display_pixmap_cols(int fore, int back)
   pix_back = back + FIRST_ZCOLOUR;
   if (back == -1)
     pix_back = -1;
+  if (fore < 0)
+    pix_fore = DEFAULT_FORE + FIRST_ZCOLOUR;
 }
 
-void display_plot_gtext(int* text,
+void display_plot_gtext(const int* text,
 			int  len,
 			int  style,
 			int  x,
@@ -2493,10 +2550,13 @@ void display_plot_gtext(int* text,
   int fg, bg;
   int ft;
 
-  int width, height;
+  float width, height;
+
+  if (len == 0)
+    return;
 
   fg = pix_fore; bg = pix_back;
-  if (style&1)
+  if ((style&1))
     { fg = pix_back; bg = pix_fore; }
   if (fg < 0)
     fg = FIRST_ZCOLOUR+7;
@@ -2515,8 +2575,8 @@ void display_plot_gtext(int* text,
 		     x_colour[bg].pixel);
       XFillRectangle(x_display, x_pixmap, x_pixgc,
 		     x, y-xfont_get_ascent(font[ft]),
-		     width,
-		     height);
+		     width+0.5,
+		     height+0.5);
     }
   xfont_plot_string(font[ft], x_pixmap, x_pixgc,
 		    x, y,
@@ -2561,10 +2621,10 @@ void display_scroll_region(int x, int y,
   else
     rh += yoff;
   
-  pixmap_update(rx, ry, rw, rh);
+  pixmap_update(rx, ry, rx+rw, ry+rh);
 }
 
-float display_measure_text(int* text, int len, int style)
+float display_measure_text(const int* text, int len, int style)
 {
   int ft;
 
@@ -2588,7 +2648,7 @@ float display_get_font_height(int style)
 
   ft = style_font[(style>>1)&15];
 
-  return xfont_get_width(font[ft]);
+  return xfont_get_height(font[ft]);
 }
 
 float display_get_font_ascent(int style)
@@ -2626,6 +2686,13 @@ void display_plot_image(BlorbImage* img, int x, int y)
       image_plot_X(img->loaded, x_display, x_pixmap, x_pixgc,
 		 x, y, img->std_n, img->std_d);
     }
+}
+
+void display_wait_for_more(void)
+{
+  more_on = 1;
+  display_readchar(0);
+  more_on = 0;
 }
 
 #endif

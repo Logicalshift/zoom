@@ -1246,6 +1246,8 @@ void zcode_v6_initialise(void)
 
   v6_startup();
   v6_set_newline_function(newline_function);
+
+  machine.dinfo = display_get_info();
 }
 
 static int*  pending_text = NULL;
@@ -1336,6 +1338,7 @@ static inline void zcode_setup_window(int window)
     v6_set_more(window, 0);
   stream_buffering(windows[window].buffering);
 }
+
 static inline int zcode_v6_push_stack(ZStack* stack,
 				      ZUWord  stk,
 				      ZUWord  value)

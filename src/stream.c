@@ -302,6 +302,9 @@ void stream_flush_buffer(void)
 {
   if (bufpos <= 0)
     return;
+#ifdef DEBUG
+  printf_debug("Buffer flushed\n");
+#endif
 
   buffer[bufpos] = 0;
   prints(buffer);

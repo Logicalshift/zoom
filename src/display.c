@@ -30,6 +30,16 @@
 #include "display.h"
 #include "format.h"
 
+#include "v6display.h"
+
+static int is_v6 = 0;
+
+#if defined(V6ASSERT) && defined(SUPPORT_VERSION_6)
+# define NOTV6 if (is_v6) { zmachine_fatal("Non-v6 function called when v6 display is active"); }
+#else
+# define NOTV6
+#endif
+
 /* Misc functions */
 
 static inline int istrlen(const int* string)
@@ -47,9 +57,16 @@ static inline void istrcpy(int* dest, const int* src)
 
 /* Output functions */
 
+void display_is_v6(void)
+{
+  is_v6 = 1;
+}
+
 void display_clear(void)
 {
   int x, y, z;
+
+  NOTV6;
 
   displayed_text = 0;
 
@@ -133,6 +150,8 @@ void display_clear(void)
 
 void display_erase_window(void)
 {
+  NOTV6;
+
   display_set_scroll_region(0);
   display_set_scroll_range(0, 0);
   display_set_scroll_position(0);
@@ -206,6 +225,16 @@ void display_erase_window(void)
 
 void display_prints(const int* str)
 {
+#ifdef SUPPORT_VERSION_6
+  if (is_v6)
+    {
+      v6_prints(str);
+      return;
+    }
+#endif
+
+  NOTV6;
+
   if (CURWIN.overlay)
     {
       int x;
@@ -376,6 +405,8 @@ void display_printf(const char* format, ...)
 
 void display_erase_line  (int val)
 {
+  NOTV6;
+
   if (CURWIN.overlay)
     {
       int x;
@@ -426,6 +457,8 @@ void display_desanitise(void)
 
 int  display_set_font    (int font)
 {
+  NOTV6;
+
   switch (font)
     {
     case -1:
@@ -442,6 +475,14 @@ int  display_set_font    (int font)
 int  display_set_style   (int style)
 {
   int old_style;
+
+#ifdef SUPPORT_VERSION_6
+  if (is_v6)
+    {
+      return v6_set_style(style);
+    }
+#endif
+  NOTV6;
 
   old_style = CURWIN.style;
   
@@ -460,6 +501,8 @@ int  display_set_style   (int style)
 
 void display_set_colour  (int fore, int back)
 {
+  NOTV6;
+
   if (fore == -1)
     fore = DEFAULT_FORE;
   if (back == -1)
@@ -477,6 +520,8 @@ void display_set_colour  (int fore, int back)
 
 void display_split       (int lines, int window)
 {
+  NOTV6;
+  
   text_win[window].winsx = CURWIN.winsx;
   text_win[window].winlx = CURWIN.winsx;
   text_win[window].winsy = CURWIN.winsy;
@@ -537,6 +582,8 @@ void display_split       (int lines, int window)
 
 void display_join        (int window1, int window2)
 {
+  NOTV6;
+
   if (text_win[window1].winsy != text_win[window2].winly)
     return; /* Windows can't be joined */
   text_win[window1].winsy = text_win[window2].winsy;
@@ -547,6 +594,8 @@ void display_join        (int window1, int window2)
 
 void display_set_window  (int window)
 {
+  NOTV6;
+
   text_win[window].fore  = CURWIN.fore;
   text_win[window].back  = CURWIN.back;
   text_win[window].style = CURWIN.style;
@@ -555,11 +604,15 @@ void display_set_window  (int window)
 
 int  display_get_window  (void)
 {
+  NOTV6;
+
   return cur_win;
 }
 
 void display_set_cursor  (int x, int y)
 {
+  NOTV6;
+
   if (CURWIN.overlay)
     {
       if (CURWIN.xpos >= size_x)
@@ -582,30 +635,36 @@ void display_set_cursor  (int x, int y)
 
 void display_set_gcursor (int x, int y)
 {
+  NOTV6;
   display_set_cursor(x, y);
 }
 
 int  display_get_gcur_x  (void)
 {
+  NOTV6;
   return CURWIN.xpos;
 }
 
 int  display_get_gcur_y  (void)
 {
+  NOTV6;
   return CURWIN.ypos;
 }
 
 int  display_get_cur_x   (void)
 {
+  NOTV6;
   return CURWIN.xpos;
 }
 
 int  display_get_cur_y   (void)
 {
+  NOTV6;
   return CURWIN.ypos;
 }
 
 void display_force_fixed (int window, int val)
 {
+  NOTV6;
   CURWIN.force_fixed = val;
 }

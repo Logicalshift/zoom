@@ -309,11 +309,11 @@ XFONT_MEASURE xfont_get_height(xfont* f)
     {
 #ifdef HAVE_XFT
     case XFONT_XFT:
-      return f->data.Xft->height;
+      return xfont_get_ascent(f)+xfont_get_descent(f);
 #endif
 #ifdef HAVE_T1LIB
     case XFONT_T1LIB:
-      return f->data.t1.size;
+      return xfont_get_ascent(f)+xfont_get_descent(f);
 #endif
     case XFONT_X:
       return f->data.X->ascent + f->data.X->descent;
@@ -510,7 +510,7 @@ void xfont_plot_string(xfont* f,
 	    /*
 	     * NOTE: can't antialias with transparent backgrounds...
 	     */
-	    T1_AASetStringX(draw, gc, T1_TRANSPARENT, 
+	    T1_AASetStringX(draw, gc, T1_OPAQUE, 
 			    x, y + (f->data.t1.bounds.llx*f->data.t1.size)/1000, 
 			    f->data.t1.id,
 			    t1txt, len, 0, T1_KERNING,
