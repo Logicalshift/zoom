@@ -178,7 +178,7 @@
 
     int x;
     for (x=0; x<3; x++) {
-        [windows[x] setProtocolForProxy: @protocol(ZVendor)];
+        [windows[x] setProtocolForProxy: @protocol(ZWindow)];
     }
 
     // Setup the display, etc
@@ -248,7 +248,7 @@ void cocoa_debug_handler(ZDWord pc) {
 		// Wait for the display to request resumption
 		NSAutoreleasePool* breakpointPool = [[NSAutoreleasePool alloc] init];
 		
-		while (waitingForBreakpoint && (mainConnection != nil || mainMachine != nil)) {
+		while (waitingForBreakpoint && (mainMachine != nil)) {
 			[breakpointPool release];
 			breakpointPool = [[NSAutoreleasePool alloc] init];
 			

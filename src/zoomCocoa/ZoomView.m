@@ -7,11 +7,13 @@
 //
 
 #include <signal.h>
+#include <unistd.h>
 
 #import "ZoomView.h"
 #import "ZoomLowerWindow.h"
 #import "ZoomUpperWindow.h"
 #import "ZoomPixmapWindow.h"
+#import "ZoomAppDelegate.h"
 
 #import "ZoomScrollView.h"
 
@@ -280,6 +282,9 @@ static void finalizeViews(void) {
     if (zMachine) [zMachine release];
 
     zMachine = [machine retain];
+	if (delegate && [delegate respondsToSelector: @selector(zMachineStarted:)]) {
+		[delegate zMachineStarted: self];
+	}
     [zMachine startRunningInDisplay: self];
 }
 
@@ -1361,7 +1366,9 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	}
 
     // Prepare for launch
-    [zoomTask setLaunchPath: serverName];
+    [zoomTask setLaunchPath: serverName];	
+	[zoomTask setArguments: [NSArray arrayWithObjects: 
+		[NSString stringWithFormat: @"%i", getpid()], nil]];
     
     zoomTaskStdout = [[NSPipe allocWithZone: [self zone]] init];
     [[NSNotificationCenter defaultCenter] addObserver: self
@@ -1375,6 +1382,9 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
                                              selector: @selector(zoomTaskFinished:)
                                                  name: NSTaskDidTerminateNotification
                                                object: zoomTask];
+	
+	// Notify the NSApp delegate that we're waiting for a Z-Machine to arrive
+	[[NSApp delegate] addViewWaitingForServer: self];
     
     // Light the blue touch paper
     [zoomTask launch];
@@ -1390,7 +1400,9 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 //	     (phut)
 - (void) zoomTaskFinished: (NSNotification*) not {
 	if ([not object] != zoomTask) return; // Not our task
-	
+
+	[[NSApp delegate] removeView: self];
+
     // The task has finished
     if (zMachine) {
         [zMachine release];
@@ -1480,43 +1492,25 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         [zoomTaskData appendString: [NSString stringWithCString: [inData bytes]
                                                          length: [inData length]]];
         
-        if (zMachine == nil) {
-            // Task data could be indicating that we should start up the ZMachine
-            if ([zoomTaskData rangeOfString: @"ZoomServer: Ready"].location != NSNotFound) {
-                NSObject<ZVendor>* theVendor = nil;
-                NSString* connectionName = [NSString stringWithFormat: @"ZoomVendor-%i",
-                    [zoomTask processIdentifier]];
-
-                theVendor =
-                    [[NSConnection rootProxyForConnectionWithRegisteredName: connectionName
-                                                                      host: nil] retain];
-
-                if (theVendor) {
-                    zMachine = [[theVendor createNewZMachine] retain];
-                    [theVendor release];
-                }
-
-                if (!zMachine) {
-                    NSLog(@"Failed to create Z-Machine");
-
-                    [zoomTask terminate];
-                } else {
-                    if (delegate && [delegate respondsToSelector: @selector(zMachineStarted:)]) {
-                        [delegate zMachineStarted: self];
-                    }
-                    
-                    [zMachine startRunningInDisplay: self];
-                }
-            }
-        } else {
-            printf("%s", [[NSString stringWithCString: [inData bytes]
-                                               length: [inData length]] cString]);
-        }
+		printf("%s", [[NSString stringWithCString: [inData bytes]
+										   length: [inData length]] cString]);
     } else {
     }
 
     [[zoomTaskStdout fileHandleForReading] waitForDataInBackgroundAndNotify];
 }
+
+/*
+- (void) setZMachine: (NSObject<ZMachine>*) newMachine {
+	if (zMachine) {
+		NSLog(@"Programmer is a spoon: setZMachine called when a zmachine is already running in this view");
+		return;
+	}
+	
+	zMachine = [newMachine retain];
+	[zMachine startRunningInDisplay: self];
+}
+*/
 
 - (BOOL)panel:(id)sender shouldShowFilename:(NSString *)filename {
 	NSSavePanel* panel = sender;

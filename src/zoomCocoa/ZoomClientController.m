@@ -305,6 +305,8 @@
 
 		[[ZoomGameInfoController sharedGameInfoController] setInfoOwner: nil];
 	}
+	
+	[[NSApp delegate] removeView: zoomView];
 }
 
 - (void)windowDidBecomeMain:(NSNotification *)aNotification {

@@ -118,9 +118,9 @@ extern NSString* ZoomStyleAttributeName;
 - (void) setScaleFactor: (float) scaling;
 
 // Specifying what to run
-- (void) setZMachine: (NSObject<ZMachine>*) machine;
 - (void) runNewServer: (NSString*) serverName;
 - (NSObject<ZMachine>*) zMachine;
+- (void) setZMachine: (NSObject<ZMachine>*) machine;
 
 // Scrolling, more prompt
 - (void) scrollToEnd;

@@ -39,9 +39,11 @@ typedef enum {
 } ZFileType;
 
 // == Server-side objects ==
+#if 0
 @protocol ZVendor
 - (out byref NSObject<ZMachine>*) createNewZMachine;
 @end
+#endif
 
 @protocol ZMachine
 
@@ -380,4 +382,9 @@ extern NSString* ZStyleAttributeName;
 - (BOOL) empty; // YES if the buffer has no data
 - (void) blat; // Like blitting, only messier
 
+@end
+
+// Connecting to the client
+@protocol ZClient
+- (out byref id<ZDisplay>) connectToDisplay: (in byref id<ZMachine>) zMachine;
 @end

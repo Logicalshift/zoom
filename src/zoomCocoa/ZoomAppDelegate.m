@@ -6,6 +6,8 @@
 //  Copyright (c) 2003 Andrew Hunter. All rights reserved.
 //
 
+#include <unistd.h>
+
 #import "ZoomAppDelegate.h"
 #import "ZoomGameInfoController.h"
 #import "ZoomSkeinController.h"
@@ -16,6 +18,10 @@
 @implementation ZoomAppDelegate
 
 // = Initialisation =
++ (void) initialization {
+	
+}
+
 - (id) init {
 	self = [super init];
 	
@@ -37,6 +43,26 @@
 			[gameIndices addObject: [[[ZoomMetadata alloc] initWithData: infocomData] autorelease]];
 		if (archiveData) 
 			[gameIndices addObject: [[[ZoomMetadata alloc] initWithData: archiveData] autorelease]];
+		
+		// Create the connection that we'll use to allow ZoomServer processes to connect to us
+		// (Originally, this was created by the ZoomServer processes themselves, but there is a limit to the
+		// number of Mach ports that can be created in OS X. Exceeding the limit creates a kernel panic - an
+		// OS X bug, but one we really don't want to provoke if possible)
+		//
+		// Unlikely that anyone ever encountered this: you need ~200-odd running games before things go
+		// kaboom.
+		NSString* connectionName = [NSString stringWithFormat: @"Zoom-%i", getpid()];
+		NSPort* port = [NSMachPort port];
+		
+		connection = [[NSConnection connectionWithReceivePort: port
+													 sendPort: port] retain];
+		[connection setRootObject: self];
+		[connection addRunLoop: [NSRunLoop currentRunLoop]];
+		if (![connection registerName: connectionName]) {
+			NSLog(@"Uh-oh: failed to register a connection. Games will probably fail to start");
+		}
+				
+		waitingViews = [[NSMutableArray alloc] init];
 	}
 	
 	return self;
@@ -45,6 +71,10 @@
 - (void) dealloc {
 	if (preferencePanel) [preferencePanel release];
 	[gameIndices release];
+	
+	[waitingViews release];
+	[connection registerName: nil];
+	[connection release];
 	
 	[super dealloc];
 }
@@ -164,6 +194,40 @@
 	}
 	
 	return nil;
+}
+
+// = Connecting views to Z-Machines =
+
+- (void) addViewWaitingForServer: (ZoomView*) view {
+	[self removeView: view];
+	[waitingViews addObject: view];
+}
+
+- (void) removeView: (ZoomView*) view {
+	[waitingViews removeObjectIdenticalTo: view];
+}
+
+- (id<ZDisplay>) connectToDisplay: (id<ZMachine>) zMachine {
+	// Get the view that's waiting
+	ZoomView* whichView = [[[waitingViews lastObject] retain] autorelease];	
+	if (whichView == nil) {
+		NSLog(@"WARNING: attempt to connect to a display when no objects are available to connect to");
+		return nil;
+	}
+	
+	// Remove from the list of waiting views
+	[waitingViews removeLastObject];
+	
+	// Notify the view that it's gained a Z-Machine
+	[[NSRunLoop currentRunLoop] performSelector: @selector(setZMachine:)
+										 target: whichView
+									   argument: zMachine
+										  order: 16
+										  modes: [NSArray arrayWithObject: NSDefaultRunLoopMode]];
+	//[whichView setZMachine: (NSObject<ZMachine>*)zMachine];
+	
+	// We're done
+	return whichView;
 }
 
 @end

@@ -15,75 +15,47 @@
 NSAutoreleasePool* mainPool = nil;
 NSRunLoop*         mainLoop = nil;
 
-ZoomServer*        mainServer = nil;
-NSConnection*      mainConnection = nil;
-
 ZoomZMachine*      mainMachine = nil;
-
-@implementation ZoomServer
-
-- (id<ZMachine>) createNewZMachine {
-    if (mainMachine) {
-        // Outside possibility
-        return nil;
-    }
-    
-    ZoomZMachine* res = [[ZoomZMachine alloc] init];
-
-    // Don't allow any further ZMachines to be created
-    // (A server that supports multple ZMachines may be a worthwhile
-    // future extension, or it may not: consider what happens when
-    // a ZMachine gets into an infinite loop)
-    [self autorelease];
-    [mainConnection registerName: nil];
-    [mainConnection autorelease];
-
-    mainConnection = nil;
-
-    mainMachine = res;
-
-    return [res autorelease];
-}
-
-@end
 
 // == The main() function ==
 int main(int argc, char** argv) {
     // Create the main autorelease pool and runloop
     mainPool = [[NSAutoreleasePool alloc] init];
     mainLoop = [NSRunLoop currentRunLoop];
-
-    // Create the ZMachine object
-    mainServer = [[ZoomServer alloc] init];
-    [mainServer autorelease];
-
-    // Advertise it for connection
-    NSString* serverName;
-
-    serverName = [NSString stringWithFormat: @"ZoomVendor-%i", getpid()];
-#ifdef DEBUG
-    NSLog(@"Zoom server %@ starting", serverName);
-#endif
-
-    // Stdout messages designed to be caught by the client
-    fprintf(stdout, "ZoomServer: Startup beginning\n");
-    fflush(stdout);
-    
-    mainConnection = [NSConnection defaultConnection];
-    [mainConnection setRootObject: mainServer];
-    if ([mainConnection registerName: serverName] == NO) {
-        NSLog(@"Unable to create Zoom server object - aborting");
-        [mainPool release];
-        return 0;
-    }
-
+	
     // Indicates that the client should be able to connect
     NSLog(@"Server ready");
-    fprintf(stdout,"ZoomServer: Ready\n");
-    fflush(stdout);
+	
+	// Connect to the view process
+	NSObject<ZClient>* client = nil;
+	NSString* connectionName = [NSString stringWithFormat: @"Zoom-%s",
+		argv[1]];
+
+	NSConnection* remoteConnection = [NSConnection connectionWithRegisteredName: connectionName
+																		   host: nil];
+	
+	if (remoteConnection == nil) {
+		NSLog(@"Warning: unable to locate connection %@. Aborting.", connectionName);
+	}
+	
+	client = (NSObject<ZClient>*)[remoteConnection rootProxy];
+	[client retain];
+	
+	if (client == nil) {
+		NSLog(@"Unable to locate client object for connection %@. Aborting", connectionName);
+		abort();
+	}
+	
+	mainMachine = [[ZoomZMachine alloc] init];
+	if ([client connectToDisplay: mainMachine] == nil) {
+		NSLog(@"Failed to connect to view");
+		abort();
+	}
+	
+	NSLog(@"Server connected");
 
     // Main runloop
-    while (mainConnection != nil || mainMachine != nil) {
+    while (mainMachine != nil) {
         [mainPool release];
         mainPool = [[NSAutoreleasePool alloc] init];
         
