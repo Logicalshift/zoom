@@ -218,7 +218,7 @@ XImage* image_to_ximage_render(image_data* img,
   ashift2 = 8 - (topbit(format->direct.alphaMask)+1);
 
   /* Allocate image data */
-  xim->data = malloc(xim->bytes_per_line * xim->height);
+  xim->data = malloc(xim->bytes_per_line*xim->height);
 
   imgdata = image_rgb(img);
   bytes_per_pixel = xim->bits_per_pixel/8;
@@ -484,13 +484,16 @@ XImage* image_to_mask_truecolour(XImage*     orig,
 	      for (z=0; z<bytes_per_pixel; z++)
 		{
 		  *(row++) = 0;
-		  *(oldrow++) = 0;
+		  oldrow++;
 		}
 	    }
 	  else
 	    {
 	      for (z=0; z<bytes_per_pixel; z++)
-		*(row++) = 255;
+		{
+		  *(row++) = 255;
+		  *(oldrow++) = 0;
+		}
 	    }
 
 	  imgdata += 4;
@@ -508,10 +511,14 @@ static void x_destruct(image_data* img, void* data)
 
   if (d->image != NULL)
     {
+      free(d->image->data);
+      d->image->data = NULL;
       XDestroyImage(d->image);
     }
   if (d->mask != NULL)
     {
+      free(d->mask->data);
+      d->mask->data = NULL;
       XDestroyImage(d->mask);
     }
 #ifdef HAVE_XRENDER
@@ -573,12 +580,12 @@ void image_plot_X(image_data* img,
   image_unload_rgb(img);
 
   XSetFunction(display, gc, GXand);
-  XPutImage(display, draw, gc, data->mask, 0,0,0,0,
+  XPutImage(display, draw, gc, data->mask, 0,0,x,y,
 	    image_width(img), image_height(img));
   XSetFunction(display, gc, GXor);
-  XPutImage(display, draw, gc, data->image, 0,0,0,0,
+  XPutImage(display, draw, gc, data->image, 0,0,x,y,
 	    image_width(img), image_height(img));
-  XSetFunction(display, gc, GXset);
+  XSetFunction(display, gc, GXcopy);
 }
 
 #ifdef HAVE_XRENDER
@@ -603,6 +610,8 @@ void image_plot_Xrender(image_data* img,
       data->piccy = None;
 
       image_set_data(img, data, x_destruct);
+      if (image_get_data(img) != data)
+	printf("Yargh\n");
     }
   
   /* Get the format if necessary */
@@ -628,7 +637,7 @@ void image_plot_Xrender(image_data* img,
       if (data->pmap == None)
 	{
 	  XImage* xim;
-	  GC      agc;
+	  GC      agc = None;
 
 	  image_unload_rgb(img);
 	  if (n != d)
@@ -640,7 +649,9 @@ void image_plot_Xrender(image_data* img,
 				     image_width(img), image_height(img),
 				     format->depth);
 	  if (data->pmap == None)
-	    return;
+	    {
+	      return;
+	    }
 
 	  /* ... and create the XRender picture */
 	  data->piccy = XRenderCreatePicture(display,
@@ -648,13 +659,18 @@ void image_plot_Xrender(image_data* img,
 					     format, 0, 0);
 
 	  /* Now, create and render the image... */
-	  xim = image_to_ximage_render(img, display, DefaultVisual(display, DefaultScreen(display)));
+	  xim = image_to_ximage_render(img, display, 
+				       DefaultVisual(display, DefaultScreen(display)));
 
 	  agc = XCreateGC(display, data->pmap, 0, NULL);
+
+	  XSetFunction(display, agc, GXcopy);
 	  XPutImage(display, data->pmap, agc, xim,
 		    0,0,0,0,
 		    xim->width, xim->height);
+	  XFlushGC(display, agc);
 
+	  free(xim->data); xim->data = NULL;
 	  XDestroyImage(xim);
 	  XFreeGC(display, agc);
 
