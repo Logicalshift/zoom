@@ -136,7 +136,7 @@
 			NSRectFill(winRect);			
 			
 			if (yp < [lines count] && yp < [win length]) {
-				[[lines objectAtIndex: yp] drawAtPoint: NSMakePoint(0, fixedSize.height*(yp+startY))];
+				[(NSAttributedString*)[lines objectAtIndex: yp] drawAtPoint: NSMakePoint(0, fixedSize.height*(yp+startY))];
 			}
 			
 			// Draw the cursor

@@ -643,8 +643,8 @@
 		};
 		4B1E3F88050F7CF100A8E303 = {
 			children = (
-				4BCF3F2D050F8ECD00A8E303,
 				4BE447BA0510E0E000A8E303,
+				4BCF3F2D050F8ECD00A8E303,
 				4B1E3F91050F7D5200A8E303,
 				4B1E3F99050F7D5200A8E303,
 				4B1E3F8F050F7D5200A8E303,
@@ -1688,6 +1688,24 @@
 			settings = {
 			};
 		};
+		4B42478B0695E25000A3A1C0 = {
+			fileRef = 4BA2BCF20694A0830082C022;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
+		4B42478C0695E25600A3A1C0 = {
+			fileRef = 4BA2BCEB06949E730082C022;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
 		4B4EF61C050FCEA600A8E303 = {
 			buildActionMask = 2147483647;
 			dstPath = "";
@@ -1978,6 +1996,75 @@
 		};
 		4B9ED9D00602977C0049E468 = {
 			fileRef = 4B9ED9CF0602977C0049E468;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BA2BCE806949E3E0082C022 = {
+			children = (
+				4BA2BCF20694A0830082C022,
+				4BA2BCF30694A0830082C022,
+				4BA2BCEB06949E730082C022,
+				4BA2BCEC06949E730082C022,
+			);
+			isa = PBXGroup;
+			name = Skeins;
+			path = Skein;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BA2BCEB06949E730082C022 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = ZoomSkein.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BA2BCEC06949E730082C022 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = ZoomSkein.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BA2BCED06949E730082C022 = {
+			fileRef = 4BA2BCEB06949E730082C022;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BA2BCEF06949E790082C022 = {
+			fileRef = 4BA2BCEC06949E730082C022;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BA2BCF20694A0830082C022 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = ZoomSkeinItem.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BA2BCF30694A0830082C022 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = ZoomSkeinItem.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BA2BCF40694A0830082C022 = {
+			fileRef = 4BA2BCF20694A0830082C022;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BA2BCF60694A08D0082C022 = {
+			fileRef = 4BA2BCF30694A0830082C022;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -2390,6 +2477,8 @@
 				4BE6220C068C273900369528,
 				4BE6236F068CB86C00369528,
 				4B3DA131068DAF9E00B7090F,
+				4BA2BCED06949E730082C022,
+				4BA2BCF40694A0830082C022,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2666,6 +2755,7 @@
 				4B23C64F053C9C8C00A8E303,
 				4B418DC30594FB97009C44DE,
 				4B418DC40594FB97009C44DE,
+				4BA2BCE806949E3E0082C022,
 				4B2EAFB105B08D2F0021A5E6,
 				4B807B9E05BFEE0C00681653,
 				4BDFA4E80535E9DE00A8E303,
@@ -2958,6 +3048,8 @@
 				4BE6220A068C273400369528,
 				4BE6236D068CB86300369528,
 				4B3DA134068DAFA900B7090F,
+				4B42478B0695E25000A3A1C0,
+				4B42478C0695E25600A3A1C0,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2985,6 +3077,8 @@
 				4BE6220B068C273400369528,
 				4BE6236E068CB86300369528,
 				4B3DA133068DAFA800B7090F,
+				4BA2BCEF06949E790082C022,
+				4BA2BCF60694A08D0082C022,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

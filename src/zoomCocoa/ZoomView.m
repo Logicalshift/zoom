@@ -1488,7 +1488,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 					[NSNumber numberWithBool: [panel isExtensionHidden]], NSFileExtensionHidden,
 					nil]];
 				
-				if ([[upperWindows objectAtIndex: 0] length] > 0) {
+				if ([(ZoomUpperWindow*)[upperWindows objectAtIndex: 0] length] > 0) {
 					windowNumber = 0;
 				} else {
 					windowNumber = 1;

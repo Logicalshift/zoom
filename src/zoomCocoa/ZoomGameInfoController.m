@@ -28,7 +28,7 @@
 - (void) dealloc {
 	if (gameInfo) [gameInfo release];
 	
-	[[NSNotification defaultCenter] removeObserver: self];
+	[[NSNotificationCenter defaultCenter] removeObserver: self];
 
 	[super dealloc];
 }

@@ -147,8 +147,9 @@
 		NSString* filename = [view filename];
 		NSString* directory = [filename stringByDeletingLastPathComponent];
 		
-		ZoomClient* newDoc = [[NSDocumentController sharedDocumentController] openDocumentWithContentsOfFile: directory
-																									 display: YES];
+		//ZoomClient* newDoc = 
+		[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfFile: directory
+																				display: YES];
 	}
 }
 

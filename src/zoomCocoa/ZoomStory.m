@@ -465,11 +465,11 @@ NSString* ZoomStoryDataHasChangedNotification = @"ZoomStoryDataHasChangedNotific
 	return [ourIds containsObject: storyID];
 }
 
-- (BOOL) isEquivalentToStory: (ZoomStory*) story {
-	if (story == self) return YES; // Shortcut
+- (BOOL) isEquivalentToStory: (ZoomStory*) eqStory {
+	if (eqStory == self) return YES; // Shortcut
 	
-	NSArray* theirIds = [story storyIds];
-	NSArray* ourIds = [self storyIds];
+	NSArray* theirIds = [eqStory storyIDs];
+	NSArray* ourIds = [self storyIDs];
 	
 	NSEnumerator* idEnum = [theirIds objectEnumerator];
 	ZoomStoryID* thisId;
