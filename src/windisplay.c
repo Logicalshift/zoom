@@ -128,10 +128,10 @@ struct line
 
 struct cellline
 {
-  int*   cell;
-  int*   fg;
-  int*   bg;
-  int*   font;
+  int*           cell;
+  unsigned char* fg;
+  unsigned char* bg;
+  unsigned char* font;
 };
 
 struct window
@@ -534,9 +534,9 @@ void display_clear(void)
       for (y=0; y<size_y; y++)
 	{
 	  text_win[x].cline[y].cell = malloc(sizeof(int)*size_x);
-	  text_win[x].cline[y].fg   = malloc(sizeof(int)*size_x);
-	  text_win[x].cline[y].bg   = malloc(sizeof(int)*size_x);
-	  text_win[x].cline[y].font = malloc(sizeof(int)*size_x);
+	  text_win[x].cline[y].fg   = malloc(sizeof(char)*size_x);
+	  text_win[x].cline[y].bg   = malloc(sizeof(char)*size_x);
+	  text_win[x].cline[y].font = malloc(sizeof(char)*size_x);
 	  
 	  for (z=0; z<size_x; z++)
 	    {
@@ -1863,9 +1863,9 @@ static void resize_window()
 	  for (y=max_y; y<size_y; y++)
 	    {
 	      CURWIN.cline[y].cell = malloc(sizeof(int)*max_x);
-	      CURWIN.cline[y].fg   = malloc(sizeof(int)*max_x);
-	      CURWIN.cline[y].bg   = malloc(sizeof(int)*max_x);
-	      CURWIN.cline[y].font = malloc(sizeof(int)*max_x);
+	      CURWIN.cline[y].fg   = malloc(sizeof(char)*max_x);
+	      CURWIN.cline[y].bg   = malloc(sizeof(char)*max_x);
+	      CURWIN.cline[y].font = malloc(sizeof(char)*max_x);
 
 	      for (z=0; z<max_x; z++)
 		{
@@ -1885,11 +1885,11 @@ static void resize_window()
 	      CURWIN.cline[y].cell = realloc(CURWIN.cline[y].cell,
 					     sizeof(int)*size_x);
 	      CURWIN.cline[y].fg   = realloc(CURWIN.cline[y].fg,
-					     sizeof(int)*size_x);
+					     sizeof(char)*size_x);
 	      CURWIN.cline[y].bg   = realloc(CURWIN.cline[y].bg,
-					     sizeof(int)*size_x);
+					     sizeof(char)*size_x);
 	      CURWIN.cline[y].font = realloc(CURWIN.cline[y].font,
-					     sizeof(int)*size_x);
+					     sizeof(char)*size_x);
 	      for (z=max_x; z<size_x; z++)
 		{
 		  CURWIN.cline[y].cell[z] = ' ';

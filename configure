@@ -524,7 +524,7 @@ fi
 
 
 
-VERSION=0.9.99beta5
+VERSION=0.9.99dev9
 PACKAGE=zoom
 
 
