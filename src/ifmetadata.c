@@ -433,15 +433,45 @@ IFMetadata* IFMD_Parse(const IFMDByte* data, size_t length) {
 			/* Duplicate entry */
 			if (res->index[entry].story != res->index[entry+1].story) {
 				char msg[512];
+				char name1[256], name2[256];
+				IFMDChar* title;
 				
-				snprintf(msg, 512, "FIX THIS MESSAGE");
+				title = res->index[entry].story->data.title;
+				res->index[entry].story->error = 1;
+				
+				if (title) {
+					IFStrnCpyC(name1, title, 256);
+				} else {
+					snprintf(name1, 256, "(untitled)");
+				}
+				
+				title = res->index[entry+1].story->data.title;
+				
+				if (title) {
+					IFStrnCpyC(name2, title, 256);
+				} else {
+					snprintf(name2, 256, "(untitled)");
+				}
+				
+				snprintf(msg, 512, "Duplicate story entry (%s/%s)", name1, name2);
 				msg[511] = 0;
 				
 				addError(currentState, IFMDErrorStoriesShareIDs, msg);
 			} else {
 				char msg[512];
+				char name[512];
+				IFMDChar* title;
 				
-				snprintf(msg, 512, "FIX THIS MESSAGE");
+				title = res->index[entry].story->data.title;
+				if (!title) title = res->index[entry].story->data.title;
+				
+				if (title) {
+					IFStrnCpyC(name, title, 512);
+				} else {
+					snprintf(name, 512, "(untitled)");
+				}
+				
+				snprintf(msg, 512, "Duplicate identification entry (%s)", name);
 				msg[511] = 0;
 				
 				addError(currentState, IFMDErrorDuplicateID, msg);
