@@ -83,10 +83,10 @@
 }</string>
 							<string>{\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
 
-\f0\fs24 \cf2 Colour preference window not working properly?}</string>
+\f0\fs24 \cf0 Colour preference window not working properly?}</string>
 						</array>
 					</dict>
 					<dict>
@@ -378,8 +378,6 @@
 
 \f0\fs24 \cf0 Bugs}</string>
 				</array>
-				<key>Expanded</key>
-				<true/>
 				<key>State</key>
 				<integer>2</integer>
 			</dict>
@@ -587,8 +585,6 @@
 
 \f0\fs24 \cf0 iFiction}</string>
 				</array>
-				<key>Expanded</key>
-				<true/>
 			</dict>
 			<dict>
 				<key>Children</key>
@@ -795,8 +791,6 @@
 
 \f0\fs24 \cf0 Zoom Window}</string>
 				</array>
-				<key>Expanded</key>
-				<true/>
 				<key>State</key>
 				<integer>2</integer>
 			</dict>
@@ -922,9 +916,11 @@
 						<key>Cols</key>
 						<array>
 							<string>{\rtf1\mac\ansicpg10000\cocoartf102
-{\fonttbl}
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
-}</string>
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Not to mention mouse clicks and timeouts}</string>
 							<string>{\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
@@ -937,8 +933,11 @@
 						<key>Cols</key>
 						<array>
 							<string>{\rtf1\mac\ansicpg10000\cocoartf102
-{\fonttbl}
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Seen this exactly ONCE. May have been something right\
 }</string>
 							<string>{\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica;}
@@ -962,10 +961,25 @@ Graham thinks lock button should (additionally?) disable the 'delete item' butto
 }</string>
 							<string>{\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Graham's docs wrong on the purpose of the lock button... Is his idea better?}</string>
+						</array>
+					</dict>
+					<dict>
+						<key>Cols</key>
+						<array>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720
 
-\f0\fs24 \cf2 Graham's docs wrong on the purpose of the lock button... Is his idea better?}</string>
+\f0\fs24 \cf2 Clear all button, 'erase all except this thread' menu option}</string>
 						</array>
 					</dict>
 				</array>
