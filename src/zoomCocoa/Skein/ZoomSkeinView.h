@@ -92,4 +92,7 @@ extern NSString* ZoomSkeinItemPboardType;
 - (void) playToPoint: (ZoomSkeinItem*) point
 		   fromPoint: (ZoomSkeinItem*) currentPoint;
 
+// The transcript
+- (void) transcriptToPoint: (ZoomSkeinItem*) point;
+
 @end

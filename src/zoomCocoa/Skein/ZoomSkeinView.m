@@ -839,6 +839,12 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 
 - (void) transcriptButtonClicked: (NSEvent*) event
 						withItem: (ZoomSkeinItem*) skeinItem {
+	if (![delegate respondsToSelector: @selector(transcriptToPoint:)]) {
+		// Can't transcript to this point: delegate does not support it
+		return;
+	}
+	
+	[delegate transcriptToPoint: skeinItem];
 }
 
 // = Editing items =
