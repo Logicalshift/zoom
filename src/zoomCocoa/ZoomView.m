@@ -1131,17 +1131,19 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 }
 
 - (void) runNewServer: (NSString*) serverName {
+	// Kill off any previously running machine
     if (zMachine != nil) {
         [zMachine release];
         zMachine = nil;
-        
-        // FIXME: reset the display
-    }
+	}
     
     if (zoomTask != nil) {
-        [zoomTask terminate];
-        [zoomTask release];
-        zoomTask = nil;
+		NSTask* oldTask = zoomTask;
+		
+        zoomTask = nil; // Changes tidy up behaviour
+		
+        [oldTask terminate];
+        [oldTask release];
     }
 
     if (zoomTaskStdout != nil) {
@@ -1153,7 +1155,29 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         [zoomTaskData release];
         zoomTaskData = nil;
     }
+	
+	// Reset the display
+	if (pixmapCursor) [pixmapCursor release];
+	pixmapCursor = nil;
+	if (pixmapWindow) [pixmapWindow release];
+	pixmapWindow = nil;
+	focusedView = nil;
+	
+	[textView setString: @""];
+	
+	[upperWindows release];
+	[lowerWindows release];
+	upperWindows = [[NSMutableArray alloc] init];
+	lowerWindows = [[NSMutableArray alloc] init];
+	
+	receiving = NO;
+	receivingCharacters = NO;
+	moreOn = NO;
+	
+	[self orInterpreterRestart];
+	[self rearrangeUpperWindows];
 
+	// Start a new machine
     zoomTask = [[NSTask allocWithZone: [self zone]] init];
     zoomTaskData = [[NSMutableString allocWithZone: [self zone]] init];
 
@@ -1191,6 +1215,8 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 //         \/
 //	     (phut)
 - (void) zoomTaskFinished: (NSNotification*) not {
+	if ([not object] != zoomTask) return; // Not our task
+	
     // The task has finished
     if (zMachine) {
         [zMachine release];
@@ -1264,6 +1290,8 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 }
 
 - (void) zoomTaskNotification: (NSNotification*) not {
+	if ([not object] != [zoomTaskStdout fileHandleForReading]) return;
+	
     // Data is waiting on stdout: receive it
     NSData* inData = [[zoomTaskStdout fileHandleForReading] availableData];
 

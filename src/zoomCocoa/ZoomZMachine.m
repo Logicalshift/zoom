@@ -80,6 +80,7 @@
     if (machineFile) {
         close_file(machineFile);
     }
+	if (storyData) [storyData release];
     
     [super dealloc];
 }
@@ -91,6 +92,7 @@
 // = Setup =
 - (void) loadStoryFile: (NSData*) storyFile {
     // Create the machine file
+	storyData = [storyFile retain];
     ZDataFile* file = [[ZDataFile alloc] initWithData: storyFile];
     machineFile = open_file_from_object([file autorelease]);
 	
@@ -422,6 +424,10 @@ void cocoa_debug_handler(ZDWord pc) {
 	return result;
 }
 
+- (NSData*) storyFile {
+	return storyData;
+}
+
 - (void) restoreSaveState: (NSData*) saveData {
 	const ZByte* gameData = [saveData bytes];
 	
@@ -517,6 +523,7 @@ void cocoa_debug_handler(ZDWord pc) {
 }
 
 // = Display size =
+
 - (void) displaySizeHasChanged {
     zmachine_resize_display(display_get_info());
 }

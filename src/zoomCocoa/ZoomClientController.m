@@ -64,6 +64,10 @@
 	[zoomView addOutputReceiver: [[self document] skein]];
 }
 
+- (IBAction) restartZMachine: (id) sender {
+	[zoomView runNewServer: nil];
+}
+
 - (void) zMachineStarted: (id) sender {
     [[zoomView zMachine] loadStoryFile: [[self document] gameData]];
 	

@@ -49,6 +49,9 @@
 	// Editing things
 	ZoomSkeinItem* itemToEdit;
 	NSTextField* itemEditor;
+	
+	// The delegate
+	NSObject* delegate;
 }
 
 // Setting/getting the source
@@ -57,6 +60,10 @@
 
 // Laying things out
 - (void) skeinNeedsLayout;
+
+// The delegate
+- (void) setDelegate: (id) delegate;
+- (id)   delegate;
 
 // Affecting the display
 - (void) scrollToItem: (ZoomSkeinItem*) item;
@@ -67,3 +74,13 @@
 - (ZoomSkeinItem*) selectedItem;
 
 @end
+
+@interface NSObject(ZoomSkeinViewDelegate)
+
+// Playing the game
+- (void) restartGame;
+- (void) playToPoint: (ZoomSkeinItem*) point
+		   fromPoint: (ZoomSkeinItem*) currentPoint;
+
+@end
+

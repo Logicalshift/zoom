@@ -21,6 +21,7 @@ extern void cocoa_debug_handler(ZDWord pc);
     NSMutableAttributedString* windowBuffer[3];
 
     // The file
+	NSData* storyData;
     ZFile* machineFile;
 
     // Some pieces of state information

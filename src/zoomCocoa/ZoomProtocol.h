@@ -71,6 +71,7 @@ typedef enum {
 
 // Obtaining game state
 - (out bycopy NSData*) createGameSave;
+- (out bycopy NSData*) storyFile;
 
 // Debugging
 - (void) loadDebugSymbolsFrom: (NSString*) symbolFile

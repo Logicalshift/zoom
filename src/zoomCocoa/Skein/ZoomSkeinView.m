@@ -948,8 +948,16 @@ enum ZSVbutton
 					break;
 					
 				case ZSVmainItem:
-					if ([event modifierFlags]&NSCommandKeyMask || [event clickCount] == 2) {
-						// Run the game
+					if ([event modifierFlags]&NSAlternateKeyMask && [event clickCount] == 1) {
+						// Clicking with the option key edits immediately
+						ZoomSkeinItem* skeinItem = [trackedItem objectForKey: ZSitem];
+
+						[self editItem: skeinItem];
+					} else if ([event modifierFlags]&NSCommandKeyMask || [event clickCount] == 2) {
+						// Run the game to this point (double- or command- click)
+						ZoomSkeinItem* skeinItem = [trackedItem objectForKey: ZSitem];
+
+						[self playToPoint: skeinItem];
 					} else if ([event clickCount] == 1) {
 						// Select this item - queue up for editing if required
 						ZoomSkeinItem* skeinItem = [trackedItem objectForKey: ZSitem];
@@ -1225,6 +1233,24 @@ enum ZSVbutton
 
 - (ZoomSkeinItem*) selectedItem {
 	return selectedItem;
+}
+
+// = Playing the game =
+
+- (void) playToPoint: (ZoomSkeinItem*) item {
+	// If the activeItem is a parent of item, then play directly to the item
+	// otherwise restart the game
+	
+}
+
+// = Delegate =
+
+- (void) setDelegate: (id) dg {
+	delegate = dg;
+}
+
+- (id) delegate {
+	return delegate;
 }
 
 @end
