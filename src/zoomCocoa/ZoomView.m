@@ -138,7 +138,11 @@ static void finalizeViews(void) {
 		[[NSNotificationCenter defaultCenter] addObserver: self
 												 selector: @selector(preferencesHaveChanged:)
 													 name: ZoomPreferencesHaveChangedNotification
-												   object: viewPrefs];		
+												   object: viewPrefs];
+		
+		// Command history
+		commandHistory = [[NSMutableArray alloc] init];
+		historyPos     = 0;
     }
 	
     return self;
@@ -180,6 +184,7 @@ static void finalizeViews(void) {
     [colours release];
     [upperWindowBuffer release];
 	[viewPrefs release];
+	[commandHistory release];
 
     [super dealloc];
 }
@@ -292,6 +297,8 @@ static void finalizeViews(void) {
         [self updateMorePrompt];
         lastTileSize = currentSize;
     }
+	
+	historyPos = [commandHistory count];
 
     // Paste stuff
     NSEnumerator* upperEnum = [upperWindows objectEnumerator];
@@ -512,8 +519,11 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         }
 
         if (newlinePos >= 0) {
-            [zMachine inputText: [str substringWithRange: NSMakeRange(inputPos,
-                                                                      newlinePos-inputPos+1)]];
+			NSString* inputText = [str substringWithRange: NSMakeRange(inputPos,
+																	   newlinePos-inputPos)];
+			
+			[commandHistory addObject: [[inputText copy] autorelease]];
+            [zMachine inputText: inputText];
             inputPos = newlinePos + 1;
         }
     } while (newlinePos >= 0);
@@ -568,7 +578,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         
         return YES;
     }
-    
+	
     if (receiving) {
         // Move the input position if required
         int modifiers = [theEvent modifierFlags];
@@ -584,6 +594,44 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
                 [textView setSelectedRange: NSMakeRange([[textView textStorage] length], 0)];
             }
         }
+		
+		// Up and down arrow keys have a different meaning if the cursor is beyond the
+		// end inputPos.
+		// (Arrow keys won't be caught above thanks to the NSFunctionKeyMask)
+		unsigned cursorPos = [textView selectedRange].location;
+		
+		if (modifiers == NSFunctionKeyMask) {
+			int key = [chars characterAtIndex: 0];
+			
+			if (cursorPos >= inputPos && (key == NSUpArrowFunctionKey || key == NSDownArrowFunctionKey)) {
+				// Move historyPos
+				int oldPos = historyPos;
+				
+				if (key == NSUpArrowFunctionKey) historyPos--;
+				if (key == NSDownArrowFunctionKey) historyPos++;
+				
+				if (historyPos < 0) historyPos = 0;
+				if (historyPos > [commandHistory count]) historyPos = [commandHistory count];
+				
+				if (historyPos == oldPos) return YES;
+				
+				// Clear the input
+				[[textView textStorage] deleteCharactersInRange: NSMakeRange(inputPos,
+																			 [[textView textStorage] length] - inputPos)];
+				
+				// Put in the new string
+				if (historyPos < [commandHistory count]) {
+					[[[textView textStorage] mutableString] insertString: [commandHistory objectAtIndex: historyPos]
+																 atIndex: inputPos];
+				}
+				
+				// Move to the end
+				[textView setSelectedRange: NSMakeRange([[textView textStorage] length], 0)];
+				
+				// Done
+				return YES;
+			}
+		}
     }
 
     return NO;

@@ -67,6 +67,10 @@ extern NSString* ZoomStyleAttributeName;
 	ZoomPreferences* viewPrefs;
 	
 	float scaleFactor;
+	
+	// Command history
+	NSMutableArray* commandHistory;
+	int				historyPos;
 }
 
 // The delegate

@@ -3,17 +3,34 @@
 
 by Andrew Hunter
 
-   Zoom is a fast Z-Machine (around 1.5x faster than frotz). It was
-   written by me to investigate the effects of specialisation on
-   bytecode languages similar to ZCode. It's a bit rough around the
-   edges, as most of the interpreter was written in a single weekend.
-   (Ahem, this is out of date. The interpreter might have been written
-   in a weekend, but it's less than 1/10th of the total code for Zoom...
-   2/3rds is the display drivers ;-)
+   Zoom was originally designed as an experiment into writing fast
+   bytecode interpreters, just over 3 years ago (first checkin into
+   the CVS repository was on 19/11/2000). Last time I timed it, it
+   could run up to around 2x faster than frotz, depending on what
+   code was being executed. It's changed a lot since then, as the
+   emphasis is now on designing a good user interface for the
+   interpreter. As I changed my main machine from a Linux PC to a
+   PowerMac about a year ago, and for another reason that will be
+   revealed later in the year, the recent development focus has been
+   on producing a Cocoa interface.
 
    Send any bug reports to bugs@logicalshift.demon.co.uk, and anything
    else to andrew@logicalshift.demon.co.uk. Zoom's homepage can be
    located at http://www.logicalshift.demon.co.uk/unix/zoom/
+   
+Versions
+========
+
+   This is 1.0.2alpha1 of Zoom. The main reason this release is alpha
+   is because of the still very new and slightly unfinished Cocoa
+   interface. As the components have gained an increasing tendency to 
+   change at different, I've given them seperate versions:
+   
+   Zoom interpreter core: 1.0.2
+   X11 interface: 1.0.2
+   Windows interface: 0.9.99beta5
+   Carbon interface: 1.0.1
+   Cocoa interface: 2.0.0alpha1
 
 Compiling Zoom
 ==============
