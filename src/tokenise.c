@@ -122,14 +122,14 @@ ZDictionary* dictionary_cache(const ZUWord dict_pos)
 	}
 #endif
 
-	hash_store(dict->words, dct + (3+entry_length*x), text_len, entry);
+	hash_store_happy(dict->words, dct + (3+entry_length*x), text_len, entry);
       }
   }
 
-  hash_store(machine.cached_dictionaries,
-	     (char*)&dict_pos,
-	     sizeof(ZUWord),
-	     dict);
+  hash_store_happy(machine.cached_dictionaries,
+		   (char*)&dict_pos,
+		   sizeof(ZUWord),
+		   dict);
 
   return dict;
 }

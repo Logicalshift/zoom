@@ -125,6 +125,14 @@ enum ZHeader_bytes
   ZH_extntable     = 0x36
 };
 
+enum ZHEB_bytes
+{
+  ZHEB_len      = 0,
+  ZHEB_xmouse   = 2,
+  ZHEB_ymouse   = 4,
+  ZHEB_unitable = 6
+};
+
 /* Internal data structures */
 
 typedef struct ZMap
@@ -220,6 +228,10 @@ typedef struct ZMachine
   ZDisplay* dinfo;
 
   int graphical;
+
+  /* Header extension block */
+  ZByte* heb;
+  ZUWord heblen;
 
   /* Output streams */
   int    screen_on;

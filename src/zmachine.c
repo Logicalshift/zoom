@@ -89,7 +89,19 @@ void zmachine_load_story(char* filename, ZMachine* machine)
   machine->cached_dictionaries = hash_create();
 
   machine->routine_offset = 8*GetWord(machine->header, ZH_routines);
-  machine->string_offset = 8*GetWord(machine->header, ZH_staticstrings);
+  machine->string_offset = 8*GetWord(machine->header,
+				     ZH_staticstrings);
+
+  machine->heb = NULL;
+  machine->heblen = 0;
+  if (machine->header[0] >= 5)
+    {
+      machine->heb    = &machine->memory[GetWord(machine->header,
+						 ZH_extntable)];
+      machine->heblen = GetWord(machine->heb, ZHEB_len);
+
+      stream_update_unicode_table();
+    }
 
   /* Parse the abbreviations table */
   {
@@ -301,15 +313,19 @@ void zmachine_setup_header(void)
    * already made mean that no game malfunctions with this mode on)
    */
 #ifdef SPEC_10
+# ifdef SAFE
   if (!machine.graphical)
     {
+# endif
       machine.memory[0x32] = 1;
       machine.memory[0x33] = 0;
+# ifdef SAFE
     }
   else
     {
       zmachine_warning("Graphics mode on - not indicating conformance to specification v1.0");
     }
+# endif
 #endif
 }
 
