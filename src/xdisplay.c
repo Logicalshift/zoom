@@ -1170,6 +1170,9 @@ static int process_events(long int to, int* buf, int buflen)
 	  tv.tv_usec += 1000000;
 	  tv.tv_sec  -= 1;
 	}
+      
+      if (tv.tv_sec < 0 && to != 0)
+	return 0;
 
       /* Calculate the time left til we flash */
       if (next_flash.tv_sec == 0 &&
@@ -1212,7 +1215,8 @@ static int process_events(long int to, int* buf, int buflen)
 	}
 
       /* Update the display if necessary */
-      if (dregion != None && exposing <= 0 &&
+      if (dregion != None && 
+	  exposing <= 0 &&
 	  !XPending(x_display))
 	{
 	  draw_window();
