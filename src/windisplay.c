@@ -31,6 +31,7 @@
 #include <string.h>
 
 #include <windows.h>
+#include <commctrl.h>
 
 #include "zmachine.h"
 #include "display.h"
@@ -75,7 +76,7 @@ COLORREF wincolour[] =
 
 HBRUSH winbrush[14];
 HPEN   winpen  [14];
-HWND   mainwin;
+HWND   mainwin, mainwinstat;
 HDC    mainwindc;
 
 static xfont** font = NULL;
@@ -170,11 +171,20 @@ int xfont_y = 0;
 static int win_x, win_y;
 static int total_x, total_y;
 
-static int caret_x, caret_y, caret_height;
-static int caret_on = 0;
-static int caret_shown = 0;
-static int caret_flashing = 0;
+static int  caret_x, caret_y, caret_height;
+static int  input_x, input_y;
+static int  caret_on = 0;
+static int  caret_shown = 0;
+static int  caret_flashing = 0;
+static int  insert = 1;
 static HPEN caret_pen;
+
+static int  timed_out = 0;
+
+static int*  text_buf = NULL;
+static int   buf_offset;
+
+static void draw_input_text(HDC dc);
 
 /***                           ----// 888 \\----                           ***/
 
@@ -841,9 +851,6 @@ int display_readline(int* buf, int buflen, long int timeout)
   
   result = process_events(timeout, buf, buflen);
 
-  if (result)
-    new_line(0);
-
   return result;
 }
 
@@ -1165,7 +1172,8 @@ static void draw_window(int win,
 	  for (x=0; x<size_x; x++)
 	    {
 	      if (text_win[win].cline[y].cell[x] != ' ' ||
-		  text_win[win].cline[y].bg[x]   != text_win[0].winback)
+		  text_win[win].cline[y].bg[x]   != text_win[0].winback ||
+		  y*xfont_y<text_win[0].winsy)
 		{
 		  int len;
 		  int fn, fg, bg;
@@ -1213,7 +1221,7 @@ static void draw_window(int win,
 
       if (line != NULL)
 	{
-	  rct.top    = 4;
+	  rct.top    = text_win[win].winsy;
 	  rct.bottom = line->baseline - line->ascent+4;
 	  rct.left   = 4;
 	  rct.right  = 4+win_x;
@@ -1251,28 +1259,32 @@ static void draw_window(int win,
 		  
 		  if (text->text[nchars-1] == '\n')
 		    sub = 1;
-		  
-		  w = xfont_get_text_width(font[text->font],
-					   text->text + startchar,
-					   nchars - startchar - sub);
-		  
-		  rct.top    = line->baseline - line->ascent+4;
-		  rct.bottom = line->baseline + line->descent+4;
-		  rct.left   = width+4;
-		  rct.right  = width+w+4;
-		  if (rct.top < rct.bottom)
-		    FillRect(dc, &rct, winbrush[text->bg]);
-		  
-		  xfont_set_colours(text->fg,
-				    text->bg);
-		  xfont_plot_string(font[text->font],
-				    dc,
-				    width+4,
-				    line->baseline-
-				    xfont_get_ascent(font[text->font])+4,
-				    text->text + startchar,
-				    nchars - startchar - sub);
-		  
+
+		  if (line->baseline+line->descent >
+		      text_win[win].winsy)
+		    {
+		      w = xfont_get_text_width(font[text->font],
+					       text->text + startchar,
+					       nchars - startchar - sub);
+		      
+		      rct.top    = line->baseline - line->ascent+4;
+		      rct.bottom = line->baseline + line->descent+4;
+		      rct.left   = width+4;
+		      rct.right  = width+w+4;
+		      /* if (rct.top < rct.bottom)
+			 FillRect(dc, &rct, winbrush[text->bg]); */
+		      
+		      xfont_set_colours(text->fg,
+					text->bg);
+		      xfont_plot_string(font[text->font],
+					dc,
+					width+4,
+					line->baseline-
+					xfont_get_ascent(font[text->font])+4,
+					text->text + startchar,
+					nchars - startchar - sub);
+		    }
+		      
 		  lastchars = nchars;
 		  lasttext = text;
 		  
@@ -1288,10 +1300,11 @@ static void draw_window(int win,
 	  rct.bottom = line->baseline+line->descent+4;
 	  rct.left   = width+4;
 	  rct.right  = win_x+4;
-	  FillRect(dc, &rct, winbrush[text_win[win].winback]);
-	  
-	  lasty = rct.bottom;
+	  if (line->baseline+line->descent > text_win[win].winsy)
+	    FillRect(dc, &rct, winbrush[text_win[win].winback]);
 	      
+	  lasty = rct.bottom;
+	  
 	  line = line->next;
 	}
 
@@ -1312,14 +1325,17 @@ static void draw_caret(HDC dc)
       
       SetROP2(dc, R2_XORPEN);
 
-      SelectObject(dc, caret_pen);
+      /* SelectObject(dc, caret_pen);
       MoveToEx(dc, caret_x+1, caret_y, NULL);
-      LineTo(dc, caret_x+1, caret_y+caret_height);
+      LineTo(dc, caret_x+1, caret_y+caret_height); */
 
-      tpen = CreatePen(PS_SOLID, 2, wincolour[CURWIN.back]);
+      if (insert)
+	tpen = CreatePen(PS_SOLID, 2, wincolour[CURWIN.back]);
+      else
+	tpen = CreatePen(PS_SOLID, 4, wincolour[CURWIN.back]);
       SelectObject(dc, tpen);
-      MoveToEx(dc, caret_x+1, caret_y, NULL);
-      LineTo(dc, caret_x+1, caret_y+caret_height);
+      MoveToEx(dc, caret_x+5, caret_y+4, NULL);
+      LineTo(dc, caret_x+5, caret_y+4+caret_height);
       DeleteObject(tpen);
       
       SetROP2(dc, R2_COPYPEN);
@@ -1352,7 +1368,7 @@ static void flash_caret(void)
 
 static void resize_window()
 {
-  RECT rct;
+  RECT rct, srct;
   int owin;
   int x,y,z;
 
@@ -1363,18 +1379,19 @@ static void resize_window()
   cur_win = 0;
 
   GetClientRect(mainwin, &rct);
+  GetWindowRect(mainwinstat, &srct);
   
   if (rct.bottom <= CURWIN.winsy)
     rct.bottom = CURWIN.winsy + xfont_y;
   
-  size_x = (rct.right-8)/xfont_x;
-  size_y = (rct.bottom-8)/xfont_y;
-
-  win_x = xfont_x * size_x;
-  win_y = xfont_y * size_y;
-
   total_x = rct.right;
-  total_y = rct.bottom;
+  total_y = rct.bottom - (srct.bottom - srct.top);
+ 
+  size_x = (total_x-8)/xfont_x;
+  size_y = (total_y-8)/xfont_y;
+
+  win_x = total_x-8;
+  win_y = total_y-8;
 
   CURWIN.winlx = win_x;
   CURWIN.winly = win_y;
@@ -1505,10 +1522,74 @@ static void resize_window()
 	    }
 	}
     }
+
+  draw_input_text(mainwindc);
   
   zmachine_resize_display(display_get_info());
   
   cur_win = owin;
+}
+
+static void draw_input_text(HDC dc)
+{
+  int w;
+  int on;
+
+  on = caret_on;
+  hide_caret();
+
+  if (CURWIN.overlay)
+    {
+      input_x = caret_x = xfont_x*CURWIN.xpos;
+      input_y = caret_y = xfont_y*CURWIN.ypos;
+      caret_height = xfont_y;
+    }
+  else
+    {
+      if (CURWIN.lastline != NULL)
+	{
+	  input_x = caret_x = CURWIN.xpos;
+	  input_y = caret_y = CURWIN.lastline->baseline-CURWIN.lastline->ascent;
+	  caret_height = CURWIN.lastline->ascent+CURWIN.lastline->descent-1;
+	}
+      else
+	{
+	  input_x = input_y = caret_x = caret_y = 0;
+	  caret_height = xfont_y-1;
+	}
+    }
+
+  if (text_buf != NULL)
+    {
+      RECT rct;
+
+      w = xfont_get_text_width(font[CURSTYLE],
+			       text_buf,
+			       istrlen(text_buf));
+      
+      caret_x += xfont_get_text_width(font[CURSTYLE],
+				      text_buf,
+				      buf_offset);
+
+      rct.left = input_x + w +4;
+      rct.right = win_x+4;
+      rct.top   = input_y+4;
+      rct.bottom = input_y+4+
+	xfont_get_height(font[CURSTYLE]);
+      FillRect(mainwindc,
+	       &rct,
+	       winbrush[CURWIN.winback]);      
+      
+      xfont_set_colours(CURWIN.fore, CURWIN.back);
+      xfont_plot_string(font[CURSTYLE],
+			mainwindc,
+			input_x+4, input_y+4,
+			text_buf,
+			istrlen(text_buf));
+    }
+
+  if (on)
+    show_caret();
 }
 
 static LRESULT CALLBACK display_winproc(HWND hwnd,
@@ -1522,13 +1603,21 @@ static LRESULT CALLBACK display_winproc(HWND hwnd,
       {
 	PAINTSTRUCT paint;
 	RECT        rct;
-	int x;
 	
 	BeginPaint(hwnd, &paint);
+	
+	draw_window(0, paint.hdc);
+	draw_window(2, paint.hdc);
 
-	for (x=0; x<3; x++)
-	  draw_window(x, paint.hdc);
-
+	if (text_buf != NULL)
+	  {
+	    xfont_plot_string(font[CURSTYLE],
+			      paint.hdc,
+			      input_x+4, input_y+4,
+			      text_buf,
+			      istrlen(text_buf));
+	  }
+	
 	rct.left   = 0;
 	rct.right  = 3;
 	rct.top    = 0;
@@ -1574,6 +1663,7 @@ static LRESULT CALLBACK display_winproc(HWND hwnd,
       break;
 
     case WM_SIZE:
+      SendMessage(mainwinstat, WM_SIZE, 0, 0);
       resize_window();
       return DefWindowProc(hwnd, message, wparam, lparam);
       
@@ -1589,7 +1679,11 @@ static LRESULT CALLBACK display_winproc(HWND hwnd,
 	    {
 	      flash_caret();
 	    }
-	  SetTimer(mainwin, 1, FLASH_TIME, NULL);
+	  break;
+
+	case 2:
+	  timed_out = 1;
+	  KillTimer(mainwin, 2);
 	  break;
 	  
 	default:
@@ -1630,7 +1724,7 @@ int WINAPI WinMain(HINSTANCE hInst,
   argv[0] = malloc(sizeof(char)*strlen("zoom"));
   strcpy(argv[0], "zoom");
   argc = 1;
-  for (x=0; lpCmd[x] != 0; x++)
+  for (x=0; lpCmd[x] != 0;)
     {
       int len;
       
@@ -1658,12 +1752,8 @@ int WINAPI WinMain(HINSTANCE hInst,
 	}
     }
 
-  printf_debug("Got %i arguments (commandline '%s')\n", argc, lpCmd);
-  for (x=0; x<argc; x++)
-    {
-      printf_debug("Argument %i: '%s'\n", x, argv[x]);
-    }
-
+  InitCommonControls();
+  
   /* Allocate the three 'standard' brushes */
   winbrush[0] = CreateSolidBrush(wincolour[0]);
   winbrush[1] = CreateSolidBrush(wincolour[1]);
@@ -1706,6 +1796,11 @@ int WINAPI WinMain(HINSTANCE hInst,
 			   inst, NULL);
   mainwindc = GetDC(mainwin);
 
+  mainwinstat = CreateStatusWindow(WS_CHILD|WS_VISIBLE,
+				   "Status test",
+				   mainwin,
+				   0x57a75);
+  
   SetTimer(mainwin, 1, FLASH_TIME, NULL);
   
   zoom_main(argc, argv);
@@ -1713,49 +1808,211 @@ int WINAPI WinMain(HINSTANCE hInst,
   return 0;
 }
 
+#define event_return(x) \
+   { \
+     KillTimer(mainwin, 2); \
+     return x; \
+     hide_caret(); \
+     caret_flashing = 0; \
+   }
 static int process_events(long int timeout,
 			  int* buf,
 			  int  buflen)
 {
   MSG msg;
-  int wason;
 
-  wason = caret_on;
-  hide_caret();
-  if (CURWIN.overlay)
-    {
-      caret_x = CURWIN.xpos*xfont_x+4;
-      caret_y = CURWIN.ypos*xfont_y+4;
-    }
-  else
-    {
-      caret_x = CURWIN.xpos+4;
-      caret_y = CURWIN.ypos+4;
-    }
-  caret_height   = 10;
   caret_flashing = 1;
 
-  if (wason)
-    show_caret();
+  timed_out = 0;
+  if (timeout > 0)
+    SetTimer(mainwin, 2, timeout, 0);
+
+  if (buf != NULL)
+    {
+      text_buf = buf;
+      buf_offset = istrlen(buf);
+    }
+  
+  draw_input_text(mainwindc);
   
   while (GetMessage(&msg, NULL, 0, 0))
     {
-      TranslateMessage(&msg);
-
-      switch (msg.message)
+      if (msg.hwnd == mainwin)
 	{
-	case WM_CHAR:
-	  if (buf == NULL)
+	  switch (msg.message)
 	    {
-	      hide_caret();
-	      caret_flashing = 0;
-	      return msg.wParam;
-	    }
-	  break;
+	    case WM_KEYDOWN:
+	      if (buf == NULL)
+		{
+		  switch (msg.wParam)
+		    {
+		    case VK_BACK:
+		    case VK_DELETE:
+		      event_return(8);
 
-	default:
-	  DispatchMessage(&msg);
+		    case VK_RETURN:
+		      event_return(13);
+
+		    case VK_UP:
+		      event_return(129);
+		    case VK_DOWN:
+		      event_return(130);
+		    case VK_LEFT:
+		      event_return(131);
+		    case VK_RIGHT:
+		      event_return(132);
+
+		    case VK_F1:
+		      event_return(133);
+		    case VK_F2:
+		      event_return(134);
+		    case VK_F3:
+		      event_return(135);
+		    case VK_F4:
+		      event_return(136);
+		    case VK_F5:
+		      event_return(137);
+		    case VK_F6:
+		      event_return(138);
+		    case VK_F7:
+		      event_return(139);
+		    case VK_F8:
+		      event_return(140);
+		    case VK_F9:
+		      event_return(141);
+		    case VK_F10:
+		      event_return(142);
+		    case VK_F11:
+		      event_return(143);
+		    case VK_F12:
+		      event_return(144);
+
+		    case VK_NUMPAD0:
+		      event_return(145);
+		    case VK_NUMPAD1:
+		      event_return(146);
+		    case VK_NUMPAD2:
+		      event_return(147);
+		    case VK_NUMPAD3:
+		      event_return(148);
+		    case VK_NUMPAD4:
+		      event_return(149);
+		    case VK_NUMPAD5:
+		      event_return(150);
+		    case VK_NUMPAD6:
+		      event_return(151);
+		    case VK_NUMPAD7:
+		      event_return(152);
+		    case VK_NUMPAD8:
+		      event_return(153);
+		    case VK_NUMPAD9:
+		      event_return(154);
+		      
+		    default:
+		      TranslateMessage(&msg);
+		    }
+		}
+	      else
+		{
+		  switch (msg.wParam)
+		    {
+		    case VK_INSERT:
+		      {
+			int on;
+
+			on = caret_on;
+			hide_caret();
+			insert = !insert;
+			if (on)
+			  show_caret();
+		      }
+		      break;
+		      
+		    case VK_LEFT:
+		      if (buf_offset > 0)
+			buf_offset--;
+		      draw_input_text(mainwindc);
+		      break;
+		    case VK_RIGHT:
+		      if (buf_offset < istrlen(buf))
+			buf_offset++;
+		      draw_input_text(mainwindc);
+		      break;
+
+		    case VK_BACK:
+		    case VK_DELETE:
+		      if (buf_offset > 0)
+			{
+			  int  x;
+			  
+			  for (x=buf_offset-1; buf[x] != 0; x++)
+			    {
+			      buf[x] = buf[x+1];
+			    }
+			  buf_offset--;
+
+			  draw_input_text(mainwindc);
+			}
+		      break;
+
+		    case VK_RETURN:
+		      display_prints(text_buf);
+		      display_prints_c("\n");
+		      text_buf = NULL;
+		      event_return(1);
+		      
+		    default:
+		      TranslateMessage(&msg);
+		    }
+		}
+	      break;
+	      
+	    case WM_CHAR:
+	      if (buf == NULL)
+		{
+		  event_return(msg.wParam);
+		}
+	      else
+		{
+		  if (buf[buf_offset] == 0 &&
+		      buf_offset < buflen-1)
+		    {		      
+		      buf[buf_offset++] = msg.wParam;
+		      buf[buf_offset] = 0;
+		    }
+		  else
+		    {
+		      if ((insert && buf_offset < buflen-1) ||
+			  !insert)
+			{
+			  if (insert)
+			    {
+			      int x;
+			      
+			      for (x=istrlen(buf); x>=buf_offset; x--)
+				{
+				  buf[x+1] = buf[x];
+				}
+			    }
+
+			  buf[buf_offset] = msg.wParam;
+			  buf_offset++;
+			}
+		    }
+
+		  draw_input_text(mainwindc);
+		}
+	      break;
+
+	    default:
+	      DispatchMessage(&msg);
+	    }
 	}
+      else
+	DispatchMessage(&msg);
+
+      if (timed_out)
+	event_return(0);
     }
 
   display_exit(0);
