@@ -206,7 +206,7 @@ static int pref_write_game(char* key,
   char name[256];
 
   if (data == NULL)
-    return;
+    return 0;
 
   strncpy(name, key, keylen);
   name[keylen] = '\0';

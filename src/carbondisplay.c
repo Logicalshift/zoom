@@ -759,7 +759,7 @@ void redraw_window(Rect* rct)
       h = xfont_get_descent(font[style_font[2]]);
       w = xfont_get_text_width(font[style_font[2]], more, 6);
 
-      xfont_set_colours(0, 7);
+      xfont_set_colours(0, 6);
       xfont_plot_string(font[style_font[2]], total_x-w-15, -(total_y-h), more, 6);
     }
 
@@ -1671,8 +1671,8 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 	      {
 		GetWindowBounds(ourwindow, kWindowContentRgn, &bound);
 
-		click_x = (argh.x - BORDERWIDTH - bound.left)/xfont_x;
-		click_y = (argh.y - BORDERWIDTH - bound.top)/xfont_y;
+		click_x = (argh.x - BORDERWIDTH - bound.left);
+		click_y = (argh.y - BORDERWIDTH - bound.top);
 
 		read_key = 254;
 		return noErr;
@@ -2154,12 +2154,12 @@ void display_terminating (unsigned char* table)
 
 int  display_get_mouse_x (void)
 {
-  return click_x;
+  return click_x/xfont_x;
 }
 
 int  display_get_mouse_y (void)
 {
-  return click_y;
+  return click_y/xfont_y;
 }
 
 void display_window_define       (int window,
@@ -2794,14 +2794,19 @@ void display_plot_image(BlorbImage* img, int x, int y)
 
 void display_wait_for_more(void)
 {
+  more_on = 1;
+  display_readchar(0);
+  more_on = 0;
 }
 
 int display_get_pix_mouse_x(void)
 {
+  return click_x - (win_x/2-pix_w/2);  
 }
 
 int display_get_pix_mouse_y(void)
 {
+  return click_y - (win_y/2-pix_h/2);
 }
 
 void display_set_input_pos(int style, int x, int y, int width)
