@@ -17,6 +17,11 @@
 static NSMutableArray* defaultFonts = nil;
 static NSArray* defaultColours = nil;
 
+static ZoomView** allocatedViews = nil;
+static int        nAllocatedViews = 0;
+
+static void finalizeViews(void);
+
 + (void) initialize {
     // Default settings
     NSString* defaultFont = @"Gill Sans";
@@ -66,21 +71,44 @@ static NSArray* defaultColours = nil;
         [NSNumber numberWithBool: YES], @"ZoomHiddenExtension",
         nil];
     
-    [defaults registerDefaults:appDefaults];    
+    [defaults registerDefaults:appDefaults];
+    
+    atexit(finalizeViews);
+}
+
++ (void) finalize {
+    int view;
+    
+    for (view=0;view<nAllocatedViews;view++) {
+        [allocatedViews[view] killTask];
+    }
+}
+
+static void finalizeViews(void) {
+    [ZoomView finalize];
 }
 
 - (id)initWithFrame:(NSRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
+        // Mark views as allocated
+        allocatedViews = realloc(allocatedViews, sizeof(ZoomView*) * (nAllocatedViews+1));
+        allocatedViews[nAllocatedViews] = self;
+        nAllocatedViews++;
+
+        // No upper/lower windows
         upperWindows = [[NSMutableArray allocWithZone: [self zone]] init];
         lowerWindows = [[NSMutableArray allocWithZone: [self zone]] init];
-        
+
+        // No Zmachine/task to start with
         zMachine = nil;
         zoomTask = nil;
         delegate = nil;
 
+        // Yep, we autoresize our subviews
         [self setAutoresizesSubviews: YES];
         
+        // Default creator code is YZZY (Zoom's creator code)
         creatorCode = 'YZZY';
         typeCode = '\?\?\?\?';
 
@@ -169,6 +197,15 @@ static NSArray* defaultColours = nil;
 
     if (zoomTaskData) {
         [zoomTaskData release];
+    }
+
+    int view;
+    for (view=0;view<nAllocatedViews;view++) {
+        if (allocatedViews[view] == self) {
+            memmove(allocatedViews + view, allocatedViews + view + 1,
+                    sizeof(ZoomView*)*(nAllocatedViews-view-1));
+            nAllocatedViews--;
+        }
     }
 
     [[NSNotificationCenter defaultCenter] removeObserver: self];
