@@ -600,6 +600,9 @@ xfont* xfont_load_font(char* font)
       ByteCount             attsz [5];
       ATSUAttributeValuePtr attptr[5];
 
+      ATSUFontFeatureType fe_types[] = { kLigaturesType };
+      ATSUFontFeatureSelector fe_sel[] = { kCommonLigaturesOffSelector };
+
       /* Get the name of this font */
       ATSFontGetPostScriptName(xf->data.mac.atsref,
 			       0,
@@ -625,6 +628,8 @@ xfont* xfont_load_font(char* font)
       attptr[4] = &font;
 
       ATSUSetAttributes(xf->data.mac.style, 5, tags, attsz, attptr);
+
+      ATSUSetFontFeatures(xf->data.mac.style, 1, fe_types, fe_sel);
     }
   }
 # endif
@@ -1148,15 +1153,6 @@ void xfont_plot_string(xfont* font,
       
       if (!transpar)
 	{
-	  /*
-	  RGBForeColor(&bg_col);
-	  bgRect.left   = portRect.left+x;
-	  bgRect.right  = bgRect.left+(pt.x+0.5);
-	  bgRect.top    = portRect.top-y - font->data.mac.ascent;
-	  bgRect.bottom = bgRect.top +
-	    font->data.mac.ascent + font->data.mac.descent;
-	  PaintRect(&bgRect);
-	  */
 	  CGRect bgr;
 
 	  CGContextSetRGBFillColor(carbon_quartz_context, 
