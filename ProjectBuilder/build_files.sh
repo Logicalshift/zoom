@@ -1,8 +1,8 @@
 #!/bin/bash
 
-echo $0 $1 $2 Building interpreter...
-
 if [ "x$1" = "xclean" ]; then
+    echo Cleaning interpreter...
+
     if [ -e build/interp_gen.h ]; then
         rm build/interp_gen.h
     fi
@@ -17,6 +17,8 @@ if [ "x$1" = "xclean" ]; then
         rm build/varop.h
     fi
 else
+    echo Building interpreter...
+    
     if [ ./src/zcode.ops -nt build/interp_gen.h ]; then
         echo interp_gen.h
         ./build/builder build/interp_gen.h -1 ./src/zcode.ops

@@ -124,8 +124,8 @@ struct window
 };
 
 /* Window data structures themselves */
-int cur_win;
-struct window text_win[3];
+extern int cur_win;
+extern struct window text_win[3];
 
 #define CURWIN text_win[cur_win]
 #define CURSTYLE (text_win[cur_win].style|(text_win[cur_win].force_fixed<<3))

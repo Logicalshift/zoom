@@ -62,6 +62,13 @@
 #define yyname   rc_yyname
 #define yyrule   rc_yyrule
 
+#define yyss        rc_yyss
+#define yysslim     rc_yysslim
+#define yyssp       rc_yyssp
+#define yystacksize rc_yystacksize
+#define yyvs        rc_yyvs
+#define yyvsp       rc_yyvsp
+
 typedef struct stringlist
 {
   char* string;
