@@ -46,6 +46,8 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/Resources/ZoomResourceDrop.h      zoomCocoa/Resources/ZoomResourceDrop.m \
 	zoomCocoa/Skein/ZoomSkeinController.h zoomCocoa/Skein/ZoomSkeinController.m \
 	zoomCocoa/Skein/ZoomSkeinLayout.h zoomCocoa/Skein/ZoomSkeinLayout.m \
+	zoomCocoa/Skein/ZoomSkeinLayoutItem.h \
+	zoomCocoa/Skein/ZoomSkeinLayoutItem.m \
 	zoomCocoa/Skein/ZoomSkeinView.h   zoomCocoa/Skein/ZoomSkeinView.m \
 	zoomCocoa/Skein/ZoomSkeinViewWeb.m zoomCocoa/Skein/ZoomSkeinWeb.m \
 	zoomCocoa/Skein/ZoomSkeinXML.m \
