@@ -52,6 +52,7 @@ extern void	  write_stringf  (ZFile* file, const char* format, ...);
 extern void	  write_stringu  (ZFile* file, const int* string);
 extern void	  write_string   (ZFile* file, const char* string);
 extern ZDWord get_file_size  (char* filename);
+extern int	  end_of_file	 (ZFile* file);
 
 extern ZFile* get_file_write (int* size, char* name, ZFile_type purpose);
 extern ZFile* get_file_read  (int* size, char* name, ZFile_type purpose);

@@ -125,6 +125,7 @@ enum ZValueTypeMasks {
 - (out bycopy NSString*)    errorMessage;
 
 - (out int)                 fileSize;
+- (out BOOL)				endOfFile;
 
 - (oneway void)             close;
 @end

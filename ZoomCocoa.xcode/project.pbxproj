@@ -1491,6 +1491,7 @@
 			path = src/zcode.ops;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
+			tabWidth = 8;
 		};
 		4B1E3FD6050F7E3100A8E303 = {
 			fileEncoding = 30;

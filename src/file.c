@@ -143,6 +143,11 @@ ZDWord get_file_size(char* filename)
   return buf.st_size;
 }
 
+int end_of_file(ZFile* file)
+{
+  return feof(file->handle)!=0;
+}
+
 void write_block(ZFile* file, ZByte* block, int length)
 {
   fwrite(block, 1, length, file->handle);
@@ -347,6 +352,8 @@ ZDWord get_file_size(char* filename)
   return sz;
 }
 
+/* end_of_file not implemented: implement to fix the Windows port */
+
 #elif WINDOW_SYSTEM == 3
 
 /* Mac OS file handling functions */
@@ -363,6 +370,7 @@ struct ZFile
 {
   FSRef  fileref;
   SInt16 forkref;
+  int    endOfFile;
 };
 
 static char* file_error_text(OSStatus stat)
@@ -509,6 +517,7 @@ ZFile* open_file_fsref(FSRef* ref)
   file = malloc(sizeof(ZFile));
   file->fileref = *ref;
   file->forkref = refnum;
+  file->endOfFile = 0;
 
   return file;
 }
@@ -530,6 +539,7 @@ ZFile* open_file_write_fsref(FSRef* ref)
   file = malloc(sizeof(ZFile));
   file->fileref = *ref;
   file->forkref = refnum;
+  file->endOfFile = 0;
 
   return file;
 }
@@ -564,6 +574,7 @@ ZByte* read_block(ZFile* file, int start_pos, int end_pos)
 		   end_pos-start_pos, block, &rd);
   if (erm != noErr)
     zmachine_fatal("Error while reading from file - %s", file_error_text(erm));
+  if (erm == eofErr) endOfFile = 1;
   if (rd != end_pos-start_pos)
     zmachine_fatal("Tried to read %i items of 1 byte, got %i items",
 		   end_pos-start_pos, rd);
@@ -574,8 +585,10 @@ ZByte* read_block(ZFile* file, int start_pos, int end_pos)
 ZByte inline read_byte(ZFile* file)
 {
   char byte;
+  OSErr res;
 
-  FSReadFork(file->forkref, fsAtMark, 0, 1, &byte, NULL);
+  res = FSReadFork(file->forkref, fsAtMark, 0, 1, &byte, NULL);
+  if (res == eofErr) file->endOfFile = 1;
   return byte;
 }
 
@@ -591,8 +604,11 @@ ZUWord read_rword(ZFile* file)
 
 void read_block2(ZByte* block, ZFile* file, int start_pos, int end_pos)
 {
-  FSReadFork(file->forkref, fsFromStart, start_pos,
-	     end_pos-start_pos, block, NULL);
+  OSErr erm;
+  
+  erm = FSReadFork(file->forkref, fsFromStart, start_pos,
+		  end_pos-start_pos, block, NULL);
+  if (erm == eofErr) file->endOfFile = 1;
 }
 
 ZDWord get_file_size(char* filename)
@@ -606,6 +622,11 @@ ZDWord get_file_size(char* filename)
     return -1;
 
   return get_file_size_fsref(&ref);
+}
+
+int end_of_file(ZFile* file)
+{
+  return file->endOfFile;
 }
 
 ZDWord get_file_size_fsref(FSRef* file)

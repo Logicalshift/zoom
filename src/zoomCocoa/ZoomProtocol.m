@@ -123,9 +123,23 @@ NSString* ZBufferNeedsFlushingNotification = @"ZBufferNeedsFlushingNotification"
     return res;
 }
 
+- (BOOL) endOfFile {
+	// Sigh, Cocoa provides no 'end of file' method. Er, glaring ommision or what?
+	unsigned long long oldOffset = [handle offsetInFile];
+	
+	[handle seekToEndOfFile];
+	unsigned long long eofOffset = [handle offsetInFile];
+	
+	if (oldOffset == eofOffset) return YES;
+	
+	[handle seekToFileOffset: oldOffset];
+	return NO;
+}
+
 - (void) close {
     return; // Do nothing
 }
+
 @end
 
 @implementation ZDataFile
@@ -247,6 +261,10 @@ NSString* ZBufferNeedsFlushingNotification = @"ZBufferNeedsFlushingNotification"
 
 - (int) fileSize {
     return [data length];
+}
+
+- (BOOL) endOfFile {
+	return pos >= [data length];
 }
 
 - (void) close {
@@ -998,6 +1016,10 @@ NSString* ZBufferScrollRegion = @"ZBSR";
 	}
 	
 	return [[data regularFileContents] length];
+}
+
+- (BOOL) endOfFile {
+	return (pos >= [[data regularFileContents] length]);
 }
 
 - (void) close {

@@ -143,3 +143,7 @@ ZDWord get_file_size(char* filename) {
 ZDWord get_size_of_file(ZFile* file) {
     return [file->theFile fileSize];
 }
+
+int end_of_file(ZFile* file) {
+	return [file->theFile endOfFile];
+}

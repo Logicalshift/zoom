@@ -260,7 +260,6 @@ typedef struct ZMachine
   int    screen_on;
   int    transcript_on;
   int    transcript_commands;
-  /* FILE*  transcript_file; */
   ZFile* transcript_file;
 
   int    memory_on;
@@ -270,8 +269,8 @@ typedef struct ZMachine
   int    buffering;
 
   /* Input streams */
-  int   script_on;
-  FILE* script_file;
+  int    script_on;
+  ZFile* script_file;
 
 #ifdef GLOBAL_PC
   ZDWord zpc;

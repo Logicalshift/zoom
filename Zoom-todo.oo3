@@ -13,12 +13,12 @@
     </style-attribute>
   </style-attribute-registry>
   <settings/>
-  <editor scroll-position="{0, 164}" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
+  <editor should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="f899YDFVn7y"/>
-    <selected-columns ids="bJSTis5k9jH"/>
-    <selected-characters range="{0, 0}"/>
+    <selected-rows ids="dg44Q4Z-9Kj"/>
+    <selected-columns ids=":941128d340f2709e21a6e303"/>
+    <selected-characters range="{144, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -69,6 +69,530 @@
         <color r="0.815686" g="0.870588" b="1"/>
       </value>
     </style>
+    <item id="bnN6VeEFG6A">
+      <values>
+        <text>
+          <p>
+            <run>
+              <lit>Testing checklist</lit>
+            </run>
+          </p>
+        </text>
+        <text>
+          <p/>
+        </text>
+      </values>
+      <children>
+        <item id="cX1ERxGuRmJ">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Can input commands</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="btW6FfOgszw">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Save games</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="asQxOYMaNdB" expanded="yes">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Load games</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+          <children>
+            <item id="co8i2g2Uh1c">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>By typing &apos;restore&apos;</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="cS3fNvJkZs-">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>By double-clicking in the finder</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+          </children>
+        </item>
+        <item id="lDW9D8lX0Op">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Recording transcripts</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="dVKcRp7v-1q">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Recording commands</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="gwkaK3AtzQE">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Replaying commands</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="fjkK3hjN1OQ">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>(More??)</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+      </children>
+    </item>
+    <item id="gnoX6zDBav8" expanded="yes">
+      <values>
+        <text>
+          <p>
+            <run>
+              <lit>Release checklist</lit>
+            </run>
+          </p>
+        </text>
+        <text>
+          <p/>
+        </text>
+      </values>
+      <children>
+        <item id="dtT7Hxkdg01">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Synchronise THANKS, macreadme.rtf and credits.rtf</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="n2AYaW1NWJO" expanded="yes">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Update version number</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+          <children>
+            <item id="iXJNFzK2E-k">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>In configuration file</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="m-SM77DX85J">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>In plist files</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+          </children>
+        </item>
+        <item id="gz-QZt6wJ7Y" expanded="yes">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>make dist</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+          <children>
+            <item id="e5U-RC5kuFx">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Tarball built correctly</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="pKo1tNW0Jwg">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Unpacks into ~/tmp?</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="eksw0iFErpr" expanded="yes">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Builds OK?</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+              <children>
+                <item id="lVYQMdIjnin">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>xcode</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <text>
+                      <p/>
+                    </text>
+                  </values>
+                </item>
+                <item id="e8k3ZXYCzMV">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>Carbon</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <text>
+                      <p/>
+                    </text>
+                  </values>
+                </item>
+                <item id="gMepCX64Q0p">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>X11</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <text>
+                      <p/>
+                    </text>
+                  </values>
+                </item>
+              </children>
+            </item>
+          </children>
+        </item>
+        <item id="ndr85WjhAVw">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Run svn copy</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="ksB-BbKSplq" expanded="yes">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Build Cocoa version</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+          <children>
+            <item id="mzCrN9iZ-5K">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Clean</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="cvJbKqozPIB">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Build in deployment mode</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="kXpQVxsOvqL" expanded="yes">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Create diskimage</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+              <children>
+                <item id="fxaG5Qeun6L">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>Zoom</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <text>
+                      <p/>
+                    </text>
+                  </values>
+                </item>
+                <item id="evlGj5aXwdZ">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>Readme</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <text>
+                      <p/>
+                    </text>
+                  </values>
+                </item>
+                <item id="dqE3e1lcPN2">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>Compress</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <text>
+                      <p/>
+                    </text>
+                  </values>
+                </item>
+              </children>
+            </item>
+          </children>
+        </item>
+        <item id="p8b3pJHIjiH" expanded="yes">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Upload</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+          <children>
+            <item id="gS4dXVX2k1e">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>logicalshift.co.uk</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="cPUgpV6iBLu">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>software-tamed.co.uk</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+          </children>
+        </item>
+        <item id="p0OcAq6NpBm" expanded="yes">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Update websites</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+          <children>
+            <item id="eJI45oszJZD">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>logicalshift.co.uk</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="o8eJFUtxrKe">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>logicalshift.demon.co.uk</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+          </children>
+        </item>
+      </children>
+    </item>
     <item id="kzPdhsKinRx" state="indeterminate">
       <values>
         <text>
@@ -83,6 +607,251 @@
         </text>
       </values>
       <children>
+        <item id="dg44Q4Z-9Kj">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>New replay system broken</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>Just hangs when we call end_of_file for some reason :-/ Something up with the result of get_file_read? Something corrupting machine.script_file?</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="o6FZTTYE9jr">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Allow line input in the upper window</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="fPtw9vJC0Fq">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>When saving (or autosaving) version 6 data, the v6 screen state is not saved. We need to retrieve this from the ZoomServer process and restore it as required</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="n5azxE7Q5je">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Debugger doesn&apos;t work for certain types of object property</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>I think &apos;extended&apos; properties are messing up, though maybe class properties are too.</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="mhp-oU_nFnR">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Memory leak in startElement()? - indication of a bug?</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>Might just be some strangeness to do with the app delegate never being released</lit>
+                </run>
+              </p>
+              <p/>
+            </text>
+          </note>
+        </item>
+        <item id="b2oX2vP-L4o">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Gets slow after long play sessions</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+          <note>
+            <text>
+              <p>
+                <run>
+                  <lit>Depends on the game, I think. New games that like to fiddle with the status bar are particularly bad. Some seem fine (Dreamhold being an example of a game that runs fine).</lit>
+                </run>
+              </p>
+              <p/>
+              <p>
+                <run>
+                  <lit>Most of the &apos;03 comp games seem to suffer from this. (Noticed this myself, and it&apos;s not been reported independently. May be exacerbated by games that fiddle with the upper window a lot, for example, Curses.</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="hG0bTrug_84">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Killing ZoomServer causes a crash? At least, it does in Inform.app</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+          <note>
+            <text>
+              <p>
+                <run>
+                  <lit>Might happen if the ZoomView has gone away but the ZoomServer hasn&apos;t?</lit>
+                </run>
+              </p>
+              <p/>
+              <p>
+                <run>
+                  <lit>Can&apos;t reliably reproduce.</lit>
+                </run>
+              </p>
+              <p/>
+              <p>
+                <run>
+                  <lit>Could be a delegate problem.</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="dOR45Z0EyuB">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Last column in the upper window doesn&apos;t always look right for all possible window sizes</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="gVVi72GTiUQ">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Need to check behaviour when resources are deleted (ex: keep games organised and deleting a story) - do we remember the old location for too long when the resources cannot be found?</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="mqWj9eCE5o7">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Need to show an error message when a game has resources set but they cannot be found</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="f899YDFVn7y">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Need a way to set the input style</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="m9hL7srSzjO">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>If ZUWord/ZWord are defined as 32-bit values, then Zoom fails to operate</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p>
+                <run>
+                  <lit>Me</lit>
+                </run>
+              </p>
+            </text>
+          </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>Original design was supposed to have Zoom work OK in this case. Not sure if I can fix this without adversely affecting performance, though</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
         <item id="khqGBjKR9DT" state="checked">
           <values>
             <text>
@@ -129,43 +898,6 @@
             </text>
           </note>
         </item>
-        <item id="fPtw9vJC0Fq">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>When saving (or autosaving) version 6 data, the v6 screen state is not saved. We need to retrieve this from the ZoomServer process and restore it as required</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
-        <item id="n5azxE7Q5je">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Debugger doesn&apos;t work for certain types of object property</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-          <note>
-            <text>
-              <p>
-                <run>
-                  <lit>I think &apos;extended&apos; properties are messing up, though maybe class properties are too.</lit>
-                </run>
-              </p>
-            </text>
-          </note>
-        </item>
         <item id="hu5EaI2XntN" state="checked">
           <values>
             <text>
@@ -201,59 +933,6 @@
             </text>
           </note>
         </item>
-        <item id="mhp-oU_nFnR">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Memory leak in startElement()? - indication of a bug?</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-          <note>
-            <text>
-              <p>
-                <run>
-                  <lit>Might just be some strangeness to do with the app delegate never being released</lit>
-                </run>
-              </p>
-              <p/>
-            </text>
-          </note>
-        </item>
-        <item id="b2oX2vP-L4o">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Gets slow after long play sessions</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-          <note>
-            <text>
-              <p>
-                <run>
-                  <lit>Depends on the game, I think. New games that like to fiddle with the status bar are particularly bad. Some seem fine (Dreamhold being an example of a game that runs fine).</lit>
-                </run>
-              </p>
-              <p/>
-              <p>
-                <run>
-                  <lit>Most of the &apos;03 comp games seem to suffer from this. (Noticed this myself, and it&apos;s not been reported independently. May be exacerbated by games that fiddle with the upper window a lot, for example, Curses.</lit>
-                </run>
-              </p>
-            </text>
-          </note>
-        </item>
         <item id="akf-RrBwIZi" state="checked">
           <values>
             <text>
@@ -267,41 +946,6 @@
               <p/>
             </text>
           </values>
-        </item>
-        <item id="hG0bTrug_84">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Killing ZoomServer causes a crash? At least, it does in Inform.app</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-          <note>
-            <text>
-              <p>
-                <run>
-                  <lit>Might happen if the ZoomView has gone away but the ZoomServer hasn&apos;t?</lit>
-                </run>
-              </p>
-              <p/>
-              <p>
-                <run>
-                  <lit>Can&apos;t reliably reproduce.</lit>
-                </run>
-              </p>
-              <p/>
-              <p>
-                <run>
-                  <lit>Could be a delegate problem.</lit>
-                </run>
-              </p>
-            </text>
-          </note>
         </item>
         <item id="ne0BD-AlzHR" state="checked">
           <values>
@@ -449,20 +1093,6 @@
             </text>
           </values>
         </item>
-        <item id="o6FZTTYE9jr">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Allow line input in the upper window</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
         <item id="dN-YtvxCqII" state="checked">
           <values>
             <text>
@@ -483,20 +1113,6 @@
               <p>
                 <run>
                   <lit>(Finished) (Finished) syndrome when you use &apos;Force restart&apos; or the skein on a finished game</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
-        <item id="dOR45Z0EyuB">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Last column in the upper window doesn&apos;t always look right for all possible window sizes</lit>
                 </run>
               </p>
             </text>
@@ -547,54 +1163,12 @@
             </text>
           </values>
         </item>
-        <item id="gVVi72GTiUQ">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Need to check behaviour when resources are deleted (ex: keep games organised and deleting a story) - do we remember the old location for too long when the resources cannot be found?</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
-        <item id="mqWj9eCE5o7">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Need to show an error message when a game has resources set but they cannot be found</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
         <item id="lCRnH2kYnF9" state="checked">
           <values>
             <text>
               <p>
                 <run>
                   <lit>Upper window cursor causes a crash if you close the window while it is displaying (should really use the new standard cursor class)</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
-        <item id="f899YDFVn7y">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Need a way to set the input style</lit>
                 </run>
               </p>
             </text>
@@ -631,36 +1205,9 @@
             </text>
           </values>
         </item>
-        <item id="m9hL7srSzjO">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>If ZUWord/ZWord are defined as 32-bit values, then Zoom fails to operate</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p>
-                <run>
-                  <lit>Me</lit>
-                </run>
-              </p>
-            </text>
-          </values>
-          <note expanded="yes">
-            <text>
-              <p>
-                <run>
-                  <lit>Original design was supposed to have Zoom work OK in this case. Not sure if I can fix this without adversely affecting performance, though</lit>
-                </run>
-              </p>
-            </text>
-          </note>
-        </item>
       </children>
     </item>
-    <item id="d4dIn82q4rK" expanded="yes">
+    <item id="d4dIn82q4rK">
       <values>
         <text>
           <p>
@@ -883,30 +1430,6 @@
             </text>
           </values>
         </item>
-        <item id="pLVhn-SEdK_" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Document close problem? (not sure)</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-          <note>
-            <text>
-              <p>
-                <run>
-                  <lit>(Uh, dunno. Think this has gone away)</lit>
-                </run>
-              </p>
-              <p/>
-            </text>
-          </note>
-        </item>
         <item id="dGwB5uicp4a">
           <values>
             <text>
@@ -988,6 +1511,29 @@
             </text>
           </note>
         </item>
+        <item id="j9PhsYoN6mI">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Replaying</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+          <note>
+            <text>
+              <p>
+                <run>
+                  <lit>Replay input stream uses the old-style fopen() style stuff, which looks wrong on OS X</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
         <item id="du2CzU-1Tto" state="checked">
           <values>
             <text>
@@ -1011,12 +1557,12 @@
             </text>
           </note>
         </item>
-        <item id="j9PhsYoN6mI">
+        <item id="pLVhn-SEdK_" state="checked">
           <values>
             <text>
               <p>
                 <run>
-                  <lit>Replaying</lit>
+                  <lit>Document close problem? (not sure)</lit>
                 </run>
               </p>
             </text>
@@ -1028,9 +1574,10 @@
             <text>
               <p>
                 <run>
-                  <lit>Replay input stream uses the old-style fopen() style stuff, which looks wrong on OS X</lit>
+                  <lit>(Uh, dunno. Think this has gone away)</lit>
                 </run>
               </p>
+              <p/>
             </text>
           </note>
         </item>
@@ -1171,43 +1718,6 @@
             </text>
           </values>
         </item>
-        <item id="pec1lh_e8Z9" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Saving</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-          <note>
-            <text>
-              <p>
-                <run>
-                  <lit>Saves as XML</lit>
-                </run>
-              </p>
-            </text>
-          </note>
-        </item>
-        <item id="aVnsnpMkI2K" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Loading</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
         <item id="ib30HqKDQ3x">
           <values>
             <text>
@@ -1251,20 +1761,6 @@
               <p>
                 <run>
                   <lit>Documentation for file format</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
-        <item id="oqK_cIRyJuH" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Get rid of &apos;old&apos; temporary items</lit>
                 </run>
               </p>
             </text>
@@ -1357,6 +1853,57 @@
               <p>
                 <run>
                   <lit>Clear all button, &apos;erase all except this thread&apos; menu option</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="oqK_cIRyJuH" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Get rid of &apos;old&apos; temporary items</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="pec1lh_e8Z9" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Saving</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+          <note>
+            <text>
+              <p>
+                <run>
+                  <lit>Saves as XML</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="aVnsnpMkI2K" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Loading</lit>
                 </run>
               </p>
             </text>
