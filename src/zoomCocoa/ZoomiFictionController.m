@@ -948,7 +948,7 @@ int tableSorter(id a, id b, void* context) {
 																			  create: NO];
 		[previewView setDirectoryToUse: [dir stringByAppendingPathComponent: @"Saves"]];
 
-		[resourceDrop setDroppedFilename: [org resourcesForIdent: ident]];
+		[resourceDrop setDroppedFilename: [story objectForKey: @"ResourceFilename"]];
 		[resourceDrop setEnabled: YES];
 	} else {
 		if ([[self window] isMainWindow]) {
@@ -1622,12 +1622,15 @@ int tableSorter(id a, id b, void* context) {
 
 - (void) resourceDropFilenameChanged: (ZoomResourceDrop*) drop {
 	ZoomStoryOrganiser* org = [ZoomStoryOrganiser sharedStoryOrganiser];
-	ZoomStoryID* selectedID = [self selectedStoryID];
+	ZoomStory* selectedStory = [self selectedStory];
 	
-	if (selectedID != nil) {
-		[org addResource: [drop droppedFilename]
-			   withIdent: selectedID
-				organise: [[ZoomPreferences globalPreferences] keepGamesOrganised]];
+	if (selectedStory != nil) {
+		[selectedStory setObject: [drop droppedFilename]
+						  forKey: @"ResourceFilename"];
+		
+		if ([[ZoomPreferences globalPreferences] keepGamesOrganised]) {
+			[org organiseStory: selectedStory];
+		}
 	}
 }
 

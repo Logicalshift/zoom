@@ -12,8 +12,18 @@
 #include "ifmetadata.h"
 
 NSString* ZoomStoryDataHasChangedNotification = @"ZoomStoryDataHasChangedNotification";
+NSString* ZoomStoryExtraMetadata = @"ZoomStoryExtraMetadata";
 
 @implementation ZoomStory
+
++ (void) initialize {
+	NSUserDefaults* defs = [NSUserDefaults standardUserDefaults];
+	
+	[defs registerDefaults: 
+		[NSDictionary dictionaryWithObjectsAndKeys:
+			[NSDictionary dictionary], ZoomStoryExtraMetadata,
+			nil]];
+}
 
 + (NSString*) nameForKey: (NSString*) key {
 	// FIXME: internationalisation (this FIXME applies to most of Zoom, which is why it hasn't happened yet)
@@ -63,6 +73,8 @@ NSString* ZoomStoryDataHasChangedNotification = @"ZoomStoryDataHasChangedNotific
 	if (self) {
 		story = IFStory_Alloc();
 		needsFreeing = YES;
+		
+		extraMetadata = nil;
 	}
 	
 	return self;
@@ -74,6 +86,8 @@ NSString* ZoomStoryDataHasChangedNotification = @"ZoomStoryDataHasChangedNotific
 	if (self) {
 		story = s;
 		needsFreeing = NO;
+		
+		extraMetadata = nil;
 	}
 	
 	return self;
@@ -84,6 +98,8 @@ NSString* ZoomStoryDataHasChangedNotification = @"ZoomStoryDataHasChangedNotific
 		IFStory_Free(story);
 		free(story);
 	}
+	
+	if (extraMetadata) [extraMetadata release];
 	
 	[super dealloc];
 }
@@ -314,6 +330,42 @@ NSString* ZoomStoryDataHasChangedNotification = @"ZoomStoryDataHasChangedNotific
 }
 
 // = Story pseudo-dictionary methods =
+- (void) loadExtraMetadata {
+	if (extraMetadata != nil) return;
+	
+	NSDictionary* dict = [[NSUserDefaults standardUserDefaults] objectForKey: ZoomStoryExtraMetadata];
+	
+	// We retrieve the data for the first story ID only. Assuming nothing funny has happened, it
+	// will be the same for all IDs associated with this story.
+	if (dict == nil || ![dict isKindOfClass: [NSDictionary class]]) {
+		extraMetadata = [[NSMutableDictionary alloc] init];
+	} else {
+		extraMetadata = [[dict objectForKey: [[[self storyIDs] objectAtIndex: 0] description]] mutableCopy];
+	}
+	
+	if (extraMetadata == nil) {
+		extraMetadata = [[NSMutableDictionary alloc] init];
+	}
+}
+
+- (void) storeExtraMetadata {
+	// Make a mutable copy of the metadata dictionary
+	NSMutableDictionary* newExtraData = [[[[NSUserDefaults standardUserDefaults] objectForKey: ZoomStoryExtraMetadata] mutableCopy] autorelease];
+	
+	if (newExtraData == nil || ![newExtraData isKindOfClass: [NSMutableDictionary class]]) {
+		newExtraData = [[[NSMutableDictionary alloc] init] autorelease];
+	}
+	
+	// Add the data for all our story IDs
+	NSEnumerator* idEnum = [[self storyIDs] objectEnumerator];
+	ZoomStoryID* storyID;
+	
+	while (storyID = [idEnum nextObject]) {
+		[newExtraData setObject: extraMetadata
+						 forKey: [storyID description]];
+	}
+}
+
 - (id) objectForKey: (id) key {
 	if (![key isKindOfClass: [NSString class]]) {
 		[NSException raise: @"ZoomKeyNotString" format: @"Metadata key is not a string"];
@@ -350,8 +402,8 @@ NSString* ZoomStoryDataHasChangedNotification = @"ZoomStoryDataHasChangedNotific
 		
 		return [NSString stringWithFormat: @"%05.2f", rating];
 	} else {
-		[NSException raise: @"ZoomKeyNotKnown" format: @"Metadata key '%@' is not known", key];
-		return nil;
+		[self loadExtraMetadata];
+		return [extraMetadata objectForKey: key];
 	}
 }
 
@@ -394,7 +446,10 @@ NSString* ZoomStoryDataHasChangedNotification = @"ZoomStoryDataHasChangedNotific
 		if (value == nil || [value length] == 0) [self setRating: -1];
 		else [self setRating: atof([value cString])];
 	} else {
-		[NSException raise: @"ZoomKeyNotKnown" format: @"Metadata key '%@' is not known", key];
+		[self loadExtraMetadata];
+		[extraMetadata setObject: value
+						  forKey: key];
+		[self storeExtraMetadata];
 	}
 }
 

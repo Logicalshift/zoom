@@ -15,6 +15,8 @@ extern NSString* ZoomStoryDataHasChangedNotification;
 @interface ZoomStory : NSObject<NSCopying> {
 	struct IFMDStory* story;
 	BOOL   needsFreeing;
+	
+	NSMutableDictionary* extraMetadata;
 }
 
 // Information
@@ -43,7 +45,7 @@ extern NSString* ZoomStoryDataHasChangedNotification;
 - (NSString*) comment;
 - (float)     rating;
 
-- (id) objectForKey: (NSString*) key; // Always returns an NSString
+- (id) objectForKey: (NSString*) key; // Always returns an NSString (other objects are possible for other metadata)
 
 // Setting data
 - (void) setTitle:    (NSString*) newTitle;

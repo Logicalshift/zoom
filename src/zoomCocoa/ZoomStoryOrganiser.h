@@ -47,10 +47,6 @@ extern NSString* ZoomStoryOrganiserChangedNotification;
 		withIdent: (ZoomStoryID*) ident
 		 organise: (BOOL) organise;
 
-- (BOOL) addResource: (NSString*) blorbFile
-		   withIdent: (ZoomStoryID*) ident
-			organise: (BOOL) organise;
-
 - (void) removeStoryWithIdent: (ZoomStoryID*) ident;
 
 // Sending notifications
@@ -63,15 +59,15 @@ extern NSString* ZoomStoryOrganiserChangedNotification;
 - (NSArray*) storyFilenames;
 - (NSArray*) storyIdents;
 
-- (NSString*) resourcesForIdent: (ZoomStoryID*) ident;
-
 // Story-specific data
 - (NSString*) directoryForIdent: (ZoomStoryID*) ident
 						 create: (BOOL) create;
 
 // Organising stories
 - (NSString*) directoryForStory: (ZoomStory*) story;
-- (void)      organiseStory: (NSString*) story;
+- (void)      organiseStory: (ZoomStory*) story;
+- (void)      organiseStory: (ZoomStory*) story
+				  withIdent: (ZoomStoryID*) ident;
 - (void)      organiseAllStories;
 - (void)      reorganiseStoriesTo: (NSString*) newStoryDirectory;
 

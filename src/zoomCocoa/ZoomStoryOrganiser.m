@@ -300,7 +300,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	oldFilename = [identsToFilenames objectForKey: ident];
 	oldIdent = [filenamesToIdents objectForKey: oldFilename];
 	
-	if (organise) {		
+	if (organise) {
 		ZoomStory* theStory = [[NSApp delegate] findStory: ident];
 		
 		// If there's no story registered, then we need to create one
@@ -752,6 +752,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		[self organiserChanged];
 }
 
+#if 0
 // Blorb resources
 
 - (BOOL) addResource: (NSString*) blorbFile
@@ -837,6 +838,102 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	[storyLock unlock];
 	
 	return res;
+}
+#endif
+
+// Reorganising stories
+- (void) organiseStory: (ZoomStory*) story
+			 withIdent: (ZoomStoryID*) ident {
+	NSString* filename = [self filenameForIdent: ident];
+	
+	if (filename == nil) {
+		NSLog(@"WARNING: Attempted to organise a story with no filename");
+		return;
+	}
+		
+	NSString* oldFilename = [[filename retain] autorelease];
+	
+	// Copy to a standard directory, change the filename we're using
+	filename = [filename stringByStandardizingPath];
+		
+	NSString* fileDir = [self directoryForIdent: ident create: YES];
+	NSString* destFile = [fileDir stringByAppendingPathComponent: @"game.z5"];
+	destFile = [destFile stringByStandardizingPath];
+		
+	if (![filename isEqualToString: destFile]) {
+		[[NSFileManager defaultManager] removeFileAtPath: destFile handler: nil];
+		if ([[NSFileManager defaultManager] copyPath: filename
+											  toPath: destFile
+											 handler: nil]) {
+			filename = destFile;
+		} else {
+			NSLog(@"Warning: couldn't copy '%@' to '%@'", filename, destFile);
+		}
+	}
+	
+	// Update the indexes
+	[identsToFilenames setObject: filename
+						  forKey: ident];
+	[filenamesToIdents removeObjectForKey: oldFilename];
+	[filenamesToIdents setObject: ident
+						  forKey: filename];
+	
+	// Organise the story's resources
+	NSString* resources = [story objectForKey: @"ResourceFilename"];
+	if (resources != nil && [[NSFileManager defaultManager] fileExistsAtPath: resources]) {
+		NSString* dir = [self directoryForIdent: ident
+										 create: NO];
+		BOOL exists, isDir;
+		NSFileManager* fm = [NSFileManager defaultManager];
+		
+		if (dir == nil) {
+			NSLog(@"No organised directory for game: cannot store resources");
+			return;
+		}
+		
+		exists = [fm fileExistsAtPath: dir
+						  isDirectory: &isDir];
+		if (!exists || !isDir) {
+			NSLog(@"Organised directory for game does not exist");
+			return;
+		}
+		
+		NSString* newFile = [dir stringByAppendingPathComponent: @"resource.blb"];
+		
+		if (![fm copyPath: resources
+				   toPath: newFile
+				  handler: nil]) {
+			NSLog(@"Unable to copy resource file to new location");
+		} else {
+			resources = newFile;
+		}
+		
+		[story setObject: resources
+				  forKey: @"ResourceFilename"];
+	} else {
+		[story setObject: nil
+				  forKey: @"ResourceFilename"];
+	}
+}
+
+- (void) organiseStory: (ZoomStory*) story {
+	NSEnumerator* idEnum = [[story storyIDs] objectEnumerator];
+	ZoomStoryID* thisID;
+	BOOL organised = NO;
+	
+	while (thisID = [idEnum nextObject]) {
+		NSString* filename = [self filenameForIdent: thisID];
+		
+		if (filename != nil) {
+			[self organiseStory: story
+					  withIdent: thisID];
+			organised = YES;
+		}
+	}
+	
+	if (!organised) {
+		NSLog(@"WARNING: attempted to organise story with no IDs");
+	}
 }
 
 @end

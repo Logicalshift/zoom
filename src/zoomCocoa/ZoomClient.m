@@ -140,6 +140,18 @@
 		[story retain];
 	}
 	
+	// Retrieve story resources (if available)
+	NSString* resourceFilename = [story objectForKey: @"ResourceFilename"];
+	if (resourceFilename != nil && [[NSFileManager defaultManager] fileExistsAtPath: resourceFilename]) {
+		ZoomBlorbFile* newResources = [[ZoomBlorbFile alloc] initWithContentsOfFile: resourceFilename];
+		
+		if (newResources) {
+			[resources release];
+			resources = newResources;
+		}
+	}
+	
+	// Store/organise this story
 	[[ZoomStoryOrganiser sharedStoryOrganiser] addStory: [self fileName]
 											  withIdent: storyId
 											   organise: [[ZoomPreferences globalPreferences] keepGamesOrganised]];
