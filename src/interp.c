@@ -695,7 +695,8 @@ static void get_fname(char* name, int len, int save)
 }
 
 #if WINDOW_SYSTEM != 3
-ZFile* get_file_write(int* fsize)
+ZFile* get_file_write(int* fsize,
+		      char* save_fname)
 {
   int fs, ok;
 
@@ -730,7 +731,8 @@ ZFile* get_file_write(int* fsize)
   return open_file_write(save_fname);
 }
 
-ZFile* get_file_read(int* fsize)
+ZFile* get_file_read(int* fsize,
+		     char* save_fname)
 {
   int fs;
 
@@ -754,7 +756,7 @@ static int save_1234(ZDWord  pc,
   ZFile* f;
 
   stream_printf("\nPlease supply a filename for save\n");
-  f = get_file_write(NULL);
+  f = get_file_write(NULL, save_fname);
   
   if (st >= 0)
     store(stack, st, 2);
@@ -782,7 +784,7 @@ static int restore_1234(ZDWord* pc, ZStack* stack)
   ZDWord sz;
 
   stream_printf("\nPlease supply a filename for restore\n");
-  f = get_file_read(&sz);
+  f = get_file_read(&sz, save_fname);
   
   if (state_load(f, sz, stack, pc))
     {

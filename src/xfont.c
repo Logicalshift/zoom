@@ -196,7 +196,8 @@ xfont* xfont_load_font(char* font)
     {
 #ifdef HAVE_XFT
       f->type = XFONT_XFT;
-      if (xft_drawable != NULL)
+      if (xft_drawable != NULL &&
+	  rc_get_antialias())
 	{
 	  XftPattern* pat, *match;
 	  XftResult   res;
@@ -205,8 +206,9 @@ xfont* xfont_load_font(char* font)
 	  XftPatternAddBool(pat, XFT_ANTIALIAS,
 			    rc_get_antialias()?True:False);
 
+	  res = XftResultMatch; /* Bug in Xft... */
 	  match = XftFontMatch(x_display, x_screen, pat, &res);
-	  if (match)
+	  if (match && res != XftResultNoMatch)
 	    {
 	      f->data.Xft = XftFontOpenPattern(x_display, match);
 	      XftPatternDestroy(match);

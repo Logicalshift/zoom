@@ -2378,7 +2378,7 @@ ZDisplay* display_get_info(void)
   dis.height        = size_y;
   dis.font_width    = 1;
   dis.font_height   = 1;
-  dis.pictures      = 0;
+  dis.pictures      = 1;
   dis.fore          = DEFAULT_FORE;
   dis.back          = DEFAULT_BACK;
 

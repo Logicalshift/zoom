@@ -2414,6 +2414,9 @@ void display_read_mouse(void)
 		&click_x, &click_y,
 		&m);
 
+  click_x -= win_left;
+  click_y -= win_top;
+
   click_b =
     ((m&Button1Mask)?1:0)|
     ((m&Button2Mask)?2:0)|
@@ -2812,7 +2815,7 @@ ZDisplay* display_get_info(void)
   dis.height        = size_y;
   dis.font_width    = 1;
   dis.font_height   = 1;
-  dis.pictures      = 0;
+  dis.pictures      = 1;
   dis.fore          = DEFAULT_FORE;
   dis.back          = DEFAULT_BACK;
 

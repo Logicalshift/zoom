@@ -2000,9 +2000,9 @@ OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
     {
       ZWord tmp;
       ZFile* f;
-      
+
       stream_printf("\nPlease supply a filename for save\n");
-      f = get_file_write(NULL);
+      f = get_file_write(NULL, save_fname);
 
       store(stack, st, 2);
       if (state_save(f, stack, pc))
@@ -2025,6 +2025,12 @@ OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
     {
       char fname[256];
       ZFile* file;
+      int    prompt = 1;
+      
+#ifdef SPEC_11
+      if (argblock.n_args > 3)
+        prompt = argblock.arg[3];
+#endif
 
       if (argblock.arg[2] != 0)
         {
@@ -2036,8 +2042,20 @@ OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
       else
 	strcpy(fname, "table.dat");
 
-      stream_printf("\nPlease supply a filename for data save\n");
-      file = get_file_write(NULL);
+      if (prompt)
+	{
+      	  stream_printf("\nPlease supply a filename for data save\n");
+      	  file = get_file_write(NULL, fname);
+	}
+      else
+        {
+	  char newname[512];
+
+	  sprintf(newname, "%s/%s", rc_get_savedir(), fname);
+	printf("%s\n", newname);
+
+	  file = open_file_write(newname);
+        }
 
       if (!(file))
 	{
@@ -2061,7 +2079,7 @@ OPCODE "restore"       EXT:0x01 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
       ZDWord sz;
 
       stream_printf("\nPlease supply a filename for restore\n");
-      f = get_file_read(&sz);
+      f = get_file_read(&sz, save_fname);
 
       if (state_load(f, sz, stack, &pc))
 	{
@@ -2081,6 +2099,12 @@ OPCODE "restore"       EXT:0x01 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
       char fname[256];
       ZFile* file;
       int sz;
+      int    prompt = 1;
+      
+#ifdef SPEC_11
+      if (argblock.n_args > 3)
+        prompt = argblock.arg[3];
+#endif
 
       if (argblock.arg[2] != 0)
         {
@@ -2092,8 +2116,19 @@ OPCODE "restore"       EXT:0x01 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
       else
 	strcpy(fname, "table.dat");
 
-      stream_printf("\nPlease supply a filename for data restore\n");
-      file = get_file_read(&sz);
+      if (prompt)
+        {
+          stream_printf("\nPlease supply a filename for data restore\n");
+          file = get_file_read(&sz, save_fname);
+        }
+      else
+        {
+	  char newname[512];
+
+	  sprintf(newname, "%s/%s", rc_get_savedir(), fname);
+
+	  file = open_file_write(newname);
+        }
 
       if (!(file))
 	{
@@ -2677,6 +2712,8 @@ OPCODE "draw_picture"  EXT:0x05 ARGS:3        VERSION 6
 
   win = v6_get_window();
 
+  printf("Picture %i\n", argblock.arg[0]);
+
   if (machine.blorb != NULL)
     {
       img = blorb_findimage(machine.blorb, argblock.arg[0]);
@@ -2749,7 +2786,7 @@ OPCODE "picture_data"  EXT:0x06 BRANCH        VERSION 6
 
       width = img->width;
       height = img->height;
-
+  
       v6_scale_image(img, &sc_n, &sc_d);
 
 #ifdef DEBUG
@@ -2802,7 +2839,7 @@ OPCODE "erase_picture" EXT:0x07               VERSION 6
       width = (width*sc_n)/sc_d;
       height = (height*sc_n)/sc_d;
       
-      display_pixmap_cols(7, 0);
+      display_pixmap_cols(v6_get_bg_colour(), 0);
       display_plot_rect(windows[v6_get_window()].x + argblock.arg[2], 
 	                windows[v6_get_window()].y + argblock.arg[1],
 	                width, height);
@@ -3039,12 +3076,12 @@ OPCODE "read_mouse"    EXT:0x16               VERSION 6
   d = Address(argblock.arg[0]);
   display_read_mouse();
 
-  d[0] = display_get_pix_mouse_y()<<8;
-  d[1] = display_get_pix_mouse_y();
-  d[2] = display_get_pix_mouse_x()<<8;
-  d[3] = display_get_pix_mouse_x();
-  d[4] = display_get_pix_mouse_b()<<8;
-  d[5] = display_get_pix_mouse_b();
+  d[0] = (unsigned)display_get_pix_mouse_y()>>8;
+  d[1] = (unsigned)display_get_pix_mouse_y();
+  d[2] = (unsigned)display_get_pix_mouse_x()>>8;
+  d[3] = (unsigned)display_get_pix_mouse_x();
+  d[4] = (unsigned)display_get_pix_mouse_b()>>8;
+  d[5] = (unsigned)display_get_pix_mouse_b();
   d[6] = 0;
   d[7] = 0;
 %}
@@ -3194,10 +3231,13 @@ OPCODE "set_true_colour" EXT:0x0d VERSION 5,7,8
 #endif
 %}
 
-OPCODE "sound_data" EXT:0x0e VERSION 5,6,7,8
+OPCODE "sound_data" EXT:0x0e BRANCH VERSION 5,6,7,8
 %{
 #ifndef SPEC_11
   zmachine_warning("sound_data has no effect before standard 1.1");
 #else
 #endif
+
+  result = 0;
+  dobranch;
 %}

@@ -601,11 +601,11 @@ void image_plot_Xrender(image_data* img,
 			int n, int d)
 {
   struct x_data* data;
-
-  data = image_get_data(img);
   int xpos, ypos;
 
   GC agc;
+
+  data = image_get_data(img);
 
   if (data == NULL)
     {
