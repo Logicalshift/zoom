@@ -66,7 +66,7 @@ void random_seed(int seed)
   do
     {
       odd = even = 0;
-      for (x=0; x<56; x++)
+      for (x=0; x<55; x++)
 	{
 	  seq[x] = lin_rand();
 	  if (seq[x]&1)
@@ -81,7 +81,7 @@ void random_seed(int seed)
   n2 = 0;
 }
 
-#define IncMod55(x) { x++; if (x>55) x=0; }
+#define IncMod55(x) { x++; if (x>=55) x=0; }
 
 ZDWord random_number(void)
 {

@@ -38,7 +38,7 @@
 
 typedef struct v6window v6window;
 
-static int active_win;
+static int active_win = 0;
 
 static int erf_n, erf_d;
 

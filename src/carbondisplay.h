@@ -85,6 +85,8 @@ extern OSErr ae_reopen_handler  (const AppleEvent* evt,
 extern void carbon_display_message(char* title, char* message);
 extern void carbon_display_rejig  (void);
 
+extern RGBColor* carbon_get_colour(int colour);
+
 extern void carbon_show_prefs(void);
 extern void carbon_set_context(void);
 extern void carbon_set_quartz(int q);

@@ -180,6 +180,31 @@ static inline void istrcpy(int* dest, const int* src)
 }
 
 /***                           ----// 888 \\----                           ***/
+/* Colour functions */
+
+RGBColor* carbon_get_colour(int colour)
+{
+  if (colour < 16)
+    {
+      /* Standard z-colour */
+      return &maccolour[colour+FIRST_ZCOLOUR];
+    }
+  else
+    {
+      static RGBColor col;
+
+      /* Really, we should scale and not just shift... This doesn't give us 
+       * good whites...
+       */
+      col.red   = (colour&0x001f)<<11;
+      col.green = (colour&0x03e0)<<6;
+      col.blue  = (colour&0x7c00)<<1;
+
+      return &col;
+    }
+}
+
+/***                           ----// 888 \\----                           ***/
 
 /* Manipulation functions */
 Boolean display_force_input(char* text)
@@ -654,14 +679,14 @@ static void draw_input_text(void)
       rct.right  = rct.left + input_width;
       rct.top    = portRect.top + caret_y + BORDERWIDTH;
       rct.bottom = rct.top + xfont_get_height(font[style_font[(style>>1)&15]]);
-      RGBForeColor(&maccolour[bg+FIRST_ZCOLOUR]);
+      RGBForeColor(carbon_get_colour(bg));
       PaintRect(&rct);
 
       caret_x += xfont_get_text_width(font[style_font[(style>>1)&15]],
 				      text_buf,
 				      buf_offset);
 
-      xfont_set_colours(fg + FIRST_ZCOLOUR, bg + FIRST_ZCOLOUR);
+      xfont_set_colours(fg, bg);
       xfont_plot_string(font[style_font[(style>>1)&15]],
 			input_x+BORDERWIDTH, -input_y-BORDERWIDTH,
 			text_buf,
@@ -732,7 +757,7 @@ void redraw_window(Rect* rct)
       h = xfont_get_descent(font[style_font[2]]);
       w = xfont_get_text_width(font[style_font[2]], more, 6);
 
-      xfont_set_colours(3, 9);
+      xfont_set_colours(0, 7);
       xfont_plot_string(font[style_font[2]], total_x-w-15, -(total_y-h), more, 6);
     }
 
@@ -1043,7 +1068,7 @@ static void draw_window(int   win,
 
 		  dassert(bg < 14);
 		  
-		  xfont_set_colours(fg + FIRST_ZCOLOUR, bg + FIRST_ZCOLOUR);
+		  xfont_set_colours(fg, bg);
 		  xfont_plot_string(font[text_win[win].cline[y].font[x]],
 				    BORDERWIDTH + (float)x*xfont_x,
 				    -(y*xfont_y +
@@ -1066,7 +1091,7 @@ static void draw_window(int   win,
 	      frct.left   = portRect.left + xfont_x*size_x+BORDERWIDTH;
 	      frct.bottom = frct.top + xfont_y;
 	      frct.right  = portRect.left + win_x+BORDERWIDTH;
-	      RGBForeColor(&maccolour[bg+FIRST_ZCOLOUR]);
+	      RGBForeColor(carbon_get_colour(bg));
 	      PaintRect(&frct);
 	    }
 	}
@@ -1150,7 +1175,7 @@ static void draw_window(int   win,
 	  frct.right  = frct.left + win_x;
 	  if (frct.top < frct.bottom)
 	    {
-	      RGBForeColor(&maccolour[text_win[win].winback+FIRST_ZCOLOUR]);
+	      RGBForeColor(carbon_get_colour(text_win[win].winback));
 	      PaintRect(&frct);
 	    }
 
@@ -1203,11 +1228,11 @@ static void draw_window(int   win,
 		  frct.bottom = frct.top + line->ascent + line->descent;
 		  frct.left   = portRect.left + width + BORDERWIDTH;
 		  frct.right  = frct.left + w;
-		  RGBForeColor(&maccolour[text->bg+FIRST_ZCOLOUR]);
+		  RGBForeColor(carbon_get_colour(text->bg));
 		  PaintRect(&frct);
 
-		  xfont_set_colours(text->fg + FIRST_ZCOLOUR,
-				    text->bg + FIRST_ZCOLOUR);
+		  xfont_set_colours(text->fg,
+				    text->bg);
 		  xfont_plot_string(font[text->font],
 				    width + BORDERWIDTH,
 				    -line->baseline - BORDERWIDTH + scrollpos,
@@ -1232,7 +1257,7 @@ static void draw_window(int   win,
 	  frct.bottom = frct.top + line->ascent + line->descent;
 	  frct.left   = portRect.left + width + BORDERWIDTH;
 	  frct.right  = portRect.left + win_x + BORDERWIDTH;
-	  RGBForeColor(&maccolour[text_win[win].winback+FIRST_ZCOLOUR]);
+	  RGBForeColor(carbon_get_colour(text_win[win].winback));
 	  PaintRect(&frct);
 
 	  lasty = frct.bottom;
@@ -1248,7 +1273,7 @@ static void draw_window(int   win,
       frct.right = BORDERWIDTH+win_x;
       if (frct.top < frct.bottom)
 	{
-	  RGBForeColor(&maccolour[text_win[win].winback+FIRST_ZCOLOUR]);
+	  RGBForeColor(carbon_get_colour(text_win[win].winback));
 	  PaintRect(&frct);
 	}
 
@@ -2568,7 +2593,7 @@ void display_plot_rect(int x, int y, int width, int height)
   r.right  = x+width;
   r.bottom = y+height;
 
-  RGBForeColor(&maccolour[FIRST_ZCOLOUR+pix_fore]);
+  RGBForeColor(carbon_get_colour(pix_fore));
   PaintRect(&r);
   
   UnlockPixels(GetGWorldPixMap(pixmap));
@@ -2612,7 +2637,21 @@ void display_pixmap_cols(int fg, int bg)
 
 int display_get_pix_colour(int x, int y)
 {
-  return 0;
+  RGBColor col;
+  
+  CGrafPtr oldport;
+  GDHandle olddev;
+
+  if (!LockPixels(GetGWorldPixMap(pixmap)))
+    zmachine_fatal("Unable to lock pixmap");
+  GetGWorld(&oldport, &olddev);
+  SetGWorld(pixmap, nil);
+  
+  GetCPixel(x, y, &col);
+
+  SetGWorld(oldport, olddev);
+
+  return (col.red>>11)|((col.green>>11)<<5)|((col.blue>>11)<<10)+16;
 }
 
 void display_plot_gtext(const int* text, int len,
@@ -2643,7 +2682,7 @@ void display_plot_gtext(const int* text, int len,
   carbon_set_context();
 #endif
 
-  xfont_set_colours(fg + FIRST_ZCOLOUR, bg + FIRST_ZCOLOUR);
+  xfont_set_colours(fg, bg);
   xfont_plot_string(font[ft], x, -y,
 		    text, len);
   
