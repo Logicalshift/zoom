@@ -176,13 +176,13 @@ static NSArray* DefaultColours(void) {
 		NSArray* newColours = [prefs objectForKey: colours];
 		
 		if (newFonts && [newFonts count] != 16) {
-			NSLog(@"Unable to decode font block: using defaults");
+			NSLog(@"Unable to decode font block completely: using defaults");
 			[prefs setObject: DefaultFonts()
 					  forKey: fonts];
 		}
 		
 		if (newColours && [newColours count] != 11) {
-			NSLog(@"Unable to decode colour block: using defaults");
+			NSLog(@"Unable to decode colour block completely: using defaults");
 			[prefs setObject: DefaultColours()
 					  forKey: colours];
 		}

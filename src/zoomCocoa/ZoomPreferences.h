@@ -11,7 +11,7 @@
 
 extern NSString* ZoomPreferencesHaveChangedNotification;
 
-@interface ZoomPreferences : NSObject {
+@interface ZoomPreferences : NSObject<NSCoding> {
 	NSMutableDictionary* prefs;
 }
 
@@ -19,6 +19,8 @@ extern NSString* ZoomPreferencesHaveChangedNotification;
 
 + (ZoomPreferences*) globalPreferences;
 - (id) initWithDefaultPreferences;
+
+- (id) initWithDictionary: (NSDictionary*) preferences;
 
 // Getting preferences
 - (BOOL) displayWarnings;
@@ -31,6 +33,8 @@ extern NSString* ZoomPreferencesHaveChangedNotification;
 
 - (NSArray*)      fonts;   // 16 fonts
 - (NSArray*)      colours; // 13 colours
+
+- (NSDictionary*) dictionary;
 
 // Setting preferences
 - (void) setDisplayWarnings: (BOOL) flag;
