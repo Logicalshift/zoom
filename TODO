@@ -16,7 +16,6 @@ GENERAL:
  * '>>' '<<' bug? again?
  
  COCOA:
- * Cocoa version has the restart bug again (erg)
  * Problem with overwriting things in the upper window? (Beyond Zork)
  * upper window behaviour really needs to change:
     - slowdown when the lower window gets full? (FIXED, I think)

@@ -103,7 +103,14 @@ ZByte* read_block(ZFile* file, int start_pos, int end_pos) {
     return res2;
 }
 
-void   read_block2    (ZByte* block, ZFile* file, int start_pos, int end_pos) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
+void   read_block2(ZByte* block, ZFile* file, int start_pos, int end_pos) {
+    NSData* result = nil;
+
+    [file->theFile seekTo: start_pos];
+    result = [file->theFile readBlock: end_pos - start_pos];
+
+    memcpy(block, [result bytes], [result length]);
+}
 
 void   write_block    (ZFile* file, ZByte* block, int length) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
 

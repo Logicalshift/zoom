@@ -253,8 +253,6 @@ int display_readline(int* buf, int len, long int timeout) {
         realLen = len-1;
     }
 
-    printf("%i %i\n", realLen, len-1);
-
     int chr;
     int termChar = 0;
 
