@@ -2102,6 +2102,12 @@
 			settings = {
 			};
 		};
+		4B5CBCEF069DD94000C0AA88 = {
+			fileRef = 4B1E3FD5050F7E1A00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		4B61963005C1AD170019AFF7 = {
 			isa = PBXFileReference;
 			lastKnownFileType = image.png;
@@ -2878,6 +2884,7 @@
 				4BBC1F6D062F41E300FE547F,
 				4BBC1F6E062F41E300FE547F,
 				4B18850C069873F0004D8501,
+				4B5CBCEF069DD94000C0AA88,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

@@ -15,9 +15,12 @@
 	self = [super init];
 	
 	if (self) {
-		rootItem = [[ZoomSkeinItem alloc] initWithCommand: @"- start -"];
+		rootItem = [[ZoomSkeinItem alloc] initWithCommand: @"- start -"];		
 		activeItem = rootItem;
 		currentOutput = [[NSMutableString alloc] init];
+		
+		[rootItem setTemporary: NO];
+		[rootItem setPlayed: YES];
 	}
 	
 	return self;
@@ -32,6 +35,7 @@
 }
 
 // = Notifications =
+
 NSString* ZoomSkeinChangedNotification = @"ZoomSkeinChangedNotification";
 
 - (void) zoomSkeinChanged {
@@ -40,6 +44,7 @@ NSString* ZoomSkeinChangedNotification = @"ZoomSkeinChangedNotification";
 }
 
 // = Zoom output receiver =
+
 - (void) inputCommand: (NSString*) command {
 	// Create/set the item to the appropraite item in the skein
 	ZoomSkeinItem* newItem = [activeItem addChild: [ZoomSkeinItem skeinItemWithCommand: command]];
@@ -84,6 +89,8 @@ NSString* ZoomSkeinChangedNotification = @"ZoomSkeinChangedNotification";
 	
 	// Back to the top
 	activeItem = rootItem;
+	
+	[self zoomSkeinChanged];
 }
 
 @end

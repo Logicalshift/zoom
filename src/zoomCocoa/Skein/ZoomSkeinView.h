@@ -17,6 +17,9 @@
 	
 	BOOL skeinNeedsLayout;
 	
+	// Details about items
+	NSMutableDictionary* itemForItem;
+	
 	// The layout
 	NSMutableDictionary* tree;
 	NSMutableArray* levels;
@@ -32,6 +35,10 @@
 	BOOL    dragScrolling;
 	NSPoint dragOrigin;
 	NSRect  dragInitialVisible;
+	
+	// Clicking buttons
+	int activeButton;
+	int lastButton;
 	
 	// Annoyingly poor support for tracking rects band-aid
 	NSRect lastVisibleRect;

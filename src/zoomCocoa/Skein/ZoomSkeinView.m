@@ -25,15 +25,49 @@ static NSString* ZSlevel    = @"ZSlevel";
 static NSImage* unplayed, *selected, *active, *unchanged, *changed;
 static NSImage* add, *delete, *locked, *unlocked, *annotate, *transcript;
 
+// Buttons
+enum ZSVbutton
+{
+	ZSVnoButton = 0,
+	ZSVaddButton,
+	ZSVdeleteButton,
+	ZSVlockButton,
+	ZSVannotateButton,
+	ZSVtranscriptButton,
+
+	ZSVmainItem = 256
+};
+
+// Our sooper sekrit interface
 @interface ZoomSkeinView(ZoomSkeinViewPrivate)
 
+// Item information
+- (NSDictionary*) itemForItem: (ZoomSkeinItem*) item;
+- (NSRect) activeAreaForItem: (NSDictionary*) item;
+
+// Layout
 - (void) layoutSkein;
 - (void) updateTrackingRects;
 
+// UI
 - (void) mouseEnteredView;
 - (void) mouseLeftView;
 - (void) mouseEnteredItem: (NSDictionary*) item;
 - (void) mouseLeftItem: (NSDictionary*) item;
+
+- (enum ZSVbutton) buttonUnderPoint: (NSPoint) point
+							 inItem: (NSDictionary*) item;
+
+- (void) addButtonClicked: (NSEvent*) event
+				 withItem: (NSDictionary*) item;
+- (void) deleteButtonClicked: (NSEvent*) event
+					withItem: (NSDictionary*) item;
+- (void) annotateButtonClicked: (NSEvent*) event
+					  withItem: (NSDictionary*) item;
+- (void) transcriptButtonClicked: (NSEvent*) event
+						withItem: (NSDictionary*) item;
+- (void) lockButtonClicked: (NSEvent*) event
+				  withItem: (NSDictionary*) item;
 
 @end
 
@@ -139,6 +173,7 @@ static NSImage* add, *delete, *locked, *unlocked, *annotate, *transcript;
 	
     if (self) {
 		skein = [[ZoomSkein alloc] init];
+		activeButton = ZSVnoButton;
     }
 	
     return self;
@@ -150,11 +185,90 @@ static NSImage* add, *delete, *locked, *unlocked, *annotate, *transcript;
 	if (tree) [tree release];
 	if (levels) [levels release];
 	if (trackingRects) [trackingRects release];
+	if (itemForItem) [itemForItem release];
 	
 	[super dealloc];
 }
 
+// = Information about items =
+
+- (NSDictionary*) itemForItem: (ZoomSkeinItem*) item {
+	if (skeinNeedsLayout) [self layoutSkein];
+	
+	return [itemForItem objectForKey: [NSValue valueWithPointer: item]]; // Yeah, yeah. Items are distinguished by command, not location in the tree
+}
+
+- (NSRect) activeAreaForItem: (NSDictionary*) item {
+	NSRect itemRect;
+	float ypos = ((float)[[item objectForKey: ZSlevel] intValue]) * itemHeight + (itemHeight/2.0);
+	float position = [[item objectForKey: ZSposition] floatValue];
+	float width = [[item objectForKey: ZSwidth] floatValue];
+	
+	// Basic rect
+	itemRect.origin.x = position + globalOffset - (width/2.0) - 20.0;
+	itemRect.origin.y = ypos - 8;
+	itemRect.size.width = width + 40.0;
+	itemRect.size.height = 30.0;
+	
+	// ... adjusted for the buttons
+	if (itemRect.size.width < (32.0 + 40.0)) {
+		itemRect.origin.x = position + globalOffset - (32.0+40.0)/2.0;
+		itemRect.size.width = 32.0 + 40.0;
+	}
+	itemRect.origin.y = ypos - 18;
+	itemRect.size.height = 52.0;
+	
+	// 'overflow' border
+	itemRect = NSInsetRect(itemRect, -4.0, -4.0);	
+	
+	return itemRect;
+}
+
 // = Drawing =
+
++ (void) drawButton: (NSImage*) button
+			atPoint: (NSPoint) pt
+		highlighted: (BOOL) highlight {
+	NSRect imgRect;
+	
+	imgRect.origin = NSMakePoint(0,0);
+	imgRect.size = [button size];
+	
+	if (!highlight) {
+		[button drawAtPoint: pt
+				   fromRect: imgRect
+				  operation: NSCompositeSourceOver
+				   fraction: 1.0];
+	} else {
+		NSImage* highlighted = [[NSImage alloc] initWithSize: imgRect.size];
+		
+		[highlighted lockFocus];
+		
+		// Background
+		[[NSColor colorWithDeviceRed: 0.0
+							   green: 0.0
+								blue: 0.0
+							   alpha: 0.4] set];
+		NSRectFill(imgRect);
+		
+		// The item
+		[button drawAtPoint: NSMakePoint(0,0)
+				   fromRect: imgRect
+				  operation: NSCompositeDestinationAtop
+				   fraction: 1.0];
+		
+		[highlighted unlockFocus];
+		
+		// Draw
+		[highlighted drawAtPoint: pt
+						fromRect: imgRect
+					   operation: NSCompositeSourceOver
+						fraction: 1.0];
+		
+		// Release
+		[highlighted release];
+	}
+}
 
 - (void)drawRect:(NSRect)rect {
 	if (tree == nil) return;
@@ -257,6 +371,8 @@ static NSImage* add, *delete, *locked, *unlocked, *annotate, *transcript;
 				w += 40.0;
 				float left = xpos - w/2.0;
 				float right = xpos + w/2.0;
+				
+				ZoomSkeinItem* itemParent = [[item objectForKey: ZSitem] parent];
 
 				// Correct for shadow
 				right -= 20.0;
@@ -267,33 +383,31 @@ static NSImage* add, *delete, *locked, *unlocked, *annotate, *transcript;
 				imgRect.origin = NSMakePoint(0,0);
 				imgRect.size   = [add size];
 				
-				[annotate drawAtPoint: NSMakePoint(left, ypos - 18)
-							 fromRect: imgRect
-							operation: NSCompositeSourceOver
-							 fraction: 1.0];
-				[transcript drawAtPoint: NSMakePoint(left + 14, ypos - 18)
-							   fromRect: imgRect
-							  operation: NSCompositeSourceOver
-							   fraction: 1.0];
+				[[self class] drawButton: annotate
+								 atPoint: NSMakePoint(left, ypos - 18)
+							 highlighted: activeButton == ZSVannotateButton];
+				[[self class] drawButton: transcript
+								 atPoint: NSMakePoint(left + 14, ypos - 18)
+							 highlighted: activeButton==ZSVtranscriptButton];
 				
-				[add drawAtPoint: NSMakePoint(right, ypos - 18)
-						fromRect: imgRect
-					   operation: NSCompositeSourceOver
-						fraction: 1.0];
-				if ([[item objectForKey: ZSitem] parent] != nil) {
+				[[self class] drawButton: add
+								 atPoint: NSMakePoint(right, ypos - 18)
+							 highlighted: activeButton==ZSVaddButton];
+				if (itemParent != nil) {
 					// Can only delete items other than the parent 'start' item
-					[delete drawAtPoint: NSMakePoint(right - 14, ypos - 18)
-							   fromRect: imgRect
-							  operation: NSCompositeSourceOver
-							   fraction: 1.0];
+					[[self class] drawButton: delete
+									 atPoint: NSMakePoint(right - 14, ypos - 18)
+								 highlighted: activeButton==ZSVdeleteButton];
 				}
 				
-				NSImage* lock = [[item objectForKey: ZSitem] temporary]?unlocked:locked;
-				
-				[lock drawAtPoint: NSMakePoint(right, ypos + 18)
-						 fromRect: imgRect
-						operation: NSCompositeSourceOver
-						 fraction: 1.0];
+				if (itemParent != nil) {
+					// Can't unlock the 'start' item
+					NSImage* lock = [[item objectForKey: ZSitem] temporary]?unlocked:locked;
+					
+					[[self class] drawButton: lock
+									 atPoint: NSMakePoint(right, ypos + 18)
+								 highlighted: activeButton==ZSVlockButton];
+				}
 			}
 		}
 	}
@@ -357,7 +471,7 @@ static NSImage* add, *delete, *locked, *unlocked, *annotate, *transcript;
 	NSMutableDictionary* childItem;
 	
 	NSMutableArray* children = [NSMutableArray array];
-	
+		
 	while (child = [childEnum nextObject]) {
 		// Layout the child item
 		childItem = [self layoutSkeinItem: child
@@ -405,6 +519,10 @@ static NSImage* add, *delete, *locked, *unlocked, *annotate, *transcript;
 	
 	[result setObject: children
 			   forKey: ZSchildren];
+	
+	// Index this item
+	[itemForItem setObject: result
+					forKey: [NSValue valueWithPointer: item]];
 		
 	// Add to the 'levels' array, which contains which items to draw at which levels
 	while (level >= [levels count]) {
@@ -448,6 +566,9 @@ static NSImage* add, *delete, *locked, *unlocked, *annotate, *transcript;
 	if (!skeinNeedsLayout) return;
 
 	skeinNeedsLayout = NO;
+	
+	if (itemForItem) [itemForItem release];
+	itemForItem = [[NSMutableDictionary alloc] init];
 	
 	// Perform initial layout of the items
 	if (tree) {
@@ -493,6 +614,7 @@ static NSImage* add, *delete, *locked, *unlocked, *annotate, *transcript;
 	
 	if (skeinNeedsLayout) [self layoutSkein];
 	
+#if 0
 	// Find the item (slow method, but it'll work)
 	int x;
 	
@@ -507,6 +629,9 @@ static NSImage* add, *delete, *locked, *unlocked, *annotate, *transcript;
 				foundItem = testItem;
 		}
 	}
+#else
+	NSDictionary* foundItem = [self itemForItem: item];
+#endif
 	
 	if (foundItem) {
 		float xpos, ypos;
@@ -517,7 +642,7 @@ static NSImage* add, *delete, *locked, *unlocked, *annotate, *transcript;
 		NSRect visRect = [self visibleRect];
 		
 		xpos -= visRect.size.width / 2.0;
-		ypos -= visRect.size.height / 2.0;
+		ypos -= visRect.size.height / 3.0;
 		
 		[self scrollPoint: NSMakePoint(xpos, ypos)];
 	} else {
@@ -633,31 +758,8 @@ static NSImage* add, *delete, *locked, *unlocked, *annotate, *transcript;
 		NSEnumerator* itemEnum = [[levels objectAtIndex: level] objectEnumerator];
 		NSDictionary* item;
 		
-		float ypos = ((float)level)*itemHeight + (itemHeight / 2.0);
-		
 		while (item = [itemEnum nextObject]) {
-			NSRect itemRect;
-			float position = [[item objectForKey: ZSposition] floatValue];
-			float width = [[item objectForKey: ZSwidth] floatValue];
-			
-			// Basic rect
-			itemRect.origin.x = position + globalOffset - (width/2.0) - 20.0;
-			itemRect.origin.y = ypos - 8;
-			itemRect.size.width = width + 40.0;
-			itemRect.size.height = 30.0;
-			
-			// ... adjusted for the buttons
-			if (itemRect.size.width < (32.0 + 40.0)) {
-				itemRect.origin.x = position + globalOffset - (32.0+40.0)/2.0;
-				itemRect.size.width = 32.0 + 40.0;
-			}
-			itemRect.origin.y = ypos - 18;
-			itemRect.size.height = 52.0;
-			
-			// 'overflow' border
-			itemRect = NSInsetRect(itemRect, -4.0, -4.0);
-			
-			itemRect = NSIntersectionRect(visibleRect, itemRect);
+			NSRect itemRect = [self activeAreaForItem: item];
 			
 			// Same reasoning as before
 			inside = NO;
@@ -751,11 +853,18 @@ static NSImage* add, *delete, *locked, *unlocked, *annotate, *transcript;
 		dragScrolling = YES;
 		dragOrigin = [event locationInWindow];
 		dragInitialVisible = [self visibleRect];
+	} else {
+		// We're inside an item - check to see which (if any) button was clicked
+		activeButton = lastButton = [self buttonUnderPoint: [self convertPoint: [event locationInWindow] 
+																	  fromView: nil]
+													inItem: trackedItem];
+		[self setNeedsDisplay: YES];
 	}
 }
 
 - (void) mouseDragged: (NSEvent*) event {
 	if (dragScrolling) {
+		// Scroll to the new position
 		NSPoint currentPos = [event locationInWindow];
 		NSRect newVisRect = dragInitialVisible;
 		
@@ -763,6 +872,16 @@ static NSImage* add, *delete, *locked, *unlocked, *annotate, *transcript;
 		newVisRect.origin.y -= dragOrigin.y - currentPos.y;
 		
 		[self scrollRectToVisible: newVisRect];
+	} else if (trackedItem != nil && lastButton != ZSVnoButton) {
+		// If the cursor moves away from a button, then unhighlight it
+		int lastActiveButton = activeButton;
+		
+		activeButton = [self buttonUnderPoint: [self convertPoint: [event locationInWindow] 
+														 fromView: nil]
+									   inItem: trackedItem];
+		if (activeButton != lastButton) activeButton = ZSVnoButton;
+		
+		if (activeButton != lastActiveButton) [self setNeedsDisplay: YES];
 	}
 }
 
@@ -776,7 +895,175 @@ static NSImage* add, *delete, *locked, *unlocked, *annotate, *transcript;
 										   argument: nil
 											  order: 64
 											  modes: [NSArray arrayWithObject: NSDefaultRunLoopMode]];
+	} else if (trackedItem != nil) {
+		// Finish a click on any item button
+		if (activeButton != ZSVnoButton) {
+			switch (activeButton) {
+				case ZSVaddButton:
+					[self addButtonClicked: event
+								  withItem: trackedItem];
+					break;
+					
+				case ZSVdeleteButton:
+					[self deleteButtonClicked: event
+									 withItem: trackedItem];
+					break;
+
+				case ZSVannotateButton:
+					[self annotateButtonClicked: event
+									   withItem: trackedItem];
+					break;
+					
+				case ZSVtranscriptButton:
+					[self transcriptButtonClicked: event
+										 withItem: trackedItem];
+					break;
+
+				case ZSVlockButton:
+					[self lockButtonClicked: event
+								   withItem: trackedItem];
+					break;
+			}
+			
+			activeButton = ZSVnoButton;
+			[self setNeedsDisplay: YES];
+		}
 	}
+
+	// Reset this anyway
+	activeButton = ZSVnoButton;	
+	lastButton = ZSVnoButton;
+}
+
+- (enum ZSVbutton) buttonUnderPoint: (NSPoint) point
+							 inItem: (NSDictionary*) item {
+	// Calculate info about the location of this item
+	float xpos = [[item objectForKey: ZSposition] floatValue] + globalOffset;
+	float ypos = ((float)[[item objectForKey: ZSlevel] intValue]) * itemHeight + (itemHeight/2.0);
+
+	NSDictionary* fontAttrs = [NSDictionary dictionaryWithObjectsAndKeys: 
+		[NSColor blackColor], NSForegroundColorAttributeName,
+		[NSFont systemFontOfSize: 10], NSFontAttributeName,
+		nil];
+	
+	NSSize size = [[[item objectForKey: ZSitem] command] sizeWithAttributes: fontAttrs];
+
+	float w = size.width; //[[item objectForKey: ZSwidth] floatValue];
+	if (w < 32.0) w = 32.0;
+	w += 40.0;
+	float left = -w/2.0;
+	float right = w/2.0;
+	
+	// Correct for shadow
+	right -= 20.0;
+	left  += 2.0;				
+
+	// Actual position
+	NSPoint offset = NSMakePoint(point.x - xpos, point.y - ypos);
+	
+	// See where was clicked
+	if (offset.y > -18.0 && offset.y < -6.0) {
+		// Upper row of buttons
+		if (offset.x > left+2.0 && offset.x < left+14.0) return ZSVannotateButton;
+		if (offset.x > left+16.0 && offset.x < left+28.0) return ZSVtranscriptButton;
+		if (offset.x > right+2.0 && offset.x < right+14.0) return ZSVaddButton;
+		if (offset.x > right-12.0 && offset.x < right-0.0) return ZSVdeleteButton;
+	} else if (offset.y > 18.0 && offset.y < 30.0) {
+		// Lower row of buttons
+		if (offset.x > right+2.0 && offset.x < right+14.0) return ZSVlockButton;
+	} else if (offset.y > -2.0 && offset.y < 14.0) {
+		// Main item
+		return ZSVmainItem;
+	} else {
+		// Nothing
+	}
+	
+	return ZSVnoButton;
+}
+
+// = Item control buttons =
+
+- (void) addButtonClicked: (NSEvent*) event
+				 withItem: (NSDictionary*) item {
+	ZoomSkeinItem* skeinItem = [item objectForKey: ZSitem];
+	
+	// Add a new, blank item
+	ZoomSkeinItem* newItem = 
+		[skeinItem addChild: [ZoomSkeinItem skeinItemWithCommand: @"FIXME: edit this item"]];
+	
+	[self skeinNeedsLayout];
+	
+	// (IMPLEMENT ME) edit the item
+	[self scrollToItem: newItem];
+}
+
+- (void) deleteButtonClicked: (NSEvent*) event
+					withItem: (NSDictionary*) item {
+	ZoomSkeinItem* skeinItem = [item objectForKey: ZSitem];
+	
+	if ([skeinItem parent] == nil) return;
+	
+	ZoomSkeinItem* parent = [skein activeItem];
+	while (parent != nil) {
+		if (parent == skeinItem) {
+			// Can't delete an item that's the parent of the active item
+			NSBeep(); // Maybe need some better feedback
+			return;
+		}
+		
+		parent = [parent parent];
+	}
+	
+	// Delete the item
+	[skeinItem removeFromParent];
+	[self skeinNeedsLayout];
+}
+
+- (void) lockButtonClicked: (NSEvent*) event
+				  withItem: (NSDictionary*) item {
+	ZoomSkeinItem* skeinItem = [item objectForKey: ZSitem];
+
+	if ([skeinItem parent] == nil) return;
+
+	if ([skeinItem temporary]) {
+		// Lock this item and its parents
+		ZoomSkeinItem* parent = skeinItem;
+		while (parent != nil) {
+			[parent setTemporary: NO];
+			parent = [parent parent];
+		}
+	} else {
+		// Unlock this item and its children
+		
+		// itemsToProcess is a stack of items
+		NSMutableArray* itemsToProcess = [NSMutableArray array];
+		[itemsToProcess addObject: skeinItem];
+		
+		while ([itemsToProcess count] > 0) {
+			ZoomSkeinItem* thisItem = [itemsToProcess lastObject];
+			[itemsToProcess removeLastObject];
+	
+			[thisItem setTemporary: YES];
+	
+			NSEnumerator* childEnum = [[thisItem children] objectEnumerator];
+			ZoomSkeinItem* child;
+			while (child = [childEnum nextObject]) {
+				[itemsToProcess addObject: child];
+			}
+		}
+	}
+	
+	[self skeinNeedsLayout];
+}
+
+- (void) annotateButtonClicked: (NSEvent*) event
+					  withItem: (NSDictionary*) item {
+	ZoomSkeinItem* skeinItem = [item objectForKey: ZSitem];
+}
+
+- (void) transcriptButtonClicked: (NSEvent*) event
+						withItem: (NSDictionary*) item {
+	ZoomSkeinItem* skeinItem = [item objectForKey: ZSitem];
 }
 
 @end
