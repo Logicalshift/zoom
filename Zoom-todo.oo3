@@ -15,7 +15,8 @@
   <settings/>
   <editor should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
-    <hoisted-rows ids="d4dIn82q4rK"/>
+    <hoisted-rows ids="kzPdhsKinRx"/>
+    <selected-rows ids="oT5FWMDPl-G"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -700,6 +701,20 @@
             </text>
           </note>
         </item>
+        <item id="oT5FWMDPl-G">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>&apos;Organise now&apos; button in game preferences b0rked.</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
         <item id="hG0bTrug_84">
           <values>
             <text>
@@ -1283,20 +1298,6 @@
               <p>
                 <run>
                   <lit>Need to do something appropriate when resources are found+loaded automatically by ZoomClient, and game organisation is turned on</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
-        <item id="a9a_PAg4N4P">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Remaining infocom games</lit>
                 </run>
               </p>
             </text>
