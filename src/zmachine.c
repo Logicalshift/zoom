@@ -244,6 +244,7 @@ void zmachine_load_story(char* filename, ZMachine* machine)
   zmachine_load_file(machine->file, machine);
 }
 
+#if WINDOW_SYSTEM==1 || WINDOW_SYSTEM==2 || WINDOW_SYSTEM==3
 void zmachine_fatal(char* format, ...)
 {
   va_list  ap;
@@ -357,6 +358,83 @@ void zmachine_fatal(char* format, ...)
     }
 }
 
+void zmachine_warning(char* format, ...)
+{
+	va_list  ap;
+	char     string[256];
+	
+	if (machine.warning_level == 0)
+		return;
+	
+	va_start(ap, format);
+	vsprintf(string, format, ap);
+	va_end(ap);
+	
+	if (machine.warning_level == 2)
+		zmachine_fatal("WARNING - %s", string);
+	
+	if (machine.display_active)
+    {
+		display_printf("[ WARNING - %s", string);
+#ifdef GLOBAL_PC
+		display_printf(" (PC = #%x)", machine.zpc);
+#endif
+		display_prints_c(" ]\n");
+    }
+	else
+    {
+#if WINDOW_SYSTEM == 2
+		char erm[512];
+		
+# ifdef GLOBAL_PC
+		sprintf(erm, "%s (PC = #%x)", string, machine.zpc);
+# else
+		sprintf(erm, "%s", string);
+# endif
+		MessageBox(NULL, erm, "Zoom " VERSION " - warning",
+				   MB_OK|MB_ICONWARNING|MB_TASKMODAL);
+#elif WINDOW_SYSTEM == 3
+		Str255 erm;
+		Str255 title;
+		DialogItemIndex item;
+		AlertStdAlertParamRec par;
+		
+		ResetAlertStage();
+		
+		par.movable = false;
+		par.helpButton = false;
+		par.filterProc = nil;
+		par.defaultText = "\010Continue";
+		par.cancelText = nil;
+		par.otherText = nil;
+		par.defaultButton = kAlertStdAlertOKButton;
+		par.cancelButton = 0;
+		par.position = 0;
+		
+		title[0] = strlen("Zoom " VERSION " - warning");
+		strcpy(title+1, "Zoom " VERSION " - warning");
+		sprintf(erm + 1, "(PC = #%x) %s", machine.zpc, string);
+		erm[0] = strlen(erm+1);
+		
+		StandardAlert(kAlertCautionAlert, title, erm, &par, &item);
+#else
+		fprintf(stderr, "[ WARNING - %s", string);
+# ifdef GLOBAL_PC
+		fprintf(stderr, " (PC = #%x)", machine.zpc);
+# endif
+		fprintf(stderr, " ]\n");
+#endif
+    }
+#ifdef DEBUG
+	fprintf(stderr, "\nWARNING - %s", string);
+#ifdef GLOBAL_PC
+	fprintf(stderr, " (PC = #%x)", machine.zpc);
+#endif
+	fprintf(stderr, "\n\n");
+#endif
+}
+#endif
+
 void zmachine_info(char* format, ...)
 {
   va_list  ap;
@@ -460,82 +538,6 @@ void zmachine_info(char* format, ...)
 #endif
 #endif
     }
-}
-
-void zmachine_warning(char* format, ...)
-{
-  va_list  ap;
-  char     string[256];
-
-  if (machine.warning_level == 0)
-    return;
-  
-  va_start(ap, format);
-  vsprintf(string, format, ap);
-  va_end(ap);
-
-  if (machine.warning_level == 2)
-    zmachine_fatal("WARNING - %s", string);
-
-  if (machine.display_active)
-    {
-      display_printf("[ WARNING - %s", string);
-#ifdef GLOBAL_PC
-      display_printf(" (PC = #%x)", machine.zpc);
-#endif
-      display_prints_c(" ]\n");
-    }
-  else
-    {
-#if WINDOW_SYSTEM == 2
-      char erm[512];
-
-# ifdef GLOBAL_PC
-      sprintf(erm, "%s (PC = #%x)", string, machine.zpc);
-# else
-      sprintf(erm, "%s", string);
-# endif
-      MessageBox(NULL, erm, "Zoom " VERSION " - warning",
-		 MB_OK|MB_ICONWARNING|MB_TASKMODAL);
-#elif WINDOW_SYSTEM == 3
-      Str255 erm;
-      Str255 title;
-      DialogItemIndex item;
-      AlertStdAlertParamRec par;
-
-      ResetAlertStage();
-
-      par.movable = false;
-      par.helpButton = false;
-      par.filterProc = nil;
-      par.defaultText = "\010Continue";
-      par.cancelText = nil;
-      par.otherText = nil;
-      par.defaultButton = kAlertStdAlertOKButton;
-      par.cancelButton = 0;
-      par.position = 0;
-
-      title[0] = strlen("Zoom " VERSION " - warning");
-      strcpy(title+1, "Zoom " VERSION " - warning");
-      sprintf(erm + 1, "(PC = #%x) %s", machine.zpc, string);
-      erm[0] = strlen(erm+1);
-      
-      StandardAlert(kAlertCautionAlert, title, erm, &par, &item);
-#else
-      fprintf(stderr, "[ WARNING - %s", string);
-# ifdef GLOBAL_PC
-      fprintf(stderr, " (PC = #%x)", machine.zpc);
-# endif
-      fprintf(stderr, " ]\n");
-#endif
-    }
-#ifdef DEBUG
-  fprintf(stderr, "\nWARNING - %s", string);
-#ifdef GLOBAL_PC
-  fprintf(stderr, " (PC = #%x)", machine.zpc);
-#endif
-  fprintf(stderr, "\n\n");
-#endif
 }
 
 #define Flag(p, f, v) machine.memory[p] = \
