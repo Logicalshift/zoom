@@ -13,6 +13,12 @@
 #include "file.h"
 #include "display.h"
 
+#ifdef DEBUG
+# define NOTE(x) NSLog(@"ZDisplay: %@", x)
+#else
+# define NOTE(x)
+#endif
+
 // = Display state =
 NSAutoreleasePool* displayPool = nil;
 
@@ -90,17 +96,24 @@ ZDisplay* display_get_info(void) {
          dis.font_height = xfont_get_height(font[style_font[4]])+0.5;
     }
     */
+	
+	NOTE(@"display_get_info");
+	
     return &dis;
 }
 
 void display_initialise(void) {
-    if (currentStyle) [currentStyle release];
+	NOTE(@"display_initialise");
+
+	if (currentStyle) [currentStyle release];
     currentStyle = [[ZStyle alloc] init];
 
     display_clear();
 }
 
 void display_reinitialise(void) {
+	NOTE(@"display_reinitialise");
+	
     if (currentStyle) [currentStyle release];
     currentStyle = [[ZStyle alloc] init];
 
@@ -108,13 +121,18 @@ void display_reinitialise(void) {
 }
 
 void display_finalise(void) {
+	NOTE(@"display_finalise");
+	
     [mainMachine flushBuffers];
-    NSLog(@"Display finalised");
     if (currentStyle) [currentStyle release];
     currentStyle = nil;
 }
 
 void display_exit(int code) {
+#ifdef DEBUG
+	NSLog(@"ZDisplay: display_exit(%i)", code);
+#endif
+	
     [mainMachine flushBuffers];
     NSLog(@"Server exited with code %i (clean)", code);
     exit(code);
@@ -123,9 +141,9 @@ void display_exit(int code) {
 // Clearing/erasure functions
 void display_clear(void) {
     NSObject<ZWindow>* win;
+	
+	NOTE(@"display_clear");
     
-    NSLog(@"clear...");
-
     currentWindow = 0;
 
     [mainMachine flushBuffers];
@@ -145,6 +163,8 @@ void display_clear(void) {
 }
 
 void display_erase_window(void) {
+	NOTE(@"display_erase_window");
+	
     [[mainMachine buffer] clearWindow: [mainMachine windowNumber: currentWindow]
                             withStyle: currentStyle];
     //[mainMachine flushBuffers];
@@ -152,6 +172,8 @@ void display_erase_window(void) {
 }
 
 void display_erase_line(int val) {
+	NOTE(@"display_erase_line");
+	
     [[mainMachine buffer] eraseLineInWindow: [mainMachine windowNumber: currentWindow]
                                   withStyle: currentStyle];
 }
@@ -171,6 +193,10 @@ void display_prints(const int* buf) {
 
     NSString* str = [NSString stringWithCharacters: bufU
                                             length: length];
+	
+#ifdef DEBUG
+	NSLog(@"ZDisplay: display_prints(\"%@\")", str);
+#endif
 
     // Send to the window
     [[mainMachine buffer] writeString: str
@@ -183,6 +209,10 @@ void display_prints(const int* buf) {
 }
 
 void display_prints_c(const char* buf) {
+#ifdef DEBUG
+	NSLog(@"ZDisplay: display_prints_c(\"%s\")", buf);
+#endif
+
     NSString* str = [NSString stringWithCString: buf];
     [[mainMachine buffer] writeString: str
                             withStyle: currentStyle
@@ -190,6 +220,10 @@ void display_prints_c(const char* buf) {
 }
 
 void display_printc(int chr) {
+#ifdef DEBUG
+	NSLog(@"ZDisplay: display_printc(\"%c\")", chr);
+#endif
+
     unichar bufU[1];
 
     bufU[0] = chr;
@@ -204,6 +238,8 @@ void display_printc(int chr) {
 void display_printf(const char* format, ...) {
     va_list  ap;
     char     string[512];
+	
+	NOTE(@"display_printf");
 
     va_start(ap, format);
     vsprintf(string, format, ap);
@@ -214,6 +250,7 @@ void display_printf(const char* format, ...) {
 
 // Input
 int display_readline(int* buf, int len, long int timeout) {
+	NOTE(@"display_readline");
     [mainMachine flushBuffers];
     
     NSObject<ZDisplay>* display = [mainMachine display];
@@ -261,7 +298,11 @@ int display_readline(int* buf, int len, long int timeout) {
 
     // Copy the data
     NSMutableString* inputBuffer = [mainMachine inputBuffer];
-    
+
+#ifdef DEBUG
+	NSLog(@"ZDisplay: display_readline = %@", inputBuffer);
+#endif
+
     int realLen = [inputBuffer length];
     if (realLen > (len-1)) {
         realLen = len-1;
@@ -291,6 +332,8 @@ int display_readline(int* buf, int len, long int timeout) {
 }
 
 int display_readchar(long int timeout) {
+	NOTE(@"display_readchar");
+	
     [mainMachine flushBuffers];
 
     NSObject<ZDisplay>* display = [mainMachine display];
@@ -342,26 +385,38 @@ int display_readchar(long int timeout) {
         theChar = [inputBuffer characterAtIndex: 0];
     }
 
+#ifdef DEBUG
+	NSLog(@"ZDisplay: display_readchar = %i", theChar);
+#endif
+	
     return theChar;
 }
 
 // = Used by the debugger =
 void display_sanitise  (void) {
+	NOTE(@"display_santise");
     NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
 }
 
 void display_desanitise(void) {
+	NOTE(@"display_desanitise");
     NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
 }
 
-void display_is_v6(void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
+void display_is_v6(void) { 
+	NOTE(@"display_is_v6");
+	NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); 
+}
 
 int display_set_font(int font) {
+	NOTE(@"display_set_font");
     NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
     return 0;
 }
 
 int display_set_style(int style) {
+	NOTE(@"display_set_style");
+	
     // Copy the old style
     ZStyle* newStyle = [currentStyle copy];
 
@@ -416,6 +471,10 @@ static NSColor* getTrue(int col) {
 }
 
 void display_set_colour(int fore, int back) {
+#ifdef DEBUG
+	NSLog(@"ZDisplay: display_set_colour(%i, %i)", fore, back);
+#endif
+	
     currentStyle = [[currentStyle autorelease] copy];
 
     if (fore == -1) fore = 0;
@@ -441,6 +500,10 @@ void display_set_colour(int fore, int back) {
 }
 
 void display_split(int lines, int window) {
+#ifdef DEBUG
+	NSLog(@"ZDisplay: display_split(%i, %i)", lines, window);
+#endif
+
     // IMPLEMENT ME: window 2
     [[mainMachine buffer] setWindow: [mainMachine windowNumber: window]
                           startLine: 0
@@ -448,6 +511,10 @@ void display_split(int lines, int window) {
 }
 
 void display_join(int win1, int win2) {
+#ifdef DEBUG
+	NSLog(@"ZDisplay: display_join(%i, %i)", win1, win2);
+#endif
+	
     // IMPLEMENT ME: window 2
     [[mainMachine buffer] setWindow: [mainMachine windowNumber: win2]
                           startLine: 0
@@ -460,14 +527,23 @@ void display_join(int win1, int win2) {
 }
 
 void display_set_window(int window) {
+#ifdef DEBUG
+	NSLog(@"ZDisplay: display_set_window(%i)", window);
+#endif
+
     currentWindow = window;
 }
 
 int  display_get_window(void) {
+	NOTE(@"display_get_window");
     return currentWindow;
 }
 
 void display_set_cursor(int x, int y) {
+#ifdef DEBUG
+	NSLog(@"ZDisplay: display_set_cursor(%i, %i)", x, y);
+#endif
+
     if (currentWindow > 0) {
         [[mainMachine buffer] moveTo: NSMakePoint(x,y)
                             inWindow: [mainMachine windowNumber: currentWindow]];
@@ -475,6 +551,8 @@ void display_set_cursor(int x, int y) {
 }
 
 int display_get_cur_x(void) {
+	NOTE(@"display_get_cur_x");
+	
     if (currentWindow == 0) {
         NSLog(@"Get_cur_x called for lower window");
         return -1; // No cursor position for the lower window
@@ -488,6 +566,8 @@ int display_get_cur_x(void) {
 }
 
 int display_get_cur_y(void) {
+	NOTE(@"display_get_cur_y");
+	
     if (currentWindow == 0) {
         NSLog(@"Get_cur_y called for lower window");
         return -1; // No cursor position for the lower window
@@ -501,32 +581,39 @@ int display_get_cur_y(void) {
 }
 
 void display_force_fixed (int window, int val) {
+	NOTE(@"display_force_fixed");
     NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
 }
 
 void display_terminating (unsigned char* table) {
+	NOTE(@"display_terminating");
     NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
 }
 
 int  display_get_mouse_x(void) {
+	NOTE(@"display_get_mouse_x");
     NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
     return 0;
 }
 
 int display_get_mouse_y(void) {
+	NOTE(@"display_get_mouse_y");
     NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
     return 0;
 }
 
 void display_set_title(const char* title) {
+	NOTE(@"display_set_title");
     NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
 }
 
 void display_update(void) {
+	NOTE(@"display_update");
     [mainMachine flushBuffers];
 }
 
 void display_beep(void) {
+	NOTE(@"display_beep");
     NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
 }
 

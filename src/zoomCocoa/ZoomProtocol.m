@@ -592,11 +592,18 @@ NSString* ZBufferSetWindow   = @"ZBSW";
 }
 
 - (void) blat {
+#ifdef DEBUG
+	NSLog(@"Buffer: flushing... (%@)", buffer);
+#endif
+	
     NSEnumerator* bufEnum = [buffer objectEnumerator];
     NSArray*      entry;
 
     while (entry = [bufEnum nextObject]) {
         NSString* entryType = [entry objectAtIndex: 0];
+#ifdef DEBUG
+		NSLog(@"Buffer: %@", entryType);
+#endif
 
         if ([entryType isEqualToString: ZBufferWriteString]) {
             NSString* str = [entry objectAtIndex: 1];
@@ -605,22 +612,38 @@ NSString* ZBufferSetWindow   = @"ZBSW";
 
             [win writeString: str
                    withStyle: sty];
+			
+#ifdef DEBUG
+			NSLog(@"Buffer: ZBufferWriteString(%@)", str);
+#endif
         } else if ([entryType isEqualToString: ZBufferClearWindow]) {
             ZStyle* sty = [entry objectAtIndex: 1];
             NSObject<ZWindow>* win = [entry objectAtIndex: 2];
 
             [win clearWithStyle: sty];
+			
+#ifdef DEBUG
+			NSLog(@"Buffer: ZBufferClearWindow");
+#endif
         } else if ([entryType isEqualToString: ZBufferMoveTo]) {
             NSPoint whereTo = [[entry objectAtIndex: 1] pointValue];
             NSObject<ZUpperWindow>* win = [entry objectAtIndex: 2];
 
             [win setCursorPositionX: whereTo.x
                                   Y: whereTo.y];
+			
+#ifdef DEBUG
+			NSLog(@"Buffer: ZBufferMoveTo(%g, %g)", whereTo.x, whereTo.y);
+#endif
         } else if ([entryType isEqualToString: ZBufferEraseLine]) {
             ZStyle* sty = [entry objectAtIndex: 1];
             NSObject<ZUpperWindow>* win = [entry objectAtIndex: 2];
 
             [win eraseLineWithStyle: sty];
+			
+#ifdef DEBUG
+			NSLog(@"Buffer: ZBufferEraseLine");
+#endif
         } else if ([entryType isEqualToString: ZBufferSetWindow]) {
             int startLine = [[entry objectAtIndex: 1] intValue];
             int endLine   = [[entry objectAtIndex: 2] intValue];
@@ -628,6 +651,10 @@ NSString* ZBufferSetWindow   = @"ZBSW";
 
             [win startAtLine: startLine];
             [win endAtLine: endLine];
+			
+#ifdef DEBUG
+			NSLog(@"Buffer: ZBufferSetWindow(%i, %i)", startLine, endLine);
+#endif
         } else {
             NSLog(@"Unknown buffer type: %@", entryType);
         }

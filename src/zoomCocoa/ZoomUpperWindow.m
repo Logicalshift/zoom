@@ -177,8 +177,11 @@ static NSString* blankLine(int length) {
 }
 
 - (void) cutLines {
-    [lines removeObjectsInRange: NSMakeRange([self length],
-                                             [lines count] - [self length])];
+	int length = [self length];
+	if ([lines count] < length) return;
+	
+    [lines removeObjectsInRange: NSMakeRange(length,
+                                             [lines count] - length)];
 }
 
 - (void) reformatLines {

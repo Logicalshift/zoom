@@ -146,7 +146,7 @@ typedef enum {
 // large blocks of varied text
 - (oneway void) startExclusive;
 - (oneway void) stopExclusive;
-- (oneway void) flushBuffer: (in bycopy ZBuffer*) toFlush;
+- (void) flushBuffer: (in bycopy ZBuffer*) toFlush;
 
 // Prompting for files
 - (void) promptForFileToWrite: (in ZFileType) type
