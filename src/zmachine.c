@@ -514,8 +514,6 @@ void zmachine_setup_header(void)
 	Flag(ZH_flags2+1, 7, machine.dinfo->sound_effects);
 
 #ifdef SPEC_11
-      printf("%i\n", machine.heblen);
-
       if (machine.heblen >= 4)
 	{
 	  FlagE(ZHEB_flags3+1, 0, 0);

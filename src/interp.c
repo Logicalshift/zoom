@@ -1781,6 +1781,10 @@ void zmachine_runsome(const int version,
       exec_ext = exec_ext_v6;
       break;
 # endif
+
+    default:
+      zmachine_fatal("Unsupported Z-Machine version");
+      return;
     }
 
  loop:
