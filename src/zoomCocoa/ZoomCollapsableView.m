@@ -128,8 +128,10 @@
 }
 
 - (void) rearrangeSubviews {
+	reiterate = YES;
 	if (rearranging) return;
 	rearranging = YES;
+	reiterate = NO;
 	
 	BOOL needsRedrawing = NO;
 	
@@ -145,44 +147,42 @@
 	NSFont* titleFont = [NSFont boldSystemFontOfSize: FONTSIZE];
 	float titleHeight = [titleFont ascender] - [titleFont descender];
 	
-	do {
-		oldBounds = newBounds;
+	oldBounds = newBounds;
+	
+	// First stage: resize all subviews to be the correct width
+	bestWidth = oldBounds.size.width - (BORDER*4);
+	
+	viewEnum = [views objectEnumerator];
+	
+	while (subview = [viewEnum nextObject]) {
+		NSRect viewFrame = [subview frame];
 		
-		// First stage: resize all subviews to be the correct width
-		bestWidth = oldBounds.size.width - (BORDER*4);
-		
-		viewEnum = [views objectEnumerator];
-		
-		while (subview = [viewEnum nextObject]) {
-			NSRect viewFrame = [subview frame];
-			
-			if (viewFrame.size.width != bestWidth) {
-				needsRedrawing = YES;
-				viewFrame.size.width = bestWidth;
-				[subview setFrameSize: viewFrame.size];
-				[subview setNeedsDisplay: YES];
-			}
+		if (viewFrame.size.width != bestWidth) {
+			needsRedrawing = YES;
+			viewFrame.size.width = bestWidth;
+			[subview setFrameSize: viewFrame.size];
+			[subview setNeedsDisplay: YES];
 		}
+	}
+	
+	// Second stage: calculate our new height (and resize appropriately)
+	newHeight = BORDER;
+	
+	viewEnum = [views objectEnumerator];
+	
+	while (subview = [viewEnum nextObject]) {
+		NSRect viewFrame = [subview frame];
 		
-		// Second stage: calculate our new height (and resize appropriately)
-		newHeight = BORDER;
-		
-		viewEnum = [views objectEnumerator];
-		
-		while (subview = [viewEnum nextObject]) {
-			NSRect viewFrame = [subview frame];
-			
-			newHeight += titleHeight * 1.2;
-			newHeight += viewFrame.size.height;
-			newHeight += BORDER*2;
-		}
-		
-		oldBounds.size.height = floor(newHeight);
-		[self setFrameSize: oldBounds.size];
-
-		// Loop until our width settles down
-		newBounds = [self bounds];
-	} while (newBounds.size.width != oldBounds.size.width);
+		newHeight += titleHeight * 1.2;
+		newHeight += viewFrame.size.height;
+		newHeight += BORDER*2;
+	}
+	
+	oldBounds.size.height = floor(newHeight);
+	[self setFrameSize: oldBounds.size];
+	
+	// Loop until our width settles down
+	newBounds = [self bounds];
 	
 	// Stage three: Position the views appropriately
 	float ypos = BORDER;
@@ -211,6 +211,13 @@
 		
 		ypos += viewFrame.size.height;
 		ypos += BORDER*2;
+	}
+	
+	if (reiterate) {
+		// Something has resized and messed up our beautiful arrangement!
+		rearranging = NO;
+		[self rearrangeSubviews];
+		return;
 	}
 	
 	// Final stage: tidy up, redraw if necessary
@@ -304,6 +311,7 @@
 }
 
 - (void) subviewFrameChanged: (NSNotification*) not {
+	reiterate = YES;
 	if (rearranging) return;
 	
 	rearranging = YES;

@@ -15,6 +15,7 @@
 	NSMutableArray* states; // Booleans, indicating if this is shown or not
 	
 	BOOL rearranging;
+	BOOL reiterate;
 }
 
 - (void) addSubview: (NSView*) subview
