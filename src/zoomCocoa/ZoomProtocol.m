@@ -450,14 +450,15 @@ NSString* ZStyleAttributeName = @"ZStyleAttribute";
 // == ZBuffer ==
 
 // Buffer type strings
-NSString* ZBufferWriteString = @"ZBWS";
-NSString* ZBufferClearWindow = @"ZBCW";
-NSString* ZBufferMoveTo      = @"ZBMT";
-NSString* ZBufferEraseLine   = @"ZBEL";
-NSString* ZBufferSetWindow   = @"ZBSW";
+NSString* ZBufferWriteString  = @"ZBWS";
+NSString* ZBufferClearWindow  = @"ZBCW";
+NSString* ZBufferMoveTo       = @"ZBMT";
+NSString* ZBufferEraseLine    = @"ZBEL";
+NSString* ZBufferSetWindow    = @"ZBSW";
 
-NSString* ZBufferPlotRect    = @"ZBPR";
-NSString* ZBufferPlotText    = @"ZBPT";
+NSString* ZBufferPlotRect     = @"ZBPR";
+NSString* ZBufferPlotText     = @"ZBPT";
+NSString* ZBufferScrollRegion = @"ZBSR";
 
 @implementation ZBuffer
 
@@ -624,6 +625,18 @@ NSString* ZBufferPlotText    = @"ZBPT";
 	[self addedToBuffer];
 }
 
+- (void) scrollRegion: (NSRect) region
+			  toPoint: (NSPoint) newPoint
+			 inWindow: (NSObject<ZPixmapWindow>*) win {
+	[buffer addObject:
+		[NSArray arrayWithObjects:
+			ZBufferScrollRegion,
+			[NSValue valueWithRect: region],
+			[NSValue valueWithPoint: newPoint],
+			win,
+			nil]];
+}
+
 // Unbuffering
 - (BOOL) empty {
     if ([buffer count] < 1)
@@ -712,6 +725,13 @@ NSString* ZBufferPlotText    = @"ZBPT";
 			[win plotText: text
 				  atPoint: point
 				withStyle: style];
+		} else if ([entryType isEqualToString: ZBufferScrollRegion]) {
+			NSRect region = [[entry objectAtIndex: 1] rectValue];
+			NSPoint point = [[entry objectAtIndex: 2] pointValue];
+			NSObject<ZPixmapWindow>* win = [entry objectAtIndex: 3];
+			
+			[win scrollRegion: region
+					  toPoint: point];
         } else {
             NSLog(@"Unknown buffer type: %@", entryType);
         }

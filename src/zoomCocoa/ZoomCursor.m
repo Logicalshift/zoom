@@ -120,9 +120,9 @@
 	
 	// Move the cursor
 	float width = [font widthOfString: @"n"]; // One 'en'
-	float height = [font ascender] - [font descender];
-	
-	cursorRect = NSMakeRect(pt.x, pt.y+[font ascender]-[font descender], width, height);
+	float height = [font defaultLineHeightForFont];
+		
+	cursorRect = NSMakeRect(pt.x, pt.y, width, height);
 	
 	cursorRect.origin.x = floor(cursorRect.origin.x + 0.5) + 0.5;
 	cursorRect.origin.y = floor(cursorRect.origin.y + 0.5) + 0.5;
@@ -148,10 +148,10 @@
 	
 	// Move the cursor
 	float width = [font widthOfString: @"n"]; // One 'en'
-	float height = [font ascender] - [font descender];
+	float height = [font defaultLineHeightForFont];
 	float offset = [[string substringToIndex: index] sizeWithAttributes: attributes].width;
 	
-	cursorRect = NSMakeRect(cursorPos.x+offset, cursorPos.y+[font ascender]-[font descender], width, height);
+	cursorRect = NSMakeRect(cursorPos.x+offset, cursorPos.y, width, height);
 
 	// Redraw
 	isShown = wasShown;
@@ -160,7 +160,7 @@
 }
 
 - (NSRect) cursorRect {
-	return cursorRect;
+	return NSInsetRect(cursorRect, -2.0, -2.0);
 }
 
 // = Display status =

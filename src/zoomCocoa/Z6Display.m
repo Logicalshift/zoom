@@ -16,6 +16,7 @@
 
 extern int zDisplayCurrentWindow;
 extern ZStyle* zDisplayCurrentStyle;
+extern BOOL zPixmapDisplay;
 
 #undef  MEASURE_REMOTELY		// Set to force measuring of font sizes, etc, on the Zoom process rather than this one. Will be slower
 
@@ -25,6 +26,7 @@ extern ZStyle* zDisplayCurrentStyle;
 
 int display_init_pixmap(int width, int height) {
 	[(NSObject<ZPixmapWindow>*)[mainMachine windowNumber: 0] setSize: NSMakeSize(width, height)];
+	zPixmapDisplay = YES;
 	
 	return 1;
 }
@@ -124,6 +126,14 @@ void display_pixmap_cols(int fore, int back) {
 	display_set_colour(fore, back);
 }
 
+void display_scroll_region(int x, int y,
+						   int width, int height,
+						   int xoff, int yoff) {
+	[[mainMachine buffer] scrollRegion: NSMakeRect(x, y, width, height)
+							   toPoint: NSMakePoint(x+xoff, y+yoff)
+							  inWindow: [mainMachine windowNumber: 0]];
+}
+
 // Measuring
 
 static int lastStyle = -12763;
@@ -212,7 +222,7 @@ float display_get_font_height(int style) {
 	NSLog(@"display_get_font_height = %g", lastHeight);
 #endif
 	
-	return lastHeight;
+	return ceilf(lastHeight)+1.0;
 }
 
 float display_get_font_ascent(int style) {
@@ -222,7 +232,7 @@ float display_get_font_ascent(int style) {
 	NSLog(@"display_get_font_ascent = %g", lastAscent);
 #endif
 	
-	return lastAscent;
+	return ceilf(lastAscent);
 }
 
 float display_get_font_descent(int style) { 
@@ -232,10 +242,12 @@ float display_get_font_descent(int style) {
 	NSLog(@"display_get_font_descent = %g", -lastDescent);
 #endif
 	
-	return -lastDescent;
+	return ceilf(-lastDescent);
 }
 
 int display_get_pix_colour(int x, int y) {
+	[mainMachine flushBuffers];
+	
 	NSColor* pixColour = [(NSObject<ZPixmapWindow>*)[mainMachine windowNumber: 0] colourAtPixel: NSMakePoint(x, y)];
 	
 	int redComponent = [pixColour redComponent] * 31.0;
@@ -247,16 +259,13 @@ int display_get_pix_colour(int x, int y) {
 
 // Input
 
-void display_set_input_pos   (int style, int x, int y, int width) { 
+void display_set_input_pos(int style, int x, int y, int width) { 
 	set_style(style);
 	
 	[(NSObject<ZPixmapWindow>*)[mainMachine windowNumber: 0] setInputPosition: NSMakePoint(x, y)
 																	withStyle: zDisplayCurrentStyle];
 }
 
-extern void  display_scroll_region   (int x, int y,
-                                      int width, int height,
-                                      int xoff, int yoff) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
 extern void  display_plot_image      (BlorbImage* img, int x, int y) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
 extern void  display_wait_for_more   (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
 

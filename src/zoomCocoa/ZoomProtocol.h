@@ -181,6 +181,10 @@ typedef enum {
 // Reading information about the pixmap
 - (out bycopy NSColor*) colourAtPixel: (NSPoint) point;
 
+// Scrolls a region of the screen
+- (void) scrollRegion: (in NSRect) region
+			  toPoint: (in NSPoint) newPoint;
+
 // Measures a string
 - (NSSize) measureString: (in bycopy NSString*) string
 			   withStyle: (in bycopy ZStyle*) style;
@@ -356,6 +360,9 @@ extern NSString* ZStyleAttributeName;
 		  atPoint: (NSPoint) point
 		withStyle: (ZStyle*) style
 		 inWindow: (NSObject<ZPixmapWindow>*) win;
+- (void) scrollRegion: (NSRect) region
+			  toPoint: (NSPoint) newPoint
+			 inWindow: (NSObject<ZPixmapWindow>*) win;
 
 // Unbuffering
 - (BOOL) empty; // YES if the buffer has no data

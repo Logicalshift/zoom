@@ -29,6 +29,8 @@
 
 - (void) keyDown: (NSEvent*) evt;
 
+- (NSString*) inputLine;
+
 - (void) setDelegate: (id) delegate;
 - (id)   delegate;
 
@@ -37,5 +39,6 @@
 @interface NSObject(ZoomInputLineDelegate)
 
 - (void) inputLineHasChanged: (ZoomInputLine*) sender;
+- (void) endOfLineReached: (ZoomInputLine*) sender;
 
 @end

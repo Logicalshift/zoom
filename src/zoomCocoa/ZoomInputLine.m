@@ -37,6 +37,10 @@
 
 // Drawing
 - (void) drawAtPoint: (NSPoint) point {
+	NSFont* font = [attributes objectForKey: NSFontAttributeName];
+	
+	point.y += [font descender];
+	
 	[lineString drawAtPoint: point
 			 withAttributes: attributes];
 }
@@ -81,14 +85,67 @@
 	
 	// Deal with/strip characters 0xf700-0xf8ff from the input string
 	int x;
+	BOOL endOfLine = NO;
 	NSMutableString* inString = [[NSMutableString alloc] init];
 		
 	for (x=0; x<[input length]; x++) {
 		unichar chr = [input characterAtIndex: x];
 		
-		// IMPLEMENT ME: up/down, function keys, etc
-		
-		if (chr < 0xf700 || chr > 0xf8ff) {
+		if (chr == 13 || chr == 10) {
+			// EOL
+			endOfLine = YES;
+			break;
+		} else if (chr == 8 || chr == 127) {
+			// Delete the last character
+			if (insertionPos > 0) {
+				[lineString deleteCharactersInRange: NSMakeRange(insertionPos-1, 1)];
+				insertionPos--;
+				[self stringHasUpdated];
+				[self updateCursor];
+				
+				[inString setString: @""];
+				break;
+			} else {
+				NSBeep();
+			}
+		} else if (chr == NSDeleteFunctionKey) {
+			if (insertionPos < [lineString length]) {
+				[lineString deleteCharactersInRange: NSMakeRange(insertionPos, 1)];
+				[self stringHasUpdated];
+				[self updateCursor];
+				
+				[inString setString: @""];
+				break;
+			} else {
+				NSBeep();
+			}
+		} else if (chr == NSLeftArrowFunctionKey) {
+			if (insertionPos > 0) {
+				insertionPos--;
+				[self updateCursor];
+				
+				[inString setString: @""];
+				break;
+			} else {
+				NSBeep();
+			}
+		} else if (chr == NSRightArrowFunctionKey) {
+			if (insertionPos < [lineString length]) {
+				insertionPos++;
+				[self updateCursor];
+				
+				[inString setString: @""];
+				break;
+			} else {
+				NSBeep();
+			}
+		} else if (chr == NSEndFunctionKey) {
+			insertionPos = [lineString length];
+			[self updateCursor];
+		} else if (chr == NSHomeFunctionKey) {
+			insertionPos = 0;
+			[self updateCursor];
+		} else if (chr < 0xf700 || chr > 0xf8ff) {
 			[inString appendString: [NSString stringWithCharacters:&chr
 															length:1]];
 		}
@@ -105,6 +162,13 @@
 	}
 	
 	[inString release];
+	
+	// Deal with end of line
+	if (endOfLine) {
+		if (delegate && [delegate respondsToSelector: @selector(endOfLineReached:)]) {
+			[delegate endOfLineReached: self];
+		}
+	}
 }
 
 // Delegate
@@ -114,6 +178,11 @@
 
 - (id) delegate {
 	return delegate;
+}
+
+// Results
+- (NSString*) inputLine {
+	return [[lineString copy] autorelease];
 }
 
 @end

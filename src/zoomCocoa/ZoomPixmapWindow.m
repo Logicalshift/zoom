@@ -98,11 +98,18 @@
 	float descender = [[attr objectForKey: NSFontAttributeName] descender];
 	NSSize size = [text sizeWithAttributes: attr];
 	
+	point.y -= ceilf(height)+1.0;
+	
 	size.height = height;
 	NSRect backgroundRect;
 	backgroundRect.origin = point;
 	backgroundRect.size = size;
 	backgroundRect.origin.y -= descender;
+	
+	backgroundRect.origin.x = floorf(backgroundRect.origin.x);
+	backgroundRect.origin.y = floorf(backgroundRect.origin.y);
+	backgroundRect.size.width = ceilf(backgroundRect.size.width);
+	backgroundRect.size.height = ceilf(backgroundRect.size.height) + 1.0;
 	
 	[[attr objectForKey: NSBackgroundColorAttributeName] set];
 	NSRectFill(backgroundRect);
@@ -116,6 +123,16 @@
 	
 	[pixmap unlockFocus];
 	[zView setNeedsDisplay: YES];
+}
+
+- (void) scrollRegion: (NSRect) region
+			  toPoint: (NSPoint) where {
+	[pixmap lockFocus];
+	// Uh, docs say we should use NSNullObject here, but it's not defined. Making a guess at its value (sigh)
+	// This would be less of a problem in a view, because we can get the view's own graphics state. But you
+	// can't get the graphics state for an image (in general).
+	NSCopyBits(0, region, where);
+	[pixmap unlockFocus];
 }
 
 // Measuring

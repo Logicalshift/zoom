@@ -27,6 +27,8 @@ static int is_v6 = 0;
 int zDisplayCurrentWindow = 0;
 ZStyle* zDisplayCurrentStyle = nil;
 
+BOOL zPixmapDisplay = NO;
+
 // = Display =
 
 // Debugging functions
@@ -85,7 +87,7 @@ ZDisplay* display_get_info(void) {
     dis.height        = pysize;
     
     dis.font_width    = fontwidth;
-    dis.font_height   = fontheight;
+    dis.font_height   = fontheight + 2.0;
     dis.pictures      = 1;
     dis.fore          = 0; // Implement me: make configurable
     dis.back          = 7; // Implement me: make configurable
@@ -354,7 +356,15 @@ int display_readline(int* buf, int len, long int timeout) {
     }
 
     buf[realLen] = 0;
-
+	
+	// For version 6: write the string we received
+	if (zPixmapDisplay) {
+		static int newline[] = { '\n', 0 };
+		
+		display_prints(buf);
+		display_prints(newline);
+	}
+	
     [inputBuffer deleteCharactersInRange: NSMakeRange(0, realLen)];
 
     return termChar;

@@ -548,7 +548,7 @@ static void finalizeViews(void) {
 		NSFont* font = [self fontWithStyle: ZFixedStyle];
 	
 		*width = [font widthOfString: @"M"];
-		*height = [font defaultLineHeightForFont];
+		*height = ceilf([font defaultLineHeightForFont])+1.0;
 	}
 }
 
@@ -2071,6 +2071,24 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 
 - (void) inputLineHasChanged: (ZoomInputLine*) sender {
 	[self setNeedsDisplayInRect: [inputLine rectForPoint: inputLinePos]];
+}
+
+- (void) endOfLineReached: (ZoomInputLine*) sender {
+	[self setNeedsDisplayInRect: [inputLine rectForPoint: inputLinePos]];
+	
+	if (receiving) {
+		NSString* inputText = [inputLine inputLine];
+		
+		[commandHistory addObject: inputText];
+		
+		inputText = [inputText stringByAppendingString: @"\n"];
+		
+		[zMachine inputText: inputText];
+		[self orInputCommand: inputText];		
+	}
+	
+	[inputLine release];
+	inputLine = nil;
 }
 
 // = Output receivers =
