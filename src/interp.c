@@ -831,10 +831,11 @@ static void zcode_op_output_stream(ZStack* stack,
 
       if (args->n_args > 2)
 	{
-	  machine.memory_width[machine.memory_on-1] = args->arg[2];
-	  
-	  if (machine.memory_width[machine.memory_on-1] == 0)
-	    machine.memory_width[machine.memory_on-1] = windows[v6_get_window()].xsize;
+	  if (args->arg[2] >= 0)
+	    machine.memory_width[machine.memory_on-1] = 
+	      windows[args->arg[2]].xsize;
+	  else
+	    machine.memory_width[machine.memory_on-1] = -args->arg[2];
 	}
 
       mem = Address((ZUWord)machine.memory_pos[machine.memory_on-1]);

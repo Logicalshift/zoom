@@ -2651,6 +2651,12 @@ OPCODE "picture_data"  EXT:0x06 BRANCH        VERSION 6
       height = img->height;
 
       v6_scale_image(img, &sc_n, &sc_d);
+
+#ifdef DEBUG
+      printf_debug("Image data for %i: %ix%i (scaled %i, %i)\n", 
+	argblock.arg[0], width, height, sc_n, sc_d);
+#endif
+
       width = (width*sc_n)/sc_d;
       height = (height*sc_n)/sc_d;
 
@@ -2663,7 +2669,6 @@ OPCODE "picture_data"  EXT:0x06 BRANCH        VERSION 6
     }
   else
     {
-      printf_debug("Image %i not found\n", argblock.arg[0]);
       result = 0;
     }
 

@@ -154,9 +154,9 @@ BlorbFile* blorb_loadfile(ZFile* file)
 	    -1;
 	  res->index.picture[res->index.npictures-1].number = -1;
 	  res->index.picture[res->index.npictures-1].width  =
-	    (data[0]<<24)|(data[1]<<24)|(data[2]<<24)|data[3];
+	    (data[0]<<24)|(data[1]<<16)|(data[2]<<8)|data[3];
 	  res->index.picture[res->index.npictures-1].height =
-	    (data[4]<<24)|(data[5]<<24)|(data[6]<<24)|data[7];
+	    (data[4]<<24)|(data[5]<<16)|(data[6]<<8)|data[7];
 	  res->index.picture[res->index.npictures-1].std_n  = 1;
 	  res->index.picture[res->index.npictures-1].std_d  = 1;
 	  res->index.picture[res->index.npictures-1].min_n  = 0;
