@@ -255,6 +255,8 @@ void image_quartz_prepare(image_data* img)
       data->p_inf.pos  = 0;
       data->p_inf.len  = 4*image_width(img)*image_height(img);
 
+      /* FIXME: actually premultiply the alpha... */
+
       data->provider = CGDataProviderCreate(&data->p_inf, &pcb);
       data->image    = CGImageCreate(image_width(img), image_height(img),
 				     8, 32, 4*image_width(img),
