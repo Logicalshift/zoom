@@ -29,6 +29,7 @@
 	BOOL overItem;
 	
 	NSMutableArray* trackingRects;
+	NSMutableArray* trackingItems;
 	NSDictionary* trackedItem;
 	
 	BOOL    dragScrolling;

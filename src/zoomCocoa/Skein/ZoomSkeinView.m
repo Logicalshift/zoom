@@ -52,6 +52,7 @@ enum ZSVbutton
 // Layout
 - (void) layoutSkein;
 - (void) updateTrackingRects;
+- (void) removeAllTrackingRects;
 
 // UI
 - (void) mouseEnteredView;
@@ -207,7 +208,9 @@ enum ZSVbutton
 	if (itemEditor) [itemEditor release];
 	if (itemToEdit) [itemToEdit release];
 	
-	if (selectedItem) [selectedItem release];
+	if (selectedItem)  [selectedItem release];
+	if (trackedItem)   [trackedItem release];
+	if (trackingItems) [trackingItems release];
 	
 	[super dealloc];
 }
@@ -473,6 +476,9 @@ enum ZSVbutton
 											   object: skein];
 	[self setSelectedItem: nil];
 	[self skeinNeedsLayout];
+	
+	[self layoutSkein];
+	[self updateTrackingRects];
 }
 
 // = Laying things out =
@@ -689,8 +695,10 @@ enum ZSVbutton
 	float levelOffset = point.y - levelPos;
 	
 	// Must correspond to the lozenge
-	if (levelOffset < -8) return nil;
-	if (levelOffset >= 22) return nil;
+	//if (levelOffset < -8) return nil;
+	//if (levelOffset >= 22) return nil;
+	if (levelOffset < -18) return nil;
+	if (levelOffset >= 34) return nil;
 	
 	// Find which item is selected (if any)
 	
@@ -728,11 +736,16 @@ enum ZSVbutton
 		[self removeTrackingRect: [val intValue]];
 	}
 	
+	[trackingRects release];
 	trackingRects = [[NSMutableArray alloc] init];
+	
+	[trackingItems release];
+	trackingItems = [[NSMutableArray alloc] init];
 }
 
 - (void) updateTrackingRects {
 	if (dragScrolling) return;
+	if ([self superview] == nil || [self window] == nil) return;
 
 	[self removeAllTrackingRects];
 	
@@ -747,6 +760,7 @@ enum ZSVbutton
 	if (overWindow) [self mouseLeftView];
 	overWindow = NO;
 	overItem = NO;
+	if (trackedItem) [trackedItem release];
 	trackedItem = nil;
 
 	int startLevel = floorf(NSMinY(visibleRect) / itemHeight)-1;
@@ -782,6 +796,7 @@ enum ZSVbutton
 			NSRect itemRect = [self activeAreaForItem: item];
 			
 			// Same reasoning as before
+			[trackingItems addObject: item];
 			inside = NO;
 			if (NSPointInRect(currentMousePos, itemRect)) {
 				[self mouseEnteredItem: item];
@@ -812,6 +827,17 @@ enum ZSVbutton
 }
 
 - (void) mouseEnteredItem: (NSDictionary*) item {
+	if (skeinNeedsLayout) {
+		[self layoutSkein];
+		[self updateTrackingRects];
+		return;
+	}
+	
+	if ([trackingItems indexOfObjectIdenticalTo: item] == NSNotFound) {
+		NSLog(@"Item %p does not exist in SkeinView! (tracking error)", item);
+		return;
+	}
+	
 	if (!overWindow) {
 		// Make sure the cursor stack is set up correctly
 		[[NSCursor openHandCursor] push];
@@ -822,7 +848,10 @@ enum ZSVbutton
 		[[NSCursor pointingHandCursor] push];
 	}
 	
-	trackedItem = item;
+	if (trackedItem) {
+		[trackedItem release];
+	}
+	trackedItem = [item retain];
 	overItem = YES;
 	
 	if (trackedItem) {
@@ -834,6 +863,7 @@ enum ZSVbutton
 	if (overItem) [NSCursor pop];
 	if (trackedItem) [self setNeedsDisplay: YES];
 	overItem = NO;
+	if (trackedItem) [trackedItem release];
 	trackedItem = nil;
 	
 	[self iHateEditing];
@@ -869,6 +899,20 @@ enum ZSVbutton
 
 - (void) mouseDown: (NSEvent*) event {
 	[self finishEditing: self];
+	
+	// Update the tracked item if it's not accurate
+	NSPoint pointInView = [event locationInWindow];
+	pointInView = [self convertPoint: pointInView fromView: nil];
+	
+	ZoomSkeinItem* realItem = [self itemAtPoint: pointInView];
+	NSDictionary* realItemD = [self itemForItem: realItem];
+	
+	if (realItemD != trackedItem) {
+		if (!overWindow) [self mouseEnteredView];
+		
+		if (trackedItem) [self mouseLeftItem: trackedItem];
+		if (realItemD) [self mouseEnteredItem: realItemD];
+	}
 	
 	if (trackedItem == nil) {
 		// We're dragging to move the view around
@@ -1291,6 +1335,36 @@ enum ZSVbutton
 
 - (id) delegate {
 	return delegate;
+}
+
+// = Moving around =
+
+- (void)viewWillMoveToWindow:(NSWindow *)newWindow {
+	[self finishEditing: self];
+	[self removeAllTrackingRects];
+}
+
+- (void) viewWillMoveToSuperview:(NSView *)newSuperview {
+	[self finishEditing: self];
+	[self removeAllTrackingRects];
+}
+
+- (void)viewDidMoveToWindow {
+	[self skeinNeedsLayout];
+}
+
+- (void) viewDidMoveToSuperview {
+	[self skeinNeedsLayout];
+}
+
+- (void) setFrame: (NSRect) frame {
+	[self skeinNeedsLayout];
+	[super setFrame: frame];
+}
+
+- (void) setBounds: (NSRect) bounds {
+	[self skeinNeedsLayout];
+	[super setBounds: bounds];
 }
 
 @end
