@@ -77,5 +77,6 @@
 - (void) drawItem: (ZoomSkeinItem*) item
 		  atPoint: (NSPoint) point;
 - (NSImage*) imageForItem: (ZoomSkeinItem*) item;
+- (NSImage*) image;
 
 @end

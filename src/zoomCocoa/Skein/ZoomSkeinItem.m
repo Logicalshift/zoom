@@ -177,6 +177,31 @@ static NSString* convertCommand(NSString* command) {
 	}
 }
 
+- (BOOL) hasChild: (ZoomSkeinItem*) item {
+	if (item == self) return YES;
+	//if ([children containsObject: child]) return YES;
+	
+	NSEnumerator* childEnum = [children objectEnumerator];
+	ZoomSkeinItem* child;
+	
+	while (child = [childEnum nextObject]) {
+		if ([child hasChild: item]) return YES;
+	}
+	
+	return NO;
+}
+
+- (BOOL) hasChildWithCommand: (NSString*) command {
+	NSEnumerator* childEnum = [children objectEnumerator];
+	ZoomSkeinItem* child;
+	
+	while (child = [childEnum nextObject]) {
+		if ([[child command] isEqualToString: command]) return YES;
+	}
+	
+	return NO;
+}
+
 // = Item data =
 
 - (NSString*) command {
@@ -301,6 +326,54 @@ static int currentScore = 1;
 	ZoomSkeinItem* otherItem = anObject;
 	
 	return [[otherItem command] isEqual: command];
+}
+
+// = NSCoding =
+
+- (void) encodeWithCoder: (NSCoder*) encoder {
+	[encoder encodeObject: children
+				   forKey: @"children"];
+	
+	[encoder encodeObject: command
+				   forKey: @"command"];
+	[encoder encodeObject: result
+				   forKey: @"result"];
+	[encoder encodeObject: annotation
+				   forKey: @"annotation"];
+	
+	[encoder encodeBool: played
+				 forKey: @"played"];
+	[encoder encodeBool: changed
+				 forKey: @"changed"];
+	[encoder encodeBool: temporary
+				 forKey: @"temporary"];
+	[encoder encodeInt: tempScore
+				forKey: @"tempScore"];
+}
+
+- (id)initWithCoder: (NSCoder *)decoder {
+	self = [super init];
+	
+	if (self) {
+		children = [[decoder decodeObjectForKey: @"children"] retain];
+		
+		command = [[decoder decodeObjectForKey: @"command"] retain];
+		result = [[decoder decodeObjectForKey: @"result"] retain];
+		annotation = [[decoder decodeObjectForKey: @"annotation"] retain];
+		
+		played = [decoder decodeBoolForKey: @"played"];
+		changed = [decoder decodeBoolForKey: @"changed"];
+		temporary = [decoder decodeBoolForKey: @"temporary"];
+		tempScore = [decoder decodeIntForKey: @"tempScore"];
+		
+		NSEnumerator* childEnum = [children objectEnumerator];
+		ZoomSkeinItem* child;
+		while (child = [childEnum nextObject]) {
+			child->parent = self;
+		}
+	}
+	
+	return self;
 }
 
 @end

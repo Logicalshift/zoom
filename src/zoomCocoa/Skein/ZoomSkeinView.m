@@ -8,6 +8,8 @@
 
 #import "ZoomSkeinView.h"
 
+#include <Carbon/Carbon.h>
+
 // Constants
 static const float itemWidth = 120.0; // Pixels
 static const float itemHeight = 96.0;
@@ -30,6 +32,8 @@ enum ZSVbutton
 
 	ZSVmainItem = 256
 };
+
+NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 
 // Our sooper sekrit interface
 @interface ZoomSkeinView(ZoomSkeinViewPrivate)
@@ -111,6 +115,8 @@ enum ZSVbutton
 		
 		layout = [[ZoomSkeinLayout alloc] init];
 		[layout setRootItem: [skein rootItem]];
+		
+		[self registerForDraggedTypes: [NSArray arrayWithObjects: ZoomSkeinItemPboardType, nil]];
     }
 	
     return self;
@@ -580,23 +586,26 @@ enum ZSVbutton
 		lastButton = ZSVnoButton;
 		
 		// Create an image of this item
-		NSRect itemRect = [layout activeAreaForItem: clickedItem];
 		NSImage* itemImage = [layout imageForItem: clickedItem];
 		
 		NSPasteboard *pboard;
 		
+		dragCanMove = ![clickedItem hasChild: [skein activeItem]];
+		
 		pboard = [NSPasteboard pasteboardWithName:NSDragPboard];
-		[pboard declareTypes:[NSArray arrayWithObject:NSTIFFPboardType] owner:self];
-		[pboard setData:[itemImage TIFFRepresentation] forType:NSTIFFPboardType];
+		[pboard declareTypes:[NSArray arrayWithObjects: ZoomSkeinItemPboardType, nil] owner:self];
+
+		[pboard setData: [NSKeyedArchiver archivedDataWithRootObject: clickedItem]
+				forType: ZoomSkeinItemPboardType];
 		
-		NSPoint dragOrigin;
+		NSPoint origin;
 		
-		dragOrigin.x = [layout xposForItem: clickedItem] - [layout widthForItem: clickedItem]/2.0 - 20.0;
-		dragOrigin.y = ((float)[layout levelForItem: clickedItem])*itemHeight + (itemHeight/2.0);
-		dragOrigin.y += 22.0;
+		origin.x = [layout xposForItem: clickedItem] - [layout widthForItem: clickedItem]/2.0 - 20.0;
+		origin.y = ((float)[layout levelForItem: clickedItem])*itemHeight + (itemHeight/2.0);
+		origin.y += 22.0;
 		
 		[self dragImage: itemImage
-					 at: dragOrigin
+					 at: origin
 				 offset: NSMakeSize(0,0)
 				  event: event
 			 pasteboard: pboard
@@ -1024,6 +1033,111 @@ enum ZSVbutton
 - (void) setBounds: (NSRect) bounds {
 	[self skeinNeedsLayout];
 	[super setBounds: bounds];
+}
+
+// = NSDraggingSource protocol =
+
+- (unsigned int)draggingSourceOperationMaskForLocal:(BOOL)isLocal {
+	if (isLocal) {
+		if (dragCanMove) {
+			return NSDragOperationCopy|NSDragOperationMove;
+		} else {
+			return NSDragOperationCopy;
+		}
+	} else {
+		return NSDragOperationCopy;
+	}
+}
+
+- (void)draggedImage:(NSImage *)anImage 
+			 endedAt:(NSPoint)aPoint 
+		   operation:(NSDragOperation)operation {
+	if ((operation&NSDragOperationMove) && clickedItem != nil && dragCanMove) {
+		[clickedItem removeFromParent];
+		[self skeinNeedsLayout];
+	}
+}
+
+// = NSDraggingDestination protocol =
+
+- (NSDragOperation) updateDragCursor: (id <NSDraggingInfo>) sender {
+	NSPoint dragPoint = [self convertPoint: [sender draggingLocation]
+								  fromView: nil];
+	ZoomSkeinItem* item = [layout itemAtPoint: dragPoint];
+	
+	if (item == nil || item == clickedItem || [item hasChildWithCommand: [clickedItem command]]) {
+		SetThemeCursor(kThemeNotAllowedCursor);
+		
+		return NSDragOperationNone;
+	} else {
+		if ([sender draggingSourceOperationMask]&NSDragOperationMove &&
+			![clickedItem hasChild: item]) {
+			SetThemeCursor(kThemeArrowCursor);
+			
+			return NSDragOperationMove;
+		} else {
+			SetThemeCursor(kThemeCopyArrowCursor);
+			
+			return NSDragOperationCopy;
+		}
+	}
+}
+
+- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender {
+	[[NSCursor arrowCursor] set];
+	
+	return [self updateDragCursor: sender];
+}
+
+- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender {
+	return [self updateDragCursor: sender];
+}
+
+- (void)draggingExited:(id <NSDraggingInfo>)sender {
+	[[NSCursor arrowCursor] set];
+}
+
+- (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender {
+	// Refuse to accept the drag operation if the item is nil
+	NSPoint dragPoint = [self convertPoint: [sender draggingLocation]
+								  fromView: nil];
+	ZoomSkeinItem* item = [layout itemAtPoint: dragPoint];
+
+	return (item != nil);
+}
+
+- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender {
+	NSPoint dragPoint = [self convertPoint: [sender draggingLocation]
+								  fromView: nil];
+	ZoomSkeinItem* item = [layout itemAtPoint: dragPoint];
+	
+	if (item == nil) return NO;
+	
+	// Decode the ZoomSkeinItemPboardType data for this operation
+	NSPasteboard* pboard = [sender draggingPasteboard];
+	NSData*       data = [pboard dataForType: ZoomSkeinItemPboardType];
+	if (data == nil) return NO;
+	
+	ZoomSkeinItem* newItem = [NSKeyedUnarchiver unarchiveObjectWithData: data];
+	if (newItem == nil) return NO;
+	
+	// Add this as a child of the old item
+	[item addChild: newItem];
+	
+	return YES;
+}
+
+- (void)concludeDragOperation:(id <NSDraggingInfo>)sender {
+	[self skeinNeedsLayout];
+	[self layoutSkein];
+
+	NSPoint dragPoint = [self convertPoint: [sender draggingLocation]
+								  fromView: nil];
+	ZoomSkeinItem* item = [layout itemAtPoint: dragPoint];
+	
+	if (item == nil) return;
+	
+	[self scrollToItem: item];
 }
 
 @end

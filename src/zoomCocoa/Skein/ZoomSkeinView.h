@@ -12,6 +12,8 @@
 #import "ZoomSkeinItem.h"
 #import "ZoomSkeinLayout.h"
 
+extern NSString* ZoomSkeinItemPboardType;
+
 @interface ZoomSkeinView : NSView {
 	ZoomSkein* skein;
 	
@@ -29,6 +31,10 @@
 	ZoomSkeinItem* trackedItem;
 	ZoomSkeinItem* clickedItem;
 	
+	// Dragging items
+	BOOL    dragCanMove;
+
+	// Drag scrolling
 	BOOL    dragScrolling;
 	NSPoint dragOrigin;
 	NSRect  dragInitialVisible;

@@ -2725,6 +2725,12 @@
 			settings = {
 			};
 		};
+		4BC3B16B06AFE63C008FCD35 = {
+			fileRef = 4B5CBB9B069D671200C0AA88;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		4BCB09620615D0D800CDFB98 = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -3607,6 +3613,7 @@
 				4BDFA4DE0535E6BE00A8E303,
 				4B14638806A2F1B500398650,
 				4B0A32AF06A5966D00BB8878,
+				4BC3B16B06AFE63C008FCD35,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

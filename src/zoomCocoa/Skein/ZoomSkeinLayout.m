@@ -483,6 +483,11 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed;
 		// There's a +40 border either side of the item
 		itemWidth += 40.0;
 		
+		// Buttons require a minimum width
+		if (itemWidth < 72.0) {
+			itemWidth = 72.0;
+		}
+		
 		// Item is centered
 		itemWidth /= 2.0;
 		
@@ -623,6 +628,31 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed;
 	[img unlockFocus];
 	
 	return img;
+}
+
+- (NSImage*) image {
+	NSImage* res = [[[NSImage alloc] initWithSize: [self size]] autorelease];
+	
+	[res lockFocus];
+	
+	NSAffineTransform* flip = [NSAffineTransform transform];
+	
+	// Almost works, except the text is upside down.
+	[flip scaleXBy: 1.0
+			   yBy: -1.0];
+	[flip translateXBy: 0.0
+				   yBy: -[self size].height];
+	[flip set];
+	
+	NSRect imgRect;
+	imgRect.origin = NSMakePoint(0,0);
+	imgRect.size = [self size];
+	
+	[self drawInRect: imgRect];
+		
+	[res unlockFocus];
+	
+	return res;
 }
 
 @end

@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 
-@interface ZoomSkeinItem : NSObject {
+@interface ZoomSkeinItem : NSObject<NSCoding> {
 	ZoomSkeinItem* parent;
 	NSMutableSet* children;
 	
@@ -39,6 +39,9 @@
 - (ZoomSkeinItem*) addChild: (ZoomSkeinItem*) childItem;
 - (void)		   removeChild: (ZoomSkeinItem*) childItem;
 - (void)		   removeFromParent;
+
+- (BOOL)           hasChild: (ZoomSkeinItem*) child; // Recursive
+- (BOOL)           hasChildWithCommand: (NSString*) command; // Not recursive
 
 // Item data
 - (NSString*)      command; // Command input
