@@ -339,8 +339,7 @@ static void appendStyle(NSMutableString* styleName,
 	}
 	
 	NSColor* selected_colour = [[NSColorPanel sharedColorPanel] color];
-	
-	NSColor* colour = [[selected_colour colorUsingColorSpaceName: NSCalibratedRGBColorSpace] colorWithAlphaComponent:(1 - ([transparencySlider floatValue] / 100.0))];
+	NSColor* colour = [[selected_colour colorUsingColorSpaceName: NSCalibratedRGBColorSpace] colorWithAlphaComponent:(([transparencySlider floatValue] / 100.0))];
 	
 	NSMutableArray* cols = [[prefs colours] mutableCopy];
 	
