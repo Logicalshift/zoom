@@ -545,7 +545,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         [self page];
         return YES;
     }
-
+    
     if (receivingCharacters) {
         NSString* chars = [theEvent characters];
         int key = -1;
@@ -585,6 +585,23 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         [zMachine inputText: chars];
         
         return YES;
+    }
+    
+    if (receiving) {
+        // Move the input position if required
+        int modifiers = [theEvent modifierFlags];
+        
+        NSString* chars = [theEvent characters];
+        
+        modifiers &= NSControlKeyMask|NSCommandKeyMask|NSAlternateKeyMask|NSFunctionKeyMask;
+        
+        if (modifiers == 0) {
+            NSRange selRange = [textView selectedRange];
+                        
+            if (selRange.location < inputPos) {
+                [textView setSelectedRange: NSMakeRange([[textView textStorage] length], 0)];
+            }
+        }
     }
 
     return NO;
