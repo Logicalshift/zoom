@@ -204,6 +204,7 @@ extern NSString* ZoomStyleAttributeName;
 
 - (NSString*) defaultSaveDirectory;
 - (BOOL)      useSavePackage;
+- (void)      prepareSavePackage: (ZPackageFile*) file;
 
 - (void) hitBreakpoint: (int) pc;
 

@@ -1589,6 +1589,10 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 				[f addData: [NSArchiver archivedDataWithRootObject: self]
 			   forFilename: @"ZoomStatus.dat"];
 				
+				if (delegate && [delegate respondsToSelector: @selector(prepareSavePackage:)]) {
+					[delegate prepareSavePackage: f];
+				}
+				
 				[zMachine promptedFileIs: [f autorelease]
 									size: 0];
 			} else {

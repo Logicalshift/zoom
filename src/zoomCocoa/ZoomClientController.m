@@ -107,6 +107,11 @@
 	return YES;
 }
 
+- (void) prepareSavePackage: (ZPackageFile*) file {
+	[file addData: [[[[self document] skein] xmlData] dataUsingEncoding: NSUTF8StringEncoding]
+	  forFilename: @"Skein.xml"];
+}
+
 - (NSString*) defaultSaveDirectory {
 	ZoomPreferences* prefs = [ZoomPreferences globalPreferences];
 	

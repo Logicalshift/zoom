@@ -150,7 +150,8 @@ NSString* ZoomSkeinChangedNotification = @"ZoomSkeinChangedNotification";
 
 @end
 
-// Our input source object
+// = Our input source object =
+
 @implementation ZoomSkeinInputSource
 
 - (id) init {

@@ -41,3 +41,10 @@ extern NSString* ZoomSkeinChangedNotification;
 						 toItem: (ZoomSkeinItem*) item2;
 
 @end
+
+@interface ZoomSkein(ZoomSkeinXML)
+
+- (NSString*) xmlData;
+- (void)      parseXmlData: (NSData*) data;
+
+@end
