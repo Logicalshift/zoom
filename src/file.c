@@ -419,8 +419,24 @@ ZFile* open_file(char* filename)
 ZFile* open_file_write(char* filename)
 {
   FSRef ref;
+  OSStatus erm;
 
-  FSPathMakeRef(filename, &ref, NULL);
+  erm = FSPathMakeRef(filename, &ref, NULL);
+
+  if (erm == fnfErr)
+    {
+      FILE* f;
+
+      /* Is there a better way to do this? */
+      f = fopen(filename, "w");
+      if (f != NULL)
+	fclose(f);
+
+      erm = FSPathMakeRef(filename, &ref, NULL);
+    }
+
+  if (erm != noErr)
+    return NULL;
 
   return open_file_write_fsref(&ref);
 }
