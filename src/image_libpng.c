@@ -25,6 +25,13 @@
 
 #ifdef HAVE_LIBPNG
 
+#define QUALITY_HIGH
+#ifdef QUALITY_HIGH
+# define MATRIX_SIZE 5
+#else
+# define MATRIX_SIZE 3
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -262,10 +269,19 @@ void image_resample(image_data* data, int n, int d)
 
   int newwidth, newheight;
 
+#ifdef QUALITY_HIGH
+  int filter[5][5] = 
+    { {  1,  2,  4,  2,  1 },
+      {  2,  4,  8,  4,  2 },
+      {  4,  8, 16,  8,  4 },
+      {  2,  4,  8,  4,  2 },
+      {  1,  2,  4,  2,  1 } };
+#else
   int filter[3][3] =
     { { 1, 2, 1 },
       { 2, 4, 2 },
       { 1, 2, 1 } };
+#endif
   
   if (data->image == NULL)
     {
@@ -291,32 +307,32 @@ void image_resample(image_data* data, int n, int d)
 
   ip = newimage = malloc(newwidth*newheight*4);
 
-  n *= 3; /* 3x3 filter, y'see */
+  n *= MATRIX_SIZE; /* 3x3 filter, y'see */
 
   if (n >= d) /* Far more likely to happen... */
     {
       int dfx, dfy, Ex, NEx, Ey, NEy;
-      unsigned char* xp[3];
+      unsigned char* xp[MATRIX_SIZE];
       int yp, dstx, dsty;
 
       int i;
 
       if (newwidth < newheight)
-	{ n = newwidth*3; d = data->width-1; }
+	{ n = newwidth*MATRIX_SIZE; d = data->width-1; }
       else
-	{ n = newheight*3; d = data->height-1; }
+	{ n = newheight*MATRIX_SIZE; d = data->height-1; }
 
       /* Set up for bresenham */
-      dfx = 2*(data->width-1)-newwidth*3;
-      dfy = 2*(data->height-1)-newheight*3;
+      dfx = 2*(data->width-1)-newwidth*MATRIX_SIZE;
+      dfy = 2*(data->height-1)-newheight*MATRIX_SIZE;
       Ex = 2*(data->width-1);
       Ey = 2*(data->height-1);
-      NEx = 2*((data->width-1)-newwidth*3);
-      NEy = 2*((data->height-1)-newheight*3);
+      NEx = 2*((data->width-1)-newwidth*MATRIX_SIZE);
+      NEy = 2*((data->height-1)-newheight*MATRIX_SIZE);
 
       /* Calculate our 3 initial y positions */
       yp = 0;
-      for (i=0; i<3; i++)
+      for (i=0; i<MATRIX_SIZE; i++)
 	{
 	  xp[i] = data->row[yp];
 
@@ -343,11 +359,11 @@ void image_resample(image_data* data, int n, int d)
 	      /* Do the sampling */
 	      rs = gs = bs = as = 0;
 
-	      for (i=0; i<3; i++)
+	      for (i=0; i<MATRIX_SIZE; i++)
 		{
 		  int j;
 
-		  for (j=0; j<3; j++)
+		  for (j=0; j<MATRIX_SIZE; j++)
 		    {
 		      rs += xp[j][0]*filter[i][j];
 		      gs += xp[j][1]*filter[i][j];
@@ -362,14 +378,18 @@ void image_resample(image_data* data, int n, int d)
 		    }
 		  else
 		    {
-		      for (j=0; j<3; j++)
+		      for (j=0; j<MATRIX_SIZE; j++)
 			xp[j] += 4;
 		      dfx += NEx;
 		    }
 		}
 
 	      /* Scale the sample */
+#ifdef QUALITY_HIGH
+	      rs /= 100; gs /= 100; bs /= 100; as /= 100;
+#else
 	      rs >>= 4; gs >>= 4; bs >>= 4; as >>= 4;
+#endif
 
 	      /* store the sample */
 	      (*ip++) = rs;
@@ -379,7 +399,7 @@ void image_resample(image_data* data, int n, int d)
 	    }
 
 	  /* Next 3 y positions */
-	  for (i=0; i<3; i++)
+	  for (i=0; i<MATRIX_SIZE; i++)
 	    {
 	      xp[i] = data->row[yp];
 
@@ -395,7 +415,7 @@ void image_resample(image_data* data, int n, int d)
 		}
 	    }
 
-	  dfx = 2*(data->width)-newwidth*3;
+	  dfx = 2*(data->width)-newwidth*MATRIX_SIZE;
 	}
     }
   else
@@ -405,7 +425,7 @@ void image_resample(image_data* data, int n, int d)
        * the original.
        */
       int dfx, dfy, E, NE;
-      unsigned char* xp[3];
+      unsigned char* xp[MATRIX_SIZE];
       int yp, dstx, dsty;
       int subyp;
 
@@ -438,9 +458,9 @@ void image_resample(image_data* data, int n, int d)
 
       /* Minor adjustment (ensures we don't overrun) */
       if (newwidth < newheight)
-	{ n = newwidth*3; d = data->width+1; }
+	{ n = newwidth*MATRIX_SIZE; d = data->width+1; }
       else
-	{ n = newheight*3; d = data->height+1; }
+	{ n = newheight*MATRIX_SIZE; d = data->height+1; }
 
       /* Set up for bresenham */
       dfx = dfy = 2*n-d;
@@ -450,7 +470,7 @@ void image_resample(image_data* data, int n, int d)
       /* Set up initial 3 y positions*/
       yp = 0;
       subyp = 0;
-      for (i=0; i<3; i++)
+      for (i=0; i<MATRIX_SIZE; i++)
 	{
 	  xp[i] = data->row[yp];
 
@@ -459,10 +479,10 @@ void image_resample(image_data* data, int n, int d)
 	    {
 	      dfy += NE;
 	      subyp++;
-	      if (subyp >= 3)
+	      if (subyp >= MATRIX_SIZE)
 		{ subyp = 0; yp++; }
 	    }
-	  subyp++; if (subyp >= 3)  { subyp = 0; yp++; }
+	  subyp++; if (subyp >= MATRIX_SIZE)  { subyp = 0; yp++; }
 
 	  dfy += E;
 	}
@@ -482,11 +502,11 @@ void image_resample(image_data* data, int n, int d)
 	      /* Do the sampling */
 	      rs = gs = bs = 0;
 
-	      for (i=0; i<3; i++)
+	      for (i=0; i<MATRIX_SIZE; i++)
 		{
 		  int j,k;
 
-		  for (j=0; j<3; j++)
+		  for (j=0; j<MATRIX_SIZE; j++)
 		    {
 		      rs += xp[j][0]*filter[i][j];
 		      gs += xp[j][1]*filter[i][j];
@@ -500,18 +520,22 @@ void image_resample(image_data* data, int n, int d)
 		    {
 		      dfx += NE;
 		      subx++;
-		      if (subx >= 3) { subx = 0; j+=4; }
+		      if (subx >= MATRIX_SIZE) { subx = 0; j+=4; }
 		    }
 		  subx++;
-		  if (subx >= 3) { subx = 0; j+=4; }
+		  if (subx >= MATRIX_SIZE) { subx = 0; j+=4; }
 
-		  for (k=0; k<3; k++)
+		  for (k=0; k<MATRIX_SIZE; k++)
 		    xp[k] += j;
 		  dfx += E;
 		}
 
 	      /* Scale the sample */
-	      rs >>= 4; gs >>= 4; bs >>= 4;
+#ifdef QUALITY_HIGH
+	      rs /= 100; gs /= 100; bs /= 100; as /= 100;
+#else
+	      rs >>= 4; gs >>= 4; bs >>= 4; as >>= 4;
+#endif
 
 	      /* store the sample */
 	      (*ip++) = rs;
@@ -521,7 +545,7 @@ void image_resample(image_data* data, int n, int d)
 	    }
 
 	  /* Next 3 y positions */
-	  for (i=0; i<3; i++)
+	  for (i=0; i<MATRIX_SIZE; i++)
 	    {
 	      xp[i] = data->row[yp];
 	      
@@ -530,10 +554,10 @@ void image_resample(image_data* data, int n, int d)
 		{
 		  dfy += NE;
 		  subyp++;
-		  if (subyp >= 3)
+		  if (subyp >= MATRIX_SIZE)
 		    { subyp = 0; yp++; }
 		}
-	      subyp++; if (subyp >= 3) { subyp=0; yp++; }
+	      subyp++; if (subyp >= MATRIX_SIZE) { subyp=0; yp++; }
 	      
 	      dfy += E;
 	    }
