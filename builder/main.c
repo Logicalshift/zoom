@@ -147,7 +147,7 @@ void output_interpreter(FILE* dest,
 	      if (op->flags.isstring)
 		{
 		  fprintf(dest, "#ifdef DEBUG\nprintf_debug(\"(String instruction) - decoding the string at #%%x: \", pc+%i);\n#endif\n", pcadd);
-		  fprintf(dest, "      string = zscii_to_ascii(&GetCode(pc+%i), &padding);\n", pcadd);
+		  fprintf(dest, "      string = zscii_to_unicode(&GetCode(pc+%i), &padding);\n", pcadd);
 		  fprintf(dest, "#ifdef DEBUG\nprintf_debug(\">%%s<\\n\", string);\n#endif\n", pcadd);
 		}
 
