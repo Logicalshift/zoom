@@ -1763,6 +1763,10 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 	  {
 	    UniChar* text;
 	    UInt32   size;
+	    int      nchars;
+	    UInt32   mod;
+
+	    EventRef* keyRef;
 
 	    if (scrollpos != 0)
 	      {
@@ -1778,7 +1782,25 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 	    text = malloc(size);
 	    GetEventParameter(event, kEventParamTextInputSendText,
 			      typeUnicodeText, NULL, size, NULL, text);
-	    size >>= 1;
+	    nchars = size>>1;
+
+	    /* Read the character codes */
+	    GetEventParameter(event, kEventParamTextInputSendKeyboardEvent,
+			      typeEventRef, NULL, 0, &size, NULL);
+
+	    if (size > 0)
+	      {
+		keyRef = malloc(size);
+		GetEventParameter(event, kEventParamTextInputSendKeyboardEvent,
+				  typeEventRef, NULL, size, NULL, keyRef);
+
+		GetEventParameter(keyRef[0], kEventParamKeyModifiers,
+				  typeUInt32, NULL, sizeof(UInt32), NULL, &mod);
+	      }
+	    else
+	      { 
+		keyRef = NULL;
+	      }
 
 	    /* 
 	     * We handle the even differently depending on whether or not
@@ -1787,172 +1809,199 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 	    if (text_buf == NULL)
 	      {
 		/* Waiting for a single keypress */
-		if (size != 1)
+		if (nchars != 1)
 		  {
 		    zmachine_warning("Multiple Unicode characters received - only returning one to the game");
 		  }
 		
-		switch (text[0])
+		if (mod == 0)
 		  {
-		  case kUpArrowCharCode:
-		    read_key = 129;
-		    break;
-		  case kDownArrowCharCode:
-		    read_key = 130;
-		    break;
-		  case kLeftArrowCharCode:
-		    read_key = 131;
-		    break;
-		  case kRightArrowCharCode:
-		    read_key = 132;
-		    break;
-
-		  case kReturnCharCode:
-		    read_key = 13;
-		    break;
-
-		  case kDeleteCharCode:
-		  case kBackspaceCharCode:
-		    read_key = 8;
-		    break;
-
-		  case kFunctionKeyCharCode:
-		    /* FIXME: how do we deal with this? */
-		    break;
-
-		  default:
-		    if (text[0] >= 32)
-		      read_key = text[0];
-		    break;
+		    switch (text[0])
+		      {
+		      case kUpArrowCharCode:
+			read_key = 129;
+			break;
+		      case kDownArrowCharCode:
+			read_key = 130;
+			break;
+		      case kLeftArrowCharCode:
+			read_key = 131;
+			break;
+		      case kRightArrowCharCode:
+			read_key = 132;
+			break;
+			
+		      case kReturnCharCode:
+			read_key = 13;
+			break;
+			
+		      case kDeleteCharCode:
+		      case kBackspaceCharCode:
+			read_key = 8;
+			break;
+			
+		      case kFunctionKeyCharCode:
+			/* FIXME: how do we deal with this? */
+			break;
+			
+		      default:
+			if (text[0] >= 32)
+			  read_key = text[0];
+			break;
+		      }
+		  }
+		else if ((mod&cmdKey) != 0)
+		  {
+		    if (text[0] > '0' && text[0] <= '9')
+		      read_key = text[0] - '0' + 132; 
+		    if (text[0] == '0')
+		      read_key = 142;
 		  }
 	      }
 	    else
 	      {
 		/* We're dealing with an input buffer */
-		switch (text[0])
+		if (mod == 0)
 		  {
-		  case kUpArrowCharCode:
-		    if (history_pos == NULL)
-		      history_pos = last_string;
-		    else
-		      if (history_pos->next != NULL)
-			history_pos = history_pos->next;
-		    if (history_pos != NULL)
+		    switch (text[0])
 		      {
-			if (istrlen(history_pos->string) < max_buflen)
-			  istrcpy(text_buf, history_pos->string);
-			
-			buf_offset = istrlen(text_buf);
-		      }
-		    redraw_input_text();
-		    break;
-		  case kDownArrowCharCode:
-		    if (history_pos != NULL)
-		      {
-			history_pos = history_pos->last;
+		      case kUpArrowCharCode:
+			if (history_pos == NULL)
+			  history_pos = last_string;
+			else
+			  if (history_pos->next != NULL)
+			    history_pos = history_pos->next;
 			if (history_pos != NULL)
 			  {
 			    if (istrlen(history_pos->string) < max_buflen)
 			      istrcpy(text_buf, history_pos->string);
+			    
 			    buf_offset = istrlen(text_buf);
 			  }
-			else
-			  {
-			    text_buf[0] = 0;
-			    buf_offset = 0;
-			  }
-		      }
-		    
-		    redraw_input_text();
-		    break;
-		    
-		  case kLeftArrowCharCode:
-		    if (buf_offset > 0)
-		      buf_offset--;
-		    redraw_input_text();
-		    break;
-		  case kRightArrowCharCode:
-		    if (buf_offset < istrlen(text_buf))
-		      buf_offset++;
-		    redraw_input_text();
-		    break;
-		    
-		  case kDeleteCharCode:
-		  case kBackspaceCharCode:
-		    if (buf_offset > 0)
-		      {
-			int  x;
-			
-			for (x=buf_offset-1; text_buf[x] != 0; x++)
-			  {
-			    text_buf[x] = text_buf[x+1];
-			  }
-			buf_offset--;
-			
 			redraw_input_text();
-		      }
-		    break;
-		    
-		  case kReturnCharCode:
-		    {
-		      history_item* newhist;
-		      
-		      newhist = malloc(sizeof(history_item));
-		      newhist->last = NULL;
-		      newhist->next = last_string;
-		      if (last_string)
-			last_string->last = newhist;
-		      newhist->string = malloc(sizeof(int)*(istrlen(text_buf)+1));
-		      istrcpy(newhist->string, text_buf);
-		      last_string = newhist;
-		    }
-		    
-		    display_prints(text_buf);
-		    display_prints_c("\n");
-		    text_buf = NULL;
-		    read_key = 10;
-		    break;
-		    
-		  case kFunctionKeyCharCode:
-		    /* FIXME: how do we deal with this? */
-		    break;
-
-		  default:
-		    for (x=0; x<size; x++)
-		      {
-			if (text_buf[buf_offset] == 0 &&
-			    buf_offset < max_buflen)
-			  { 
-			    text_buf[buf_offset++] = text[x];
-			    text_buf[buf_offset] = 0;
-			  }
-			else
+			break;
+		      case kDownArrowCharCode:
+			if (history_pos != NULL)
 			  {
-			    if ((insert && buf_offset < max_buflen-1) ||
-				!insert)
+			    history_pos = history_pos->last;
+			    if (history_pos != NULL)
 			      {
-				if (insert)
-				  {
-				    int x;
-				    
-				    for (x=istrlen(text_buf); x>=buf_offset; x--)
-				      {
-					text_buf[x+1] = text_buf[x];
-				      }
-				  }
-				
-				text_buf[buf_offset] = text[x];
-				buf_offset++;
+				if (istrlen(history_pos->string) < max_buflen)
+				  istrcpy(text_buf, history_pos->string);
+				buf_offset = istrlen(text_buf);
+			      }
+			    else
+			      {
+				text_buf[0] = 0;
+				buf_offset = 0;
 			      }
 			  }
+			
+			redraw_input_text();
+			break;
+			
+		      case kLeftArrowCharCode:
+			if (buf_offset > 0)
+			  buf_offset--;
+			redraw_input_text();
+			break;
+		      case kRightArrowCharCode:
+			if (buf_offset < istrlen(text_buf))
+			  buf_offset++;
+			redraw_input_text();
+			break;
+			
+		      case kDeleteCharCode:
+		      case kBackspaceCharCode:
+			if (buf_offset > 0)
+			  {
+			    int  x;
+			    
+			    for (x=buf_offset-1; text_buf[x] != 0; x++)
+			      {
+				text_buf[x] = text_buf[x+1];
+			      }
+			    buf_offset--;
+			    
+			    redraw_input_text();
+			  }
+			break;
+			
+		      case kReturnCharCode:
+			{
+			  history_item* newhist;
+			  
+			  newhist = malloc(sizeof(history_item));
+			  newhist->last = NULL;
+			  newhist->next = last_string;
+			  if (last_string)
+			    last_string->last = newhist;
+			  newhist->string = malloc(sizeof(int)*(istrlen(text_buf)+1));
+			  istrcpy(newhist->string, text_buf);
+			  last_string = newhist;
+			}
+		    
+			display_prints(text_buf);
+			display_prints_c("\n");
+			text_buf = NULL;
+			read_key = 10;
+			break;
+			
+		      case kFunctionKeyCharCode:
+			/* FIXME: how do we deal with this? */
+			break;
+			
+		      default:
+			for (x=0; x<nchars; x++)
+			  {
+			    if (text_buf[buf_offset] == 0 &&
+				buf_offset < max_buflen)
+			      { 
+				text_buf[buf_offset++] = text[x];
+				text_buf[buf_offset] = 0;
+			      }
+			    else
+			      {
+				if ((insert && buf_offset < max_buflen-1) ||
+				    !insert)
+				  {
+				    if (insert)
+				      {
+					int x;
+					
+					for (x=istrlen(text_buf); x>=buf_offset; x--)
+					  {
+					    text_buf[x+1] = text_buf[x];
+					  }
+				      }
+				    
+				    text_buf[buf_offset] = text[x];
+				    buf_offset++;
+				  }
+			      }
+			  }
+			break;
 		      }
 			
 		    redraw_input_text();
-		    break;
+		  }
+		else if ((mod&cmdKey) != 0)
+		  {
+		    if (text[0] > '0' && text[0] <= '9')
+		      read_key = text[0] - '0' + 132; 
+		    if (text[0] == '0')
+		      read_key = 142;
+		    
+		    if (read_key != 0)
+		      {
+			text_buf = NULL;
+		      }
 		  }
 	      }
 
 	    free(text);
+	    if (keyRef != NULL)
+	      free(keyRef);
 	  }
 	  break;
 	}
