@@ -880,7 +880,7 @@ static pascal OSStatus pref_wnd_evt(EventHandlerCallRef handler,
 		      items[x] = x+1;
 		    }
 		  RemoveDataBrowserItems(cntl, kDataBrowserNoItem, n_fonts, items, 0);
-		  AddDataBrowserItems(cntl, kDataBrowserNoItem, n_fonts, items, 0);
+		  AddDataBrowserItems(cntl, kDataBrowserNoItem, n_fonts, items, kDataBrowserItemNoProperty);
 
 		  /* Mark as using the global fonts... */
 		  cid.signature = CARBON_FONTLOC;
@@ -1911,7 +1911,7 @@ static void pref_setup(void)
       strcpy(font_copy[x].name, fonts[x].name);
       items[x] = x+1;
     }
-  AddDataBrowserItems(cntl, kDataBrowserNoItem, n_fonts, items, 0);
+  AddDataBrowserItems(cntl, kDataBrowserNoItem, n_fonts, items, kDataBrowserItemNoProperty);
 
   /* Set up the colour list */
   cid.signature = CARBON_COLLIST;
@@ -1923,7 +1923,7 @@ static void pref_setup(void)
       items[x] = x+1;
       colour_copy[x] = maccolour[x+6];
     }
-  AddDataBrowserItems(cntl, kDataBrowserNoItem, 11, items, 0);
+  AddDataBrowserItems(cntl, kDataBrowserNoItem, 11, items, kDataBrowserItemNoProperty);
   
   cid.signature = CARBON_COLLOC;
   cid.id        = CARBON_COLLOCID;
@@ -2031,13 +2031,10 @@ void carbon_show_prefs(void)
       cid.signature = CARBON_FONTLIST;
       cid.id        = CARBON_FONTLISTID;
       GetControlByID(carbon_prefdlog, &cid, &cntl);
-      
+
       SetDataBrowserTableViewRowHeight(cntl, 20);
       SetDataBrowserSelectionFlags(cntl, kDataBrowserSelectOnlyOne);
       SetDataBrowserListViewUsePlainBackground(cntl, false);
-  
-      SetDataBrowserSortProperty(cntl, 'Styl');
-      SetDataBrowserSortOrder(cntl, kDataBrowserOrderIncreasing);
 
       dbcb.version = kDataBrowserLatestCallbacks;
       InitDataBrowserCallbacks(&dbcb);
@@ -2046,6 +2043,9 @@ void carbon_show_prefs(void)
       dbcb.u.v1.itemCompareCallback = NewDataBrowserItemCompareUPP(font_compare_cb);
       
       SetDataBrowserCallbacks(cntl, &dbcb);
+        
+      SetDataBrowserSortProperty(cntl, 'Styl');
+      SetDataBrowserSortOrder(cntl, kDataBrowserOrderIncreasing);
 
       dbcustom.version = kDataBrowserLatestCustomCallbacks;
       InitDataBrowserCustomCallbacks(&dbcustom);
