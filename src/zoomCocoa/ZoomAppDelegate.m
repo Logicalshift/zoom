@@ -20,8 +20,10 @@
 	
 	if (self) {
 		gameIndices = [[NSMutableArray alloc] init];
-		
-		NSData* userData = nil;
+
+		NSString* configDir = [self zoomConfigDirectory];
+
+		NSData* userData = [NSData dataWithContentsOfFile: [configDir stringByAppendingPathComponent: @"metadata.xml"]];
 		NSData* infocomData = [NSData dataWithContentsOfFile: [[NSBundle mainBundle] pathForResource: @"infocom" ofType: @"xml"]];
 		NSData* archiveData = [NSData dataWithContentsOfFile: [[NSBundle mainBundle] pathForResource: @"archive" ofType: @"xml"]];
 		
@@ -107,6 +109,40 @@
 
 - (ZoomMetadata*) userMetadata {
 	return [gameIndices objectAtIndex: 0];
+}
+
+- (NSString*) zoomConfigDirectory {
+	// The app delegate may not be the best place for this routine... Maybe a function somewhere
+	// would be better?
+	NSArray* libraryDirs = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+	
+	NSEnumerator* libEnum;
+	NSString* libDir;
+
+	libEnum = [libraryDirs objectEnumerator];
+	
+	while (libDir = [libEnum nextObject]) {
+		BOOL isDir;
+		
+		NSString* zoomLib = [[libDir stringByAppendingPathComponent: @"Preferences"] stringByAppendingPathComponent: @"uk.org.logicalshift.zoom"];
+		if ([[NSFileManager defaultManager] fileExistsAtPath: zoomLib isDirectory: &isDir]) {
+			if (isDir) {
+				return zoomLib;
+			}
+		}
+	}
+	
+	libEnum = [libraryDirs objectEnumerator];
+	
+	while (libDir = [libEnum nextObject]) {
+		NSString* zoomLib = [[libDir stringByAppendingPathComponent: @"Preferences"] stringByAppendingPathComponent: @"uk.org.logicalshift.zoom"];
+		if ([[NSFileManager defaultManager] createDirectoryAtPath: zoomLib
+													   attributes:nil]) {
+			return zoomLib;
+		}
+	}
+	
+	return nil;
 }
 
 @end

@@ -22,4 +22,6 @@
 - (ZoomStory*) findStory: (ZoomStoryID*) gameID;
 - (ZoomMetadata*) userMetadata;
 
+- (NSString*) zoomConfigDirectory;
+
 @end

@@ -406,6 +406,8 @@ int tableSorter(id a, id b, void* context) {
 		[story setObject: anObject
 				  forKey: [aTableColumn identifier]];
 	}
+
+	[[[NSApp delegate] userMetadata] writeToDefaultFile];
 }
 
 - (IBAction) updateGameInfo: (id) sender {
@@ -418,60 +420,70 @@ int tableSorter(id a, id b, void* context) {
 	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
 	[story setTitle: [[ZoomGameInfoController sharedGameInfoController] title]];
 	[self reloadTableData]; [mainTableView reloadData];
+	[[[NSApp delegate] userMetadata] writeToDefaultFile];
 }
 
 - (IBAction) infoHeadlineChanged: (id) sender {
 	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
 	[story setHeadline: [[ZoomGameInfoController sharedGameInfoController] headline]];
 	[self reloadTableData]; [mainTableView reloadData];
+	[[[NSApp delegate] userMetadata] writeToDefaultFile];
 }
 
 - (IBAction) infoAuthorChanged: (id) sender {
 	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
 	[story setAuthor: [[ZoomGameInfoController sharedGameInfoController] author]];
 	[self reloadTableData]; [mainTableView reloadData];
+	[[[NSApp delegate] userMetadata] writeToDefaultFile];
 }
 
 - (IBAction) infoGenreChanged: (id) sender {
 	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
 	[story setGenre: [[ZoomGameInfoController sharedGameInfoController] genre]];
 	[self reloadTableData]; [mainTableView reloadData];
+	[[[NSApp delegate] userMetadata] writeToDefaultFile];
 }
 
 - (IBAction) infoYearChanged: (id) sender {
 	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
 	[story setYear: [[ZoomGameInfoController sharedGameInfoController] year]];
 	[self reloadTableData]; [mainTableView reloadData];
+	[[[NSApp delegate] userMetadata] writeToDefaultFile];
 }
 
 - (IBAction) infoGroupChanged: (id) sender {
 	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
 	[story setGroup: [[ZoomGameInfoController sharedGameInfoController] group]];
 	[self reloadTableData]; [mainTableView reloadData];
+	[[[NSApp delegate] userMetadata] writeToDefaultFile];
 }
 
 - (IBAction) infoCommentsChanged: (id) sender {
 	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
 	[story setComment: [[ZoomGameInfoController sharedGameInfoController] comments]];
 	[self reloadTableData]; [mainTableView reloadData];
+	[[[NSApp delegate] userMetadata] writeToDefaultFile];
 }
 
 - (IBAction) infoTeaserChanged: (id) sender {
 	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
 	[story setTeaser: [[ZoomGameInfoController sharedGameInfoController] teaser]];
 	[self reloadTableData]; [mainTableView reloadData];
+	[[[NSApp delegate] userMetadata] writeToDefaultFile];
 }
 
 - (IBAction) infoZarfRatingChanged: (id) sender {
 	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
 	[story setZarfian: [[ZoomGameInfoController sharedGameInfoController] zarfRating]];
 	[self reloadTableData]; [mainTableView reloadData];
+	[[[NSApp delegate] userMetadata] writeToDefaultFile];
 }
 
 - (IBAction) infoMyRatingChanged: (id) sender {
 	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
 	[story setRating: [[ZoomGameInfoController sharedGameInfoController] rating]];
 	[self reloadTableData]; [mainTableView reloadData];
+	[[[NSApp delegate] userMetadata] writeToDefaultFile];
 }
 
 @end

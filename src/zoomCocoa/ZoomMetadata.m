@@ -7,6 +7,7 @@
 //
 
 #import "ZoomMetadata.h"
+#import "ZoomAppDelegate.h"
 
 #include "ifmetadata.h"
 
@@ -92,6 +93,15 @@ static int dataWrite(const char* bytes, int length, void* userData) {
 - (BOOL) writeToFile: (NSString*)path
 		  atomically: (BOOL)flag {
 	return [[self xmlData] writeToFile: path atomically: flag];
+}
+
+- (BOOL) writeToDefaultFile {
+	// The app delegate may not be the best place for this routine... Maybe a function somewhere
+	// would be better?
+	NSString* configDir = [[NSApp delegate] zoomConfigDirectory];
+	
+	return [self writeToFile: [configDir stringByAppendingPathComponent: @"metadata.xml"]
+				  atomically: YES];
 }
 
 @end

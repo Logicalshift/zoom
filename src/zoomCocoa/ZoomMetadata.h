@@ -33,5 +33,6 @@
 - (NSData*) xmlData;
 - (BOOL)    writeToFile: (NSString*)path
 			 atomically: (BOOL)flag;
+- (BOOL) writeToDefaultFile;
 
 @end

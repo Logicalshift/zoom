@@ -76,7 +76,7 @@
 		[storyInfo setZarfian: [sgI zarfRating]];
 		[storyInfo setRating: [sgI rating]];
 		
-		[[[NSApp delegate] userMetadata] writeToFile: @"/Users/ahunter/testData.xml" atomically: YES];
+		[[[NSApp delegate] userMetadata] writeToDefaultFile];
 	}
 }
 
