@@ -2453,6 +2453,16 @@ void display_set_title(const char* title)
   SetWTitle(zoomWindow, tit);
 
   strcpy(carbon_title, title);
+
+  SetWindowProxyCreatorAndType(zoomWindow, SIGNATURE, 'ZCOD', 
+			       kOnSystemDisk);
+
+  if (machine.blorb_file == machine.file)
+    {
+    }
+  else
+    {
+    }
 }
 
 void display_update(void)

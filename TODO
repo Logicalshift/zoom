@@ -7,6 +7,7 @@ Hmm, this file was a bit out of date.
  X save window size under Carbon
  X text corruption under Shogun
  X Zork Zero colour changing
+ * sigh, creating files under Carbon still broken (set file type)
  * problem with resize when 'MORE' is displayed.
  * startup message
  * Colour preference thing

@@ -25,7 +25,7 @@
 				<string>ZCOD</string>
 			</array>
 			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
+			<string>Viewer</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -57,7 +57,7 @@
 				<string>IFRS</string>
 			</array>
 			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
+			<string>Viewer</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -68,8 +68,10 @@
 			<string>zoom-game.icns</string>
 			<key>CFBundleTypeName</key>
 			<string>Z-Code blorb bundle</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array/>
 			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
+			<string>Viewer</string>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
@@ -80,12 +82,16 @@
 	<string>Zoom Help</string>
 	<key>CFBundleIconFile</key>
 	<string>zoom-app.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string>uk.org.logicalshift.Zoom</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Zoom</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>Zoom 1.0.1, compiled for Mac OS X</string>
+	<string>1.0.1</string>
 	<key>CFBundleSignature</key>
 	<string>YZZY</string>
 	<key>CFBundleVersion</key>

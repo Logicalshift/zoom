@@ -344,6 +344,9 @@ static enum zcode_type type_fsref(FSRef* file)
     case 'IFZS':
       return TYPE_IFZS;
 
+    case 'IFRS':
+      return TYPE_IFRS;
+
     case '????':
     case 'TEXT':
     case 'BINA':
