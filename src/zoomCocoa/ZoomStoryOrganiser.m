@@ -287,14 +287,34 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 		[newStory addID: newID];
 		
 		[data storeStory: newStory];
+		[data writeToDefaultFile];
+		oldStory = [newStory autorelease];
 	} else {
 		NSLog(@"Found metadata for story '%@'", gameName);
+	}
+	
+	// Check for any resources associated with this story
+	if ([oldStory objectForKey: @"ResourceFilename"] == nil) {
+		NSString* possibleResource = [[gameFile stringByDeletingLastPathComponent] stringByAppendingPathComponent: @"resource.blb"];
+		BOOL isDir = NO;
+		BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath: possibleResource
+														   isDirectory: &isDir];
+		
+		if (exists && !isDir) {
+			NSLog(@"Found resources for game at %@", possibleResource);
+			
+			[oldStory setObject: possibleResource
+						 forKey: @"ResourceFilename"];
+
+			[data storeStory: oldStory];
+			[data writeToDefaultFile];
+		}
 	}
 	
 	// Now store with us
 	[self addStory: gameFile
 		 withIdent: newID
-		  organise: NO];
+		  organise: NO];	
 }
 
 // = Initialisation =
