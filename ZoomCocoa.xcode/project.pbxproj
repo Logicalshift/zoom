@@ -56,6 +56,8 @@
 		};
 		4B1E3F4B050F7AD000A8E303 = {
 			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.1;
+				SDKROOT = /Developer/SDKs/MacOSX10.1.5.sdk;
 			};
 			buildStyles = (
 				4B1E3F49050F7AD000A8E303,
@@ -1588,6 +1590,52 @@
 			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>NSDocumentClass</key>
+			<string>ZoomClient</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>qut</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>zoom-file.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>Quetzal saved game</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>IFZS</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>NSDocumentClass</key>
+			<string>ZoomClient</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>blb</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Blorb resource file</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>IFRS</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>NSDocumentClass</key>
+			<string>ZoomClient</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>zlb</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Z-Code blorb resource file</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
 			<key>NSDocumentClass</key>
 			<string>ZoomClient</string>
 		</dict>
