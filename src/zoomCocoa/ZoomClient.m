@@ -269,7 +269,8 @@
 		// Couldn't find the story data for this savegame
 		NSBeginAlertSheet(@"Unable to find story file", 
 						  @"Cancel", nil, nil, nil, nil, nil, nil, nil,
-						  @"Zoom does not know where a valid story file for '%@' is and so is unable to load it", [[wrapper filename] lastPathComponent]);
+						  @"Zoom is unable to load a valid story file for '%@' (tried '%@')", [[wrapper filename] lastPathComponent],
+						  gameFile);
 		
 		return NO;		
 	}
@@ -298,6 +299,7 @@
 	// NOTE: saveData is the data minus the 'FORM' chunk - that is, valid input for state_decompile()
 	// (which doesn't use this chunk)
 	
+	[self setFileName: gameFile];
 	return [self loadDataRepresentation: data
 								 ofType: @"ZCode story"];
 }
