@@ -1,5 +1,13 @@
 2000-12-06  Andrew Hunter    <andrew@logicalshift.co.uk>
-	* merged windows version back into CVS
+
+	* version updated to 0.9.99dev8
+	
+	* merged windows version back into CVS. Main changes are the use of
+	the noyywrap option in the lexers, windisplay.c, printf_debug and
+	related functions and cygwin & cross-compiling detection. There's
+	also a hack for Borland cc's inlining code which causes gcc to
+	emit a warning - note that push() is now defined in both interp.c
+	and state.c.
 
 2000-11-27  Andrew Hunter    <andrew@logicalshift.co.uk>
 

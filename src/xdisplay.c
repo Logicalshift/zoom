@@ -1996,4 +1996,48 @@ int main(int argc, char** argv)
   return zoom_main(argc, argv);
 }
 
+void display_exit(int status)
+{
+  exit(status);
+}
+
+void printf_debug(char* format, ...)
+{
+  va_list* ap;
+  char     string[512];
+
+  va_start(ap, format);
+  vsprintf(string, format, ap);
+  va_end(ap);
+
+  fputs(string, stderr);
+}
+
+void printf_error(char* format, ...)
+{
+  va_list* ap;
+  char     string[512];
+
+  va_start(ap, format);
+  vsprintf(string, format, ap);
+  va_end(ap);
+
+  fputs(string, stderr);
+}
+  
+void printf_info(char* format, ...)
+{
+  va_list* ap;
+  char     string[512];
+
+  va_start(ap, format);
+  vsprintf(string, format, ap);
+  va_end(ap);
+
+  fputs(string, stdout);
+}
+
+void printf_info_done(void) { }
+void printf_error_done(void) { }
+
 #endif

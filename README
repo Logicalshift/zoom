@@ -153,6 +153,49 @@ Using Zoom
    An example .zoomrc file can be found in the source distribution as 
    'zoomrc'
 
+Zoom and Windows
+================
+
+  This version of Zoom now supports windows through the mingw32 library
+  (and to a lesser extent with Borland's C compiler). The windows display
+  library is a complete rewrite, and uses the techniques I discussed in
+  an raif posting to allow the window to be resized while a game is running.
+  These techniques are not without their penalty, however, and this version
+  of Zoom cannot be compiled with v6 support, and tends to redraw some
+  displays much slower than the X version. It also starts v3 games in the
+  top left of the screen instead of the bottom left, which is strictly
+  speaking against the standard, but saves me some fiddling.
+
+  The zoomrc has the format as described above. A windows font is described
+  using a string such as:
+
+    'Arial' 10 b
+
+  Which is Arial, 10pt, bold. The font name MUST be in single quotes ('). The
+  optional specifiers at the end can be left out entirely, or can be a
+  combination of:
+
+    b - bold
+    B - extra bold
+    i - italic
+    u - underline
+    f - fixed-pitch
+  
+  The font specifies in the example could then be:
+
+        font 1 "'Arial' 10"           roman
+        font 2 "'Arial' 10 b"         bold
+        font 3 "'Arial' 10 i"         italic
+        font 4 "'Courier New' 10 f"   fixed
+        font 5 "'Courier New' 10 fb"  fixed-bold
+        font 6 "'Courier New' 10 fi"  fixed-italic
+        font 7 "'Courier New' 10 fbi" fixed-bold-italic
+        font 8 "'Arial' bi"           bold-italic
+        font 9 "font3"                symbolic
+
+  (Note that the special font name 'font3' still specifies the built-in
+  version of font 3)
+
 Extensions and oddities
 =======================
 

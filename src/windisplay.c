@@ -508,6 +508,15 @@ void display_prints(const int* str)
       RECT rct;
       int sx;
 
+      if (CURWIN.xpos >= size_x)
+	CURWIN.xpos = size_x-1;
+      if (CURWIN.xpos < 0)
+	CURWIN.xpos = 0;
+      if (CURWIN.ypos >= size_y)
+	CURWIN.ypos = size_y-1;
+      if (CURWIN.ypos < 0)
+	CURWIN.ypos = 0;
+      
       CURWIN.style |= 8;
       sx = CURWIN.xpos;
       

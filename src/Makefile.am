@@ -27,6 +27,10 @@ LDFLAGS=@LDFLAGS@
 zoom: zoom.o $(zoom_OBJECTS) $(zoom_DEPENDENCIES)
 	@rm -f zoom
 	$(LINK) $(zoom_LDFLAGS) $(zoom_OBJECTS) zoom.o $(zoom_LDADD) $(LIBS)
+if CREATE_EXE
+	mv zoom zoom.exe
+	ln -s zoom.exe zoom
+endif
 endif
 
 %.o: %.rc

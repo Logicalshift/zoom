@@ -2,7 +2,7 @@
 AC_PREREQ(2.13)
 AC_INIT()
 
-VERSION=0.9.99dev7
+VERSION=0.9.99dev8
 PACKAGE=zoom
 
 UTIL_DISPLAY_INIT()
@@ -17,7 +17,11 @@ AC_PROG_CC
 AC_PROG_CPP
 AM_PROG_LEX
 AC_PROG_YACC
-AC_PATH_PROG(PERL, perl)
+AC_PATH_PROG(PERL, perl, noperl)
+
+if test "$PERL" = "noperl"; then
+  AC_MSG_ERROR([You must have a copy of perl installed to compile Zoom])
+fi
 
 ACLOCAL="$ACLOCAL -I m4"
 
@@ -135,9 +139,14 @@ if test "$CYGWIN" != "yes"; then
 
     AM_CONDITIONAL(WINDOWS_VERSION, true)
     AM_CONDITIONAL(BORLAND_VERSION, false)
+    AM_CONDITIONAL(CREATE_EXE, true)
 
     AC_DEFINE(WINDOW_SYSTEM, 2)
+  else
+    AM_CONDITIONAL(CREATE_EXE, false)
   fi
+else
+  AM_CONDITIONAL(CREATE_EXE, false)
 fi
 
 if test "$CYGWIN" = "yes"; then
@@ -153,7 +162,8 @@ if test "$CYGWIN" = "yes"; then
   AM_CONDITIONAL(BORLAND_VERSION, false)
 
   AC_DEFINE(WINDOW_SYSTEM, 2)
-elsif test "$MINGW32" != "yes"
+else
+if test "$MINGW32" != "yes"; then
   AC_PATH_XTRA
   if test "$no_x" = "yes"; then
     AC_MSG_CHECKING([for Windows headers & libraries])
@@ -177,6 +187,7 @@ elsif test "$MINGW32" != "yes"
 
     LIBS="$LIBS -lX11"
   fi
+fi
 fi
 
 AC_HEADER_STDC
