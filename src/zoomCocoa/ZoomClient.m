@@ -143,6 +143,8 @@
 	// Retrieve story resources (if available)
 	NSString* resourceFilename = [story objectForKey: @"ResourceFilename"];
 	if (resourceFilename != nil && [[NSFileManager defaultManager] fileExistsAtPath: resourceFilename]) {
+		NSLog(@"Loading resources from %@", resourceFilename);
+		
 		ZoomBlorbFile* newResources = [[ZoomBlorbFile alloc] initWithContentsOfFile: resourceFilename];
 		
 		if (newResources) {

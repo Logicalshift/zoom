@@ -14,6 +14,8 @@
 NSString* ZoomStoryDataHasChangedNotification = @"ZoomStoryDataHasChangedNotification";
 NSString* ZoomStoryExtraMetadata = @"ZoomStoryExtraMetadata";
 
+NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataChangedNotification";
+
 @implementation ZoomStory
 
 + (void) initialize {
@@ -75,6 +77,11 @@ NSString* ZoomStoryExtraMetadata = @"ZoomStoryExtraMetadata";
 		needsFreeing = YES;
 		
 		extraMetadata = nil;
+		
+		[[NSNotificationCenter defaultCenter] addObserver: self
+												 selector: @selector(extraDataChanged:)
+													 name: ZoomStoryExtraMetadataChangedNotification
+												   object: nil];		
 	}
 	
 	return self;
@@ -88,6 +95,11 @@ NSString* ZoomStoryExtraMetadata = @"ZoomStoryExtraMetadata";
 		needsFreeing = NO;
 		
 		extraMetadata = nil;
+		
+		[[NSNotificationCenter defaultCenter] addObserver: self
+												 selector: @selector(extraDataChanged:)
+													 name: ZoomStoryExtraMetadataChangedNotification
+												   object: nil];
 	}
 	
 	return self;
@@ -100,6 +112,8 @@ NSString* ZoomStoryExtraMetadata = @"ZoomStoryExtraMetadata";
 	}
 	
 	if (extraMetadata) [extraMetadata release];
+	
+	[[NSNotificationCenter defaultCenter] removeObserver: self];
 	
 	[super dealloc];
 }
@@ -364,6 +378,25 @@ NSString* ZoomStoryExtraMetadata = @"ZoomStoryExtraMetadata";
 		[newExtraData setObject: extraMetadata
 						 forKey: [storyID description]];
 	}
+	
+	// Store in the defaults
+	[[NSUserDefaults standardUserDefaults] setObject: newExtraData
+											  forKey: ZoomStoryExtraMetadata];
+	
+	// Notify the other stories about the change
+	[[NSNotificationCenter defaultCenter] postNotificationName: ZoomStoryExtraMetadataChangedNotification
+														object: self];
+}
+
+- (void) extraDataChanged: (NSNotification*) not {
+	// Respond to notifications about changing metadata
+	if (extraMetadata) {
+		[extraMetadata release];
+		extraMetadata = nil;
+		
+		// (Reloading prevents a potential bug in the future. It's not absolutely required right now)
+		[self loadExtraMetadata];
+	}
 }
 
 - (id) objectForKey: (id) key {
@@ -446,6 +479,8 @@ NSString* ZoomStoryExtraMetadata = @"ZoomStoryExtraMetadata";
 		if (value == nil || [value length] == 0) [self setRating: -1];
 		else [self setRating: atof([value cString])];
 	} else {
+		NSLog(@"Setting extra metadata: %@ = %@", key, value);
+		
 		[self loadExtraMetadata];
 		[extraMetadata setObject: value
 						  forKey: key];
