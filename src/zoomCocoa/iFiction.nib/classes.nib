@@ -1,7 +1,12 @@
 {
     IBClasses = (
         {
-            ACTIONS = {deleteSavegame = id; displayGameInfoWindow = id; revealInFinder = id; }; 
+            ACTIONS = {
+                deleteSavegame = id; 
+                displayGameInfoWindow = id; 
+                revealInFinder = id; 
+                saveMetadata = id; 
+            }; 
             CLASS = FirstResponder; 
             LANGUAGE = ObjC; 
             SUPERCLASS = NSObject; 

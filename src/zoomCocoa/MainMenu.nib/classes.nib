@@ -5,6 +5,7 @@
                 displayGameInfoWindow = id; 
                 displayNoteWindow = id; 
                 playInFullScreen = id; 
+                saveMetadata = id; 
                 showGamePreferences = id; 
                 showPreferences = id; 
                 showiFiction = id; 
