@@ -56,6 +56,9 @@ Using Zoom
                 (255,0,255), (0,255,255), (255,255,204),
       	        # These are the colours provided by DOS interpreters
       	        (187, 187, 187), (136, 136, 136), (68, 68, 68)
+
+        gamedir "/usr/local/share/games/zcode"
+        savedir "/home/me/zcode/save"
       }
 
    This illustrates all the available options. Unless you have a
@@ -98,6 +101,12 @@ Using Zoom
    Colour 0 is the first specified in the list, and the rest follow
    in sequence.
 
+   If Zoom is run without a game specified, it will try to look in the
+   directory specified by 'gamedir', and list all of the games it finds
+   in there (games are assumed to be in files with a .z? extension) as
+   a menu, giving a choice as to which one to run. 'savedir' gives the
+   default directory for saving and restoring files.
+
    Each game can be specified with a block like this, or the block
    can be omitted. If you do specify a block for a game, the options
    there override the defaults. For example:
@@ -110,9 +119,12 @@ Using Zoom
        {
          interpreter 5
          revision    Z
+
+	 savedir "/home/me/zcode/beyond"
        }
 
    specifies that Beyond Zork requires a different intepreter number
+   and should save its games into '/home/me/zcode/beyond' by default
    - note that you can also specify different colour schemes and
    fonts here (with fonts you can give a partial specification, so
    just adding, say, 'font 1 "-weird-font" roman' would cause Zoom to 
