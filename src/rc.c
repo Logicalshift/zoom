@@ -58,9 +58,12 @@ void rc_load(void)
 {
   char* home;
   char* filename;
+  int domerge = 1;
 
   if (rc_hash == NULL)
     rc_hash = hash_create();
+
+  rc_merging = 0;
 
 #if WINDOW_SYSTEM != 2
   home = getenv("HOME");
@@ -79,6 +82,8 @@ void rc_load(void)
   
   if (yyin==NULL)
     {
+      domerge = 0;
+
       yyin = fopen(ZOOMRC, "r");
       if (yyin == NULL)
 	zmachine_fatal("Unable to open resource file '%s', or the systems default file at " ZOOMRC, filename);
@@ -89,6 +94,28 @@ void rc_load(void)
     zmachine_fatal("Unable to open resource file 'zoomrc'. Make sure that it is in the current directory");
 #endif
 
+  _rc_line = 1;
+  rc_parse();
+  fclose(yyin);
+
+#if WINDOW_SYSTEM == 1
+  if (domerge)
+    rc_merge(ZOOMRC);
+#endif
+}
+
+void rc_merge(char* filename)
+{
+  if (rc_hash == NULL)
+    rc_hash = hash_create();
+
+  rc_merging = 1;
+  yyin = fopen(filename, "r");
+  if (yyin == NULL)
+    {
+      zmachine_warning("Unable to open resource file '%s'");
+      return;
+    }
   _rc_line = 1;
   rc_parse();
   fclose(yyin);
