@@ -491,7 +491,7 @@ static void pref_store(void)
     }
 
   /* Reset the display */
-  rc_set_game(Address(ZH_serial), Word(ZH_release), Word(ZH_checksum));
+  rc_set_game(zmachine_get_serial(), Word(ZH_release), Word(ZH_checksum));
   
   /* Rewrite the preferences file */
   pref_write();
@@ -1617,7 +1617,7 @@ void carbon_prefs_set_resources(char* path)
   machine.blorb_file = rfile; 
 
   /* Store this in the resources... */
-  sprintf(str, "%i.%.6s.%04x", Word(ZH_release), Address(ZH_serial), 
+  sprintf(str, "%i.%.6s.%04x", Word(ZH_release), zmachine_get_serial(), 
 	  (unsigned)Word(ZH_checksum));
   game = hash_get(rc_hash, str, strlen(str));
 
@@ -1626,7 +1626,7 @@ void carbon_prefs_set_resources(char* path)
       rc_game* nocs;
       char str2[20];
 
-      sprintf(str2, "%i.%.6s", Word(ZH_release), Address(ZH_serial));
+      sprintf(str2, "%i.%.6s", Word(ZH_release), zmachine_get_serial());
       nocs = hash_get(rc_hash, str2, strlen(str2));
 
       if (nocs == NULL)
@@ -1746,7 +1746,7 @@ static void pref_setup(void)
 		  kControlCheckBoxCheckedValue:kControlCheckBoxUncheckedValue);
 
   /* Try to get the game hash entry */
-  sprintf(str, "%i.%.6s.%04x", Word(ZH_release), Address(ZH_serial), 
+  sprintf(str, "%i.%.6s.%04x", Word(ZH_release), zmachine_get_serial(), 
 	  (unsigned)Word(ZH_checksum));
   game = hash_get(rc_hash, str, strlen(str));
 
@@ -1755,7 +1755,7 @@ static void pref_setup(void)
       rc_game* nocs;
       char str2[20];
 
-      sprintf(str2, "%i.%.6s", Word(ZH_release), Address(ZH_serial));
+      sprintf(str2, "%i.%.6s", Word(ZH_release), zmachine_get_serial());
       nocs = hash_get(rc_hash, str2, strlen(str2));
 
       if (nocs == NULL)
@@ -1797,7 +1797,7 @@ static void pref_setup(void)
   cid.id        = CARBON_SERIALID;
   
   GetControlByID(carbon_prefdlog, &cid, &cntl);
-  sprintf(str, "%.6s", Address(ZH_serial));
+  sprintf(str, "%.6s", zmachine_get_serial());
   SetControlData(cntl, kControlEntireControl, kControlStaticTextTextTag,
 		 strlen(str), str);
 

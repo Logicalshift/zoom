@@ -290,12 +290,13 @@ typedef struct ZDictionary
   hash words;
 } ZDictionary;
 
-extern void zmachine_load_story    (char* filename, ZMachine* machine);
-extern void zmachine_setup_header  (void);
-extern void zmachine_resize_display(ZDisplay* dis);
-extern void zmachine_fatal         (char* format, ...);
-extern void zmachine_warning       (char* format, ...);
-extern void zmachine_mark_statusbar(void);
+extern void  zmachine_load_story    (char* filename, ZMachine* machine);
+extern void  zmachine_setup_header  (void);
+extern void  zmachine_resize_display(ZDisplay* dis);
+extern void  zmachine_fatal         (char* format, ...);
+extern void  zmachine_warning       (char* format, ...);
+extern void  zmachine_mark_statusbar(void);
+extern char* zmachine_get_serial    (void);
 
 extern ZWord   pop         (ZStack*);
 extern ZFrame* call_routine(ZDWord* pc, ZStack* stack, ZDWord start);

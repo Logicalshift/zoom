@@ -672,8 +672,33 @@ void zmachine_mark_statusbar(void)
     }
 }
 
+char* zmachine_get_serial(void)
+{
+  static char serial[7];
+  ZByte* addr;
+  int x;
+
+  addr = Address(ZH_serial);
+
+  for (x=0; x<6; x++)
+    {
+      if (addr[x] >= '0' && addr[x] <= '9')
+	{
+	  serial[x] = addr[x];
+	}
+      else
+	{
+	  serial[x] = 'A' + addr[x] % 26;
+	}
+    }
+
+  serial[6] = 0;
+
+  return serial;
+}
+
 #ifdef DEBUG
-extern ZWord debug_print_var(ZWord val, int var)
+ZWord debug_print_var(ZWord val, int var)
 {
   printf_debug("Read variable #%x (value %i)\n", var, val);
   return val;

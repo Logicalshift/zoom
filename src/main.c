@@ -108,13 +108,13 @@ int zoom_main(int argc, char** argv)
       display_initialise();
       args.story_file = menu_get_story();
       zmachine_load_story(args.story_file, &machine);
-      rc_set_game(Address(ZH_serial), Word(ZH_release), Word(ZH_checksum));
+      rc_set_game(zmachine_get_serial(), Word(ZH_release), Word(ZH_checksum));
       display_reinitialise();
     }
   else
     {
       zmachine_load_story(args.story_file, &machine);
-      rc_set_game(Address(ZH_serial), Word(ZH_release), Word(ZH_checksum));
+      rc_set_game(zmachine_get_serial(), Word(ZH_release), Word(ZH_checksum));
       display_initialise();
     }
 #else
@@ -124,7 +124,7 @@ int zoom_main(int argc, char** argv)
     zmachine_load_story(NULL, &machine);
     FSRefMakePath(lastopenfs, path, 256);
     args.story_file = path;
-    rc_set_game(Address(ZH_serial), Word(ZH_release), Word(ZH_checksum));
+    rc_set_game(zmachine_get_serial(), Word(ZH_release), Word(ZH_checksum));
     display_initialise();
   }
 #endif
@@ -234,7 +234,7 @@ int zoom_main(int argc, char** argv)
     sprintf(title, rc_get_name(),
 	    name,
 	    Word(ZH_release),
-	    Address(ZH_serial),
+	    zmachine_get_serial(),
 	    (unsigned)Word(ZH_checksum));
     display_set_title(title);
 
