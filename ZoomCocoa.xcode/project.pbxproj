@@ -398,8 +398,6 @@
 			sourceTree = "<group>";
 		};
 		4B1E3F49050F7AD000A8E303 = {
-			buildRules = (
-			);
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -414,8 +412,6 @@
 			name = Development;
 		};
 		4B1E3F4A050F7AD000A8E303 = {
-			buildRules = (
-			);
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -580,8 +576,7 @@
 		};
 		4B1E3F5C050F7B2500A8E303 = {
 			explicitFileType = "compiled.mach-o.executable";
-			fallbackIsa = PBXFileReference;
-			isa = PBXExecutableFileReference;
+			isa = PBXFileReference;
 			path = ZoomServer;
 			refType = 3;
 			sourceTree = BUILT_PRODUCTS_DIR;
@@ -615,8 +610,7 @@
 			sourceTree = "<group>";
 		};
 		4B1E3F60050F7BA000A8E303 = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = Cocoa.framework;
 			path = /System/Library/Frameworks/Cocoa.framework;
@@ -798,8 +792,7 @@
 		};
 		4B1E3F7A050F7C3900A8E303 = {
 			explicitFileType = "compiled.mach-o.executable";
-			fallbackIsa = PBXFileReference;
-			isa = PBXExecutableFileReference;
+			isa = PBXFileReference;
 			path = Builder;
 			refType = 3;
 			sourceTree = BUILT_PRODUCTS_DIR;
@@ -2496,7 +2489,7 @@
 		4BACE9FA05B428C700A9B6DC = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
-			lastKnownFileType = text.plist.xml;
+			lastKnownFileType = text.xml;
 			name = infocom.iFiction;
 			path = src/infocom.iFiction;
 			refType = 2;
@@ -2882,8 +2875,7 @@
 			};
 		};
 		4BCF3F2B050F8E2400A8E303 = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = Foundation.framework;
 			path = /System/Library/Frameworks/Foundation.framework;
@@ -3286,8 +3278,7 @@
 		};
 		4BCF3F3D050FB1B400A8E303 = {
 			explicitFileType = wrapper.application;
-			fallbackIsa = PBXFileReference;
-			isa = PBXApplicationReference;
+			isa = PBXFileReference;
 			path = Zoom.app;
 			refType = 3;
 			sourceTree = BUILT_PRODUCTS_DIR;
@@ -3761,8 +3752,7 @@
 		};
 		4BDFA4BA0535E64900A8E303 = {
 			explicitFileType = wrapper.framework;
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			path = ZoomView.framework;
 			refType = 3;
 			sourceTree = BUILT_PRODUCTS_DIR;
