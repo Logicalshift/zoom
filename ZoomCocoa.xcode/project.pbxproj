@@ -3008,6 +3008,7 @@
 				4BBC1F6E062F41E300FE547F,
 				4B18850C069873F0004D8501,
 				4B5CBCEF069DD94000C0AA88,
+				4BD81B4E06B6E9F400AD14E1,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3183,6 +3184,8 @@
 			<array>
 				<string>blb</string>
 			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>Blorb.icns</string>
 			<key>CFBundleTypeName</key>
 			<string>Blorb resource file</string>
 			<key>CFBundleTypeOSTypes</key>
@@ -3290,6 +3293,7 @@
 				4BCF3F45050FB21C00A8E303,
 				4BCF3F46050FB21C00A8E303,
 				4BAE0EF6062ADA19009426D5,
+				4BD81B4D06B6E9F400AD14E1,
 				4B418DE40594FC3B009C44DE,
 				4B418DE50594FC3B009C44DE,
 				4B418DE60594FC3B009C44DE,
@@ -3500,6 +3504,19 @@
 		};
 		4BCF3F63050FBB3F00A8E303 = {
 			fileRef = 4BCF3F62050FBB3F00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BD81B4D06B6E9F400AD14E1 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.icns;
+			path = Blorb.icns;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BD81B4E06B6E9F400AD14E1 = {
+			fileRef = 4BD81B4D06B6E9F400AD14E1;
 			isa = PBXBuildFile;
 			settings = {
 			};
