@@ -85,7 +85,7 @@ static void output_opname(FILE* dest,
 			  char* opname,
 			  int   versions)
 {
-  int x,z;
+  int z;
 
   fprintf(dest, "goto op_%s", opname);
   VERSIONS;
@@ -152,7 +152,7 @@ void output_interpreter(FILE* dest,
 		{
 		  fprintf(dest, "#ifdef DEBUG\nprintf_debug(\"(String instruction) - decoding the string at #%%x: \", pc+%i);\n#endif\n", pcadd);
 		  fprintf(dest, "      string = zscii_to_unicode(&GetCode(pc+%i), &padding);\n", pcadd);
-		  fprintf(dest, "#ifdef DEBUG\nprintf_debug(\">%%s<\\n\", string);\n#endif\n", pcadd);
+		  fprintf(dest, "#ifdef DEBUG\nprintf_debug(\">%%s<\\n\", string);\n#endif\n");
 		}
 
 	      if (op->flags.isbranch || op->flags.isstring)
