@@ -2009,7 +2009,7 @@ static int process_events(long int timeout,
 	      else
 		{
 		  if (buf[buf_offset] == 0 &&
-		      buf_offset < buflen-1)
+		      buf_offset < buflen)
 		    {		      
 		      buf[buf_offset++] = msg.wParam;
 		      buf[buf_offset] = 0;
