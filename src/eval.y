@@ -73,7 +73,7 @@
 
 int debug_eval_result = 0;
 char* debug_eval_type = NULL;
-char* debug_error;
+const char* debug_error;
 extern debug_routine* debug_expr_routine;
 
 #define UnpackR(x) (machine.packtype==packed_v4?4*((ZUWord)x):(machine.packtype==packed_v8?8*((ZUWord)x):4*((ZUWord)x)+machine.routine_offset))
@@ -225,7 +225,7 @@ static int prop_addr(int object, int prop)
 Eval:		  Expression
 		    {
 		      debug_eval_result = $1;
-		      debug_eval_type = "signed";
+		      debug_eval_type = NULL;
 		    }
 		| '(' IDENTIFIER ')' Expression
 		    {
@@ -279,7 +279,7 @@ Expression:	  IDENTIFIER
 		  {
 		    $$ = $1 | $3;
 		  }
-		| '~' Expression %prec UNARYMINUS
+		| '~' Expression
 		  {
 		    $$ = ~$2;
 		  }

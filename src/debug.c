@@ -38,6 +38,17 @@ debug_routine*    debug_expr_routine = NULL;
 static int*       expr      = NULL;
 static int        expr_pos  = 0;
 
+typedef struct debug_display
+{
+  int*  expr;
+  char* desc;
+  ZWord lastvalue;
+  int   erm;
+} debug_display;
+
+static int            ndisps = 0;
+static debug_display* dbdisp = NULL;
+
 /***                           ----// 888 \\----                           ***/
 
 /* The debugger console */
@@ -120,6 +131,48 @@ void debug_run_breakpoint(ZDWord pc)
       display_set_style(0);
     }
 
+  /* Evaluate any display expressions */
+  for (x=0; x<ndisps; x++)
+    {
+      expr = dbdisp[x].expr;
+      expr_pos = 0;
+      debug_expr_routine = addr.routine;
+      debug_error = NULL;
+      debug_eval_parse();
+
+      if (debug_error == NULL)
+	{
+	  if (debug_eval_result != dbdisp[x].lastvalue ||
+	      dbdisp[x].erm == 1)
+	    {
+	      display_printf("==");
+	      display_set_colour(1, 7);
+	      display_printf("%s=%s\n", dbdisp[x].desc,
+			     debug_print_value(debug_eval_result,
+					       debug_eval_type));
+	      display_set_colour(4, 7);
+	    }
+	  dbdisp[x].lastvalue = debug_eval_result;
+	  dbdisp[x].erm = 0;
+	}
+      else
+	{
+	  if (dbdisp[x].erm == 0)
+	    {
+	      display_printf("==");
+	      display_set_colour(1, 7);
+	      display_printf("%s=%s\n", dbdisp[x].desc,
+			     debug_error);
+	      display_set_colour(4, 7);
+	    }
+	  dbdisp[x].erm = 1;
+	}
+      
+      if (debug_eval_type != NULL)
+	free(debug_eval_type);
+      debug_eval_type = NULL;
+    }
+
   /* Process commands */
   while (1)
     {
@@ -190,6 +243,51 @@ void debug_run_breakpoint(ZDWord pc)
 		count++;
 	      }
 	  }
+	  break;
+
+	case 'd':
+	  debug_expr_routine = addr.routine;
+	  expr = cline + 1;
+	  expr_pos = 0;
+	  debug_error = NULL;
+	  debug_eval_parse();
+	  if (debug_error == NULL)
+	    {
+	      int len;
+	      char* disp;
+
+	      for (len=0; expr[len] != 0; len++);
+	      
+	      disp = malloc(sizeof(char)*(len+1));
+	      for (len=0; expr[len] != 0; len++)
+		disp[len] = expr[len];
+	      disp[len] = 0;
+
+	      dbdisp = realloc(dbdisp, sizeof(debug_display)*(ndisps+1));
+	      dbdisp[ndisps].desc = disp;
+	      dbdisp[ndisps].expr = malloc(sizeof(int)*(len+1));
+	      
+	      for (len=0; expr[len] != 0; len++)
+		dbdisp[ndisps].expr[len] = expr[len];
+	      dbdisp[ndisps].expr[len] = 0;
+	      dbdisp[ndisps].lastvalue = debug_eval_result;
+	      dbdisp[ndisps].erm = 0;
+
+	      ndisps++;
+
+	      display_printf("= Display: %s=%s\n",
+			     disp,
+			     debug_print_value(debug_eval_result,
+					       debug_eval_type));
+	    }
+	  else
+	    {
+	      display_printf("=? %s\n", debug_error);
+	    }
+
+	  if (debug_eval_type != NULL)
+	    free(debug_eval_type);
+	  debug_eval_type = NULL;
 	  break;
 
 	case 'p':
@@ -417,7 +515,7 @@ int debug_clear_breakpoint(debug_breakpoint* bp)
 /* Debug file */
 
 debug_symbols debug_syms = { 
-  0, NULL, NULL, NULL, 0, NULL, 0,
+  0, NULL, NULL, NULL, NULL, 0, NULL, 0,
   0
 };
 
@@ -534,7 +632,7 @@ void debug_load_symbols(char* filename,
 	    fl->name = malloc(sizeof(char)*(strlen(db_file + pos + 2) + 1));
 	    strcpy(fl->name, db_file + pos + 2);
 	    pos += 3 + strlen(fl->name);
-	    fl->realname = malloc(sizeof(char)*(strlen(db_file + pos)));
+	    fl->realname = malloc(sizeof(char)*(strlen(db_file + pos) + 1));
 	    strcpy(fl->realname, db_file + pos);
 	    pos += strlen(fl->realname) + 1;
 
@@ -885,17 +983,18 @@ void debug_load_symbols(char* filename,
 
 	    r.nlines = 0;
 	    r.line   = NULL;
+
+	    if (this_routine != NULL &&
+		this_routine->start >= r.start)
+	      {
+		display_printf("=! Out of order routines\n");
+	      }
 	    
 	    debug_syms.routine = realloc(debug_syms.routine,
 					 sizeof(debug_routine)*
 					 (debug_syms.nroutines+1));
 
 	    debug_syms.routine[debug_syms.nroutines] = r;
-	    if (this_routine != NULL &&
-		this_routine->start >= r.start)
-	      {
-		display_printf("=! Out of order routines\n");
-	      }
 	    this_routine = debug_syms.routine + debug_syms.nroutines;
 
 	    debug_syms.nroutines++;
@@ -1269,6 +1368,7 @@ ZWord debug_symbol_value(const char*    symbol,
 	  return GetWord(machine.header, ZH_globals) + res->data.array.offset;
 
 	default:
+	  break;
 	}
     }
 
@@ -1393,6 +1493,9 @@ int debug_eval_lex(void)
 char* debug_print_value(ZWord value, char* type)
 {
   static char res[256];
+
+  if (type == NULL)
+    type = "signed";
 
   if (strcmp(type, "unsigned") == 0)
     {

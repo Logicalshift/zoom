@@ -210,7 +210,7 @@ extern int               debug_nbps;
 extern debug_symbols     debug_syms;
 extern int               debug_eval_result;
 extern char*             debug_eval_type;
-extern char*             debug_error;
+extern const char*       debug_error;
 
 #define DEBUG_EOF_DBR 0
 #define DEBUG_FILE_DBR 1
