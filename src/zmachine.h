@@ -275,7 +275,7 @@ typedef struct ZMachine
 #endif
   
   /* Autosaving */
-  ZDWord can_autosave;
+  ZDWord autosave_pc;
 
   /* Commandline options */
   int warning_level;

@@ -295,9 +295,9 @@
 	// Create a save game, for autosave purposes
 	int len;
 	
-	if (!machine.can_autosave) return nil;
+	if (machine.autosave_pc <= 0) return nil;
 	
-	void* gameData = state_compile(&machine.stack, machine.zpc, &len, 1);
+	void* gameData = state_compile(&machine.stack, machine.autosave_pc, &len, 1);
 	
 	NSData* result = [NSData dataWithBytes: gameData length: len];
 	

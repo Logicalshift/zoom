@@ -1412,7 +1412,7 @@ OPCODE "sread"          VAR:0x04 ARGS:2               VERSION 1,2,3
   int x;
 
   //pc -= (2+padding); /* HACK: allow autosave */
-  machine.can_autosave = 1;
+  machine.autosave_pc = pc - (2+padding);
 
   stream_flush_buffer();
 
@@ -1456,25 +1456,25 @@ OPCODE "sread"          VAR:0x04 ARGS:2               VERSION 1,2,3
 
   free(buf);
 
-  machine.can_autosave = 0;
+  machine.autosave_pc = 0;
   //pc += (2+padding); /* HACK: allow autosave */
 %}
 
 OPCODE "sread"          VAR:0x04 ARGS:4       CANJUMP VERSION 4
 %{
   //pc -= (2+padding); /* HACK: allow autosave */
-  machine.can_autosave = 1;
+  machine.autosave_pc = pc - (2+padding);
   zcode_op_sread_4(&pc, stack, &argblock);
-  machine.can_autosave = 0;
+  machine.autosave_pc = 0;
   //pc += (2+padding); /* HACK: allow autosave */
 %}
 
 OPCODE "aread"          VAR:0x04 ARGS:4 STORE CANJUMP VERSION 5,7,8
 %{
   //pc -= (3+padding); /* HACK: allow autosave */
-  machine.can_autosave = 1;
+  machine.autosave_pc = pc - (3+padding);
   zcode_op_aread_5678(&pc, stack, &argblock, st);
-  machine.can_autosave = 0;
+  machine.autosave_pc = 0;
   //pc += (3+padding); /* HACK: allow autosave */
 %}
 
@@ -1785,7 +1785,7 @@ OPCODE "sound_effect"   VAR:0x15                      VERSION all # 3,4,5,6,7,8
 OPCODE "read_char"      VAR:0x16 ARGS:3 STORE CANJUMP VERSION 4,5,7,8
 %{
   //pc -= (3+padding); /* HACK: allow autosave */
-  machine.can_autosave = 1;
+  machine.autosave_pc = pc - (3+padding);
 
   stream_flush_buffer();
 
@@ -1798,7 +1798,7 @@ OPCODE "read_char"      VAR:0x16 ARGS:3 STORE CANJUMP VERSION 4,5,7,8
       zcode_op_readchar(&pc, stack, &argblock, st);
     }
 
-  machine.can_autosave = 0;
+  machine.autosave_pc = 0;
   //pc += (3+padding); /* HACK: allow autosave */
 %}
 
@@ -2328,13 +2328,13 @@ OPCODE "check_unicode" EXT:0x0c ARGS:1 STORE  VERSION 5,7,8
 OPCODE "aread"          VAR:0x04 ARGS:4 STORE CANJUMP VERSION 6
 %{
   //pc -= (3+padding); /* HACK: allow autosave */
-  machine.can_autosave = 1;
+  machine.autosave_pc = pc - (3+padding);
   
   stream_flush_buffer();
   v6_set_caret();
   zcode_op_aread_5678(&pc, stack, &argblock, st);
   
-  machine.can_autosave = 0;
+  machine.autosave_pc = 0;
   //pc += (3+padding);
 %}
 
@@ -2391,7 +2391,7 @@ OPCODE "set_text_style" VAR:0x11 ARGS:1               VERSION 6
 OPCODE "read_char"      VAR:0x16 ARGS:3 STORE CANJUMP VERSION 6
 %{
   //pc -= (3+padding); /* HACK: allow autosave */
-  machine.can_autosave = 1;
+  machine.autosave_pc = pc - (3+padding);
 
   stream_flush_buffer();
   v6_set_caret();
@@ -2405,7 +2405,7 @@ OPCODE "read_char"      VAR:0x16 ARGS:3 STORE CANJUMP VERSION 6
       zcode_op_readchar(&pc, stack, &argblock, st);
     }
 	
-  machine.can_autosave = 0;
+  machine.autosave_pc = 0;
   //pc += (3+padding); /* HACK: allow autosave */
 %}
 

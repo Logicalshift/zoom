@@ -197,7 +197,7 @@ void zmachine_load_file(ZFile* file, ZMachine* machine) {
     machine->script_file = NULL;
     machine->memory_on = 0;
 	
-	machine->can_autosave = 0;
+	machine->autosave_pc = 0;
 	
 #ifdef REMOTE_BREAKPOINT
 	machine->force_breakpoint = 0;
