@@ -91,6 +91,10 @@ typedef enum {
 - (int)        addressForName: (NSString*) name;
 - (NSString*)  nameForAddress: (int) address;
 
+- (NSString*) sourceFileForAddress: (int) address;
+- (NSString*) routineForAddress: (int) address;
+- (int)       lineForAddress: (int) address;
+
 @end
 
 // == Client-side objects ==

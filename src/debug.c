@@ -1547,7 +1547,19 @@ char* debug_print_value(ZWord value, char* type)
 }
 
 void debug_set_bp_handler(debug_breakpoint_handler handler) {
+	static int initialised = 0;
+	int x;
+	
 	bp_handler = handler;
+	
+	if (!initialised) {
+		initialised = 1;
+		
+		for (x=0; x<debug_syms.nroutines; x++) {
+			debug_set_breakpoint(debug_syms.routine[x].start+1,
+								 0, 1);
+		}
+	}
 }
 
 void debug_set_temp_breakpoints(debug_step_type step) {
@@ -1563,10 +1575,8 @@ void debug_set_temp_breakpoints(debug_step_type step) {
 			ln = -1;
 		}
 		
-		if (step == debug_step_over) {
-		} else if (step == debug_step_into) {
+		if (step == debug_step_into) {
 			stepinto = 1;
-		} else if (step == debug_step_out) {
 		}
 		
 		/* Set a breakpoint on each line... */

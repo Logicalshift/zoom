@@ -252,12 +252,12 @@ void cocoa_debug_handler(ZDWord pc) {
 	if (display) {
 		// Notify the display of the breakpoint
 		waitingForBreakpoint = YES;
+		[self flushBuffers];
 		[display hitBreakpointAt: pc];
 		
 		// Wait for the display to request resumption
 		NSAutoreleasePool* breakpointPool = [[NSAutoreleasePool alloc] init];
 		
-		NSLog(@"Waiting for breakpoint...");
 		while (waitingForBreakpoint && (mainConnection != nil || mainMachine != nil)) {
 			[breakpointPool release];
 			breakpointPool = [[NSAutoreleasePool alloc] init];
@@ -265,7 +265,6 @@ void cocoa_debug_handler(ZDWord pc) {
 			[mainLoop acceptInputForMode: NSDefaultRunLoopMode
 							  beforeDate: [NSDate distantFuture]];
 		}
-		NSLog(@"Done");
 		
 		[breakpointPool release];
 	}
@@ -357,6 +356,30 @@ void cocoa_debug_handler(ZDWord pc) {
 }
 
 - (NSString*)  nameForAddress: (int) address {
+}
+
+- (NSString*) sourceFileForAddress: (int) address {
+	debug_address addr = debug_find_address(address);
+	
+	if (addr.line == NULL) return nil;
+
+	return [NSString stringWithCString: debug_syms.files[addr.line->fl].realname];
+}
+
+- (NSString*) routineForAddress: (int) address {
+	debug_address addr = debug_find_address(address);
+	
+	if (addr.routine == NULL) return nil;
+	
+	return [NSString stringWithCString: addr.routine->name];
+}
+
+- (int) lineForAddress: (int) address {
+	debug_address addr = debug_find_address(address);
+	
+	if (addr.line == NULL) return -1;
+	
+	return addr.line->ln;
 }
 
 // = Autosave =
