@@ -8,7 +8,7 @@
 # !! IMPORTANT !! (Well, sort of)
 # The default zoomrc file now sets anti-aliasing to off by default,
 # because many people have reported problems with Xft's selection
-# of fonts. Blech. Reset to 'on' to get anti-aliasing back.
+# of fonts. Blech. Reset to 'yes' to get anti-aliasing back.
 default "%s (%i.%.6s.%04x)"
 {
   interpreter 3
