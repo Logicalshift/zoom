@@ -650,6 +650,7 @@ static void finalizeViews(void) {
 - (void) displayMoreIfNecessary {
     NSLayoutManager* mgr = [textView layoutManager];
 
+	// Find the last glyph in the text view
     NSRange endGlyph = [textView selectionRangeForProposedRange:
         NSMakeRange([[textView textStorage] length]-1, 1)
                                                     granularity: NSSelectByCharacter];
@@ -657,6 +658,7 @@ static void finalizeViews(void) {
         return; // Doesn't exist
     }
 
+	// See if it has fallen off the end
     NSRect endRect = [mgr boundingRectForGlyphRange: endGlyph
                                     inTextContainer: [textView textContainer]];
     double endPoint = endRect.origin.y + endRect.size.height;
@@ -666,6 +668,18 @@ static void finalizeViews(void) {
         morePoint = maxSize.height;
         moreOn = YES;
     }
+	
+	if (moreOn) {
+		// Turn more off if the text view is below a certain size
+		ZStyle* standardStyle = [[ZStyle alloc] init];
+		
+		NSRect textSize = [textView frame];
+		NSSize fontSize = [@"M" sizeWithAttributes: [self attributesForStyle: standardStyle]];
+		
+		if (textSize.size.height < fontSize.height * 1.25) {
+			moreOn = NO;
+		}
+	}
 
     [self setShowsMorePrompt: moreOn];
 
@@ -727,8 +741,12 @@ static void finalizeViews(void) {
     [self setShowsMorePrompt: NO];
     
     double maxHeight = [textView maxSize].height;
+	double newHeight = [textScroller contentSize].height;
+	
+	if (newHeight < 4.0) newHeight = 4.0;
+	
     moreReferencePoint = maxHeight;
-    maxHeight += [textScroller contentSize].height;
+    maxHeight += newHeight;
 
     [self updateMorePrompt];
 
