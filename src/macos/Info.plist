@@ -43,6 +43,22 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>blb</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>zoom-file.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>Blorb bundle</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>IFRS</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>Zoom</string>
