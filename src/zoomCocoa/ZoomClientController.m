@@ -206,7 +206,9 @@
 }
 
 - (IBAction) updateGameInfo: (id) sender {
-	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: [[self document] storyInfo]];
+	if ([[ZoomGameInfoController sharedGameInfoController] infoOwner] == self) {
+		[[ZoomGameInfoController sharedGameInfoController] setGameInfo: [[self document] storyInfo]];
+	}
 }
 
 - (void)windowDidResignMain:(NSNotification *)aNotification {
@@ -214,8 +216,12 @@
 		[self playInFullScreen: self];
 	}
 	
-	[self recordGameInfo: self];
-	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
+	if ([[ZoomGameInfoController sharedGameInfoController] infoOwner] == self) {
+		[self recordGameInfo: self];
+		[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
+		
+		[[ZoomGameInfoController sharedGameInfoController] setInfoOwner: nil];
+	}
 
 	if ([[ZoomSkeinController sharedSkeinController] skein] == [[self document] skein]) {
 		[[ZoomSkeinController sharedSkeinController] setSkein: nil];
@@ -255,10 +261,16 @@
 
 - (void)windowWillClose:(NSNotification *)aNotification {
 	// Can't do stuff here: [self document] has been set to nil
-	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
+	if ([[ZoomGameInfoController sharedGameInfoController] infoOwner] == self) {
+		[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
+
+		[[ZoomGameInfoController sharedGameInfoController] setInfoOwner: nil];
+	}
 }
 
 - (void)windowDidBecomeMain:(NSNotification *)aNotification {
+	[[ZoomGameInfoController sharedGameInfoController] setInfoOwner: self];
+	
 	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: [[self document] storyInfo]];
 	[[ZoomSkeinController sharedSkeinController] setSkein: [[self document] skein]];
 }

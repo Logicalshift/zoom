@@ -316,6 +316,10 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 }
 
 - (ZoomStory*) createStoryCopy: (ZoomStory*) theStory {
+	if (theStory == nil) {
+		return nil;
+	}
+	
 	// When editing story data, we need to work on a copy in the user metadata area.
 	// By default, we just use the first version we find, which might be in one of the
 	// files loaded from our own application (and hence won't get saved when we finish
@@ -584,7 +588,15 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 }
 
 - (void)windowDidBecomeMain:(NSNotification *)aNotification {
+	[[ZoomGameInfoController sharedGameInfoController] setInfoOwner: self];
 	[self configureFromMainTableSelection];
+}
+
+- (void)windowDidResignMain:(NSNotification *)aNotification {
+	if ([[ZoomGameInfoController sharedGameInfoController] infoOwner] == self) {
+		[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
+		[[ZoomGameInfoController sharedGameInfoController] setInfoOwner: nil];
+	}
 }
 
 // = Our life as a data source =
@@ -935,7 +947,7 @@ int tableSorter(id a, id b, void* context) {
 		ZoomStoryID* ident = [storyList objectAtIndex: [mainTableView selectedRow]];
 		ZoomStory* story = [self storyForID: ident];
 
-		if ([[self window] isMainWindow]) {
+		if ([[self window] isMainWindow] && [[ZoomGameInfoController sharedGameInfoController] infoOwner] == self) {
 			[[ZoomGameInfoController sharedGameInfoController] setGameInfo: story];
 		}
 
@@ -952,7 +964,7 @@ int tableSorter(id a, id b, void* context) {
 		[resourceDrop setDroppedFilename: [story objectForKey: @"ResourceFilename"]];
 		[resourceDrop setEnabled: YES];
 	} else {
-		if ([[self window] isMainWindow]) {
+		if ([[self window] isMainWindow] && [[ZoomGameInfoController sharedGameInfoController] infoOwner] == self) {
 			[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
 		}
 		
@@ -1221,6 +1233,8 @@ int tableSorter(id a, id b, void* context) {
 // = GameInfo window actions =
 
 - (IBAction) infoNameChanged: (id) sender {
+	if ([self selectedStory] == nil) return;
+	
 	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
 	[story setTitle: [[ZoomGameInfoController sharedGameInfoController] title]];
 	[self reloadTableData]; [mainTableView reloadData];
@@ -1228,6 +1242,8 @@ int tableSorter(id a, id b, void* context) {
 }
 
 - (IBAction) infoHeadlineChanged: (id) sender {
+	if ([self selectedStory] == nil) return;
+	
 	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
 	[story setHeadline: [[ZoomGameInfoController sharedGameInfoController] headline]];
 	[self reloadTableData]; [mainTableView reloadData];
@@ -1235,6 +1251,8 @@ int tableSorter(id a, id b, void* context) {
 }
 
 - (IBAction) infoAuthorChanged: (id) sender {
+	if ([self selectedStory] == nil) return;
+	
 	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
 	[story setAuthor: [[ZoomGameInfoController sharedGameInfoController] author]];
 	[self reloadTableData]; [mainTableView reloadData];
@@ -1242,6 +1260,8 @@ int tableSorter(id a, id b, void* context) {
 }
 
 - (IBAction) infoGenreChanged: (id) sender {
+	if ([self selectedStory] == nil) return;
+	
 	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
 	[story setGenre: [[ZoomGameInfoController sharedGameInfoController] genre]];
 	[self reloadTableData]; [mainTableView reloadData];
@@ -1249,6 +1269,8 @@ int tableSorter(id a, id b, void* context) {
 }
 
 - (IBAction) infoYearChanged: (id) sender {
+	if ([self selectedStory] == nil) return;
+	
 	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
 	[story setYear: [[ZoomGameInfoController sharedGameInfoController] year]];
 	[self reloadTableData]; [mainTableView reloadData];
@@ -1256,6 +1278,8 @@ int tableSorter(id a, id b, void* context) {
 }
 
 - (IBAction) infoGroupChanged: (id) sender {
+	if ([self selectedStory] == nil) return;
+	
 	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
 	[story setGroup: [[ZoomGameInfoController sharedGameInfoController] group]];
 	[self reloadTableData]; [mainTableView reloadData];
@@ -1263,6 +1287,8 @@ int tableSorter(id a, id b, void* context) {
 }
 
 - (IBAction) infoCommentsChanged: (id) sender {
+	if ([self selectedStory] == nil) return;
+	
 	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
 	[story setComment: [[ZoomGameInfoController sharedGameInfoController] comments]];
 	[self reloadTableData]; [mainTableView reloadData];
@@ -1270,6 +1296,8 @@ int tableSorter(id a, id b, void* context) {
 }
 
 - (IBAction) infoTeaserChanged: (id) sender {
+	if ([self selectedStory] == nil) return;
+	
 	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
 	[story setTeaser: [[ZoomGameInfoController sharedGameInfoController] teaser]];
 	[self reloadTableData]; [mainTableView reloadData];
@@ -1277,6 +1305,8 @@ int tableSorter(id a, id b, void* context) {
 }
 
 - (IBAction) infoZarfRatingChanged: (id) sender {
+	if ([self selectedStory] == nil) return;
+	
 	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
 	[story setZarfian: [[ZoomGameInfoController sharedGameInfoController] zarfRating]];
 	[self reloadTableData]; [mainTableView reloadData];
@@ -1284,6 +1314,8 @@ int tableSorter(id a, id b, void* context) {
 }
 
 - (IBAction) infoMyRatingChanged: (id) sender {
+	if ([self selectedStory] == nil) return;
+	
 	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
 	[story setRating: [[ZoomGameInfoController sharedGameInfoController] rating]];
 	[self reloadTableData]; [mainTableView reloadData];

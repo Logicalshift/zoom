@@ -90,7 +90,9 @@
 	[[ZoomGameInfoController sharedGameInfoController] showWindow: self];
 
 	// Blank out the game info window
-	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
+	if ([[ZoomGameInfoController sharedGameInfoController] infoOwner] == nil) {
+		[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
+	}
 }
 
 - (IBAction) displaySkein: (id) sender {

@@ -33,6 +33,17 @@
 	[super dealloc];
 }
 
+// = Owner =
+
+- (void) setInfoOwner: (id) newOwner {
+	if (infoOwner) [infoOwner release];
+	infoOwner = [newOwner retain];
+}
+
+- (id) infoOwner {
+	return infoOwner;
+}
+
 // = Interface actions =
 
 - (IBAction)selectGenre:(id)sender {

@@ -30,6 +30,8 @@
 	IBOutlet NSTabView*     tabs;
 	
 	ZoomStory* gameInfo;
+	
+	id infoOwner;
 }
 
 + (ZoomGameInfoController*) sharedGameInfoController;
@@ -43,6 +45,9 @@
 // Setting up the game info window
 - (void) setGameInfo: (ZoomStory*) info;
 - (ZoomStory*) gameInfo;
+
+- (void) setInfoOwner: (id) owner;
+- (id)   infoOwner;
 
 // Reading the current (updated) contents of the game info window
 - (NSString*) title;
