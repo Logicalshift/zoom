@@ -71,12 +71,12 @@ Drawable     x_drawable = None;
 Pixmap       x_pixmap = None;
 GC           x_pixgc;
 
+static int pix_w, pix_h;
+
 #ifdef HAVE_XRENDER
 XRenderPictFormat* x_picformat = NULL;
 Picture            x_winpic = None;
 Picture            x_pixpic = None;
-
-static int pix_w, pix_h;
 #endif
 
 #ifdef HAVE_XDBE
@@ -226,6 +226,10 @@ static void reset_clip(void)
 #ifdef HAVE_XFT
       if (xft_drawable != NULL)
 	XftDrawSetClip(xft_drawable, rgn);
+      if (x_pixmap != None)
+	{
+	  XftDrawSetClip(xft_drawable, None);
+	}
 #endif
 
       resetregion = 0;
@@ -658,7 +662,7 @@ static void draw_window()
 
   XSetRegion(x_display, x_wingc, dregion);
 #ifdef HAVE_XFT
-  if (xft_drawable != NULL)
+  if (xft_drawable != NULL && x_pixmap == None)
     XftDrawSetClip(xft_drawable, dregion);
 #endif
 
@@ -1029,51 +1033,6 @@ static void draw_window()
 		0,0, pix_w, pix_h,
 		xp, yp);
     }
-  
-  /* MORE */
-  if (more_on)
-    {
-      clip.x = (win_x+BORDER_SIZE*2) - (morew + 2);
-      clip.y = (win_y+BORDER_SIZE*2) - (moreh + 2);
-      clip.width = morew+2; clip.height = moreh+2;
-
-      XSetRegion(x_display, x_wingc, dregion);
-#ifdef HAVE_XFT
-      if (xft_drawable != NULL)
-	XftDrawSetClip(xft_drawable, dregion);
-#endif
-
-      XSetForeground(x_display, x_wingc, x_colour[4].pixel);
-      XFillRectangle(x_display, x_drawable, x_wingc,
-		     clip.x, clip.y, morew+1, moreh+1);
-
-      xfont_set_colours(0+FIRST_ZCOLOUR, 4);
-      xfont_plot_string(font[style_font[2]],
-			x_drawable, x_wingc,
-			win_x+BORDER_SIZE*2-(morew+1), 
-			win_y+BORDER_SIZE*2-(moreh) +
-			xfont_get_ascent(font[style_font[2]]), 
-			more, 6);
-
-      XSetForeground(x_display, x_wingc, x_colour[6].pixel);
-      XDrawLine(x_display, x_drawable, x_wingc,
-		clip.x+morew+1, clip.y+moreh+1, clip.x, clip.y+moreh+1);
-      XDrawLine(x_display, x_drawable, x_wingc,
-		clip.x+morew+1, clip.y+moreh+1, clip.x+morew+1, clip.y);
-
-      XSetForeground(x_display, x_wingc, x_colour[5].pixel);
-      XDrawLine(x_display, x_drawable, x_wingc,
-		clip.x, clip.y, clip.x+morew+1, clip.y);
-      XDrawLine(x_display, x_drawable, x_wingc,
-		clip.x, clip.y, clip.x, clip.y+moreh+1);
-  }
-
-  /* Free regions */
-  XFree(newregion);
-  XFree(dregion);
-  dregion = None;
-
-  resetregion = 1;
 
   /* Flip buffers */
 #ifdef HAVE_XDBE
@@ -1092,6 +1051,67 @@ static void draw_window()
   if (!more_on)
     draw_input_text();
   draw_caret();
+  
+  /* MORE */
+  if (more_on)
+    {
+#ifdef HAVE_XFT
+      XftDraw* lastdraw;
+#endif
+
+      clip.x = (win_x+BORDER_SIZE*2) - (morew + 2);
+      clip.y = (win_y+BORDER_SIZE*2) - (moreh + 2);
+      clip.width = morew+2; clip.height = moreh+2;
+
+      XSetRegion(x_display, x_wingc, dregion);
+#ifdef HAVE_XFT
+      if (xft_drawable != NULL && xft_maindraw != NULL)
+	{
+	  lastdraw = xft_drawable;
+	  xft_drawable = xft_maindraw;
+	}
+      if (xft_drawable != NULL)
+	XftDrawSetClip(xft_drawable, dregion);
+#endif
+
+      XSetForeground(x_display, x_wingc, x_colour[4].pixel);
+      XFillRectangle(x_display, x_mainwin, x_wingc,
+		     clip.x, clip.y, morew+1, moreh+1);
+
+      xfont_set_colours(0+FIRST_ZCOLOUR, 4);
+      xfont_plot_string(font[style_font[2]],
+			x_mainwin, x_wingc,
+			win_x+BORDER_SIZE*2-(morew+1), 
+			win_y+BORDER_SIZE*2-(moreh) +
+			xfont_get_ascent(font[style_font[2]]), 
+			more, 6);
+
+      XSetForeground(x_display, x_wingc, x_colour[6].pixel);
+      XDrawLine(x_display, x_mainwin, x_wingc,
+		clip.x+morew+1, clip.y+moreh+1, clip.x, clip.y+moreh+1);
+      XDrawLine(x_display, x_mainwin, x_wingc,
+		clip.x+morew+1, clip.y+moreh+1, clip.x+morew+1, clip.y);
+
+      XSetForeground(x_display, x_wingc, x_colour[5].pixel);
+      XDrawLine(x_display, x_mainwin, x_wingc,
+		clip.x, clip.y, clip.x+morew+1, clip.y);
+      XDrawLine(x_display, x_mainwin, x_wingc,
+		clip.x, clip.y, clip.x, clip.y+moreh+1);
+
+#ifdef HAVE_XFT
+      if (xft_drawable != NULL && xft_maindraw != NULL)
+	{
+	  xft_drawable = lastdraw;
+	}
+#endif
+  }
+
+  /* Free regions */
+  XFree(newregion);
+  XFree(dregion);
+  dregion = None;
+
+  resetregion = 1;
 }
 
 static void resize_window()

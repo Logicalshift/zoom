@@ -1237,6 +1237,8 @@ void zcode_v6_initialise(void)
 
   for (x=0; x<8; x++)
     {
+      v6_set_window(x);
+
       windows[x].wrapping   = 0;
       windows[x].scrolling  = 1;
       windows[x].buffering  = 1;
@@ -1244,6 +1246,11 @@ void zcode_v6_initialise(void)
       windows[x].x = windows[x].y = 0;
       windows[x].xsize = machine.dinfo->width; 
       windows[x].ysize = machine.dinfo->height;
+
+      v6_set_style(0);
+      windows[x].style = 0;
+      v6_set_colours(machine.dinfo->fore, machine.dinfo->back);
+      windows[x].colour = ((machine.dinfo->back+2)<<8)|(machine.dinfo->fore+2);
     }
 
   windows[0].wrapping = 1;

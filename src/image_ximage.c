@@ -653,7 +653,7 @@ void image_plot_Xrender(image_data* img,
 	  agc = XCreateGC(display, data->pmap, 0, NULL);
 	  XPutImage(display, data->pmap, agc, xim,
 		    0,0,0,0,
-		    image_width(img), image_height(img));
+		    xim->width, xim->height);
 
 	  XDestroyImage(xim);
 	  XFreeGC(display, agc);
