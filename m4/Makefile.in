@@ -57,24 +57,24 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-BUILDERCC = @BUILDERCC@
+host_alias = @host_alias@
+host_triplet = @host@
+AS = @AS@
 CC = @CC@
 CPP = @CPP@
+DLLTOOL = @DLLTOOL@
+LD = @LD@
 LEX = @LEX@
+LIBTOOL = @LIBTOOL@
+LN_S = @LN_S@
 MAKEINFO = @MAKEINFO@
-MINGWWINDRES = @MINGWWINDRES@
+NM = @NM@
+OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
-PERL = @PERL@
-RESEXTN = @RESEXTN@
+RANLIB = @RANLIB@
 UTIL_PROG_TPUT = @UTIL_PROG_TPUT@
 VERSION = @VERSION@
-WINDRES = @WINDRES@
 YACC = @YACC@
-ZBYTE_TYPE = @ZBYTE_TYPE@
-ZDWORD_TYPE = @ZDWORD_TYPE@
-ZMACHINE_CONV_WORD = @ZMACHINE_CONV_WORD@
-ZUWORD_TYPE = @ZUWORD_TYPE@
-ZWORD_TYPE = @ZWORD_TYPE@
 
 EXTRA_DIST = util.m4 display.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -164,6 +164,7 @@ clean-am:  clean-generic mostlyclean-am
 clean: clean-am
 
 distclean-am:  distclean-generic clean-am
+	-rm -f libtool
 
 distclean: distclean-am
 
