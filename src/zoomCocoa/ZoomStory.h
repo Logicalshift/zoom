@@ -14,7 +14,20 @@
 	BOOL   needsFreeing;
 }
 
+// Initialisation
 - (id) init;								// New story
 - (id) initWithStory: (struct IFMDStory*) story;   // Existing story (not freed)
+
+// Accessors
+- (NSString*) title;
+- (NSString*) headline;
+- (NSString*) author;
+- (NSString*) genre;
+- (int)       year;
+- (NSString*) group;
+- (unsigned)  zarfian;
+- (NSString*) teaser;
+- (NSString*) comment;
+- (float)     rating;
 
 @end

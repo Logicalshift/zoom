@@ -19,6 +19,7 @@
 
     if (self) {
         gameData = nil;
+		story = nil;
     }
 
     return self;
@@ -26,6 +27,7 @@
 
 - (void) dealloc {
     [gameData release];
+	if (story) [story release];
     
     [super dealloc];
 }
@@ -54,12 +56,22 @@
     gameData = [data retain];
 	
 	story = [[NSApp delegate] findStory: [[[ZoomStoryID alloc] initWithZCodeStory: gameData] autorelease]];
+	
+	if (story == nil) {
+		story = [[ZoomStory alloc] init];
+	} else {
+		[story retain];
+	}
     
     return YES;
 }
 
 - (NSData*) gameData {
     return gameData;
+}
+
+- (ZoomStory*) storyInfo {
+	return story;
 }
 
 @end

@@ -3,8 +3,8 @@
 // Controller for the game info window
 
 #import <Cocoa/Cocoa.h>
+#import "ZoomStory.h"
 
-@class ZoomGameInfo;
 @interface ZoomGameInfoController : NSWindowController {
 	IBOutlet NSMenu*      genreMenu;
 	
@@ -29,7 +29,8 @@
 
 - (IBAction)selectGenre:(id)sender;
 - (IBAction)showGenreMenu:(id)sender;
+- (IBAction)activateRating:(id)sender;
 
-- (void) setGameInfo: (ZoomGameInfo*) info;
+- (void) setGameInfo: (ZoomStory*) info;
 
 @end

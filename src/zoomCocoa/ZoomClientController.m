@@ -58,7 +58,7 @@
 }
 
 - (IBAction) updateGameInfo: (id) sender {
-	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: self];
+	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: [[self document] storyInfo]];
 }
 
 - (void)windowDidResignMain:(NSNotification *)aNotification {
@@ -70,7 +70,7 @@
 }
 
 - (void)windowDidBecomeMain:(NSNotification *)aNotification {
-	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: self];
+	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: [[self document] storyInfo]];
 }
 
 @end

@@ -17,5 +17,6 @@
 }
 
 - (NSData*) gameData;
+- (ZoomStory*) storyInfo;
 
 @end

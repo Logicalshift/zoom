@@ -59,7 +59,19 @@
 					 forView: [[self window] contentView]];
 }
 
-- (void) setGameInfo: (ZoomGameInfo*) info {
+- (IBAction)activateRating:(id)sender {
+	if ([ratingOn state] == NSOnState) {
+		[rating setEnabled: YES];
+	} else {
+		[rating setEnabled: NO];
+	}
+	
+	[NSApp sendAction: @selector(infoMyRatingChanged:)
+				   to: nil 
+				 from: self];
+}
+
+- (void) setGameInfo: (ZoomStory*) info {
 	[self window]; // (Make sure the window is loaded)
 	
 	if (info == nil) {
@@ -77,19 +89,34 @@
 		[rating setEnabled: NO];		[rating setIntValue: 5.0];
 		[ratingOn setEnabled: NO];		[ratingOn setState: NSOffState];
 	} else {
-		[gameName setEnabled: YES];		[gameName setStringValue: @"No game selected"];
-		[headline setEnabled: YES];		[headline setStringValue: @""];
-		[author setEnabled: YES];		[author setStringValue: @""];
-		[genre setEnabled: YES];		[genre setStringValue: @""];
-		[year setEnabled: YES];			[year setStringValue: @""];
-		[group setEnabled: YES];		[group setStringValue: @""];
+		[gameName setEnabled: YES];		[gameName setStringValue: [info title]];
+		[headline setEnabled: YES];		[headline setStringValue: [info headline]];
+		[author setEnabled: YES];		[author setStringValue: [info author]];
+		[genre setEnabled: YES];		[genre setStringValue: [info genre]];
+		[year setEnabled: YES];			
 		
-		[comments setEditable: YES];	[comments setString: @""];
-		[teaser setEditable: YES];		[teaser setString: @""];
+		int yr = [info year];
+		if (yr > 0) {
+			[year setStringValue: [NSString stringWithFormat: @"%i", yr]];
+		} else {
+			[year setStringValue: @""];
+		}
 		
-		[zarfRating setEnabled: YES];   [zarfRating selectItemAtIndex: 0];
-		[rating setEnabled: YES];		[rating setIntValue: 5.0];
-		[ratingOn setEnabled: YES];		[ratingOn setState: NSOffState];
+		[group setEnabled: YES];		[group setStringValue: [info group]];
+		
+		[comments setEditable: YES];	[comments setString: [info comment]];
+		[teaser setEditable: YES];		[teaser setString: [info teaser]];
+		
+		[zarfRating setEnabled: YES];   [zarfRating selectItemAtIndex: [info zarfian]];
+		
+		float rat = [info rating];
+		if (rat >= 0) {
+			[rating setEnabled: YES];		[rating setIntValue: rat];
+			[ratingOn setEnabled: YES];		[ratingOn setState: NSOnState];
+		} else {
+			[rating setEnabled: NO];		[rating setIntValue: 5.0];
+			[ratingOn setEnabled: YES];		[ratingOn setState: NSOffState];
+		}
 	}
 }
 
