@@ -15,10 +15,8 @@ Hmm, this file was a bit out of date.
  * Remove font numbering
  * '>>' '<<' bug? again?
  
- * Cocoa version 'bounces' around when 
- * Really need to just send the entire buffer rather than individual commands
  * Cocoa version has the restart bug again (erg)
- * Problem with overwriting things in the upper window?
+ * Problem with overwriting things in the upper window? (Beyond Zork)
 
  * Sound
  * Internationalisation support

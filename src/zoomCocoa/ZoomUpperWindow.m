@@ -121,6 +121,8 @@
 
 - (void) endAtLine:   (int) line {
     endLine = line;
+
+    [theView rearrangeUpperWindows];
 }
 
 // Cursor positioning
