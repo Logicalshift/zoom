@@ -55,6 +55,10 @@ struct debug_file
   int number;
   char* name;
   char* realname;
+
+  char*  data;
+  int    nlines;
+  char** line;
 };
 
 struct debug_class
@@ -163,12 +167,18 @@ struct debug_symbol
     debug_array    array;
     int            routine;
   } data;
+
+  debug_symbol* next;
 };
 
 struct debug_breakpoint
 {
   ZDWord address;
-  ZByte original;
+  ZByte  original;
+
+  int    usage;
+  int    temporary;
+  int    funcbp;
 };
 
 struct debug_symbols
@@ -176,6 +186,8 @@ struct debug_symbols
   int nsymbols;
   hash symbol;
   hash file;
+
+  debug_symbol* first_symbol;
 
   debug_routine* routine;
   int            nroutines;
@@ -189,11 +201,16 @@ struct debug_address
 {
   debug_routine* routine;
   debug_line*    line;
+
+  int            line_no;
 };
 
 extern debug_breakpoint* debug_bplist;
 extern int               debug_nbps;
 extern debug_symbols     debug_syms;
+extern int               debug_eval_result;
+extern char*             debug_eval_type;
+extern char*             debug_error;
 
 #define DEBUG_EOF_DBR 0
 #define DEBUG_FILE_DBR 1
@@ -214,19 +231,35 @@ extern debug_symbols     debug_syms;
 /* === Debug functions === */
 
 /* Breakpoints */
-int               debug_set_breakpoint  (int address);
-int               debug_clear_breakpoint(int address);
-debug_breakpoint* debug_get_breakpoint  (int address);
+extern int               debug_set_breakpoint  (int address,
+						int temporary,
+						int funcbp);
+extern int               debug_clear_breakpoint(debug_breakpoint* bp);
+extern debug_breakpoint* debug_get_breakpoint  (int address);
 
-void              debug_run_breakpoint(ZDWord pc);
+extern void              debug_run_breakpoint(ZDWord pc);
 
 /* === Inform debug file functions === */
 
 /* Initialisation/loading */
-void              debug_load_symbols    (char* filename);
+extern void              debug_load_symbols    (char* filename,
+						char* pathname);
 
 /* Information retrieval */
-debug_address     debug_find_address    (int   address);
+extern debug_address     debug_find_address      (int   address);
+extern int               debug_find_named_address(const char* name);
+extern char*             debug_address_string    (debug_address addr, 
+						  int pc,
+						  int format);
+
+/* === Expression evaluation === */
+extern int               debug_eval_parse  (void);
+extern void              debug_eval_error  (const char*);
+extern int               debug_eval_lex    (void);
+extern ZWord             debug_symbol_value(const char*    symbol,
+					    debug_routine* r);
+extern char*             debug_print_value (ZWord          value,
+					    char*          type);
 
 #endif
 

@@ -58,6 +58,9 @@ extern void display_printc    (int);
 extern void display_printf    (const char*, ...);
 extern int  display_check_char(int);
 
+extern void display_sanitise  (void);
+extern void display_desanitise(void);
+
 /* Input functions */
 extern int  display_readline(int*, int, long int);
 extern int  display_readchar(long int); /* Timeout is milliseconds */

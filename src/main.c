@@ -223,30 +223,40 @@ int zoom_main(int argc, char** argv)
       if (args.debug_mode == 1)
 	{
 	  char* filename;
+	  char* pathname;
 	  int x;
 	  debug_symbol* start;
 	  
 	  filename = malloc(strlen(args.story_file) + strlen("gameinfo.dbg") + 1);
+	  pathname = malloc(strlen(args.story_file) + 1);
 	  strcpy(filename, args.story_file);
+	  strcpy(pathname, args.story_file);
 	  
 	  for (x=strlen(filename)-1; x > 0 && filename[x-1] != '/'; x--);
 	  
 	  strcpy(filename + x, "gameinfo.dbg");
+	  pathname[x] = 0;
 	  
-	  debug_load_symbols(filename);
+	  debug_load_symbols(filename, pathname);
 	  
 	  start = hash_get(debug_syms.symbol, "main", 4);
 	  if (start == NULL ||
 	      start->type != dbg_routine)
 	    {
-	      debug_set_breakpoint(GetWord(machine.header, ZH_initpc));
+	      debug_set_breakpoint(GetWord(machine.header, ZH_initpc), 0, 0);
 	    }
 	  else
 	    {
 	      debug_routine* routine;
 	      
 	      routine = debug_syms.routine + start->data.routine;
-	      debug_set_breakpoint(routine->start+1);
+	      debug_set_breakpoint(routine->start+1, 0, 0);
+	    }
+
+	  for (x=0; x<debug_syms.nroutines; x++)
+	    {
+	      debug_set_breakpoint(debug_syms.routine[x].start+1,
+				   0, 1);
 	    }
 	}
     }

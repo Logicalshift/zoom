@@ -395,6 +395,32 @@ void display_erase_line  (int val)
     }
 }
 
+/* Debug functions */
+
+static int old_win;
+static int old_fore, old_back;
+static int old_style;
+
+void display_sanitise(void)
+{
+  old_win = cur_win;
+
+  display_set_window(0);
+
+  old_fore = CURWIN.fore;
+  old_back = CURWIN.back;
+  old_style = CURWIN.style;
+
+  display_set_style(0);
+  display_set_colour(4, 7);
+}
+
+void display_desanitise(void)
+{
+  display_set_colour(old_fore, old_back);
+  display_set_style(old_style);
+  display_set_window(old_win);
+}
 
 /* Style functions */
 

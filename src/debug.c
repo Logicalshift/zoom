@@ -28,19 +28,63 @@
 #include "debug.h"
 #include "zscii.h"
 
-debug_breakpoint* debug_bplist = NULL;
-int               debug_nbps    = 0;
+#define yylval debug_eval_lval
+#include "eval.h"
+
+debug_breakpoint* debug_bplist       = NULL;
+int               debug_nbps         = 0;
+debug_routine*    debug_expr_routine = NULL;
+
+static int*       expr      = NULL;
+static int        expr_pos  = 0;
 
 /***                           ----// 888 \\----                           ***/
 
 /* The debugger console */
 
+static int stepinto = 0;
+
+/* Action when a breakpoint occurs */
 void debug_run_breakpoint(ZDWord pc)
 {
   debug_address addr;
+  debug_breakpoint* bp;
   static int banner = 0;
-  
+  int x;
+
+  bp = debug_get_breakpoint(pc);
+  if (bp == NULL)
+    {
+      display_sanitise();
+      display_printf("=! Unexpected breakpoint\n");
+      display_desanitise();
+      return;
+    }
+
+  if (bp->usage == 1 && bp->funcbp && !stepinto)
+    return;
+
   addr = debug_find_address(pc);
+  if (bp->usage == 1 && bp->funcbp && 
+      (!stepinto || addr.routine->defn_fl == 0 || addr.routine->defn_fl == 255))
+    {
+      return;
+    }
+
+  /* Clear any temporary breakpoints */
+  for (x=0; x<debug_nbps; x++)
+    {
+      if (debug_bplist[x].temporary > 0)
+	{
+	  debug_clear_breakpoint(debug_bplist + x);
+	  x--;
+	}
+    }
+
+  display_sanitise();
+  display_printf("=\n");
+
+  stepinto = 0;
 
   /* Print a quick banner if we're just starting up... */
   if (banner == 0)
@@ -56,31 +100,24 @@ void debug_run_breakpoint(ZDWord pc)
     }
   
   /* Display the location information */
-  if (addr.routine == NULL)
-    {
-      display_printf("== PC=#%05x\n", pc);
-    }
-  else
+  display_printf("== ");
+  display_set_style(8);
+  display_printf("%s\n", debug_address_string(addr, pc, 0));
+  display_set_style(0);
+
+  if (addr.line != NULL &&
+      addr.line->fl > 0 &&
+      addr.line->ln > 0 && 
+      addr.line->fl != 255)
     {
       display_printf("== ");
-      if (addr.routine->defn_fl > 0)
-	display_printf("%s:", debug_syms.files[addr.routine->defn_fl].name);
+      display_set_style(8);
+      if (addr.line->ln-1 > debug_syms.files[addr.line->fl].nlines)
+	display_printf("(Line not found)\n");
       else
-	display_printf("#%05x:", pc);
-		       
-      if (addr.line != NULL)
-	{
-	  display_printf("%i", addr.line->ln);
-	}
-      else
-	{
-	  if (addr.routine->defn_fl == 0)
-	    display_printf("(unknown)");
-	  else
-	    display_printf("#%05x", pc);
-	}
-
-      display_printf(" (%s)\n", addr.routine->name);
+	display_printf("%s\n", 
+		       debug_syms.files[addr.line->fl].line[addr.line->ln-1]);
+      display_set_style(0);
     }
 
   /* Process commands */
@@ -92,29 +129,244 @@ void debug_run_breakpoint(ZDWord pc)
       
       display_printf("= : ");
       display_readline(cline, 128, 0);
+
+      if (cline[0] == 0)
+	{
+	  cline[0] = 's';
+	  cline[1] = 0;
+	}
+
+      switch (cline[0])
+	{
+	case 'h':
+	  display_printf("= Commands accepted by the debugger:\n");
+	  display_printf("== b<addr> - set breakpoint\n");
+	  display_printf("== c - continue execution\n");
+	  display_printf("== f - finish function\n");
+	  display_printf("== h - this message\n");
+	  display_printf("== l - list breakpoints\n");
+	  display_printf("== n - single step, over functions\n");
+	  display_printf("== p<expr> - evaluate expression\n");
+	  display_printf("== s - single step, into functions\n");
+	  display_printf("== t - stack backtrace\n");
+	  display_printf("==\n");
+	  display_printf("== Addresses can have one of two forms:\n");
+	  display_printf("=== file:line\n");
+	  display_printf("=== function\n");
+	  display_printf("== Breakpoints will be set on the first line following that specified\n");
+	  display_printf("== Expressions are in standard inform syntax (with some restrictions)\n");
+	  break;
+
+	case 'c':
+	  display_printf("= Continue\n");
+	  goto done;
+
+	case 't':
+	  {
+	    ZFrame* frm;
+	    int frmpc;
+	    int count;
+
+	    display_printf("= Backtrace\n");
+
+	    frm   = machine.stack.current_frame;
+	    frmpc = pc;
+	    count = 0;
+
+	    while (frm != NULL)
+	      {
+		debug_address addr;
+
+		addr = debug_find_address(frmpc);
+
+		display_printf("== %i) ", count);
+		display_set_style(8);
+		display_printf("%s", debug_address_string(addr, frmpc, 1));
+		display_set_style(0);
+		display_printf("\n");
+
+		frmpc = frm->ret;
+		frm = frm->last_frame;
+		count++;
+	      }
+	  }
+	  break;
+
+	case 'p':
+	  debug_expr_routine = addr.routine;
+	  expr = cline + 1;
+	  expr_pos = 0;
+	  debug_error = NULL;
+	  debug_eval_parse();
+	  if (debug_error == NULL)
+	    {
+	      display_printf("= Evaluate: %s\n", 
+			     debug_print_value(debug_eval_result,
+					       debug_eval_type));
+	    }
+	  else
+	    display_printf("=? Evaluate: %s\n", debug_error);
+
+	  if (debug_eval_type != NULL)
+	    free(debug_eval_type);
+	  debug_eval_type = NULL;
+	  break;
+
+	case 'l':
+	  {
+	    int x, num;
+
+	    num = 0;
+
+	    display_printf("= User breakpoints:\n");
+	    for (x=0; x<debug_nbps; x++)
+	      {
+		if (debug_bplist[x].usage > (debug_bplist[x].temporary + debug_bplist[x].funcbp))
+		  {
+		    debug_address bpaddr;
+
+		    bpaddr = debug_find_address(debug_bplist[x].address);
+		    num++;
+		    display_printf("== %i) %s\n", num, 
+				   debug_address_string(bpaddr,
+							debug_bplist[x].address,
+							1));
+		  }
+	      }
+	  }
+	  break;
+
+	case 'b':
+	  {
+	    char* loc;
+	    int x, y;
+	    int addr;
+	    
+	    for (x=1; cline[x] != 0 && cline[x] == ' '; x++);
+	    for (y=x; cline[y] != 0; y++);
+
+	    loc = malloc(sizeof(char)*(y-x+1));
+	    for (y=x; cline[y] != 0; y++)
+	      {
+		loc[y-x] = cline[y];
+	      }
+	    loc[y-x] = 0;
+
+	    addr = debug_find_named_address(loc);
+
+	    if (addr != -1)
+	      {
+		debug_breakpoint* obp;
+		debug_address where;
+
+		where = debug_find_address(addr);
+
+		obp = debug_get_breakpoint(addr);
+		if (obp != NULL &&
+		    obp->usage > (obp->temporary + obp->funcbp))
+		  {
+		    display_printf("=? Breakpoint already set at %s\n",
+				   debug_address_string(where, addr, 0));
+		  }
+		else
+		  {
+		    debug_set_breakpoint(addr, 0, 0);
+		    display_printf("= Breakpoint set at %s\n",
+				   debug_address_string(where, addr, 0));
+		  }
+	      }
+	    else
+	      {
+		display_printf("=? Location not found\n");
+	      }
+
+	    free(loc);
+	  }
+	  break;
+
+	case 's':
+	case 'n':
+	case 'f':
+	  {
+	    int ln;
+
+	    ln = addr.line_no;
+	    if (ln != -1)
+	      ln++;
+	    if (ln >= addr.routine->nlines)
+	      ln = -1;
+
+	    if (cline[0] == 'n')
+	      display_printf("= Next\n");
+	    else if (cline[0] == 's')
+	      {
+		display_printf("= Step\n");
+		stepinto = 1;
+	      }
+	    else if (cline[0] == 'f')
+	      {
+		display_printf("= Finish\n");
+	      }
+	  
+	    /* Set a breakpoint on each line... */
+	    if (cline[0] != 'f')
+	      {
+		for (ln = 0; ln < addr.routine->nlines; ln++)
+		  {
+		    debug_set_breakpoint(addr.routine->line[ln].address, 1, 0);
+		  }
+	      }
+
+	    /* Set a breakpoint on the return location of this function */
+	    if (machine.stack.current_frame != NULL)
+	      {
+		debug_set_breakpoint(machine.stack.current_frame->ret, 1, 0);
+	      }
+
+	    goto done;
+	  }
+
+	default:
+	  display_printf("=? Type 'h' for help\n");
+	}
     }
+
+ done:
+  display_desanitise();
 }
 
 /***                           ----// 888 \\----                           ***/
 
 /* Breakpoints */
 
-int debug_set_breakpoint(int address)
+int debug_set_breakpoint(int address,
+			 int temporary,
+			 int funcbp)
 {
+  debug_breakpoint* bp;
+
+  bp = debug_get_breakpoint(address);
+  if (bp != NULL)
+    {
+      bp->usage++;
+      bp->temporary += temporary;
+      return 1;
+    }
+
   if (machine.memory[address] == 0xbc)
     return 0; /* Breakpoint already set */
   
-  if (debug_get_breakpoint(address) != NULL)
-    return 0; /* Breakpoint already set (shouldn't happen, but...) */
-
 #ifdef DEBUG
   printf_debug("Setting BP @ %04x\n", address);
 #endif
 
   debug_bplist = realloc(debug_bplist,
 			 sizeof(debug_breakpoint)*(debug_nbps+1));
-  debug_bplist[debug_nbps].address = address;
-  debug_bplist[debug_nbps].original = machine.memory[address];
+  debug_bplist[debug_nbps].address   = address;
+  debug_bplist[debug_nbps].original  = machine.memory[address];
+  debug_bplist[debug_nbps].usage     = 1;
+  debug_bplist[debug_nbps].temporary = temporary;
+  debug_bplist[debug_nbps].funcbp    = funcbp;
 
   machine.memory[address] = 0xbc; /* status_nop, our breakpoint */
 
@@ -134,6 +386,30 @@ debug_breakpoint* debug_get_breakpoint(int address)
     }
 
   return NULL;
+}
+
+int debug_clear_breakpoint(debug_breakpoint* bp)
+{
+  int x;
+
+  x = bp - debug_bplist;
+  if (x < 0 || x >= debug_nbps)
+    return 0;
+
+  bp->usage--;
+  if (bp->temporary > 0)
+    bp->temporary--;
+
+  if (bp->usage <= 0)
+    {
+      machine.memory[bp->address] = bp->original;
+      debug_nbps--;
+      memmove(debug_bplist + x, debug_bplist + x + 1,
+	      sizeof(debug_breakpoint)*(debug_nbps-x));
+      return 2;
+    }
+
+  return 1;
 }
 
 /***                           ----// 888 \\----                           ***/
@@ -175,7 +451,8 @@ static void debug_add_symbol(char* name,
   free(storename);
 }
 
-void debug_load_symbols(char* filename)
+void debug_load_symbols(char* filename,
+			char* pathname)
 {
   ZFile* file;
   ZByte* db_file;
@@ -220,6 +497,20 @@ void debug_load_symbols(char* filename)
 
   if (debug_syms.symbol == NULL)
     debug_syms.symbol = hash_create();
+  if (debug_syms.file == NULL)
+    debug_syms.file = hash_create();
+
+  sym = malloc(sizeof(debug_symbol));
+  sym->type = dbg_global;
+  sym->data.global.name = "self";
+  sym->data.global.number = 251-16;
+  debug_add_symbol(sym->data.global.name, sym);
+
+  sym = malloc(sizeof(debug_symbol));
+  sym->type = dbg_global;
+  sym->data.global.name = "sender";
+  sym->data.global.number = 250-16;
+  debug_add_symbol(sym->data.global.name, sym);
 
   while (pos < size && !done)
     {
@@ -231,28 +522,101 @@ void debug_load_symbols(char* filename)
 
 	case DEBUG_FILE_DBR:
 	  {
-	    debug_file fl;
+	    debug_file* fl;
+	    ZFile*      fl_load;
+	    ZDWord      fl_len;
+	     
+	    char* fn;
 
-	    fl.number = db_file[pos+1];
-	    fl.name = malloc(sizeof(char)*(strlen(db_file + pos + 2) + 1));
-	    strcpy(fl.name, db_file + pos + 2);
-	    pos += 3 + strlen(fl.name);
-	    fl.realname = malloc(sizeof(char)*(strlen(db_file + pos)));
-	    strcpy(fl.realname, db_file + pos);
-	    pos += strlen(fl.realname) + 1;
+	    fl = malloc(sizeof(debug_file));
+
+	    fl->number = db_file[pos+1];
+	    fl->name = malloc(sizeof(char)*(strlen(db_file + pos + 2) + 1));
+	    strcpy(fl->name, db_file + pos + 2);
+	    pos += 3 + strlen(fl->name);
+	    fl->realname = malloc(sizeof(char)*(strlen(db_file + pos)));
+	    strcpy(fl->realname, db_file + pos);
+	    pos += strlen(fl->realname) + 1;
+
+	    fl->data   = NULL;
+	    fl->nlines = 0;
+	    fl->line   = NULL;
+
+	    fn = malloc(sizeof(char)*(strlen(fl->realname)+strlen(pathname)+1));
+	    strcpy(fn, fl->realname);
+
+	    fl_len = get_file_size(fn);
+	    if (fl_len == -1)
+	      {
+		strcpy(fn, pathname);
+		strcat(fn, fl->realname);
+		fl_len = get_file_size(fn);
+	      }
+	    if (fl_len >= 0)
+	      {
+		fl_load = open_file(fn);
+		if (fl_load != NULL)
+		  {
+		    int x;
+
+		    fl->data = read_block(fl_load, 0, fl_len);
+		    close_file(fl_load);
+		    fl->data = realloc(fl->data, sizeof(char)*(fl_len+2));
+		    fl->data[fl_len] = 0;
+		    
+		    fl->nlines++;
+		    fl->line = realloc(fl->line, sizeof(char*)*(fl->nlines));
+		    fl->line[0] = fl->data;
+
+		    for (x=0; x<fl_len; x++)
+		      {
+			if (fl->data[x] == 13 || fl->data[x] == 10)
+			  {
+			    int p;
+
+			    p = x;
+
+			    if (((fl->data[x+1] == 10 || fl->data[x+1] == 13) &&
+				 fl->data[x+1] != fl->data[x]))
+				x++;
+
+			    fl->data[p] = 0;
+
+			    if (x < fl_len)
+			      {
+				fl->nlines++;
+				fl->line = realloc(fl->line,
+						  sizeof(char*)*fl->nlines);
+				fl->line[fl->nlines-1] = fl->data + x+1;
+			      }
+			  }
+		      }
+		  }
+	      }
+	    else
+	      {
+		display_printf("=? unable to load source file '%s'\n", fl->realname);
+	      }
+
+	    free(fn);
 
 	    debug_syms.nfiles++;
 	    
-	    if (debug_syms.nfiles != fl.number)
+	    if (debug_syms.nfiles != fl->number)
 	      {
 		display_printf("=! file '%s' doesn't appear in order\n",
-			       fl.name);
+			       fl->name);
 		goto failed;
 	      }
 
 	    debug_syms.files = realloc(debug_syms.files, 
 				       sizeof(debug_file)*(debug_syms.nfiles+1));
-	    debug_syms.files[fl.number] = fl;
+	    debug_syms.files[fl->number] = *fl;
+
+	    hash_store_happy(debug_syms.file,
+			     fl->name,
+			     strlen(fl->name),
+			     fl);
 	  }
 	  break;
 	  
@@ -321,8 +685,7 @@ void debug_load_symbols(char* filename)
 
 	    pos++;
 
-	    g.number  = db_file[pos++]<<8;
-	    g.number |= db_file[pos++];
+	    g.number  = db_file[pos++];
 
 	    g.name = malloc(sizeof(char)*(strlen(db_file + pos) + 1));
 	    strcpy(g.name, db_file + pos);
@@ -625,6 +988,10 @@ void debug_load_symbols(char* filename)
   free(db_file);
 }
 
+/* 
+ * Looks up information about a given (Z-Machine) address - finds routine,
+ * line information
+ */
 debug_address debug_find_address(int address)
 {
   debug_address res;
@@ -632,6 +999,7 @@ debug_address debug_find_address(int address)
 
   res.routine = NULL;
   res.line    = NULL;
+  res.line_no = -1;
 
   for (x=0; x<debug_syms.nroutines; x++)
     {
@@ -651,7 +1019,392 @@ debug_address debug_find_address(int address)
       if (res.routine->line[x].address > address)
 	break;
 
+      res.line_no = x;
       res.line = res.routine->line + x;
+    }
+
+  return res;
+}
+
+/*
+ * Finds the Z-Machine address of something named by the user
+ * (eg parserm:3856 for line 3856 of parserm, or InformLibrary.play
+ * for the start of the InformLibrary.play() routine)
+ */
+int debug_find_named_address(const char* name)
+{
+  static char* ourname = NULL;
+  int x, len;
+  debug_symbol* sym;
+
+  len = strlen(name);
+  ourname = realloc(ourname, sizeof(char)*(len+1));
+  strcpy(ourname, name);
+  
+  /* See if we have a routine... */
+  for (x=0; x<len; x++)
+    {
+      if (ourname[x] >= 'A' && ourname[x] <= 'Z')
+	{
+	  ourname[x] += 32;
+	}
+    }
+
+  sym = hash_get(debug_syms.symbol,
+		 ourname,
+		 len);
+
+  if (sym != NULL &&
+      sym->type == dbg_routine)
+    {
+      return debug_syms.routine[sym->data.routine].start + 1;
+    }
+
+  /* Files are case-sensitive (usually. Not on Mac OS, bizarrely) */
+  strcpy(ourname, name);
+
+  if (ourname[0] == '#')
+    {
+      int adr;
+
+      adr = 0;
+      
+      /* PC value */
+      for (x=1; x<len; x++)
+	{
+	  adr <<= 4;
+	  if (ourname[x] >= '0' && ourname[x] <= '9')
+	    adr += ourname[x] - '0';
+	  else if (ourname[x] >= 'A' && ourname[x] <= 'F')
+	    adr += ourname[x] - 'A' + 10;
+	  else if (ourname[x] >= 'a' && ourname[x] <= 'f')
+	    adr += ourname[x] - 'a' + 10;
+	  else
+	    break;
+	}
+
+      if (x == len && adr >= 0 && adr < machine.story_length)
+	return adr;
+    }
+
+  for (x=len-1; 
+       x>0 && (ourname[x] >= '0' && ourname[x] <= '9');
+       x--);
+
+  if (ourname[x] == ':')
+    {
+      debug_file* fl;
+      int line_no;
+
+      ourname[x] = 0;
+
+      line_no = atoi(ourname + x + 1);
+
+      fl = hash_get(debug_syms.file,
+		    ourname,
+		    strlen(ourname));
+      
+      if (fl != NULL)
+	{
+	  for (x=0; x<debug_syms.nroutines; x++)
+	    {
+	      if ((debug_syms.routine[x].defn_fl == fl->number &&
+		   debug_syms.routine[x].end_fl == fl->number) &&
+		  debug_syms.routine[x].defn_ln <= line_no &&
+		  debug_syms.routine[x].end_ln  >= line_no)
+		{
+		  int y;
+		  debug_routine* r;
+		  int found_line = 0;
+
+		  r = debug_syms.routine + x;
+		  
+		  for (y=0; y<r->nlines; y++)
+		    {
+		      found_line = y;
+
+		      if (r->line[y].ln >= line_no)
+			break;
+		    }
+
+		  return r->line[found_line].address;
+		}
+	    }
+	}
+    }
+
+  return -1;
+}
+
+char* debug_address_string(debug_address addr, int pc, int format)
+{
+  static char* res = NULL;
+  char num[10];
+  int len;
+  
+  len = 0;
+  res = realloc(res, sizeof(char));
+  res[0] = 0;
+
+  if (addr.routine != NULL &&
+      addr.line    != NULL)
+    {
+      if (format == 1)
+	{
+	  len += strlen(addr.routine->name)+5;
+	  res = realloc(res, sizeof(char)*(len+1));
+	  strcat(res, addr.routine->name);
+	  strcat(res, "() (");
+	}
+
+      if (addr.routine->defn_fl > 0 && addr.routine->defn_fl != 255)
+	{
+	  len += strlen(debug_syms.files[addr.routine->defn_fl].name)+1;
+	  res = realloc(res, sizeof(char)*(len+1));
+	  strcat(res, debug_syms.files[addr.routine->defn_fl].name);
+	  strcat(res, ":");
+	}
+
+      sprintf(num, "%i", addr.line->ln);
+      
+      len += strlen(num);
+      res = realloc(res, sizeof(char)*(len+1));
+      strcat(res, num);
+
+      if (format == 1)
+	strcat(res, ")");
+      else
+	{
+	  len += strlen(addr.routine->name)+3;
+	  res = realloc(res, sizeof(char)*(len+1));
+	  strcat(res, " (");
+	  strcat(res, addr.routine->name);
+	  strcat(res, ")");
+	}
+    }
+  else if (addr.routine != NULL)
+    {
+      len += strlen(addr.routine->name)+1;
+      res = realloc(res, sizeof(char)*(len+1));
+      strcat(res, addr.routine->name);
+      strcat(res, ":");
+
+      sprintf(num, "#%05x", pc);
+      len += strlen(num);
+      res = realloc(res, sizeof(char)*(len+1));
+      strcat(res, num);
+    }
+  else
+    {
+      if (format == 1)
+	{
+	  len += 4;
+	  res = realloc(res, sizeof(char)*(len+1));
+	  strcat(res, "??? ");
+	}
+
+      sprintf(num, "#%05x", pc);
+      len += strlen(num);
+      res = realloc(res, sizeof(char)*(len+1));
+      strcat(res, num);      
+    }
+
+  return res;
+}
+
+ZWord debug_symbol_value(const char*    symbol,
+			 debug_routine* r)
+{
+  static char* sym = NULL;
+  debug_symbol* res;
+  int x, len;
+
+  len = strlen(symbol);
+  sym = realloc(sym, sizeof(char)*(len+1));
+  for (x=0; x<len; x++)
+    {
+      if (symbol[x] >= 'A' && symbol[x] <= 'Z')
+	sym[x] = symbol[x] + 32;
+      else
+	sym[x] = symbol[x];
+    }
+  sym[len] = 0;
+
+  if (r != NULL)
+    {
+      for (x=0; x<r->nvars; x++)
+	{
+	  if (strcmp(r->var[x], symbol) == 0)
+	    {
+	      return machine.stack.current_frame->local[x+1];
+	    }
+	}
+    }
+
+  res = hash_get(debug_syms.symbol,
+		 sym,
+		 len);
+
+  if (res != NULL)
+    {
+      switch (res->type)
+	{
+	case dbg_class:
+	  return -1;
+
+	case dbg_object:
+	  return res->data.object.number;
+
+	case dbg_global:
+	  return machine.globals[res->data.global.number<<1]<<8 |
+	    machine.globals[(res->data.global.number<<1)+1];
+	  
+	case dbg_attr:
+	  return -1;
+
+	case dbg_prop:
+	  return res->data.prop.number;
+	  
+	case dbg_array:
+	  return GetWord(machine.header, ZH_globals) + res->data.array.offset;
+
+	default:
+	}
+    }
+
+  debug_error = "Symbol not found";
+  return 0;
+}
+
+/* Expression evaluation */
+void debug_eval_error(const char* erm)
+{
+  debug_error = erm;
+}
+
+int debug_eval_lex(void)
+{
+  int start;
+
+  if (expr[expr_pos] == 0)
+    return 0;
+
+  while (expr[expr_pos] == ' ')
+    expr_pos++;
+
+  start = expr_pos;
+
+  if ((expr[expr_pos] >= 'A' && expr[expr_pos] <= 'Z') ||
+      (expr[expr_pos] >= 'a' && expr[expr_pos] <= 'z'))
+    {
+      int x;
+
+      /* IDENTIFIER */
+      while ((expr[expr_pos] >= 'A' && expr[expr_pos] <= 'Z') ||
+	     (expr[expr_pos] >= 'a' && expr[expr_pos] <= 'z') ||
+	     (expr[expr_pos] >= '0' && expr[expr_pos] <= '9') ||
+	     expr[expr_pos] == '_')
+	{
+	  expr_pos++;
+	}
+
+      yylval.str = malloc(sizeof(char)*(expr_pos-start+1));
+      for (x=start; x<expr_pos; x++)
+	{
+	  yylval.str[x-start] = expr[x];
+	}
+      yylval.str[expr_pos-start] = 0;
+
+      return IDENTIFIER;
+    }
+  
+  if (expr[expr_pos] >= '0' && expr[expr_pos] <= '9')
+    {
+      /* NUMBER */
+      yylval.number = 0;
+
+      while (expr[expr_pos] >= '0' && expr[expr_pos] <= '9')
+	{
+	  yylval.number *= 10;
+	  yylval.number += expr[expr_pos] - '0';
+	  expr_pos++;
+	}
+      return NUMBER;
+    }
+
+  if (expr[expr_pos] == '$')
+    {
+      /* NUMBER */
+      yylval.number = 0;
+      expr_pos++;
+
+      while ((expr[expr_pos] >= '0' && expr[expr_pos] <= '9') ||
+	     (expr[expr_pos] >= 'A' && expr[expr_pos] <= 'F') ||
+	     (expr[expr_pos] >= 'a' && expr[expr_pos] <= 'f'))
+	{
+	  yylval.number *= 16;
+	  if (expr[expr_pos] >= '0' && expr[expr_pos] <= '9')
+	    yylval.number += expr[expr_pos] - '0';
+	  else if (expr[expr_pos] >= 'A' && expr[expr_pos] <= 'F')
+	    yylval.number += expr[expr_pos] - 'A' + 10;
+	  else if (expr[expr_pos] >= 'a' && expr[expr_pos] <= 'f')
+	    yylval.number += expr[expr_pos] - 'a' + 10;
+
+	  expr_pos++;
+	}
+
+      return NUMBER;
+    }
+
+  if (expr[expr_pos] == '-')
+    {
+      if (expr[expr_pos+1] == '>')
+	{
+	  expr_pos+=2;
+	  return BYTEARRAY;
+	}
+      if (expr[expr_pos+1] == '-' && expr[expr_pos+2] == '>')
+	{
+	  expr_pos += 3;
+	  return WORDARRAY;
+	}
+    }
+
+  if (expr[expr_pos] == '.')
+    {
+      if (expr[expr_pos+1] == '&')
+	{
+	  expr_pos+=2;
+	  return PROPADDR;
+	}
+      if (expr[expr_pos+1] == '#')
+	{
+	  expr_pos+=2;
+	  return PROPLEN;
+	}
+    }
+
+  expr_pos++;
+  if (expr[expr_pos-1] < 256)
+    return expr[expr_pos-1];
+  return '?';
+}
+
+char* debug_print_value(ZWord value, char* type)
+{
+  static char res[256];
+
+  if (strcmp(type, "unsigned") == 0)
+    {
+      sprintf(res, "%u", value);
+    }
+  if (strcmp(type, "hex") == 0)
+    {
+      sprintf(res, "$%x\n", value);
+    }
+  else
+    {
+      sprintf(res, "%i", value);
     }
 
   return res;
