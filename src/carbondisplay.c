@@ -1626,7 +1626,9 @@ static void update_scroll(void)
       rct.left   = BORDERWIDTH;
       rct.right  = BORDERWIDTH+win_x;
 
+      updating = 1;
       redraw_window(&rct);
+      updating = 0;
     }
 }
 
@@ -1713,6 +1715,10 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 	case kEventWindowBoundsChanged:
 	  {
 	    Rect rct;
+	    int old_x, old_y;
+
+	    old_x = total_x;
+	    old_y = total_y;
 
 	    /* Resize the text in the window */
 	    scroll_overlays = 0;
@@ -1724,11 +1730,10 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 	    rct.right  = total_x;
 	    
 	    /* Redraw the window */
-	    updating = 1;
-	    SetPortWindowPort(zoomWindow);
-	    ClipRect(&rct);
-	    redraw_window(&rct);
-	    updating = 0;
+	    if (total_x != old_x || total_y != old_y)
+	      {
+		display_update();
+	      }
 	  }
 	  break;
 

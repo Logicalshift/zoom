@@ -1016,7 +1016,6 @@ void xfont_plot_string(xfont* font,
   ByteCount outlen;
 
   Rect portRect;
-  Rect bgRect;
 
   CGrafPtr thePort = GetQDGlobalsThePort();
 
@@ -1091,10 +1090,7 @@ void xfont_plot_string(xfont* font,
     }
   else
     {
-      CGPoint pt;
       CGGlyph* glyph;
-      
-      //outbuf = convert_text(font, string, length, &outlen);
       
       glyph = convert_glyphs(font, string, length, &outlen);
 

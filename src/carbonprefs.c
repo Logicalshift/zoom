@@ -305,6 +305,12 @@ static void pref_store(void)
   rc_defgame->antialias =
     GetControlValue(cntl)==kControlCheckBoxCheckedValue?1:0;
 
+  if (carbon_quartz_context != nil)
+    {
+      CGContextSetShouldAntialias(carbon_quartz_context,
+				  rc_defgame->antialias);
+    }
+
   /* Get the game title */
   cid.signature = CARBON_TITLE;
   cid.id        = CARBON_TITLEID;  
@@ -484,8 +490,6 @@ static void pref_store(void)
 
   /* Reset the display */
   rc_set_game(Address(ZH_serial), Word(ZH_release), Word(ZH_checksum));
-  carbon_display_rejig();
-  zmachine_mark_statusbar();
   
   /* Rewrite the preferences file */
   pref_write();
@@ -549,6 +553,8 @@ static void pref_store(void)
     CFPreferencesAppSynchronize(kCFPreferencesCurrentApplication);
   }
 
+  carbon_display_rejig();
+  zmachine_mark_statusbar();
   display_update();
 }
 
