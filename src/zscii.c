@@ -311,7 +311,6 @@ int* zscii_to_unicode(ZByte* string, int* len)
 	      else
 		{
 #ifdef SPEC_11
-		  printf("%i\n", zchar);
 		  if (zchar > 767)
 		    {
 		      /* Unicode character, this is a bit of a PITA */
