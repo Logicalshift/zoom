@@ -26,8 +26,12 @@
 - (id) initWithContentsOfFile: (NSString*) filename;	// Calls initWithData
 - (id) initWithData: (NSData*) xmlData;					// Designated initialiser
 
+// Information about the parse
+- (NSArray*) errors;
+
 // Retrieving information
 - (ZoomStory*) findStory: (ZoomStoryID*) ident;
+- (NSArray*)   stories;
 
 // Storing information
 - (void) storeStory: (ZoomStory*) story;

@@ -1065,6 +1065,8 @@ int tableSorter(id a, id b, void* context) {
 		// Allow only if at least one savegame is selected
 		NSLog(@"%@", [previewView selectedSaveGame]);
 		return [previewView selectedSaveGame] != nil;
+	} else if (sel == @selector(saveMetadata:)) {
+		return [mainTableView numberOfSelectedRows] > 0;
 	}
 	
 	return YES;
@@ -1119,8 +1121,6 @@ int tableSorter(id a, id b, void* context) {
 	NSEnumerator* rowEnum = [storiesToDelete objectEnumerator];
 	
 	while (ident = [rowEnum nextObject]) {
-		NSString* filename = [[ZoomStoryOrganiser sharedStoryOrganiser] filenameForIdent: ident];
-
 		[[ZoomStoryOrganiser sharedStoryOrganiser] removeStoryWithIdent: ident];
 	}
 	
@@ -1211,7 +1211,137 @@ int tableSorter(id a, id b, void* context) {
 
 // = Loading iFiction data =
 - (void) mergeiFictionFromFile: (NSString*) filename {
+	// Show our window
 	[[self window] makeKeyAndOrderFront: self];
+	
+	// Read the file
+	ZoomMetadata* newData = [[[ZoomMetadata alloc] initWithContentsOfFile: filename] autorelease];
+	
+	if (newData == nil) {
+		// Doh!
+		NSBeginAlertSheet(@"Unable to load metadata", @"Cancel", nil,
+						  nil, [self window], nil, nil,
+						  nil,nil,
+						  @"Zoom encountered an error while trying to load an iFiction file.");
+		return;
+	}
+	
+	if ([[newData errors] count] > 0) {
+		NSBeginAlertSheet(@"Unable to load metadata", @"Cancel", nil,
+						  nil, [self window], nil, nil,
+						  nil,nil,
+						  @"Zoom encountered an error (%@) while trying to load an iFiction file.",
+						  [[newData errors] objectAtIndex: 0]);
+		return;		
+	}
+	
+	// Merge any new descriptions found there
+	NSMutableArray* replacements = [NSMutableArray array];
+	ZoomStory* story;
+	NSEnumerator* storyEnum = [[newData stories] objectEnumerator];
+	
+	while (story = [storyEnum nextObject]) {
+		// Find if the story already exists in our index
+		ZoomStory* oldStory = nil;
+
+		ZoomStoryID* ident;
+		NSEnumerator* identEnum = [[story storyIDs] objectEnumerator];
+		
+		while (ident = [identEnum nextObject]) {
+			oldStory = [[NSApp delegate] findStory: ident];
+			if (oldStory != nil) break;
+		}
+		
+		if (oldStory != nil) {
+			// Add this story to the list of stories to query about replacing
+			[replacements addObject: [[story copy] autorelease]];
+		}
+		
+		// Add this story to the userMetadata
+		[[[NSApp delegate] userMetadata] storeStory: [[story copy] autorelease]];
+	}
+	
+	// Store and reflect any changes
+	[[[NSApp delegate] userMetadata] writeToDefaultFile];
+
+	[self reloadTableData];
+	[self configureFromMainTableSelection];
+	
+	// If there's anything to query about, ask!
+	if ([replacements count] > 0) {
+		NSBeginAlertSheet(@"Some descriptors are already in my database", 
+						  @"Keep old", @"Use new",
+						  nil, [self window], self, @selector(useReplacements:returnCode:contextInfo:),
+						  nil, [replacements retain],
+						  @"This metadata file contains descriptions for some story files that already exist in the database. Do you want to keep using the old descriptions or switch to the new ones?");		
+	}
 }
+
+- (void) useReplacements: (NSWindow *)alert 
+			  returnCode: (int)returnCode 
+			 contextInfo: (void *)contextInfo {
+	NSArray* replacements = contextInfo;
+	[replacements autorelease];
+	
+	if (returnCode != NSAlertAlternateReturn) return;
+	
+	ZoomStory* story;
+	NSEnumerator* storyEnum = [replacements objectEnumerator];
+	
+	while (story = [storyEnum nextObject]) {
+		[[[NSApp delegate] userMetadata] storeStory: story];
+	}
+	
+	// Store and reflect any changes
+	[[[NSApp delegate] userMetadata] writeToDefaultFile];	
+	
+	[self reloadTableData];
+	[self configureFromMainTableSelection];
+}
+
+// = Saving iFiction data =
+
+- (IBAction) saveMetadata: (id) sender {
+	NSSavePanel* panel = [NSSavePanel savePanel];
+	
+	[panel setRequiredFileType: @"iFiction"];
+	NSString* directory = [[NSUserDefaults standardUserDefaults] objectForKey: @"ZoomiFictionSavePath"];
+	
+    [panel beginSheetForDirectory: directory
+                             file: nil
+                   modalForWindow: [self window]
+                    modalDelegate: self
+                   didEndSelector: @selector(saveMetadataDidEnd:returnCode:contextInfo:) 
+                      contextInfo: nil];	
+}
+
+- (void) saveMetadataDidEnd: (NSSavePanel *) panel 
+				 returnCode: (int) returnCode 
+				contextInfo: (void*) contextInfo {
+	if (returnCode != NSOKButton) return;
+	
+	// Generate the data to save
+	ZoomMetadata* newMetadata = [[[ZoomMetadata alloc] init] autorelease];
+	
+	NSEnumerator* selEnum = [mainTableView selectedRowEnumerator];
+	NSNumber* selRow;
+	
+	while (selRow = [selEnum nextObject]) {
+		ZoomStoryID* ident = [storyList objectAtIndex: [selRow intValue]];
+		ZoomStory* story = [[NSApp delegate] findStory: ident];
+		
+		if (story != nil) {
+			[newMetadata storeStory: [[story copy] autorelease]];
+		}
+	}
+	
+	// Save it!
+	[newMetadata writeToFile: [panel filename]
+				  atomically: YES];
+	
+	// Store any preference changes
+	[[NSUserDefaults standardUserDefaults] setObject: [panel directory]
+                                              forKey: @"ZoomiFictionSavePath"];
+}	
 
 @end

@@ -81,10 +81,30 @@
 	}
 }
 
+- (NSArray*) stories {
+	NSMutableArray* res = [NSMutableArray array];
+	
+	int x;
+	for (x=0; x<metadata->numberOfStories; x++) {
+		ZoomStory* story = [[ZoomStory alloc] initWithStory: metadata->stories[x]];
+		
+		[res addObject: story];
+		[story release];
+	}
+	
+	return res;
+}
+
 // = Storing information =
 - (void) storeStory: (ZoomStory*) story {
 	[dataLock lock];
 	IFMD_AddStory(metadata, [story story]);
+	
+#ifdef IFMD_ALLOW_TESTING
+	// Test, if available
+	IFMD_testrepository(metadata);
+#endif
+
 	[dataLock unlock];
 }
 
@@ -118,6 +138,64 @@ static int dataWrite(const char* bytes, int length, void* userData) {
 	
 	return [self writeToFile: [configDir stringByAppendingPathComponent: @"metadata.iFiction"]
 				  atomically: YES];
+}
+
+// = Errors =
+- (NSArray*) errors {
+	int x;
+	NSMutableArray* array = [NSMutableArray array];
+	
+	for (x=0; x<metadata->numberOfErrors; x++) {
+		if (metadata->error[x].severity == IFMDErrorFatal) {
+			NSString* errorName;
+			
+			switch (metadata->error[x].type) {
+				case IFMDErrorProgrammerIsASpoon:
+					errorName = @"Programmer is a spoon";
+					break;
+					
+				case IFMDErrorXMLError:
+					errorName = @"XML parsing error";
+					break;
+					
+				case IFMDErrorNotXML:
+					errorName = @"File is not in XML format";
+					break;
+					
+				case IFMDErrorUnknownVersion:
+					errorName = @"Unknown iFiction version number";
+					break;
+					
+				case IFMDErrorUnknownTag:
+					errorName = @"Invalid iFiction tag encountered in file";
+					break;
+					
+				case IFMDErrorNotIFIndex:
+					errorName = @"No index found";
+					break;
+					
+				case IFMDErrorUnknownFormat:
+					errorName = @"Unknown story format";
+					break;
+					
+				case IFMDErrorMismatchedFormats:
+					errorName = @"Story and identification data specify different formats";
+					break;
+					
+				case IFMDErrorStoriesShareIDs:
+					errorName = @"Two stories have the same ID";
+					break;
+					
+				case IFMDErrorDuplicateID:
+					errorName = @"One story contains the same ID twice";
+					break;
+			}
+			
+			[array addObject: [NSString stringWithFormat: errorName, metadata->error[x].moreText]];
+		}
+	}
+	
+	return array;
 }
 
 @end

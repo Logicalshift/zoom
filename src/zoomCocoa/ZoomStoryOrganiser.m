@@ -64,8 +64,6 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 		ZoomStoryID* fileID = [NSUnarchiver unarchiveObjectWithData: storyData];
 		ZoomStoryID* realID = [[ZoomStoryID alloc] initWithZCodeFile: filename];
 		
-		NSLog(@"%@", filename);
-		
 		if (fileID != nil && realID != nil && [fileID isEqual: realID]) {
 			// Check for a pre-existing entry
 			[storyLock lock];
