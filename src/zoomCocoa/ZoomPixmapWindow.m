@@ -87,10 +87,25 @@
 		  atPoint: (NSPoint) point
 		withStyle: (ZStyle*) style {
 	[pixmap lockFocus];
-	
+		
 	NSMutableDictionary* attr = [[zView attributesForStyle: style] mutableCopy];
-	[attr removeObjectForKey: NSBackgroundColorAttributeName];
 	
+	// Draw the background
+	float height = [[attr objectForKey: NSFontAttributeName] defaultLineHeightForFont];
+	float descender = [[attr objectForKey: NSFontAttributeName] descender];
+	NSSize size = [text sizeWithAttributes: attr];
+	
+	size.height = height;
+	NSRect backgroundRect;
+	backgroundRect.origin = point;
+	backgroundRect.size = size;
+	backgroundRect.origin.y -= descender;
+	
+	[[attr objectForKey: NSBackgroundColorAttributeName] set];
+	NSRectFill(backgroundRect);
+	
+	// Draw the text
+	[attr removeObjectForKey: NSBackgroundColorAttributeName];
 	[text drawAtPoint: point
 	   withAttributes: attr];
 	
@@ -119,7 +134,7 @@
 	*width = [font widthOfString: @"M"];
 	*ascent = [font ascender];
 	*descent = [font descender];
-	*height = [font defaultLineHeightForFont];
+	*height = floor([font defaultLineHeightForFont])+1;
 }
 
 - (out bycopy NSDictionary*) attributesForStyle: (in bycopy ZStyle*) style {
