@@ -79,7 +79,7 @@ HPEN   winpen  [14];
 HWND   mainwin, mainwinstat;
 HDC    mainwindc;
 HMENU  mainwinmenu;
-HMENU  fontmenu = 0;
+HMENU  fontmenu = NULL;
 
 static xfont** font = NULL;
 static int     n_fonts = 9;
@@ -237,6 +237,8 @@ static void size_window(void)
 static void rejig_fonts(void)
 {
   int x;
+  struct rc_font* fonts;
+  uInt mid;
 
   for (x=0; x<16; x++)
     {
@@ -257,6 +259,23 @@ static void rejig_fonts(void)
 	    style_font[x] = style_font[8];
 	}
     }
+
+  if (fontmenu != NULL)
+    DestroyMenu(fontmenu);
+  
+  fontmenu = CreateMenu();
+  fonts = rc_get_fonts();
+  for (x=0; x<n_fonts; x++)
+    {
+      char f[256];
+
+      sprintf(f, "Font %i", x);
+      AppendMenu(fontmenu, 0, IDM_FONTS+x, f);
+    }
+
+  mid = GetMenuItemID(mainwinmenu, 1);
+  mid = GetMenuItemID(mid, 2);
+  ModifyMenu(mid, MF_BYPOSITION|MF_POPUP, fontmenu, "Font");
 }
 
 void display_initialise(void)

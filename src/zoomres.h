@@ -42,4 +42,6 @@
 
 #define IDC_OK          500
 
+#define IDM_FONTS       350
+
 #endif
