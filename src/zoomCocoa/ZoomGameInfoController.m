@@ -100,7 +100,7 @@
 		[zarfRating setEnabled: NO];	[zarfRating selectItemAtIndex: 0];
 		[rating setEnabled: NO];		[rating setIntValue: 5.0];
 		[ratingOn setEnabled: NO];		[ratingOn setState: NSOffState];
-	} else {
+	} else {		
 		if (gameInfo) [gameInfo release];
 		gameInfo = [info retain];
 
@@ -182,6 +182,21 @@
 	} else {
 		return -1;
 	}
+}
+
+- (NSDictionary*) dictionary {
+	return [NSDictionary dictionaryWithObjectsAndKeys:
+		[self title], @"title",
+		[self headline], @"headline",
+		[self author], @"author",
+		[self genre], @"genre",
+		[NSNumber numberWithInt: [self year]], @"year",
+		[self group], @"group",
+		[self comments], @"comments",
+		[self teaser], @"teaser",
+		[NSNumber numberWithUnsignedInt: [self zarfRating]], @"zarfRating",
+		[NSNumber numberWithFloat: [self rating]], @"rating",
+		nil];
 }
 
 // = NSText delegate =

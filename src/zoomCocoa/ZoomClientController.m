@@ -141,16 +141,25 @@
 	ZoomStory* storyInfo = [[self document] storyInfo];
 
 	if ([sgI gameInfo] == storyInfo) {
-		[storyInfo setTitle: [sgI title]];
-		[storyInfo setHeadline: [sgI headline]];
-		[storyInfo setAuthor: [sgI author]];
-		[storyInfo setGenre: [sgI genre]];
-		[storyInfo setYear: [sgI year]];
-		[storyInfo setGroup: [sgI group]];
-		[storyInfo setComment: [sgI comments]];
-		[storyInfo setTeaser: [sgI teaser]];
-		[storyInfo setZarfian: [sgI zarfRating]];
-		[storyInfo setRating: [sgI rating]];
+		// Grr, annoying bug discovered here.
+		// Previously we called [sgI title], etc directly here.
+		// But, there was a case where the iFiction window could have become reactivated before this
+		// call (didn't always happen, it seems, which is why I missed it). In this case, after the
+		// title was set, the iFiction window would be notified that a change to the story settings
+		// had occured, and update itself, AND THE GAMEINFO WINDOW, accordingly. Which replaced all
+		// the rest of the settings with the settings of the currently selected game. DOH!
+		NSDictionary* sgIValues = [sgI dictionary];
+		
+		[storyInfo setTitle: [sgIValues objectForKey: @"title"]];
+		[storyInfo setHeadline: [sgIValues objectForKey: @"headline"]];
+		[storyInfo setAuthor: [sgIValues objectForKey: @"author"]];
+		[storyInfo setGenre: [sgIValues objectForKey: @"genre"]];
+		[storyInfo setYear: [[sgIValues objectForKey: @"year"] intValue]];
+		[storyInfo setGroup: [sgIValues objectForKey: @"group"]];
+		[storyInfo setComment: [sgIValues objectForKey: @"comments"]];
+		[storyInfo setTeaser: [sgIValues objectForKey: @"teaser"]];
+		[storyInfo setZarfian: [[sgIValues objectForKey: @"zarfRating"] unsignedIntValue]];
+		[storyInfo setRating: [[sgIValues objectForKey: @"rating"] floatValue]];
 		
 		[[[NSApp delegate] userMetadata] writeToDefaultFile];
 	}

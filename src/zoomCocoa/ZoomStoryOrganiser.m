@@ -272,7 +272,6 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		
 		// If there's no story registered, then we need to create one
 		if (theStory == nil) {
-			NSLog(@"*** Story not found: creating default ***");
 			theStory = [[ZoomStory alloc] init];
 			
 			[theStory addID: ident];
@@ -460,8 +459,6 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	// Find the group directory
 	NSString* groupDir = [rootDir stringByAppendingPathComponent: group];
 	
-	NSLog(@"Group: %@", group);
-	
 	if (![[NSFileManager defaultManager] fileExistsAtPath: groupDir
 											  isDirectory: &isDir]) {
 		if (createGroup) {
@@ -489,9 +486,6 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	int number = 0;
 	const int maxNumber = 20;
 	
-	NSLog(@"Title: %@", title);
-	NSLog(@"game: %@", gameDir);
-	
 	while (![self directory: gameDir 
 				  isForGame: ident] &&
 		   number < maxNumber) {
@@ -510,8 +504,6 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		return nil;
 	}
 	
-	NSLog(@"game II: %@", gameDir);
-
 	// Create the directory if necessary
 	if (![[NSFileManager defaultManager] fileExistsAtPath: gameDir
 											  isDirectory: &isDir]) {
@@ -630,9 +622,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	// Move the old directory to the new directory
 	
 	// Vague possibilities of this failing: in particular, currentDir may be not write-accessible or
-	// something might appear there between our check and actually moving the directory
-	NSLog(@"Moving %@ to %@", currentDir, idealDir);
-	
+	// something might appear there between our check and actually moving the directory	
 	if (![[NSFileManager defaultManager] movePath: currentDir
 										  toPath: idealDir
 										 handler: nil]) {

@@ -50,4 +50,7 @@
 - (unsigned)  zarfRating;
 - (float)     rating;
 
+// Read them all at once
+- (NSDictionary*) dictionary;
+
 @end
