@@ -3373,7 +3373,7 @@
 	<key>CFBundleSignature</key>
 	<string>YZZY</string>
 	<key>CFBundleVersion</key>
-	<string>1.0.2beta1</string>
+	<string>1.0.2dev6</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu.nib</string>
 	<key>NSPrincipalClass</key>
@@ -3858,7 +3858,7 @@
 	<key>CFBundleSignature</key>
 	<string>YZZY</string>
 	<key>CFBundleVersion</key>
-	<string>2.0.0beta1</string>
+	<string>2.0.0dev6</string>
 </dict>
 </plist>
 ";

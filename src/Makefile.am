@@ -97,6 +97,7 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/Skein/SkeinAnnotate.png zoomCocoa/Skein/SkeinDelete.png \
 	zoomCocoa/Skein/SkeinLocked.png zoomCocoa/Skein/SkeinTranscript.png \
 	zoomCocoa/Skein/SkeinUnlocked.png \
+	zoomCocoa/Skein-annotation.png \
 	zoomCocoa/English.lproj/Credits.rtf
 
 zoom_SOURCES = \

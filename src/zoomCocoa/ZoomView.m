@@ -2047,6 +2047,9 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	[encoder encodeObject: [textView textStorage]];
 	[encoder encodeObject: commandHistory];
 	
+	// DOH!
+	[encoder encodeObject: pixmapWindow];
+	
 	// All we need, I think
 	
 	// Done
@@ -2071,7 +2074,6 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		
 		NSTextStorage* storage = [decoder decodeObject];
 		
-		[[textView textStorage] beginEditing];
 		// Workaround for a Cocoa bug
 		[[textView textStorage] setAttributedString: [[[NSAttributedString alloc] initWithAttributedString: storage] autorelease]];
 		
@@ -2098,7 +2100,6 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		[self reformatWindow];
 		[self resetMorePrompt];
 		[self scrollToEnd];
-		[[textView textStorage] endEditing];
 		inputPos = [[textView textStorage] length];
 	} else {
 		NSLog(@"Unknown autosave version (ignoring)");
