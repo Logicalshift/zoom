@@ -198,10 +198,10 @@ static NSString* xmlEncode(NSString* str) {
 // = Parsing the XML =
 
 // Have to use expat: Apple's own XML parser is not available in Jaguar
-// The Cocoa XML parser is pretty crappy anyway, and we'd end up with a similar mess as this using that
-// (sigh)
 
 - (BOOL) parseXmlData: (NSData*) data {
+	NSAutoreleasePool* xmlAutorelease = [[NSAutoreleasePool alloc] init];
+	
 	ZoomSkeinXMLInput* inputParser = [[ZoomSkeinXMLInput alloc] init];
 	
 	// Process the XML associated with this file
@@ -210,6 +210,8 @@ static NSString* xmlEncode(NSString* str) {
 		NSLog(@"ZoomSkein: Failed to parse skein XML data");
 		
 		[inputParser release];
+
+		[xmlAutorelease release];
 		return NO;
 	}
 	
@@ -222,6 +224,8 @@ static NSString* xmlEncode(NSString* str) {
 	
 	if (skein == nil) {
 		NSLog(@"ZoomSkein: Failed to find root 'Skein' element");
+
+		[xmlAutorelease release];
 		return NO;
 	}
 	
@@ -239,6 +243,8 @@ static NSString* xmlEncode(NSString* str) {
 	
 	if (rootNodeId == nil) {
 		NSLog(@"ZoomSkein: No root node ID specified");
+
+		[xmlAutorelease release];
 		return NO;
 	}
 	
@@ -286,6 +292,7 @@ static NSString* xmlEncode(NSString* str) {
 			// Should never happen
 			// (Hahaha)
 			NSLog(@"ZoomSkein: Programmer is a spoon (item ID: %@)", itemNodeId);
+			[xmlAutorelease release];
 			return NO;
 		}
 		
@@ -336,6 +343,7 @@ static NSString* xmlEncode(NSString* str) {
 			// Should never happen
 			// (Hahaha)
 			NSLog(@"ZoomSkein: Programmer is a spoon (item ID: %@)", itemNodeId);
+			[xmlAutorelease release];
 			return NO;
 		}
 
@@ -372,6 +380,7 @@ static NSString* xmlEncode(NSString* str) {
 	ZoomSkeinItem* newRoot = [itemDictionary objectForKey: rootNodeId];
 	if (newRoot == nil) {
 		NSLog(@"ZoomSkein: No root node");
+		[xmlAutorelease release];
 		return NO;
 	}
 	
@@ -386,6 +395,7 @@ static NSString* xmlEncode(NSString* str) {
 	
 	[self zoomSkeinChanged];
 
+	[xmlAutorelease release];
 	return YES;
 }
 
@@ -469,7 +479,6 @@ static XMLCALL void charData    (void *userData,
 			if (res == nil) {
 				res = [[NSMutableString alloc] initWithString: [child objectForKey: xmlChars]];
 			} else {
-				[res appendString: @"\n"];
 				[res appendString: [child objectForKey: xmlChars]];
 			}
 		}
@@ -482,7 +491,7 @@ static XMLCALL void charData    (void *userData,
 					   withName: (NSString*) elementName {
 	NSMutableArray* res = nil;
 	
-	NSEnumerator* children = [[element objectForKey: xmlChildren] objectEnumerator];;
+	NSEnumerator* children = [[element objectForKey: xmlChildren] objectEnumerator];
 	NSDictionary* child;
 	
 	while (child = [children nextObject]) {
@@ -623,7 +632,7 @@ static NSString* makeStringLen(const XML_Char* data, int lenIn) {
 	// Create this element
 	NSMutableDictionary* lastElement = [xmlStack lastObject];
 	NSMutableDictionary* element = [NSMutableDictionary dictionary];
-	
+
 	[element setObject: xmlElement
 				forKey: xmlType];
 	[element setObject: makeString(name)
@@ -667,21 +676,35 @@ static NSString* makeStringLen(const XML_Char* data, int lenIn) {
 	
 	// Create this element
 	NSMutableDictionary* lastElement = [xmlStack lastObject];
-	NSMutableDictionary* element = [NSMutableDictionary dictionary];
-	
-	[element setObject: xmlCharData
-				forKey: xmlType];
-	[element setObject: makeStringLen(s, len)
-				forKey: xmlChars];
-	
-	// Add as a child of the previous element
 	NSMutableArray* children = [lastElement objectForKey: xmlChildren];
-	if (children == nil) {
-		children = [NSMutableArray array];
-		[lastElement setObject: children
-						forKey: xmlChildren];
+	NSMutableDictionary* element;
+	BOOL addAsChild;
+	
+	if (children && [[[children lastObject] objectForKey: xmlType] isEqualToString: xmlCharData]) {
+		element = [children lastObject];
+		[[element objectForKey: xmlChars] appendString: makeStringLen(s, len)];
+		
+		addAsChild = NO;
+	} else {
+		element = [NSMutableDictionary dictionary];
+		
+		[element setObject: xmlCharData
+					forKey: xmlType];
+		[element setObject: [[makeStringLen(s, len) mutableCopy] autorelease]
+					forKey: xmlChars];
+		
+		addAsChild = YES;
 	}
-	[children addObject: element];
+	
+	// Add as a child of the previous element, if required
+	if (addAsChild) {
+		if (children == nil) {
+			children = [NSMutableArray array];
+			[lastElement setObject: children
+						forKey: xmlChildren];
+		}
+		[children addObject: element];
+	}
 }
 
 // = XML callback implementation =
