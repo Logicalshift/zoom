@@ -66,8 +66,6 @@ static NSString* convertCommand(NSString* command) {
 		changed   = NO;
 		
 		annotation = nil;
-		
-		annotation = [@"Label" retain];
 	}
 	
 	return self;

@@ -50,6 +50,8 @@ extern NSString* ZoomSkeinItemPboardType;
 	ZoomSkeinItem* itemToEdit;
 	NSTextField* itemEditor;
 	
+	BOOL editingAnnotation;
+	
 	// The delegate
 	NSObject* delegate;
 }
@@ -69,6 +71,7 @@ extern NSString* ZoomSkeinItemPboardType;
 - (void) scrollToItem: (ZoomSkeinItem*) item;
 
 - (void) editItem: (ZoomSkeinItem*) skeinItem;
+- (void) editItemAnnotation: (ZoomSkeinItem*) skeinItem;
 - (void) setSelectedItem: (ZoomSkeinItem*) skeinItem;
 - (ZoomSkeinItem*) selectedItem;
 

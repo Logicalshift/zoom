@@ -68,6 +68,8 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 - (void) finishEditing: (id) sender;
 
 - (void) editSoon: (ZoomSkeinItem*) item;
+- (void) editItem: (ZoomSkeinItem*) skeinItem
+	   annotation: (BOOL) annotation;
 - (void) iHateEditing;
 
 @end
@@ -828,6 +830,8 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 
 - (void) annotateButtonClicked: (NSEvent*) event
 					  withItem: (ZoomSkeinItem*) skeinItem {
+	// Provide an editor for the annotation rather than the item
+	[self editItemAnnotation: skeinItem];
 }
 
 - (void) transcriptButtonClicked: (NSEvent*) event
@@ -842,7 +846,10 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 		
 		// This will merge trees if the item gets the same name as a neighbouring item
 		[itemToEdit removeFromParent];
-		[itemToEdit setCommand: [itemEditor stringValue]];
+		if (!editingAnnotation)
+			[itemToEdit setCommand: [itemEditor stringValue]];
+		else
+			[itemToEdit setAnnotation: [itemEditor stringValue]];
 		ZoomSkeinItem* newItem = [parent addChild: itemToEdit];
 		
 		// Change the active item if required
@@ -886,7 +893,18 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	[self finishEditing: self];
 }
 
+- (void) editItemAnnotation: (ZoomSkeinItem*) skeinItem {
+	[self editItem: skeinItem
+		annotation: YES];
+}
+
 - (void) editItem: (ZoomSkeinItem*) skeinItem {
+	[self editItem: skeinItem
+		annotation: NO];
+}
+
+- (void) editItem: (ZoomSkeinItem*) skeinItem
+	   annotation: (BOOL) annotation {
 	// Finish any existing editing
 	[self finishEditing: self];
 	
@@ -907,6 +925,9 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	// Area of the text for this item
 	NSRect itemFrame = [layout textAreaForItem: skeinItem];
 	
+	// (Or the annotation)
+	if (annotation) itemFrame.origin.y -= 15;
+	
 	// Make sure the item is the right size
 	float minItemWidth = itemWidth - 32.0;
 	if (itemFrame.size.width < minItemWidth) {
@@ -925,7 +946,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	[itemEditor setFont: [NSFont systemFontOfSize: 10]];
 	
 	[itemEditor setAttributedStringValue: 
-		[[[NSAttributedString alloc] initWithString: [skeinItem command]
+		[[[NSAttributedString alloc] initWithString: annotation?[skeinItem annotation]:[skeinItem command]
 										 attributes: itemTextAttributes] autorelease]];
 		
 	[itemEditor setAlignment: NSCenterTextAlignment];
@@ -935,9 +956,12 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 
 	[self addSubview: itemEditor];
 	
+	editingAnnotation = annotation;
+	
 	[[self window] makeFirstResponder: itemEditor];
 	[[self window] makeKeyWindow];
 }
+
 
 - (void) editSoon: (ZoomSkeinItem*) item {
 	[self performSelector: @selector(editItem:)

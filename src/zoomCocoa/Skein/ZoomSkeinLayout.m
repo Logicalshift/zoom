@@ -477,8 +477,9 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 	// Recall that items are drawn at:
 	//		float ypos = ((float)level)*itemHeight + (itemHeight / 2.0);
 	//      The 'lozenge' extends -8 upwards, and has a height of 30 pixels
-	//		There needs to be some space for icon controls, but we'll leave them out for the moment
+	//		There needs to be some space for icon controls
 	//		Levels start at 0
+	//		Labels appear above the item (in the control space: so you can't directly click on a label)
 	
 	// Check for level
 	int level = floorf(point.y/itemHeight);
@@ -598,6 +599,7 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 			NSDictionary* child;
 			while (child = [childEnumerator nextObject]) {
 				float childXPos = [self xposForData: child];
+				BOOL annotated = [[self itemForData: child] annotation]!=nil;
 				
 				if ([[self itemForData: child] temporary]) {
 					[tempChildLink set];
@@ -606,7 +608,7 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 				}
 				
 				[NSBezierPath strokeLineFromPoint: NSMakePoint(xpos, startYPos)
-										  toPoint: NSMakePoint(childXPos, endYPos)];
+										  toPoint: NSMakePoint(childXPos, annotated?endYPos-18:endYPos)];
 			}
 			
 			// Draw the annotation, if present
