@@ -212,6 +212,10 @@ extern int               debug_eval_result;
 extern char*             debug_eval_type;
 extern const char*       debug_error;
 
+extern int*				 debug_expr;
+extern int				 debug_expr_pos;
+extern debug_routine*    debug_expr_routine;
+
 #define DEBUG_EOF_DBR 0
 #define DEBUG_FILE_DBR 1
 #define DEBUG_CLASS_DBR 2

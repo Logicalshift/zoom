@@ -1787,6 +1787,42 @@ void zmachine_runsome(const int version,
   int *              string;
 
   int x;
+  
+  /*
+   * PowerMac Dual 1.25Ghz:
+   *
+   * Without computed gotos:
+   * ZMark version 0.2, by Andrew Hunter
+   * 
+   * IntMark1: 2.18 secs
+   * IntMark2: 2.29 secs
+   * JumpMark: 2.96 secs
+   * CallMark: 0.38 secs
+   * NopMark: 1.09 secs
+   * 
+   * With computed gotos:
+   * 
+   * ZMark version 0.2, by Andrew Hunter
+   * 
+   * IntMark1: 2.23 secs
+   * IntMark2: 2.30 secs
+   * JumpMark: 3.16 secs
+   * CallMark: 0.40 secs
+   * NopMark: 1.32 secs
+   *
+   * (Hmm, gcc 3.3 is a major improvement over 2.95: NopMark used to be 5x slower with computed gotos)
+   *
+   * Bizarrely, speed seems to have improved now I've added the sigusr1 stuff
+   */
+  
+  /*
+   * The 'computed gotos' style interpreter is faster to compile, but can 
+   * run a bit slower under certain circumstances. Instead of switch statements,
+   * we use tables of gotos and then a large list of labels. This is non-portable
+   * to other compilers (but Zoom won't compile without gcc at the moment anyway).
+   *
+   * I'm going to look into improving this
+   */
 
 #ifdef HAVE_COMPUTED_GOTOS
 # define TABLES_ONLY
@@ -1804,7 +1840,7 @@ void zmachine_runsome(const int version,
 
   pc = start_counter;
   stack = &machine.stack;
-
+	  
 #ifdef HAVE_COMPUTED_GOTOS
   switch (version)
     {
@@ -1849,6 +1885,14 @@ void zmachine_runsome(const int version,
     }
 
  loop:
+#ifdef REMOTE_BREAKPOINT
+	  /* Really need to find a way to do this without a performance impact */
+	  if (machine.force_breakpoint) {
+		  machine.force_breakpoint = 0;
+		  debug_set_breakpoint(pc, 1, 0);
+	  }
+#endif
+	  
   instr = GetCode(pc);
  execute_instr:
   goto *decode[instr];
@@ -1876,8 +1920,16 @@ void zmachine_runsome(const int version,
 # endif
 
 #else
-  while (1)
+  for(;;)
     {
+#ifdef REMOTE_BREAKPOINT
+	  /* Really need to find a way to do this without a performance impact */
+	  if (machine.force_breakpoint) {
+		  machine.force_breakpoint = 0;
+		  debug_set_breakpoint(pc, 1, 0);
+	  }
+#endif
+
       instr = GetCode(pc);
 
 #ifdef DEBUG

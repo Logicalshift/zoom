@@ -56,7 +56,6 @@ void zmachine_load_file(ZFile* file, ZMachine* machine) {
         zmachine_fatal("Unable to open story file");
     }
 
-
     machine->blorb_tokens = NULL;
     machine->blorb = NULL;
     if (blorb_is_blorbfile(machine->file))
@@ -199,6 +198,10 @@ void zmachine_load_file(ZFile* file, ZMachine* machine) {
     machine->memory_on = 0;
 	
 	machine->can_autosave = 0;
+	
+#ifdef REMOTE_BREAKPOINT
+	machine->force_breakpoint = 0;
+#endif
 }
 
 void zmachine_load_story(char* filename, ZMachine* machine)

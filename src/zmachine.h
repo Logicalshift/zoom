@@ -87,6 +87,10 @@
 		      */
 #undef  CUTE_STARTUP /* 'Adventure-style' warranty message */
 
+#ifndef REMOTE_BREAKPOINT
+#undef REMOTE_BREAKPOINT /* Send SIGUSR1 to force a breakpoint at the next execution point */
+#endif
+
 /*
  * Versions to support (note that support for version 5 includes
  * support for versions 7 and 8 as well
@@ -285,6 +289,8 @@ typedef struct ZMachine
   ZFile*     blorb_file;
   IffFile*   blorb_tokens;
   BlorbFile* blorb;
+  
+  int force_breakpoint;
 } ZMachine;
 
 typedef struct ZDictionary

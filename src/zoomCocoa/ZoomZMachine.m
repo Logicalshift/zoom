@@ -23,6 +23,7 @@
 #include "blorb.h"
 #include "v6display.h"
 #include "state.h"
+#include "debug.h"
 
 @implementation ZoomZMachine
 
@@ -241,6 +242,52 @@
 
 // = Debugging =
 - (NSData*) staticMemory {
+}
+
+- (void) loadDebugSymbolsFrom: (NSString*) symbolFile
+			   withSourcePath: (NSString*) sourcePath {
+	debug_load_symbols([symbolFile cString], [sourcePath cString]);
+}
+
+- (int) evaluateExpression: (NSString*) expression {
+	debug_address addr;
+	
+	addr = debug_find_address(machine.zpc);
+
+	debug_expr = malloc(sizeof(int) * ([expression length]+1));
+	int x;
+	for (x=0; x<[expression length]; x++) {
+		debug_expr[x] = [expression characterAtIndex: x];
+	}
+	debug_expr[x] = 0;
+
+	debug_expr_routine = addr.routine;
+	debug_error = NULL;
+	debug_expr_pos = 0;
+	debug_eval_parse();
+	free(debug_expr);
+	
+	if (debug_error != NULL) return 0x7fffffff;
+	
+	return debug_eval_result;
+}
+
+- (void)   setBreakpointAt: (int) address {
+}
+
+- (BOOL)   setBreakpointAtName: (NSString*) name {
+}
+
+- (void)   removeBreakpointAt: (int) address {
+}
+
+- (void)   removeBreakpointAtName: (NSString*) name {
+}
+
+- (int)        addressForName: (NSString*) name {
+}
+
+- (NSString*)  nameForAddress: (int) address {
 }
 
 // = Autosave =

@@ -28,6 +28,8 @@
 #include "debug.h"
 #include "zscii.h"
 
+#include <signal.h>
+
 #define yylval debug_eval_lval
 #include "eval.h"
 
@@ -35,8 +37,8 @@ debug_breakpoint* debug_bplist       = NULL;
 int               debug_nbps         = 0;
 debug_routine*    debug_expr_routine = NULL;
 
-static int*       expr      = NULL;
-static int        expr_pos  = 0;
+int*			  debug_expr      = NULL;
+int				  debug_expr_pos  = 0;
 
 typedef struct debug_display
 {
@@ -134,8 +136,8 @@ void debug_run_breakpoint(ZDWord pc)
   /* Evaluate any display expressions */
   for (x=0; x<ndisps; x++)
     {
-      expr = dbdisp[x].expr;
-      expr_pos = 0;
+      debug_expr = dbdisp[x].expr;
+      debug_expr_pos = 0;
       debug_expr_routine = addr.routine;
       debug_error = NULL;
       debug_eval_parse();
@@ -248,8 +250,8 @@ void debug_run_breakpoint(ZDWord pc)
 
 	case 'd':
 	  debug_expr_routine = addr.routine;
-	  expr = cline + 1;
-	  expr_pos = 0;
+	  debug_expr = cline + 1;
+	  debug_expr_pos = 0;
 	  debug_error = NULL;
 	  debug_eval_parse();
 	  if (debug_error == NULL)
@@ -257,19 +259,19 @@ void debug_run_breakpoint(ZDWord pc)
 	      int len;
 	      char* disp;
 
-	      for (len=0; expr[len] != 0; len++);
+	      for (len=0; debug_expr[len] != 0; len++);
 	      
 	      disp = malloc(sizeof(char)*(len+1));
-	      for (len=0; expr[len] != 0; len++)
-		disp[len] = expr[len];
+	      for (len=0; debug_expr[len] != 0; len++)
+		disp[len] = debug_expr[len];
 	      disp[len] = 0;
 
 	      dbdisp = realloc(dbdisp, sizeof(debug_display)*(ndisps+1));
 	      dbdisp[ndisps].desc = disp;
 	      dbdisp[ndisps].expr = malloc(sizeof(int)*(len+1));
 	      
-	      for (len=0; expr[len] != 0; len++)
-		dbdisp[ndisps].expr[len] = expr[len];
+	      for (len=0; debug_expr[len] != 0; len++)
+		dbdisp[ndisps].expr[len] = debug_expr[len];
 	      dbdisp[ndisps].expr[len] = 0;
 	      dbdisp[ndisps].lastvalue = debug_eval_result;
 	      dbdisp[ndisps].erm = 0;
@@ -293,8 +295,8 @@ void debug_run_breakpoint(ZDWord pc)
 
 	case 'p':
 	  debug_expr_routine = addr.routine;
-	  expr = cline + 1;
-	  expr_pos = 0;
+	  debug_expr = cline + 1;
+	  debug_expr_pos = 0;
 	  debug_error = NULL;
 	  debug_eval_parse();
 	  if (debug_error == NULL)
@@ -550,6 +552,12 @@ static void debug_add_symbol(char* name,
   free(storename);
 }
 
+#ifdef REMOTE_BREAKPOINT
+static void debug_sigusr1(int sig) {
+	machine.force_breakpoint = 1;
+}
+#endif
+
 void debug_load_symbols(char* filename,
 			char* pathname)
 {
@@ -561,10 +569,23 @@ void debug_load_symbols(char* filename,
   int done;
   
   int x;
-
+  
   debug_routine* this_routine = NULL;
   debug_symbol* sym;
-
+  
+#ifdef REMOTE_BREAKPOINT
+  /* SIGUSR1 indicates that we should break ASAP */
+  struct sigaction oldact;
+	  
+  sigaction(SIGUSR1, NULL, &oldact);
+  
+  oldact.sa_flags |= SA_RESTART;
+  oldact.sa_flags &= ~(SA_NODEFER|SA_SIGINFO);
+  oldact.sa_handler = debug_sigusr1;
+  
+  sigaction(SIGUSR1, &oldact, NULL);
+#endif
+				
   size = get_file_size(filename);
   file = open_file(filename);
 
@@ -1387,107 +1408,107 @@ int debug_eval_lex(void)
 {
   int start;
 
-  if (expr[expr_pos] == 0)
+  if (debug_expr[debug_expr_pos] == 0)
     return 0;
 
-  while (expr[expr_pos] == ' ')
-    expr_pos++;
+  while (debug_expr[debug_expr_pos] == ' ')
+    debug_expr_pos++;
 
-  start = expr_pos;
+  start = debug_expr_pos;
 
-  if ((expr[expr_pos] >= 'A' && expr[expr_pos] <= 'Z') ||
-      (expr[expr_pos] >= 'a' && expr[expr_pos] <= 'z'))
+  if ((debug_expr[debug_expr_pos] >= 'A' && debug_expr[debug_expr_pos] <= 'Z') ||
+      (debug_expr[debug_expr_pos] >= 'a' && debug_expr[debug_expr_pos] <= 'z'))
     {
       int x;
 
       /* IDENTIFIER */
-      while ((expr[expr_pos] >= 'A' && expr[expr_pos] <= 'Z') ||
-	     (expr[expr_pos] >= 'a' && expr[expr_pos] <= 'z') ||
-	     (expr[expr_pos] >= '0' && expr[expr_pos] <= '9') ||
-	     expr[expr_pos] == '_')
+      while ((debug_expr[debug_expr_pos] >= 'A' && debug_expr[debug_expr_pos] <= 'Z') ||
+	     (debug_expr[debug_expr_pos] >= 'a' && debug_expr[debug_expr_pos] <= 'z') ||
+	     (debug_expr[debug_expr_pos] >= '0' && debug_expr[debug_expr_pos] <= '9') ||
+	     debug_expr[debug_expr_pos] == '_')
 	{
-	  expr_pos++;
+	  debug_expr_pos++;
 	}
 
-      yylval.str = malloc(sizeof(char)*(expr_pos-start+1));
-      for (x=start; x<expr_pos; x++)
+      yylval.str = malloc(sizeof(char)*(debug_expr_pos-start+1));
+      for (x=start; x<debug_expr_pos; x++)
 	{
-	  yylval.str[x-start] = expr[x];
+	  yylval.str[x-start] = debug_expr[x];
 	}
-      yylval.str[expr_pos-start] = 0;
+      yylval.str[debug_expr_pos-start] = 0;
 
       return IDENTIFIER;
     }
   
-  if (expr[expr_pos] >= '0' && expr[expr_pos] <= '9')
+  if (debug_expr[debug_expr_pos] >= '0' && debug_expr[debug_expr_pos] <= '9')
     {
       /* NUMBER */
       yylval.number = 0;
 
-      while (expr[expr_pos] >= '0' && expr[expr_pos] <= '9')
+      while (debug_expr[debug_expr_pos] >= '0' && debug_expr[debug_expr_pos] <= '9')
 	{
 	  yylval.number *= 10;
-	  yylval.number += expr[expr_pos] - '0';
-	  expr_pos++;
+	  yylval.number += debug_expr[debug_expr_pos] - '0';
+	  debug_expr_pos++;
 	}
       return NUMBER;
     }
 
-  if (expr[expr_pos] == '$')
+  if (debug_expr[debug_expr_pos] == '$')
     {
       /* NUMBER */
       yylval.number = 0;
-      expr_pos++;
+      debug_expr_pos++;
 
-      while ((expr[expr_pos] >= '0' && expr[expr_pos] <= '9') ||
-	     (expr[expr_pos] >= 'A' && expr[expr_pos] <= 'F') ||
-	     (expr[expr_pos] >= 'a' && expr[expr_pos] <= 'f'))
+      while ((debug_expr[debug_expr_pos] >= '0' && debug_expr[debug_expr_pos] <= '9') ||
+	     (debug_expr[debug_expr_pos] >= 'A' && debug_expr[debug_expr_pos] <= 'F') ||
+	     (debug_expr[debug_expr_pos] >= 'a' && debug_expr[debug_expr_pos] <= 'f'))
 	{
 	  yylval.number *= 16;
-	  if (expr[expr_pos] >= '0' && expr[expr_pos] <= '9')
-	    yylval.number += expr[expr_pos] - '0';
-	  else if (expr[expr_pos] >= 'A' && expr[expr_pos] <= 'F')
-	    yylval.number += expr[expr_pos] - 'A' + 10;
-	  else if (expr[expr_pos] >= 'a' && expr[expr_pos] <= 'f')
-	    yylval.number += expr[expr_pos] - 'a' + 10;
+	  if (debug_expr[debug_expr_pos] >= '0' && debug_expr[debug_expr_pos] <= '9')
+	    yylval.number += debug_expr[debug_expr_pos] - '0';
+	  else if (debug_expr[debug_expr_pos] >= 'A' && debug_expr[debug_expr_pos] <= 'F')
+	    yylval.number += debug_expr[debug_expr_pos] - 'A' + 10;
+	  else if (debug_expr[debug_expr_pos] >= 'a' && debug_expr[debug_expr_pos] <= 'f')
+	    yylval.number += debug_expr[debug_expr_pos] - 'a' + 10;
 
-	  expr_pos++;
+	  debug_expr_pos++;
 	}
 
       return NUMBER;
     }
 
-  if (expr[expr_pos] == '-')
+  if (debug_expr[debug_expr_pos] == '-')
     {
-      if (expr[expr_pos+1] == '>')
+      if (debug_expr[debug_expr_pos+1] == '>')
 	{
-	  expr_pos+=2;
+	  debug_expr_pos+=2;
 	  return BYTEARRAY;
 	}
-      if (expr[expr_pos+1] == '-' && expr[expr_pos+2] == '>')
+      if (debug_expr[debug_expr_pos+1] == '-' && debug_expr[debug_expr_pos+2] == '>')
 	{
-	  expr_pos += 3;
+	  debug_expr_pos += 3;
 	  return WORDARRAY;
 	}
     }
 
-  if (expr[expr_pos] == '.')
+  if (debug_expr[debug_expr_pos] == '.')
     {
-      if (expr[expr_pos+1] == '&')
+      if (debug_expr[debug_expr_pos+1] == '&')
 	{
-	  expr_pos+=2;
+	  debug_expr_pos+=2;
 	  return PROPADDR;
 	}
-      if (expr[expr_pos+1] == '#')
+      if (debug_expr[debug_expr_pos+1] == '#')
 	{
-	  expr_pos+=2;
+	  debug_expr_pos+=2;
 	  return PROPLEN;
 	}
     }
 
-  expr_pos++;
-  if (expr[expr_pos-1] < 256)
-    return expr[expr_pos-1];
+  debug_expr_pos++;
+  if (debug_expr[debug_expr_pos-1] < 256)
+    return debug_expr[debug_expr_pos-1];
   return '?';
 }
 

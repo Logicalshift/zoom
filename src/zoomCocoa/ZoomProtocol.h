@@ -57,9 +57,6 @@ typedef enum {
 // Running
 - (oneway void) startRunningInDisplay: (in byref NSObject<ZDisplay>*) display;
 
-// Debugging
-- (out bycopy NSData*) staticMemory;
-
 // Recieving text/characters
 - (oneway void) inputText: (in bycopy NSString*) text;
 - (oneway void) inputMouseAtPositionX: (int) x
@@ -74,6 +71,20 @@ typedef enum {
 
 // Obtaining game state
 - (out bycopy NSData*) createGameSave;
+
+// Debugging
+- (void) loadDebugSymbolsFrom: (NSString*) symbolFile
+			   withSourcePath: (NSString*) sourcePath;
+
+- (out bycopy NSData*) staticMemory;
+- (int)    evaluateExpression: (NSString*) expression;
+- (void)   setBreakpointAt: (int) address;
+- (BOOL)   setBreakpointAtName: (NSString*) name;
+- (void)   removeBreakpointAt: (int) address;
+- (void)   removeBreakpointAtName: (NSString*) name;
+
+- (int)        addressForName: (NSString*) name;
+- (NSString*)  nameForAddress: (int) address;
 
 @end
 

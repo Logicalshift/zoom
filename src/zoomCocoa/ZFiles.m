@@ -134,7 +134,9 @@ void write_dword(ZFile* file, ZDWord word) {
 }
 
 ZDWord get_file_size(char* filename) { 
-    NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
+	return [[[[NSFileManager defaultManager] fileAttributesAtPath: [NSString stringWithCString: filename]
+													 traverseLink: YES] objectForKey: NSFileSize]
+		intValue];
     return 0;
 }
 

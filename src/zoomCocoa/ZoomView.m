@@ -6,6 +6,8 @@
 //  Copyright (c) 2003 Andrew Hunter. All rights reserved.
 //
 
+#include <signal.h>
+
 #import "ZoomView.h"
 #import "ZoomLowerWindow.h"
 #import "ZoomUpperWindow.h"
@@ -1087,6 +1089,10 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     zoomTaskData = nil;
 }
 
+- (BOOL) isRunning {
+	return zMachine != nil;
+}
+
 - (void) _zoomTaskNotification: (NSNotification*) not {
     // Data is waiting on stdout: receive it
     NSData* inData = [[zoomTaskStdout fileHandleForReading] availableData];
@@ -1313,6 +1319,10 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 
 - (void) killTask {
     if (zoomTask) [zoomTask terminate];
+}
+
+- (void) debugTask {
+	if (zoomTask) kill([zoomTask processIdentifier], SIGUSR1);
 }
 
 // = Warnings/errors =

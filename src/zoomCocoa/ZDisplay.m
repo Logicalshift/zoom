@@ -212,7 +212,12 @@ void display_prints_c(const char* buf) {
 #ifdef DEBUG
 	NSLog(@"ZDisplay: display_prints_c(\"%s\")", buf);
 #endif
-
+	
+	if ([mainMachine windowNumber: currentWindow] == nil) {
+		NSLog(@"No window: leaking '%s'", buf);
+		return;
+	}
+	
     NSString* str = [NSString stringWithCString: buf];
     [[mainMachine buffer] writeString: str
                             withStyle: currentStyle
@@ -223,6 +228,11 @@ void display_printc(int chr) {
 #ifdef DEBUG
 	NSLog(@"ZDisplay: display_printc(\"%c\")", chr);
 #endif
+	
+	if ([mainMachine windowNumber: currentWindow] == nil) {
+		NSLog(@"No window: leaking '%c'", chr);
+		return;
+	}
 
     unichar bufU[1];
 

@@ -140,7 +140,7 @@ void get_options(int argc, char** argv, arguments* args)
 	  printf_info("    -V         display version information\n");
 	  printf_info("    -w         display warnings\n");
 	  printf_info("    -W         make all warnings fatal (strict standards compliance)\n");
-	  printf_info("    -D         enable symbolic debug mode (requires gameifo.dbg)\n");
+	  printf_info("    -D         enable symbolic debug mode (requires gameinfo.dbg)\n");
 	  printf_info("Zoom is copyright (C) Andrew Hunter, 2000\n");
 	  printf_info_done();
 	  display_exit(0);

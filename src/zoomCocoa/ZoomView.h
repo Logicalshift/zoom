@@ -83,6 +83,11 @@ extern NSString* ZoomStyleAttributeName;
 
 - (void) killTask;
 
+// debugTask forces a breakpoint at the next instruction. Note that the task must have
+// debugging symbols loaded, or this will kill the task. Also note that the effect may
+// be different than expected if the task is waiting for input.
+- (void) debugTask;
+
 - (void) setScaleFactor: (float) scaling;
 
 // Specifying what to run
@@ -142,6 +147,8 @@ extern NSString* ZoomStyleAttributeName;
 // Autosaving
 - (BOOL) createAutosaveDataWithCoder: (NSCoder*) encoder;
 - (void) restoreAutosaveFromCoder: (NSCoder*) decoder;
+
+- (BOOL) isRunning;
 
 @end
 
