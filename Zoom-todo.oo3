@@ -17,8 +17,8 @@
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
     <selected-rows ids="mLzCDLZD7ky"/>
-    <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{83, 0}"/>
+    <selected-columns ids=":941128d340f2709e21a6e303"/>
+    <selected-characters range="{176, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -864,6 +864,15 @@
               <p/>
             </text>
           </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>Hmm, not happening any more: perhaps only happens after a rename session. Yes, confirmed this. Seems to only happen after addStory: has called organiseStory: to rename a story.</lit>
+                </run>
+              </p>
+            </text>
+          </note>
         </item>
         <item id="jB0jGi2zEea" state="checked">
           <values>
