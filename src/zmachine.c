@@ -460,6 +460,9 @@ void zmachine_setup_header(void)
       machine.memory[ZH_intnumber] = rc_get_interpreter();
       machine.memory[ZH_intvers] = rc_get_revision();
 
+      if (machine.blorb == NULL)
+	Flag(ZH_flags2+1, 3, 0);
+
 #ifdef SPEC_11
       if (machine.heblen >= 10)
 	{
@@ -477,25 +480,28 @@ void zmachine_setup_header(void)
       machine.memory[ZH_deffore]    = machine.dinfo->fore+2;
       machine.memory[ZH_defback]    = machine.dinfo->back+2;
 
-      if (!machine.graphical)
+      if (machine.memory[0] != 6)
 	{
-	  machine.memory[ZH_width]      = machine.dinfo->columns>>8;
-	  machine.memory[ZH_width+1]    = machine.dinfo->columns;
-	  machine.memory[ZH_height]     = machine.dinfo->lines>>8;
-	  machine.memory[ZH_height+1]   = machine.dinfo->lines;
-	  machine.memory[ZH_fontwidth]  = 1;
-	  machine.memory[ZH_fontheight] = 1;
-
-	  Flag(ZH_flags2+1, 3, 0);
-	}
-      else
-	{
-	  machine.memory[ZH_width]      = machine.dinfo->width>>8;
-	  machine.memory[ZH_width+1]    = machine.dinfo->width;
-	  machine.memory[ZH_height]     = machine.dinfo->height>>8;
-	  machine.memory[ZH_height+1]   = machine.dinfo->height;
-	  machine.memory[ZH_fontwidth]  = machine.dinfo->font_width;
-	  machine.memory[ZH_fontheight] = machine.dinfo->font_height;
+	  if (!machine.graphical)
+	    {
+	      machine.memory[ZH_width]      = machine.dinfo->columns>>8;
+	      machine.memory[ZH_width+1]    = machine.dinfo->columns;
+	      machine.memory[ZH_height]     = machine.dinfo->lines>>8;
+	      machine.memory[ZH_height+1]   = machine.dinfo->lines;
+	      machine.memory[ZH_fontwidth]  = 1;
+	      machine.memory[ZH_fontheight] = 1;
+	      
+	      Flag(ZH_flags2+1, 3, 0);
+	    }
+	  else
+	    {
+	      machine.memory[ZH_width]      = machine.dinfo->width>>8;
+	      machine.memory[ZH_width+1]    = machine.dinfo->width;
+	      machine.memory[ZH_height]     = machine.dinfo->height>>8;
+	      machine.memory[ZH_height+1]   = machine.dinfo->height;
+	      machine.memory[ZH_fontwidth]  = machine.dinfo->font_width;
+	      machine.memory[ZH_fontheight] = machine.dinfo->font_height;
+	    }
 	}
 
       if (Word(ZH_flags2)&(1<<5))
