@@ -301,6 +301,7 @@ extern void  zmachine_mark_statusbar(void);
 extern char* zmachine_get_serial    (void);
 
 extern ZWord   pop         (ZStack*);
+extern ZWord   top         (ZStack*);
 extern ZFrame* call_routine(ZDWord* pc, ZStack* stack, ZDWord start);
      
 /* Utility macros */
@@ -313,6 +314,7 @@ extern ZWord debug_print_var(ZWord val, int var);
 #endif
 
 #define GetVar(y)  DebugVar(((y)==0?pop(stack):(((unsigned char) (y))<16?stack->current_frame->local[(y)]:(machine.globals[((y)<<1)-32]<<8)|machine.globals[((y)<<1)-31])), y)
+#define GetVarNoPop(y) DebugVar(((y)==0?top(stack):(((unsigned char) (y))<16?stack->current_frame->local[(y)]:(machine.globals[((y)<<1)-32]<<8)|machine.globals[((y)<<1)-31])), y)
 #define GetCode(x)  machine.memory[(x)]
 #define Word(x)     ((machine.memory[(x)]<<8)|machine.memory[(x)+1])
 #define ReadByte(x) (machine.memory[(x)])

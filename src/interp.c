@@ -156,6 +156,24 @@ inline ZWord pop(ZStack* stack)
   return *(--stack->stack_top);
 }
 
+inline ZWord top(ZStack* stack)
+{
+    if (stack->current_frame)
+    {
+#ifdef SAFE
+        if (stack->current_frame->frame_size <= 0)
+            zmachine_fatal("Stack underflow");
+#endif
+    }
+
+#ifdef SAFE
+    if (stack->stack_top == stack->stack)
+        zmachine_fatal("Stack underflow");
+#endif
+
+    return *(stack->stack_top-1);
+}
+
 ZFrame* call_routine(ZDWord* pc, ZStack* stack, ZDWord start)
 {
   ZFrame* newframe;
@@ -228,6 +246,32 @@ inline void store(ZStack* stack, int var, ZWord value)
       var-=16;
       machine.globals[var<<1]     = value>>8;
       machine.globals[(var<<1)+1] = value;
+    }
+}
+
+inline void store_nopush(ZStack* stack, int var, ZWord value)
+{
+#ifdef DEBUG
+    printf_debug("Storing %i in Variable #%x\n", value, var);
+#endif
+    if (var == 0)
+    {
+#ifdef SAFE
+        if (stack->stack_top == stack->stack)
+            zmachine_fatal("Stack underflow");
+#endif
+
+        *(stack->stack_top-1) = value;
+    }
+    else if (var < 16)
+    {
+        stack->current_frame->local[var] = value;
+    }
+    else
+    {
+        var-=16;
+        machine.globals[var<<1]     = value>>8;
+        machine.globals[(var<<1)+1] = value;
     }
 }
 

@@ -39,7 +39,7 @@ OPCODE "dec_chk"    2OP:0x04 BRANCH VERSION all
 %{
   ZWord var;
 
-  var = GetVar(arg1);
+  var = GetVarNoPop(arg1);
   result = (--var) < arg2;
   store(stack, arg1, var);
   dobranch;
@@ -49,7 +49,7 @@ OPCODE "inc_chk"    2OP:0x05 BRANCH VERSION all
 %{
   ZWord var;
 
-  var = GetVar(arg1);
+  var = GetVarNoPop(arg1);
   result = (++var) > arg2;
   store(stack, arg1, var);
   dobranch;
@@ -606,7 +606,7 @@ OPCODE "get_next_prop" 2OP:0x13 STORE  VERSION 4,5,6,7,8
 
 OPCODE "store"        2OP:0x0d        VERSION all
 %{
-  store(stack, arg1, arg2);
+  store_nopush(stack, arg1, arg2);
 %}
 
 OPCODE "loadw"        2OP:0x0f STORE  VERSION all
@@ -859,7 +859,7 @@ OPCODE "inc"          1OP:0x05              VERSION all
   printf_debug("Inc: increasing variable %i by 1\n", arg1);
 #endif
   
-  var = GetVar(arg1);
+  var = GetVarNoPop(arg1);
   var++;
   store(stack, arg1, var);
 %}
@@ -872,7 +872,7 @@ OPCODE "dec"          1OP:0x06              VERSION all
   printf_debug("Dec: decreasing variable %i by 1\n", arg1);
 #endif
   
-  var = GetVar(arg1);
+  var = GetVarNoPop(arg1);
   var--;
   store(stack, arg1, var);  
 %}
@@ -1024,7 +1024,7 @@ OPCODE "print_paddr"  1OP:0x0d              VERSION 4,5,6,7,8
 
 OPCODE "load"         1OP:0x0e        STORE VERSION all
 %{
-  store(stack, st, GetVar(uarg1));
+  store(stack, st, GetVarNoPop(uarg1));
 %}
 
 OPCODE "not"          1OP:0x0f        STORE VERSION 1,2,3,4
@@ -1525,7 +1525,7 @@ OPCODE "pull"           VAR:0x09 ARGS:1               VERSION 3,4,5,7,8
   ZUWord val;
 
   val = pop(stack);
-  store(stack, argblock.arg[0], val);
+  store_nopush(stack, argblock.arg[0], val);
 %}
 
 OPCODE "split_window"   VAR:0x0a ARGS:1               VERSION 3,4,5,7,8
