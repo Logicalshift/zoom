@@ -1,5 +1,10 @@
 2000-12-11  Andrew Hunter    <andrew@logicalshift.co.uk>
 
+	* fixed equally stupid bug where argp was no longer being detected
+
+	* fixed damn stupid bug where zmachine_setup_header() was writing
+	to the objects header word instead of flags2.
+
 	* version updated to 0.9.99dev9 (release of beta5)
 
 	* resource leak fixed (windisplay.c)

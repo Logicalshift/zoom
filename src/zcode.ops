@@ -422,7 +422,7 @@ OPCODE "get_prop"      2OP:0x11 STORE  VERSION 4,5,6,7,8
     {
     case 1:
       store(stack, st, p->prop[0]);
-       break;
+      break;
 
       /*
        * Hmm, this is against spec, but some Inform games
@@ -432,7 +432,7 @@ OPCODE "get_prop"      2OP:0x11 STORE  VERSION 4,5,6,7,8
     default:
       zmachine_warning("get_prop used on a property with length %i",
 		       p->size);
-      store(stack, st, (p->prop[-1]<<8)|p->prop[0]);
+      store(stack, st, (p->prop[-1]<<8)|p->prop[0]); /* Frotz's behaviour */
       break;
       
     case 2:

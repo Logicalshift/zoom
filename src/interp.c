@@ -217,7 +217,7 @@ void restart_machine(void)
   zmachine_setup_header();
 }
 
-#define Obj3(x) (machine.objects + 62+(((x)-1)*9))
+#define Obj3(x) (machine.memory + GetWord(machine.header, ZH_objs) + 62+(((x)-1)*9))
 #define parent_3  4
 #define sibling_3 5
 #define child_3   6
@@ -257,7 +257,7 @@ static inline struct prop* get_object_prop_3(ZUWord object, ZWord property)
     }
 
   info.size = 2;
-  info.prop = machine.objects + 2*property-2;
+  info.prop = machine.memory+GetWord(machine.header, ZH_objs) + 2*property-2;
   info.isdefault = 1;
 
   return &info;
@@ -265,7 +265,7 @@ static inline struct prop* get_object_prop_3(ZUWord object, ZWord property)
 
 #define UnpackR(x) (machine.packtype==packed_v4?4*((ZUWord)x):(machine.packtype==packed_v8?8*((ZUWord)x):4*((ZUWord)x)+machine.routine_offset))
 #define UnpackS(x) (machine.packtype==packed_v4?4*((ZUWord)x):(machine.packtype==packed_v8?8*((ZUWord)x):4*((ZUWord)x)+machine.string_offset))
-#define Obj4(x) (machine.objects + 126 + ((((ZUWord)x)-1)*14))
+#define Obj4(x) ((machine.memory + (GetWord(machine.header, ZH_objs))) + 126 + ((((ZUWord)x)-1)*14))
 #define parent_4  6
 #define sibling_4 8
 #define child_4   10
@@ -365,8 +365,13 @@ static inline struct prop* get_object_prop_4(ZUWord object, ZWord property)
 	}
     }
 
+#ifdef DEBUG
+  printf_debug("Using default property at #%x (%i)\n",
+	       Word(ZH_objs)+(2*property-2));
+#endif
+  
   info.size = 2;
-  info.prop = machine.objects + 2*property-2;
+  info.prop = Address(Word(ZH_objs) + 2*property-2);
   info.isdefault = 1;
   info.pad = 0;
 
@@ -424,6 +429,7 @@ static void zcode_op_print_obj_123(ZStack* stack, ZWord arg)
   stream_prints(zscii_to_ascii(prop, &len));
 }
 
+#ifdef SUPPORT_VERSION_3
 static void draw_statusbar_123(ZStack* stack)
 {
   ZWord score;
@@ -464,6 +470,7 @@ static void draw_statusbar_123(ZStack* stack)
   display_set_window(0);
   stream_buffering(1);
 }
+#endif
 
 inline static int convert_colour(int col)
 {
@@ -606,6 +613,7 @@ static void get_filename(char* name, int len, int save)
 #endif
 }
 
+#if defined(SUPPORT_VERSION_4) || defined(SUPPORT_VERSION_3)
 static int save_1234(ZDWord  pc,
 		     ZStack* stack,
 		     int     st)
@@ -676,6 +684,7 @@ static int restore_1234(ZDWord* pc, ZStack* stack)
   
   return 0;
 }
+#endif
 
 static void zcode_op_output_stream(ZStack* stack,
 				   ZArgblock* args)

@@ -204,7 +204,6 @@ typedef struct ZMachine
 #endif
 
   ZByte*   globals;
-  ZByte*   objects;
 
   ZStack   stack;
 

@@ -92,8 +92,8 @@ void zmachine_load_story(char* filename, ZMachine* machine)
 
   machine->globals             = machine->memory +
     GetWord(machine->header, ZH_globals);
-  machine->objects             = machine->memory +
-    GetWord(machine->header, ZH_objs);
+  /*machine->objects             = machine->memory +
+    GetWord(machine->header, ZH_objs); */
   machine->dict                = machine->memory +
     GetWord(machine->header, ZH_dict);
 
@@ -297,7 +297,7 @@ void zmachine_setup_header(void)
     case 7:
     case 5:
       zscii_install_alphabet();
-      
+
       Flag(1, 0, machine.dinfo->colours);
       machine.memory[ZH_deffore]    = machine.dinfo->fore+2;
       machine.memory[ZH_defback]    = machine.dinfo->back+2;
@@ -311,7 +311,7 @@ void zmachine_setup_header(void)
 	  machine.memory[ZH_fontwidth]  = 1;
 	  machine.memory[ZH_fontheight] = 1;
 
-	  Flag(11, 3, 0);
+	  Flag(ZH_flags2+1, 3, 0);
 	}
       else
 	{
@@ -324,11 +324,11 @@ void zmachine_setup_header(void)
 	}
 
       if (Word(ZH_flags2)&(1<<5))
-	Flag(11, 5, machine.dinfo->mouse);
+	Flag(ZH_flags2+1, 5, machine.dinfo->mouse);
       if (Word(ZH_flags2)&(1<<6))
-	Flag(11, 6, machine.dinfo->colours);
+	Flag(ZH_flags2+1, 6, machine.dinfo->colours);
       if (Word(ZH_flags2)&(1<<7))
-	Flag(11, 7, machine.dinfo->sound_effects);
+	Flag(ZH_flags2+1, 7, machine.dinfo->sound_effects);
     case 4:
       Flag(1, 2, machine.dinfo->boldface);
       Flag(1, 3, machine.dinfo->italic);
@@ -427,7 +427,7 @@ void zmachine_resize_display(ZDisplay* dis)
 #ifdef DEBUG
 extern ZWord debug_print_var(ZWord val, int var)
 {
-  printf("Read variable #%x (value %i)\n", var, val);
+  printf_debug("Read variable #%x (value %i)\n", var, val);
   return val;
 }
 #endif

@@ -113,7 +113,7 @@ void output_interpreter(FILE* dest,
 	      fprintf(dest, "    case 0x%x: /* %s */\n",
 		      op->value|0xb0, op->name);
 
-	      fprintf(dest, "#ifdef DEBUG\nprintf(\"%s\\n\");\n#endif\n",
+	      fprintf(dest, "#ifdef DEBUG\nprintf_debug(\"%s\\n\");\n#endif\n",
 		      op->name);
 
 	      if (op->flags.isstore)
@@ -140,7 +140,9 @@ void output_interpreter(FILE* dest,
 		}
 	      if (op->flags.isstring)
 		{
+		  fprintf(dest, "#ifdef DEBUG\nprintf_debug(\"(String instruction) - decoding the string at #%%x: \", pc+%i);\n#endif\n", pcadd);
 		  fprintf(dest, "      string = zscii_to_ascii(&GetCode(pc+%i), &padding);\n", pcadd);
+		  fprintf(dest, "#ifdef DEBUG\nprintf_debug(\">%%s<\\n\", string);\n#endif\n", pcadd);
 		}
 
 	      if (op->flags.isbranch || op->flags.isstring)
@@ -161,7 +163,7 @@ void output_interpreter(FILE* dest,
 		  fprintf(dest, "    case 0x%x: /* %s */\n",
 			  op->value|0x80|(y<<4), op->name);
 
-		  fprintf(dest, "#ifdef DEBUG\nprintf(\"%s\\n\");\n#endif\n",
+		  fprintf(dest, "#ifdef DEBUG\nprintf_debug(\"%s\\n\");\n#endif\n",
 			  op->name);
 
 		  switch (y)
@@ -231,7 +233,7 @@ void output_interpreter(FILE* dest,
 		  fprintf(dest, "    case 0x%x: /* %s */\n",
 			  op->value|(y<<5), op->name);
 
-		  fprintf(dest, "#ifdef DEBUG\nprintf(\"%s\\n\");\n#endif\n",
+		  fprintf(dest, "#ifdef DEBUG\nprintf_debug(\"%s\\n\");\n#endif\n",
 			  op->name);
 
 		  if (op->flags.reallyvar)
@@ -290,7 +292,7 @@ void output_interpreter(FILE* dest,
 	      fprintf(dest, "    case 0x%x: /* %s - variable form */\n",
 		      op->value|0xc0, op->name);
 	      
-	      fprintf(dest, "#ifdef DEBUG\nprintf(\"%s (var form)\\n\");\n#endif\n",
+	      fprintf(dest, "#ifdef DEBUG\nprintf_debug(\"%s (var form)\\n\");\n#endif\n",
 		      op->name);
 	      
 	      pcadd = 4;
@@ -401,7 +403,7 @@ void output_interpreter(FILE* dest,
 	    case varop:
 	      fprintf(dest, "    case 0x%x: /* %s */\n",
 		      op->value|0xe0, op->name);
-	      fprintf(dest, "#ifdef DEBUG\nprintf(\"%s\\n\");\n#endif\n",
+	      fprintf(dest, "#ifdef DEBUG\nprintf_debug(\"%s\\n\");\n#endif\n",
 		      op->name);
 	      pcadd = 2;
 	      if (op->flags.islong)
@@ -466,7 +468,7 @@ void output_interpreter(FILE* dest,
 	  if (op->type == extop && op->versions&vmask)
 	    {
 	      fprintf(dest, "        case 0x%x: /* %s */\n", op->value, op->name);
-	      fprintf(dest, "#ifdef DEBUG\nprintf(\"ExtOp: %s\n\");\n#endif\n", op->name);
+	      fprintf(dest, "#ifdef DEBUG\nprintf_debug(\"ExtOp: %s\n\");\n#endif\n", op->name);
 	      pcadd = 3;
 	      if (op->flags.islong)
 		{
