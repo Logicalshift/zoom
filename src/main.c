@@ -97,6 +97,9 @@ int zoom_main(int argc, char** argv)
 #endif
 
   rc_load();
+#if WINDOW_SYSTEM == 3
+  carbon_merge_rc();
+#endif
 
 #if WINDOW_SYSTEM != 3  
   if (args.story_file == NULL)

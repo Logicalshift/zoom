@@ -111,6 +111,8 @@ extern int  carbon_ask_question       (char* title, char* message,
 				       char* OK, char* cancel, int def);
 extern void carbon_display_about      (void);
 
+extern void carbon_merge_rc           (void);
+
 extern enum carbon_file_type carbon_type_fsref(FSRef* file);
 
 /* image_ routines have their own naming convention, which we preserve */

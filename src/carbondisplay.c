@@ -2518,6 +2518,31 @@ static pascal OSErr drag_receive(WindowRef win, void* data, DragRef drag)
   return dragNotAcceptedErr;
 }
 
+void carbon_merge_rc(void)
+     /* Merge in the default zoomrc */
+{
+  CFBundleRef ourbundle;
+  CFURLRef    zoomrc;
+  CFStringRef path = nil;
+  
+  /* It doesn't... Get the location of the default zoomrc... */
+  ourbundle = CFBundleGetMainBundle();
+  zoomrc = CFBundleCopyResourceURL(ourbundle, CFSTR("zoomrc"), NULL,
+				   NULL);
+  if (zoomrc != nil)
+    path = CFURLCopyFileSystemPath(zoomrc, kCFURLPOSIXPathStyle);
+  
+  if (zoomrc != nil && path != nil)
+    {
+      char name[512];
+      
+      CFStringGetCString(path, name, 511, kCFStringEncodingUTF8);
+      
+      rc_merge(name);
+    }
+}
+  
+
 void display_initialise(void)
 {
   EventLoopRef    mainLoop;
