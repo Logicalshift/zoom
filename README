@@ -181,7 +181,7 @@ Zoom and Windows
     u - underline
     f - fixed-pitch
   
-  The font specifies in the example could then be:
+  The font specifiers in the example could then be:
 
         font 1 "'Arial' 10"           roman
         font 2 "'Arial' 10 b"         bold

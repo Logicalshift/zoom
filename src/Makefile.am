@@ -2,7 +2,7 @@ bin_PROGRAMS = \
 	zoom
 pkgdata_DATA = zoomrc
 
-EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico
+EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico
 
 zoom_SOURCES = \
 	main.c interp.c file.c options.c zmachine.c zscii.c xdisplay.c \
