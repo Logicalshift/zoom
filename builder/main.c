@@ -30,6 +30,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "../config.h"
+
 #include "operation.h"
 #include "gram.h"
 
@@ -89,6 +91,7 @@ static void output_opname(FILE* dest,
   fprintf(dest, ";\n");
 }
 
+#ifndef HAVE_COMPUTED_GOTOS
 void output_interpreter(FILE* dest,
 			int version)
 {
@@ -547,6 +550,460 @@ void output_interpreter(FILE* dest,
     }
   fprintf(dest, "\n */\n");
 }
+#else
+#define DECODE_FLAGS(opf) \
+      if (opf.isbranch) \
+        strcat(name, "b"); \
+      if (opf.isstore) \
+        strcat(name, "s"); \
+      if (opf.isstring) \
+        strcat(name, "S"); \
+      if (opf.islong) \
+        strcat(name, "l"); \
+      if (opf.reallyvar)  \
+        strcat(name, "v");
+
+char* decode_name(enum optype type, opflags fl)
+{
+  static char name[256];
+  const char* prefix;
+
+  switch(type)
+    {
+    case zop:
+      prefix = "zop";
+      break;
+
+    case unop:
+      prefix = "unop";
+      break;
+
+    case binop:
+      prefix = "binop";
+      break;
+
+    case varop:
+      prefix = "varop";
+      break;
+
+    case extop:
+      prefix = "extop";
+      break;
+
+    default:
+      prefix = "unk";
+    }
+
+  sprintf(name, "%s", prefix);
+  DECODE_FLAGS(fl);
+
+  return name;
+}
+
+void output_interpreter(FILE* dest,
+			int version)
+{
+  /* 
+   * The 'interpreter', such as it is now, is just two tables of goto 
+   * addresses... We do need to work out the decode codepoints, though.
+   */
+  int x, y;
+  int vmask;
+  int pcadd;
+
+  char* decode_table[256];
+  char* exec_table[256];
+  char* decode_ext_table[256];
+  char* exec_ext_table[256];
+
+  vmask = 1<<version;
+
+  for (x=0; x<256; x++)
+    {
+      decode_table[x] = exec_table[x] = decode_ext_table[x] = 
+	exec_ext_table[x] = "badop";
+    }
+
+  /* Instruction decoders */
+  /* 
+   * I'm basing this largely on my old code, hence the rather unusual way
+   * of enumerating these things. This technique at least guarantees
+   * no deadcode...
+   */
+  fprintf(dest, "#ifndef TABLES_ONLY\n");
+  for (x=0; x<zmachine.numops; x++)
+    {
+      operation* op;
+
+      op = zmachine.op[x];
+
+      if (op->versions&vmask)
+	{
+	  char* name;
+	  char* opname;
+
+	  name = decode_name(op->type, op->flags);
+	  fprintf(dest, "#ifndef D_%s\n", name);
+	  fprintf(dest, "#define D_%s\n", name);
+
+	  opname = malloc(strlen(op->name) + 10);
+	  sprintf(opname, "op_%s", op->name);
+	  if (op->versions != -1)
+	    {
+	      int z;
+	      strcat(opname, "_");
+	      for (z = 1; z<10; z++)
+		{
+		  char s[2];
+
+		  s[0] = 48+z; s[1] = 0;
+		  if (op->versions&(1<<z))
+		    strcat(opname, s);
+		}
+	    }
+
+	  switch (op->type)
+	    {
+	    case zop:
+	      pcadd = 1;
+	      fprintf(dest, "  %s:\n", name);
+
+	      decode_table[op->value|0xb0] = malloc(strlen(name)+1);
+	      strcpy(decode_table[op->value|0xb0], name);
+
+	      exec_table[op->value|0xb0] = opname;
+	      
+	      if (op->flags.isstore)
+		{
+		  fprintf(dest, "    st = GetCode(pc+%i);\n", pcadd);
+		  pcadd++;
+		}
+	      if (op->flags.isbranch)
+		{
+		  fprintf(dest, "    tmp = GetCode(pc+%i);\n", pcadd);
+		  fprintf(dest, "    branch = tmp&0x3f;\n");
+		  fprintf(dest, "    padding=0;\n");
+		  fprintf(dest, "    if (!(tmp&0x40))\n");
+		  fprintf(dest, "      {\n");
+		  fprintf(dest, "        padding = 1;\n");
+		  fprintf(dest, "        if (branch&0x20)\n");
+		  fprintf(dest, "          branch -= 64;\n");
+		  fprintf(dest, "        branch <<= 8;\n");
+		  fprintf(dest, "        branch |= GetCode(pc+%i);\n",
+			  pcadd+1);
+		  fprintf(dest, "      }\n");
+		  fprintf(dest, "    negate = tmp&0x80;\n");
+ 		  pcadd++;
+		}
+	      if (op->flags.isstring)
+		{
+		  fprintf(dest, "    string = zscii_to_unicode(&GetCode(pc+%i), &padding);\n", pcadd);
+		}
+
+	      if (op->flags.isbranch || op->flags.isstring)
+		fprintf(dest, "    pc += %i+padding;\n", pcadd);
+	      else
+		fprintf(dest, "    pc += %i;\n", pcadd);
+
+	      fprintf(dest, "    goto *exec[instr];\n");
+	      fprintf(dest, "\n");
+	      break;
+	      
+	    case unop:
+	      for (y=0; y<3; y++)
+		{
+		  pcadd = 1;
+		  fprintf(dest, "  %s_%i:\n", name, y);
+
+		  decode_table[op->value|0x80|(y<<4)] = malloc(strlen(name)+4);
+		  sprintf(decode_table[op->value|0x80|(y<<4)], "%s_%i", name, y);
+		  
+		  exec_table[op->value|0x80|(y<<4)] = opname;
+
+		  switch (y)
+		    {
+		    case 0:
+		      fprintf(dest, "    arg1 = (GetCode(pc+%i)<<8)|GetCode(pc+%i);\n", pcadd, pcadd+1);
+		      pcadd+=2;
+		      break;
+
+		    case 1:
+		      fprintf(dest, "    arg1 = GetCode(pc+%i);\n",
+			      pcadd);
+		      pcadd++;
+		      break;
+
+		    case 2:
+		      fprintf(dest, "    arg1 = GetVar(GetCode(pc+%i));\n",
+			      pcadd);
+		      pcadd++;
+		      break;
+		    }
+		  
+		  if (op->flags.isstore)
+		    {
+		      fprintf(dest, "    st = GetCode(pc+%i);\n", pcadd);
+		      pcadd++;
+		    }
+		  if (op->flags.isbranch)
+		    {
+		      fprintf(dest, "    tmp = GetCode(pc+%i);\n", pcadd);
+		      fprintf(dest, "    branch = tmp&0x3f;\n");
+		      fprintf(dest, "    padding=0;\n");
+		      fprintf(dest, "    if (!(tmp&0x40))\n");
+		      fprintf(dest, "      {\n");
+		      fprintf(dest, "        padding = 1;\n");
+		      fprintf(dest, "        if (branch&0x20)\n");
+		      fprintf(dest, "          branch -= 64;\n");
+		      fprintf(dest, "        branch <<= 8;\n");
+		      fprintf(dest, "        branch |= GetCode(pc+%i);\n",
+			      pcadd+1);
+		      fprintf(dest, "      }\n");
+		      fprintf(dest, "    negate = tmp&0x80;\n");
+		      pcadd++;
+		    }
+		  if (op->flags.isstring)
+		    {
+		      fprintf(dest, "    /* Implement me */\n");
+		    }
+		  
+		  if (op->flags.isbranch || op->flags.isstring)
+		    fprintf(dest, "    pc += %i+padding;\n", pcadd);
+		  else
+		    fprintf(dest, "    pc += %i;\n", pcadd);
+
+		  fprintf(dest, "    goto *exec[instr];\n");
+		  fprintf(dest, "\n");
+		}
+	      break;
+	      
+	    case binop:
+	      for (y=0; y<4; y++)
+		{
+		  fprintf(dest, "  %s_%i:\n", name, y);
+
+		  decode_table[op->value|(y<<5)] = malloc(strlen(name)+4);
+		  sprintf(decode_table[op->value|(y<<5)], 
+			  "%s_%i", name, y);
+
+		  exec_table[op->value|(y<<5)] = opname;
+
+		  pcadd = 1;
+
+		  if (op->flags.reallyvar)
+		    fprintf(dest, "    argblock.n_args = 2;\n");
+		  if (y&2)
+		    fprintf(dest, "    arg1 = GetVar(GetCode(pc+1));\n");
+		  else
+		    fprintf(dest, "    arg1 = GetCode(pc+1);\n");
+		  if (y&1)
+		    fprintf(dest, "    arg2 = GetVar(GetCode(pc+2));\n");
+		  else
+		    fprintf(dest, "    arg2 = GetCode(pc+2);\n");
+		  pcadd+=2;
+		  
+		  if (op->flags.isstore)
+		    {
+		      fprintf(dest, "    st = GetCode(pc+%i);\n", pcadd);
+		      pcadd++;
+		    }
+		  if (op->flags.isbranch)
+		    {
+		      fprintf(dest, "    tmp = GetCode(pc+%i);\n", pcadd);
+		      fprintf(dest, "    branch = tmp&0x3f;\n");
+		      fprintf(dest, "    padding=0;\n");
+		      fprintf(dest, "    if (!(tmp&0x40))\n");
+		      fprintf(dest, "      {\n");
+		      fprintf(dest, "        padding = 1;\n");
+		      fprintf(dest, "        if (branch&0x20)\n");
+		      fprintf(dest, "          branch -= 64;\n");
+		      fprintf(dest, "        branch <<= 8;\n");
+		      fprintf(dest, "        branch |= GetCode(pc+%i);\n",
+			      pcadd+1);
+		      fprintf(dest, "      }\n");
+		      fprintf(dest, "    negate = tmp&0x80;\n");
+		      pcadd++;
+		    }
+		  
+		  if (op->flags.isbranch || op->flags.isstring)
+		    fprintf(dest, "    pc += %i+padding;\n", pcadd);
+		  else
+		    fprintf(dest, "    pc += %i;\n", pcadd);
+
+		  fprintf(dest, "  goto *exec[instr];\n");
+		}
+
+	      fprintf(dest, "  %s_var:\n", name);
+	      pcadd = 4;
+	      fprintf(dest, "    padding = zmachine_decode_varop(stack, &GetCode(pc+1), &argblock)-2;\n");
+	      
+	      decode_table[op->value|0xc0] = malloc(strlen(name)+5);
+	      sprintf(decode_table[op->value|0xc0], "%s_var", name);
+
+	      exec_table[op->value|0xc0] = opname;
+
+	      if (op->flags.isstore)
+		{
+		  fprintf(dest, "    st = GetCode(pc+%i+padding);\n", pcadd);
+		  pcadd++;
+		}
+	      if (op->flags.isbranch)
+		{
+		  fprintf(dest, "    tmp = GetCode(pc+%i+padding);\n", pcadd);
+		  fprintf(dest, "    branch = tmp&0x3f;\n");
+		  fprintf(dest, "    if (!(tmp&0x40))\n");
+		  fprintf(dest, "      {\n");
+		  fprintf(dest, "        padding++;\n");
+		  fprintf(dest, "        if (branch&0x20)\n");
+		  fprintf(dest, "          branch -= 64;\n");
+		  fprintf(dest, "        branch <<= 8;\n");
+		  fprintf(dest, "        branch |= GetCode(pc+%i+padding);\n",
+			  pcadd);
+		  fprintf(dest, "      }\n");
+		  fprintf(dest, "    negate = tmp&0x80;\n");
+		  pcadd++;
+		}
+
+	      fprintf(dest, "    pc += %i+padding;\n", pcadd);
+	      fprintf(dest, "    goto *exec[instr];\n");
+	      break;
+	      
+	    case varop:
+	      fprintf(dest, "  %s:\n", name);
+
+	      decode_table[op->value|0xe0] = malloc(strlen(name)+1);
+	      strcpy(decode_table[op->value|0xe0], name);
+
+	      exec_table[op->value|0xe0] = opname;
+
+	      pcadd = 2;
+	      if (op->flags.islong)
+		{
+		  fprintf(dest, "    padding = zmachine_decode_doubleop(stack, &GetCode(pc+1), &argblock);\n");
+		  pcadd++;
+		}
+	      else
+		fprintf(dest, "    padding = zmachine_decode_varop(stack, &GetCode(pc+1), &argblock);\n");
+		  
+	      if (op->flags.isstore)
+		{
+		  fprintf(dest, "    st = GetCode(pc+%i+padding);\n", pcadd);
+		  pcadd++;
+		}
+	      if (op->flags.isbranch)
+		{
+		  fprintf(dest, "    tmp = GetCode(pc+%i+padding);\n", pcadd);
+		  fprintf(dest, "    branch = tmp&0x3f;\n");
+		  fprintf(dest, "    if (!(tmp&0x40))\n");
+		  fprintf(dest, "      {\n");
+		  fprintf(dest, "        padding++;\n");
+		  fprintf(dest, "        if (branch&0x20)\n");
+		  fprintf(dest, "          branch -= 64;\n");
+		  fprintf(dest, "        branch <<= 8;\n");
+		  fprintf(dest, "        branch |= GetCode(pc+%i+padding);\n",
+			  pcadd);
+		  fprintf(dest, "      }\n");
+		  fprintf(dest, "    negate = tmp&0x80;\n");
+		  pcadd++;
+		}
+
+	      fprintf(dest, "    pc += %i+padding;\n", pcadd);
+	      fprintf(dest, "    goto *exec[instr];\n");
+	      break;
+	      
+	    case extop:
+	      fprintf(dest, "  %s:\n", name);
+
+	      decode_ext_table[op->value] = malloc(strlen(name)+1);
+	      strcpy(decode_ext_table[op->value], name);
+
+	      exec_ext_table[op->value] = opname;
+
+	      pcadd = 3;
+	      if (op->flags.islong)
+		{
+		  fprintf(dest, "    padding = zmachine_decode_doubleop(stack, &GetCode(pc+2), &argblock);\n");
+		  pcadd++;
+		}
+	      else
+		fprintf(dest, "    padding = zmachine_decode_varop(stack, &GetCode(pc+2), &argblock);\n");
+	      
+	      if (op->flags.isstore)
+		{
+		  fprintf(dest, "    st = GetCode(pc+%i+padding);\n", pcadd);
+		  pcadd++;
+		}
+	      if (op->flags.isbranch)
+		{
+		  fprintf(dest, "    tmp = GetCode(pc+%i+padding);\n", pcadd);
+		  fprintf(dest, "    branch = tmp&0x3f;\n");
+		  fprintf(dest, "    if (!(tmp&0x40))\n");
+		  fprintf(dest, "      {\n");
+		  fprintf(dest, "        padding++;\n");
+		  fprintf(dest, "        if (branch&0x20)\n");
+		  fprintf(dest, "          branch -= 64;\n");
+		  fprintf(dest, "        branch <<= 8;\n");
+		  fprintf(dest, "        branch |= GetCode(pc+%i+padding);\n",
+			  pcadd);
+		  fprintf(dest, "      }\n");
+		  fprintf(dest, "    negate = tmp&0x80;\n");
+		  pcadd++;
+		}
+
+	      fprintf(dest, "    pc+=%i+padding;\n", pcadd);
+	      fprintf(dest, "    goto *exec_ext[instr];\n");
+	      break;	      
+	    }
+
+	  fprintf(dest, "#endif\n");
+	}
+    }
+
+  decode_table[190] = "execute_ext_op";
+
+  fprintf(dest, "#else\n");
+  /* Output the tables */
+  if (version > 0)
+    {
+      fprintf (dest, "  static const void* decode_v%i[256] = {", version);
+      for (x=0; x<256; x++)
+	{
+	  if ((x&0x3) == 0)
+	    fprintf(dest, "\n    ");
+	  fprintf(dest, "&&%s,\t", decode_table[x]);
+	}
+      fprintf(dest, "\n  };\n");
+
+      fprintf (dest, "  static const void* decode_ext_v%i[256] = {", version);
+      for (x=0; x<256; x++)
+	{
+	  if ((x&0x3) == 0)
+	    fprintf(dest, "\n    ");
+	  fprintf(dest, "&&%s,\t", decode_ext_table[x]);
+	}
+      fprintf(dest, "\n  };\n");
+ 
+      fprintf (dest, "  static const void* exec_v%i[256] = {", version);
+      for (x=0; x<256; x++)
+	{
+	  if ((x&0x3) == 0)
+	    fprintf(dest, "\n    ");
+	  fprintf(dest, "&&%s,\t", exec_table[x]);
+	}
+      fprintf(dest, "\n  };\n");
+ 
+      fprintf (dest, "  static const void* exec_ext_v%i[256] = {", version);
+      for (x=0; x<256; x++)
+	{
+	  if ((x&0x3) == 0)
+	    fprintf(dest, "\n    ");
+	  fprintf(dest, "&&%s,\t", exec_ext_table[x]);
+	}
+      fprintf(dest, "\n  };\n");
+   }
+  fprintf(dest, "#endif\n");
+}
+#endif
 
 void output_operations(FILE* dest,
 		       int   ver)
@@ -617,7 +1074,9 @@ int main(int argc, char** argv)
       if ((output = fopen(argv[1], "w")))
 	{
 	  output_interpreter(output, atoi(argv[2]));
+	  fprintf(output, "#ifndef TABLES_ONLY\n");
 	  output_operations(output, atoi(argv[2]));
+	  fprintf(output, "#endif\n");
 	  fclose(output);
 	}
       else

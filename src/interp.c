@@ -1729,10 +1729,89 @@ void zmachine_runsome(const int version,
 
   int x;
 
+#ifdef HAVE_COMPUTED_GOTOS
+# define TABLES_ONLY
+# include "interp_z3.h"
+# include "interp_z4.h"
+# include "interp_z5.h"
+# include "interp_z6.h"
+# undef TABLES_ONLY
+
+  register const void** decode;
+  const void** decode_ext;
+  register const void** exec;
+  const void** exec_ext;
+#endif
+
   pc = start_counter;
   stack = &machine.stack;
 
-  while (pc != -1)
+#ifdef HAVE_COMPUTED_GOTOS
+  switch (version)
+    {
+# ifdef SUPPORT_VERSION_3
+    case 3:
+      decode = decode_v3;
+      decode_ext = decode_ext_v3;
+      exec = exec_v3;
+      exec_ext = exec_ext_v3;
+      break;
+# endif
+# ifdef SUPPORT_VERSION_3
+    case 4:
+      decode = decode_v4;
+      decode_ext = decode_ext_v4;
+      exec = exec_v4;
+      exec_ext = exec_ext_v4;
+      break;
+# endif
+# ifdef SUPPORT_VERSION_3
+    case 5:
+      decode = decode_v5;
+      decode_ext = decode_ext_v5;
+      exec = exec_v5;
+      exec_ext = exec_ext_v5;
+      break;
+# endif
+# ifdef SUPPORT_VERSION_3
+    case 6:
+      decode = decode_v6;
+      decode_ext = decode_ext_v6;
+      exec = exec_v6;
+      exec_ext = exec_ext_v6;
+      break;
+# endif
+    }
+
+ loop:
+  instr = GetCode(pc);
+ execute_instr:
+  goto *decode[instr];
+
+ badop:
+  zmachine_fatal("Unknown opcode: %x", instr);
+
+ execute_ext_op:
+  instr = GetCode(pc+1);
+  goto *decode_ext[instr];
+
+# include "interp_gen.h"
+
+# ifdef SUPPORT_VERSION_3
+#  include "interp_z3.h"
+# endif
+# ifdef SUPPORT_VERSION_4
+#  include "interp_z4.h"
+# endif
+# ifdef SUPPORT_VERSION_5
+#  include "interp_z5.h"
+# endif
+# ifdef SUPPORT_VERSION_6
+#  include "interp_z6.h"
+# endif
+
+#else
+  while (1)
     {
       instr = GetCode(pc);
 
@@ -1801,4 +1880,5 @@ void zmachine_runsome(const int version,
 	}
       loop: ;
     }
+#endif
 }

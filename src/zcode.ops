@@ -1173,6 +1173,7 @@ OPCODE "catch"       0OP:0x09 STORE   VERSION 5,6,7,8
 OPCODE "quit"        0OP:0x0a CANJUMP VERSION all 
 %{
   pc = -1;
+  return;
 %}
 
 OPCODE "new_line"    0OP:0x0b         VERSION all
