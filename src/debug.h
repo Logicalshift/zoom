@@ -195,6 +195,7 @@ struct debug_symbols
   int            nfiles;
 
   ZDWord         codearea;
+  ZDWord		 stringarea;
 };
 
 struct debug_address

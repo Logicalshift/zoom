@@ -1075,6 +1075,8 @@ void debug_load_symbols(char* filename,
 		if (strcmp(name, "code area") == 0)
 		  {
 		    debug_syms.codearea = address;
+		  } else if (strcmp(name, "strings area") == 0) {
+			  debug_syms.stringarea = address;
 		  }
 	      }
 	    pos++;
