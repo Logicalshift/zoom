@@ -6,7 +6,7 @@
 # (Note, font 4 must always be fixed-pitch)
 default "%s (%i.%.6s)"
 {
-  interpreter 1
+  interpreter 3
   revision    Z
 
   font 1  "'Times' 14"          roman
