@@ -7,6 +7,7 @@
 #define YYERROR_VERBOSE
 
 extern int yyline;
+extern int codeline; 
 
 oplist zmachine;
 extern int  yyerror(char*);
@@ -39,12 +40,14 @@ extern int  yylex(void);
 
 %token <number> NUMBER
 %token <string> STRING
+%token <string> CODEBLOCK
 
 %type <op>      OpCode
 %type <flags>   FlagList
 %type <number>  SupportedVersions 
 %type <number>  VersionList
 %type <number>  Flag
+%type <string>  OptionalCode
 
 %%
 
@@ -72,7 +75,7 @@ ZMachine:	  OpCode
 		    }
 		;
 
-OpCode:		  OPCODE STRING OPTYPE ':' NUMBER FlagList VERSION SupportedVersions
+OpCode:		  OPCODE STRING OPTYPE ':' NUMBER FlagList VERSION SupportedVersions OptionalCode
 		    {
 		      $$ = malloc(sizeof(operation));
 
@@ -81,6 +84,16 @@ OpCode:		  OPCODE STRING OPTYPE ':' NUMBER FlagList VERSION SupportedVersions
 		      $$->value    = $5;
 		      $$->flags    = $6;
 		      $$->versions = $8;
+		      $$->code     = $9;
+		      $$->codeline = codeline;
+		    }
+		;
+
+OptionalCode:	  /* Empty */
+		    { $$ = NULL; }
+		| CODEBLOCK
+		    {
+		      $$ = $1;
 		    }
 		;
 

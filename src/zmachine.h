@@ -42,12 +42,6 @@
  * Undefining SAFE will turn off bounds checking in any operations
  * that use it.
  *
- * INLINE inlines all the functions in op.c (assuming you're using
- * gcc, at any rate). As these are at the center of the inner loop,
- * this tends to produce a fairly good speed increase. However, it
- * gives gcc a bit of a heart attack if you have more than one
- * SUPPORT_VERSION compiled in (it's bad enough with just one)
- *
  * GLOBAL_PC will make the program counter be stored in a global
  * variable - this creates a very slight slowdown, but means warnings
  * and errors can give the PC that they occured at
@@ -59,7 +53,6 @@
 
 #undef  DEBUG        /* Lots of debugging crap */
 #define SAFE         /* Perform more bounds checking */
-#undef  INLINE_OPS   /* Inline operation functions - ~30% speed increase */
 #undef  PAGED_MEMORY /* Not implemented, anyway ;-) */
 #define GLOBAL_PC    /* Set to make the program counter global */
 #define CAN_UNDO     /* Support the undo commands */

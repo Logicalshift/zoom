@@ -31,6 +31,7 @@
 #include "options.h"
 #include "interp.h"
 #include "rc.h"
+#include "stream.h"
 
 #include "display.h"
 
@@ -184,6 +185,7 @@ int main(int argc, char** argv)
       break;
     }
 
+  stream_flush_buffer();
   display_prints("\n");
   display_set_colour(7, 1);
   display_prints("[ Press any key to exit ]");

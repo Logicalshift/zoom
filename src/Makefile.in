@@ -77,7 +77,7 @@ bin_PROGRAMS =  	zoom
 
 EXTRA_DIST = zcode.ops
 
-zoom_SOURCES =  	main.c interp.c op.c file.c options.c zmachine.c zscii.c xdisplay.c 	hash.c tokenise.c stream.c font3.c state.c pix.c rc.c rc_parse.y 	rc_lex.l 		file.h zmachine.h options.h interp.h zscii.h op.h display.h hash.h 	tokenise.h stream.h font3.h state.h pix.h rc.h rcp.h rc_parse.h
+zoom_SOURCES =  	main.c interp.c file.c options.c zmachine.c zscii.c xdisplay.c 	hash.c tokenise.c stream.c font3.c state.c pix.c rc.c rc_parse.y 	rc_lex.l 		file.h zmachine.h options.h interp.h zscii.h display.h hash.h 	tokenise.h stream.h font3.h state.h pix.h rc.h rcp.h rc_parse.h
 
 
 CFLAGS = @CFLAGS@ @X_CFLAGS@
@@ -96,7 +96,7 @@ X_CFLAGS = @X_CFLAGS@
 X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
-zoom_OBJECTS =  main.o interp.o op.o file.o options.o zmachine.o zscii.o \
+zoom_OBJECTS =  main.o interp.o file.o options.o zmachine.o zscii.o \
 xdisplay.o hash.o tokenise.o stream.o font3.o state.o pix.o rc.o \
 rc_parse.o rc_lex.o
 zoom_LDADD = $(LDADD)
@@ -114,6 +114,10 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
 GZIP_ENV = --best
+DEP_FILES =  .deps/file.P .deps/font3.P .deps/hash.P .deps/interp.P \
+.deps/main.P .deps/options.P .deps/pix.P .deps/rc.P .deps/rc_lex.P \
+.deps/rc_parse.P .deps/state.P .deps/stream.P .deps/tokenise.P \
+.deps/xdisplay.P .deps/zmachine.P .deps/zscii.P
 SOURCES = $(zoom_SOURCES)
 OBJECTS = $(zoom_OBJECTS)
 
@@ -121,9 +125,9 @@ all: all-redirect
 .SUFFIXES:
 .SUFFIXES: .S .c .l .o .s .y
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu --include-deps src/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu src/Makefile
 
-Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
@@ -154,9 +158,6 @@ uninstall-binPROGRAMS:
 	list='$(bin_PROGRAMS)'; for p in $$list; do \
 	  rm -f $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
 	done
-
-.c.o:
-	$(COMPILE) -c $<
 
 .s.o:
 	$(COMPILE) -c $<
@@ -221,6 +222,11 @@ distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 subdir = src
 
 distdir: $(DISTFILES)
+	here=`cd $(top_builddir) && pwd`; \
+	top_distdir=`cd $(top_distdir) && pwd`; \
+	distdir=`cd $(distdir) && pwd`; \
+	cd $(top_srcdir) \
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu src/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
@@ -231,34 +237,38 @@ distdir: $(DISTFILES)
 	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
-file.o: file.c file.h ztypes.h ../config.h
-font3.o: font3.c font3.h
-hash.o: hash.c hash.h
-interp.o: interp.c ../config.h zmachine.h ztypes.h hash.h file.h op.h \
-	zscii.h varop.h interp_gen.h interp_z3.h interp_z4.h \
-	interp_z5.h
-main.o: main.c zmachine.h ztypes.h ../config.h hash.h file.h options.h \
-	interp.h rc.h display.h
-op.o: op.c ../config.h zmachine.h ztypes.h hash.h file.h op.h zscii.h \
-	tokenise.h stream.h state.h pix.h display.h
-options.o: options.c zmachine.h ztypes.h ../config.h hash.h file.h \
-	options.h
-pix.o: pix.c ztypes.h ../config.h zmachine.h hash.h file.h pix.h
-rc.o: rc.c zmachine.h ztypes.h ../config.h hash.h file.h rc.h rcp.h
-rc_lex.o: rc_lex.c rc.h rcp.h rc_parse.h
-rc_parse.o: rc_parse.c ../config.h zmachine.h ztypes.h hash.h file.h \
-	rc.h rcp.h
-state.o: state.c zmachine.h ztypes.h ../config.h hash.h file.h state.h
-stream.o: stream.c zmachine.h ztypes.h ../config.h hash.h file.h \
-	stream.h display.h
-tokenise.o: tokenise.c zmachine.h ztypes.h ../config.h hash.h file.h \
-	tokenise.h zscii.h
-xdisplay.o: xdisplay.c zmachine.h ztypes.h ../config.h hash.h file.h \
-	display.h font3.h rc.h
-zmachine.o: zmachine.c zmachine.h ztypes.h ../config.h hash.h file.h \
-	zscii.h display.h rc.h
-zscii.o: zscii.c zmachine.h ztypes.h ../config.h hash.h file.h zscii.h
 
+DEPS_MAGIC := $(shell mkdir .deps > /dev/null 2>&1 || :)
+
+-include $(DEP_FILES)
+
+mostlyclean-depend:
+
+clean-depend:
+
+distclean-depend:
+	-rm -rf .deps
+
+maintainer-clean-depend:
+
+%.o: %.c
+	@echo '$(COMPILE) -c $<'; \
+	$(COMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-cp .deps/$(*F).pp .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm .deps/$(*F).pp
+
+%.lo: %.c
+	@echo '$(LTCOMPILE) -c $<'; \
+	$(LTCOMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-sed -e 's/^\([^:]*\)\.o[ 	]*:/\1.lo \1.o :/' \
+	  < .deps/$(*F).pp > .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm -f .deps/$(*F).pp
 info-am:
 info: info-am
 dvi-am:
@@ -297,23 +307,24 @@ distclean-generic:
 maintainer-clean-generic:
 	-test -z "rc_lexlrc_parsehrc_parsec" || rm -f rc_lexl rc_parseh rc_parsec
 mostlyclean-am:  mostlyclean-binPROGRAMS mostlyclean-compile \
-		mostlyclean-tags mostlyclean-generic
+		mostlyclean-tags mostlyclean-depend mostlyclean-generic
 
 mostlyclean: mostlyclean-am
 
-clean-am:  clean-binPROGRAMS clean-compile clean-tags clean-generic \
-		mostlyclean-am
+clean-am:  clean-binPROGRAMS clean-compile clean-tags clean-depend \
+		clean-generic mostlyclean-am
 
 clean: clean-am
 
 distclean-am:  distclean-binPROGRAMS distclean-compile distclean-tags \
-		distclean-generic clean-am
+		distclean-depend distclean-generic clean-am
 
 distclean: distclean-am
 
 maintainer-clean-am:  maintainer-clean-binPROGRAMS \
 		maintainer-clean-compile maintainer-clean-tags \
-		maintainer-clean-generic distclean-am
+		maintainer-clean-depend maintainer-clean-generic \
+		distclean-am
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
 
@@ -323,12 +334,13 @@ maintainer-clean: maintainer-clean-am
 maintainer-clean-binPROGRAMS uninstall-binPROGRAMS install-binPROGRAMS \
 mostlyclean-compile distclean-compile clean-compile \
 maintainer-clean-compile tags mostlyclean-tags distclean-tags \
-clean-tags maintainer-clean-tags distdir info-am info dvi-am dvi check \
-check-am installcheck-am installcheck install-exec-am install-exec \
-install-data-am install-data install-am install uninstall-am uninstall \
-all-redirect all-am all installdirs mostlyclean-generic \
-distclean-generic clean-generic maintainer-clean-generic clean \
-mostlyclean distclean maintainer-clean
+clean-tags maintainer-clean-tags distdir mostlyclean-depend \
+distclean-depend clean-depend maintainer-clean-depend info-am info \
+dvi-am dvi check check-am installcheck-am installcheck install-exec-am \
+install-exec install-data-am install-data install-am install \
+uninstall-am uninstall all-redirect all-am all installdirs \
+mostlyclean-generic distclean-generic clean-generic \
+maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 
 interp.c: interp_gen.h interp_z3.h interp_z4.h interp_z5.h interp_z6.h varop.h
@@ -339,15 +351,15 @@ doubleop.h: $(top_srcdir)/builder/varopdecode.pl
 	 @PERL@ $(top_srcdir)/builder/varopdecode.pl 8 doubleop >doubleop.h
 
 interp_gen.h: zcode.ops $(top_builddir)/builder/builder
-	     $(top_builddir)/builder/builder interp_gen.h -1 <$(top_srcdir)/src/zcode.ops
+	     $(top_builddir)/builder/builder interp_gen.h -1 $(top_srcdir)/src/zcode.ops
 interp_z3.h: zcode.ops $(top_builddir)/builder/builder
-	     $(top_builddir)/builder/builder interp_z3.h 3 <$(top_srcdir)/src/zcode.ops
+	     $(top_builddir)/builder/builder interp_z3.h 3 $(top_srcdir)/src/zcode.ops
 interp_z4.h: zcode.ops $(top_builddir)/builder/builder
-	     $(top_builddir)/builder/builder interp_z4.h 4 <$(top_srcdir)/src/zcode.ops
+	     $(top_builddir)/builder/builder interp_z4.h 4 $(top_srcdir)/src/zcode.ops
 interp_z5.h: zcode.ops $(top_builddir)/builder/builder
-	     $(top_builddir)/builder/builder interp_z5.h 5 <$(top_srcdir)/src/zcode.ops
+	     $(top_builddir)/builder/builder interp_z5.h 5 $(top_srcdir)/src/zcode.ops
 interp_z6.h: zcode.ops $(top_builddir)/builder/builder
-	     $(top_builddir)/builder/builder interp_z6.h 6 <$(top_srcdir)/src/zcode.ops
+	     $(top_builddir)/builder/builder interp_z6.h 6 $(top_srcdir)/src/zcode.ops
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

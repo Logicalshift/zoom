@@ -1,3 +1,12 @@
+2000-11-08  Andrew Hunter    <andrew@logicalshift.co.uk>
+
+	* changed builder to new format. Now uses gotos rather than calling
+	subroutines. This is a manual inlining of the functions - we get the
+	speed increases encountered before, but without the compiler
+	problems, or the size increase. Standard speed of the interpreter
+	is just over twice the speed of frotz. The new format of the
+	zcode.ops file removed the need for op.c altogether.
+	
 2000-11-07  Andrew Hunter    <andrew@logicalshift.co.uk>
 
 	* version changed to 0.9.99dev4

@@ -37,6 +37,8 @@ extern int    yyline;
 extern oplist zmachine;
 extern int    yyparse();
 
+static char*  filename;
+
 static int sortops(const void* un, const void* deux)
 {
   operation* one;
@@ -76,61 +78,13 @@ static char* notimpl = "    /* %s not implemented */\n";
 
 static void output_opname(FILE* dest,
 			  char* opname,
-			  int   versions,
-			  int   args,
-			  int   store,
-			  int   branch,
-			  int   canjump,
-			  int   omit,
-			  int   negate,
-			  int   varop)
+			  int   versions)
 {
   int x,z;
-  
-  fprintf(dest, "zcode_op_%s", opname);
-  if (negate)
-    fprintf(dest, "n");
-  if (omit==4)
-    fprintf(dest, "m");
-  VERSIONS;
-  fprintf(dest, "(");
-  
-  if (branch || canjump)
-    {
-      fprintf(dest, "&pc, ");
-    }
-  fprintf(dest, "stack");
-  if (omit == 1)
-    {
-      fprintf(dest, ", omit");
-    }
-  else if (omit == 2)
-    {
-      fprintf(dest, ", 2");
-    }
-  else if (omit == 3)
-    {
-      fprintf(dest, ", argblock.n_args");
-    }
 
-  if (varop || omit == 4)
-    {
-      fprintf(dest, ", &argblock");
-    }
-  else
-    for (x=0; x<args; x++)
-      {
-	fprintf(dest, ", arg%i", x+1);
-      }
-  if (store)
-    {
-      fprintf(dest, ", store");
-    }
-  if (branch)
-    {
-      fprintf(dest, ", branch");
-    }
-  fprintf(dest, ")");
+  fprintf(dest, "goto op_%s", opname);
+  VERSIONS;
+  fprintf(dest, ";\n");
 }
 
 void output_interpreter(FILE* dest,
@@ -164,7 +118,7 @@ void output_interpreter(FILE* dest,
 
 	      if (op->flags.isstore)
 		{
-		  fprintf(dest, "      store = GetCode(pc+%i);\n", pcadd);
+		  fprintf(dest, "      st = GetCode(pc+%i);\n", pcadd);
 		  pcadd++;
 		}
 	      if (op->flags.isbranch)
@@ -189,58 +143,14 @@ void output_interpreter(FILE* dest,
 		  fprintf(dest, "      string = zscii_to_ascii(&GetCode(pc+%i), &padding);\n", pcadd);
 		}
 
-	      if (op->flags.isstring)
-		{
-		  fprintf(dest, "      pc += %i+padding;\n", pcadd);
-		  if (!op->flags.canjump)
-		    fprintf(dest, "      zcode_op_%s(string);\n", op->name);
-		  else
-		    fprintf(dest, "      zcode_op_%s(&pc, stack, string);\n", op->name);
-		}
+	      if (op->flags.isbranch || op->flags.isstring)
+		fprintf(dest, "      pc += %i+padding;\n", pcadd);
 	      else
-		{
-		  if (op->flags.isbranch || op->flags.canjump)
-		    {
-		      if (op->flags.isbranch)
-			fprintf(dest, "      pc += %i+padding;\n",
-				pcadd);
-		      else
-		    fprintf(dest, "      pc += %i;\n", pcadd);
-		      
-		      if (op->flags.canjump)
-			{
-			  fprintf(dest, "      ");
-			  output_opname(dest, op->name, op->versions, 0,
-					op->flags.isstore, op->flags.isbranch,
-					op->flags.canjump,
-					0, 0, 0);
-			  fprintf(dest, ";\n");
-			}
-		      else
-			{
-			  fprintf(dest, "      if (negate)\n");
-			  fprintf(dest, "        ");
-			  output_opname(dest, op->name, op->versions, 0,
-					op->flags.isstore, op->flags.isbranch, op->flags.canjump,
-					0, 0, 0);
-			  fprintf(dest, ";\n      else\n        ");
-			  output_opname(dest, op->name, op->versions, 0,
-					op->flags.isstore, op->flags.isbranch, op->flags.canjump,
-					0, 1, 0);
-			  fprintf(dest, ";\n");
-			}
-		    }
-		  else
-		    {
-		      fprintf(dest, "      pc += %i;\n", pcadd);
-		      fprintf(dest, "      ");
-		      output_opname(dest, op->name, op->versions, 0,
-				    op->flags.isstore, op->flags.isbranch, op->flags.canjump,
-				    0, 0, 0);
-		      fprintf(dest, ";\n");
-		    }
-		}
-	      fprintf(dest, "      break;\n\n");
+		fprintf(dest, "      pc += %i;\n", pcadd);
+	      
+	      fprintf(dest, "      ");
+	      output_opname(dest, op->name, op->versions);
+	      fprintf(dest, "\n");
 	      break;
 
 	      /* All possible 1OP bytes */
@@ -276,7 +186,7 @@ void output_interpreter(FILE* dest,
 		  
 		  if (op->flags.isstore)
 		    {
-		      fprintf(dest, "      store = GetCode(pc+%i);\n", pcadd);
+		      fprintf(dest, "      st = GetCode(pc+%i);\n", pcadd);
 		      pcadd++;
 		    }
 		  if (op->flags.isbranch)
@@ -301,46 +211,15 @@ void output_interpreter(FILE* dest,
 		      fprintf(dest, "      /* Implement me */\n");
 		    }
 		  
-		  if (op->flags.isbranch || op->flags.canjump)
-		    {
-		      if (op->flags.isbranch)
-			fprintf(dest, "      pc += %i+padding;\n",
-				pcadd);
-		      else
-			fprintf(dest, "      pc += %i;\n", pcadd);
-
-		      if (op->flags.canjump)
-			{
-			  fprintf(dest, "      ");
-			  output_opname(dest, op->name, op->versions, 1,
-					op->flags.isstore, op->flags.isbranch, op->flags.canjump,
-					0, 0, 0);
-			  fprintf(dest, ";\n");
-			}
-		      else
-			{
-			  fprintf(dest, "      if (negate)\n");
-			  fprintf(dest, "        ");
-			  output_opname(dest, op->name, op->versions, 1,
-					op->flags.isstore, op->flags.isbranch, op->flags.canjump,
-					0, 0, 0);
-			  fprintf(dest, ";\n      else\n        ");
-			  output_opname(dest, op->name, op->versions, 1,
-					op->flags.isstore, op->flags.isbranch, op->flags.canjump,
-					0, 1, 0);
-			  fprintf(dest, ";\n");
-			}
-		    }
+		  if (op->flags.isbranch || op->flags.isstring)
+		    fprintf(dest, "      pc += %i+padding;\n", pcadd);
 		  else
-		    {
-		      fprintf(dest, "      pc += %i;\n", pcadd);
-		      fprintf(dest, "      ");
-		      output_opname(dest, op->name, op->versions, 1,
-				    op->flags.isstore, op->flags.isbranch, op->flags.canjump,
-				    0, 0, 0);
-		      fprintf(dest, ";\n");
-		    }
-		  fprintf(dest, "      break;\n\n");
+		    fprintf(dest, "      pc += %i;\n", pcadd);
+		  
+		  fprintf(dest, "      ");
+		  output_opname(dest, op->name, op->versions);
+		  
+		  fprintf(dest, "\n");
 		}
 	      break;
 
@@ -355,6 +234,8 @@ void output_interpreter(FILE* dest,
 		  fprintf(dest, "#ifdef DEBUG\nprintf(\"%s\\n\");\n#endif\n",
 			  op->name);
 
+		  if (op->flags.reallyvar)
+		    fprintf(dest, "      argblock.n_args = 2;\n");
 		  if (y&2)
 		    fprintf(dest, "      arg1 = GetVar(GetCode(pc+1));\n");
 		  else
@@ -367,7 +248,7 @@ void output_interpreter(FILE* dest,
 		  
 		  if (op->flags.isstore)
 		    {
-		      fprintf(dest, "      store = GetCode(pc+%i);\n", pcadd);
+		      fprintf(dest, "      st = GetCode(pc+%i);\n", pcadd);
 		      pcadd++;
 		    }
 		  if (op->flags.isbranch)
@@ -387,46 +268,16 @@ void output_interpreter(FILE* dest,
 		      fprintf(dest, "      negate = tmp&0x80;\n");
 		      pcadd++;
 		    }
-		  if (op->flags.isbranch || op->flags.canjump)
-		    {
-		      if (op->flags.isbranch)
-			fprintf(dest, "      pc += %i+padding;\n",
-				pcadd);
-		      else
-			fprintf(dest, "      pc += %i;\n", pcadd);
-
-		      if (op->flags.canjump)
-			{
-			  fprintf(dest, "      ");
-			  output_opname(dest, op->name, op->versions, 2,
-					op->flags.isstore, op->flags.isbranch, op->flags.canjump,
-					2, 0, 0);
-			  fprintf(dest, ";\n");
-			}
-		      else
-			{
-			  fprintf(dest, "      if (negate)\n");
-			  fprintf(dest, "        ");
-			  output_opname(dest, op->name, op->versions, 2,
-					op->flags.isstore, op->flags.isbranch, op->flags.canjump,
-					2, 0, 0);
-			  fprintf(dest, ";\n      else\n        ");
-			  output_opname(dest, op->name, op->versions, 2,
-					op->flags.isstore, op->flags.isbranch, op->flags.canjump,
-					2, 1, 0);
-			  fprintf(dest, ";\n");
-			}
-		    }
+		  
+		  if (op->flags.isbranch || op->flags.isstring)
+		    fprintf(dest, "      pc += %i+padding;\n", pcadd);
 		  else
-		    {
-		      fprintf(dest, "      pc += %i;\n", pcadd);
-		      fprintf(dest, "      ");
-		      output_opname(dest, op->name, op->versions, 2,
-				    op->flags.isstore, op->flags.isbranch, op->flags.canjump,
-				    2, 0, 0);
-		      fprintf(dest, ";\n");
-		    }
-		  fprintf(dest, "      break;\n\n");
+		    fprintf(dest, "      pc += %i;\n", pcadd);
+		  
+		  fprintf(dest, "      ");
+		  output_opname(dest, op->name, op->versions);
+		  
+		  fprintf(dest, "\n");
 		}
 
 	      /*
@@ -508,7 +359,7 @@ void output_interpreter(FILE* dest,
 			fprintf(dest, "          omit = 2;\n");
 			
 		      fprintf(dest, "          padding = %i;\n", padding);
-		      fprintf(dest, "          break;\n");
+		      fprintf(dest, "          goto loop;\n");
 		    }
 		}
 	      fprintf(dest, "        default:\n");
@@ -517,14 +368,11 @@ void output_interpreter(FILE* dest,
 #else
 
 	      fprintf(dest, "        padding = zmachine_decode_varop(stack, &GetCode(pc+1), &argblock)-2;\n");
-	      fprintf(dest, "        arg1 = argblock.arg[0];\n");
-	      fprintf(dest, "        arg2 = argblock.arg[1];\n");
-	      /* fprintf(dest, "        omit = argblock.n_args;\n"); */
 #endif
 	      
 	      if (op->flags.isstore)
 		{
-		  fprintf(dest, "      store = GetCode(pc+%i+padding);\n", pcadd);
+		  fprintf(dest, "      st = GetCode(pc+%i+padding);\n", pcadd);
 		  pcadd++;
 		}
 	      if (op->flags.isbranch)
@@ -544,44 +392,10 @@ void output_interpreter(FILE* dest,
 		  pcadd++;
 		}
 
-	      if (op->flags.isbranch || op->flags.canjump)
-		{
-		  fprintf(dest, "        pc += %i+padding;\n",
-			  pcadd);
-
-		  if (op->flags.canjump)
-		    {
-		      fprintf(dest, "      ");
-		      output_opname(dest, op->name, op->versions, 2,
-				    op->flags.isstore, op->flags.isbranch, op->flags.canjump,
-				    op->flags.reallyvar?4:3, 0, 0);
-		      fprintf(dest, ";\n");
-		    }
-		  else
-		    {
-		      fprintf(dest, "      if (negate)\n");
-		      fprintf(dest, "        ");
-		      output_opname(dest, op->name, op->versions, 2,
-				    op->flags.isstore, op->flags.isbranch, op->flags.canjump,
-				    op->flags.reallyvar?4:3, 0, 0);
-		      fprintf(dest, ";\n      else\n        ");
-		      output_opname(dest, op->name, op->versions, 2,
-				    op->flags.isstore, op->flags.isbranch, op->flags.canjump,
-				    op->flags.reallyvar?4:3, 1, 0);
-		      fprintf(dest, ";\n");
-		    }
-		}
-	      else
-		{
-		  fprintf(dest, "      ");
-		  output_opname(dest, op->name, op->versions, 2,
-				op->flags.isstore, op->flags.isbranch, op->flags.canjump,
-				op->flags.reallyvar?4:3, 0, 0);
-		  fprintf(dest, ";\n");
-		  fprintf(dest, "      pc += %i+padding;\n", pcadd);
-		}
-
-	      fprintf(dest, "      break;\n\n");
+	      fprintf(dest, "      pc += %i+padding;\n", pcadd);
+	      fprintf(dest, "      ");
+	      output_opname(dest, op->name, op->versions);
+	      fprintf(dest, "\n");
 	      break;
 
 	    case varop:
@@ -600,7 +414,7 @@ void output_interpreter(FILE* dest,
 		  
 	      if (op->flags.isstore)
 		{
-		  fprintf(dest, "      store = GetCode(pc+%i+padding);\n", pcadd);
+		  fprintf(dest, "      st = GetCode(pc+%i+padding);\n", pcadd);
 		  pcadd++;
 		}
 	      if (op->flags.isbranch)
@@ -620,44 +434,10 @@ void output_interpreter(FILE* dest,
 		  pcadd++;
 		}
 
-	      if (op->flags.isbranch || op->flags.canjump)
-		{
-		  fprintf(dest, "      pc += %i+padding;\n",
-			  pcadd);
-
-		  if (op->flags.canjump)
-		    {
-		      fprintf(dest, "      ");
-		      output_opname(dest, op->name, op->versions, 0,
-				    op->flags.isstore, op->flags.isbranch, op->flags.canjump,
-				    0, 0, 1);
-		      fprintf(dest, ";\n");
-		    }
-		  else
-		    {
-		      fprintf(dest, "      if (negate)\n");
-		      fprintf(dest, "        ");
-		      output_opname(dest, op->name, op->versions, 0,
-				    op->flags.isstore, op->flags.isbranch, op->flags.canjump,
-				    0, 0, 1);
-		      fprintf(dest, ";\n      else\n        ");
-		      output_opname(dest, op->name, op->versions, 0,
-				    op->flags.isstore, op->flags.isbranch, op->flags.canjump,
-				    0, 1, 1);
-		      fprintf(dest, ";\n");
-		    }
-		}
-	      else
-		{
-		  fprintf(dest, "      pc += %i+padding;\n", pcadd);
-		  fprintf(dest, "      ");
-		  output_opname(dest, op->name, op->versions, 0,
-				op->flags.isstore, op->flags.isbranch, op->flags.canjump,
-				0, 0, 1);
-		  fprintf(dest, ";\n");
-		}
-	      
-	      fprintf(dest, "      break;\n\n");
+	      fprintf(dest, "      pc += %i+padding;\n", pcadd);
+	      fprintf(dest, "      ");
+	      output_opname(dest, op->name, op->versions);	      
+	      fprintf(dest, "\n");
 	      break;
 
 	    case extop:
@@ -698,7 +478,7 @@ void output_interpreter(FILE* dest,
 	      
 	      if (op->flags.isstore)
 		{
-		  fprintf(dest, "          store = GetCode(pc+%i+padding);\n", pcadd);
+		  fprintf(dest, "          st = GetCode(pc+%i+padding);\n", pcadd);
 		  pcadd++;
 		}
 	      if (op->flags.isbranch)
@@ -717,44 +497,11 @@ void output_interpreter(FILE* dest,
 		  fprintf(dest, "          negate = tmp&0x80;\n");
 		  pcadd++;
 		}
-	      
-	      if (op->flags.isbranch || op->flags.canjump)
-		{
-		  fprintf(dest, "          pc += %i+padding;\n",
-			  pcadd);
-		  
-		  if (op->flags.canjump)
-		    {
-		      fprintf(dest, "      ");
-		      output_opname(dest, op->name, op->versions, 0,
-				    op->flags.isstore, op->flags.isbranch, op->flags.canjump,
-				    0, 0, 1);
-		      fprintf(dest, ";\n");
-		    }
-		  else
-		    {
-		      fprintf(dest, "      if (negate)\n");
-		      fprintf(dest, "        ");
-		      output_opname(dest, op->name, op->versions, 0,
-				    op->flags.isstore, op->flags.isbranch, op->flags.canjump,
-				    0, 0, 1);
-		      fprintf(dest, ";\n      else\n        ");
-		      output_opname(dest, op->name, op->versions, 0,
-				  op->flags.isstore, op->flags.isbranch, op->flags.canjump,
-				    0, 1, 1);
-		      fprintf(dest, ";\n");
-		    }
-		}
-	      else
-		{
-		  fprintf(dest, "      ");
-		  output_opname(dest, op->name, op->versions, 0,
-				op->flags.isstore, op->flags.isbranch, op->flags.canjump,
-				0, 0, 1);
-		  fprintf(dest, ";\n");
-		  fprintf(dest, "          pc += %i+padding;\n", pcadd);
-		}
-	      fprintf(dest, "          break;\n\n");
+
+	      fprintf(dest, "          pc+=%i+padding;\n", pcadd);
+	      fprintf(dest, "          ");
+	      output_opname(dest, op->name, op->versions);	      
+	      fprintf(dest, "\n");
 	    }
 	}
       fprintf(dest, "        default:\n");
@@ -764,10 +511,9 @@ void output_interpreter(FILE* dest,
 	}
       else
 	{
-	  fprintf(dest, "          goto version;\n");
+	  fprintf(dest, "          break;\n");
 	}
       fprintf(dest, "        }\n");
-      fprintf(dest, "      break;\n\n");
     }
 
   fprintf(dest, "    default:\n");
@@ -782,27 +528,81 @@ void output_interpreter(FILE* dest,
   fprintf(dest, "    }\n");
 }
 
+void output_operations(FILE* dest,
+		       int   ver)
+{
+  int x, z;
+  int versions, vmask;
+
+  vmask = 1<<ver;
+
+  for (x=0; x<zmachine.numops; x++)
+    {
+      operation* op;
+
+      op = zmachine.op[x];
+
+      versions = op->versions;
+      if ((op->versions&vmask && op->versions != -1) ||
+	  (ver==-1 && op->versions == -1))
+      {
+	fprintf(dest, "#ifndef ZCODE_OP_%s", op->name);
+	VERSIONS;
+	fprintf(dest, "\n");
+	fprintf(dest, "# define ZCODE_OP_%s", op->name);
+	VERSIONS;
+	fprintf(dest, "\n");
+
+	fprintf(dest, "  op_%s", op->name);
+	VERSIONS;
+	fprintf(dest, ":\n");
+
+	if (op->code == NULL)
+	  fprintf(dest, "    zmachine_warning(\"%s not implemented\");\n", op->name);
+	else
+	  {
+	    fprintf(dest, "    {\n");
+	    fprintf(dest, "#line %i \"%s\"\n", op->codeline, filename);
+	    fprintf(dest, "%s\n", op->code);
+	    fprintf(dest, "    }\n");
+	  }
+	
+	fprintf(dest, "    goto loop;\n\n");
+	fprintf(dest, "#endif\n");
+      }
+    }
+}
+
+extern FILE* yyin;
+
 int main(int argc, char** argv)
 {
-  yyline          = 1;
-  zmachine.numops = 0;
-  zmachine.op     = NULL;
-  yyparse();
-
-  qsort(zmachine.op, zmachine.numops-1, sizeof(operation*), sortops);
-
-  if (argc==3)
+  if (argc==4)
     {
       FILE* output;
 
+      if (!(yyin = fopen(filename=argv[3], "r")))
+	{
+	  fprintf(stderr, "Couldn't open input file\n");
+	  return 1;
+	}
+
+      yyline          = 1;
+      zmachine.numops = 0;
+      zmachine.op     = NULL;
+      yyparse();
+
+      qsort(zmachine.op, zmachine.numops-1, sizeof(operation*), sortops);
+      
       if ((output = fopen(argv[1], "w")))
 	{
 	  output_interpreter(output, atoi(argv[2]));
+	  output_operations(output, atoi(argv[2]));
 	  fclose(output);
 	}
       else
 	{
-	  fprintf(stderr, "Couldn't open file\n");
+	  fprintf(stderr, "Couldn't output open file\n");
 	  return 1;
 	}
     }

@@ -23,19 +23,887 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include <sys/time.h>
+#include <ctype.h>
+#include <string.h>
 
 #include "../config.h"
 
-/* #define inline */
-
 #include "zmachine.h"
-#include "op.h"
 #include "zscii.h"
+#include "display.h"
+#include "stream.h"
+#include "state.h"
+#include "tokenise.h"
 
-#ifdef INLINE_OPS
-#define INLINING
-#include "op.c"
+/***                           ----// 888 \\----                           ***/
+
+/* Utilty functions */
+
+#define dobranch \
+   if ((result && negate) || (!result && !negate)) \
+     { \
+       switch (branch) \
+	{ \
+	case 0: \
+	  goto op_rfalse; \
+	case 1: \
+	  goto op_rtrue; \
+	  \
+	default: \
+	  pc += branch-2; \
+          goto loop; \
+	} \
+     }
+
+inline void push(ZStack* stack, const ZWord word)
+{
+  *(stack->stack_top++) = word;
+  stack->stack_size--;
+
+  if (stack->current_frame != NULL)
+    stack->current_frame->frame_size++;
+  
+  if (stack->stack_size <= 0)
+    {
+      stack->stack_total += 2048;
+      if (!(stack->stack = realloc(stack->stack,
+				   stack->stack_total*sizeof(ZWord))))
+	{
+	  zmachine_fatal("Stack overflow");
+	}
+      stack->stack_size = 2048;
+    }
+
+#ifdef DEBUG
+  if (stack->current_frame)
+    printf("Stack: push - size now %i, frame usage %i (pushed #%x)\n",
+	   stack->stack_size, stack->current_frame->frame_size,
+	   stack->stack_top[-1]);
 #endif
+}
+
+inline ZWord pop(ZStack* stack)
+{
+  stack->stack_size++;
+
+  if (stack->current_frame)
+    {
+      stack->current_frame->frame_size--;
+#ifdef SAFE
+      if (stack->current_frame->frame_size < 0)
+	zmachine_fatal("Stack underflow");
+#endif
+    }
+
+#ifdef SAFE
+  if (stack->stack_top == stack->stack)
+    zmachine_fatal("Stack underflow");
+#endif
+  
+#ifdef DEBUG
+  if (stack->current_frame)
+    printf("Stack: pop - size now %i, frame usage %i (value #%x)\n",
+	   stack->stack_size, stack->current_frame->frame_size,
+	   stack->stack_top[-1]);
+#endif
+  
+  return *(--stack->stack_top);
+}
+
+ZFrame* call_routine(ZDWord* pc, ZStack* stack, ZDWord start)
+{
+  ZFrame* newframe;
+  int n_locals;
+  int x;
+
+  newframe = malloc(sizeof(ZFrame));
+  
+  newframe->ret          = *pc;
+  newframe->flags        = 0;
+  newframe->storevar     = 0;
+  newframe->discard      = 0;
+  newframe->frame_size   = 0;
+  if (stack->current_frame != NULL)
+    newframe->frame_num  = stack->current_frame->frame_num+1;
+  else
+    newframe->frame_num  = 1;
+  newframe->last_frame   = stack->current_frame;
+  newframe->v4read       = NULL;
+  newframe->v5read       = NULL;
+  stack->current_frame   = newframe;
+  
+  n_locals = GetCode(start);
+  newframe->nlocals = n_locals;
+
+  if (machine.memory[0] <= 4)
+    {
+      for (x=0; x<n_locals; x++)
+	{
+	  newframe->local[x+1] = (GetCode(start+(x*2)+1)<<8)|
+	    GetCode(start+(x*2)+2);
+	}
+  
+      *pc = start+n_locals*2+1;
+    }
+  else
+    {
+      if (n_locals > 15)
+	{
+	  zmachine_warning("Routine with %i locals", n_locals);
+	  n_locals = 15;
+	}
+      for (x=0; x<n_locals; x++)
+	{
+	  newframe->local[x+1] = 0;
+	}
+
+      *pc = start+1;
+    }
+
+  return newframe;
+}
+
+inline void store(ZStack* stack, int var, ZWord value)
+{
+#ifdef DEBUG
+  printf("Storing %i in Variable #%x\n", value, var);
+#endif
+  if (var == 0)
+    {
+      push(stack, value);
+    }
+  else if (var < 16)
+    {
+      stack->current_frame->local[var] = value;
+    }
+  else
+    {
+      var-=16;
+      machine.globals[var<<1]     = value>>8;
+      machine.globals[(var<<1)+1] = value;
+    }
+}
+
+void restart_machine(void)
+{
+  machine.screen_on = 1;
+  machine.transcript_on = 0;
+  if (machine.transcript_file)
+    {
+      fclose(machine.transcript_file);
+      machine.transcript_file = NULL;
+    }
+  machine.memory_on = 0;
+
+  display_set_window(0);
+  display_join(0,2);
+
+  zmachine_setup_header();
+}
+
+#define Obj3(x) (machine.objects + 62+(((x)-1)*9))
+#define parent_3  4
+#define sibling_3 5
+#define child_3   6
+
+struct prop
+{
+  ZByte* prop;
+  int    size;
+  int    pad;
+  int    isdefault;
+};
+
+static inline struct prop* get_object_prop_3(ZUWord object, ZWord property)
+{
+  ZByte* obj;
+  ZByte* prop;
+  ZByte  size;
+  
+  static struct prop info;
+
+  obj = Obj3(object);
+  prop = machine.memory + ((obj[7]<<8)|obj[8]);
+
+  prop = prop + (prop[0]*2) + 1;
+
+  while ((size = prop[0]) != 0)
+    {
+      if ((size&0x1f) == property)
+	{
+	  info.size = (size>>5) + 1;
+	  info.prop = prop + 1;
+	  info.isdefault = 0;
+	  return &info;
+	}
+      
+      prop = prop + (size>>5) + 2;
+    }
+
+  info.size = 2;
+  info.prop = machine.objects + 2*property-2;
+  info.isdefault = 1;
+
+  return &info;
+}
+
+#define UnpackR(x) (machine.packtype==packed_v4?4*((ZUWord)x):(machine.packtype==packed_v8?8*((ZUWord)x):4*((ZUWord)x)+machine.routine_offset))
+#define UnpackS(x) (machine.packtype==packed_v4?4*((ZUWord)x):(machine.packtype==packed_v8?8*((ZUWord)x):4*((ZUWord)x)+machine.string_offset))
+#define Obj4(x) (machine.objects + 126 + (((x)-1)*14))
+#define parent_4  6
+#define sibling_4 8
+#define child_4   10
+#define GetParent4(x) (((x)[parent_4]<<8)|(x)[parent_4+1])
+#define GetSibling4(x) (((x)[sibling_4]<<8)|(x)[sibling_4+1])
+#define GetChild4(x) (((x)[child_4]<<8)|(x)[child_4+1])
+#define GetPropAddr4(x) (((x)[12]<<8)|(x)[13])
+
+struct propinfo
+{
+  int datasize;
+  int number;
+  int header;
+};
+
+static inline struct propinfo* get_object_propinfo_4(ZByte* prop)
+{
+  static struct propinfo pinfo;
+  
+  if (prop[0]&0x80)
+    {
+      pinfo.number   = prop[0]&0x3f;
+      pinfo.datasize = prop[1]&0x3f;
+      pinfo.header = 2;
+
+      if (pinfo.datasize == 0)
+	pinfo.datasize = 64;
+    }
+  else
+    {
+      pinfo.number   = prop[0]&0x3f;
+      pinfo.datasize = (prop[0]&0x40)?2:1;
+      pinfo.header = 1;
+    }
+
+  return &pinfo;
+}
+
+static inline struct prop* get_object_prop_4(ZUWord object, ZWord property)
+{
+  ZByte* obj;
+  ZByte* prop;
+  int    pnum;
+  
+  static struct prop info;
+
+  if (object != 0)
+    {
+      obj = Obj4(object);
+      prop = Address((ZUWord)GetPropAddr4(obj));
+      
+      prop += (prop[0]*2) + 1;
+      pnum = 128;
+      
+      while (pnum != 0)
+	{
+	  int len, pad;
+	  
+	  if (prop[0]&0x80)
+	    {
+	      pnum = prop[0]&0x3f;
+	      len  = prop[1]&0x3f;
+	      pad  = 2;
+	      
+	      if (len == 0)
+		len = 64;
+	    }
+	  else
+	    {
+	      pnum = prop[0]&0x3f;
+	      len  = (prop[0]&0x40)?2:1;
+	      pad  = 1;
+	    }
+	  
+#ifdef DEBUG
+	  printf("(Property %i, (looking for %i) length %i: ", pnum,
+		 property, len);
+	  {
+	    int x;
+	    
+	    for (x=0; x<=len+pad; x++)
+	      printf("$%x ", prop[x]);
+	    printf(")\n");
+	  }
+#endif
+	  
+	  if (pnum == property)
+	    {
+	      info.size = len;
+	      info.prop = prop + pad;
+	      info.isdefault = 0;
+	      info.pad = pad;
+	      return &info;
+	    }
+	  
+	  prop = prop + len + pad;
+	}
+    }
+
+  info.size = 2;
+  info.prop = machine.objects + 2*property-2;
+  info.isdefault = 1;
+  info.pad = 0;
+
+  return &info;
+}
+
+#ifdef TRACKING
+static char* tracking_object(ZUWord arg)
+{
+  ZByte* obj;
+  ZByte* prop;
+  int len;
+
+  if (Byte(0) <= 3)
+    {
+      obj = Obj3(arg);
+      prop = machine.memory + ((obj[7]<<8)|obj[8]) + 1;
+      return zscii_to_ascii(prop, &len);
+    }
+  else
+    {
+      obj = Obj4(arg);
+      prop = Address((ZUWord)GetPropAddr4(obj)+1);
+      return zscii_to_ascii(prop, &len);
+    }
+}
+
+#include <stdarg.h>
+static void tracking_print(char* format, ...)
+{
+  va_list* ap;
+  char str[512];
+
+  va_start(ap, format);
+  vsprintf(str, format, ap);
+  va_end(ap);
+
+  fprintf(stderr, "TRACKING: %s\n", str);
+}
+#endif
+
+static void zcode_op_print_obj_123(ZStack* stack, ZWord arg)
+{
+  ZByte* obj;
+  ZByte* prop;
+  int len;
+
+  obj = Obj3(arg);
+  prop = machine.memory + ((obj[7]<<8)|obj[8]) + 1;
+
+#ifdef DEBUG
+  printf(">%s<\n", zscii_to_ascii(prop, &len));
+#endif
+
+  stream_prints(zscii_to_ascii(prop, &len));
+}
+
+static void draw_statusbar_123(ZStack* stack)
+{
+  ZWord score;
+  ZWord moves;
+
+  stream_flush_buffer();
+  stream_buffering(0);
+  
+  display_set_window(1); display_set_font(3);
+  display_set_colour(7, 0);
+
+  display_prints("\n ");
+  display_set_cursor(2, 0);
+  zcode_op_print_obj_123(stack, GetVar(16));
+
+  score = GetVar(17);
+  moves = GetVar(18);
+
+  display_set_cursor(50, 0);
+  if (machine.memory[1]&0x2)
+    {
+      display_printf("Time: %2i:%02i", (score+11)%12+1, moves);
+    }
+  else
+    {
+      display_printf("Score: %i  Moves: %i", score, moves);
+    }
+
+  display_set_colour(0, 7); display_set_font(0);
+  display_set_window(0);
+  stream_buffering(1);
+}
+
+inline static int convert_colour(int col)
+{
+  switch (col)
+    {
+    case 2:
+      return 0;
+    case 3:
+      return 1;
+    case 4:
+      return 2;
+    case 5:
+      return 3;
+    case 6:
+      return 4;
+    case 7:
+      return 5;
+    case 8:
+      return 6;
+    case 9:
+      return 7;
+    case 10:
+      return 8;
+    case 11:
+      return 9;
+    case 12:
+      return 10;
+    case 1:
+      return -1;
+    case 0:
+      return -2;
+
+    default:
+      zmachine_warning("Colour %i out of range", col);
+      return -1;
+    }
+}
+
+static int save_1234(ZDWord  pc,
+			    ZStack* stack,
+			    int     st)
+{
+  static char fname[256] = "savefile.qut";
+  ZWord tmp;
+  int ok;
+
+  do
+    {
+      ok = 1;
+      display_prints("\nPlease supply a filename for save\nFile: ");
+      display_readline(fname, 255, 0);
+
+      if (get_file_size(fname) != -1)
+	{
+	  char yn[5];
+
+	  yn[0] = 0;
+	  ok = 0;
+	  display_prints("That file already exists!\nAre you sure? (y/N) ");
+	  display_readline(yn, 4, 0);
+
+	  if (tolower(yn[0]) == 'y')
+	    ok = 1;
+	  else
+	    {
+	      return 0;
+	    }
+	}
+    }
+  while (!ok);
+  
+  if (st >= 0)
+    store(stack, st, 2);
+
+  if (state_save(fname, stack, pc))
+    {
+      if (st == 0)
+	tmp = GetVar(st);
+      return 1;
+    }
+
+  if (state_fail())
+    display_printf("(Save failed, reason: %s)\n", state_fail());
+  else
+    display_printf("(Save failed, reason unknown)\n");
+
+  if (st == 0)
+    tmp = GetVar(st);
+  return 0;
+}
+
+static int restore_1234(ZDWord* pc, ZStack* stack)
+{
+  static char fname[256] = "savefile.qut";
+  
+  display_prints("\nPlease supply a filename for restore\nFile: ");
+  display_readline(fname, 255, 0);
+  
+  if (state_load(fname, stack, pc))
+    {
+      restart_machine();
+      return 1;
+    }
+
+  if (state_fail())
+    display_printf("(Restore failed, reason: %s)\n", state_fail());
+  else
+    display_printf("(Restore failed, reason unknown)\n");
+  
+  return 0;
+}
+
+static void zcode_op_output_stream(ZStack* stack,
+				   ZArgblock* args)
+{
+  ZByte* mem;
+  ZWord w;
+
+  stream_flush_buffer();
+  
+  switch (args->arg[0])
+    {
+    case 0:
+      return;
+      
+    case 1:
+      machine.screen_on = 1;
+      break;
+    case -1:
+      machine.screen_on = 0;
+      break;
+
+    case 2:
+      if (machine.transcript_file == NULL)
+	{
+	  static char fname[256] = "script.txt";
+	  
+	  display_prints("\nPlease supply a filename for transcript\nFile: ");
+	  display_readline(fname, 256, 0);
+
+	  if (get_file_size(fname) != -1)
+	    {
+	      char yn[5];
+
+	      yn[0] = 0;
+	      display_prints("That file already exists!\nAre you sure? (y/N) ");
+	      display_readline(yn, 1, 0);
+	      
+	      if (tolower(yn[0]) == 'y')
+		machine.transcript_file = fopen(fname, "a");
+	    }
+	  if (machine.transcript_file == NULL)
+	    {
+	      display_prints("Failed.\n");
+	      return;
+	    }
+	  else
+	    {
+	      machine.transcript_on = 1;
+	      fprintf(machine.transcript_file, "*** Transcript generated by Zoom\n\n");
+	    }
+	}
+
+      if (machine.transcript_file != NULL)
+	machine.transcript_on = 1;
+
+      w = Word(ZH_flags2);
+      w |= 1;
+      machine.memory[ZH_flags2] = w>>8;
+      machine.memory[ZH_flags2+1] = w;
+      break;
+    case -2:
+      if (machine.transcript_file != NULL)
+	fflush(machine.transcript_file);
+      machine.transcript_on = 0;
+
+      w = Word(ZH_flags2);
+      w &= ~1;
+      machine.memory[ZH_flags2] = w>>8;
+      machine.memory[ZH_flags2+1] = w;
+      break;
+
+    case 3:
+      if (args->arg[1] == 0)
+	zmachine_fatal("output_stream 3 must be supplied with a memory address");
+      machine.memory_on++;
+      if (machine.memory_on > 16)
+	zmachine_fatal("Maximum recurse level for memory redirect is 16");
+      machine.memory_pos[machine.memory_on-1] = args->arg[1];
+
+      mem = Address((ZUWord)machine.memory_pos[machine.memory_on-1]);
+      mem[0] = 0;
+      mem[1] = 0;
+      break;
+    case -3:
+      machine.memory_on--;
+      if (machine.memory_on < 0)
+	{
+	  machine.memory_on = 0;
+	  zmachine_warning("Tried to stop writing to memory when no memory redirect was in effect");
+	}
+      break;
+      
+    default:
+      zmachine_warning("Stream number %i not supported by this interpreter (for versions 4, 5, 7 & 8)", args->arg[0]);
+    }
+}
+
+static void zcode_op_aread_5678(ZDWord* pc,
+				ZStack* stack,
+				ZArgblock* args,
+				int st)
+{
+  ZByte* mem;
+  char* buf;
+  int x;
+  
+  mem = machine.memory + (ZUWord) args->arg[0];
+  buf = malloc(sizeof(char)*(mem[0]+1));
+
+  if (args->arg[7] != 0)
+    {
+      ZWord ret;
+      
+      /* Returning from a timeout routine */
+
+      ret = pop(stack);
+
+      if (ret != 0)
+	{
+	  mem[1] = 0;
+	  free(buf);
+	  return;
+	}
+    }
+  
+  if (mem[1] != 0)
+    {
+      /* zmachine_warning("aread: using existing buffer (display may
+       * get messed up)"); */
+      
+      for (x=0; x<mem[1]; x++)
+	{
+	  buf[x] = mem[x+2];
+	}
+      buf[x] = 0;
+
+      stream_remove_buffer(buf);
+    }
+  else
+    buf[0] = 0;
+
+  stream_flush_buffer();
+
+  if (args->arg[2] == 0)
+    {
+      display_readline(buf, mem[0], 0);
+      stream_input(buf);
+    }
+  else
+    {
+      int res;
+
+      res = display_readline(buf, mem[0], args->arg[2]*100);
+      
+      if (!res)
+	{
+	  ZFrame* newframe;
+	  int x;
+
+	  mem[1] = 0;
+	  for (x=0; buf[x] != 0; x++)
+	    {
+	      mem[1]++;
+	      buf[x] = tolower(buf[x]);
+	      mem[x+2] = buf[x];
+	    }
+
+	  newframe = call_routine(pc, stack, UnpackR(args->arg[3]));
+	  args->arg[7] = 1;
+	  newframe->storevar  = 0;
+	  newframe->flags     = 0;
+	  newframe->readblock = *args;
+	  newframe->readstore = st;
+	  newframe->v5read    = zcode_op_aread_5678;
+	  free(buf);
+	  return;
+	}
+
+      stream_input(buf);
+    }
+
+  mem[1] = 0;
+  for (x=0; buf[x] != 0; x++)
+    {
+      mem[1]++;
+      buf[x] = tolower(buf[x]);
+      mem[x+2] = buf[x];
+    }
+
+  if (args->n_args > 1 && args->arg[1] != 0)
+    {
+      tokenise_string(buf,
+		      Word(ZH_dict),
+		      Address((ZUWord) args->arg[1]),
+		      0,
+		      2);
+
+#ifdef DEBUG
+      {
+	ZByte* tokbuf;
+	tokbuf = Address((ZUWord)args->arg[1]);
+	printf("Dump of parse buffer $%x\n", args->arg[1]);
+	for (x=0; x<tokbuf[1]; x++)
+	  {
+	    printf("  Token $%x%x word at %i, length %i\n",
+		   tokbuf[2+x*4],
+		   tokbuf[3+x*4],
+		   tokbuf[5+x*4],
+		   tokbuf[4+x*4]);
+	  }
+      }
+#endif
+    }
+
+  free(buf);
+
+  store(stack, st, 10);
+}
+
+static ZDWord scan_table(ZUWord word,
+			 ZUWord addr,
+			 ZUWord len,
+			 ZUWord form)
+{
+  int p;
+
+  if (form&0x80)
+    {
+      for (p=0; p<len; p++)
+	{
+	  if (Word(addr) == word)
+	    return addr;
+	  addr += form&0x7f;
+	}
+    }
+  else
+    {
+      for (p=0; p<len; p++)
+	{
+	  if (Byte(addr) == word)
+	    return addr;
+	  addr += form&0x7f;
+	}
+    }
+
+  return -1;
+}
+
+static void zcode_op_sread_4(ZDWord* pc,
+			     ZStack* stack,
+			     ZArgblock* args)
+{
+  ZByte* mem;
+  static char* buf;
+  int x;
+
+  stream_flush_buffer();
+
+  mem = machine.memory + (ZUWord) args->arg[0];
+
+  if (args->arg[7] != 0)
+    {
+      ZWord ret;
+      
+      /* Returning from a timeout routine */
+
+      ret = pop(stack);
+
+      if (ret != 0)
+	{
+	  mem[1] = 0;
+	  return;
+	}
+    }
+  else
+    {
+      buf = malloc(sizeof(char)*(mem[0]+1));
+      buf[0] = 0;
+    }
+  
+  if (args->arg[2] == 0)
+    {
+      display_readline(buf, mem[0], 0);
+    }
+  else
+    {
+      int res;
+      
+      res = display_readline(buf, mem[0], args->arg[2]*100);
+      
+      if (!res)
+	{
+	  ZFrame* newframe;
+	  int x;
+
+	  stream_input(buf);
+
+	  for (x=0; buf[x] != 0; x++)
+	    {
+	      buf[x] = tolower(buf[x]);
+	      mem[x+1] = tolower(x);
+	    }
+	  mem[x+1] = 0;
+
+	  newframe = call_routine(pc, stack, UnpackR(args->arg[3]));
+	  args->arg[7] = 1;
+	  newframe->storevar  = 0;
+	  newframe->flags     = 0;
+	  newframe->readblock = *args;
+	  newframe->v4read    = zcode_op_sread_4;
+	  return;
+	}
+    }
+
+  stream_input(buf);
+  for (x=0; buf[x] != 0; x++)
+    {
+      buf[x] = tolower(buf[x]);
+      mem[x+1] = buf[x];
+    }
+  mem[x+1] = 0;
+
+  if (args->n_args > 1)
+    {
+      tokenise_string(buf,
+		      Word(ZH_dict),
+		      machine.memory + (ZUWord) args->arg[1],
+		      0,
+		      1);
+
+#ifdef DEBUG
+      {
+	ZByte* tokbuf;
+	tokbuf = machine.memory + (ZUWord) args->arg[1];
+	for (x=0; x<tokbuf[1]; x++)
+	  {
+	    printf("Token $%x%x word at %i, length %i\n",
+			   tokbuf[2+x*4],
+			   tokbuf[3+x*4],
+			   tokbuf[5+x*4],
+			   tokbuf[4+x*4]);
+	  }
+      }
+#endif
+    }
+
+  free(buf);
+}
+
+/***                           ----// 888 \\----                           ***/
+/* The interpreter itself */
 
 #include "varop.h"
 
@@ -89,6 +957,8 @@ int zmachine_decode_doubleop(ZStack* stack,
 }
 #endif
 
+static clock_t start_clock, end_clock;
+
 void zmachine_run(const int version)
 {
 #ifdef GLOBAL_PC
@@ -97,19 +967,23 @@ void zmachine_run(const int version)
   ZDWord         pc;
 #endif
   int            padding;
-  int            store;
+  int            st;
   int            tmp;
   int            negate;
+  int            result;
   ZDWord         branch;
-  ZWord          arg1 = 0;
-  ZWord          arg2 = 0;
+  /* Historical reasons */
+#define arg1 argblock.arg[0]
+#define arg2 argblock.arg[1]
+#define uarg1 ((ZUWord)argblock.arg[0])
+#define uarg2 ((ZUWord)argblock.arg[1])
   ZArgblock      argblock;
-  ZByte*         code;
   ZStack*        stack;
   char*          string;
   register ZByte instr;
 
-  code  = machine.memory;
+  int x;
+
   pc    = GetWord(machine.header, ZH_initpc);
   stack = &machine.stack;
 
@@ -199,56 +1073,31 @@ void zmachine_run(const int version)
        */
       
 #include "interp_gen.h"
-      goto loop;
       
     version:
       switch(version)
 	{
 #ifdef SUPPORT_VERSION_3
 	case 3:
-	  goto version3;
+#include "interp_z3.h"
 #endif
 #ifdef SUPPORT_VERSION_4
 	case 4:
-	  goto version4;
+#include "interp_z4.h"
 #endif
 #ifdef SUPPORT_VERSION_5
 	case 5:
 	case 7:
 	case 8:
-	  goto version5;
+#include "interp_z5.h"
 #endif
 #ifdef SUPPORT_VERSION_6
 	case 6:
-	  goto version6;
-#endif
-	}
-      zmachine_fatal("Unsupported version");
-      
-#ifdef SUPPORT_VERSION_3
-    version3:
-#include "interp_z3.h"
-      goto loop;
-#endif
-      
-#ifdef SUPPORT_VERSION_4
-    version4:
-#include "interp_z4.h"
-      goto loop;
-#endif
-      
-#ifdef SUPPORT_VERSION_5
-    version5:
-#include "interp_z5.h"
-      goto loop;
-#endif
-      
-#ifdef SUPPORT_VERSION_6
-    version6:
 #include "interp_z6.h"
-      goto loop;
 #endif
-
-    loop:
+	default:
+	  zmachine_fatal("Unsupported version");
+	}
+      loop:
     }
 }

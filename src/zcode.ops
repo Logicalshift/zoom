@@ -4,159 +4,2083 @@
 
 # YMMV, depending on your compilers optimisation abilities
 
+####                           ----// 888 \\----                           ####
 # 2OPs
 
 # je is weird and is actually treated as a VAR op instead of a 2OP
 OPCODE "je"         2OP:0x01 BRANCH REALLYVAR VERSION all
+%{
+  result = 1;
+  for (x=1; x<argblock.n_args; x++)
+    {
+      if (argblock.arg[0] == argblock.arg[x])
+	{
+	  goto je_true;
+	}
+    }
+  result = 0;
+je_true:
+  dobranch;  
+%}
 
 OPCODE "jl"         2OP:0x02 BRANCH VERSION all
+%{
+  result = arg1<arg2;
+  dobranch;
+%}
+
 OPCODE "jg"         2OP:0x03 BRANCH VERSION all
+%{
+  result = arg1>arg2;
+  dobranch;
+%}
+
 OPCODE "dec_chk"    2OP:0x04 BRANCH VERSION all
+%{
+  ZWord var;
+
+  var = GetVar(arg1);
+  result = (--var) < arg2;
+  store(stack, arg1, var);
+  dobranch;
+%}
+
 OPCODE "inc_chk"    2OP:0x05 BRANCH VERSION all
+%{
+  ZWord var;
+
+  var = GetVar(arg1);
+  result = (++var) > arg2;
+  store(stack, arg1, var);
+  dobranch;
+%}
+
 OPCODE "jin"        2OP:0x06 BRANCH VERSION 1,2,3
+%{
+  ZByte* obj;
+
+  obj = Obj3(uarg1);
+  result = obj[parent_3] == arg2;
+  dobranch;
+%}
+
 OPCODE "jin"        2OP:0x06 BRANCH VERSION 4,5,6,7,8
+%{
+  ZByte* obj;
+
+  obj = Obj4(uarg1);
+  result = GetParent4(obj) == arg2;
+  dobranch;
+%}
+
 OPCODE "test"       2OP:0x07 BRANCH VERSION all
+%{
+  result = ((ZUWord)arg1&(ZUWord)arg2)==(ZUWord)arg2;
+  dobranch;
+%}
 
 OPCODE "test_attr"     2OP:0x0a BRANCH VERSION 1,2,3
+%{
+  ZByte* obj;
+  int byte, bit;
+  
+  if (uarg1>255 || uarg1 == 0)
+    zmachine_fatal("Object out of range");
+  if (uarg2>31)
+    zmachine_fatal("Attribute out of range");
+
+  byte = uarg2>>3;
+  bit  = uarg2&7;
+
+  obj = Obj3(uarg1);
+
+#ifdef TRACKING
+  if (machine.track_attributes)
+    tracking_print("Testing attribute %i of object \"%s\" (%s)",
+		   attr, tracking_object(uarg1),
+		   (obj[byte]&(0x80>>bit))?"Set":"Unset");
+#endif
+
+  result = ((obj[byte]&(0x80>>bit)) != 0);
+  dobranch;
+%}
+
 OPCODE "test_attr"     2OP:0x0a BRANCH VERSION 4,5,6,7,8
+%{
+  ZByte* obj;
+  int byte, bit;
+
+  if (uarg1 == 0)
+    zmachine_fatal("Object 0 has no attributes");
+  if (uarg2 == 48)
+    {
+      zmachine_warning("Attempt to test attribute 48");
+      goto loop;
+    }
+  if (uarg2>47)
+    zmachine_fatal("Attribute out of range");
+  
+  byte = uarg2>>3;
+  bit  = uarg2&7;
+
+  obj = Obj4(uarg1);
+
+#ifdef TRACKING
+  if (machine.track_attributes)
+    tracking_print("Testing attribute %i of object \"%s\" (%s)",
+		   arg2, tracking_object(arg1),
+		   (obj[byte]&(0x80>>bit))?"Set":"Unset");
+#endif
+
+  result = (obj[byte]&(0x80>>bit)) != 0;
+  dobranch;
+%}
+
 OPCODE "set_attr"      2OP:0x0b        VERSION 1,2,3
+%{
+  ZByte* obj;
+  int byte, bit;
+
+  if (uarg1>255 || uarg1 == 0)
+    zmachine_fatal("Object out of range");
+  if (uarg2>31)
+    zmachine_fatal("Attribute out of range");
+
+#ifdef TRACKING
+  if (machine.track_attributes)
+    tracking_print("Setting attribute %i of object \"%s\"",
+		   uarg2, tracking_object(uarg1));
+#endif
+  
+  byte = uarg2>>3;
+  bit  = uarg2&7;
+
+  obj = Obj3(uarg1);
+  obj[byte] |= 0x80>>bit;
+%}
+
 OPCODE "set_attr"      2OP:0x0b        VERSION 4,5,6,7,8
+%{
+  ZByte* obj;
+  int byte, bit;
+
+  if (uarg1 == 0)
+    zmachine_fatal("Object 0 cannot be altered");
+  if (uarg2>47)
+    zmachine_fatal("Attribute out of range");
+
+#ifdef DEBUG
+  printf("Setting attribute %x of object #%x\n", uarg2, uarg1);
+#endif
+
+#ifdef TRACKING
+  if (machine.track_attributes)
+    tracking_print("Setting attribute %i of object \"%s\"",
+		   uarg2, tracking_object(uarg1));
+#endif
+  
+  byte = uarg2>>3;
+  bit  = uarg2&7;
+
+  obj = Obj4(uarg1);
+  obj[byte] |= (0x80>>bit);
+%}
+
 OPCODE "clear_attr"    2OP:0x0c        VERSION 1,2,3
+%{
+  ZByte* obj;
+  int byte, bit;
+
+  if (uarg1>255 || uarg1 == 0)
+    zmachine_fatal("Object out of range");
+  if (uarg2>31)
+    zmachine_fatal("Attribute out of range");
+
+#ifdef TRACKING
+  if (machine.track_attributes)
+    tracking_print("Setting attribute %i of object \"%s\"",
+		   uarg2, tracking_object(uarg1));
+#endif
+  
+  byte = uarg2>>3;
+  bit  = uarg2&7;
+
+  obj = Obj3(uarg1);
+  obj[byte] &= ~(0x80>>bit);
+%}
+
 OPCODE "clear_attr"    2OP:0x0c        VERSION 4,5,6,7,8
+%{
+  ZByte* obj;
+  int byte, bit;
+
+  if (uarg1 == 0)
+    zmachine_fatal("Object 0 cannot be altered");
+  if (uarg2>47)
+    zmachine_fatal("Attribute out of range");
+
+#ifdef DEBUG
+  printf("Setting attribute %x of object #%x\n", uarg2, uarg1);
+#endif
+
+#ifdef TRACKING
+  if (machine.track_attributes)
+    tracking_print("Setting attribute %i of object \"%s\"",
+		   uarg2, tracking_object(uarg1));
+#endif
+  
+  byte = uarg2>>3;
+  bit  = uarg2&7;
+
+  obj = Obj4(uarg1);
+  obj[byte] &= ~(0x80>>bit);
+%}
+
 OPCODE "insert_obj"    2OP:0x0e        VERSION 1,2,3
+%{
+  ZByte* src_obj;
+  ZByte* dest_obj;
+  ZByte* tmp;
+  
+  if (uarg1>255 || uarg1 == 0)
+    zmachine_fatal("Object out of range");  
+  if (uarg2>255)
+    zmachine_fatal("Object out of range");
+
+  /* Get the address of the object */
+  src_obj = Obj3(uarg1);
+
+  if (src_obj[parent_3] != 0)
+    {
+      /* Get the address of its parent */
+      tmp = Obj3(src_obj[parent_3]);
+      
+      /*
+       * If the object is a direct child of its parent, set the new child
+       * to the object's sibling
+       */
+      if (tmp[child_3] == uarg1)
+	{
+	  tmp[child_3] = src_obj[sibling_3];
+	}
+      else
+	{
+	  /* Find the object which is a sibling with this object */
+	  tmp = Obj3(tmp[child_3]);
+	  
+	  while (tmp[sibling_3] != uarg1 && tmp[sibling_3] != 0)
+	    {
+	      tmp = Obj3(tmp[sibling_3]);
+	    }
+	  
+	  if (tmp[sibling_3] == 0)
+	    zmachine_fatal("Corrupt object tree (object is not a child of its parent)");
+	  
+	  /* Set its sibling to the sibling of the object */
+	  tmp[sibling_3] = src_obj[sibling_3];
+	}
+    }
+      
+  if (uarg2 != 0)
+    {
+      /* Set the new parent's child to be this object */
+      dest_obj = Obj3(uarg2);
+      src_obj[sibling_3] = dest_obj[child_3];
+      dest_obj[child_3]  = uarg1;
+    }
+  else
+    src_obj[sibling_3] = 0;
+  
+  src_obj[parent_3] = uarg2;
+%}
+
 OPCODE "insert_obj"    2OP:0x0e        VERSION 4,5,6,7,8
+%{
+  ZByte* src_obj;
+  ZByte* dest_obj;
+  ZByte* tmp;
+
+#ifdef DEBUG
+  printf("Inserting object %i into %i\n", uarg1, uarg2);
+#endif
+  
+  if (uarg1 == 0)
+    zmachine_fatal("Object 0 cannot be inserted");
+
+  src_obj = Obj4(uarg1);
+  
+  if (GetParent4(src_obj) != 0)
+    {
+      ZUWord sibling;
+      
+      /* Get the address of the old parent */
+      tmp = Obj4(GetParent4(src_obj));
+
+      if (GetChild4(tmp) == uarg1)
+	{
+	  sibling = GetSibling4(src_obj);
+	  /*
+	   * Object is a direct child, so we make the new child this
+	   * object's sibling
+	   */
+	  tmp[child_4] = sibling>>8;
+	  tmp[child_4+1] = sibling;
+	}
+      else
+	{
+	  ZUWord our_sibling;
+	  
+	  /* Find the object which is a sibling with this object */
+	  tmp = Obj4(GetChild4(tmp));
+
+	  sibling = GetSibling4(tmp);
+	  while (sibling != uarg1 && sibling != 0)
+	    {
+	      tmp = Obj4(sibling);
+	      sibling = GetSibling4(tmp);
+	    }
+
+	  if (sibling == 0)
+	    zmachine_fatal("Corrupt object tree (object is not a child of its parent)");
+
+	  /* Set its sibling to our sibling */
+	  our_sibling = GetSibling4(src_obj);
+	  tmp[sibling_4] = our_sibling>>8;
+	  tmp[sibling_4+1] = our_sibling;
+	}
+    }
+
+  if (uarg2 != 0)
+    {
+      ZUWord kid;
+      
+      /* Set the new parent's child to be this object */
+      dest_obj = Obj4(uarg2);
+      kid = GetChild4(dest_obj);
+      src_obj[sibling_4] = kid>>8;
+      src_obj[sibling_4+1] = kid;
+      dest_obj[child_4] = uarg1>>8;
+      dest_obj[child_4+1] = uarg1;
+    }
+  else
+    {
+      src_obj[sibling_4] = 0;
+      src_obj[sibling_4+1] = 0;
+    }
+
+  src_obj[parent_4] = uarg2>>8;
+  src_obj[parent_4+1] = uarg2;
+%}
+
 OPCODE "get_prop"      2OP:0x11 STORE  VERSION 1,2,3
+%{
+  struct prop* p;
+  
+  if (uarg1>255 || uarg1 == 0)
+    zmachine_fatal("Object out of range");
+  if (uarg2>31)
+    zmachine_fatal("Property out of range");
+  
+  p = get_object_prop_3(uarg1, uarg2);
+
+  switch (p->size)
+    {
+    case 1:
+      store(stack, st, p->prop[0]);
+      break;
+      
+    case 2:
+      store(stack, st, (p->prop[0]<<8)|p->prop[1]);
+      break;
+      
+    default:
+      zmachine_fatal("Size %i is invalid for get_prop\n", p->size);
+    }
+%}
+
 OPCODE "get_prop"      2OP:0x11 STORE  VERSION 4,5,6,7,8
+%{
+  struct prop* p;
+
+  if (uarg1 == 0)
+    zmachine_warning("Object 0 has no properties");
+  if (uarg2>63)
+    zmachine_fatal("Property %i out of range", uarg2);
+
+#ifdef DEBUG
+  printf("Get_prop: object %i prop %i\n", uarg1, uarg2);
+#endif
+
+  p = get_object_prop_4(uarg1, uarg2);
+
+  switch (p->size)
+    {
+    case 1:
+      store(stack, st, p->prop[0]);
+       break;
+
+      /*
+       * Hmm, this is against spec, but some Inform games
+       * (Christminster?) seem to use get_prop on properties with
+       * lengths > 2. So we'll let 'em off with a warning
+       */
+    default:
+      zmachine_warning("get_prop used on a property with length %i",
+		       p->size);
+      store(stack, st, (p->prop[-1]<<8)|p->prop[0]);
+      break;
+      
+    case 2:
+      store(stack, st, (p->prop[0]<<8)|p->prop[1]);
+      break;
+      
+      /* default:
+	 zmachine_fatal("Size %i is invalid for get_prop\n", p->size); */
+    }  
+%}
+
 OPCODE "get_prop_addr" 2OP:0x12 STORE  VERSION 1,2,3
+%{
+  ZByte* obj_adr;
+  ZUWord prop_adr;
+  ZByte  size;
+
+  if (uarg1 == 0 || uarg1>255)
+    zmachine_fatal("Object out of range");
+  if (uarg2 > 31)
+    zmachine_fatal("Property out of range");
+  
+  obj_adr = Obj3(uarg1);
+
+  prop_adr  = (obj_adr[7]<<8)|obj_adr[8];
+  prop_adr += Byte(prop_adr)*2 + 1;
+
+  while ((size = Byte(prop_adr)) != 0)
+    {
+      if ((size&0x1f) == uarg2)
+	{
+	  store(stack, st, prop_adr + 1);
+	  goto loop;
+	}
+
+      prop_adr += (size>>5) + 2;
+    }
+
+  store(stack, st, 0);
+%}
+
 OPCODE "get_prop_addr" 2OP:0x12 STORE  VERSION 4,5,6,7,8
+%{
+  ZByte* obj_adr;
+  ZUWord prop_adr;
+  struct propinfo* pinfo;
+
+  if (uarg1 == 0)
+    {
+      zmachine_warning("Object 0 has no properties");
+      store(stack, st, 0);
+    }
+  if (uarg2 > 63)
+    zmachine_fatal("Property %i out of range", uarg2);
+  
+  obj_adr = Obj4(uarg1);
+  
+  prop_adr = GetPropAddr4(obj_adr);
+  prop_adr += (Byte(prop_adr)*2)+1;
+  
+  do
+    {
+      pinfo = get_object_propinfo_4(Address(prop_adr));
+
+      if (pinfo->number == uarg2)
+	{
+	  store(stack, st, (ZUWord)(prop_adr+pinfo->header));
+	  goto loop;
+	}
+      
+      prop_adr += pinfo->datasize + pinfo->header;
+    }
+  while (pinfo->number != 0);
+
+  store(stack, st, 0);
+%}
+
 OPCODE "get_next_prop" 2OP:0x13 STORE  VERSION 1,2,3
+%{
+  ZByte* obj_adr;
+  ZWord  prop_adr;
+  ZByte  size;
+  int state;
+
+  obj_adr = Obj3(uarg1);
+
+  prop_adr  = (obj_adr[7]<<8)|obj_adr[8];
+  prop_adr += Byte(prop_adr)*2 + 1;
+
+  if (uarg2 == 0)
+    {
+      store(stack, st, Byte(prop_adr)&0x1f);
+      goto loop;
+    }
+  
+  state = 0;
+  while ((size = Byte(prop_adr)) != 0)
+    {
+      if (state)
+	{
+	  store(stack, st, size&0x1f);
+	  goto loop;
+	}
+      if ((size&0x1f) == uarg2)
+	{
+	  state = 1;
+	}
+
+      prop_adr += (size>>5) + 2;
+    }
+
+  store(stack, st, 0);  
+%}
+
 OPCODE "get_next_prop" 2OP:0x13 STORE  VERSION 4,5,6,7,8
+%{
+  struct prop*     property;
+  struct propinfo* inf;
+  
+  if (uarg1 == 0)
+    zmachine_fatal("Object 0 has no properties");
+  if (uarg2 > 63)
+    zmachine_fatal("Property out of range");
+  
+  if (uarg2 == 0)
+    {
+      ZByte* obj_adr;
+      ZUWord prop_adr;
+ 
+      obj_adr = Obj4(uarg1);
+
+      prop_adr = GetPropAddr4(obj_adr);
+      prop_adr += (Byte(prop_adr)*2)+1;
+
+      inf = get_object_propinfo_4(Address(prop_adr));
+      store(stack, st, inf->number);
+      goto loop;
+    }
+  
+  property = get_object_prop_4(uarg1, uarg2);
+  
+  if (property->isdefault)
+    zmachine_fatal("Can't get next property of a default");
+
+  inf = get_object_propinfo_4(property->prop - property->pad);
+  if (inf->number != 0)
+    {
+      ZByte *next_prop;
+
+      next_prop = property->prop + inf->datasize;
+      inf = get_object_propinfo_4(next_prop);
+
+      store(stack, st, inf->number);
+    }
+  else /* Huh? We retrieved property 0? */
+    zmachine_fatal("Programmer is a spoon");
+%}
 
 OPCODE "store"        2OP:0x0d        VERSION all
+%{
+  store(stack, arg1, arg2);
+%}
+
 OPCODE "loadw"        2OP:0x0f STORE  VERSION all
+%{
+#ifdef DEBUG
+  printf("Loading word at #%x\n", (ZUWord)arg1+((ZUWord)arg2*2));
+#endif
+  store(stack, st, Word((ZUWord)arg1+((ZUWord)arg2*2)));
+%}
 OPCODE "loadb"        2OP:0x10 STORE  VERSION all
+%{
+#ifdef DEBUG
+  printf("Loading byte at #%x\n", (ZUWord)arg1+(ZUWord)arg2);
+#endif
+  store(stack, st, Byte((ZUWord)arg1+(ZUWord)arg2));
+%}
 
 OPCODE "or"           2OP:0x08 STORE  VERSION all
+%{ store(stack, st, arg1|arg2); %}
+
 OPCODE "and"          2OP:0x09 STORE  VERSION all
+%{ store(stack, st, arg1&arg2); %}
+
 OPCODE "add"          2OP:0x14 STORE  VERSION all
+%{ store(stack, st, arg1+arg2); %}
+
 OPCODE "sub"          2OP:0x15 STORE  VERSION all
+%{ store(stack, st, arg1-arg2); %}
+
 OPCODE "mul"          2OP:0x16 STORE  VERSION all
+%{ store(stack, st, arg1*arg2); %}
+
 OPCODE "div"          2OP:0x17 STORE  VERSION all
+%{ 
+  if (arg2 == 0)
+    zmachine_fatal("Division by 0");
+  store(stack, st, arg1/arg2);
+%}
+
 OPCODE "mod"          2OP:0x18 STORE  VERSION all
+%{ 
+  if (arg2 == 0)
+    zmachine_fatal("Modulo by 0");
+  store(stack, st, arg1%arg2);
+%}
 
 OPCODE "call_2s"      2OP:0x19 CANJUMP STORE VERSION 4,5,6,7,8
-OPCODE "call_2n"      2OP:0x1a CANJUMP       VERSION 5,6,7,8
-OPCODE "set_colour"   2OP:0x1b               VERSION 5,7,8
-OPCODE "set_colour"   2OP:0x1b REALLYVAR     VERSION 6
-OPCODE "throw"        2OP:0x1c CANJUMP       VERSION 5,6,7,8
+%{
+  ZDWord  new_routine;
+  ZFrame* newframe;
 
+  if (arg1 == 0)
+    {
+      store(stack, st, 0);
+      goto loop;
+    }
+  
+  new_routine = UnpackR(uarg1);
+  newframe = call_routine(&pc, stack, new_routine);
+
+  if (argblock.n_args >= 2)
+    {
+      newframe->local[1] = arg2;
+      newframe->flags |= 1;
+    }
+  newframe->storevar = st;
+%}
+
+OPCODE "call_2n"      2OP:0x1a CANJUMP       VERSION 5,6,7,8
+%{
+  ZDWord  new_routine;
+  ZFrame* newframe;
+
+  if (uarg1 == 0)
+    {
+      goto loop;
+    }
+  
+  new_routine = UnpackR(uarg1);
+  newframe = call_routine(&pc, stack, new_routine);
+
+  if (argblock.n_args >= 2)
+    {
+      newframe->local[1] = arg2;
+      newframe->flags |= 1;
+    }
+  newframe->discard  = 1;
+%}
+
+OPCODE "set_colour"   2OP:0x1b               VERSION 5,7,8
+%{
+#ifdef DEBUG
+  printf("Setting colours to %i, %i\n", arg1, arg2);
+#endif
+  stream_flush_buffer();
+  display_set_colour(convert_colour(arg1), convert_colour(arg2));
+%}
+
+OPCODE "set_colour"   2OP:0x1b REALLYVAR     VERSION 6
+
+OPCODE "throw"        2OP:0x1c CANJUMP       VERSION 5,6,7,8
+%{
+  if (stack->current_frame == NULL)
+    zmachine_fatal("Throw attempted after function with catch has returned");
+  if (stack->current_frame->frame_num < arg1)
+    zmachine_fatal("Throw attempted after function with catch has returned");
+
+  /* Unroll the stack to the appropriate frame */
+  while (stack->current_frame->frame_num != arg2)
+    {
+      ZFrame* oldframe;
+
+      oldframe = stack->current_frame;
+      stack->current_frame = oldframe->last_frame;
+      stack->stack_size += oldframe->frame_size;
+      stack->stack_top  -= oldframe->frame_size;
+
+      free(oldframe);
+    }
+
+  /* Do a return */
+  goto op_ret;
+%}
+
+####                           ----// 888 \\----                           ####
 # 1OPs
 
 OPCODE "jz"           1OP:0x00 BRANCH       VERSION all
-OPCODE "get_sibling"  1OP:0x01 BRANCH STORE VERSION 1,2,3
-OPCODE "get_sibling"  1OP:0x01 BRANCH STORE VERSION 4,5,6,7,8
-OPCODE "get_child"    1OP:0x02 BRANCH STORE VERSION 1,2,3
-OPCODE "get_child"    1OP:0x02 BRANCH STORE VERSION 4,5,6,7,8
-OPCODE "get_parent"   1OP:0x03        STORE VERSION 1,2,3
-OPCODE "get_parent"   1OP:0x03        STORE VERSION 4,5,6,7,8
-OPCODE "get_prop_len" 1OP:0x04        STORE VERSION 1,2,3
-OPCODE "get_prop_len" 1OP:0x04        STORE VERSION 4,5,6,7,8
-OPCODE "inc"          1OP:0x05              VERSION all
-OPCODE "dec"          1OP:0x06              VERSION all
-OPCODE "print_addr"   1OP:0x07              VERSION all
-OPCODE "call_1s"      1OP:0x08 CANJUMP STORE VERSION 4,5,6,7,8
-OPCODE "remove_obj"   1OP:0x09              VERSION 1,2,3
-OPCODE "remove_obj"   1OP:0x09              VERSION 4,5,6,7,8
-OPCODE "print_obj"    1OP:0x0a              VERSION 1,2,3
-OPCODE "print_obj"    1OP:0x0a              VERSION 4,5,6,7,8
-OPCODE "ret"          1OP:0x0b CANJUMP      VERSION all
-OPCODE "jump"         1OP:0x0c CANJUMP      VERSION all
-OPCODE "print_paddr"  1OP:0x0d              VERSION 1,2,3
-OPCODE "print_paddr"  1OP:0x0d              VERSION 4,5,6,7,8
-OPCODE "load"         1OP:0x0e        STORE VERSION all
-OPCODE "not"          1OP:0x0f        STORE VERSION 1,2,3,4
-OPCODE "call_1n"      1OP:0x0f CANJUMP      VERSION 5,6,7,8
+%{
+  result = arg1==0;
+  dobranch;
+%}
 
+OPCODE "get_sibling"  1OP:0x01 BRANCH STORE VERSION 1,2,3
+%{
+  ZByte* obj;
+
+  obj = Obj3(uarg1);
+  store(stack, st, obj[sibling_3]);
+  result = obj[sibling_3] != 0;
+  dobranch;
+%}
+
+OPCODE "get_child"    1OP:0x02 BRANCH STORE VERSION 1,2,3
+%{
+  ZByte* obj;
+
+  obj = Obj3(uarg1);
+  store(stack, st, obj[child_3]);
+  result = obj[child_3] != 0;
+  dobranch;
+%}
+
+OPCODE "get_parent"   1OP:0x03        STORE VERSION 1,2,3
+%{
+  ZByte* obj;
+
+  obj = Obj3(uarg1);
+  store(stack, st, obj[parent_3]);
+%}
+
+OPCODE "get_prop_len" 1OP:0x04        STORE VERSION 1,2,3
+%{
+  store(stack, st, (machine.memory[uarg1-1]>>5)+1);
+%}
+
+OPCODE "get_sibling"  1OP:0x01 BRANCH STORE VERSION 4,5,6,7,8
+%{
+  ZByte* obj_adr;
+  ZUWord sibling;
+
+  if (uarg1 == 0)
+    {
+      zmachine_warning("Object 0 has no siblings");
+      store(stack, st, 0);
+      goto loop;
+    }
+  
+  obj_adr = Obj4(uarg1);
+  sibling = GetSibling4(obj_adr);
+
+  store(stack, st, sibling);
+
+  result = sibling != 0;
+  dobranch;
+%}
+
+OPCODE "get_child"    1OP:0x02 BRANCH STORE VERSION 4,5,6,7,8
+%{
+  ZByte* obj_adr;
+  ZUWord child;
+
+  if (uarg1 == 0)
+    {
+      zmachine_warning("Object 0 has no siblings");
+      store(stack, st, 0);
+      goto loop;
+    }
+  
+  obj_adr = Obj4(uarg1);
+  child = GetChild4(obj_adr);
+
+  store(stack, st, child);
+
+  result = child != 0;
+  dobranch;
+%}
+
+OPCODE "get_parent"   1OP:0x03        STORE VERSION 4,5,6,7,8
+%{
+  ZByte* obj_adr;
+  ZUWord parent;
+
+  if (uarg1 == 0)
+    {
+      zmachine_warning("Object 0 has no siblings");
+      store(stack, st, 0);
+      goto loop;
+    }
+  
+  obj_adr = Obj4(uarg1);
+  parent = GetParent4(obj_adr);
+
+  store(stack, st, parent);
+%}
+
+OPCODE "get_prop_len" 1OP:0x04        STORE VERSION 4,5,6,7,8
+%{
+  ZByte* p;
+  struct propinfo* inf;
+
+  p = machine.memory + uarg1;
+  if (p[-1]&0x80)
+    p -= 2;
+  else
+    p -= 1;
+
+  inf = get_object_propinfo_4(p);
+
+  store(stack, st, inf->datasize);  
+%}
+
+OPCODE "inc"          1OP:0x05              VERSION all
+%{
+  ZWord var;
+
+#ifdef DEBUG
+  printf("Inc: increasing variable %i by 1\n", arg1);
+#endif
+  
+  var = GetVar(arg1);
+  var++;
+  store(stack, arg1, var);
+%}
+
+OPCODE "dec"          1OP:0x06              VERSION all
+%{
+  ZWord var;
+
+#ifdef DEBUG
+  printf("Dec: decreasing variable %i by 1\n", arg1);
+#endif
+  
+  var = GetVar(arg1);
+  var--;
+  store(stack, arg1, var);  
+%}
+
+OPCODE "print_addr"   1OP:0x07              VERSION all
+%{
+  int len;
+
+#ifdef DEBUG
+  printf(">%s<\n", zscii_to_ascii(machine.memory + uarg1, &len));
+#endif
+  
+  stream_prints(zscii_to_ascii(machine.memory + uarg1, &len));  
+%}
+
+OPCODE "call_1s"      1OP:0x08 CANJUMP STORE VERSION 4,5,6,7,8
+%{
+  ZDWord  new_routine;
+  ZFrame* newframe;
+
+  if (arg1 == 0)
+    {
+      store(stack, st, 0);
+      goto loop;
+    }
+  
+  new_routine = UnpackR(arg1);
+  newframe = call_routine(&pc, stack, new_routine);
+
+  newframe->storevar = st;
+%}
+
+OPCODE "remove_obj"   1OP:0x09              VERSION 1,2,3
+%{
+  arg2 = 0;
+  goto op_insert_obj_123;
+%}
+
+OPCODE "remove_obj"   1OP:0x09              VERSION 4,5,6,7,8
+%{
+  arg2 = 0;
+  goto op_insert_obj_45678;
+%}
+
+OPCODE "print_obj"    1OP:0x0a              VERSION 1,2,3
+%{
+  ZByte* obj;
+  ZByte* prop;
+  int len;
+
+  obj = Obj3(uarg1);
+  prop = machine.memory + ((obj[7]<<8)|obj[8]) + 1;
+
+#ifdef DEBUG
+  printf(">%s<\n", zscii_to_ascii(prop, &len));
+#endif
+
+  stream_prints(zscii_to_ascii(prop, &len));
+%}
+
+OPCODE "print_obj"    1OP:0x0a              VERSION 4,5,6,7,8
+%{
+  ZByte* obj;
+  ZByte* prop;
+  int len;
+
+  obj = Obj4(uarg1);
+  prop = Address((ZUWord)GetPropAddr4(obj)+1);
+
+#ifdef DEBUG
+  printf(">%s<\n", zscii_to_ascii(prop, &len));
+#endif
+
+  stream_prints(zscii_to_ascii(prop, &len));
+%}
+
+OPCODE "ret"          1OP:0x0b CANJUMP      VERSION all
+%{
+  ZFrame* oldframe;
+  
+  oldframe = stack->current_frame;
+  stack->current_frame = oldframe->last_frame;
+  stack->stack_top  -= oldframe->frame_size;
+  stack->stack_size += oldframe->frame_size;
+
+  pc = oldframe->ret;
+
+  if (oldframe->discard == 0)
+    store(stack, oldframe->storevar, arg1);
+
+  if (oldframe->v4read != NULL)
+    (oldframe->v4read)(&pc, stack, &oldframe->readblock);
+  if (oldframe->v5read != NULL)
+    (oldframe->v5read)(&pc, stack, &oldframe->readblock, oldframe->readstore);
+
+#ifdef DEBUG
+  if (oldframe->discard == 0)
+    printf("Returned %i into V%x\n", arg1, oldframe->storevar);
+  if (stack->current_frame != NULL)
+    printf("Stack: returned, discarded %i outstanding items (stack top now #%x, size %i, frame usage %i)\n",
+	   oldframe->frame_size, stack->stack_top, stack->stack_size,
+	   stack->current_frame!=NULL?stack->current_frame->frame_size:-1);
+#endif
+  
+  free(oldframe);
+%}
+
+OPCODE "jump"         1OP:0x0c CANJUMP      VERSION all
+%{ pc += arg1-2; %}
+
+OPCODE "print_paddr"  1OP:0x0d              VERSION 1,2,3
+%{
+  int len;
+
+#ifdef DEBUG
+  printf(">%s<\n", zscii_to_ascii(machine.memory + (((ZDWord)uarg1)<<1), &len));
+#endif
+
+  stream_prints(zscii_to_ascii(machine.memory + (((ZDWord)uarg1)<<1), &len));
+%}
+
+OPCODE "print_paddr"  1OP:0x0d              VERSION 4,5,6,7,8
+%{
+  int len;
+
+#ifdef DEBUG
+  printf(">%s<\n", zscii_to_ascii(machine.memory + UnpackS(uarg1), &len));
+#endif
+
+  stream_prints(zscii_to_ascii(machine.memory + UnpackS(uarg1), &len));
+%}
+
+OPCODE "load"         1OP:0x0e        STORE VERSION all
+%{
+  store(stack, st, GetVar(uarg1));
+%}
+
+OPCODE "not"          1OP:0x0f        STORE VERSION 1,2,3,4
+%{
+  store(stack, st, ~GetVar(arg1));
+%}
+
+OPCODE "call_1n"      1OP:0x0f CANJUMP      VERSION 5,6,7,8
+%{
+  ZDWord  new_routine;
+  ZFrame* newframe;
+
+  if (arg1 == 0)
+    {
+      store(stack, st, 0);
+      goto loop;
+    }
+  
+  new_routine = UnpackR(arg1);
+  newframe = call_routine(&pc, stack, new_routine);
+
+  newframe->discard = 1;
+%}
+
+####                           ----// 888 \\----                           ####
 # 0OPs
 
 OPCODE "rtrue"       0OP:0x00 CANJUMP VERSION all
-OPCODE "rfalse"      0OP:0x01 CANJUMP VERSION all
-OPCODE "print"       0OP:0x02 STRING  VERSION all
-OPCODE "print_ret"   0OP:0x03 CANJUMP STRING  VERSION all
-OPCODE "nop"         0OP:0x04         VERSION all
-OPCODE "save"        0OP:0x05 BRANCH  VERSION 1,2,3
-OPCODE "save"        0OP:0x05 STORE CANJUMP VERSION 4
-OPCODE "restore"     0OP:0x06 BRANCH  VERSION 1,2,3
-OPCODE "restore"     0OP:0x06 STORE CANJUMP VERSION 4
-OPCODE "restart"     0OP:0x07 CANJUMP VERSION all
-OPCODE "ret_popped"  0OP:0x08 CANJUMP VERSION all
-OPCODE "pop"         0OP:0x09         VERSION 1,2,3,4
-OPCODE "catch"       0OP:0x09 STORE   VERSION 5,6,7,8
-OPCODE "quit"        0OP:0x0a CANJUMP VERSION all
-OPCODE "new_line"    0OP:0x0b         VERSION all
-OPCODE "show_status" 0OP:0x0c         VERSION 3
-OPCODE "status_nop"  0OP:0x0c         VERSION 4,5,6,7,8
-OPCODE "verify"      0OP:0x0d BRANCH  VERSION 3,4,5,6,7,8
-OPCODE "piracy"      0OP:0x0f BRANCH  VERSION 5,6,7,8
+%{
+  arg1 = 1; goto op_ret;
+%}
 
+OPCODE "rfalse"      0OP:0x01 CANJUMP VERSION all
+%{
+  arg1 = 0; goto op_ret;
+%}
+
+OPCODE "print"       0OP:0x02 STRING  VERSION all
+%{
+#ifdef DEBUG
+  printf(">%s<\n", string);
+#endif
+  stream_prints(string);
+%}
+
+OPCODE "print_ret"   0OP:0x03 CANJUMP STRING  VERSION all
+%{
+#ifdef DEBUG
+  printf(">%s<\n", string);
+#endif
+  stream_prints(string);
+  stream_prints("\n");
+  stream_flush_buffer();
+  goto op_rtrue;
+%}
+
+OPCODE "nop"         0OP:0x04         VERSION all
+%{ /* zzz */ %}
+
+OPCODE "save"        0OP:0x05 BRANCH  VERSION 1,2,3
+%{
+  ZDWord newpc;
+  
+  if (branch == 0 || branch == 1)
+    {
+      zmachine_warning("This interpreter does not support returning from v3 save statements correctly");
+      newpc = pc;
+    }
+  else
+    newpc = pc + branch-2;
+
+  result = save_1234(newpc, stack, -1);
+  dobranch;
+%}
+
+OPCODE "save"        0OP:0x05 STORE CANJUMP VERSION 4
+%{
+  if (save_1234(pc, stack, st))
+    store(stack, st, 1);
+  else
+    store(stack, st, 0);
+%}
+
+OPCODE "restore"     0OP:0x06 BRANCH  VERSION 1,2,3
+%{
+  if (!restore_1234(&pc, stack))
+    {
+      result = 0;
+      dobranch;
+    }
+%}
+
+OPCODE "restore"     0OP:0x06 STORE CANJUMP VERSION 4
+%{
+  if (!restore_1234(&pc, stack))
+    {
+      store(stack, st, 0);
+    }  
+%}
+
+OPCODE "restart"     0OP:0x07 CANJUMP VERSION all
+%{
+  /* Unwind stack */
+  while (stack->current_frame->last_frame != NULL)
+    {
+      ZFrame* oldframe;
+
+      oldframe = stack->current_frame;
+      stack->current_frame = oldframe->last_frame;
+
+      stack->stack_size += oldframe->frame_size;
+      stack->stack_top  -= oldframe->frame_size;
+
+      free(oldframe);
+    }
+  
+  read_block2(machine.memory, machine.file, 0, machine.dynamic_ceiling);
+  pc = Word(ZH_initpc);
+
+  restart_machine();  
+%}
+
+OPCODE "ret_popped"  0OP:0x08 CANJUMP VERSION all
+%{
+  arg1 = pop(stack);
+  goto op_ret;
+%}
+
+OPCODE "pop"         0OP:0x09         VERSION 1,2,3,4
+%{ pop(stack); %}
+
+OPCODE "catch"       0OP:0x09 STORE   VERSION 5,6,7,8
+%{
+  if (stack->current_frame == NULL)
+    zmachine_fatal("Catch attempted while no frame is current");
+  store(stack, st, stack->current_frame->frame_num);
+%}
+
+OPCODE "quit"        0OP:0x0a CANJUMP VERSION all 
+%{
+  pc = -1;
+%}
+
+OPCODE "new_line"    0OP:0x0b         VERSION all
+%{
+  stream_prints("\n");
+  stream_flush_buffer();  
+%}
+
+OPCODE "show_status" 0OP:0x0c         VERSION 3
+%{
+  draw_statusbar_123(stack);
+%}
+
+OPCODE "status_nop"  0OP:0x0c         VERSION 4,5,6,7,8
+%{
+  /* Zzzz */
+%}
+
+OPCODE "verify"      0OP:0x0d BRANCH  VERSION all # 3,4,5,6,7,8
+%{
+  result = 1;
+  dobranch;
+%}
+
+OPCODE "piracy"      0OP:0x0f BRANCH  VERSION 5,6,7,8
+%{
+  result = 1;
+  dobranch;
+%}
+
+####                           ----// 888 \\----                           ####
 # VAR ops
 
 OPCODE "call"           VAR:0x00        STORE CANJUMP VERSION 1,2,3
+%{
+  ZDWord  new_routine;
+  ZFrame* newframe;
+  int     x;
+  
+  if (argblock.n_args < 1)
+    zmachine_fatal("call must have 1 argument");
+
+  if (argblock.arg[0] == 0)
+    {
+      store(stack, st, 0);
+      goto loop;
+    }
+  
+  new_routine = 2*(ZUWord)argblock.arg[0];
+  
+#ifdef DEBUG
+  printf("CALL $%x -> V%03i\n", new_routine, st);
+#endif
+
+  newframe = call_routine(&pc, stack, new_routine);
+
+  for (x=1; x<argblock.n_args; x++)
+    {
+      newframe->flags |= 1<<(x-1);
+      newframe->local[x] = argblock.arg[x];
+    }
+
+  newframe->storevar = st;
+%}
+
 OPCODE "call_vs"        VAR:0x00        STORE CANJUMP VERSION 4,5,6,7,8
+%{
+  ZDWord  new_routine;
+  ZFrame* newframe;
+  int     x;
+  
+  if (argblock.n_args < 1)
+    zmachine_fatal("call must have 1 argument");
+
+  if (argblock.arg[0] == 0)
+    {
+      store(stack, st, 0);
+      goto loop;
+    }
+  
+  new_routine = UnpackR((ZUWord)argblock.arg[0]);
+  
+#ifdef DEBUG
+  printf("CALL $%x -> V%03i\n", new_routine, st);
+#endif
+
+  newframe = call_routine(&pc, stack, new_routine);
+
+  for (x=1; x<argblock.n_args; x++)
+    {
+      newframe->flags |= 1<<(x-1);
+      newframe->local[x] = argblock.arg[x];
+    }
+
+  newframe->storevar = st;    
+%}
+
 OPCODE "storew"         VAR:0x01 ARGS:3               VERSION all
+%{
+  ZByte* mem;
+
+#ifdef DEBUG
+  printf("Storing word value %i at #%x\n",
+	 argblock.arg[2],
+	 ((ZUWord) argblock.arg[0] + (ZUWord) (argblock.arg[1]*2))&0xffff);
+#endif
+#ifdef SAFE
+  if (((ZUWord) argblock.arg[0] + ((ZUWord) argblock.arg[1]*2)) >
+      machine.dynamic_ceiling)
+    zmachine_fatal("Out of range storew (tried to store at $%x, but ceiling is at $%x)",
+		   ((ZUWord) argblock.arg[0] + ((ZUWord) argblock.arg[1]*2)),
+		   machine.dynamic_ceiling);
+#endif
+  
+  if ((ZUWord) argblock.arg[0] + ((ZUWord) argblock.arg[1]*2) == ZH_flags2)
+    {
+      ZArgblock a;
+
+      stream_flush_buffer();
+      
+      a.n_args = 1;
+      a.arg[0] = (argblock.arg[2]&1)?2:-2;
+
+      zcode_op_output_stream(stack, &a);
+
+      argblock.arg[2] &= ~1;
+      argblock.arg[2] |= Word(ZH_flags2)&1;
+    }
+
+  mem = Address(((ZUWord) argblock.arg[0] + ((ZUWord) argblock.arg[1]*2))&0xffff);
+  mem[0] = argblock.arg[2]>>8;
+  mem[1] = argblock.arg[2];  
+%}
+
 OPCODE "storeb"         VAR:0x02 ARGS:3               VERSION all
+%{
+  ZByte* mem;
+
+#ifdef DEBUG
+  printf("Storing byte value %i at #%x\n",
+	 argblock.arg[2],
+	 ((ZUWord) argblock.arg[0] + (ZUWord) argblock.arg[1])&0xffff);
+#endif
+#ifdef SAFE
+  if (((ZUWord) argblock.arg[0] + (ZUWord) argblock.arg[1]) >
+      machine.dynamic_ceiling)
+    zmachine_fatal("Out of range storeb (store to $%x, ceiling at $%x)", ((ZUWord) argblock.arg[0] + (ZUWord) argblock.arg[1]), machine.dynamic_ceiling);
+#endif
+
+  mem = Address(((ZUWord) argblock.arg[0] + (ZUWord) argblock.arg[1])&0xffff);
+  mem[0] = argblock.arg[2];
+%}
+
 OPCODE "put_prop"       VAR:0x03 ARGS:3               VERSION 1,2,3
+%{
+  struct prop* p;
+  
+  if (argblock.arg[0]>255 || argblock.arg[0] == 0)
+    zmachine_fatal("Object out of range");
+  if (argblock.arg[1]>31)
+    zmachine_fatal("Property out of range");
+  
+  p = get_object_prop_3(argblock.arg[0], argblock.arg[1]);
+  if (p->isdefault)
+    zmachine_fatal("No such property %i for object %i", argblock.arg[1], argblock.arg[0]);
+
+  switch (p->size)
+    {
+    case 1:
+      p->prop[0] = argblock.arg[2];
+      break;
+      
+    case 2:
+      p->prop[0] = argblock.arg[2]>>8;
+      p->prop[1] = argblock.arg[2];
+      break;
+
+    default:
+      zmachine_fatal("%i is an invalid size for put_prop", p->size);
+    }  
+%}
+
 OPCODE "put_prop"       VAR:0x03 ARGS:3               VERSION 4,5,6,7,8
+%{
+  struct prop* p;
+  
+  if (argblock.arg[0] == 0)
+    zmachine_fatal("Object 0 has no properties");
+  if (argblock.arg[1]>63)
+    zmachine_fatal("Property out of range");
+  
+  p = get_object_prop_4(argblock.arg[0], argblock.arg[1]);
+  if (p->isdefault)
+    zmachine_fatal("No such property %i for object %i", argblock.arg[1], argblock.arg[0]);
+
+  switch (p->size)
+    {
+    case 1:
+      p->prop[0] = argblock.arg[2];
+      break;
+      
+    case 2:
+      p->prop[0] = argblock.arg[2]>>8;
+      p->prop[1] = argblock.arg[2];
+      break;
+
+    default:
+      zmachine_fatal("%i is an invalid size for put_prop", p->size);
+    }
+%}
+
 OPCODE "sread"          VAR:0x04 ARGS:2               VERSION 1,2,3
+%{
+  ZByte* mem;
+  char* buf;
+  int x;
+
+  stream_flush_buffer();
+
+  mem = machine.memory + (ZUWord) argblock.arg[0];
+  buf = malloc(sizeof(char)*(mem[0]+1));
+  
+  buf[0] = 0;
+  draw_statusbar_123(stack);
+  display_readline(buf, mem[0], 0);
+  stream_input(buf);
+  
+  for (x=0; buf[x] != 0; x++)
+    {
+      buf[x] = tolower(buf[x]);
+      mem[x+1] = buf[x];
+    }
+  mem[x+1] = 0;
+
+  if (argblock.n_args > 1)
+    {
+      tokenise_string(buf,
+		      Word(ZH_dict),
+		      machine.memory + (ZUWord) argblock.arg[1],
+		      0,
+		      1);
+
+#ifdef DEBUG
+      {
+	ZByte* tokbuf;
+	tokbuf = machine.memory + (ZUWord) argblock.arg[1];
+	for (x=0; x<tokbuf[1]; x++)
+	  {
+	    printf("Token $%x%x word at %i, length %i\n",
+			   tokbuf[2+x*4],
+			   tokbuf[3+x*4],
+			   tokbuf[5+x*4],
+			   tokbuf[4+x*4]);
+	  }
+      }
+#endif
+    }
+
+  free(buf);
+%}
+
 OPCODE "sread"          VAR:0x04 ARGS:4       CANJUMP VERSION 4
+%{
+  zcode_op_sread_4(&pc, stack, &argblock);
+%}
+
 OPCODE "aread"          VAR:0x04 ARGS:4 STORE CANJUMP VERSION 5,6,7,8
+%{
+  zcode_op_aread_5678(&pc, stack, &argblock, st);
+%}
+
 OPCODE "print_char"     VAR:0x05 ARGS:1               VERSION all
+%{
+#ifdef DEBUG
+  printf(">%c<\n", argblock.arg[0]);
+#endif
+  if (argblock.arg[0] == 0)
+    argblock.arg[0] = 32;
+  stream_printf("%c", argblock.arg[0]);
+%}
+
 OPCODE "print_num"      VAR:0x06 ARGS:1               VERSION all
+%{
+#ifdef DEBUG
+  printf(">%i<\n", argblock.arg[0]);
+#endif
+  stream_printf("%i", argblock.arg[0]);
+%}
+
 OPCODE "random"         VAR:0x07 ARGS:1 STORE         VERSION all
+%{
+  if (argblock.arg[0] > 0)
+    {
+      store(stack, st, (rand()%argblock.arg[0])+1);
+    }
+  else if (argblock.arg[0] < 0)
+    {
+      srand(argblock.arg[0]);
+      store(stack, st, 0);
+    }
+  else
+    {
+      struct timeval tv;
+      
+      /* Reseed RNG */
+      gettimeofday(&tv, NULL);
+      srand(tv.tv_sec|tv.tv_usec);
+
+      store(stack, st, 0);
+    }
+%}
+
 OPCODE "push"           VAR:0x08 ARGS:1               VERSION all
+%{
+  push(stack, argblock.arg[0]);
+%}
+
 OPCODE "pull"           VAR:0x09 ARGS:1               VERSION 1,2,3,4,5,7,8
+%{
+  ZUWord val;
+
+  val = pop(stack);
+  store(stack, argblock.arg[0], val);
+%}
+
 OPCODE "pull"           VAR:0x09 ARGS:1 STORE         VERSION 6
-OPCODE "split_window"   VAR:0x0a ARGS:1               VERSION 3,4,5,6,7,8
+
+OPCODE "split_window"   VAR:0x0a ARGS:1               VERSION all # 3,4,5,6,7,8
+%{
+  stream_flush_buffer();
+
+  if (argblock.arg[0] != 0)
+    {
+      int win;
+      int ver;
+
+      ver = Byte(0);
+
+#ifdef DEBUG
+      printf("Top window bottom is now %i\n", argblock.arg[0]);
+#endif
+      
+      win = display_get_window();
+      
+      display_set_window(0);
+      display_join(0, 2);
+      display_split(argblock.arg[0], 2);
+      display_no_more(2);
+      display_set_window(2);
+      if (ver == 3)
+	{
+	  display_set_cursor(0,1);
+	  display_erase_window();
+	}
+      display_set_scroll(0);
+      display_force_fixed(2, 1);
+
+      display_set_window(win);
+    }
+  else
+    {
+      display_join(0, 2);
+      display_set_window(0);
+    }
+
+  if (machine.transcript_on == 2 && display_get_window() == 0)
+    machine.transcript_on = 1;
+%}
+
 OPCODE "set_window"     VAR:0x0b ARGS:1               VERSION 3,4,5,7,8
+%{
+  stream_flush_buffer();
+
+  switch (argblock.arg[0])
+    {
+    case 0:
+      stream_buffering(machine.buffering);
+      display_set_window(0);
+
+      if (machine.transcript_on == 2)
+	machine.transcript_on = 1;
+      break;
+    case 1:
+      stream_buffering(0);
+      display_set_window(2);
+      if (Byte(0) == 3)
+	display_set_cursor(0,1);
+
+      if (machine.transcript_on == 1)
+	machine.transcript_on = 2;
+      break;
+    default:
+      zmachine_warning("Window %i not available", argblock.arg[0]);
+    }
+%}
+
 OPCODE "set_window"     VAR:0x0b ARGS:1               VERSION 6
+
 OPCODE "call_vs2"       VAR:0x0c   STORE LONG CANJUMP VERSION 4,5,6,7,8
+%{
+  goto op_call_vs_45678;
+%}
+
 OPCODE "erase_window"   VAR:0x0d ARGS:1               VERSION 4,5,6,7,8
+%{
+  int old_win;
+
+  stream_flush_buffer();
+  old_win = display_get_window();
+  
+  switch (argblock.arg[0])
+    {
+    case 0:
+      display_set_window(0);
+      display_erase_window();
+      if (Byte(0) != 4)
+	display_set_cursor(0,0);
+      display_set_window(old_win);
+      break;
+      
+    case 1:
+      display_set_window(2);
+      display_erase_window();
+      display_set_cursor(0,0);
+      display_set_window(old_win);
+      break;
+
+    case -1:
+      display_join(0, 2);
+      display_set_window(0);
+      display_erase_window();
+      if (Byte(0) != 4)
+	display_set_cursor(0,0);
+      break;
+    }
+%}
+
 OPCODE "erase_line"     VAR:0x0e ARGS:1               VERSION 4,5,7,8
+%{
+  display_erase_line(1);
+%}
+
 OPCODE "erase_line"     VAR:0x0e ARGS:1               VERSION 6
+
 OPCODE "set_cursor"     VAR:0x0f ARGS:2               VERSION 4,5,7,8
+%{
+  stream_flush_buffer();
+#ifdef DEBUG
+  printf("Cursor moved to %i, %i\n", argblock.arg[1]-1, argblock.arg[0]-1);
+#endif
+  if (display_get_window() == 2)
+    display_set_cursor(argblock.arg[1]-1, argblock.arg[0]-1);
+%}
+
 OPCODE "set_cursor"     VAR:0x0f ARGS:3               VERSION 6
+
 OPCODE "get_cursor"     VAR:0x10 ARGS:1               VERSION 4,5,6,7,8
+%{
+  ZByte* dest;
+  int x, y;
+
+  dest = Address((ZUWord)argblock.arg[0]);
+  x = display_get_cur_x()+1;
+  y = display_get_cur_y()+1;
+
+  dest[0] = y>>8;
+  dest[1] = y;
+  dest[2] = x>>8;
+  dest[3] = x;
+%}
+
 OPCODE "set_text_style" VAR:0x11 ARGS:1               VERSION 4,5,6,7,8
+%{
+  stream_flush_buffer();
+  display_set_style(argblock.arg[0]);  
+%}
+
 OPCODE "buffer_mode"    VAR:0x12 ARGS:1               VERSION 4,5,6,7,8
+%{
+  machine.buffering = argblock.arg[0];
+  stream_buffering(argblock.arg[0]);
+%}
+
 OPCODE "output_stream"  VAR:0x13 ARGS:1               VERSION 3
+%{
+  zcode_op_output_stream(stack, &argblock);
+%}
+
 OPCODE "output_stream"  VAR:0x13 ARGS:2               VERSION 4,5,7,8
+%{
+  zcode_op_output_stream(stack, &argblock);
+%}
+
 OPCODE "output_stream"  VAR:0x13 ARGS:3               VERSION 6
-OPCODE "input_stream"   VAR:0x14 ARGS:1               VERSION 3,4,5,6,7,8
-OPCODE "sound_effect"   VAR:0x15                      VERSION 3,4,5,6,7,8
+
+OPCODE "input_stream"   VAR:0x14 ARGS:1               VERSION all # 3,4,5,6,7,8
+
+OPCODE "sound_effect"   VAR:0x15                      VERSION all # 3,4,5,6,7,8
+%{
+  display_beep();
+%}
+
 OPCODE "read_char"      VAR:0x16 ARGS:3 STORE         VERSION 4,5,6,7,8
+%{
+  stream_flush_buffer();
+  store(stack, st, display_readchar(0));
+%}
+
 OPCODE "scan_table"     VAR:0x17        BRANCH STORE  VERSION 4,5,6,7,8
+%{
+  ZDWord adr;
+  
+  if (argblock.n_args < 4)
+    argblock.arg[3] = 0x82;
+
+  adr = scan_table(argblock.arg[0],
+		   argblock.arg[1],
+		   argblock.arg[2],
+		   argblock.arg[3]);
+
+  if (adr > 0)
+    {
+      store(stack, st, adr);
+      result = 1;
+    }
+  else
+    {
+      store(stack, st, 0);
+      result = 0;
+    }
+  dobranch;
+%}
+
 OPCODE "not"            VAR:0x18 ARGS:1 STORE         VERSION 5,6,7,8
+%{
+  store(stack, st, ~argblock.arg[0]);
+%}
+
 OPCODE "call_vn"        VAR:0x19 CANJUMP              VERSION 5,6,7,8
+%{
+  ZDWord  new_routine;
+  ZFrame* newframe;
+  int     x;
+  
+  if (argblock.n_args < 1)
+    zmachine_fatal("call must have 1 argument");
+
+  if (argblock.arg[0] == 0)
+    {
+      store(stack, st, 0);
+      goto loop;
+    }
+  
+  new_routine = UnpackR((ZUWord)argblock.arg[0]);
+  
+#ifdef DEBUG
+  printf("CALL $%x -> V%03i\n", new_routine, st);
+#endif
+
+  newframe = call_routine(&pc, stack, new_routine);
+
+  for (x=1; x<argblock.n_args; x++)
+    {
+      newframe->flags |= 1<<(x-1);
+      newframe->local[x] = argblock.arg[x];
+    }
+
+  newframe->discard = 1;
+%}
+
 OPCODE "call_vn2"       VAR:0x1a CANJUMP LONG         VERSION 5,6,7,8
+%{
+  goto op_call_vn_5678;
+%}
+
 OPCODE "tokenise"       VAR:0x1b ARGS:4               VERSION 5,6,7,8
+%{
+  ZByte* text;
+  char*  buf;
+
+  text = Address((ZUWord)argblock.arg[0]);
+  buf = malloc(text[0]+1);
+  strncpy(buf, text + 2, text[1]);
+  buf[text[1]] = 0;
+  
+  tokenise_string(buf,
+		  argblock.arg[2]==0?Word(ZH_dict):argblock.arg[2],
+		  Address((ZUWord)argblock.arg[1]),
+		  argblock.arg[3] != 0,
+		  2);
+
+#ifdef DEBUG
+      {
+	ZByte* tokbuf;
+	int x;
+	
+	tokbuf = machine.memory + (ZUWord) argblock.arg[1];
+	for (x=0; x<tokbuf[1]; x++)
+	  {
+	    printf("Token $%x%x word at %i, length %i\n",
+			   tokbuf[2+x*4],
+			   tokbuf[3+x*4],
+			   tokbuf[5+x*4],
+			   tokbuf[4+x*4]);
+	  }
+      }
+#endif
+
+  free(buf);
+%}
+
 OPCODE "encode_text"    VAR:0x1c ARGS:4               VERSION 5,6,7,8
+%{
+  /* Note: I haven't tested this yet */
+  pack_zscii(Address((ZUWord)argblock.arg[0]) + argblock.arg[2],
+	     argblock.arg[1],
+	     Address((ZUWord)argblock.arg[3]),
+	     9);
+%}
+
 OPCODE "copy_table"     VAR:0x1d ARGS:3               VERSION 5,6,7,8
+%{
+  if (argblock.arg[1] != 0)
+    {
+#ifdef DEBUG
+      printf("Copying #%x bytes from #%x to #%x\n", argblock.arg[2],
+	     (ZUWord)argblock.arg[0], (ZUWord)argblock.arg[1]);
+#endif
+      
+      if (argblock.arg[2] >= 0) /* Move memory */
+	memmove(Address((ZUWord)argblock.arg[1]),
+		Address((ZUWord)argblock.arg[0]),
+		(ZUWord)argblock.arg[2]);
+      else /* Copy forwards */
+	{
+	  ZUWord x;
+	  ZByte* src;
+	  ZByte* dest;
+
+	  src = Address((ZUWord)argblock.arg[0]);
+	  dest = Address((ZUWord)argblock.arg[1]);
+
+	  for (x = 0; x<-argblock.arg[2]; x++)
+	    {
+	      dest[x] = src[x];
+	    }
+	}
+    }
+  else
+    {
+      ZUWord x;
+      ZByte* mem;
+
+#ifdef DEBUG
+      printf("Blanking %i bytes from #%x\n", argblock.arg[2], (ZUWord)argblock.arg[0]);
+#endif
+      
+      mem = Address((ZUWord)argblock.arg[0]);
+      
+      for (x=0; x<argblock.arg[2]; x++)
+	{
+	  mem[x] = 0;
+	}
+    }
+%}
+
 OPCODE "print_table"    VAR:0x1e                      VERSION 5,6,7,8
+%{
+  ZByte* table;
+  int x,y;
+  int xpos;
+
+  stream_flush_buffer();
+  xpos = display_get_gcur_x();
+
+  if (argblock.arg[2] == 0)
+    argblock.arg[2] = 1;
+
+#ifdef DEBUG
+  printf("Printing table #%x (%ix%i), offset %i\n", argblock.arg[0], argblock.arg[1], argblock.arg[2], argblock.arg[3]);
+#endif
+  
+  table = Address((ZUWord) argblock.arg[0]);
+
+  for (y=0; y<argblock.arg[2]; y++)
+    {
+      if (y != 0)
+	{
+	  stream_prints("\n");
+	  stream_flush_buffer();
+	  if (machine.screen_on)
+	    display_set_gcursor(xpos, display_get_gcur_y());
+	}
+      
+      for (x=0; x<argblock.arg[1]; x++)
+	{
+	  unsigned char c;
+
+	  c = (table++)[0];
+	  if (c == 0)
+	    c = 32;
+	  if (c>31)
+	    stream_printf("%c", c);
+	}
+
+      table += argblock.arg[3];
+    }
+  stream_flush_buffer();
+%}
+
 OPCODE "check_argcount" VAR:0x1f ARGS:1 BRANCH        VERSION 5,6,7,8
+%{
+  result = (stack->current_frame->flags&(1<<(argblock.arg[0]-1)))!=0;
+  dobranch;
+%}
 
 # EXT ops
 
 OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
+%{
+  static char fname[256] = "savefile.qut";
+  int ok;
+
+  stream_flush_buffer();
+  
+  if (argblock.n_args == 0)
+    {
+      ZWord tmp;
+      
+      do
+	{
+	  ok = 1;
+	  display_prints("\nPlease supply a filename for save\nFile: ");
+	  display_readline(fname, 255, 0);
+
+	  if (get_file_size(fname) != -1)
+	    {
+	      char yn[5];
+
+	      yn[0] = 0;
+	      ok = 0;
+	      display_prints("That file already exists!\nAre you sure? (y/N) ");
+	      display_readline(yn, 1, 0);
+	      
+	      if (tolower(yn[0]) == 'y')
+		ok = 1;
+	      else
+		{
+		  store(stack, st, 0);
+		  goto loop;
+		}
+	    }
+	}
+      while (!ok);
+
+      store(stack, st, 2);
+      if (state_save(fname, stack, pc))
+	{
+	  tmp = GetVar(st); /* Pop the variable if it was on the stack */
+	  store(stack, st, 1);
+	}
+      else
+	{
+	  tmp = GetVar(st);
+	  store(stack, st, 0);
+
+	  if (state_fail())
+	    display_printf("(Save failed, reason: %s)\n", state_fail());
+	  else
+	    display_printf("(Save failed, reason unknown)\n");
+	}
+    }
+  else
+    {
+      char fname[256];
+      ZFile* file;
+
+      /* Untested */
+
+      if (argblock.arg[3] != 0)
+	strcpy(fname, Address(argblock.arg[2]));
+      else
+	strcpy(fname, "table.dat");
+
+      display_prints("\nPlease supply a filename for save\nFile: ");
+      display_readline(fname, 255, 0);
+
+      if (!(file = open_file_write(fname)))
+	{
+	  store(stack, st, 0);
+	  goto loop;
+	}
+
+      write_block(file, Address(argblock.arg[0]), argblock.arg[1]);
+	
+      store(stack, st, 1);
+    }
+%}
+
 OPCODE "restore"       EXT:0x01 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
+%{
+  static char fname[256] = "savefile.qut";
+  
+  if (argblock.n_args == 0)
+    {
+      display_prints("\nPlease supply a filename for restore\nFile: ");
+      display_readline(fname, 255, 0);
+
+      if (state_load(fname, stack, &pc))
+	{
+	  zmachine_setup_header();
+	  goto loop;
+	}
+
+      if (state_fail())
+	display_printf("(Restore failed, reason: %s)\n", state_fail());
+      else
+	display_printf("(Restore failed, reason unknown)\n");
+      
+      store(stack, st, 0);
+    }
+  else
+    {
+      char fname[256];
+      ZFile* file;
+
+      /* Untested */
+
+      if (argblock.arg[3] != 0)
+	strcpy(fname, Address(argblock.arg[2]));
+      else
+	strcpy(fname, "table.dat");
+
+      display_prints("\nPlease supply a filename for restore\nFile: ");
+      display_readline(fname, 255, 0);
+
+      if (!(file = open_file(fname)))
+	{
+	  store(stack, st, 0);
+	  goto loop;
+	}
+
+      read_block2(Address(argblock.arg[0]),
+		  file, 0, argblock.arg[1]);
+	
+      store(stack, st, 1);
+    }
+%}
+
 OPCODE "log_shift"     EXT:0x02 ARGS:2 STORE  VERSION 5,6,7,8
+%{
+  if (argblock.arg[1] >= 0)
+    {
+      store(stack, st, argblock.arg[0]<<argblock.arg[1]);
+    }
+  else
+    {
+      ZUWord result;
+
+      result = argblock.arg[0];
+      result >>= -argblock.arg[1];
+      store(stack, st, result);
+    }
+%}
+
 OPCODE "art_shift"     EXT:0x03 ARGS:2 STORE  VERSION 5,6,7,8
+%{
+  if (argblock.arg[1] >= 0)
+    {
+      store(stack, st, argblock.arg[0]<<argblock.arg[1]);
+    }
+  else
+    {
+      store(stack, st, argblock.arg[0]>>-argblock.arg[1]);
+    }  
+%}
+
 OPCODE "set_font"      EXT:0x04 ARGS:1 STORE  VERSION 5,6,7,8
+%{
+  stream_flush_buffer();
+  
+  switch (argblock.arg[0])
+    {
+    case 1:
+      display_set_font(0);
+      break;
+
+    case 3:
+      display_set_font(-1);
+      break;
+
+    case 4:
+      display_set_font(3);
+      break;
+
+    default:
+      zmachine_warning("Font %i not supported", argblock.arg[0]);
+    }
+%}
+
 OPCODE "draw_picture"  EXT:0x05 ARGS:3        VERSION 6
 OPCODE "picture_data"  EXT:0x06 BRANCH        VERSION 6
 OPCODE "erase_picture" EXT:0x07               VERSION 6
 OPCODE "set_margins"   EXT:0x08 ARGS:3        VERSION 6
+
 OPCODE "save_undo"     EXT:0x09 ARGS:0 STORE CANJUMP VERSION 5,6,7,8
+%{
+#ifdef CAN_UNDO
+  ZWord tmp;
+
+  if (machine.undo)
+    free(machine.undo);
+  
+  store(stack, st, 2);
+  machine.undo = state_compile(stack, pc, &machine.undo_len,
+#ifdef SQUEEZE_UNDO
+			       1
+#else
+			       0
+#endif
+			       );
+  tmp = GetVar(st); /* (Pop the value again if it's on the stack) */
+  
+  if (machine.undo)
+    store(stack, st, 1);
+  else
+    store(stack, st, 0);
+#else
+  store(stack, st, -1);
+#endif
+%}
+
 OPCODE "restore_undo"  EXT:0x0a ARGS:0 STORE CANJUMP VERSION 5,6,7,8
+%{
+#ifdef CAN_UNDO
+  if (machine.undo)
+    {
+      if (state_decompile(machine.undo, stack, &pc, machine.undo_len))
+	{
+	  free(machine.undo);
+	  machine.undo = NULL;
+	  goto loop;
+	}
+      free(machine.undo);
+      machine.undo = NULL;
+      store(stack, st, 0);
+    }
+#else
+  store(stack, st, 0);
+#endif
+%}
+
 OPCODE "print_unicode" EXT:0x0b ARGS:1        VERSION 5,7,8
 OPCODE "check_unicode" EXT:0x0c ARGS:1 STORE  VERSION 5,7,8
 OPCODE "move_window"   EXT:0x10               VERSION 6
@@ -175,6 +2099,30 @@ OPCODE "picture_table" EXT:0x1c               VERSION 6
 
 # Our own extensions - benchmarking/profiling operations
 OPCODE "start_timer"   EXT:0x80               VERSION 4,5,6,7,8
+%{
+  start_clock = clock();
+%}
+
 OPCODE "stop_timer"    EXT:0x81               VERSION 4,5,6,7,8
+%{
+  end_clock = clock();
+%}
+
 OPCODE "read_timer"    EXT:0x82 STORE         VERSION 4,5,6,7,8
+%{
+  clock_t now;
+
+  now = end_clock - start_clock;
+
+  store(stack, st, (ZUWord) (now*100)/CLOCKS_PER_SEC);
+%}
+
 OPCODE "print_timer"   EXT:0x83      	      VERSION 4,5,6,7,8
+%{
+  clock_t now;
+  
+  now = end_clock - start_clock;
+
+  stream_printf("%i.%02i secs", (signed int) (now/CLOCKS_PER_SEC),
+		(signed int) ((now*100)/CLOCKS_PER_SEC)%100);
+%}

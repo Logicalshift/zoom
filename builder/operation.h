@@ -47,7 +47,9 @@ typedef struct
   enum optype type;
   int         value;
   opflags     flags;
-  int versions;   /* Bitfield */
+  int         versions; /* Bitfield */
+  char*       code;
+  int         codeline;
 } operation;
 
 typedef struct oplist

@@ -5,6 +5,7 @@
 #include "gram.h"
 
 int yyline;
+int codeline;
 %}
 
 %%
@@ -79,6 +80,28 @@ EXT				yylval.optype = extop; return OPTYPE;
 
 				  return STRING;
 				}
+
+"%{"(\n|[^%]|(%[^}]))*"%}"	{
+				  int x;
+				  yylval.string = NULL;
+
+				  codeline = yyline;
+
+				  for (x=2; 
+				       x<(strlen(yytext))-2;
+				       x++)
+				    {
+				      yylval.string =
+				        realloc(yylval.string, x+1);
+				      yylval.string[x-2] = yytext[x];
+				      if (yytext[x] == 10)
+				        yyline++;
+				    }
+				  yylval.string[x-2] = 0;
+
+				  return CODEBLOCK;
+				}
+
 
 [ \t]+				/* Yum! */
 \n				yyline++;
