@@ -249,6 +249,11 @@
     outputBuffer = [[ZBuffer allocWithZone: [self zone]] init];
 }
 
+// = Display size =
+- (void) displaySizeHasChanged {
+    zmachine_resize_display(display_get_info());
+}
+
 @end
 
 // Various Zoom C functions (not yet implemented elsewhere)

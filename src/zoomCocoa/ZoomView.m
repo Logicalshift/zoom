@@ -124,6 +124,18 @@ static NSArray* defaultColours = nil;
         // Styles, fonts, etc
         fonts = [defaultFonts retain];
         colours = [defaultColours retain];
+
+        // Get notifications
+        [[NSNotificationCenter defaultCenter] addObserver: self
+                                                 selector: @selector(boundsChanged:)
+                                                     name: NSViewBoundsDidChangeNotification
+                                                   object: self];
+        [[NSNotificationCenter defaultCenter] addObserver: self
+                                                 selector: @selector(boundsChanged:)
+                                                     name: NSViewFrameDidChangeNotification
+                                                   object: self];
+        [self setPostsBoundsChangedNotifications: YES];
+        [self setPostsFrameChangedNotifications: YES];
     }
     return self;
 }
@@ -277,6 +289,23 @@ static NSArray* defaultColours = nil;
     receiving = NO;
     receivingCharacters = NO;
     [textView setEditable: NO];
+}
+
+- (void) dimensionX: (out int*) xSize
+                  Y: (out int*) ySize {
+    NSSize fixedSize = [@"M" sizeWithAttributes:
+        [NSDictionary dictionaryWithObjectsAndKeys:
+            [self fontWithStyle:ZFixedStyle], NSFontAttributeName, nil]];
+    NSRect ourBounds = [textView bounds];
+
+    *xSize = floor(ourBounds.size.width  / fixedSize.width);
+    *ySize = floor(ourBounds.size.height / fixedSize.height);
+}
+
+- (void) boundsChanged: (NSNotification*) not {
+    if (zMachine) {
+        [zMachine displaySizeHasChanged];
+    }
 }
 
 // = Utility functions =

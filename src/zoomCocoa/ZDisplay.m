@@ -60,10 +60,14 @@ ZDisplay* display_get_info(void) {
     dis.timed_input   = 1;
     dis.mouse         = 0;
 
-    dis.lines         = 25; // IMPLEMENT ME: get from server
-    dis.columns       = 80;
-    dis.width         = 80;
-    dis.height        = 25;
+    int xsize, ysize;
+    [[mainMachine display] dimensionX: &xsize
+                                    Y: &ysize];
+
+    dis.lines         = ysize;
+    dis.columns       = xsize;
+    dis.width         = xsize;
+    dis.height        = ysize;
     
     dis.font_width    = 1;
     dis.font_height   = 1;

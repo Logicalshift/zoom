@@ -88,6 +88,9 @@
 - (NSColor*) foregroundColourForStyle: (ZStyle*) style;
 - (NSColor*) backgroundColourForStyle: (ZStyle*) style;
 
+- (void) setFonts:   (NSArray*) fonts;
+- (void) setColours: (NSArray*) colours;
+
 // The upper window
 - (int)  upperWindowSize;
 - (void) setUpperBuffer: (double) bufHeight;

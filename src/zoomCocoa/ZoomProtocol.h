@@ -54,6 +54,8 @@
 - (oneway void) inputText: (in bycopy NSString*) text;
 - (oneway void) inputMouseAtPositionX: (int) x
                                     Y: (int) y;
+
+- (oneway void) displaySizeHasChanged;
 @end
 
 // == Client-side objects ==
