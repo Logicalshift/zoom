@@ -1,0 +1,270 @@
+// !$*UTF8*$!
+{
+	4B1E3F4B050F7AD000A8E303 = {
+		activeBuildStyle = 4B1E3F49050F7AD000A8E303;
+		activeExecutable = 4B1E3F5D050F7B2500A8E303;
+		activeTarget = 4B1E3F5B050F7B2500A8E303;
+		addToTargets = (
+			4B1E3F5B050F7B2500A8E303,
+		);
+		executables = (
+			4B1E3F5D050F7B2500A8E303,
+			4B1E3F7B050F7C3900A8E303,
+		);
+		perUserDictionary = {
+			PBXPerProjectTemplateStateSaveDate = 84902410;
+			PBXWorkspaceContents = (
+				{
+					LeftSlideOut = {
+						Split0 = {
+							Split0 = {
+								NavContent0 = {
+									bookmark = 4B593D92050F83C900A8E303;
+									history = (
+										4B593D91050F83C900A8E303,
+									);
+								};
+								NavCount = 1;
+								NavGeometry0 = {
+									Frame = "{{0, 0}, {571, 286}}";
+									NavBarVisible = YES;
+								};
+								NavSplitVertical = NO;
+							};
+							SplitCount = 1;
+							Tab1 = {
+								Debugger = {
+									Split0 = {
+										SplitCount = 2;
+									};
+									SplitCount = 1;
+									TabCount = 2;
+								};
+								LauncherConfigVersion = 7;
+							};
+							Tab2 = {
+								LauncherConfigVersion = 3;
+								Runner = {
+								};
+							};
+							TabCount = 5;
+						};
+						SplitCount = 1;
+						Tab1 = {
+							OptionsSetName = "Hierarchy, all classes";
+						};
+						TabCount = 5;
+					};
+				},
+			);
+			PBXWorkspaceGeometries = (
+				{
+					ContentSize = "{855, 571}";
+					LeftSlideOut = {
+						ActiveTab = 0;
+						ActiveTabName = PBXGroupTreeModule;
+						Collapsed = NO;
+						Frame = "{{0, 23}, {855, 548}}";
+						Split0 = {
+							ActiveTab = 2;
+							ActiveTabName = PBXBuildResultsModule;
+							Collapsed = NO;
+							Frame = "{{284, 0}, {571, 548}}";
+							Split0 = {
+								Frame = "{{0, 262}, {571, 286}}";
+							};
+							SplitCount = 1;
+							Tab0 = {
+								Frame = "{{0, 0}, {681, 289}}";
+							};
+							Tab1 = {
+								Debugger = {
+									Collapsed = NO;
+									Frame = "{{0, 0}, {681, 150}}";
+									Split0 = {
+										Frame = "{{0, 24}, {681, 126}}";
+										Split0 = {
+											Frame = "{{0, 0}, {333, 126}}";
+										};
+										Split1 = {
+											DebugVariablesTableConfiguration = (
+												Name,
+												123,
+												Value,
+												85,
+												Summary,
+												105.123,
+											);
+											Frame = "{{342, 0}, {339, 126}}";
+										};
+										SplitCount = 2;
+									};
+									SplitCount = 1;
+									Tab0 = {
+										Frame = "{{0, 0}, {100, 50}}";
+									};
+									Tab1 = {
+										Frame = "{{0, 0}, {100, 50}}";
+									};
+									TabCount = 2;
+									TabsVisible = YES;
+								};
+								Frame = "{{0, 0}, {681, 120}}";
+								LauncherConfigVersion = 7;
+							};
+							Tab2 = {
+								Frame = "{{0, 0}, {681, 234}}";
+								LauncherConfigVersion = 3;
+								Runner = {
+									Frame = "{{0, 0}, {681, 234}}";
+								};
+							};
+							Tab3 = {
+								BuildMessageFrame = "{{0, 0}, {573, 146}}";
+								BuildTranscriptFrame = "{{0, 155}, {573, 61}}";
+								BuildTranscriptFrameExpanded = YES;
+								Frame = "{{0, 0}, {571, 238}}";
+							};
+							Tab4 = {
+								Frame = "{{0, 0}, {612, 295}}";
+							};
+							TabCount = 5;
+							TabsVisible = YES;
+						};
+						SplitCount = 1;
+						Tab0 = {
+							Frame = "{{0, 0}, {260, 548}}";
+							GroupTreeTableConfiguration = (
+								TargetStatusColumn,
+								18,
+								MainColumn,
+								227,
+							);
+						};
+						Tab1 = {
+							ClassesFrame = "{{0, 0}, {250, 333}}";
+							ClassesTreeTableConfiguration = (
+								PBXBookColumnIdentifier,
+								20,
+								PBXClassColumnIdentifier,
+								207,
+							);
+							Frame = "{{0, 0}, {248, 554}}";
+							MembersFrame = "{{0, 342}, {250, 212}}";
+							MembersTreeTableConfiguration = (
+								PBXBookColumnIdentifier,
+								20,
+								PBXMethodColumnIdentifier,
+								206,
+							);
+						};
+						Tab2 = {
+							Frame = "{{0, 0}, {217, 554}}";
+						};
+						Tab3 = {
+							Frame = "{{0, 0}, {239, 554}}";
+							TargetTableConfiguration = (
+								ActiveObject,
+								16,
+								ObjectNames,
+								206.296,
+							);
+						};
+						Tab4 = {
+							BreakpointsTreeTableConfiguration = (
+								breakpointColumn,
+								197,
+								enabledColumn,
+								31,
+							);
+							Frame = "{{0, 0}, {250, 554}}";
+						};
+						TabCount = 5;
+						TabsVisible = YES;
+					};
+					NavBarShownByDefault = YES;
+					StatusViewVisible = YES;
+					Template = 64ABBB4501FA494900185B06;
+					ToolbarVisible = YES;
+					WindowLocation = "{174, 205}";
+				},
+			);
+			PBXWorkspaceStateSaveDate = 84902410;
+		};
+		perUserProjectItems = {
+			4B593D91050F83C900A8E303 = 4B593D91050F83C900A8E303;
+			4B593D92050F83C900A8E303 = 4B593D92050F83C900A8E303;
+		};
+		projectwideBuildSettings = {
+		};
+		wantsIndex = 1;
+		wantsSCM = -1;
+	};
+	4B1E3F5B050F7B2500A8E303 = {
+		activeExec = 0;
+		executables = (
+			4B1E3F5D050F7B2500A8E303,
+		);
+	};
+	4B1E3F5D050F7B2500A8E303 = {
+		activeArgIndex = 2147483647;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		configStateDict = {
+		};
+		debuggerPlugin = GDBDebugging;
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		isa = PBXExecutable;
+		name = ZoomServer;
+		shlibInfoDictList = (
+		);
+		sourceDirectories = (
+		);
+	};
+	4B1E3F67050F7BB700A8E303 = {
+		activeExec = 0;
+	};
+	4B1E3F79050F7C3900A8E303 = {
+		activeExec = 0;
+		executables = (
+			4B1E3F7B050F7C3900A8E303,
+		);
+	};
+	4B1E3F7B050F7C3900A8E303 = {
+		activeArgIndex = 2147483647;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		configStateDict = {
+		};
+		debuggerPlugin = GDBDebugging;
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		isa = PBXExecutable;
+		name = Builder;
+		shlibInfoDictList = (
+		);
+		sourceDirectories = (
+		);
+	};
+	4B593D91050F83C900A8E303 = {
+		fRef = 4B1E3F8F050F7D5200A8E303;
+		isa = PBXBookmark;
+	};
+	4B593D92050F83C900A8E303 = {
+		fRef = 4B1E3F8F050F7D5200A8E303;
+		isa = PBXTextBookmark;
+		name = "file.c: 33";
+		rLen = 0;
+		rLoc = 1008;
+		rType = 0;
+		vrLen = 315;
+		vrLoc = 919;
+	};
+}

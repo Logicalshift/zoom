@@ -30,7 +30,7 @@
 #include "file.h"
 #include "zmachine.h"
 
-#if WINDOW_SYSTEM != 2 && WINDOW_SYSTEM != 3
+#if WINDOW_SYSTEM != 2 && WINDOW_SYSTEM != 3 && WINDOW_SYSTEM != 4
 
 struct ZFile
 {

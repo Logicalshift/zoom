@@ -152,10 +152,6 @@ void display_erase_window(void)
 {
   NOTV6;
 
-  display_set_scroll_region(0);
-  display_set_scroll_range(0, 0);
-  display_set_scroll_position(0);
-
   displayed_text = 0;
   
   if (CURWIN.overlay)
@@ -185,6 +181,10 @@ void display_erase_window(void)
       struct line* nextline;
       int x, y, z;
 
+      display_set_scroll_region(0);
+      display_set_scroll_range(0, 0);
+      display_set_scroll_position(0);
+      
       text = CURWIN.text;
       while (text != NULL)
 	{

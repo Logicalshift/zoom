@@ -2,7 +2,7 @@ Hmm, this file was a bit out of date.
 
  * Crash with graphics set to a directory?
  * Allow for graphics directories
- * Hang with Xft2
+ * Hang with Xft2 (appears to be a bug in Xft2 rather than Zoom)
  * Extra Zork II / Plundered Hearts definitions
  * taipan.z5 text display underneath upper window bug
  * [More] and recorded scripts broken?
@@ -10,11 +10,8 @@ Hmm, this file was a bit out of date.
  * heirarchical fonts
  * reset pixmap display on restart under v6
  * XSL documentation
- * FOO.Z5 bug under OS X
- - restarting the game seems to leave some variables intact
-     (eg, pick up the phone booth and die...)
  * disable quicktime rendering
- * scroll bar bug
+ * crash when moving a file and it's resources in OS X?
 
  * Sound
  * Internationalisation support

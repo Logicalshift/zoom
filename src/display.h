@@ -23,7 +23,8 @@
 
 /*
  * Ah, this was once a great ole display library. Unfortunately, my 
- * changing demands made it a bit of a mess.
+ * changing demands made it a bit of a mess. Some of these functions
+ * are architecture-specific, and some aren't any more.
  */
 
 #ifndef __DISPLAY_H
