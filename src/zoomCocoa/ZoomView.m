@@ -703,6 +703,12 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         backgroundColour = tmp;
     }
 	
+	// The foreground colour must have 100% alpha
+	foregroundColour = [NSColor colorWithDeviceRed: [foregroundColour redComponent]
+											 green: [foregroundColour greenComponent]
+											  blue: [foregroundColour blueComponent]
+											 alpha: 1.0];
+	
     // Generate the new attributes
     NSDictionary* newAttr = [NSDictionary dictionaryWithObjectsAndKeys:
         fontToUse, NSFontAttributeName,
@@ -744,14 +750,20 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     if (backgroundColour == nil) {
         backgroundColour = [colours objectAtIndex: [style backgroundColour]];
     }
-
+	
     if ([style reversed]) {
         NSColor* tmp = foregroundColour;
 
         foregroundColour = backgroundColour;
         backgroundColour = tmp;
     }
-
+	
+	// The foreground colour must have 100% alpha
+	foregroundColour = [NSColor colorWithDeviceRed: [foregroundColour redComponent]
+											 green: [foregroundColour greenComponent]
+											  blue: [foregroundColour blueComponent]
+											 alpha: 1.0];
+	
     // Generate the new attributes
     NSDictionary* newAttr = [NSDictionary dictionaryWithObjectsAndKeys:
         fontToUse, NSFontAttributeName,
@@ -802,6 +814,12 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
             res = [colours objectAtIndex: [style foregroundColour]];
         }
     }
+	
+	// The foreground colour must have 100% alpha
+	res = [NSColor colorWithDeviceRed: [res redComponent]
+								green: [res greenComponent]
+								 blue: [res blueComponent]
+								alpha: 1.0];	
     
     return res;
 }

@@ -321,7 +321,6 @@ static void appendStyle(NSMutableString* styleName,
 }
 
 - (void)changeColor:(id)sender {	
-
 	int selColour = [colours selectedRow];
 	
 	if (selColour < 0) {
