@@ -324,8 +324,8 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
     NSUserDefaults *defaults  = [NSUserDefaults standardUserDefaults];
 	ZoomStoryOrganiser* defaultPrefs = [[[[self class] alloc] init] autorelease];
 	
-		NSArray* libraries = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-		NSString* libraryDir = [[libraries objectAtIndex: 0] stringByAppendingPathComponent: @"Interactive Fiction"];
+	NSArray* libraries = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+	NSString* libraryDir = [[libraries objectAtIndex: 0] stringByAppendingPathComponent: @"Interactive Fiction"];
 	
     NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys: [defaultPrefs dictionary], defaultName,
 		libraryDir, ZoomGameStorageDirectory, nil];
