@@ -36,6 +36,10 @@ extern NSAutoreleasePool* displayPool;
 - (void) bufferMovement: (NSPoint) point
               forWindow: (int) windowNumber;
 - (void) bufferEraseLine: (int) windowNumber;
+- (void) bufferSetWindow: (int) windowNumber
+               startLine: (int) startline;
+- (void) bufferSetWindow: (int) windowNumber
+                 endLine: (int) endline;
 - (void) flushBuffers;
 
 @end

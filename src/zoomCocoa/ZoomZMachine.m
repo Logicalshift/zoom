@@ -27,6 +27,8 @@
 static NSString* bufferedString = @"bufferedString";
 static NSString* bufferedMovement = @"bufferedMovement";
 static NSString* bufferedEraseLine = @"bufferedEraseLine";
+static NSString* bufferedStartLine = @"bufferedStartLine";
+static NSString* bufferedEndLine = @"bufferedEndLine";
 
 @implementation ZoomZMachine
 
@@ -329,6 +331,24 @@ static NSString* bufferedEraseLine = @"bufferedEraseLine";
         nil]];
 }
 
+- (void) bufferSetWindow: (int) windowNumber
+               startLine: (int) startline {
+    [outputBuffer addObject: [NSArray arrayWithObjects:
+        bufferedStartLine,
+        [NSNumber numberWithInt: startline],
+        [NSNumber numberWithInt: windowNumber],
+        nil]];
+}
+
+- (void) bufferSetWindow: (int) windowNumber
+                 endLine: (int) endline {
+    [outputBuffer addObject: [NSArray arrayWithObjects:
+        bufferedEndLine,
+        [NSNumber numberWithInt: endline],
+        [NSNumber numberWithInt: windowNumber],
+        nil]];
+}
+
 - (void) flushBuffers {
     NSEnumerator* bufEnum;
 
@@ -363,6 +383,18 @@ static NSString* bufferedEraseLine = @"bufferedEraseLine";
             
             [(NSObject<ZUpperWindow>*)[self windowNumber:
                 [lastWindow intValue]] eraseLine];
+        } else if ([bufType isEqualToString: bufferedStartLine]) {
+            NSNumber* lastWindow = [bufEntry objectAtIndex: 2];
+            int line = [[bufEntry objectAtIndex: 1] intValue];
+
+            [(NSObject<ZUpperWindow>*)[self windowNumber:
+                [lastWindow intValue]] startAtLine: line];
+        } else if ([bufType isEqualToString: bufferedEndLine]) {
+            NSNumber* lastWindow = [bufEntry objectAtIndex: 2];
+            int line = [[bufEntry objectAtIndex: 1] intValue];
+
+            [(NSObject<ZUpperWindow>*)[self windowNumber:
+                [lastWindow intValue]] endAtLine: line];
         }
     }
 

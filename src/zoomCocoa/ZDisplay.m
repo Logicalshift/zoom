@@ -89,6 +89,8 @@ void display_initialise(void) {
 void display_reinitialise(void) {
     if (currentStyle) [currentStyle release];
     currentStyle = [[ZStyle alloc] init];
+
+    display_clear();
 }
 
 void display_finalise(void) {
@@ -107,6 +109,8 @@ void display_exit(int code) {
 // Clearing/erasure functions
 void display_clear(void) {
     NSObject<ZWindow>* win;
+    
+    NSLog(@"clear...");
 
     currentWindow = 0;
 
@@ -114,13 +118,13 @@ void display_clear(void) {
 
     win = [mainMachine windowNumber: 1];
     [win clearWithStyle: currentStyle];
-    [(NSObject<ZUpperWindow>*)win startAtLine: -1];
-    [(NSObject<ZUpperWindow>*)win endAtLine: -1];
+    [(NSObject<ZUpperWindow>*)win startAtLine: 0];
+    [(NSObject<ZUpperWindow>*)win endAtLine: 0];
 
     win = [mainMachine windowNumber: 2];
     [win clearWithStyle: currentStyle];
-    [(NSObject<ZUpperWindow>*)win startAtLine: -1];
-    [(NSObject<ZUpperWindow>*)win endAtLine: -1];
+    [(NSObject<ZUpperWindow>*)win startAtLine: 0];
+    [(NSObject<ZUpperWindow>*)win endAtLine: 0];
     
     win = [mainMachine windowNumber: 0];
     [win clearWithStyle: currentStyle];
@@ -387,27 +391,24 @@ void display_set_colour(int fore, int back) {
 }
 
 void display_split(int lines, int window) {
-    [mainMachine flushBuffers];
-
-    NSObject<ZUpperWindow>* win = [mainMachine windowNumber: window];
-
-    if ([win conformsToProtocol: @protocol(ZUpperWindow)]) {
-        // IMPLEMENT ME: window 2
-        [win startAtLine: 0];
-        [win endAtLine: lines];
-    }
+    // IMPLEMENT ME: window 2
+    [mainMachine bufferSetWindow: window
+                       startLine: 0];
+    [mainMachine bufferSetWindow: window
+                         endLine: lines];
 }
 
 void display_join(int win1, int win2) {
-    [mainMachine flushBuffers];
-    
-    NSObject<ZUpperWindow>* win = [mainMachine windowNumber: win2];
+    // IMPLEMENT ME: window 2
+    [mainMachine bufferSetWindow: win2
+                       startLine: 0];
+    [mainMachine bufferSetWindow: win2
+                         endLine: 0];
 
-    if ([win conformsToProtocol: @protocol(ZUpperWindow)]) {
-        // IMPLEMENT ME: window 2
-        [win startAtLine: 0];
-        [win endAtLine: 0];
-    }
+    /*
+    [mainMachine flushBuffers];
+    [[mainMachine windowNumber: win2] clearWithStyle: currentStyle];
+     */
 }
 
 void display_set_window(int window) {

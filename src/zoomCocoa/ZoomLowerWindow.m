@@ -28,8 +28,16 @@
 
 // Clears the window
 - (void) clearWithStyle: (ZStyle*) style {
+    // Clear the lower part of all the upper windows
+    NSEnumerator* upperEnum = [[zoomView upperWindows] objectEnumerator];
+    ZoomUpperWindow* win;
+    while (win = [upperEnum nextObject]) {
+        [win cutLines];
+    }
+    
     [[[[zoomView textView] textStorage] mutableString] setString: @""];
     [[zoomView textView] setBackgroundColor: [zoomView backgroundColourForStyle: style]];
+    [[zoomView textView] clearPastedLines]; 
     [zoomView scrollToEnd];
     [zoomView resetMorePrompt];
 }

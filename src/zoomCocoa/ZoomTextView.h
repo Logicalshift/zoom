@@ -7,10 +7,14 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "ZoomUpperWindow.h"
 
-
+@class ZoomUpperWindow;
 @interface ZoomTextView : NSTextView {
-
+    NSMutableArray* pastedLines; // Array of arrays ([NSValue<rect>, NSAttributedString])
 }
+
+- (void) pasteUpperWindowLinesFrom: (ZoomUpperWindow*) win;
+- (void) clearPastedLines;
 
 @end

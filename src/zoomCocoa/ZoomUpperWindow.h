@@ -10,6 +10,7 @@
 
 #import "ZoomView.h"
 
+@class ZoomView;
 @interface ZoomUpperWindow : NSObject<ZUpperWindow> {
     ZoomView* theView;
 
@@ -26,5 +27,6 @@
 - (int) length;
 - (NSArray*) lines;
 - (NSColor*) backgroundColour;
+- (void)     cutLines;
 
 @end

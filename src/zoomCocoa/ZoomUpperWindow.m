@@ -18,6 +18,8 @@
         lines = [[NSMutableArray allocWithZone: [self zone]] init];
 
         backgroundColour = [[NSColor blueColor] retain];
+
+        endLine = startLine = 0;
     }
     return self;
 }
@@ -34,6 +36,8 @@
     [lines release];
     lines = [[NSMutableArray allocWithZone: [self zone]] init];
     xpos = ypos = 0;
+
+    NSLog(@"Upper window clear");
 
     [backgroundColour release];
     backgroundColour = [[theView backgroundColourForStyle: style] retain];
@@ -110,12 +114,12 @@
 // Cursor positioning
 - (void) setCursorPositionX: (int) xp
                           Y: (int) yp {
-    xpos = xp; ypos = yp;
+    xpos = xp; ypos = yp-startLine;
 }
 
 - (void) cursorPositionX: (int*) xp
                        Y: (int*) yp {
-    *xp = xpos; *yp = ypos;
+    *xp = xpos; *yp = ypos+startLine;
 }
 
 // Line erasure
@@ -136,6 +140,11 @@
 
 - (NSColor*) backgroundColour {
     return backgroundColour;
+}
+
+- (void) cutLines {
+    [lines removeObjectsInRange: NSMakeRange([self length],
+                                             [lines count] - [self length])];
 }
 
 @end

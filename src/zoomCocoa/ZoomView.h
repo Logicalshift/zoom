@@ -18,6 +18,7 @@
 #define ZSymbolicStyle 8
 
 @class ZoomScrollView;
+@class ZoomTextView;
 @interface ZoomView : NSView<ZDisplay> {
     NSObject<ZMachine>* zMachine;
 
@@ -57,7 +58,7 @@
 - (NSAttributedString*) formatZString: (NSString*) zString
                             withStyle: (ZStyle*) style;
 
-- (NSTextView*) textView;
+- (ZoomTextView*) textView;
 
 - (NSFont*) fontWithStyle: (int) style;
 - (NSColor*) foregroundColourForStyle: (ZStyle*) style;

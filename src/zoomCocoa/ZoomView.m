@@ -189,11 +189,27 @@ static NSArray* defaultColours = nil;
 
 // Set whether or not we recieve certain types of data
 - (void) shouldReceiveCharacters {
+    [self rearrangeUpperWindows];
+
+    // Paste stuff
+    NSEnumerator* upperEnum = [upperWindows objectEnumerator];
+    ZoomUpperWindow* win;
+    while (win = [upperEnum nextObject]) {
+        [textView pasteUpperWindowLinesFrom: win];
+    }
+
     receivingCharacters = YES;
 }
 
 - (void) shouldReceiveText: (int) maxLength {
     [self rearrangeUpperWindows];
+
+    // Paste stuff
+    NSEnumerator* upperEnum = [upperWindows objectEnumerator];
+    ZoomUpperWindow* win;
+    while (win = [upperEnum nextObject]) {
+        [textView pasteUpperWindowLinesFrom: win];
+    }
     
     // If the more prompt is off, then set up for editting
     if (!moreOn) {
