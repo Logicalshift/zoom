@@ -35,6 +35,14 @@ static NSString* organiserDirectory = @"organiserDirectory";
 static ZoomPreferences* globalPreferences = nil;
 static NSLock*          globalLock = nil;
 
++ (NSString*) defaultOrganiserDirectory {
+	NSArray* docDir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+	
+	NSString* res = [[docDir objectAtIndex: 0] stringByAppendingPathComponent: @"Interactive Fiction"];
+	
+	return res;
+}
+
 + (void)initialize {
 	NSAutoreleasePool* apool = [[NSAutoreleasePool alloc] init];
 	

@@ -417,6 +417,7 @@ static void appendStyle(NSMutableString* styleName,
 				  contextInfo: (void *)contextInfo {
 	if (returnCode != NSOKButton) return;
 	
+	[[ZoomStoryOrganiser sharedStoryOrganiser] reorganiseStoriesTo: [sheet directory]];
 	[prefs setOrganiserDirectory: [sheet directory]];
 	[organiseDir setString: [prefs organiserDirectory]];
 }
@@ -427,6 +428,7 @@ static void appendStyle(NSMutableString* styleName,
 	[dirChooser setAllowsMultipleSelection: NO];
 	[dirChooser setCanChooseDirectories: YES];
 	[dirChooser setCanChooseFiles: NO];
+	[dirChooser setCanCreateDirectories: YES];
 	
 	NSString* path = [prefs organiserDirectory];
 	
@@ -440,6 +442,7 @@ static void appendStyle(NSMutableString* styleName,
 }
 
 - (IBAction) resetOrganiseDir: (id) sender {
+	[[ZoomStoryOrganiser sharedStoryOrganiser] reorganiseStoriesTo: [ZoomPreferences defaultOrganiserDirectory]];
 	[prefs setOrganiserDirectory: nil];
 	[organiseDir setString: [prefs organiserDirectory]];
 }

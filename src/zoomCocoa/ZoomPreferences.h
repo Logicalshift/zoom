@@ -24,6 +24,8 @@ extern NSString* ZoomPreferencesHaveChangedNotification;
 - (id) initWithDictionary: (NSDictionary*) preferences;
 
 // Getting preferences
++ (NSString*) defaultOrganiserDirectory;
+
 - (BOOL) displayWarnings;
 - (BOOL) fatalWarnings;
 - (BOOL) speakGameText;

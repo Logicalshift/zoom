@@ -16,6 +16,9 @@
   <editor should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
+    <selected-rows ids="m9hL7srSzjO"/>
+    <selected-columns ids=":078928d440f2709e21a6e303"/>
+    <selected-characters range="{72, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -776,131 +779,6 @@
             </text>
           </note>
         </item>
-        <item id="g9H8U-s3ymD" state="indeterminate">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Might cause bugs</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-          <children>
-            <item id="bVLHTzQZCjp" state="checked">
-              <values>
-                <text>
-                  <p>
-                    <run>
-                      <lit>Groups or titles with a directory separator in them (&apos;/&apos; or &apos;:&apos; ?)</lit>
-                    </run>
-                  </p>
-                </text>
-                <text>
-                  <p/>
-                </text>
-              </values>
-              <note expanded="yes">
-                <text>
-                  <p>
-                    <run>
-                      <lit>Causes can&apos;t rename error, thrown exception blows up table</lit>
-                    </run>
-                  </p>
-                  <p/>
-                  <p>
-                    <run>
-                      <lit>FIXED: added translation routine</lit>
-                    </run>
-                  </p>
-                </text>
-              </note>
-            </item>
-            <item id="bhtNI9CHXrl" state="checked">
-              <values>
-                <text>
-                  <p>
-                    <run>
-                      <lit>Games in the same group, but with different case (eg one in group &apos;Testing&apos; and one &apos;testing&apos;)</lit>
-                    </run>
-                  </p>
-                </text>
-                <text>
-                  <p/>
-                </text>
-              </values>
-              <note expanded="yes">
-                <text>
-                  <p>
-                    <run>
-                      <lit>No problems, I think</lit>
-                    </run>
-                  </p>
-                </text>
-              </note>
-            </item>
-            <item id="aDlVfH8pC6s" state="checked">
-              <values>
-                <text>
-                  <p>
-                    <run>
-                      <lit>Renaming a game to have different case</lit>
-                    </run>
-                  </p>
-                </text>
-                <text>
-                  <p/>
-                </text>
-              </values>
-              <note expanded="yes">
-                <text>
-                  <p>
-                    <run>
-                      <lit>Produced log message; fixed, I think</lit>
-                    </run>
-                  </p>
-                </text>
-              </note>
-            </item>
-            <item id="gfU_Q1yHlny">
-              <values>
-                <text>
-                  <p>
-                    <run>
-                      <lit>Changing the organisation directory while it has games inside</lit>
-                    </run>
-                  </p>
-                </text>
-                <text>
-                  <p/>
-                </text>
-              </values>
-              <note expanded="yes">
-                <text>
-                  <p>
-                    <run>
-                      <lit>Doesn&apos;t move the games, &apos;Reorganise now&apos; does nothing :-/</lit>
-                    </run>
-                  </p>
-                  <p/>
-                  <p>
-                    <run>
-                      <lit>organiseStory: bug probably causes the reorganise problem</lit>
-                    </run>
-                  </p>
-                  <p>
-                    <run>
-                      <lit>Really need to just move the contents of the old directory to the new one. &apos;Reorganise now&apos; should really fix this problem, though.</lit>
-                    </run>
-                  </p>
-                </text>
-              </note>
-            </item>
-          </children>
-        </item>
         <item id="icIWCXitNrm">
           <values>
             <text>
@@ -1505,6 +1383,131 @@
                   <p/>
                 </text>
               </values>
+            </item>
+          </children>
+        </item>
+        <item id="g9H8U-s3ymD" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Might cause bugs</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+          <children>
+            <item id="bVLHTzQZCjp" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Groups or titles with a directory separator in them (&apos;/&apos; or &apos;:&apos; ?)</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <lit>Causes can&apos;t rename error, thrown exception blows up table</lit>
+                    </run>
+                  </p>
+                  <p/>
+                  <p>
+                    <run>
+                      <lit>FIXED: added translation routine</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="bhtNI9CHXrl" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Games in the same group, but with different case (eg one in group &apos;Testing&apos; and one &apos;testing&apos;)</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <lit>No problems, I think</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="aDlVfH8pC6s" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Renaming a game to have different case</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <lit>Produced log message; fixed, I think</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="gfU_Q1yHlny" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Changing the organisation directory while it has games inside</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <lit>Doesn&apos;t move the games, &apos;Reorganise now&apos; does nothing :-/</lit>
+                    </run>
+                  </p>
+                  <p/>
+                  <p>
+                    <run>
+                      <lit>organiseStory: bug probably causes the reorganise problem</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <lit>Really need to just move the contents of the old directory to the new one. &apos;Reorganise now&apos; should really fix this problem, though.</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
             </item>
           </children>
         </item>

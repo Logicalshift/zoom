@@ -22,7 +22,6 @@ NSString* ZoomStoryOrganiserProgressNotification = @"ZoomStoryOrganiserProgressN
 static NSString* defaultName = @"ZoomStoryOrganiser";
 static NSString* extraDefaultsName = @"ZoomStoryOrganiserExtra";
 static NSString* ZoomGameDirectories = @"ZoomGameDirectories";
-static NSString* ZoomGameStorageDirectory = @"ZoomGameStorageDirectory";
 static NSString* ZoomIdentityFilename = @".zoomIdentity";
 
 @implementation ZoomStoryOrganiser
@@ -338,11 +337,7 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
     NSUserDefaults *defaults  = [NSUserDefaults standardUserDefaults];
 	ZoomStoryOrganiser* defaultPrefs = [[[[self class] alloc] init] autorelease];
 	
-	NSArray* libraries = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	NSString* libraryDir = [[libraries objectAtIndex: 0] stringByAppendingPathComponent: @"Interactive Fiction"];
-	
-    NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys: [defaultPrefs dictionary], defaultName,
-		libraryDir, ZoomGameStorageDirectory, nil];
+    NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys: [defaultPrefs dictionary], defaultName, nil];
 	
     [defaults registerDefaults: appDefaults];	
 }
@@ -500,6 +495,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 }
 
 // = Progress =
+
 - (void) startedActing {
 	[[NSNotificationCenter defaultCenter] postNotificationName: ZoomStoryOrganiserProgressNotification
 														object: self
@@ -1129,9 +1125,168 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	[storyLock unlock];
 }
 
+- (void) renamedIdent: (ZoomStoryID*) ident
+		   toFilename: (NSString*) filename {
+	filename = [[filename copy] autorelease];
+	
+	[storyLock lock];
+	
+	NSString* oldFilename = [identsToFilenames objectForKey: ident];
+	ZoomStoryID* oldID = [filenamesToIdents objectForKey: oldFilename];
+	
+	if (oldFilename) [identsToFilenames removeObjectForKey: ident];
+	if (oldID) [filenamesToIdents removeObjectForKey: oldFilename];
+	
+	[identsToFilenames setObject: filename
+						  forKey: ident];
+	[filenamesToIdents setObject: ident
+						  forKey: filename];
+	
+	[storyLock unlock];
+	
+	[self organiserChanged];
+}
+
 - (void) reorganiseStoriesTo: (NSString*) newStoryDirectory {
 	// Changes the story organisation directory
-	// Meh. Can just rename the directory, perhaps?
+	// Should be called before changing the story directory in the preferences
+	if (![[NSFileManager defaultManager] fileExistsAtPath: newStoryDirectory]) {
+		if (![[NSFileManager defaultManager] createDirectoryAtPath: newStoryDirectory
+														attributes: nil]) {
+			NSLog(@"WARNING: Can't reorganise to %@ - couldn't create directory", newStoryDirectory);
+			return;
+		}
+	}
+	
+	[storyLock lock];
+	
+	// Get the old story directory
+	NSString* lastStoryDirectory = [[[[ZoomPreferences globalPreferences] organiserDirectory] copy] autorelease];
+	
+	// Nothing to do if it's not different
+	if ([[lastStoryDirectory lowercaseString] isEqualToString: [newStoryDirectory lowercaseString]]) {
+		[storyLock unlock];
+		[storyLock lock];
+	}
+	
+	// Move the stories around
+	[self startedActing];
+
+	// List of files in our database
+	NSArray* filenames = [[[filenamesToIdents allKeys] copy] autorelease];
+	NSEnumerator* fileEnum = [filenames objectEnumerator];
+	
+	NSString* filename;
+	
+	// Parts of directories
+	NSArray* originalComponents = [lastStoryDirectory pathComponents];
+	
+	NSAutoreleasePool* loopPool = [[NSAutoreleasePool alloc] init];
+	while (filename = [fileEnum nextObject]) {
+		int x;
+
+		[loopPool release];
+		loopPool = [[NSAutoreleasePool alloc] init];
+
+		// Retrieve info about the file
+		ZoomStoryID* storyID = [filenamesToIdents objectForKey: filename];
+		NSArray* filenameComponents = [filename pathComponents];
+		
+		// Do nothing if the file is definitely outside the organisation structure
+		if ([filenameComponents count] <= [originalComponents count]+1) {
+			NSLog(@"WARNING: Not organising %@, as it doesn't appear to have been organised before", filename);
+			continue;	// Can't be equivalent.
+		}
+		
+		// Work out where this file would end up
+		NSString* newFilename = newStoryDirectory;
+		for (x=[originalComponents count]; x<[filenameComponents count]; x++) {
+			newFilename = [newFilename stringByAppendingPathComponent: [filenameComponents objectAtIndex: x]];
+		}
+		
+		if (![[NSFileManager defaultManager] fileExistsAtPath: filename]) {
+			// File has gone away - note that with the way this algorithm is implemented, this is expected to happen
+			// If the file now exists in the new location, update our database
+			// If not, then log a warning
+			if (storyID == nil) {
+				NSLog(@"WARNING: Not organising %@, as its information appears to have disappeared from the database", filename);
+			} else if (![[NSFileManager defaultManager] fileExistsAtPath: newFilename]) {
+				NSLog(@"WARNING: The file %@ appears to have gone away somewhere mysterious", filename);
+			} else {
+				[storyLock unlock];
+				[self renamedIdent: storyID
+						toFilename: newFilename];
+				[storyLock lock];
+			}
+			continue;
+		}
+		
+		// If filename is in the original directory, then move it to the new one
+		BOOL isOrganised = YES;
+		for (x=0; x<[originalComponents count]; x++) {
+			if ([[filenameComponents objectAtIndex: x] caseInsensitiveCompare: [originalComponents objectAtIndex: x]] != NSOrderedSame) {
+				isOrganised = NO;
+				break;
+			}
+		}
+		
+		if (!isOrganised) {
+			NSLog(@"WARNING: Not organising %@, as it doesn't appear to have been organised before", filename);
+			continue;	// Can't be equivalent.
+		}
+		
+		// Work out what to move to where
+		int component = [originalComponents count];
+		
+		NSString* componentToMove = nil;
+		
+		NSString* moveFrom;
+		NSString* moveTo;
+
+		while (component < [filenameComponents count]) {
+			componentToMove = [filenameComponents objectAtIndex: [originalComponents count]];
+
+			moveFrom = [lastStoryDirectory stringByAppendingPathComponent: componentToMove];
+			moveTo = [newStoryDirectory stringByAppendingPathComponent: componentToMove];
+
+			if (![[NSFileManager defaultManager] fileExistsAtPath: moveTo]) {
+				break;
+			}
+		}
+		
+		if ([[NSFileManager defaultManager] fileExistsAtPath: moveTo]) {
+			NSLog(@"WARNING: Not moving %@, as it would clobber a file at %@", moveFrom, moveTo);
+			continue;
+		}
+		
+		if (componentToMove == nil) {
+			// Should never happen
+			NSLog(@"WARNING: Programmer is a spoon (tried to move something that we should have discarded earlier)");
+			continue;
+		}
+		
+		// OK, move the file
+		if (![[NSFileManager defaultManager] movePath: moveFrom
+											   toPath: moveTo
+											  handler: nil]) {
+			NSLog(@"WARNING: Failed to move %@ to %@", moveFrom, moveTo);
+			continue;
+		}
+		
+		// Update our database		
+		[storyLock unlock];
+		[self renamedIdent: storyID
+				toFilename: newFilename];
+		[storyLock lock];
+	}
+	[loopPool release];
+
+	[self endedActing];
+	
+	[storyLock unlock];
+		
+	[self storePreferences];
+	[[NSUserDefaults standardUserDefaults] synchronize];	// In case we later crash
 }
 
 // = Reorganising story files =
@@ -1164,28 +1319,6 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	return [NSDictionary dictionaryWithObjectsAndKeys: storyID, @"storyID", story, @"story", nil];
 }
 
-- (void) renamedIdent: (ZoomStoryID*) ident
-		   toFilename: (NSString*) filename {
-	filename = [[filename copy] autorelease];
-	
-	[storyLock lock];
-	
-	NSString* oldFilename = [identsToFilenames objectForKey: ident];
-	ZoomStoryID* oldID = [filenamesToIdents objectForKey: oldFilename];
-	
-	if (oldFilename) [identsToFilenames removeObjectForKey: ident];
-	if (oldID) [filenamesToIdents removeObjectForKey: oldFilename];
-	
-	[identsToFilenames setObject: filename
-						  forKey: ident];
-	[filenamesToIdents setObject: ident
-						  forKey: filename];
-	
-	[storyLock unlock];
-	
-	[self organiserChanged];
-}
-
 - (void) organiserThread: (NSDictionary*) dict {
 	NSAutoreleasePool* p = [[NSAutoreleasePool alloc] init];
 	
@@ -1215,8 +1348,6 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	NSEnumerator* filenameEnum = [filenames objectEnumerator];
 	NSString* filename;
 	
-	NSLog(@"Reorganising stories...");
-
 	NSAutoreleasePool* loopPool = [[NSAutoreleasePool alloc] init];
 
 	while (filename = [filenameEnum nextObject]) {
