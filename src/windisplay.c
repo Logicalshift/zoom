@@ -777,17 +777,18 @@ static void format_last_text(int more)
 	  nl = 0;
 	  do
 	    {
-	      x++;
-	      word_len++;
-	      if (text->text[x-1] == '\n')
+	      if (text->text[x] == '\n')
 		{
 		  nl = 1;
 		  break;
 		}
+	      x++;
+	      word_len++;
 	    }
-	  while (x <= (text->len-1) &&
-		 (text->text[x] == ' ' ||
-		  text->text[x] == '\n'));
+	  while (!nl &&
+		 (x < text->len &&
+		  (text->text[x] == ' ' ||
+		   text->text[x] == '\n')));
 
 	  w = xfont_get_text_width(fn,
 				   text->text + word_start,
@@ -819,6 +820,10 @@ static void format_last_text(int more)
 	  if (nl)
 	    {
 	      new_line(more);
+
+	      x++;
+	      total_len++;
+	      word_start++;
 
 	      xpos = CURWIN.xpos;
 	      line = CURWIN.lastline;
