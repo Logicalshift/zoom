@@ -48,6 +48,7 @@
 #include <Carbon/Carbon.h>
 
 #include "zmachine.h"
+#include "rc.h"
 #include "font3.h"
 #include "xfont.h"
 #include "carbondisplay.h"

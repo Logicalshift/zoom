@@ -817,7 +817,7 @@ void save_evt_handler(NavEventCallbackMessage select,
 	      
 	      /* Get the filename */
 	      len = CFStringGetLength(reply.saveFileName);
-	      filename = NewPtr(len);
+	      filename = (UniChar*) NewPtr(len);
 	      CFStringGetCharacters(reply.saveFileName, CFRangeMake(0,len),
 				    filename);
 

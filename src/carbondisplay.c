@@ -1666,13 +1666,23 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 	    if (part == inContent && 
 		(terminating[254] || text_buf == NULL))
 	      {
+		int xp, yp;
+
 		GetWindowBounds(ourwindow, kWindowContentRgn, &bound);
 
 		click_x = (argh.x - BORDERWIDTH - bound.left);
 		click_y = (argh.y - BORDERWIDTH - bound.top);
 
-		read_key = 254;
-		return noErr;
+		xp = click_x - (win_x/2-pix_w/2);
+		yp = click_y - (win_y/2-pix_h/2);
+
+		if (pixmap == NULL ||
+		    (xp > mousew_x          && yp > mousew_y &&
+		     xp < mousew_x+mousew_w && yp < mousew_y+mousew_h))
+		  {
+		    read_key = 254;
+		    return noErr;
+		  }
 	      }
 
 	    return eventNotHandledErr;
@@ -2367,7 +2377,7 @@ int main(int argc, char** argv)
       {
 	CFBundleRef ourbundle;
 	CFURLRef    zoomrc;
-	CFStringRef path;
+	CFStringRef path = nil;
 
 	/* It doesn't... Get the location of the default zoomrc... */
 	ourbundle = CFBundleGetMainBundle();
@@ -2777,7 +2787,7 @@ int display_get_pix_colour(int x, int y)
 
   SetGWorld(oldport, olddev);
 
-  return (col.red>>11)|((col.green>>11)<<5)|((col.blue>>11)<<10)+16;
+  return ((col.red>>11)|((col.green>>11)<<5)|((col.blue>>11)<<10))+16;
 }
 
 void display_plot_gtext(const int* text, int len,
@@ -2925,8 +2935,12 @@ void display_set_input_pos(int style, int x, int y, int width)
   pix_cw = width;
 }
 
-void display_set_mouse_win(int x, int y, int width, int height)
+void display_set_mouse_win(int x, int y, int w, int h)
 {
+  mousew_x = x;
+  mousew_y = y;
+  mousew_w = w;
+  mousew_h = h;
 }
 
 #endif

@@ -432,7 +432,7 @@
     <reference idRef="293"/>
     <reference idRef="294"/>
     <object class="IBCarbonWindow" id="295">
-      <string name="windowRect">334 319 438 618 </string>
+      <string name="windowRect">241 297 345 596 </string>
       <string name="title">About Zoom</string>
       <object name="rootControl" class="IBCarbonRootControl" id="296">
         <string name="bounds">0 0 104 299 </string>
@@ -442,9 +442,9 @@
             <string name="title">Zoom - a Z-Machine</string>
           </object>
           <object class="IBCarbonStaticText" id="300">
-            <string name="bounds">44 133 60 166 </string>
+            <string name="bounds">44 115 60 184 </string>
             <ostype name="controlSignature">Vers</ostype>
-            <string name="title">1.0.0</string>
+            <string name="title">1.0.1beta1</string>
           </object>
           <object class="IBCarbonStaticText" id="301">
             <string name="bounds">68 20 84 279 </string>
