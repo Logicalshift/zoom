@@ -128,18 +128,7 @@
     // Load the story
     machine.story_length = get_size_of_file(machineFile);
     zmachine_load_file(machineFile, &machine);
-}
-
-- (BOOL) loadResourcesFromData: (in bycopy NSData*) resources {
-    return NO; // IMPLEMENT ME
-}
-
-- (BOOL) loadResourcesFromFile: (in bycopy NSFileHandle*) file {
-    return NO; // IMPLEMENT ME
-}
-
-- (BOOL) loadResourcesFromZFile: (in byref NSObject<ZFile>*) file {
-    return NO; // IMPLEMENT ME
+	machine.blorb = blorb_loadfile(NULL);
 }
 
 // = Running =

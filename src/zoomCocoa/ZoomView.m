@@ -2255,4 +2255,20 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	return resources;
 }
 
+- (BOOL) containsImageWithNumber: (int) number {
+	if (resources == nil) return NO;
+		
+	return [resources containsImageWithNumber: number];
+}
+
+- (NSSize) sizeOfImageWithNumber: (int) number {
+	NSImage* img = [resources imageWithNumber: number];
+	
+	if (img != nil) {
+		return [img size];
+	} else {
+		return NSMakeSize(0,0);
+	}
+}
+
 @end

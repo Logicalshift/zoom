@@ -199,4 +199,23 @@
 	return inputStyle;
 }
 
+- (void) plotImageWithNumber: (int) number
+					 atPoint: (NSPoint) point {
+	NSImage* img = [[zView resources] imageWithNumber: number];
+
+	NSRect imgRect;
+	imgRect.origin = NSMakePoint(0,0);
+	imgRect.size = [img size];
+	
+	NSLog(@"Draw image number %i (%g %g) at point %g %g", number, imgRect.size.width, imgRect.size.height, point.x, point.y);
+	
+	[pixmap lockFocus];
+	[img setFlipped: [pixmap isFlipped]];
+	[img drawAtPoint: point
+			fromRect: imgRect
+		   operation: NSCompositeSourceOver
+			fraction: 1.0];
+	[pixmap unlockFocus];
+}
+
 @end

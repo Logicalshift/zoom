@@ -458,6 +458,7 @@ NSString* ZBufferSetWindow    = @"ZBSW";
 
 NSString* ZBufferPlotRect     = @"ZBPR";
 NSString* ZBufferPlotText     = @"ZBPT";
+NSString* ZBufferPlotImage    = @"ZBPI";
 NSString* ZBufferScrollRegion = @"ZBSR";
 
 @implementation ZBuffer
@@ -637,6 +638,18 @@ NSString* ZBufferScrollRegion = @"ZBSR";
 			nil]];
 }
 
+- (void) plotImage: (int) number
+		   atPoint: (NSPoint) point
+		  inWindow: (NSObject<ZPixmapWindow>*) win {
+	[buffer addObject:
+		[NSArray arrayWithObjects:
+			ZBufferPlotImage,
+			[NSNumber numberWithInt: number],
+			[NSValue valueWithPoint: point],
+			win,
+			nil]];
+}
+
 // Unbuffering
 - (BOOL) empty {
     if ([buffer count] < 1)
@@ -725,6 +738,13 @@ NSString* ZBufferScrollRegion = @"ZBSR";
 			[win plotText: text
 				  atPoint: point
 				withStyle: style];
+		} else if ([entryType isEqualToString: ZBufferPlotImage]) {
+			int number = [[entry objectAtIndex: 1] intValue];
+			NSPoint point = [[entry objectAtIndex: 2] pointValue];
+			NSObject<ZPixmapWindow>* win = [entry objectAtIndex: 3];
+			
+			[win plotImageWithNumber: number
+							 atPoint: point];
 		} else if ([entryType isEqualToString: ZBufferScrollRegion]) {
 			NSRect region = [[entry objectAtIndex: 1] rectValue];
 			NSPoint point = [[entry objectAtIndex: 2] pointValue];

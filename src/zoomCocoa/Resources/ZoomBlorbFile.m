@@ -245,6 +245,18 @@
 	return YES;
 }
 
+- (BOOL) containsImageWithNumber: (int) num {
+	if (!resourceIndex) {
+		if (![self parseResourceIndex]) return NO;
+	}
+	if (!resourceIndex) return NO;
+	
+	return 
+		[locationsToBlocks objectForKey: 
+			[[resourceIndex objectForKey: @"Pict"] objectForKey: 
+				[NSNumber numberWithUnsignedInt: num]]] != nil;
+}
+
 // = Typed data =
 
 - (NSData*) gameHeader {

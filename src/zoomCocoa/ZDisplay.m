@@ -13,6 +13,8 @@
 #include "file.h"
 #include "display.h"
 #include "v6display.h"
+#include "zmachine.h"
+#include "blorb.h"
 
 #ifdef DEBUG
 # define NOTE(x) NSLog(@"ZDisplay: %@", x)
@@ -118,7 +120,12 @@ void display_initialise(void) {
 
 	if (zDisplayCurrentStyle) [zDisplayCurrentStyle release];
     zDisplayCurrentStyle = [[ZStyle alloc] init];
-
+	
+	// Clear out the image cache
+	if (zoomImageCache != NULL) free(zoomImageCache);
+	zoomImageCache = NULL;
+	zoomImageCacheSize = 0;
+		
     //display_clear(); (Commented out to support autosave)
 }
 
@@ -127,6 +134,11 @@ void display_reinitialise(void) {
 	
     if (zDisplayCurrentStyle) [zDisplayCurrentStyle release];
     zDisplayCurrentStyle = [[ZStyle alloc] init];
+	
+	// Clear out the image cache
+	if (zoomImageCache != NULL) free(zoomImageCache);
+	zoomImageCache = NULL;
+	zoomImageCacheSize = 0;
 
     display_clear();
 }

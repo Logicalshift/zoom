@@ -40,6 +40,7 @@
 
 // The resource index
 - (BOOL) parseResourceIndex;
+- (BOOL) containsImageWithNumber: (int) num;
 
 // Typed data
 - (NSData*) imageDataWithNumber: (int) num;

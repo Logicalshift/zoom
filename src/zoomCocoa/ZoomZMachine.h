@@ -14,6 +14,9 @@ extern NSAutoreleasePool* displayPool;
 
 extern void cocoa_debug_handler(ZDWord pc);
 
+extern struct BlorbImage* zoomImageCache;
+extern int zoomImageCacheSize;
+
 @interface ZoomZMachine : NSObject<ZMachine> {
     // Remote objects
     NSObject<ZDisplay>* display;

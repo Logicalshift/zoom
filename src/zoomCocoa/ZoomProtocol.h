@@ -47,9 +47,6 @@ typedef enum {
 
 // Setup
 - (void) loadStoryFile: (in bycopy NSData*) storyFile;
-- (BOOL) loadResourcesFromData: (in bycopy NSData*) resources;
-- (BOOL) loadResourcesFromFile: (in bycopy NSFileHandle*) file;
-- (BOOL) loadResourcesFromZFile: (in byref NSObject<ZFile>*) file;
 
 // Restoring game state
 - (void) restoreSaveState: (in bycopy NSData*) gameSave;
@@ -192,6 +189,11 @@ typedef enum {
 // Sets the input position in the window
 - (void) setInputPosition: (NSPoint) point
 				withStyle: (in bycopy ZStyle*) style;
+
+// Images
+- (void) plotImageWithNumber: (in int) number
+					 atPoint: (in NSPoint) point;
+
 @end
 
 @protocol ZDisplay
@@ -237,6 +239,10 @@ typedef enum {
 
 // Debugging
 - (void) hitBreakpointAt: (int) programCounter;
+
+// Resources
+- (BOOL)   containsImageWithNumber: (int) number;
+- (NSSize) sizeOfImageWithNumber: (int) number;
 
 @end
 
@@ -363,6 +369,9 @@ extern NSString* ZStyleAttributeName;
 - (void) scrollRegion: (NSRect) region
 			  toPoint: (NSPoint) newPoint
 			 inWindow: (NSObject<ZPixmapWindow>*) win;
+- (void) plotImage: (int) number
+		   atPoint: (NSPoint) point
+		  inWindow: (NSObject<ZPixmapWindow>*) win;
 
 // Unbuffering
 - (BOOL) empty; // YES if the buffer has no data

@@ -20,6 +20,9 @@ extern BOOL zPixmapDisplay;
 
 #undef  MEASURE_REMOTELY		// Set to force measuring of font sizes, etc, on the Zoom process rather than this one. Will be slower
 
+struct BlorbImage* zoomImageCache = NULL;
+int zoomImageCacheSize = 0;
+
 // = V6 display =
 
 // Initialisation
@@ -266,7 +269,6 @@ void display_set_input_pos(int style, int x, int y, int width) {
 																	withStyle: zDisplayCurrentStyle];
 }
 
-extern void  display_plot_image      (BlorbImage* img, int x, int y) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
 extern void  display_wait_for_more   (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
 
 extern void  display_read_mouse      (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
@@ -277,24 +279,12 @@ extern int   display_get_pix_mouse_y (void) { NSLog(@"Function not implemented: 
 extern void  display_set_mouse_win   (int x, int y, int width, int height) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
 
 // = Images =
-image_data*    image_load       (ZFile* file,
-                                 int offset,
-                                 int len,
-                                 image_data* palimg) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-void           image_unload     (image_data* img) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-void           image_unload_rgb (image_data* img) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
 
-int            image_cmp_palette(image_data* img1, image_data* img2) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-
-int            image_width      (image_data* img) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-int            image_height     (image_data* img) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-unsigned char* image_rgb        (image_data* img) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-
-void           image_resample   (image_data* img, int n, int d) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-
-void           image_set_data   (image_data* img, void* data,
-                                 void (*destruct)(image_data*, void*)) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-void*          image_get_data   (image_data* img) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
+void display_plot_image(BlorbImage* img, int x, int y) {
+	[[mainMachine buffer] plotImage: img->number
+							atPoint: NSMakePoint(x, y)
+						   inWindow: [mainMachine windowNumber: 0]];
+}
 
 // = Blorb =
 
@@ -323,8 +313,64 @@ void blorb_closefile(BlorbFile* file) {
 }
 
 BlorbImage* blorb_findimage(BlorbFile* blorb, int num) {
+	// Get the image storage
+	BlorbImage* res = NULL;
+	
+	if (num < 0 || num > 32768) return NULL; // Limits on the number of images
+	
+	if (num >= zoomImageCacheSize) {
+		int x;
+		
+		zoomImageCache = realloc(zoomImageCache, sizeof(struct BlorbImage)*(num+1));
+		
+		for (x=zoomImageCacheSize; x<=num; x++) {
+			zoomImageCache[x].in_use = 0;
+		}
+		
+		zoomImageCacheSize = num;
+	}
+	
+	// Use the cached image if possible
+	res = zoomImageCache + num;
+	if (res->in_use) {
+		if (res->file_offset < 0) 
+			return NULL;
+		else
+			return res;
+	}
+
 	// Get information on this image from the remote system
-	BlorbImage* res = malloc(sizeof(BlorbImage));
+	NSObject<ZDisplay>* disp = [mainMachine display];
+	
+	if (![disp containsImageWithNumber: num]) {
+		// Image not available: mark it as so
+		res->file_offset = -1;
+		res->in_use = NULL;
+		return NULL;
+	}
+	
+	NSSize imageSize = [disp sizeOfImageWithNumber: num];
+	
+	// Set up the image block
+	res->file_offset = 0;
+	res->file_len = 0;
+	res->number = num;
+	res->loaded = res; // HACK! See below
+	res->in_use = 1;
+	
+	res->width = ceilf(imageSize.width);
+	res->height = ceilf(imageSize.height);
+	
+	res->std_n = 1; res->std_d = 1;
+	res->min_n = 1; res->min_d = 1;
+	res->max_n = 1; res->max_d = 1;
+	res->usage_count = 1;
+	res->is_adaptive = 0;
+	
+	// *HACK*
+	// res->loaded must contain a value in order for the system to recognise that there exists an actual image
+	// there (ie for @draw_picture to work). This causes no harm, as the actual image_* API is not used at all
+	// in the Cocoa version, so any value at all other than NULL will do.
 	
 	return res;
 }
