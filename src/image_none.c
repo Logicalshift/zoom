@@ -31,13 +31,15 @@
 
 #include "image.h"
 
-image_data* image_load(ZFile* f, int offset, int length) { return NULL; }
+image_data* image_load(ZFile* f, int offset, int length, image_data* palimg) { return NULL; }
 
 void image_unload(image_data* data) { }
 
 void image_unload_rgb(image_data* data) { }
 
 int image_width(image_data* data) { return 10; }
+
+int image_cmp_palette(image_data* img1, image_data* img2) { return 0; };
 
 int image_height(image_data* data) { return 10; }
 
