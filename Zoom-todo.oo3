@@ -15,10 +15,7 @@
   <settings/>
   <editor should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
-    <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="m9hL7srSzjO"/>
-    <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{72, 0}"/>
+    <hoisted-rows ids="gnoX6zDBav8"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -213,7 +210,7 @@
         </item>
       </children>
     </item>
-    <item id="gnoX6zDBav8" expanded="yes">
+    <item id="gnoX6zDBav8" expanded="yes" state="indeterminate">
       <values>
         <text>
           <p>
@@ -227,7 +224,7 @@
         </text>
       </values>
       <children>
-        <item id="dtT7Hxkdg01">
+        <item id="dtT7Hxkdg01" state="checked">
           <values>
             <text>
               <p>
@@ -241,7 +238,7 @@
             </text>
           </values>
         </item>
-        <item id="n2AYaW1NWJO" expanded="yes">
+        <item id="n2AYaW1NWJO" expanded="yes" state="checked">
           <values>
             <text>
               <p>
@@ -255,7 +252,7 @@
             </text>
           </values>
           <children>
-            <item id="iXJNFzK2E-k">
+            <item id="iXJNFzK2E-k" state="checked">
               <values>
                 <text>
                   <p>
@@ -269,7 +266,7 @@
                 </text>
               </values>
             </item>
-            <item id="m-SM77DX85J">
+            <item id="m-SM77DX85J" state="checked">
               <values>
                 <text>
                   <p>
@@ -797,6 +794,29 @@
               <p>
                 <run>
                   <lit>Er, not happening any more. Might have been a knock-on effect of another bug.</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="nTRyLrO671B">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Changing the prefs removes all the styles</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>&apos;Restyling&apos; bug?</lit>
                 </run>
               </p>
             </text>

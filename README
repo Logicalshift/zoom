@@ -21,14 +21,14 @@ by Andrew Hunter
 Versions
 ========
 
-   This is 1.0.2beta1 of Zoom. As the components have gained an increasing
+   This is 1.0.2beta2 of Zoom. As the components have gained an increasing
    tendency to change at different rates, I've given them seperate versions:
    
    Zoom interpreter core: 1.0.2
    X11 interface: 1.0.2
    Windows interface: 0.9.99beta5
    Carbon interface: 1.0.1
-   Cocoa interface: 2.0.0beta1
+   Cocoa interface: 2.0.0beta2
    
    Note that Zoom's display system underwent a fairly major change
    between 1.0.0 and 1.0.1 due to the addition of version 6 support. This
