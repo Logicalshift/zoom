@@ -23,8 +23,16 @@ static ZStyle* currentStyle = nil;
 
 // Debugging functions
 void printf_debug(char* format, ...) {
-    NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
+    va_list  ap;
+    char     string[8192];
+
+    va_start(ap, format);
+    vsprintf(string, format, ap);
+    va_end(ap);
+
+    fputs(string, stdout);
 }
+
 void printf_info (char* format, ...) {
     NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
 }
@@ -84,6 +92,8 @@ ZDisplay* display_get_info(void) {
 void display_initialise(void) {
     if (currentStyle) [currentStyle release];
     currentStyle = [[ZStyle alloc] init];
+
+    display_clear();
 }
 
 void display_reinitialise(void) {
@@ -264,7 +274,7 @@ int display_readline(int* buf, int len, long int timeout) {
             realLen = chr;
             termChar = 10;
 
-            [inputBuffer deleteCharactersInRange: NSMakeRange(chr-1, 1)];
+            [inputBuffer deleteCharactersInRange: NSMakeRange(chr, 1)];
             break;
         }
     }

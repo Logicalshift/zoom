@@ -863,6 +863,9 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
                     [zMachine startRunningInDisplay: self];
                 }
             }
+        } else {
+            printf("%s", [[NSString stringWithCString: [inData bytes]
+                                               length: [inData length]] cString]);
         }
     } else {
     }
