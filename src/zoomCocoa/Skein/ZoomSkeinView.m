@@ -818,8 +818,12 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 		}
 	}
 	
+	/*
 	[skein zoomSkeinChanged];
 	[self skeinNeedsLayout];
+	[self scrollToItem: skeinItem];
+	 */
+	[self setNeedsDisplay: YES];
 }
 
 - (void) annotateButtonClicked: (NSEvent*) event
