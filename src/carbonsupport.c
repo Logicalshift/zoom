@@ -58,6 +58,76 @@ FSRef* lastopenfs = NULL;
 FSRef* forceopenfs = NULL;
 
 WindowRef carbon_message_win = nil;
+WindowRef carbon_about_win = nil;
+
+/* Display the 'About' box */
+static EventHandlerUPP abouthandle = NULL;
+
+static pascal OSStatus about_wnd_evt(EventHandlerCallRef handler,
+				     EventRef event,
+				     void*    data)
+{
+  UInt32    cla;
+  UInt32    wha;
+
+  cla = GetEventClass(event);
+  wha = GetEventKind(event);
+
+  switch (cla)
+    {
+    case kEventClassCommand:
+      switch (wha)
+	{
+	case kEventProcessCommand:
+	  {
+	    HICommand cmd;
+
+	    GetEventParameter(event, kEventParamDirectObject,
+			      typeHICommand, NULL, sizeof(HICommand),
+			      NULL, &cmd);
+
+	    switch (cmd.commandID)
+	      {
+	      case kHICommandOK:
+		TransitionWindow(carbon_about_win, kWindowZoomTransitionEffect,
+				 kWindowHideTransitionAction, NULL);
+		DisposeWindow(carbon_about_win);
+		carbon_about_win = NULL;
+
+		return noErr;
+	      }
+	  }
+	}
+    }
+
+  return eventNotHandledErr;
+}
+
+void carbon_display_about(void)
+{
+  IBNibRef nib;
+  
+  if (carbon_about_win == nil)
+    {
+      EventTypeSpec winspec[] = { { kEventClassCommand, kEventProcessCommand } };
+
+      CreateNibReference(CFSTR("zoom"), &nib);
+      CreateWindowFromNib(nib, CFSTR("AboutBox"), &carbon_about_win);
+      DisposeNibReference(nib);
+
+      if (abouthandle == NULL)
+	abouthandle = NewEventHandlerUPP(about_wnd_evt);
+      
+      InstallEventHandler(GetWindowEventTarget(carbon_about_win),
+			  abouthandle, 1, winspec, 0, NULL);
+
+      TransitionWindow(carbon_about_win, kWindowZoomTransitionEffect,
+		       kWindowShowTransitionAction, NULL);
+      ShowWindow(carbon_about_win);
+    }
+
+  BringToFront(carbon_about_win);
+}
 
 /* Display a message box */
 void carbon_display_message(char* title, char* message)

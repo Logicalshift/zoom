@@ -1638,6 +1638,10 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 		    return noErr;
 		  }
 		break;
+
+	      case 'abou':
+		carbon_display_about();
+		break;
 		
 	      default:
 		return eventNotHandledErr;

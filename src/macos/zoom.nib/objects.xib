@@ -4,7 +4,7 @@
   <object name="rootObject" class="NSCustomObject" id="1">
     <string name="customClass">NSApplication</string>
   </object>
-  <array count="50" name="allObjects">
+  <array count="51" name="allObjects">
     <object class="IBCarbonMenuItem" id="199">
       <string name="title">About Zoom</string>
       <int name="keyEquivalentModifier">0</int>
@@ -432,11 +432,11 @@
     <reference idRef="293"/>
     <reference idRef="294"/>
     <object class="IBCarbonWindow" id="295">
-      <string name="windowRect">241 297 345 596 </string>
+      <string name="windowRect">241 297 385 596 </string>
       <string name="title">About Zoom</string>
       <object name="rootControl" class="IBCarbonRootControl" id="296">
-        <string name="bounds">0 0 104 299 </string>
-        <array count="3" name="subviews">
+        <string name="bounds">0 0 144 299 </string>
+        <array count="4" name="subviews">
           <object class="IBCarbonStaticText" id="297">
             <string name="bounds">20 85 36 214 </string>
             <string name="title">Zoom - a Z-Machine</string>
@@ -450,9 +450,15 @@
             <string name="bounds">68 20 84 279 </string>
             <string name="title">Copyright (C) 2000-2002 Andrew Hunter</string>
           </object>
+          <object class="IBCarbonButton" id="313">
+            <string name="bounds">104 114 124 184 </string>
+            <string name="title">OK</string>
+            <ostype name="command">ok  </ostype>
+            <int name="buttonType">1</int>
+          </object>
         </array>
       </object>
-      <int name="carbonWindowClass">4</int>
+      <int name="carbonWindowClass">1</int>
       <int name="themeBrush">0</int>
       <int name="windowPosition">7</int>
     </object>
@@ -480,8 +486,9 @@
         </array>
       </object>
     </object>
+    <reference idRef="313"/>
   </array>
-  <array count="50" name="allParents">
+  <array count="51" name="allParents">
     <reference idRef="208"/>
     <reference idRef="1"/>
     <reference idRef="211"/>
@@ -532,6 +539,7 @@
     <reference idRef="306"/>
     <reference idRef="306"/>
     <reference idRef="201"/>
+    <reference idRef="296"/>
   </array>
   <dictionary count="5" name="nameTable">
     <string>AboutBox</string>
@@ -545,5 +553,5 @@
     <string>Preferences</string>
     <reference idRef="234"/>
   </dictionary>
-  <unsigned_int name="nextObjectID">313</unsigned_int>
+  <unsigned_int name="nextObjectID">314</unsigned_int>
 </object>

@@ -96,8 +96,10 @@ extern void carbon_set_context(void);
 extern void carbon_set_quartz(int q);
 
 extern void carbon_prefs_set_resources(char* path);
-extern int  carbon_ask_question(char* title, char* message,
-				char* OK, char* cancel, int def);
+
+extern int  carbon_ask_question       (char* title, char* message,
+				       char* OK, char* cancel, int def);
+extern void carbon_display_about      (void);
 
 /* image_ routines have their own naming convention, which we preserve */
 extern void image_draw_carbon(image_data* img, 
