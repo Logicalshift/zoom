@@ -145,6 +145,7 @@ void zmachine_load_story(char* filename, ZMachine* machine)
 
     for (x=0; x<96*2; x+=2)
       {
+	machine->abbrev_addr[x>>1] = ((abbrev[x]<<9)|(abbrev[x+1]<<1));
 	word = zscii_to_ascii(machine->memory +
 			      ((abbrev[x]<<9)|(abbrev[x+1]<<1)), &len);
 	machine->abbrev[x>>1] = malloc(strlen(word)+1);

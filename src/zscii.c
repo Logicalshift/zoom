@@ -28,7 +28,7 @@
 
 static unsigned char *buf  = NULL;
 static unsigned char *buf2 = NULL;
-static int maxlen;
+static int maxlen = 0;
 
 static unsigned int alpha_a[32] =
 {
@@ -138,13 +138,58 @@ char* zscii_to_ascii(ZByte* string, int* len)
 	  {
 	    int z;
 	    char* abbrev;
+	    int addr;
+	    ZByte* table;
 
 	    zchar |= buf2[x];
-	    abbrev = machine.abbrev[zchar];
+	    
+	    /* 
+	     * Annoyingly, some games seem to rewrite the abbreviation
+	     * table at runtime. This may cause weird things to happen
+	     * if a game is sick enough to use abbreviations in
+	     * abbreviations, too.
+	     */
+	    table = machine.memory + GetWord(machine.header, ZH_abbrevs);
+	    addr = ((table[zchar*2]<<9)|(table[zchar*2+1]<<1));
 
-	    for (z=0; abbrev[z] != 0; z++)
+	    if (machine.abbrev_addr[zchar] != addr)
 	      {
-		buf[y++] = abbrev[z];
+		/* 
+		 * Hack, this function was never designed to be called
+		 * recursively
+		 */
+		char* oldbuf, *oldbuf2;
+		int oldmaxlen;
+		int ablen;
+
+		oldbuf = buf; oldbuf2 = buf2;
+		oldmaxlen = maxlen;
+		maxlen = 0;
+		buf = buf2 = NULL;
+		
+		abbrev = zscii_to_ascii(machine.memory +
+					addr,
+					&ablen);
+		
+		free(buf2);
+		buf = oldbuf;
+		buf2 = oldbuf2;
+		maxlen = oldmaxlen;
+		
+		for (z=0; abbrev[z] != 0; z++)
+		  {
+		    buf[y++] = abbrev[z];
+		  }
+		
+		free(abbrev);
+	      }
+	    else
+	      {
+		abbrev = machine.abbrev[zchar];
+		for (z=0; abbrev[z] != 0; z++)
+		  {
+		    buf[y++] = abbrev[z];
+		  }
 	      }
 	  }
 	    

@@ -74,7 +74,7 @@
 		      * interpreter is conformant to the ZMachine
 		      * specification v1.0
 		      */
-#define GRAPHICAL    /*
+#undef  GRAPHICAL    /*
 		      * Define to set the default behaviour to mimic
 		      * that of the Beyond Zork interpreter
 		      */
@@ -83,8 +83,8 @@
  * Versions to support (note that support for version 5 includes
  * support for versions 7 and 8 as well
  */
-//#define SUPPORT_VERSION_3
-//#define SUPPORT_VERSION_4
+#define SUPPORT_VERSION_3
+#define SUPPORT_VERSION_4
 #define SUPPORT_VERSION_5
 #undef  SUPPORT_VERSION_6
 
@@ -207,7 +207,8 @@ typedef struct ZMachine
 
   ZStack   stack;
 
-  char*    abbrev[96];
+  char*    abbrev     [96];
+  int      abbrev_addr[96];
 
   ZByte*   dict;
 
@@ -287,7 +288,7 @@ extern ZWord debug_print_var(ZWord val, int var);
 #define DebugVar(x, y) x
 #endif
 
-#define GetVar(y)  DebugVar(((y)==0?pop(stack):(((unsigned char) (y))<16?stack->current_frame->local[(y)]:(machine.globals[((y)<<1)-32]<<8)|machine.globals[((y)<<1)-31])), x)
+#define GetVar(y)  DebugVar(((y)==0?pop(stack):(((unsigned char) (y))<16?stack->current_frame->local[(y)]:(machine.globals[((y)<<1)-32]<<8)|machine.globals[((y)<<1)-31])), y)
 #define GetCode(x) machine.memory[(x)]
 #define Word(x)    ((machine.memory[(x)]<<8)|machine.memory[(x)+1])
 #define Byte(x)    (machine.memory[(x)])
