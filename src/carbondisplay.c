@@ -78,11 +78,11 @@ void display_clear(void)
 {
 }
 
-void display_prints(const int*)
+void display_prints(const int* str)
 {
 }
 
-void display_prints_c(const char*)
+void display_prints_c(const char* str)
 {
 }
 
@@ -90,19 +90,19 @@ void display_printc(int)
 {
 }
 
-void display_printf(const char*, ...)
+void display_printf(const char* format, ...)
 {
 }
 
-int display_check_char(int)
+int display_check_char(int chr)
 {
 }
 
-int display_readline(int*, int, long int)
+int display_readline(int* buf, int buflen, long int timeout)
 {
 }
 
-int display_readchar(long int)
+int display_readchar(long int timeout)
 {
 }
 
@@ -200,10 +200,6 @@ int  display_get_mouse_x (void)
 }
 
 int  display_get_mouse_y (void)
-{
-}
-
-void display_set_window (int window)
 {
 }
 
