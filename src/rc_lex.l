@@ -44,6 +44,11 @@ no				return NO;
 				  strcpy(yylval.str, yytext);
 				  return GAMEID;
 				}
+[0-9]{1,3}\.[0-9]{6}\.[0-9a-fA-F]{4} {
+				  yylval.str = malloc(strlen(yytext)+1);
+				  strcpy(yylval.str, yytext);
+				  return GAMEID;
+				}
 [0-9]+				{
 				  yylval.num = atoi(yytext);
 				  return NUMBER;

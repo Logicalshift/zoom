@@ -205,6 +205,9 @@ static int pref_write_game(char* key,
 {
   char name[256];
 
+  if (data == NULL)
+    return;
+
   strncpy(name, key, keylen);
   name[keylen] = '\0';
 
@@ -465,7 +468,7 @@ static void pref_store(void)
     }
 
   /* Reset the display */
-  rc_set_game(Address(ZH_serial), Word(ZH_release));
+  rc_set_game(Address(ZH_serial), Word(ZH_release), Word(ZH_checksum));
   carbon_display_rejig();
 
   /* Rewrite the preferences file */
@@ -1061,7 +1064,15 @@ void carbon_prefs_set_resources(char* path)
 {
   BlorbFile* file;
   ZFile*     rfile;
- 
+
+  char       str[128];
+
+  rc_game*   game;
+
+  int        hadblorb;
+
+  hadblorb = machine.blorb != NULL;
+
   /* Read the file... See if it looks good... */
   rfile = open_file(path);
   if (rfile != NULL)
@@ -1111,6 +1122,66 @@ void carbon_prefs_set_resources(char* path)
   machine.blorb = file;
   machine.blorb_tokens = file->file;
   machine.blorb_file = rfile; 
+
+  /* Store this in the resources... */
+  sprintf(str, "%i.%.6s.%04x", Word(ZH_release), Address(ZH_serial), Word(ZH_checksum));
+  game = hash_get(rc_hash, str, strlen(str));
+
+  if (game == NULL)
+    {
+      rc_game* nocs;
+      char str2[20];
+
+      sprintf(str2, "%i.%.6s", Word(ZH_release), Address(ZH_serial));
+      nocs = hash_get(rc_hash, str2, strlen(str2));
+
+      if (nocs == NULL)
+	{
+	  /* Create a new, blank entry */
+	  game = malloc(sizeof(rc_game));
+	  game->name = malloc(strlen(carbon_title)+1);
+	  strcpy(game->name, carbon_title);
+      
+	  game->interpreter = -1;
+	  game->revision    = -1;
+	  game->fonts       = NULL;
+	  game->n_fonts     = -1;
+	  game->colours     = NULL;
+	  game->n_colours   = -1;
+	  game->gamedir     = NULL;
+	  game->savedir     = NULL;
+	  game->sounds      = NULL;
+	  game->graphics    = NULL;
+	  game->xsize       = -1;
+	  game->ysize       = -1;
+	  game->antialias   = -1;
+	}
+      else
+	{
+	  /* Copy the old-style entry into the new new-style one */
+	  game = malloc(sizeof(rc_game));
+	  *game = *nocs;
+
+	  /* Delete the old one... */
+	  hash_store(rc_hash, str2, strlen(str2), NULL);
+	}
+      
+      hash_store(rc_hash, str, strlen(str), game);
+    }
+
+  game->graphics = malloc(strlen(path)+1);
+  strcpy(game->graphics, path);
+
+  pref_write();
+
+  if (!hadblorb)
+    {
+      char str[512];
+      sprintf(str, "The resources for the game '%s' have been remembered in the configuration file: you should not have to do this again", 
+	      carbon_title);
+      carbon_display_message("Resource location recorded",
+			     str);
+    }
 }
 
 /* Function to set up the contents of the preferences dialog */
@@ -1161,28 +1232,47 @@ static void pref_setup(void)
 		  kControlCheckBoxCheckedValue:kControlCheckBoxUncheckedValue);
 
   /* Try to get the game hash entry */
-  sprintf(str, "%i.%.6s", Word(ZH_release), Address(ZH_serial));
+  sprintf(str, "%i.%.6s.%04x", Word(ZH_release), Address(ZH_serial), Word(ZH_checksum));
   game = hash_get(rc_hash, str, strlen(str));
 
   if (game == NULL)
     {
-      /* Create a new, blank entry */
-      game = malloc(sizeof(rc_game));
-      game->name = malloc(strlen(carbon_title)+1);
-      strcpy(game->name, carbon_title);
+      rc_game* nocs;
+      char str2[20];
+
+      sprintf(str2, "%i.%.6s", Word(ZH_release), Address(ZH_serial));
+      nocs = hash_get(rc_hash, str2, strlen(str2));
+
+      if (nocs == NULL)
+	{
+	  /* Create a new, blank entry */
+	  game = malloc(sizeof(rc_game));
+	  game->name = malloc(strlen(carbon_title)+1);
+	  strcpy(game->name, carbon_title);
       
-      game->interpreter = -1;
-      game->revision    = -1;
-      game->fonts       = NULL;
-      game->n_fonts     = -1;
-      game->colours     = NULL;
-      game->n_colours   = -1;
-      game->gamedir     = NULL;
-      game->savedir     = NULL;
-      game->sounds      = NULL;
-      game->graphics    = NULL;
-      game->xsize       = -1;
-      game->ysize       = -1;
+	  game->interpreter = -1;
+	  game->revision    = -1;
+	  game->fonts       = NULL;
+	  game->n_fonts     = -1;
+	  game->colours     = NULL;
+	  game->n_colours   = -1;
+	  game->gamedir     = NULL;
+	  game->savedir     = NULL;
+	  game->sounds      = NULL;
+	  game->graphics    = NULL;
+	  game->xsize       = -1;
+	  game->ysize       = -1;
+	  game->antialias   = -1;
+	}
+      else
+	{
+	  /* Copy the old-style entry into the new new-style one */
+	  game = malloc(sizeof(rc_game));
+	  *game = *nocs;
+
+	  /* Delete the old one... */
+	  hash_store(rc_hash, str2, strlen(str2), NULL);
+	}
 
       hash_store(rc_hash, str, strlen(str), game);
     }

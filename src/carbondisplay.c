@@ -2085,8 +2085,11 @@ void display_set_title(const char* title)
 {
   static char tit[256];
 
-  strcpy(tit+1, "Zoom " VERSION " - ");
-  strcat(tit+1, title);
+  /* 
+   * Don't really need to say we're called 'Zoom'. That's what's the menu 
+   * bar is for
+   */
+  strcpy(tit+1, title);
   tit[0] = strlen(tit+1);
   SetWTitle(zoomWindow, tit);
 

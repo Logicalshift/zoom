@@ -469,8 +469,8 @@ OSErr ae_opendocs_handler(const AppleEvent* evt,
       break;
 
     case TYPE_BORING:
-      carbon_display_message("THE WORLD IS ENDING!",
-			     "Hmm, this appears to be a bug. Zoom can't work out the type of this file");
+      carbon_display_message("Unable to identify file",
+			     "Zoom is unable to work out the type of this file");
       break; /* Well, we're broken, at any rate */
     }
 

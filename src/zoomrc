@@ -4,7 +4,7 @@
 
 # Standard settings - applies to all interpreters
 # (Note, font 4 must always be fixed-pitch)
-default "%s (%i.%.6s)"
+default "%s (%i.%.6s.%04x)"
 {
   interpreter 4
   revision    Z

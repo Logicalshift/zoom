@@ -94,12 +94,18 @@ void rc_load(void)
   fclose(yyin);
 }
 
-void rc_set_game(char* serial, int revision)
+void rc_set_game(char* serial, int revision, int checksum)
 {
-  char hash[20];
+  char hash[40];
 
-  sprintf(hash, "%i.%.6s", revision, serial);
+  sprintf(hash, "%i.%.6s.%04x", revision, serial, (unsigned)checksum);
   game = hash_get(rc_hash, hash, strlen(hash));
+
+  if (game == NULL)
+    {
+      sprintf(hash, "%i.%.6s", revision, serial);
+      game = hash_get(rc_hash, hash, strlen(hash));
+    }
   if (game == NULL)
     game = hash_get(rc_hash, "default", 7);
   if (game == NULL)

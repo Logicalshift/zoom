@@ -76,7 +76,7 @@ char* menu_get_story(void)
   display_set_colour(7, 4);
   display_erase_window();
 
-  rc_set_game("xxxxxx", 65535);
+  rc_set_game("xxxxxx", 65535, 65535);
 
   dirname = rc_get_gamedir();
   gamedir = opendir(dirname);

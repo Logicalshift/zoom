@@ -62,7 +62,7 @@ typedef struct
 } rc_game;
 
 extern void       rc_load           (void);
-extern void       rc_set_game       (char* serial, int revision);
+extern void       rc_set_game       (char* serial, int revision, int checksum);
 extern rc_colour* rc_get_colours    (int* n_cols);
 extern rc_font*   rc_get_fonts      (int* n_fonts);
 extern char*      rc_get_name       (void);

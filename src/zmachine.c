@@ -96,7 +96,7 @@ void zmachine_load_story(char* filename, ZMachine* machine)
       machine->blorb = blorb_loadfile(machine->file);
       machine->blorb_tokens = machine->blorb->file;
 
-      rc_set_game("xxxxxx", 65535);
+      rc_set_game("xxxxxx", 65535, 65535);
 
       display_initialise();
       display_init_pixmap(640, 480);
