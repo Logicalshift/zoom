@@ -1196,7 +1196,9 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         [zMachine release];
         zMachine = nil;
     }
-
+	
+	if (receiving || receivingCharacters) [self stopReceiving];
+	
     // Notify the user (display a message)
     ZStyle* notifyStyle = [[ZStyle allocWithZone: [self zone]] init];
     ZStyle* standardStyle = [[ZStyle allocWithZone: [self zone]] init];

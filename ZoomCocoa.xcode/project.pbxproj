@@ -137,6 +137,9 @@
 			fileRef = 4B1884AF06975647004D8501;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		4B1884B206975647004D8501 = {
@@ -263,36 +266,6 @@
 			};
 		};
 		4B1885BB0698B867004D8501 = {
-			fileRef = 4B1885B60698B867004D8501;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		4B1885E60698BA40004D8501 = {
-			fileRef = 4B1885B20698B867004D8501;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		4B1885E70698BA41004D8501 = {
-			fileRef = 4B1885B30698B867004D8501;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		4B1885E80698BA42004D8501 = {
-			fileRef = 4B1885B40698B867004D8501;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		4B1885E90698BA42004D8501 = {
-			fileRef = 4B1885B50698B867004D8501;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		4B1885EA0698BA43004D8501 = {
 			fileRef = 4B1885B60698B867004D8501;
 			isa = PBXBuildFile;
 			settings = {
@@ -2744,11 +2717,6 @@
 				4BBC1F6D062F41E300FE547F,
 				4BBC1F6E062F41E300FE547F,
 				4B18850C069873F0004D8501,
-				4B1885E60698BA40004D8501,
-				4B1885E70698BA41004D8501,
-				4B1885E80698BA42004D8501,
-				4B1885E90698BA42004D8501,
-				4B1885EA0698BA43004D8501,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

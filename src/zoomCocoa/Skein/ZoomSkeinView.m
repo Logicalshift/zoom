@@ -28,8 +28,67 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed;
 + (NSImage*) imageNamed: (NSString*) name {
 	NSImage* img = [NSImage imageNamed: name];
 	
+	if (img == nil) {
+		// Try to load from the framework instead
+		NSBundle* ourBundle = [NSBundle bundleForClass: [self class]];
+		NSString* filename = [ourBundle pathForResource: name
+												 ofType: @"png"];
+		
+		if (filename) {
+			img = [[[NSImage alloc] initWithContentsOfFile: filename] autorelease];
+		}
+	}
+	
 	[img setFlipped: YES];
 	return img;
+}
+
++ (void) drawImage: (NSImage*) img
+		   atPoint: (NSPoint) pos
+		 withWidth: (float) width {
+	pos.x = floorf(pos.x);
+	pos.y = floorf(pos.y);
+	width = floorf(width);
+	
+	// Images must be 90x30
+	if (width == 90.0) {
+		[img drawAtPoint: pos
+				fromRect: NSMakeRect(0,0,90,30)
+			   operation: NSCompositeSourceOver
+				fraction: 1.0];
+		
+		return;
+	}
+	
+	if (width <= 0.0) width = 1.0;
+	
+	// Draw the middle bit
+	NSRect bitToDraw = NSMakeRect(pos.x, pos.y, 50, 30);
+	NSRect bitToDrawFrom = NSMakeRect(20, 0, 50, 30);
+	float p;
+	
+	for (p=width; p>=0.0; p-=50.0) {
+		if (p < 50.0) {
+			bitToDrawFrom.size.width = bitToDraw.size.width = p;
+		}
+		
+		bitToDraw.origin.x = pos.x + p - bitToDraw.size.width;
+
+		[img drawInRect: bitToDraw
+			   fromRect: bitToDrawFrom
+			  operation: NSCompositeSourceOver
+			   fraction: 1.0];	
+	}
+	
+	// Draw the edge bits
+	[img drawInRect: NSMakeRect(pos.x-20, pos.y, 20, 30)
+		   fromRect: NSMakeRect(0,0,20,30)
+		  operation: NSCompositeSourceOver
+		   fraction: 1.0];	
+	[img drawInRect: NSMakeRect(pos.x+width, pos.y, 20, 30)
+		   fromRect: NSMakeRect(70,0,20,30)
+		  operation: NSCompositeSourceOver
+		   fraction: 1.0];	
 }
 
 + (void) initialize {
@@ -109,16 +168,21 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed;
 			
 			// Draw the background (IMPLEMENT ME)
 			NSImage* background = unchanged;
+			float bgWidth = size.width;
+			//if (bgWidth < 90.0) bgWidth = 90.0;
 			
 			if (![skeinItem played]) background = unplayed;
 			if ([skeinItem changed]) background = changed;
 			if (skeinItem == [skein activeItem]) background = active;
 			if ([skeinItem parent] == [skein activeItem]) background = changed;
 			
-			[background drawAtPoint: NSMakePoint(xpos - 45, ypos - 8)
+			[ZoomSkeinView drawImage: background
+					atPoint: NSMakePoint(xpos - bgWidth/2.0, ypos-8)
+				  withWidth: bgWidth];
+/*			[background drawAtPoint: NSMakePoint(xpos - 45, ypos - 8)
 						   fromRect: NSMakeRect(0,0,90,30)
 						  operation: NSCompositeSourceOver
-						   fraction: 1.0];
+						   fraction: 1.0]; */
 
 			// Draw the item
 			[[skeinItem command] drawAtPoint: NSMakePoint(xpos - (size.width/2), ypos)
@@ -235,6 +299,12 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed;
 					  forKey: ZSposition];
 	}
 	
+	// Adjust the width to fit the text, if required
+	float ourWidth = [[item command] sizeWithAttributes: [NSDictionary dictionaryWithObjectsAndKeys: 
+		[NSFont systemFontOfSize: 10.0], NSFontAttributeName, nil]].width;
+	ourWidth += 44;
+	if (position < ourWidth) position = ourWidth;
+	
 	// Return the result
 	NSMutableDictionary* result = [ZoomSkeinView item: item
 											withWidth: itemWidth
@@ -274,8 +344,9 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed;
 				withOffset: newPos];
 	}
 	
-	if ((-newPos) > globalOffset)
-		globalOffset = -newPos;
+	float leftPos = newPos - ([[item objectForKey: ZSfullwidth] floatValue]/2.0);
+	if ((-leftPos) > globalOffset)
+		globalOffset = -leftPos;
 	if (newPos > globalWidth)
 		globalWidth = newPos;
 }
@@ -304,7 +375,6 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed;
 	globalOffset = 0; globalWidth = 0;
 	[self fixPositions: tree
 			withOffset: 0];
-	globalOffset += itemWidth/2.0;
 	
 	// Resize this view
 	NSRect newBounds = [self bounds];
