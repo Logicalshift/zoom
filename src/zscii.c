@@ -177,6 +177,12 @@ int* zscii_to_unicode(ZByte* string, int* len)
 		      buf[y++] = ' ';
 		      buf[y++] = ' ';
 		    }
+		  if (buf[y-1] == 11)
+		    {
+		      y--;
+		      buf[y++] = ' ';
+		      buf[y++] = ' ';
+		    }
 		  abet=0;
 		}
 	      else
