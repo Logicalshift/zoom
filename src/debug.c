@@ -195,6 +195,7 @@ void debug_run_breakpoint(ZDWord pc)
 	  display_printf("= Commands accepted by the debugger:\n");
 	  display_printf("== b<addr> - set breakpoint\n");
 	  display_printf("== c - continue execution\n");
+	  display_printf("== d<expr> - display an expression after every breakpoint\n");
 	  display_printf("== f - finish function\n");
 	  display_printf("== h - this message\n");
 	  display_printf("== l - list breakpoints\n");

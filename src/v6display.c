@@ -208,9 +208,9 @@ static void scroll_to_height(int height, int change_baseline)
       if (bg >= 0)
 	{
 	  display_pixmap_cols(bg, 0);
-	  display_plot_rect(ACTWIN.xpos,
+	  display_plot_rect(ACTWIN.xpos+ACTWIN.lmargin,
 			    ACTWIN.ypos+ACTWIN.height-scrollby,
-			    ACTWIN.width,
+			    ACTWIN.width-ACTWIN.lmargin-ACTWIN.rmargin,
 			    scrollby);
 	}
       
@@ -229,7 +229,7 @@ static void scroll_to_height(int height, int change_baseline)
    * Need to scroll any existing text on this line down, so
    * baselines match
    */
-  if (height > oldheight && !ACTWIN.no_scroll)
+  if (height > oldheight && !ACTWIN.no_scroll && oldheight > 0)
     {
       int scrollby;
       
@@ -238,10 +238,10 @@ static void scroll_to_height(int height, int change_baseline)
       display_scroll_region(ACTWIN.xpos,  ACTWIN.cury,
 			    ACTWIN.width, oldheight,
 			    0,  scrollby);
-      
+
       if (bg >= 0)
 	{
-	  display_pixmap_cols(bg, 0);
+	  display_pixmap_cols(1, 0);
 	  display_plot_rect(ACTWIN.xpos+ACTWIN.lmargin, ACTWIN.cury,
 			    ACTWIN.width-ACTWIN.lmargin-ACTWIN.rmargin,
 			    scrollby);
@@ -265,8 +265,8 @@ void v6_prints(const int* text)
     t[len] = text[len];
   t[len] = 0;
 
-  printf_debug("V6: Printing text to window %i (style %x, colours %i, %i): >%s<\n", active_win, 
-	       ACTWIN.style, ACTWIN.fore, ACTWIN.back, t);
+  printf_debug("V6: Printing text to window %i (style %x, colours %i, %i, position %g, %g): >%s<\n", active_win, 
+	       ACTWIN.style, ACTWIN.fore, ACTWIN.back, ACTWIN.curx, ACTWIN.cury, t);
 #endif
 
   for (len=0; text[len] != 0; len++);
@@ -338,7 +338,10 @@ void v6_prints(const int* text)
 
       /* Stop plotting if wrapping is off */
       if (ACTWIN.wrapping == 0)
-	return;
+	{
+	  ACTWIN.curx += width;
+	  return;
+	}
 
       /* Newline, if necessary */
       if (text[text_pos] != 0)
@@ -405,12 +408,15 @@ void v6_prints(const int* text)
 
 void v6_prints_c(const char* text)
 {
+#ifdef DEBUG
+  printf_debug("YAARRRK\n");
+#endif
 }
 
 void v6_set_caret(void)
 {
   display_set_input_pos(ACTWIN.style, ACTWIN.curx, ACTWIN.cury,
-			(ACTWIN.xpos+ACTWIN.width)-ACTWIN.curx);
+			(ACTWIN.xpos+ACTWIN.width-ACTWIN.rmargin)-ACTWIN.curx);
   if (ACTWIN.style&1)
     display_pixmap_cols(ACTWIN.back, ACTWIN.fore);
   else
@@ -451,6 +457,10 @@ void v6_erase_window(void)
 
 void v6_erase_line(int val)
 {
+#ifdef DEBUG
+  printf_debug("V6: erase line : %i %g\n", val, ACTWIN.curx);
+#endif
+
   if (ACTWIN.line_height == 0)
     {
       scroll_to_height(display_get_font_height(ACTWIN.style), 1);
@@ -463,7 +473,8 @@ void v6_erase_line(int val)
     display_pixmap_cols(ACTWIN.back, 0);
   if (val == 1)
     display_plot_rect(ACTWIN.curx, ACTWIN.cury,
-		      ACTWIN.width-(ACTWIN.curx-ACTWIN.xpos), ACTWIN.line_height);
+		      ACTWIN.width-ACTWIN.rmargin-(ACTWIN.curx-ACTWIN.xpos),
+		      ACTWIN.line_height);
   else
     {
       if (ACTWIN.curx + val > ACTWIN.xpos + ACTWIN.width - ACTWIN.rmargin)
