@@ -1621,7 +1621,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
             break;
             
         case ZFileTranscript:
-            [panel setRequiredFileType:  [NSString stringWithFormat: @"txt"]];
+            [panel setRequiredFileType: [NSString stringWithFormat: @"txt"]];
             typeCode = 'TEXT';
             if (supportsMessage) {
                 [panel setMessage: [NSString stringWithFormat: @"%@ transcript recording file", saveOpen]];
@@ -1702,10 +1702,10 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 				ZoomUpperWindow* previewWin;
 				
 				[f setAttributes: [NSDictionary dictionaryWithObjectsAndKeys: 
-					[NSNumber numberWithLong: creatorCode], NSFileHFSCreatorCode,
-					[NSNumber numberWithLong: typeCode], NSFileHFSTypeCode,
-					[NSNumber numberWithBool: [panel isExtensionHidden]], NSFileExtensionHidden,
-					nil]];
+						[NSNumber numberWithLong: creatorCode], NSFileHFSCreatorCode,
+						[NSNumber numberWithLong: typeCode], NSFileHFSTypeCode,
+						[NSNumber numberWithBool: [panel isExtensionHidden]], NSFileExtensionHidden,
+						nil]];
 				
 				if ([upperWindows count] <= 0 || [(ZoomUpperWindow*)[upperWindows objectAtIndex: 0] length] > 0) {
 					windowNumber = 0;
@@ -1734,11 +1734,15 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 				[zMachine filePromptCancelled];				
 			}
 		} else {
+			int creator = creatorCode;
+			
+			if (typeCode == 'TEXT') creator = 0;
+			
 			if ([[NSFileManager defaultManager] createFileAtPath:fn
 														   contents:[NSData data]
 														 attributes:
 				[NSDictionary dictionaryWithObjectsAndKeys: 
-					[NSNumber numberWithLong: creatorCode], NSFileHFSCreatorCode,
+					[NSNumber numberWithLong: creator], NSFileHFSCreatorCode,
 					[NSNumber numberWithLong: typeCode], NSFileHFSTypeCode,
 					[NSNumber numberWithBool: [panel isExtensionHidden]], NSFileExtensionHidden,
 					nil]]) {

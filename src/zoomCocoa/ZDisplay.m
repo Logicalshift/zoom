@@ -104,7 +104,8 @@ void printf_debug(char* format, ...) {
     char     string[8192];
 
     va_start(ap, format);
-    vsprintf(string, format, ap);
+    vsnprintf(string, 8192, format, ap);
+	string[8191] = 0;
     va_end(ap);
 
 	NSLog(@"DEBUG: %s", string);
@@ -329,7 +330,8 @@ void display_printf(const char* format, ...) {
 	NOTE(@"display_printf");
 
     va_start(ap, format);
-    vsprintf(string, format, ap);
+    vsnprintf(string, 512, format, ap);
+	string[511] = 0;
     va_end(ap);
 
     display_prints_c(string);

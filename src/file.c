@@ -25,6 +25,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdarg.h>
 #include <sys/stat.h>
 
 #include "file.h"
@@ -640,3 +642,38 @@ void write_dword(ZFile* file, ZDWord word)
 }
 
 #endif
+
+void write_string(ZFile* file, const char* string) {
+  write_block(file, string, strlen(string));
+}
+
+void write_stringf(ZFile* file, const char* format, ...) {
+  char buffer[4096];
+  va_list ap;
+  
+  va_start(ap, format);
+  vsnprintf(buffer, 4096, format, ap);
+  buffer[4095] = 0;
+  va_end(ap);
+  
+  write_string(file, buffer);
+}
+
+void write_stringu(ZFile* file, const int* string) {
+  /* Maybe FIXME: write in UTF-8 format? */
+  int len, x;
+  char* str;
+  
+  for (len=0; string[len] != 0; len++);
+  
+  str = malloc(len+1);
+  
+  for (x=0; x<len; x++) {
+    str[x] = string[x]<128?string[x]:'?';
+  }
+  str[x] = 0;
+  
+  write_string(file, str);
+  
+  free(str);
+}

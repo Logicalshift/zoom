@@ -257,7 +257,8 @@ void zmachine_fatal(char* format, ...)
   char     string[256];
 
   va_start(ap, format);
-  vsprintf(string, format, ap);
+  vsnprintf(string, 256, format, ap);
+  string[255] = 0;
   va_end(ap);
 
 #if WINDOW_SYSTEM != 3

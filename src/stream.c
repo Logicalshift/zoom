@@ -182,14 +182,8 @@ static void prints(const int* const s)
   if (machine.transcript_on == 1)
     {
       int x;
-
-      for (x=0; s[x] != 0; x++)
-	{
-	  if (s[x] > 255)
-	    fputc('?', machine.transcript_file);
-	  else
-	    fputc(s[x], machine.transcript_file);
-	}
+    
+      write_stringu(machine.transcript_file, s);
     }
 }
 
@@ -269,9 +263,8 @@ void stream_input(const int* s)
     {
       int x;
 
-      for (x=0; s[x] != 0; x++)
-	fputc(s[x]<128?s[x]:'?', machine.transcript_file);
-      fputc('\n', machine.transcript_file);
+      write_stringu(machine.transcript_file, s);
+      write_string(machine.transcript_file, "\n");
     }
 }
 

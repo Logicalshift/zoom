@@ -260,7 +260,8 @@ typedef struct ZMachine
   int    screen_on;
   int    transcript_on;
   int    transcript_commands;
-  FILE*  transcript_file;
+  /* FILE*  transcript_file; */
+  ZFile* transcript_file;
 
   int    memory_on;
   ZUWord memory_pos  [16];
