@@ -504,6 +504,8 @@ inline static int convert_colour(int col)
       return -1;
     case 0:
       return -2;
+    case -1:
+      return -3;
 
     default:
       zmachine_warning("Colour %i out of range", col);
@@ -1291,9 +1293,9 @@ static int newline_function(const int* remaining,
 	  if (pending_text != NULL)
 	    zmachine_fatal("Programmer is a spoon");
 
-	  pending_text = malloc(rem_len+1);
+	  pending_text = malloc((rem_len+1)*sizeof(int));
 	  pending_len  = rem_len;
-	  memcpy(pending_text, remaining, rem_len);
+	  memcpy(pending_text, remaining, rem_len*sizeof(int));
 	  pending_text[rem_len] = 0;
 
 	  printf_debug("Calling newline_return\n");
@@ -1469,6 +1471,13 @@ void zmachine_run(const int version,
   pc    = GetWord(machine.header, ZH_initpc);
   stack = &machine.stack;
 
+#if defined(SUPPORT_VERSION_6)
+  if (version == 6)
+    {
+      zcode_v6_initialise();
+    }
+#endif
+
   zmachine_setup_header();
   machine.undo = NULL;
 
@@ -1478,7 +1487,6 @@ void zmachine_run(const int version,
       call_routine(&pc, stack,
 		   (4*GetWord(machine.header, ZH_initpc)) +
 		   machine.routine_offset);
-      zcode_v6_initialise();
     }
 #endif
 

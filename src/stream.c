@@ -180,6 +180,7 @@ void stream_prints(const unsigned char* s)
 
   for (x=0; x<len; x++)
     {
+      /*
       if (s[x] == 10)
 	{
 	  line++;
@@ -191,6 +192,7 @@ void stream_prints(const unsigned char* s)
 		display_update();
 	    }
 	}
+      */
       buffer[bufpos++] = zscii_unicode[s[x]];
     }
 }
@@ -300,15 +302,27 @@ int stream_readline(char* buf, int len, long int timeout)
 
 void stream_flush_buffer(void)
 {
+  static int flushing =  0;
+
+  if (flushing)
+    {
+      printf("Blech\n");
+      return;
+    }
+
   if (bufpos <= 0)
     return;
 #ifdef DEBUG
   printf_debug("Buffer flushed\n");
 #endif
 
+  flushing = 1;
+
   buffer[bufpos] = 0;
   prints(buffer);
   bufpos = 0;
+
+  flushing = 0;
 }
 
 void stream_buffering(int buf)

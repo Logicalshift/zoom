@@ -105,6 +105,8 @@ struct BlorbSound
 
 struct BlorbResolution
 {
+  int offset, length;
+
   int px, py;
   int minx, miny;
   int maxx, maxy;

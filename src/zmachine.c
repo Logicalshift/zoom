@@ -35,6 +35,7 @@
 #include "rc.h"
 #include "stream.h"
 #include "blorb.h"
+#include "v6display.h"
 
 #if WINDOW_SYSTEM == 2
 # include <windows.h>
@@ -231,7 +232,7 @@ void zmachine_fatal(char* format, ...)
     {
       machine.display_active = 0;
 
-      display_set_font(0);
+      display_sanitise();
 
       display_set_style(0);
       display_set_style(2);

@@ -434,6 +434,12 @@ static int old_style;
 
 void display_sanitise(void)
 {
+  if (is_v6)
+    {
+      v6_reset_windows();
+      return;
+    }
+
   old_win = cur_win;
 
   display_set_window(0);
@@ -501,6 +507,14 @@ int  display_set_style   (int style)
 
 void display_set_colour  (int fore, int back)
 {
+#ifdef SUPPORT_VERSION_6
+  /* Required by the error/warning/finalisation routines */
+  if (is_v6)
+    {
+      v6_set_colours(fore, back);
+      return;
+    }
+#endif
   NOTV6;
 
   if (fore == -1)

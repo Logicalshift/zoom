@@ -2419,7 +2419,7 @@ OPCODE "erase_window"   VAR:0x0d ARGS:1               VERSION 6
 
   v6_set_window(ewin);
   v6_erase_window();
-  v6_set_cursor(windows[ewin].x,windows[ewin].y);
+  v6_set_cursor(1,1);
   v6_set_window(old_win);
 %}
 
@@ -2447,8 +2447,8 @@ OPCODE "set_cursor"    VAR:0x0f ARGS:3        VERSION 6
 
   owin = v6_get_window();
   v6_set_window(argblock.arg[2]);
-  v6_set_cursor(argblock.arg[1] + windows[argblock.arg[2]].x,
-		argblock.arg[0] + windows[argblock.arg[2]].y);
+  v6_set_cursor(argblock.arg[1],
+		argblock.arg[0]);
   v6_set_window(owin);
 %}
 
@@ -2461,8 +2461,8 @@ OPCODE "get_cursor"    VAR:0x10 ARGS:1        VERSION 6
   win = v6_get_window();
 
   dest = Address((ZUWord)argblock.arg[0]);
-  x = v6_get_cursor_x()-windows[win].x;
-  y = v6_get_cursor_y()-windows[win].y;
+  x = v6_get_cursor_x();
+  y = v6_get_cursor_y();
 
   dest[0] = y>>8;
   dest[1] = y;
@@ -2476,33 +2476,110 @@ OPCODE "output_stream" VAR:0x13 ARGS:3        VERSION 6
   zcode_op_output_stream(stack, &argblock);
 %}
 
+OPCODE "set_font"      EXT:0x04 ARGS:1 STORE  VERSION 6
+%{
+  stream_flush_buffer();
+
+  store(stack, st, 1);
+ 
+  switch (argblock.arg[0])
+    {
+    case 1:
+      v6_set_style(-16);
+      v6_set_style(-8);
+      break;
+
+    case 3:
+      v6_set_style(16);
+      break;
+
+    case 4:
+      v6_set_style(-16);
+      v6_set_style(8);
+      break;
+
+    default:
+      zmachine_warning("Font %i not supported", argblock.arg[0]);
+      store(stack, st, 0);
+   }
+%}
+
 OPCODE "draw_picture"  EXT:0x05 ARGS:3        VERSION 6
 %{
-  printf("draw_picture not implemented\n");
+  BlorbImage* img;
+  int win;
+
+  stream_flush_buffer();
+
+  win = v6_get_window();
+
+  if (machine.blorb != NULL)
+    {
+      img = blorb_findimage(machine.blorb, argblock.arg[0]);
+    }
+  else
+    img = NULL;
+
+  if (img != NULL && img->loaded != NULL)
+    {
+      int x,y;
+
+      x = argblock.arg[2];
+      y = argblock.arg[1];
+      if (argblock.n_args < 3)
+	x = v6_get_cursor_x();
+      if (argblock.n_args < 2)
+        y = v6_get_cursor_y();
+
+      display_plot_image(img, x+windows[win].x-1, y+windows[win].y-1);
+    }
 %}
 
 OPCODE "picture_data"  EXT:0x06 BRANCH        VERSION 6
 %{
-  printf("picture_data not implemented\n");
-#if 0
-  ZByte* d;
-  ZUWord width, height;
+  unsigned char* d;
+  int width, height;
+  BlorbImage* img;
 
   d = Address((ZUWord)argblock.arg[1]);
 
-  //width = pix_width((ZUWord)argblock.arg[0]);
-  //height = pix_height((ZUWord)argblock.arg[0]);
+  if (machine.blorb != NULL)
+    {
+      img = blorb_findimage(machine.blorb, argblock.arg[0]);
+    }
+  else
+    img = NULL;
 
-  d[0] = height>>8;
-  d[1] = height;
-  d[2] = width>>8;
-  d[3] = width;
-#endif
+  if (img != NULL)
+    {
+      int sc_n, sc_d;
+
+      width = img->width;
+      height = img->height;
+
+      v6_scale_image(img, &sc_n, &sc_d);
+      width = (width*sc_n)/sc_d;
+      height = (height*sc_n)/sc_d;
+
+      d[0] = height>>8;
+      d[1] = height;
+      d[2] = width>>8;
+      d[3] = width;
+
+      result = 1;
+    }
+  else
+    {
+      printf_debug("Image %i not found\n", argblock.arg[0]);
+      result = 0;
+    }
+
+  dobranch;
 %}
 
 OPCODE "erase_picture" EXT:0x07               VERSION 6
 %{
-  printf("erase_picture not implemented\n");
+  printf_debug("erase_picture not implemented\n");
 %}
 
 OPCODE "set_margins"   EXT:0x08 ARGS:3        VERSION 6
@@ -2516,19 +2593,17 @@ OPCODE "set_margins"   EXT:0x08 ARGS:3        VERSION 6
   win = v6_get_window();
   v6_set_window(argblock.arg[2]);
 
+  printf_debug("Margins set to %i, %i\n", argblock.arg[0], argblock.arg[1]);
+
   windows[argblock.arg[2]].leftmar  = argblock.arg[0];
   windows[argblock.arg[2]].rightmar = argblock.arg[1];
 
-  printf_debug("Margins of window %i set to %i, %i\n", argblock.arg[2], argblock.arg[0], argblock.arg[1]);
-  
   zcode_setup_window(argblock.arg[2]);
-  if (v6_get_cursor_x() < windows[argblock.arg[2]].x+
-                          windows[argblock.arg[2]].leftmar)
+  if (v6_get_cursor_x() < windows[argblock.arg[2]].leftmar)
     {
       yp = v6_get_cursor_y();
     
-      v6_set_cursor(windows[argblock.arg[2]].x+
-                    windows[argblock.arg[2]].leftmar,
+      v6_set_cursor(windows[argblock.arg[2]].leftmar,
                     yp);
     }
   v6_set_window(win);
@@ -2555,6 +2630,11 @@ OPCODE "move_window"   EXT:0x10               VERSION 6
   windows[argblock.arg[0]].leftmar = 0;
   windows[argblock.arg[0]].rightmar = 0;
   
+  printf_debug("Window %i position is now %i, %i\n",	
+	 argblock.arg[0],
+	 windows[argblock.arg[0]].x,
+	 windows[argblock.arg[0]].y);
+
   zcode_setup_window(argblock.arg[0]);
   v6_set_window(win);
 %}
@@ -2567,6 +2647,11 @@ OPCODE "window_size"   EXT:0x11               VERSION 6
   windows[argblock.arg[0]].ysize = argblock.arg[1];
   windows[argblock.arg[0]].leftmar = 0;
   windows[argblock.arg[0]].rightmar = 0;
+
+  printf_debug("Window %i size is now %i, %i\n",	
+	 argblock.arg[0],
+	 windows[argblock.arg[0]].xsize,
+	 windows[argblock.arg[0]].ysize);
 
   {
     int win;
@@ -2596,6 +2681,7 @@ OPCODE "get_wind_prop" EXT:0x13        STORE  VERSION 6
   if (argblock.arg[0] < 0)
     zmachine_fatal("Bad window for get_wind_prop: %i", argblock.arg[0]);
   v6_set_window(argblock.arg[0]);
+
   switch(argblock.arg[1])
     {
     case 0:
@@ -2611,10 +2697,10 @@ OPCODE "get_wind_prop" EXT:0x13        STORE  VERSION 6
       store(stack, st, windows[argblock.arg[0]].xsize);
       break;
     case 4:
-      store(stack, st, v6_get_cursor_x()-windows[argblock.arg[0]].x);
+      store(stack, st, v6_get_cursor_y());
       break;
     case 5:
-      store(stack, st, v6_get_cursor_y()-windows[argblock.arg[0]].y);
+      store(stack, st, v6_get_cursor_x());
       break;
     case 6:
       store(stack, st, windows[argblock.arg[0]].leftmar);
@@ -2661,7 +2747,10 @@ OPCODE "get_wind_prop" EXT:0x13        STORE  VERSION 6
 
 OPCODE "scroll_window" EXT:0x14               VERSION 6
 %{
-  printf("scroll_window not implemented\n");
+  if (argblock.arg[0] == v6_get_window())
+    stream_flush_buffer();
+
+  v6_scroll_window(argblock.arg[0], argblock.arg[1]);
 %}
 
 OPCODE "pop_stack"     EXT:0x15               VERSION 6
@@ -2688,12 +2777,12 @@ OPCODE "pop_stack"     EXT:0x15               VERSION 6
 
 OPCODE "read_mouse"    EXT:0x16               VERSION 6
 %{
-  printf("read_mouse not implemented\n");
+  printf_debug("read_mouse not implemented\n");
 %}
 
 OPCODE "mouse_window"  EXT:0x17               VERSION 6
 %{
-  printf("mouse_window not implemented\n");
+  printf_debug("mouse_window not implemented\n");
 %}
 
 OPCODE "push_stack"    EXT:0x18        BRANCH VERSION 6
@@ -2775,17 +2864,17 @@ OPCODE "put_wind_prop" EXT:0x19               VERSION 6
 
 OPCODE "print_form"    EXT:0x1a               VERSION 6
 %{
-  printf("print_form not implemented\n");
+  printf_debug("print_form not implemented\n");
 %}
 
 OPCODE "make_menu"     EXT:0x1b        BRANCH VERSION 6
 %{
-  printf("make_menu not implemented\n");
+  printf_debug("make_menu not implemented\n");
 %}
 
 OPCODE "picture_table" EXT:0x1c               VERSION 6
 %{
-  printf("picture_table not implemented\n");
+  printf_debug("picture_table not implemented\n");
 %}
 
 ####                           ----// 888 \\----                           ####

@@ -34,11 +34,17 @@ extern void v6_startup      (void);
 extern void v6_reset        (void);
 extern void v6_reset_windows(void);
 
+extern void v6_scale_image  (BlorbImage* img, 
+			     int* img_n, 
+			     int* img_d);
+
 extern void v6_prints       (const int* text);
 extern void v6_prints_c     (const char* text);
 
 extern void v6_erase_window (void);
 extern void v6_erase_line   (int);
+extern void v6_scroll_window(int window,
+			     int amount);
 
 extern int  v6_set_style    (int);
 extern void v6_set_colours  (int fg, int bg);

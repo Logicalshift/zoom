@@ -40,6 +40,8 @@ typedef struct v6window v6window;
 
 static int active_win;
 
+static int erf_n, erf_d;
+
 struct v6window
 {
   float curx, cury;
@@ -72,7 +74,7 @@ static int (*nl_func)(const int * remaining,
 void v6_startup      (void)
 {
 #ifdef DEBUG
-  printf_debug("V6 startup\n");
+  printf_debug("V6: startup\n");
 #endif
 
   display_init_pixmap(-1, -1);
@@ -81,25 +83,47 @@ void v6_startup      (void)
   machine.dinfo = display_get_info();
 
   v6_reset();
+
+  machine.memory[ZH_width] = machine.dinfo->width>>8;
+  machine.memory[ZH_width+1] = machine.dinfo->width;
+  machine.memory[ZH_height] = machine.dinfo->height>>8;
+  machine.memory[ZH_height+1] = machine.dinfo->height;
+  /* Note that these are backwards in v6 :-) */
+  machine.memory[ZH_fontwidth] = machine.dinfo->font_height;
+  machine.memory[ZH_fontheight] = machine.dinfo->font_width;
 }
 
 void v6_reset        (void)
 {
 #ifdef DEBUG
-  printf_debug("V6 reset\n");
+  printf_debug("V6: reset\n");
 #endif
 
   v6_reset_windows();
 
   v6_set_window(0);
   v6_erase_window();
+
+  erf_n = 1; erf_d = 1;
+
+  if (machine.blorb != NULL && machine.blorb->reso.offset != -1)
+    {
+      erf_n = machine.dinfo->width;
+      erf_d = machine.blorb->reso.px;
+    }
+}
+
+void v6_scale_image(BlorbImage* img, int* img_n, int* img_d)
+{
+  *img_n = erf_n*img->std_n;
+  *img_d = erf_d;
 }
 
 void v6_reset_windows(void)
 {
   int x;
 #ifdef DEBUG
-  printf_debug("V6 reset windows\n");
+  printf_debug("V6: reset windows\n");
 #endif
 
   for (x=0; x<8; x++)
@@ -136,7 +160,7 @@ void v6_prints(const int* text)
     t[len] = text[len];
   t[len] = 0;
 
-  printf_debug("Printing text to window %i (style %x): >%s<\n", active_win, 
+  printf_debug("V6: Printing text to window %i (style %x): >%s<\n", active_win, 
 	       ACTWIN.style, t);
 #endif
 
@@ -200,20 +224,25 @@ void v6_prints(const int* text)
 
 	  scrollby = (ACTWIN.cury+ACTWIN.line_height)-(ACTWIN.ypos+ACTWIN.height);
 #ifdef DEBUG
-	  printf_debug("Scrolling by %i\n", scrollby);
+	  printf_debug("V6: Scrolling by %i\n", scrollby);
 #endif
 
 	  display_scroll_region(ACTWIN.xpos, ACTWIN.ypos+scrollby,
 				ACTWIN.width, ACTWIN.height,
 				0, -scrollby);
-	  display_pixmap_cols(bg, 0);
-	  display_plot_rect(ACTWIN.xpos, ACTWIN.ypos+ACTWIN.height-scrollby,
-			    ACTWIN.width, scrollby);
+	  if (bg >= 0)
+	    {
+	      display_pixmap_cols(bg, 0);
+	      display_plot_rect(ACTWIN.xpos,
+				ACTWIN.ypos+ACTWIN.height-scrollby,
+				ACTWIN.width,
+				scrollby);
+	    }
 
 	  ACTWIN.cury -= scrollby;
 
 #ifdef DEBUG
-	  printf_debug("Text amount is now %g (more paging %s)\n", 
+	  printf_debug("V6: Text amount is now %g (more paging %s)\n", 
 		       ACTWIN.text_amount, ACTWIN.no_more?"OFF":"ON");
 #endif
 	}
@@ -232,9 +261,13 @@ void v6_prints(const int* text)
 				ACTWIN.width, oldheight,
 				ACTWIN.xpos,  scrollby);
 	  
-	  display_pixmap_cols(bg, 0);
-	  display_plot_rect(ACTWIN.xpos, ACTWIN.cury,
-			    ACTWIN.width, scrollby);
+	  if (bg >= 0)
+	    {
+	      display_pixmap_cols(bg, 0);
+	      display_plot_rect(ACTWIN.xpos+ACTWIN.lmargin, ACTWIN.cury,
+				ACTWIN.width-ACTWIN.lmargin-ACTWIN.rmargin,
+				scrollby);
+	    }
 	}
 
       /* Plot the text */
@@ -260,13 +293,13 @@ void v6_prints(const int* text)
 	  ACTWIN.text_amount += ACTWIN.line_height;
 	  ACTWIN.cury += ACTWIN.line_height;
 	  ACTWIN.line_height = 0;
-	  ACTWIN.curx = ACTWIN.lmargin;
+	  ACTWIN.curx = ACTWIN.xpos + ACTWIN.lmargin;
 
 	  more = -1;
 	  if (nl_func != NULL)
 	    {
-	      more = (nl_func)(text + text_pos,
-			       len - text_pos);
+	      more = (nl_func)(text + text_pos + (text[text_pos]==10?1:0),
+			       len - text_pos - (text[text_pos]==10?1:0));
 	    }
 
 	  if (more == 2)
@@ -309,15 +342,16 @@ void v6_set_caret(void)
 void v6_erase_window(void)
 {
 #ifdef DEBUG
-  printf_debug("V6 erase window #%i\n", active_win);
+  printf_debug("V6: erase window #%i\n", active_win);
 #endif
 
   if (ACTWIN.style&1)
     display_pixmap_cols(ACTWIN.fore, ACTWIN.back);
   else
     display_pixmap_cols(ACTWIN.back, ACTWIN.fore);
-  display_plot_rect  (ACTWIN.xpos, ACTWIN.ypos,
-		      ACTWIN.width, ACTWIN.height);
+
+  display_plot_rect(ACTWIN.xpos, ACTWIN.ypos,
+		    ACTWIN.width, ACTWIN.height);
 
   ACTWIN.cury = ACTWIN.ypos;
   ACTWIN.curx = ACTWIN.xpos + ACTWIN.lmargin;
@@ -332,7 +366,7 @@ void v6_erase_line(int val)
 void v6_set_colours(int fg, int bg)
 {
 #ifdef DEBUG
-  printf_debug("V6 set colours: %i, %i (window %i)\n", fg, bg, active_win);
+  printf_debug("V6: set colours: %i, %i (window %i)\n", fg, bg, active_win);
 #endif
 
   if (fg == -2)
@@ -343,6 +377,8 @@ void v6_set_colours(int fg, int bg)
     fg = DEFAULT_FORE;
   if (bg == -1)
     bg = DEFAULT_BACK;
+  if (bg == -3)
+    bg = -200;
   ACTWIN.fore = fg;
   ACTWIN.back = bg;
 }
@@ -364,7 +400,7 @@ int v6_set_style(int style)
     }
 
 #ifdef DEBUG
-  printf_debug("V6 set style (window %i), new style %x\n", active_win,
+  printf_debug("V6: set style (window %i), new style %x\n", active_win,
 	       ACTWIN.style);
 #endif
 
@@ -379,7 +415,7 @@ int  v6_get_window(void)
 void v6_set_window(int window)
 {
 #ifdef DEBUG
-  printf_debug("V6 window set to %i\n", window);
+  printf_debug("V6: window set to %i\n", window);
 #endif
   active_win = window;
 }
@@ -390,8 +426,12 @@ void v6_define_window(int window,
 		      int width, int height)
 {
 #ifdef DEBUG
-  printf_debug("V6 defining window %i\n", window);
+  printf_debug("V6: defining window %i - at (%i, %i), size %ix%i, margins %i, %i\n", window,
+	       x, y, width, height, lmargin, rmargin);
 #endif
+
+  x--; y--;
+
   win[window].xpos = x;
   win[window].ypos = y;
   win[window].lmargin = lmargin;
@@ -426,24 +466,66 @@ void v6_set_more(int window, int flag)
 
 void v6_set_cursor(int x, int y)
 {
-  ACTWIN.curx = x;
-  ACTWIN.cury = y;
-  ACTWIN.line_height = 0;
+  int ly;
+
+#ifdef DEBUG
+  printf_debug("V6: moving cursor to %i, %i\n", x, y);
+#endif
+
+  ly = ACTWIN.cury;
+
+  x--; y--;
+  ACTWIN.curx = ACTWIN.xpos + x;
+  ACTWIN.cury = ACTWIN.ypos + y;
+
+  if (ly != ACTWIN.cury)
+    ACTWIN.line_height = display_get_font_height(ACTWIN.style);
 }
 
 int  v6_get_cursor_x(void)
 {
-  return ACTWIN.curx;
+  return ACTWIN.curx-ACTWIN.xpos+1;
 }
 
 int  v6_get_cursor_y(void)
 {
-  return ACTWIN.cury;
+  return ACTWIN.cury-ACTWIN.ypos+1;
 }
 
 void v6_set_newline_function(int (*func)(const int * remaining,
 					 int rem_len))
 {
   nl_func = func;
+}
+
+void v6_scroll_window(int window, int amount)
+{
+  if (amount > 0)
+    {
+      display_scroll_region(win[window].xpos, win[window].ypos+amount,
+			    win[window].width, win[window].height-amount,
+			    0, -amount);
+
+      if (win[window].back >= 0)
+	{
+	  display_pixmap_cols(win[window].back, 0);
+	  display_plot_rect(win[window].xpos, 
+			    win[window].ypos+win[window].height-amount,
+			    win[window].width, amount);
+	}
+    }
+  else
+    {
+      display_scroll_region(win[window].xpos, win[window].ypos,
+			    win[window].width, win[window].height-amount,
+			    0, amount);
+
+      if (win[window].back >= 0)
+	{
+	  display_pixmap_cols(win[window].back, 0);
+	  display_plot_rect(win[window].xpos, win[window].ypos,
+			    win[window].width, amount);
+	}
+    }
 }
 

@@ -668,7 +668,7 @@ void image_plot_Xrender(image_data* img,
 		   None,
 		   pic,
 		   0,0,0,0,
-		   0,0,
+		   x,y,
 		   image_width(img), image_height(img));
 }
 #endif

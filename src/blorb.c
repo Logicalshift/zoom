@@ -96,6 +96,9 @@ BlorbFile* blorb_loadfile(ZFile* file)
   res->copyright       = NULL;
   res->author          = NULL;
 
+  res->reso.offset     = -1;
+  res->reso.length     = -1;
+
   /* Decode and allocate space for each of the chunks in the file */
   for (x=0; x<iff->nchunks; x++)
     {
@@ -132,6 +135,41 @@ BlorbFile* blorb_loadfile(ZFile* file)
 	  res->index.picture[res->index.npictures-1].in_use      = 0;
 	  res->index.picture[res->index.npictures-1].usage_count = 0;
 	}
+      else if (cmp_token(iff->chunk[x].id, "Rect") &&
+	       iff->chunk[x].length == 8)
+	{
+	  /* 
+	   * Hum, nonstandard, 'fake' image. Some blorb files seem to have 
+	   * this piece of evilness, so we support it...
+	   */
+	  data = read_block(file, iff->chunk[x].offset, 
+			    iff->chunk[x].offset + iff->chunk[x].length);
+
+	  res->index.npictures++;
+	  res->index.picture = realloc(res->index.picture,
+				       sizeof(BlorbImage)*res->index.npictures);
+	  res->index.picture[res->index.npictures-1].file_offset =
+	    iff->chunk[x].offset;
+	  res->index.picture[res->index.npictures-1].file_len =
+	    -1;
+	  res->index.picture[res->index.npictures-1].number = -1;
+	  res->index.picture[res->index.npictures-1].width  =
+	    (data[0]<<24)|(data[1]<<24)|(data[2]<<24)|data[3];
+	  res->index.picture[res->index.npictures-1].height =
+	    (data[4]<<24)|(data[5]<<24)|(data[6]<<24)|data[7];
+	  res->index.picture[res->index.npictures-1].std_n  = 1;
+	  res->index.picture[res->index.npictures-1].std_d  = 1;
+	  res->index.picture[res->index.npictures-1].min_n  = 0;
+	  res->index.picture[res->index.npictures-1].min_d  = 1;
+	  res->index.picture[res->index.npictures-1].max_n  = 1;
+	  res->index.picture[res->index.npictures-1].max_d  = 0;
+
+	  res->index.picture[res->index.npictures-1].loaded      = NULL;
+	  res->index.picture[res->index.npictures-1].in_use      = 0;
+	  res->index.picture[res->index.npictures-1].usage_count = 0;
+
+	  free(data);
+	}
       else if (cmp_token(iff->chunk[x].id, "FORM"))
 	{
 	  /* FORM chunk */
@@ -154,6 +192,8 @@ BlorbFile* blorb_loadfile(ZFile* file)
       else if (cmp_token(iff->chunk[x].id, "Reso"))
 	{
 	  /* Resolution chunk */
+	  res->reso.offset = iff->chunk[x].offset;
+	  res->reso.length = iff->chunk[x].length;
 	}
       else if (cmp_token(iff->chunk[x].id, "Loop"))
 	{
@@ -287,6 +327,56 @@ BlorbFile* blorb_loadfile(ZFile* file)
       free(data);
     }
 
+  /* Read the resolution chunk */
+  if (res->reso.offset != -1)
+    {
+      int num,x;
+
+      data = read_block(file, res->reso.offset, res->reso.offset + res->reso.length);
+
+      res->reso.px   = (data[0]<<24)|(data[1]<<16)|(data[2]<<8)|data[3];
+      res->reso.py   = (data[4]<<24)|(data[5]<<16)|(data[6]<<8)|data[7];
+      res->reso.minx = (data[8]<<24)|(data[9]<<16)|(data[10]<<8)|data[11];
+      res->reso.miny = (data[12]<<24)|(data[13]<<16)|(data[14]<<8)|data[15];
+      res->reso.maxx = (data[16]<<24)|(data[17]<<16)|(data[18]<<8)|data[19];
+      res->reso.maxy = (data[20]<<24)|(data[21]<<16)|(data[22]<<8)|data[23];
+
+      num = (res->reso.length-24)/28;
+      for (x=0; x<num; x++)
+	{
+	  unsigned char* rec;
+	  int num;
+	  int y;
+
+	  rec = data + 24 + 28*x;
+	  
+	  num = (data[0]<<24)|(data[1]<<16)|(data[2]<<8)|data[3];
+	  
+	  for (y=0; y<res->index.npictures; y++)
+	    {
+	      if (res->index.picture[y].number == num)
+		{
+		  res->index.picture[y].std_n =
+		    (data[4]<<24)|(data[5]<<16)|(data[6]<<8)|data[7];
+		  res->index.picture[y].std_d =
+		    (data[8]<<24)|(data[9]<<16)|(data[10]<<8)|data[11];
+		  res->index.picture[y].min_n =
+		    (data[12]<<24)|(data[13]<<16)|(data[14]<<8)|data[15];
+		  res->index.picture[y].min_d =
+		    (data[16]<<24)|(data[17]<<16)|(data[18]<<8)|data[19];
+		  res->index.picture[y].max_n =
+		    (data[20]<<24)|(data[21]<<16)|(data[22]<<8)|data[23];
+		  res->index.picture[y].max_d =
+		    (data[24]<<24)|(data[25]<<16)|(data[26]<<8)|data[27];
+		  
+		  break;
+		}
+	    }
+	}
+
+      free(data);
+    }
+
   return res;
 }
 
@@ -298,6 +388,7 @@ BlorbImage* blorb_findimage(BlorbFile* blb, int number)
   if (blb == NULL)
     return NULL;
   
+  res = NULL;
   for (x=0; x<blb->index.npictures; x++)
     {
       if (blb->index.picture[x].number == number)
@@ -306,8 +397,18 @@ BlorbImage* blorb_findimage(BlorbFile* blb, int number)
 	}
     }
 
+  if (res == NULL)
+    return NULL;
+
+  if (res->file_len == -1)
+    return res; /* Fake image */
+
   if (res->loaded == NULL)
-    res->loaded = image_load(blb->source, res->file_offset, res->file_len);
+    {
+      res->loaded = image_load(blb->source, res->file_offset, res->file_len);
+      res->width  = image_width(res->loaded);
+      res->height = image_height(res->loaded);
+    }
 
   return res;
 }

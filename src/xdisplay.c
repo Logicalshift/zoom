@@ -38,6 +38,7 @@
 
 #include "zmachine.h"
 #include "display.h"
+#include "v6display.h"
 #include "rc.h"
 
 #include "image.h"
@@ -1990,6 +1991,13 @@ void display_update_region(XFONT_MEASURE left,
   if (left == right ||
       top == bottom)
     return;
+  
+  if (left > right ||
+      top > bottom)
+    {
+      printf_debug("Blag: %i, %i, %i, %i\n", (int)left, (int)top, (int)right, (int)bottom);
+      return;
+    }
 
   if (dregion == None)
     dregion = XCreateRegion();
@@ -2451,7 +2459,7 @@ ZDisplay* display_get_info(void)
   dis.fixed_space   = 1;
   dis.sound_effects = 0;
   dis.timed_input   = 1;
-  dis.mouse         = 0;
+  dis.mouse         = 1;
   
   dis.lines         = size_y;
   dis.columns       = size_x;
@@ -2467,6 +2475,9 @@ ZDisplay* display_get_info(void)
     {
       dis.width = pix_w;
       dis.height = pix_h;
+
+      dis.font_width = xfont_get_width(font[style_font[4]]);
+      dis.font_height = xfont_get_height(font[style_font[4]]);
     }
 
   return &dis;
@@ -2671,21 +2682,32 @@ float display_get_font_descent(int style)
 
 void display_plot_image(BlorbImage* img, int x, int y)
 {
+  int sc_n, sc_d;
+
   if (img == NULL)
     return;
+
+  v6_scale_image(img, &sc_n, &sc_d);
+
+  if (img->loaded == NULL)
+    {
+      return;
+    }
 
 #ifdef HAVE_XRENDER
   if (x_pixpic != None)
     {
       image_plot_Xrender(img->loaded, x_display, x_pixpic,
-			 x, y, img->std_n, img->std_d);
+			 x, y, sc_n, sc_d);
     }
   else
 #endif
     {
       image_plot_X(img->loaded, x_display, x_pixmap, x_pixgc,
-		 x, y, img->std_n, img->std_d);
+		 x, y, sc_n, sc_d);
     }
+
+  pixmap_update(x, y, x+image_width(img->loaded), y+image_height(img->loaded));
 }
 
 void display_wait_for_more(void)

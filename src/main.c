@@ -153,6 +153,24 @@ int zoom_main(int argc, char** argv)
       }
     name[x-slashpos-1] = 0;
 
+    if (rc_get_graphics() != NULL)
+      {
+	ZFile* res;
+
+	res = open_file(rc_get_graphics());
+	
+	if (blorb_is_blorbfile(res))
+	  {
+	    machine.blorb_file = res;
+	    machine.blorb = blorb_loadfile(machine.blorb_file);
+	  }
+	else
+	  {
+	    zmachine_warning("Resource file is not a blorb file (ignored)");
+	    close_file(res);
+	  }
+      }
+
     sprintf(title, rc_get_name(),
 	    name,
 	    Word(ZH_release),
