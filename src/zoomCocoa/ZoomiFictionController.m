@@ -1050,21 +1050,117 @@ int tableSorter(id a, id b, void* context) {
 }
 
 - (IBAction) delete: (id) sender {
-	// Delete the selected games
-	ZoomStoryID* ident;
+	// Ask for confirmation
+	if ([mainTableView numberOfSelectedRows] <= 0) return;
 	
+	NSString* request = @"Are you sure you want to destroy the spoons?";
+	
+	if ([mainTableView numberOfSelectedRows] == 1) {
+		request = @"Are you sure you want to delete this game?";
+	} else {
+		request = @"Are you sure you want to delete these games?";
+	}
+	
+	// Maybe FIXME: we can display this as a sheet, but we can't display the 'delete save game?'
+	// dialog that way (it appears as a sheet in the drawer. You'd expect a drawer to be a child
+	// window, but it isn't, so there doesn't seem to be a way of retrieving the window to display
+	// under. Well, I can think of a couple of ways around this, but they all feel like ugly hacks)
 	NSEnumerator* rowEnum = [mainTableView selectedRowEnumerator];
 	NSNumber* row;
 	
+	NSMutableArray* storiesToDelete = [NSMutableArray array];
+	
 	while (row = [rowEnum nextObject]) {
-		ident = [storyList objectAtIndex: [row intValue]];
+		[storiesToDelete addObject: [storyList objectAtIndex: [row intValue]]];
+	}
+	
+	NSBeginAlertSheet(@"Are you sure?",
+					  @"Keep", @"Delete", nil,
+					  [self window],
+					  self,
+					  @selector(confirmDelete:returnCode:contextInfo:),
+					  nil,
+					  [storiesToDelete retain],
+					  request);
+}
 
+- (void) confirmDelete:(NSWindow *)sheet 
+			returnCode:(int)returnCode 
+		   contextInfo:(void *)contextInfo {
+	NSMutableArray* storiesToDelete = contextInfo;
+	[storiesToDelete autorelease];
+	
+	if (returnCode != NSAlertAlternateReturn) return;
+	
+	// Delete the selected games from the organiser
+	ZoomStoryID* ident;
+	
+	NSEnumerator* rowEnum = [storiesToDelete objectEnumerator];
+	
+	while (ident = [rowEnum nextObject]) {
 		NSString* filename = [[ZoomStoryOrganiser sharedStoryOrganiser] filenameForIdent: ident];
 
 		[[ZoomStoryOrganiser sharedStoryOrganiser] removeStoryWithIdent: ident];
 	}
 	
-	// FIXME: move to trash?
+	// If the games are kept organised, then ask if the user wants to move games to the trash
+	// (give the option of always doing this)
+	if ([[ZoomPreferences globalPreferences] keepGamesOrganised]) {
+		[[NSRunLoop currentRunLoop] performSelector: @selector(showTrashConfirm:)
+											 target: self
+										   argument: [storiesToDelete retain]
+											  order: 256
+											  modes: [NSArray arrayWithObject: NSDefaultRunLoopMode]];
+	}
+}
+
+- (void) showTrashConfirm: (NSMutableArray*) storiesToDelete {
+	NSString* request = @"Hey, who put spoons in with the trash?";
+	
+	if ([storiesToDelete count] == 1) {
+		request = @"Do you want to move this story's files to the trash?";
+	} else {
+		request = @"Do you want to move these stories' files to the trash?";
+	}
+	
+	NSBeginAlertSheet(@"Move to trash?",
+					  @"OK", @"Leave", nil,
+					  [self window],
+					  self,
+					  @selector(confirmMoveToTrash:returnCode:contextInfo:),
+					  nil,
+					  storiesToDelete,
+					  request);		
+}
+
+- (void) confirmMoveToTrash: (NSWindow *)sheet 
+				 returnCode: (int)returnCode 
+				contextInfo: (void *)contextInfo {
+	NSMutableArray* storiesToDelete = contextInfo;
+	[storiesToDelete autorelease];
+	
+	if (returnCode != NSAlertDefaultReturn) return;
+	
+	ZoomStoryID* ident;
+	
+	NSEnumerator* rowEnum = [storiesToDelete objectEnumerator];
+	
+	while (ident = [rowEnum nextObject]) {
+		NSString* filename = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: ident
+																				   create: NO];
+		if (filename != nil) {
+			int tag;
+			
+			[[NSWorkspace sharedWorkspace] performFileOperation: NSWorkspaceRecycleOperation
+														 source: [filename stringByDeletingLastPathComponent]
+													destination: @""
+														  files: [NSArray arrayWithObject: [filename lastPathComponent]]
+															tag: &tag];
+			
+			// (make sure it's gone from the organiser)
+			[[ZoomStoryOrganiser sharedStoryOrganiser] removeStoryWithIdent: ident];
+		}
+	}
 }
 
 - (IBAction) revealInFinder: (id) sender {
