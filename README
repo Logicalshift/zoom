@@ -31,6 +31,18 @@ Compiling Zoom
    Please report any build problems to the bugs address listed 
    above: Zoom should work on a reasonably wide variety of systems.
 
+   You may want to try the --enable-new-terp option to configure:
+   this enables an experimental new interpreter design. This gives
+   gcc's optimiser a much easier time of things (improving compile
+   times considerably). This style of interpreter produces a slight
+   (almost insignificant) performance hit.
+
+   I've experienced problems with gcc 3's optimiser: specifically,
+   it reduces the speed of some instructions by a factor of up to
+   6 (0OPs, usually, for some reason - see the results of NopMark in 
+   zmark). No idea why at all - this effect is most marked with the
+   new interpreter style.
+
 Using Zoom
 ==========
 
