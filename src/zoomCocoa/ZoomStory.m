@@ -357,6 +357,11 @@ NSString* ZoomStoryDataHasChangedNotification = @"ZoomStoryDataHasChangedNotific
 
 - (void) setObject: (id) value
 			forKey: (id) key {
+	if ([key isEqualToString: @"rating"] && [value isKindOfClass: [NSNumber class]]) {
+		[self setRating: [value floatValue]];
+		return;
+	}
+	
 	if (![value isKindOfClass: [NSString class]]) {
 		[NSException raise: @"ZoomBadValue" format: @"Metadata value is not a string"];
 		return;

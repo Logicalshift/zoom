@@ -200,6 +200,7 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	[newColumn setDataCell: [[[ZoomRatingCell alloc] init] autorelease]];
 	[newColumn setMinWidth: 84];
 	[newColumn setMaxWidth: 84];
+	[newColumn setEditable: YES];
 	[[newColumn headerCell] setStringValue: @"Rating"];
 	
 	[mainTableView addTableColumn: [newColumn autorelease]];
@@ -944,7 +945,7 @@ int tableSorter(id a, id b, void* context) {
 	if (teaser == nil) teaser = @"";
 	
 	if (![[commentView string] isEqualToString: comment]) {
-		[commentView setString: @""];
+		//[commentView setString: @""];
 		NSSize sz = [commentView frame].size;
 		sz.height = 2;
 		[commentView setFrameSize: sz];
@@ -953,7 +954,7 @@ int tableSorter(id a, id b, void* context) {
 	}
 	if (![[teaserView string] isEqualToString: teaser]) {
 		// FIXME: when ending editing the teaser is temporarily set to "", which mucks things up a bit
-		[teaserView setString: @""];
+		//[teaserView setString: @""];
 		NSSize sz = [teaserView frame].size;
 		sz.height = 2;
 		[teaserView setFrameSize: sz];

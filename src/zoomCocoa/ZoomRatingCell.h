@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 
 @interface ZoomRatingCell : NSActionCell {
-
+	NSRect currentFrame;
 }
 
 @end

@@ -76,15 +76,74 @@ static NSSize starsSize;
 			  fromRect: clipRect
 			 operation: NSCompositeSourceOver
 			  fraction: 1.0];
-	if (value > 0.5) {
-		[stars2 setFlipped: flipped];
-		[stars2 drawInRect: drawRect
-				  fromRect: clipRect
-				 operation: NSCompositeSourceOver
-				  fraction: (value*2.0)-1.0];
-	}
+
+	[stars2 setFlipped: flipped];
+	[stars2 drawInRect: drawRect
+			  fromRect: clipRect
+			 operation: NSCompositeSourceOver
+			  fraction: value*value];
 	
 	// Done
+}
+
+- (void) adjustValueToPoint: (NSPoint) point
+					 inView: (NSView*) controlView {
+	// Work out the rectangle we're in
+	NSRect drawRect;
+	
+	drawRect.origin.x = currentFrame.origin.x + (currentFrame.size.width - starsSize.width)/2;
+	drawRect.origin.y = currentFrame.origin.y + (currentFrame.size.height - starsSize.height)/2;
+	drawRect.size = starsSize;
+	
+	float value = (point.x - drawRect.origin.x) / drawRect.size.width;
+	
+	if (value > 1.0) value = 1.0;
+	if (value < -1.0) value = 0.0;
+	
+	value *= 10.0;
+	
+	value = floor(value + 0.5);
+	
+	[self setObjectValue: [NSNumber numberWithFloat: value]];
+	[(NSControl*)controlView updateCell: self];
+}
+
+- (BOOL)trackMouse:(NSEvent *)theEvent
+			inRect:(NSRect)cellFrame
+			ofView:(NSView *)controlView 
+	  untilMouseUp:(BOOL)untilMouseUp {
+	currentFrame = cellFrame;
+	
+	return [super trackMouse: theEvent
+					  inRect: cellFrame
+					  ofView: controlView
+				untilMouseUp: untilMouseUp];
+}
+
+- (BOOL)startTrackingAt: (NSPoint)startPoint 
+				 inView: (NSView *)controlView {
+	return YES;
+}
+
+- (BOOL)continueTracking:(NSPoint)lastPoint
+					  at:(NSPoint)currentPoint 
+				  inView:(NSView *)controlView {
+	[self adjustValueToPoint: currentPoint
+					  inView: controlView];
+
+	return YES;
+}
+
+- (void)stopTracking: (NSPoint)lastPoint
+				  at: (NSPoint)stopPoint 
+			  inView: (NSView *)controlView
+		   mouseIsUp: (BOOL)flag {
+	[self adjustValueToPoint: stopPoint
+					  inView: controlView];
+}
+
++ (BOOL)prefersTrackingUntilMouseUp {
+	return YES;
 }
 
 @end
