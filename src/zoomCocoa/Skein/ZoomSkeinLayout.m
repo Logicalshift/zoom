@@ -582,4 +582,47 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed;
 	}
 }
 
+- (void) drawItem: (ZoomSkeinItem*) skeinItem
+		  atPoint: (NSPoint) point {
+	// Draw the background
+	NSImage* background = unchanged;
+	float bgWidth = [self widthForItem: skeinItem];
+	
+	if (![skeinItem played]) background = unplayed;
+	if ([skeinItem changed]) background = changed;
+	if (skeinItem == activeItem) background = active;
+	if ([skeinItem parent] == activeItem) background = active;
+	if (skeinItem == [self selectedItem]) background = selected;
+	
+	// Temporarily unflip the background image before drawing
+	// (Doing this means this call will not work in flipped views. Well, it will, but it will look dreadful)
+	[background setFlipped: NO];
+	[[self class] drawImage: background
+					atPoint: NSMakePoint(point.x + 20, point.y + (background==selected?2.0:0.0))
+				  withWidth: bgWidth];
+	[background setFlipped: YES];
+	
+	// Draw the item
+	[[skeinItem command] drawAtPoint: NSMakePoint(point.x+20, point.y+8 + (background==selected?2.0:0.0))
+					  withAttributes: itemTextAttributes];
+}
+
+- (NSImage*) imageForItem: (ZoomSkeinItem*) item {
+	NSRect imgRect;
+	
+	imgRect.origin = NSMakePoint(0,0);
+	imgRect.size = NSMakeSize([self widthForItem: item] + 40.0, 30.0);
+	
+	NSImage* img = [[[NSImage alloc] initWithSize: imgRect.size] autorelease];
+	
+	[img lockFocus];
+	[[NSColor clearColor] set];
+	NSRectFill(imgRect);
+	[self drawItem: item
+		   atPoint: NSMakePoint(0,0)];	
+	[img unlockFocus];
+	
+	return img;
+}
+
 @end

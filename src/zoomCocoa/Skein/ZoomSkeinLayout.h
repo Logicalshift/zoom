@@ -74,5 +74,8 @@
 
 // Drawing
 - (void) drawInRect: (NSRect) rect;
+- (void) drawItem: (ZoomSkeinItem*) item
+		  atPoint: (NSPoint) point;
+- (NSImage*) imageForItem: (ZoomSkeinItem*) item;
 
 @end

@@ -574,6 +574,34 @@ enum ZSVbutton
 		newVisRect.origin.y -= dragOrigin.y - currentPos.y;
 		
 		[self scrollRectToVisible: newVisRect];
+	} else if (clickedItem != nil && (lastButton == ZSVmainItem)) {
+		// Drag this item. Default action is a copy action, but a move op is possible if command is held
+		// down.
+		lastButton = ZSVnoButton;
+		
+		// Create an image of this item
+		NSRect itemRect = [layout activeAreaForItem: clickedItem];
+		NSImage* itemImage = [layout imageForItem: clickedItem];
+		
+		NSPasteboard *pboard;
+		
+		pboard = [NSPasteboard pasteboardWithName:NSDragPboard];
+		[pboard declareTypes:[NSArray arrayWithObject:NSTIFFPboardType] owner:self];
+		[pboard setData:[itemImage TIFFRepresentation] forType:NSTIFFPboardType];
+		
+		NSPoint dragOrigin;
+		
+		dragOrigin.x = [layout xposForItem: clickedItem] - [layout widthForItem: clickedItem]/2.0 - 20.0;
+		dragOrigin.y = ((float)[layout levelForItem: clickedItem])*itemHeight + (itemHeight/2.0);
+		dragOrigin.y += 22.0;
+		
+		[self dragImage: itemImage
+					 at: dragOrigin
+				 offset: NSMakeSize(0,0)
+				  event: event
+			 pasteboard: pboard
+				 source: self
+			  slideBack: YES];
 	} else if (trackedItem != nil && lastButton != ZSVnoButton) {
 		// If the cursor moves away from a button, then unhighlight it
 		int lastActiveButton = activeButton;
@@ -584,15 +612,7 @@ enum ZSVbutton
 		if (activeButton != lastButton) activeButton = ZSVnoButton;
 		
 		if (activeButton != lastActiveButton) [self setNeedsDisplay: YES];
-	} else if (clickedItem != nil) {
-		// Drag this item. Default action is a copy action, but a move op is possible if command is held
-		// down.
-		
-		// Create an image of this item
-		NSRect itemRect = [layout activeAreaForItem: clickedItem];
-		NSImage* itemImage;
-		
-	}
+	}	
 }
 
 - (void) mouseUp: (NSEvent*) event {
