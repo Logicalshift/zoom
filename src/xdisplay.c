@@ -95,6 +95,7 @@ XdbeBackBuffer x_backbuffer = None;
 #endif
 
 static Region dregion = None;
+static int    updatecount = 0;
 static int    resetregion = 0;
 
 static int scroll_pos    = 20;
@@ -1366,6 +1367,7 @@ static void draw_window()
   XFree(dregion);
   dregion = None;
 
+  updatecount = 0;
   resetregion = 1;
 }
 
@@ -2356,6 +2358,22 @@ void display_update_region(XFONT_MEASURE left,
 
   if (dregion == None)
     dregion = XCreateRegion();
+
+  updatecount++;
+  if (updatecount == 20)
+    {
+      XFree(dregion);
+      dregion = XCreateRegion();
+
+      clip.x = 0;
+      clip.y = 0;
+      clip.width = total_x;
+      clip.height = total_y;
+      XUnionRectWithRegion(&clip, dregion, dregion);
+      return;
+    }
+  else if (updatecount > 20)
+    return;
 
   clip.x = left + BORDER_SIZE; clip.y = top + BORDER_SIZE;
   clip.width = right - left; clip.height = bottom - top;

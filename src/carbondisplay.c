@@ -95,6 +95,8 @@ int        window_available = 0;
 int        quitflag = 0;
 static int updating = 0;
 
+static int updatecount = 0;
+
 static int scrollpos = 0;
 
 char carbon_title[256];
@@ -299,6 +301,21 @@ void display_update_region(XFONT_MEASURE left,
 			   XFONT_MEASURE bottom)
 {
   Rect rct;
+
+  updatecount++;
+
+  if (updatecount == 20)
+    {
+      rct.top = 0;
+      rct.left = 0;
+      rct.right = total_x;
+      rct.bottom = total_y;
+      InvalWindowRect(zoomWindow, &rct);
+    }
+  else
+    {
+      return;
+    }
 
   rct.top    = top;
   rct.left   = left;
@@ -1130,6 +1147,8 @@ static void draw_window(int   win,
 
   thePort = GetQDGlobalsThePort();
   GetPortBounds(thePort, &portRect);
+
+  updatecount = 0;
 
   dassert(rct != NULL);
 
