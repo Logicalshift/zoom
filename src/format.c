@@ -428,7 +428,7 @@ void format_last_text(int more)
 	    {
 	      new_line(more, text->font);
 	      
-	      xpos = CURWIN.xpos;
+	      text_start = xpos = CURWIN.xpos;
 	      line = CURWIN.lastline;
 	    }
 	}
