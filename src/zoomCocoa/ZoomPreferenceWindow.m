@@ -130,4 +130,16 @@ static NSDictionary*  itemDictionary = nil;
 	[self switchToPane: colourSettingsView];
 }
 
+// == Setting the preferences that we're editing ==
+
+- (void) setPreferences: (ZoomPreferences*) prefs {
+	[displayWarnings setState: [prefs displayWarnings]?NSOnState:NSOffState];
+	[fatalWarnings setState: [prefs fatalWarnings]?NSOnState:NSOffState];
+	[speakGameText setState: [prefs speakGameText]?NSOnState:NSOffState];
+	
+	[gameTitle setStringValue: [prefs gameTitle]];
+	[interpreter selectItemAtIndex: [prefs interpreter]-1];
+	[revision setStringValue: [NSString stringWithFormat: @"%c", [prefs revision]]];
+}
+
 @end

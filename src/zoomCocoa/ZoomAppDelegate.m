@@ -27,6 +27,7 @@
 	}
 	
 	[[preferencePanel window] center];
+	[preferencePanel setPreferences: [ZoomPreferences globalPreferences]];
 	[[preferencePanel window] makeKeyAndOrderFront: self];
 }
 
