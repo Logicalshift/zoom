@@ -494,6 +494,7 @@ void display_split       (int lines, int window)
 	{
 	  CURWIN.lasttext->next   = malloc(sizeof(struct text));
 	  CURWIN.lasttext         = CURWIN.lasttext->next;
+	  CURWIN.lasttext->next   = NULL;
 	  CURWIN.lasttext->spacer = 1;
 	  CURWIN.lasttext->space  = CURWIN.winsy -
 	    (CURWIN.lastline->baseline + CURWIN.lastline->descent);
