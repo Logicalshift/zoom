@@ -28,5 +28,7 @@
 
 extern void zmachine_run(const int version,
 			 char* savefile);
-     
+extern void zmachine_runsome(const int version, 
+			     int start_counter);
+
 #endif

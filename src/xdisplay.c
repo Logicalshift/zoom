@@ -2566,6 +2566,9 @@ void display_plot_gtext(const int* text,
   if (len == 0)
     return;
 
+  if (x<0 || y<0)
+    return;
+
   fg = pix_fore; bg = pix_back;
   if ((style&1))
     { fg = pix_back; bg = pix_fore; }
@@ -2588,6 +2591,23 @@ void display_plot_gtext(const int* text,
 		     x, y-xfont_get_ascent(font[ft]),
 		     width+0.5,
 		     height+0.5);
+    }
+  else if (bg == -1)
+    {
+      /* Blecherous, but there you go */
+      XImage* teeny;
+      unsigned long px;
+
+      teeny = XGetImage(x_display, x_pixmap, x, y, 1, 1, AllPlanes, XYPixmap);
+      px = XGetPixel(teeny, 0, 0);
+      XDestroyImage(teeny);
+
+      XSetForeground(x_display, x_pixgc,
+		     px);
+      XFillRectangle(x_display, x_pixmap, x_pixgc,
+		     x, y-xfont_get_ascent(font[ft]),
+		     width+0.5,
+		     height+0.5);   
     }
   xfont_plot_string(font[ft], x_pixmap, x_pixgc,
 		    x, y,

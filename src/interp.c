@@ -33,6 +33,7 @@
 #include <string.h>
 
 #include "zmachine.h"
+#include "interp.h"
 #include "zscii.h"
 #include "display.h"
 #include "stream.h"
@@ -145,6 +146,7 @@ ZFrame* call_routine(ZDWord* pc, ZStack* stack, ZDWord start)
   newframe->last_frame   = stack->current_frame;
   newframe->v4read       = NULL;
   newframe->v5read       = NULL;
+  newframe->end_func     = 0;
   stack->current_frame   = newframe;
   
   n_locals = GetCode(start);
@@ -1304,7 +1306,11 @@ static int newline_function(const int* remaining,
 				  UnpackR(windows[win].newline_routine));
 	  newframe->storevar = 255;
 	  newframe->discard  = 1;
-	  newframe->v5read   = newline_return;
+	  // newframe->v5read   = newline_return;
+	  newframe->end_func = 1;
+
+	  zmachine_runsome(machine.version, machine.zpc);
+	  newline_return(NULL, NULL, NULL, 0);
 	  
 	  return 2;
 	}
@@ -1450,23 +1456,7 @@ void zmachine_run(const int version,
 #else
   ZDWord         pc;
 #endif
-  int            padding;
-  int            st     = 0;
-  int            tmp;
-  int            negate = 0;
-  int            result = 0;
-  ZDWord         branch = 0;
-  /* Historical reasons */
-#define arg1 argblock.arg[0]
-#define arg2 argblock.arg[1]
-#define uarg1 ((ZUWord)argblock.arg[0])
-#define uarg2 ((ZUWord)argblock.arg[1])
-  ZArgblock      argblock;
   ZStack*        stack;
-  char*          string;
-  register ZByte instr;
-
-  int x;
 
   pc    = GetWord(machine.header, ZH_initpc);
   stack = &machine.stack;
@@ -1543,7 +1533,39 @@ void zmachine_run(const int version,
 	  display_readchar(5000);
 	}
     }
-  
+
+  machine.version = version;
+
+  zmachine_runsome(version, pc);
+}
+
+void zmachine_runsome(const int version, 
+		      int start_counter)
+{
+#ifndef GLOBAL_PC
+  ZDWord         pc;
+#endif
+  int            padding;
+  int            st     = 0;
+  int            tmp;
+  int            negate = 0;
+  int            result = 0;
+  ZDWord         branch = 0;
+  /* Historical reasons */
+#define arg1 argblock.arg[0]
+#define arg2 argblock.arg[1]
+#define uarg1 ((ZUWord)argblock.arg[0])
+#define uarg2 ((ZUWord)argblock.arg[1])
+  ZArgblock      argblock;
+  ZStack*        stack;
+  char*          string;
+  register ZByte instr;
+
+  int x;
+
+  pc = start_counter;
+  stack = &machine.stack;
+
   while (pc != -1)
     {
       instr = GetCode(pc);

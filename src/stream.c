@@ -306,7 +306,6 @@ void stream_flush_buffer(void)
 
   if (flushing)
     {
-      printf("Blech\n");
       return;
     }
 

@@ -283,6 +283,11 @@ void v6_prints(const int* text)
 	{
 	  int more;
 	  
+	  ACTWIN.text_amount += ACTWIN.line_height;
+	  ACTWIN.cury += ACTWIN.line_height;
+	  ACTWIN.line_height = 0;
+	  ACTWIN.curx = ACTWIN.xpos + ACTWIN.lmargin;
+
 	  if (ACTWIN.text_amount + ACTWIN.line_height > ACTWIN.height - 
 	      (ACTWIN.line_height+display_get_font_height(ACTWIN.style)))
 	    {
@@ -290,23 +295,16 @@ void v6_prints(const int* text)
 		ACTWIN.want_more = 1;
 	    }
 
-	  ACTWIN.text_amount += ACTWIN.line_height;
-	  ACTWIN.cury += ACTWIN.line_height;
-	  ACTWIN.line_height = 0;
-	  ACTWIN.curx = ACTWIN.xpos + ACTWIN.lmargin;
-
 	  more = -1;
 	  if (nl_func != NULL)
 	    {
 	      more = (nl_func)(text + text_pos + (text[text_pos]==10?1:0),
 			       len - text_pos - (text[text_pos]==10?1:0));
+
+	      ACTWIN.curx = ACTWIN.xpos + ACTWIN.lmargin;
 	    }
 
-	  if (more == 2)
-	    {
-	      return;
-	    }
-	  else if (more == 1 && !ACTWIN.no_more)
+	  if (more == 1 && !ACTWIN.no_more)
 	    {
 	      display_wait_for_more();
 	      ACTWIN.text_amount = ACTWIN.line_height;
@@ -317,6 +315,9 @@ void v6_prints(const int* text)
 	      display_wait_for_more();
 	    }
 	  ACTWIN.want_more = 0;
+
+	  if (more == 2)
+	    return;
 	}
       else
 	{
@@ -378,7 +379,7 @@ void v6_set_colours(int fg, int bg)
   if (bg == -1)
     bg = DEFAULT_BACK;
   if (bg == -3)
-    bg = -200;
+    bg = -1;
   ACTWIN.fore = fg;
   ACTWIN.back = bg;
 }

@@ -942,6 +942,7 @@ OPCODE "print_obj"    1OP:0x0a              VERSION 4,5,6,7,8
 OPCODE "ret"          1OP:0x0b CANJUMP      VERSION all
 %{
   ZFrame* oldframe;
+  int     end_func;
   
   oldframe = stack->current_frame;
   stack->current_frame = oldframe->last_frame;
@@ -956,7 +957,10 @@ OPCODE "ret"          1OP:0x0b CANJUMP      VERSION all
   if (oldframe->v4read != NULL)
     (oldframe->v4read)(&pc, stack, &oldframe->readblock);
   if (oldframe->v5read != NULL)
-    (oldframe->v5read)(&pc, stack, &oldframe->readblock, oldframe->readstore);
+    {
+      (oldframe->v5read)(&pc, stack, &oldframe->readblock, oldframe->readstore);
+      end_func = 1;
+    }
 
 #ifdef DEBUG
   if (oldframe->discard == 0)
@@ -966,8 +970,13 @@ OPCODE "ret"          1OP:0x0b CANJUMP      VERSION all
 	   oldframe->frame_size, stack->stack_top, stack->stack_size,
 	   stack->current_frame!=NULL?stack->current_frame->frame_size:-1);
 #endif
+
+  end_func = oldframe->end_func;
   
   free(oldframe);
+
+  if (end_func)
+    return;
 %}
 
 OPCODE "jump"         1OP:0x0c CANJUMP      VERSION all
@@ -2593,7 +2602,9 @@ OPCODE "set_margins"   EXT:0x08 ARGS:3        VERSION 6
   win = v6_get_window();
   v6_set_window(argblock.arg[2]);
 
+#ifdef DEBUG
   printf_debug("Margins set to %i, %i\n", argblock.arg[0], argblock.arg[1]);
+#endif
 
   windows[argblock.arg[2]].leftmar  = argblock.arg[0];
   windows[argblock.arg[2]].rightmar = argblock.arg[1];
@@ -2630,10 +2641,12 @@ OPCODE "move_window"   EXT:0x10               VERSION 6
   windows[argblock.arg[0]].leftmar = 0;
   windows[argblock.arg[0]].rightmar = 0;
   
+#ifdef DEBUG
   printf_debug("Window %i position is now %i, %i\n",	
 	 argblock.arg[0],
 	 windows[argblock.arg[0]].x,
 	 windows[argblock.arg[0]].y);
+#endif
 
   zcode_setup_window(argblock.arg[0]);
   v6_set_window(win);
@@ -2648,10 +2661,12 @@ OPCODE "window_size"   EXT:0x11               VERSION 6
   windows[argblock.arg[0]].leftmar = 0;
   windows[argblock.arg[0]].rightmar = 0;
 
+#ifdef DEBUG
   printf_debug("Window %i size is now %i, %i\n",	
 	 argblock.arg[0],
 	 windows[argblock.arg[0]].xsize,
 	 windows[argblock.arg[0]].ysize);
+#endif
 
   {
     int win;
