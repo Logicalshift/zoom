@@ -28,6 +28,7 @@ GENERAL:
  * various crashes to do with releasing autorelease pools (particularily associated with baluthar from '03) (FIXED?)
  * way to distinguish between data/quetzal file types when opening files to save
  * way to prompt for script files (recording + transcript)
+ * display error messages in alerts
 
 FUTURE:
  * Sound

@@ -18,16 +18,16 @@ by Andrew Hunter
 Compiling Zoom
 ==============
 
-   To get a full-featured interpreter, you'll want to have at least
-   libpng installed. The Mac OS X port will fall back to using
-   QuickTime for PNG rendering if necessary, but that code is full
-   of bugs and looks awful anyway. For X, having an X server with
-   Xrender and Xft is a good idea. T1Lib is optional, but appears
-   to provide improved rendering quality over Xft (which seems to
-   have great difficulties with hinting).
+   (See later for Cocoa)
+
+   To get a full-featured interpreter under X windows or Carbon, 
+   you'll want to have at least libpng installed. For X, having an
+   X server with Xrender and Xft is a good idea. T1Lib is optional, 
+   but appears to provide improved rendering quality over Xft (which
+   seems to have great difficulties with hinting).
 
    With all the libraries installed, ./configure && make should be
-   all that's required to build Zoom for either X or Mac OS X.
+   all that's required to build Zoom for either X or Mac OS X (Carbon).
    Please report any build problems to the bugs address listed 
    above: Zoom should work on a reasonably wide variety of systems.
    
@@ -49,7 +49,30 @@ Compiling Zoom
    it reduces the speed of some instructions by a factor of up to
    6 (0OPs, usually, for some reason - see the results of NopMark in 
    zmark). No idea why at all - this effect is most marked with the
-   new interpreter style.
+   new interpreter style. Note that compiling the interpreter can be
+   a great workout for your system; on my Mac OS X machine, it needs
+   nearly 1Gb of memory to compile successfully with gcc 3.3. 
+   Earlier versions of gcc require much less memory; I have 
+   successfully compiled under x86 linux on a machine with 32Mb
+   of memory and gcc 2.95; the PPC version of gcc seems to require
+   much more memory for optimisation than the standard version, too.
+   Regardless, at least 256Mb of memory is recommended for those
+   that wish to compile Zoom.
+
+Compiling Zoom (Cocoa)
+======================
+
+   Rather than use the configure/automake process for this, I have
+   elected to use Xcode: to compile the new version of Zoom, load the
+   ZoomCocoa.xcode project into Xcode and hit build. Note that Xcode
+   seems to have a hard time running Yacc; if the build fails with
+   many weird errors, you will have to manually delete the relevant
+   DerivedSources (hidden in various places throughout the build
+   directory that Xcode creates). There also seems to be an occasional
+   problem with precompiled headers that will produce similar problems
+   (errors in Carbon headers this time), but simply restarting the
+   build process will fix this - you are much more likely to see
+   problems with building the Yacc sources, though.
 
 Using Zoom (X-Windows)
 ======================
