@@ -15,8 +15,10 @@
         {
             ACTIONS = {
                 addButtonPressed = id; 
+                changeFilter = id; 
                 drawerButtonPressed = id; 
                 restoreAutosave = id; 
+                searchFieldChanged = id; 
                 startNewGame = id; 
             }; 
             CLASS = ZoomiFictionController; 
@@ -33,6 +35,7 @@
                 infoButton = ZoomiFButton; 
                 mainTableView = NSTableView; 
                 newgameButton = ZoomiFButton; 
+                searchField = NSTextField; 
                 teaserView = NSTextView; 
             }; 
             SUPERCLASS = NSWindowController; 
