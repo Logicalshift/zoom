@@ -1132,12 +1132,16 @@ enum ZSVbutton
 	if ([skeinItem parent] == nil) return;
 
 	if ([skeinItem temporary]) {
+		[skeinItem setTemporary: NO];
+#if 0
+		// -- NOW DONE BY THE ITEM ITSELF
 		// Lock this item and its parents
 		ZoomSkeinItem* parent = skeinItem;
 		while (parent != nil) {
 			[parent setTemporary: NO];
 			parent = [parent parent];
 		}
+#endif
 	} else {
 		// Unlock this item and its children
 		

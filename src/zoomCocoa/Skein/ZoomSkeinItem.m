@@ -225,6 +225,18 @@ static NSString* convertCommand(NSString* command) {
 
 - (void) setTemporary: (BOOL) isTemporary {
 	temporary = isTemporary;
+	
+	ZoomSkeinItem* p = [self parent];
+	
+	// Also applies to parent items if set to 'NO'
+	if (!isTemporary) {
+		while (p != nil) {
+			if (![p temporary]) break;
+			[p setTemporary: NO];
+		}
+	}
+	
+	// FIXME: unsetting should apply to children, too
 }
 
 static int currentScore = 1;
