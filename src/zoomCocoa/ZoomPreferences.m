@@ -36,14 +36,20 @@ static ZoomPreferences* globalPreferences = nil;
 static NSLock*          globalLock = nil;
 
 + (void)initialize {
+	NSAutoreleasePool* apool = [[NSAutoreleasePool alloc] init];
+	
     NSUserDefaults *defaults  = [NSUserDefaults standardUserDefaults];
-	ZoomPreferences* defaultPrefs = [[[[self class] alloc] initWithDefaultPreferences] autorelease];
+	ZoomPreferences* defaultPrefs = [[[self class] alloc] initWithDefaultPreferences];
     NSDictionary *appDefaults = [NSDictionary dictionaryWithObject: [defaultPrefs dictionary]
 															forKey: @"ZoomGlobalPreferences"];
+	
+	[defaultPrefs release];
 	
     [defaults registerDefaults: appDefaults];
 	
 	globalLock = [[NSLock alloc] init];
+	
+	[apool release];
 }
 
 + (ZoomPreferences*) globalPreferences {
@@ -132,7 +138,7 @@ static NSArray* DefaultColours(void) {
 		[NSColor colorWithDeviceRed: .26 green: .26 blue: .26 alpha: 1],
 		nil] retain];
 	
-	return defaultColours;
+	return [defaultColours autorelease];
 }
 
 - (id) initWithDefaultPreferences {
