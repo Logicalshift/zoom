@@ -73,6 +73,11 @@ char* menu_get_story(void)
   char      format[10];
   int       read;
   
+  di = display_get_info();
+
+  display_set_window(0);
+  display_split(di->height, 1);
+  display_set_window(1);
   display_set_colour(7, 4);
   display_erase_window();
 
@@ -144,8 +149,6 @@ char* menu_get_story(void)
   closedir(gamedir);
 
   qsort(game, n_games, sizeof(struct game_struct), game_compare);
-
-  di = display_get_info();
 
   selection = 0;
   height = (di->lines-6)&~1;
