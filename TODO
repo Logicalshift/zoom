@@ -11,19 +11,12 @@ GENERAL:
  * XSL documentation
  * crash when moving a file and its resources in OS X?
  * Remove font numbering
- * '>>' '<<' bug? again?
+ * '>>' '<<' bug? again? (Xft thing?)
  
  COCOA:
  * upper window behaviour really needs to change:
     - slowdown when the lower window gets full? (FIXED, I think)
-    - Really, upper window things pasted onto the lower window need to have an
-      'attached character', so they move correctly when the window is resized
     - readline in upper window?
- * line editing (up/down arrows)
- * Fullscreen mode
- * Ability to reformat display
- * crash when running spacest2.z5? (FIXED, I think)
- * various crashes to do with releasing autorelease pools (particularily associated with baluthar from '03) (FIXED?)
  * way to distinguish between data/quetzal file types when opening files to save
  * way to prompt for script files (recording + transcript)
  * display error messages in alerts
