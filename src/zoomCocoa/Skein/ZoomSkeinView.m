@@ -10,7 +10,7 @@
 
 // Constants
 static const float itemWidth = 120.0; // Pixels
-static const float itemHeight = 64.0;
+static const float itemHeight = 96.0;
 static const float itemPadding = 56.0;
 
 // Entries in the item dictionary
@@ -23,6 +23,7 @@ static NSString* ZSlevel    = @"ZSlevel";
 
 // Images
 static NSImage* unplayed, *selected, *active, *unchanged, *changed;
+static NSImage* add, *delete, *locked, *unlocked, *annotate, *transcript;
 
 @interface ZoomSkeinView(ZoomSkeinViewPrivate)
 
@@ -105,11 +106,18 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed;
 }
 
 + (void) initialize {
-	unplayed  = [[[self class] imageNamed: @"Skein-unplayed"] retain];
-	selected  = [[[self class] imageNamed: @"Skein-selected"] retain];
-	active    = [[[self class] imageNamed: @"Skein-active"] retain];
-	unchanged = [[[self class] imageNamed: @"Skein-unchanged"] retain];
-	changed   = [[[self class] imageNamed: @"Skein-changed"] retain];
+	unplayed   = [[[self class] imageNamed: @"Skein-unplayed"] retain];
+	selected   = [[[self class] imageNamed: @"Skein-selected"] retain];
+	active     = [[[self class] imageNamed: @"Skein-active"] retain];
+	unchanged  = [[[self class] imageNamed: @"Skein-unchanged"] retain];
+	changed    = [[[self class] imageNamed: @"Skein-changed"] retain];
+	
+	add        = [[[self class] imageNamed: @"SkeinAdd"] retain];
+	delete     = [[[self class] imageNamed: @"SkeinDelete"] retain];
+	locked     = [[[self class] imageNamed: @"SkeinLocked"] retain];
+	unlocked   = [[[self class] imageNamed: @"SkeinUnlocked"] retain];
+	annotate   = [[[self class] imageNamed: @"SkeinAnnotate"] retain];
+	transcript = [[[self class] imageNamed: @"SkeinTranscript"] retain];
 }
 
 + (NSMutableDictionary*) item: (ZoomSkeinItem*) item
@@ -219,12 +227,73 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed;
 			float startYPos = ypos + 10.0 + size.height;
 			float endYPos = ypos - 10.0 + itemHeight;
 			
+			NSColor* tempChildLink = [NSColor blueColor];
+			NSColor* permChildLink = [NSColor blackColor];
+			
 			NSDictionary* child;
 			while (child = [childEnumerator nextObject]) {
 				float childXPos = [[child objectForKey: ZSposition] floatValue] + globalOffset;
 				
+				if ([[child objectForKey: ZSitem] temporary]) {
+					[tempChildLink set];
+				} else {
+					[permChildLink set];
+				}
+				
 				[NSBezierPath strokeLineFromPoint: NSMakePoint(xpos, startYPos)
 										  toPoint: NSMakePoint(childXPos, endYPos)];
+			}
+			
+			// Draw the control icons (if this is the item that the mouse is over)
+			if (item == trackedItem) {
+				// Layout is:
+				//    A T        x +
+				//    ( ** ITEM ** )
+				//                 L
+				// 
+				// Where A = Annotate, T = transcript, x = delete, + = add, L = lock
+				float w = bgWidth;
+				if (w < 32.0) w = 32.0;
+				w += 40.0;
+				float left = xpos - w/2.0;
+				float right = xpos + w/2.0;
+
+				// Correct for shadow
+				right -= 20.0;
+				left  += 2.0;
+				
+				// Draw the buttons
+				NSRect imgRect;
+				imgRect.origin = NSMakePoint(0,0);
+				imgRect.size   = [add size];
+				
+				[annotate drawAtPoint: NSMakePoint(left, ypos - 18)
+							 fromRect: imgRect
+							operation: NSCompositeSourceOver
+							 fraction: 1.0];
+				[transcript drawAtPoint: NSMakePoint(left + 14, ypos - 18)
+							   fromRect: imgRect
+							  operation: NSCompositeSourceOver
+							   fraction: 1.0];
+				
+				[add drawAtPoint: NSMakePoint(right, ypos - 18)
+						fromRect: imgRect
+					   operation: NSCompositeSourceOver
+						fraction: 1.0];
+				if ([[item objectForKey: ZSitem] parent] != nil) {
+					// Can only delete items other than the parent 'start' item
+					[delete drawAtPoint: NSMakePoint(right - 14, ypos - 18)
+							   fromRect: imgRect
+							  operation: NSCompositeSourceOver
+							   fraction: 1.0];
+				}
+				
+				NSImage* lock = [[item objectForKey: ZSitem] temporary]?unlocked:locked;
+				
+				[lock drawAtPoint: NSMakePoint(right, ypos + 18)
+						 fromRect: imgRect
+						operation: NSCompositeSourceOver
+						 fraction: 1.0];
 			}
 		}
 	}
@@ -571,10 +640,22 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed;
 			float position = [[item objectForKey: ZSposition] floatValue];
 			float width = [[item objectForKey: ZSwidth] floatValue];
 			
-			itemRect.origin.x = position + globalOffset - (width/2.0) - 10.0;
+			// Basic rect
+			itemRect.origin.x = position + globalOffset - (width/2.0) - 20.0;
 			itemRect.origin.y = ypos - 8;
-			itemRect.size.width = width + 20.0;
+			itemRect.size.width = width + 40.0;
 			itemRect.size.height = 30.0;
+			
+			// ... adjusted for the buttons
+			if (itemRect.size.width < (32.0 + 40.0)) {
+				itemRect.origin.x = position + globalOffset - (32.0+40.0)/2.0;
+				itemRect.size.width = 32.0 + 40.0;
+			}
+			itemRect.origin.y = ypos - 18;
+			itemRect.size.height = 52.0;
+			
+			// 'overflow' border
+			itemRect = NSInsetRect(itemRect, -4.0, -4.0);
 			
 			itemRect = NSIntersectionRect(visibleRect, itemRect);
 			
@@ -621,10 +702,15 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed;
 	
 	trackedItem = item;
 	overItem = YES;
+	
+	if (trackedItem) {
+		[self setNeedsDisplay: YES];
+	}
 }
 
 - (void) mouseLeftItem: (NSDictionary*) item {
 	if (overItem) [NSCursor pop];
+	if (trackedItem) [self setNeedsDisplay: YES];
 	overItem = NO;
 	trackedItem = nil;
 }
