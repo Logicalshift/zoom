@@ -305,6 +305,8 @@ static NSArray* DefaultColours(void) {
 		NSArray* docDir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 		
 		res = [[docDir objectAtIndex: 0] stringByAppendingPathComponent: @"Interactive Fiction"];
+		
+		NSLog(@"Can't find organiser directory preference: using default");
 	}
 	[prefLock unlock];
 	
