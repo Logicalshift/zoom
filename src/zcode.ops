@@ -2143,6 +2143,7 @@ OPCODE "restore"       EXT:0x01 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
 
 	  sprintf(newname, "%s/%s", rc_get_savedir(), fname);
 
+	  sz = get_file_size(newname);
 	  file = open_file(newname);
 
 	  free(newname);
