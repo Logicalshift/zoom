@@ -206,6 +206,12 @@ static NSArray* defaultColours = nil;
 - (void) shouldReceiveCharacters {
     [self rearrangeUpperWindows];
 
+    int currentSize = [self upperWindowSize];
+    if (currentSize != lastTileSize) {
+        [textScroller tile];
+        lastTileSize = currentSize;
+    }
+    
     // Paste stuff
     NSEnumerator* upperEnum = [upperWindows objectEnumerator];
     ZoomUpperWindow* win;
@@ -224,6 +230,12 @@ static NSArray* defaultColours = nil;
 
 - (void) shouldReceiveText: (int) maxLength {
     [self rearrangeUpperWindows];
+
+    int currentSize = [self upperWindowSize];
+    if (currentSize != lastTileSize) {
+        [textScroller tile];
+        lastTileSize = currentSize;
+    }
 
     // Paste stuff
     NSEnumerator* upperEnum = [upperWindows objectEnumerator];
@@ -617,7 +629,6 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     int newSize = [self upperWindowSize];
     if (newSize != lastUpperWindowSize) {
         // Lay things out
-        [textScroller tile];
         lastUpperWindowSize = newSize;
 
         // The place where we need to put the more prompt may have changed

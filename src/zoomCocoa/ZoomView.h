@@ -43,6 +43,7 @@
     NSMutableArray* upperWindows;
     NSMutableArray* lowerWindows; // Not that more than one makes any sort of sense
     int lastUpperWindowSize;
+    int lastTileSize;
     BOOL upperWindowNeedsRedrawing;
 
     BOOL exclusiveMode;
