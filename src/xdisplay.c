@@ -501,10 +501,18 @@ static void move_caret(void)
 
   if (x_pixmap != None)
     {
+      int xp, yp;
+
+      xp = win_x/2-pix_w/2;
+      yp = win_y/2-pix_h/2;
+
       input_x = caret_x = pix_cx;
       input_y = caret_y = pix_cy;
       input_y += xfont_get_ascent(font[style_font[(pix_cstyle>>1)&15]]);
       caret_height = xfont_get_height(font[style_font[(pix_cstyle>>1)&15]]);
+
+      input_x += xp; caret_x += xp;
+      input_y += yp; caret_y += yp;
 
       if (text_buf != NULL)
 	{
@@ -2070,10 +2078,15 @@ static int process_events(long int to, int* buf, int buflen)
 		}
 	      else if (terminating[doubleclick] || buf == NULL)
 		{
+		  int xp, yp;
+		  
+		  xp = win_x/2-pix_w/2;
+		  yp = win_y/2-pix_h/2;
+
 		  if (mousew_h < 0 ||
-		      (click_x > mousew_x && click_y > mousew_y &&
-		       click_x < mousew_x+mousew_w && 
-		       click_y < mousew_y+mousew_h))
+		      (click_x-xp > mousew_x && click_y-yp > mousew_y &&
+		       click_x-xp < mousew_x+mousew_w && 
+		       click_y-yp < mousew_y+mousew_h))
 		    {
 		      XDefineCursor(x_display, x_mainwin, clickCursor);
 		      return doubleclick;
@@ -2393,12 +2406,12 @@ int display_get_mouse_y(void)
 
 int display_get_pix_mouse_x(void)
 {
-  return click_x;
+  return click_x - (win_x/2-pix_w/2);
 }
 
 int display_get_pix_mouse_y(void)
 {
-  return click_y;
+  return click_y - (win_y/2-pix_h/2);
 }
 
 void display_set_more(int window, int more)
