@@ -47,6 +47,7 @@ Zoom Manual - Troubleshooting
         <li><a href="#macdata">Infocom data files</a>
 	<li><a href="#defterp">Making Zoom the default interpreter</a>
 	<li><a href="#osxfonts">Fonts</a>
+	<li><a href="#osxmessages">'Erroneous entry in .zoomrc' messages</a>
 	<li><a href="#osximg">Images</a> (while compiling)
       </ul>
     <li><a href="#xwin">X-Windows</a>
@@ -116,6 +117,9 @@ Zoom Manual - Troubleshooting
       Only After Dark, you can save the game after the colours make
       the game illegible, then restart and restore to produce a
       legible game.
+    <p>
+      Future versions of Zoom will contain options to fix these
+      problems.
     </dl>
   </dl>
 
@@ -172,6 +176,36 @@ cp &quot;~/Desktop/GAME&quot; &quot;~/Desktop/GAME.z5&quot;
     supported in both systems. The Quartz system is, however, somewhat
     slower than its QuickDraw equivalent (partly due to the lack of
     adequate functions for measuring text dimensions).
+  </p>
+
+  <h3><a name="osxmessages">
+    'Erroneous entry' messaegs
+  </h3>
+
+  <p>
+    Certain 'cracked' copies of the Infocom games have garbage in
+    the serial number field. With the 1.0.1beta series of releases,
+    Zoom would write a corrupted preferences file for these games
+    (meaning Zoom would not start up). The current version of Zoom can
+    read these corrupted files, but will display 'Erroneous entry'
+    messages while loading. These messages will go away next time Zoom
+    saves the configuration file: open and close the preferences
+    dialog to force this to happen.
+  </p>
+
+  <p>
+    If Zoom fails to start due to a configuration file problem (much
+    less likely these days), type the following into a terminal window:
+  </p>
+
+<pre>
+  $ mv ~/.zoomrc ~/broken-zoomrc.txt
+</pre>
+
+  <p>
+    This is always a bug. Email me at <a
+    href="mailto:andrew@logicalshift.demon.co.uk">andrew@logicalshift.demon.co.uk</a>,
+    attaching the 'broken-zoomrc.txt' file.
   </p>
 
   <h3><a name="osximg">
@@ -286,6 +320,8 @@ dir &quot;/usr/X11R6/lib/X11/fonts/Type1&quot;
     <li>.Zx (as opposed to .zx) games weren't recognised as such under
       Mac OS X.
     <li>Segmentation fault when playing taipan.z5
+    <li>Certain 'cracked' copies of the old Infocom games could cause
+      Zoom to write a bad configuration file.
   </ul>
 
   <h3>1.0.1beta2</h3>
