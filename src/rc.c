@@ -36,9 +36,9 @@ extern FILE* yyin;
 extern int   rc_parse(void);
 extern int   _rc_line;
 
-hash rc_hash = NULL;
-static rc_game* game = NULL;
-static rc_game* defgame = NULL;
+hash            rc_hash    = NULL;
+static rc_game* game       = NULL;
+rc_game*        rc_defgame = NULL;
 
 #ifdef DATADIR
 # define ZOOMRC DATADIR "/zoomrc"
@@ -104,8 +104,8 @@ void rc_set_game(char* serial, int revision)
     game = hash_get(rc_hash, "default", 7);
   if (game == NULL)
     zmachine_fatal("No .zoomrc entry for your game, and no default entry either");
-  defgame = hash_get(rc_hash, "default", 7);
-  if (defgame == NULL)
+  rc_defgame = hash_get(rc_hash, "default", 7);
+  if (rc_defgame == NULL)
     zmachine_fatal("No default entry in .zoomrc");
 }
 
@@ -139,18 +139,18 @@ rc_font* rc_get_fonts(int* n_fonts)
 
   if (game->fonts == NULL)
     {
-      *n_fonts = defgame->n_fonts;
-      return defgame->fonts;
+      *n_fonts = rc_defgame->n_fonts;
+      return rc_defgame->fonts;
     }
 
-  deffonts = defgame->fonts;
-  for (x=0; x<defgame->n_fonts; x++)
+  deffonts = rc_defgame->fonts;
+  for (x=0; x<rc_defgame->n_fonts; x++)
     {
       int found = 0;
 
       for (y=0; y<game->n_fonts; y++)
 	{
-	  if (game->fonts[y].num == defgame->fonts[x].num)
+	  if (game->fonts[y].num == rc_defgame->fonts[x].num)
 	    found = 1;
 	}
 
@@ -159,7 +159,7 @@ rc_font* rc_get_fonts(int* n_fonts)
 	  game->n_fonts++;
 	  game->fonts = realloc(game->fonts,
 				sizeof(rc_font)*game->n_fonts);
-	  game->fonts[game->n_fonts-1] = defgame->fonts[x];
+	  game->fonts[game->n_fonts-1] = rc_defgame->fonts[x];
 	}
     }
   
@@ -174,8 +174,8 @@ rc_colour* rc_get_colours(int* n_cols)
 
   if (game->colours == NULL)
     {
-      *n_cols = defgame->n_colours;
-      return defgame->colours;
+      *n_cols = rc_defgame->n_colours;
+      return rc_defgame->colours;
     }
   
   *n_cols = game->n_colours;
@@ -185,14 +185,14 @@ rc_colour* rc_get_colours(int* n_cols)
 int rc_get_interpreter(void)
 {
   if (game->interpreter == -1)
-    return defgame->interpreter;
+    return rc_defgame->interpreter;
   return game->interpreter;
 }
 
 int rc_get_revision(void)
 {
   if (game->revision == -1)
-    return defgame->revision;
+    return rc_defgame->revision;
   return game->revision;
 }
 
@@ -200,9 +200,9 @@ char* rc_get_gamedir(void)
 {
   if (game->gamedir == NULL)
     {
-      if (defgame->gamedir == NULL)
+      if (rc_defgame->gamedir == NULL)
 	return GAMEDIR;
-      return defgame->gamedir;
+      return rc_defgame->gamedir;
     }
   return game->gamedir;
 }
@@ -211,7 +211,7 @@ char* rc_get_savedir(void)
 {
   if (game->savedir == NULL)
     {
-      if (defgame->gamedir == NULL)
+      if (rc_defgame->gamedir == NULL)
 	{
 #if WINDOW_SYSTEM != 2
 	  return "./";
@@ -219,7 +219,7 @@ char* rc_get_savedir(void)
 	  return NULL;
 #endif
 	}
-      return defgame->savedir;
+      return rc_defgame->savedir;
     }
   return game->savedir;
 }
@@ -227,14 +227,14 @@ char* rc_get_savedir(void)
 char* rc_get_graphics(void)
 {
   if (game->graphics == NULL)
-    return defgame->graphics;
+    return rc_defgame->graphics;
   return game->graphics;
 }
 
 char* rc_get_sounds(void)
 {
   if (game->sounds == NULL)
-    return defgame->sounds;
+    return rc_defgame->sounds;
   return game->sounds;
 }
 
@@ -242,9 +242,9 @@ int rc_get_xsize(void)
 {
   if (game->xsize == -1)
     {
-      if (defgame->xsize == -1)
+      if (rc_defgame->xsize == -1)
 	return 80;
-      return defgame->xsize;
+      return rc_defgame->xsize;
     }
   return game->xsize;
 }
@@ -253,9 +253,9 @@ int rc_get_ysize(void)
 {
   if (game->ysize == -1)
     {
-      if (defgame->ysize == -1)
+      if (rc_defgame->ysize == -1)
 	return 30;
-      return defgame->ysize;
+      return rc_defgame->ysize;
     }
   return game->ysize;
 }

@@ -78,6 +78,12 @@ int zoom_main(int argc, char** argv)
   args.story_file = NULL;
   args.save_file = NULL;
   args.warning_level = 0;
+  if (carbon_prefs.show_warnings)
+    {
+      args.warning_level = 1;
+      if (carbon_prefs.fatal_warnings)
+	args.warning_level = 2;
+    }
   args.track_attr = args.track_objs = args.track_props = args.graphical = 0;
 #endif
   machine.warning_level = args.warning_level;
@@ -161,10 +167,10 @@ int zoom_main(int argc, char** argv)
     int x;
 
     display_prints_c("\nFont 3: ");
-    display_set_font(-1);
+    display_set_style(16);
     for (x=32; x<128; x++)
       display_printf("%c", x);
-    display_set_font(0);
+    display_set_style(0);
   }
 #endif
   

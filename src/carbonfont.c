@@ -19,6 +19,22 @@
 
 /*
  * Fonts for Mac OS (Carbon)
+ *
+ * There are no less than three different font drivers here:
+ *   - QuickDraw Text
+ *   - ATSUI
+ *   - Quartz
+ *
+ * ATSUI is slow, and to use it properly you'd really need to rewrite
+ * the whole rendering interface. That's probably not worth it...
+ *
+ * QuickDraw uses a crappy font rendering engine
+ *
+ * Quartz looks nice, but there is a shortage of ways of measuring text:
+ * the way we do it is a bit of a hack, but seems accurate enough.
+ * (You can't define USE_QUARTZ and USE_ATS...)
+ *
+ * All this is why this file is a bit of a mess in places...
  */
 
 #include "../config.h"
@@ -35,6 +51,11 @@
 #include "xfont.h"
 #include "carbondisplay.h"
 
+extern XFONT_MEASURE xfont_x;
+extern XFONT_MEASURE xfont_y;
+
+static PolyHandle f3[96];
+
 struct xfont
 {
   enum
@@ -46,32 +67,88 @@ struct xfont
   {
     struct
     {
+#ifdef USE_ATS
+      FMFontFamily family;
+      ATSUFontID font;
+      ATSUStyle  style;
+#else
       FMFontFamily family;
       int size;
       int isbold;
       int isitalic;
       int isunderlined;
 
-      int ascent, descent, maxwidth;
-
       TextEncoding      encoding;
       UnicodeToTextInfo convert;
+
+# ifdef USE_QUARTZ
+      ATSFontRef atsref;
+      ATSUStyle  style;
+      char*      psname;
+      CGFontRef  cgfont;
+# endif
+
+#endif
+
+      XFONT_MEASURE ascent, descent, maxwidth;
     } mac;
   } data;
 };
 
 static int fg_col, bg_col;
 
+#ifdef USE_QUARTZ
+static CGContextRef wincontext = nil;
+
+static xfont*       winlastfont = NULL;
+static int          enable_quartz = 0;
+#endif
+
 /***                           ----// 888 \\----                           ***/
+
+#ifdef USE_QUARTZ
+void carbon_set_context(void)
+{
+  CGrafPtr thePort = GetQDGlobalsThePort();
+
+  CGContextRelease(wincontext);
+  CreateCGContextForPort(thePort, &wincontext);
+  winlastfont = NULL;
+}
+
+void carbon_set_quartz(int q)
+{
+  enable_quartz = q;
+}
+#endif
 
 void xfont_initialise(void)
 {
+  int x;
+
+#ifdef USE_QUARTZ
+  if (wincontext == nil)
+    {
+      CGrafPtr p;
+      OSStatus res;
+      
+      p = GetWindowPort(zoomWindow);
+
+      res = CreateCGContextForPort(p, &wincontext);
+      
+      winlastfont = NULL;
+    }
+#endif
+
+  for (x=0; x<96; x++)
+    f3[x] = nil;
 }
 
 void xfont_shutdown(void)
 {
 }
 
+#ifndef USE_ATS
 static void select_font(xfont* font)
 {
   TextFont(font->data.mac.family);
@@ -80,6 +157,7 @@ static void select_font(xfont* font)
 	   (font->data.mac.isitalic?italic:0)       |
 	   (font->data.mac.isunderlined?underline:0));
 }
+#endif
 
 #define DEFAULT_FONT applFont
 
@@ -98,6 +176,9 @@ static xfont* xfont_default_font(void)
 {
   xfont* xf;
 
+#ifdef USE_ATS
+  return NULL;
+#else
   xf = malloc(sizeof(struct xfont));
   xf->type = FONT_INTERNAL;
   xf->data.mac.family       = DEFAULT_FONT;
@@ -106,6 +187,124 @@ static xfont* xfont_default_font(void)
   xf->data.mac.isitalic     = 0;
   xf->data.mac.isunderlined = 0;
   return xf;
+#endif
+}
+
+carbon_font* carbon_parse_font(char* font)
+{
+  int x;
+
+  static carbon_font fnt;
+  char*       face_name;
+  static char fontcopy[256];
+  char*       face_width;
+  char*       face_props;
+
+  if (strcmp(font, "font3") == 0)
+    {
+      fnt.isfont3 = 1;
+      fnt.isbold = fnt.isitalic = fnt.isunderlined = 0;
+      fnt.size = 0;
+      return &fnt;
+    }
+  fnt.isfont3 = 0;
+
+  if (strlen(font) > 256)
+    {
+      zmachine_warning("Invalid font name (too long)");
+ 
+      return NULL;
+    }
+
+  /* Get the face name */
+  strcpy(fontcopy, font);
+  x = 0;
+  while (fontcopy[x++] != '\'')
+    {
+      if (fontcopy[x] == 0)
+	{
+	  zmachine_warning("Invalid font name: %s (font name must be in single quotes)", font);
+
+	  return NULL;
+	}
+    }
+
+  face_name = &fontcopy[x];
+
+  x--;
+  while (fontcopy[++x] != '\'')
+    {
+      if (fontcopy[x] == 0)
+	{
+	  zmachine_warning("Invalid font name: %s (missing \')", font);
+
+	  return NULL;
+	}
+    }
+  fontcopy[x] = 0;
+
+  /* Get the font width */
+  while (fontcopy[++x] == ' ')
+    {
+      if (fontcopy[x] == 0)
+	{
+	  zmachine_warning("Invalid font name: %s (no font size specified)", font);
+
+	  return NULL;
+	}
+    }
+
+  face_width = &fontcopy[x];
+
+  while (fontcopy[x] >= '0' &&
+	 fontcopy[x] <= '9')
+    x++;
+
+  if (fontcopy[x] != ' ' &&
+      fontcopy[x] != 0)
+    {
+      zmachine_warning("Invalid font name: %s (invalid size)", font);
+
+      return NULL;
+    }
+
+  if (fontcopy[x] != 0)
+    {
+      fontcopy[x] = 0;
+      face_props  = &fontcopy[x+1];
+    }
+  else
+    face_props = NULL;
+
+  fnt.face_name = face_name;
+  fnt.size = atoi(face_width);
+  fnt.isbold = fnt.isitalic = fnt.isunderlined = 0;
+
+  if (face_props != NULL)
+    {
+      for (x=0; face_props[x] != 0; x++)
+	{
+	  switch (face_props[x])
+	    {
+	    case 'b':
+	    case 'B':
+	      fnt.isbold = 1;
+	      break;
+
+	    case 'i':
+	    case 'I':
+	      fnt.isitalic = 1;
+	      break;
+
+	    case 'u':
+	    case 'U':
+	      fnt.isunderlined = 1;
+	      break;
+	    }
+	}
+    }
+
+  return &fnt;
 }
 
 xfont* xfont_load_font(char* font)
@@ -121,19 +320,29 @@ xfont* xfont_load_font(char* font)
 
   GrafPtr oldport;
   FontInfo fm;
-  int aspace[] = { 'M' };
+  int aspace[] = { 'T', 'e', 's', 't' };
+
+#ifdef USE_ATS
+  OSStatus erm;
+
+  ATSUAttributeTag tags[3] = 
+    { 
+      kATSUSizeTag, kATSUQDUnderlineTag,
+      kATSUFontTag 
+    };
+  ByteCount             attsz [3];
+  ATSUAttributeValuePtr attptr[3];
+
+  Fixed size;
+  Boolean isbold, isitalic, isunderline;
+#endif
 
   if (strcmp(font, "font3") == 0)
     {
-      zmachine_warning("Font 3 not currently supported under Mac OS X");
-
       xf = malloc(sizeof(struct xfont));
-      xf->type = FONT_INTERNAL;
-      xf->data.mac.family       = DEFAULT_FONT;
-      xf->data.mac.size         = 12;
-      xf->data.mac.isbold       = 0;
-      xf->data.mac.isitalic     = 0;
-      xf->data.mac.isunderlined = 0;
+
+      xf->type = FONT_FONT3;
+
       return xf;
     }
   
@@ -141,14 +350,7 @@ xfont* xfont_load_font(char* font)
     {
       zmachine_warning("Invalid font name (too long)");
  
-      xf = malloc(sizeof(struct xfont));
-      xf->type = FONT_INTERNAL;
-      xf->data.mac.family       = DEFAULT_FONT;
-      xf->data.mac.size         = 12;
-      xf->data.mac.isbold       = 0;
-      xf->data.mac.isitalic     = 0;
-      xf->data.mac.isunderlined = 0;
-      return xf;
+      return xfont_default_font();
     }
 
   /* Get the face name */
@@ -216,6 +418,90 @@ xfont* xfont_load_font(char* font)
     face_props = NULL;
 
   xf = malloc(sizeof(xfont));
+
+#ifdef USE_ATS
+  /* Locate the font */
+  xf->type = FONT_INTERNAL;
+  isbold = isitalic = isunderline = false;
+  
+  if (face_props != NULL)
+    {
+      for (x=0; face_props[x] != 0; x++)
+	{
+	  switch (face_props[x])
+	    {
+	    case 'b':
+	    case 'B':
+	      isbold = true;
+	      break;
+
+	    case 'i':
+	    case 'I':
+	      isitalic = true;
+	      break;
+
+	    case 'u':
+	    case 'U':
+	      isunderline = true;
+	      break;
+	    }
+	}
+    }
+
+  family[0] = strlen(face_name);
+  strcpy(family+1, face_name);
+  xf->data.mac.family = FMGetFontFamilyFromName(family);
+  erm = FMGetFontFromFontFamilyInstance(xf->data.mac.family,
+					(isbold?bold:0)           |
+					(isitalic?italic:0)       |
+					(isunderline?underline:0),
+					&xf->data.mac.font,
+					NULL);
+
+  if (erm != noErr)
+    {
+      zmachine_warning("Font family '%s' not found", face_name);
+      free(xf);
+      return xfont_default_font();
+    }
+
+  ATSUCreateStyle(&xf->data.mac.style);
+  
+  size = atoi(face_width)<<16;
+
+
+  /* Set the attributes of this font */
+  attsz[0] = sizeof(Fixed);
+  attsz[1] = sizeof(Boolean);
+  attsz[2] = sizeof(ATSUFontID);
+  attptr[0] = &size;
+  attptr[1] = &isunderline;
+  attptr[2] = &xf->data.mac.font;
+
+  ATSUSetAttributes(xf->data.mac.style, 3, tags, attsz, attptr);
+
+  /* Measure the font */
+  {
+    ATSUTextLayout lo;
+    UniChar text[1] = { 'M' };
+
+    ATSUTextMeasurement before, after, ascent, descent;
+
+    /* (Sigh, there has to be a better way of doing things) */
+
+    ATSUCreateTextLayout(&lo);
+    ATSUSetTextPointerLocation(lo, text, 0, 1, 1);
+    ATSUSetRunStyle(lo, xf->data.mac.style, 0, 1);
+    ATSUMeasureText(lo, 0, 1, &before, &after, &ascent, &descent);
+    
+    xf->data.mac.ascent = ascent/65536.0;
+    xf->data.mac.descent = descent/65536.0;
+    xf->data.mac.maxwidth = (after+before)/65536.0;
+
+    ATSUDisposeTextLayout(lo);
+  }
+#else
+
   xf->type = FONT_INTERNAL;
   family[0] = strlen(face_name);
   strcpy(family+1, face_name);
@@ -267,18 +553,90 @@ xfont* xfont_load_font(char* font)
   select_font(xf);
   GetFontInfo(&fm);
 
+# ifdef USE_QUARTZ
+  {
+    FMFont font;
+    OSStatus erm;
+
+    erm = FMGetFontFromFontFamilyInstance(xf->data.mac.family,
+					  (xf->data.mac.isbold?bold:0)           |
+					  (xf->data.mac.isitalic?italic:0)       |
+					  (xf->data.mac.isunderlined?underline:0),
+					  &font,
+					  NULL);
+
+    if (erm != noErr)
+      zmachine_fatal("Unable to get FMFont structure for font '%s'", face_name);
+
+    xf->data.mac.atsref = FMGetATSFontRefFromFont(font);
+    xf->data.mac.cgfont = CGFontCreateWithPlatformFont(&xf->data.mac.atsref);
+    {
+      CFStringRef str;
+      char buf[256];
+
+      ATSUAttributeTag tags[5] =
+	{ 
+	  kATSUSizeTag, kATSUQDBoldfaceTag, 
+	  kATSUQDItalicTag, kATSUQDUnderlineTag,
+	  kATSUFontTag 
+	};
+      ByteCount             attsz [5];
+      ATSUAttributeValuePtr attptr[5];
+
+      /* Get the name of this font */
+      ATSFontGetPostScriptName(xf->data.mac.atsref,
+			       0,
+			       &str);
+      CFStringGetCString(str, buf, 256, kCFStringEncodingMacRoman);
+      
+      xf->data.mac.psname = malloc(strlen(buf)+1);
+      strcpy(xf->data.mac.psname, buf);
+      CFRelease(str);
+
+      /* 
+       * Create an ATSU style (bleh, we need to do this so we can work out 
+       * the glyph IDs to plot) 
+       */
+      ATSUCreateStyle(&xf->data.mac.style);
+
+      attsz[1] = attsz[2] = attsz[3] = sizeof(Boolean);
+      attsz[4] = sizeof(ATSUFontID);
+      attptr[0] = &xf->data.mac.size;
+      attptr[1] = &xf->data.mac.isbold;
+      attptr[2] = &xf->data.mac.isitalic;
+      attptr[3] = &xf->data.mac.isunderlined;
+      attptr[4] = &font;
+
+      ATSUSetAttributes(xf->data.mac.style, 5, tags, attsz, attptr);
+    }
+  }
+# endif
+
   xf->data.mac.ascent   = fm.ascent;
   xf->data.mac.descent  = fm.descent + fm.leading;
-  xf->data.mac.maxwidth =  xfont_get_text_width(xf, aspace, 1);
+  xf->data.mac.maxwidth = xfont_get_text_width(xf, aspace, 4)/4.0;
 
   SetPort(oldport);
+#endif
 
   return xf;
 }
 
 void xfont_release_font(xfont* xf)
 {
-  DisposeUnicodeToTextInfo(&xf->data.mac.convert);
+  if (xf->type != FONT_FONT3)
+    {
+#ifdef USE_ATS
+      ATSUDisposeStyle(xf->data.mac.style);
+#else
+      DisposeUnicodeToTextInfo(&xf->data.mac.convert);
+# ifdef USE_QUARTZ
+      CGFontRelease(xf->data.mac.cgfont);
+      ATSUDisposeStyle(xf->data.mac.style);
+      free(xf->data.mac.psname);
+# endif
+#endif
+    }
   free(xf);
 }
 
@@ -288,26 +646,39 @@ void xfont_set_colours(int fg, int bg)
   bg_col = bg;
 }
 
-int xfont_get_height(xfont* xf)
+XFONT_MEASURE xfont_get_height(xfont* xf)
 {
+  if (xf->type == FONT_FONT3)
+    return xfont_y;
+
   return xf->data.mac.ascent + xf->data.mac.descent;
 }
 
-int xfont_get_ascent(xfont* xf)
+XFONT_MEASURE xfont_get_ascent(xfont* xf)
 {
+  if (xf->type == FONT_FONT3)
+    return xfont_y;
+
   return xf->data.mac.ascent;
 }
 
-int xfont_get_descent(xfont* xf)
+XFONT_MEASURE xfont_get_descent(xfont* xf)
 {
+  if (xf->type == FONT_FONT3)
+    return 0;
+
   return xf->data.mac.descent;
 }
 
-int xfont_get_width(xfont* xf)
+XFONT_MEASURE xfont_get_width(xfont* xf)
 {
+  if (xf->type == FONT_FONT3)
+    return xfont_x;
+
   return xf->data.mac.maxwidth;
 }
 
+#ifndef USE_ATS
 static char* convert_text(xfont* font,
 			  const int* string,
 			  int length,
@@ -355,32 +726,227 @@ static char* convert_text(xfont* font,
 
   return outbuf;
 }
+#endif
 
-int xfont_get_text_width(xfont* xf,
-			 const int* string,
-			 int length)
+#if 0
+/*
+ * This requires some explaination...
+ *
+ * CGContextSelectFont() is slow. So we want to use CGContextSetFont,
+ * which is reasonably fast. However, that doesn't support *any* encoding
+ * conversions, so we need to use ATSU to get the glyph details of the
+ * text we're about to plot. Of course, it would be too simple to provide
+ * a function that just produces glyph values, so we have to arse around
+ * with layouts and so on.
+ */
+static CGGlyph* convert_glyphs(xfont* font,
+			       const int* string,
+			       int length,
+			       SInt32* olen)
 {
+  static ATSUGlyphInfoArray* res = NULL;
+  static CGGlyph* out = NULL;
+
+  ATSUTextLayout lay;
+
+  int x;
+
+  static UniChar* str = NULL;
+  UniCharCount runlength[1];
+  ATSUStyle    style[1];
+
+  ByteCount    bufsize;
+
+  if (res == NULL)
+    {
+      res = malloc(sizeof(ATSUGlyphInfoArray)+sizeof(ATSUGlyphInfo)*512);
+    }
+  res->numGlyphs = 512;
+
+  str = realloc(str, sizeof(UniChar)*length);
+  for (x=0; x<length; x++)
+    str[x] = string[x];
+
+  runlength[0] = length;
+  style[0] = font->data.mac.style;
+  ATSUCreateTextLayoutWithTextPtr(str, 0, length, length, 1, runlength, style,
+				  &lay);
+  
+  bufsize = 512;
+  ATSUGetGlyphInfo(lay, 0, length, &bufsize, res);
+
+  ATSUDisposeTextLayout(lay);
+  
+  *olen = bufsize;
+
+  out = realloc(out, sizeof(CGGlyph)*bufsize);
+  for (x=0; x<bufsize; x++)
+    {
+      out[x] = res->glyphs[x].glyphID;
+    }
+
+  return out;
+}
+#endif
+
+#ifdef USE_ATS
+static void make_layout(xfont*         xf, 
+			const int*     string, 
+			int            len,
+			ATSUTextLayout lo)
+{
+  static UniChar* ustr = NULL;
+  int x;
+
+  ustr = realloc(ustr, sizeof(UniChar)*len);
+  for (x=0; x<len; x++)
+    ustr[x] = string[x];
+
+  ATSUSetTextPointerLocation(lo, ustr, 0, len, len);
+  ATSUSetRunStyle(lo, xf->data.mac.style, 0, len);
+}
+#endif
+
+XFONT_MEASURE xfont_get_text_width(xfont* xf,
+				   const int* string,
+				   int length)
+{
+#ifdef USE_ATS
+  ATSUTextLayout lo;
+  GrafPtr oldport;
+
+  static UniChar* str = NULL;
+  UniCharCount runlength[1];
+  ATSUStyle    style[1];
+  
+  int x;
+
+  ATSUTextMeasurement before, after, ascent, descent;
+
+  if (xf->type == FONT_FONT3)
+    return length*xfont_x;
+
+  GetPort(&oldport);
+  SetPort(GetWindowPort(zoomWindow));
+
+  str = realloc(str, sizeof(UniChar)*length);
+  for (x=0; x<length; x++)
+    str[x] = string[x];
+
+  runlength[0] = length;
+  style[0] = xf->data.mac.style;
+  ATSUCreateTextLayoutWithTextPtr(str, 0, length, length, 1, runlength, style,
+				  &lo);
+  
+  ATSUMeasureText(lo, 0, length, &before, &after, &ascent, &descent);
+  ATSUDisposeTextLayout(lo);
+
+  SetPort(oldport);
+
+  return (XFONT_MEASURE)(after+before)/65536.0;
+#else
   GrafPtr oldport;
 
   char*     outbuf;
   ByteCount outlen;
-  SInt16    res;
+  XFONT_MEASURE res;
+
+  if (xf->type == FONT_FONT3)
+    return length*xfont_x;
 
   GetPort(&oldport);
   SetPort(GetWindowPort(zoomWindow));
 
   select_font(xf);
   outbuf = convert_text(xf, string, length, &outlen);
-  
-  res = TextWidth(outbuf, 0, outlen);
+
+#ifdef USE_QUARTZ
+  if (!enable_quartz)
+    {
+#endif
+      res = TextWidth(outbuf, 0, outlen);
+#ifdef USE_QUARTZ
+    }
+  else
+    {
+      CGPoint end;
+      
+      if (winlastfont != xf)
+	{
+	  CGContextSelectFont(wincontext, xf->data.mac.psname, 
+			      xf->data.mac.size,
+			      kCGEncodingMacRoman);
+	  winlastfont = xf;
+	}
+      CGContextSetTextPosition(wincontext, 0, 0);
+      CGContextSetTextDrawingMode(wincontext, kCGTextInvisible);
+      CGContextShowText(wincontext, outbuf, outlen);
+      
+      end = CGContextGetTextPosition(wincontext);
+      
+      res = end.x;
+    }
+#endif
 
   SetPort(oldport);
 
   return res;
+#endif
+}
+
+static void plot_font_3(int chr, XFONT_MEASURE xpos, XFONT_MEASURE ypos)
+{
+  int x;
+    
+  if (chr > 127 || chr < 32)
+    return;
+  chr-=32;
+
+  if (font_3.chr[chr].num_coords < 0)
+    {
+      zmachine_warning("Attempt to plot unspecified character %i",
+		       chr+32);
+      return;
+    }
+
+#ifdef USE_QUARTZ
+  if (enable_quartz)
+    {
+      CGContextBeginPath(wincontext);
+      CGContextMoveToPoint(wincontext,
+			   (font_3.chr[chr].coords[0]*xfont_x) / 8.0 + xpos, 
+			   ((8-font_3.chr[chr].coords[1])*xfont_y) / 8.0 + ypos);
+      for (x=0; x<font_3.chr[chr].num_coords; x++)
+	{
+	  CGContextAddLineToPoint(wincontext,
+				  (font_3.chr[chr].coords[x<<1]*xfont_x) / 8.0 + xpos, 
+				  ((8-font_3.chr[chr].coords[(x<<1)+1])*xfont_y) / 8.0 + ypos);
+	}
+      CGContextEOFillPath(wincontext);
+    }
+  else
+#endif
+    {
+      if (f3[chr] == nil)
+	{
+	  MoveTo((font_3.chr[chr].coords[0]*xfont_x) / 8.0 + 0.5, 
+		 (font_3.chr[chr].coords[1]*xfont_y) / 8.0 + 0.5);
+	  f3[chr] = OpenPoly();
+	  for (x=0; x<font_3.chr[chr].num_coords; x++)
+	    {
+	      LineTo((font_3.chr[chr].coords[x<<1]*xfont_x) / 8.0 + 0.5, 
+		     (font_3.chr[chr].coords[(x<<1)+1]*xfont_y) / 8.0 + 0.5);
+	    }
+	  ClosePoly();
+	}
+      OffsetPoly(f3[chr], xpos, ypos);
+      PaintPoly(f3[chr]);
+      OffsetPoly(f3[chr], -xpos, -ypos);
+    }
 }
 
 void xfont_plot_string(xfont* font,
-		       int x, int y,
+		       XFONT_MEASURE x, XFONT_MEASURE y,
 		       const int* string,
 		       int length)
 {
@@ -394,22 +960,146 @@ void xfont_plot_string(xfont* font,
   
   GetPortBounds(thePort, &portRect);
 
+  if (font->type == FONT_FONT3)
+    {
+      int pos;
+      
+      RGBForeColor(&maccolour[bg_col]);
+      bgRect.left   = portRect.left+x;
+      bgRect.right  = bgRect.left+length*xfont_x;
+      bgRect.top    = portRect.top-y - xfont_y;
+      bgRect.bottom = bgRect.top + xfont_y;
+      PaintRect(&bgRect);
+
+#ifdef USE_QUARTZ
+      if (enable_quartz)
+	{
+	  CGContextSetRGBFillColor(wincontext, 
+				   (float)maccolour[fg_col].red/65536.0,
+				   (float)maccolour[fg_col].green/65536.0,
+				   (float)maccolour[fg_col].blue/65536.0,
+				   1.0);
+	  
+	  for (pos = 0; pos<length; pos++)
+	    {
+	      plot_font_3(string[pos], 
+			  portRect.left + x + xfont_x*pos,
+			  (portRect.bottom-portRect.top) + y);
+	    }
+	}
+      else
+#endif
+	{
+	  RGBForeColor(&maccolour[fg_col]);
+	  
+	  for (pos = 0; pos<length; pos++)
+	    {
+	      plot_font_3(string[pos], 
+			  portRect.left+x + xfont_x*pos,
+			  portRect.top-y - xfont_y);
+	    }
+	}
+
+      return;
+    }
+
+#ifdef USE_ATS
+ {
+   ATSUTextLayout lo;
+    ATSUTextMeasurement before, after, ascent, descent;
+   
+   ATSUCreateTextLayout(&lo);
+   make_layout(font, string, length, lo);
+
+   ATSUMeasureText(lo, 0, length, &before, &after, &ascent, &descent);
+   RGBForeColor(&maccolour[bg_col]);
+   bgRect.left   = portRect.left+x;
+   bgRect.right  = bgRect.left+(after>>16);
+   bgRect.top    = portRect.top-y - (ascent>>16);
+   bgRect.bottom = bgRect.top +
+     (ascent>>16) + (descent>>16);
+   PaintRect(&bgRect);
+
+   RGBForeColor(&maccolour[fg_col]);
+   ATSUDrawText(lo, 0, length, (portRect.left + x)*65536.0, 
+		(portRect.top - y)*65536.0);
+   ATSUDisposeTextLayout(lo);
+ }
+#else
   outbuf = convert_text(font, string, length, &outlen);
-  select_font(font);
 
-  RGBForeColor(&maccolour[bg_col]);
-  bgRect.left   = portRect.left+x;
-  bgRect.right  = bgRect.left+TextWidth(outbuf, 0, outlen);
-  bgRect.top    = portRect.top-y - font->data.mac.ascent;
-  bgRect.bottom = bgRect.top +
-    font->data.mac.ascent + font->data.mac.descent;
+# ifdef USE_QUARTZ
+  if (!enable_quartz)
+    {
+# endif
+      select_font(font);
 
-  PaintRect(&bgRect);
-
-  RGBBackColor(&maccolour[bg_col]);
-  RGBForeColor(&maccolour[fg_col]);
-  MoveTo(portRect.left+x, portRect.top - y);
-  DrawText(outbuf, 0, outlen);
+      RGBForeColor(&maccolour[bg_col]);
+      bgRect.left   = portRect.left+x;
+      bgRect.right  = bgRect.left+TextWidth(outbuf, 0, outlen);
+      bgRect.top    = portRect.top-y - font->data.mac.ascent;
+      bgRect.bottom = bgRect.top +
+	font->data.mac.ascent + font->data.mac.descent;
+      PaintRect(&bgRect);
+      
+      RGBBackColor(&maccolour[bg_col]);
+      RGBForeColor(&maccolour[fg_col]);
+      MoveTo(portRect.left+x, portRect.top - y);
+      DrawText(outbuf, 0, outlen);
+# ifdef USE_QUARTZ
+    }
+  else
+    {
+      CGPoint pt;
+      
+      CGContextSetRGBFillColor(wincontext, 
+			       (float)maccolour[fg_col].red/65536.0,
+			       (float)maccolour[fg_col].green/65536.0,
+			       (float)maccolour[fg_col].blue/65536.0,
+			       1.0);
+      
+      outbuf = convert_text(font, string, length, &outlen);
+      
+      //glyph = convert_glyphs(font, string, length, &outlen);
+      
+      /*
+       * There is always CGContextSetFont, but while I'm able to create
+       * the structure, I can't make CGContextShowText display *anything*...
+       */
+      if (winlastfont != font)
+	{
+	  CGContextSelectFont(wincontext, font->data.mac.psname, 
+			      font->data.mac.size,
+			      kCGEncodingMacRoman);
+	  winlastfont = font;
+      }
+      //CGContextSetFont(wincontext, font->data.mac.cgfont);
+      
+      /* Blank out the background */
+      CGContextSetTextDrawingMode(wincontext, kCGTextInvisible);
+      CGContextSetTextPosition(wincontext, 0, 0);
+      CGContextShowText(wincontext,
+			outbuf, outlen);
+      // CGContextShowGlyphs(wincontext, glyph, outlen);
+      pt = CGContextGetTextPosition(wincontext);
+      
+      RGBForeColor(&maccolour[bg_col]);
+      bgRect.left   = portRect.left+x;
+      bgRect.right  = bgRect.left+(pt.x+0.5);
+      bgRect.top    = portRect.top-y - font->data.mac.ascent;
+      bgRect.bottom = bgRect.top +
+	font->data.mac.ascent + font->data.mac.descent;
+      PaintRect(&bgRect);
+      
+      CGContextSetTextDrawingMode(wincontext, kCGTextFill);
+      CGContextSetTextPosition(wincontext,
+			       portRect.left + x, 
+			       (portRect.bottom-portRect.top)+y);
+      CGContextShowText(wincontext,
+			outbuf, outlen);
+    }
+# endif
+#endif
 }
 
 #endif

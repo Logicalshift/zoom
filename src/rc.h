@@ -24,6 +24,8 @@
 #ifndef __RC_H
 #define __RC_H
 
+#include "hash.h"
+
 typedef struct
 {
   int r, g, b;
@@ -71,5 +73,8 @@ extern int        rc_get_xsize      (void);
 extern int        rc_get_ysize      (void);
 extern char*      rc_get_graphics   (void);
 extern char*      rc_get_sounds     (void);
+
+extern hash       rc_hash;
+extern rc_game*   rc_defgame;
 
 #endif

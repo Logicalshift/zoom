@@ -19,6 +19,9 @@
 
 /*
  * Display for MacOS X (Carbon)
+ *
+ * (Things are a bit odd in here, mainly because lots of this is a fairly
+ * direct port from the Windows version)
  */
 
 #include "../config.h"
@@ -39,6 +42,14 @@
 #include "hash.h"
 #include "xfont.h"
 #include "carbondisplay.h"
+
+#define DEBUG
+
+#ifdef DEBUG
+#define dassert(x) if (!(x)) { window_available = 0; zmachine_fatal("Assertion failed: " # x " (line %i)", __LINE__); }
+#else
+#define dassert(x)
+#endif
 
 static int process_events(long int timeout,
 			  int* buf,
@@ -65,8 +76,8 @@ RGBColor maccolour[14] = {
 };
 
 /* Windows, flags */
-WindowRef  zoomWindow;
-ControlRef zoomScroll;
+WindowRef     zoomWindow;
+ControlRef    zoomScroll;
 
 DialogRef  fataldlog = nil;
 DialogRef  quitdlog  = nil;
@@ -75,6 +86,23 @@ int        quitflag = 0;
 static int updating = 0;
 
 static int scrollpos = 0;
+
+char carbon_title[256];
+
+#undef  INSETBORDER        /* Define to use the border style used on Unix */
+#ifdef  INSETBORDER
+#define BORDERWIDTH 8
+#else
+#define BORDERWIDTH 2
+#endif
+
+/* Preferences */
+carbon_preferences carbon_prefs = { 0, 0, 0, 0 };
+
+/* Speech */
+static SpeechChannel speechchan;
+static char*         nextspeech = NULL;
+static char*         lastspeech = NULL;
 
 /* Font information */
 static xfont** font = NULL;
@@ -98,6 +126,14 @@ static int style_font[16] = { 0, 1, 2, 5, 3, 6, 7, 8,
 			      4, 4, 4, 4, 4, 4, 4, 4 };
 
 /* Z-Machine window layout */
+struct word
+{
+  int           start;
+  int           len;
+  XFONT_MEASURE width;
+  int           newline;
+};
+
 struct text
 {
   int fg, bg;
@@ -105,11 +141,15 @@ struct text
 
   int spacer;
   int space;
+  int spoken;
   
   int len;
   int* text;
   
   struct text* next;
+
+  int          nwords;
+  struct word* word;
 };
 
 struct line
@@ -117,10 +157,10 @@ struct line
   struct text* start;
   int          n_chars;
   int          offset;
-  int          baseline;
-  int          ascent;
-  int          descent;
-  int          height;
+  XFONT_MEASURE baseline;
+  XFONT_MEASURE ascent;
+  XFONT_MEASURE descent;
+  XFONT_MEASURE height;
 
   struct line* next;
 };
@@ -137,8 +177,8 @@ struct window
 {
   int xpos, ypos;
 
-  int winsx, winsy;
-  int winlx, winly;
+  XFONT_MEASURE winsx, winsy;
+  XFONT_MEASURE winlx, winly;
 
   int overlay;
   int force_fixed;
@@ -165,7 +205,7 @@ int cur_win;
 struct window text_win[3];
 
 #define CURWIN text_win[cur_win]
-#define CURSTYLE (text_win[cur_win].style|(text_win[cur_win].force_fixed<<8))
+#define CURSTYLE (text_win[cur_win].style|(text_win[cur_win].force_fixed<<3))
 
 /* Window parameters */
 #define DEFAULTX 80
@@ -173,13 +213,13 @@ struct window text_win[3];
 static int size_x, size_y;
 static int max_x, max_y;
 
-int xfont_x = 0;
-int xfont_y = 0;
-static int win_x   = 0;
-static int win_y   = 0;
-static int total_x = 0;
-static int total_y = 0;
-static int start_y;
+XFONT_MEASURE xfont_x = 0;
+XFONT_MEASURE xfont_y = 0;
+static XFONT_MEASURE win_x   = 0;
+static XFONT_MEASURE win_y   = 0;
+static XFONT_MEASURE total_x = 0;
+static XFONT_MEASURE total_y = 0;
+static XFONT_MEASURE start_y;
 
 static int scroll_overlays = 1;
 
@@ -233,7 +273,6 @@ static unsigned char terminating[256] =
 static int click_x, click_y;
 
 static void draw_input_text(void);
-static void update_status_text(void);
 
 /***                           ----// 888 \\----                           ***/
 
@@ -283,6 +322,7 @@ static void resize_window()
   int x,y,z;
   int ofont_x, ofont_y;
   int owin;
+  int lastx, lasty;
   Rect rct;
 
   if (xfont_x == 0 || xfont_y == 0)
@@ -321,17 +361,24 @@ static void resize_window()
   if ((rct.bottom-rct.top) <= CURWIN.winsy)
     rct.bottom = rct.top + CURWIN.winsy + xfont_y;
 
+  lastx = total_x;
+  lasty = total_y;
+
   total_x = rct.right - rct.left;
   total_y = rct.bottom - rct.top;
+  
+  if (lastx == total_x &&
+      lasty == total_y)
+    return;
 
   MoveControl(zoomScroll, total_x - 15, 0);
   SizeControl(zoomScroll, 16, total_y-14);
-  
-  size_x = (total_x-19)/xfont_x;
-  size_y = (total_y-4)/xfont_y;
 
-  win_x = total_x-19;
-  win_y = total_y-4;
+  size_x = (total_x-BORDERWIDTH*2-15)/xfont_x;
+  size_y = (total_y-BORDERWIDTH*2)/xfont_y;
+
+  win_x = total_x-BORDERWIDTH*2-15;
+  win_y = total_y-BORDERWIDTH*2;
 
   /* Resize and reformat the overlay windows */
   for (x=1; x<=2; x++)
@@ -484,11 +531,11 @@ static void size_window(void)
   
   win_x = xfont_x*size_x;
   win_y = xfont_y*size_y;
-  total_x = win_x + 19;
-  total_y = win_y + 4;
+  total_x = win_x + BORDERWIDTH*2 + 15;
+  total_y = win_y + BORDERWIDTH*2;
 
   MoveControl(zoomScroll, total_x - 15, 0);
-  SizeControl(zoomScroll, 15, total_y);
+  SizeControl(zoomScroll, 15, total_y - 14);
 
   GetWindowBounds(zoomWindow, kWindowContentRgn, &bounds);
   bounds.right = bounds.left + total_x;
@@ -515,7 +562,7 @@ static void draw_caret()
       PenNormal();
       PenMode(srcXor);
       PenSize(2,1);
-      MoveTo(portRect.left+caret_x+2, portRect.top+caret_y+2);
+      MoveTo(portRect.left+caret_x+BORDERWIDTH, portRect.top+caret_y+BORDERWIDTH);
       Line(0, caret_height);
 
       PenNormal();
@@ -527,19 +574,19 @@ static void draw_caret()
 /* Redraw the caret */
 static void redraw_caret(void)
 {
-  GrafPtr oldport;
-  
+  CGrafPtr oldport = nil;
+
   if (!updating)
     {
       Rect clip;
 
       GetPort(&oldport);
 
-      SetPort(GetWindowPort(zoomWindow));
+      SetPortWindowPort(zoomWindow);
       
-      clip.left = 2;
+      clip.left = BORDERWIDTH;
       clip.right = clip.left+win_x;
-      clip.top = 2;
+      clip.top = BORDERWIDTH;
       clip.bottom = clip.top+win_y;
       ClipRect(&clip);
     }
@@ -613,6 +660,7 @@ static void draw_input_text(void)
     {
       input_x = caret_x = xfont_x*CURWIN.xpos;
       input_y = caret_y = xfont_y*CURWIN.ypos;
+      input_y += xfont_get_ascent(font[style_font[(CURSTYLE>>1)&15]]);
       caret_height = xfont_y;
     }
   else
@@ -641,25 +689,29 @@ static void draw_input_text(void)
       thePort = GetQDGlobalsThePort();
       GetPortBounds(thePort, &portRect); 
 
-      w = xfont_get_text_width(font[style_font[CURSTYLE]],
+      dassert(CURSTYLE < 32);
+      dassert(CURSTYLE >= 0);
+      dassert(style_font[(CURSTYLE>>1)&15] <= n_fonts &&
+	      style_font[(CURSTYLE>>1)&15] >= 0);
+      w = xfont_get_text_width(font[style_font[(CURSTYLE>>1)&15]],
 			       text_buf,
 			       istrlen(text_buf));
 
       PenNormal();
-      rct.left   = portRect.left + input_x + w + 2;
-      rct.right  = portRect.left + win_x+2;
-      rct.top    = portRect.top + caret_y+2;
-      rct.bottom = rct.top + xfont_get_height(font[style_font[CURSTYLE]]);
+      rct.left   = portRect.left + input_x + w + BORDERWIDTH;
+      rct.right  = portRect.left + win_x + BORDERWIDTH;
+      rct.top    = portRect.top + caret_y + BORDERWIDTH;
+      rct.bottom = rct.top + xfont_get_height(font[style_font[(CURSTYLE>>1)&15]]);
       RGBForeColor(&maccolour[bg]);
       PaintRect(&rct);
 
-      caret_x += xfont_get_text_width(font[style_font[CURSTYLE]],
+      caret_x += xfont_get_text_width(font[style_font[(CURSTYLE>>1)&15]],
 				      text_buf,
 				      buf_offset);
 
       xfont_set_colours(fg, bg);
-      xfont_plot_string(font[style_font[CURSTYLE]],
-			input_x+2, -input_y-2,
+      xfont_plot_string(font[style_font[(CURSTYLE>>1)&15]],
+			input_x+BORDERWIDTH, -input_y-BORDERWIDTH,
 			text_buf,
 			istrlen(text_buf));
     }
@@ -671,16 +723,17 @@ static void draw_input_text(void)
 /* Redraw the input text */
 static void redraw_input_text(void)
 {
-  GrafPtr oldport;
   Rect clip;
-  
-  GetPort(&oldport);
-  
-  SetPort(GetWindowPort(zoomWindow));
-  
-  clip.left = 2;
+
+  SetPortWindowPort(zoomWindow);
+
+#ifdef USE_QUARTZ
+  carbon_set_context();
+#endif
+
+  clip.left = BORDERWIDTH;
   clip.right = clip.left+win_x;
-  clip.top = 2;
+  clip.top = BORDERWIDTH;
   clip.bottom = clip.right+win_y;
   ClipRect(&clip);
 
@@ -691,28 +744,27 @@ static void redraw_input_text(void)
   clip.top = 0;
   clip.bottom = total_y;
   ClipRect(&clip);
-
-  SetPort(oldport);
 }
 
 /* Redraw (part of?) the window */
 void redraw_window(Rect* rct)
 {
-  GrafPtr oldport;
   RgnHandle oldclip = nil;
 
   if (!updating)
     {
-      GetPort(&oldport);
-
-      SetPort(GetWindowPort(zoomWindow));
+      SetPortWindowPort(zoomWindow);
 
       oldclip = NewRgn();
       GetClip(oldclip);
 
       ClipRect(rct);
-    }
-  
+     } 
+ 
+#ifdef USE_QUARTZ
+  carbon_set_context();
+#endif
+
   draw_window(0, rct);
   draw_window(1, rct);
   draw_window(2, rct);
@@ -720,12 +772,22 @@ void redraw_window(Rect* rct)
   draw_input_text();
   draw_borders();
 
+  if (more_on)
+    {
+      int more[] = { '[', 'M', 'O', 'R', 'E', ']' };
+      int w, h;
+
+      h = xfont_get_descent(font[style_font[2]]);
+      w = xfont_get_text_width(font[style_font[2]], more, 6);
+
+      xfont_set_colours(3, 9);
+      xfont_plot_string(font[style_font[2]], total_x-w-15, -(total_y-h), more, 6);
+    }
+
   if (!updating)
     {
       SetClip(oldclip);
       DisposeRgn(oldclip);
-
-      SetPort(oldport);
     }
 }
 
@@ -743,7 +805,7 @@ static pascal OSStatus zoom_evt_handler(EventHandlerCallRef myHandlerChain,
 
   cla = GetEventClass(event);
   wha = GetEventKind(event);
-  
+
   switch (cla)
     {
     case kEventClassCommand:
@@ -770,7 +832,11 @@ static pascal OSStatus zoom_evt_handler(EventHandlerCallRef myHandlerChain,
 					 "Unable to force a save at this point");
 		}
 	      break;
-	     
+
+	    case kHICommandPreferences:
+	      carbon_show_prefs();
+	      break;
+
 	    case kHICommandQuit:
 	      if (window_available)
 		{
@@ -800,6 +866,10 @@ static pascal OSStatus zoom_evt_handler(EventHandlerCallRef myHandlerChain,
 		{
 		  quitflag = 1;
 		}
+	      break;
+	      
+	    default:
+	      return eventNotHandledErr;
 	    }
 	  return noErr;
 
@@ -899,9 +969,9 @@ static void draw_window(int   win,
 {
   struct line* line;
   int x;
-  int width;
+  XFONT_MEASURE width;
   int offset;
-  int lasty;
+  XFONT_MEASURE lasty;
   struct text* text;
 
   CGrafPtr thePort;
@@ -909,7 +979,9 @@ static void draw_window(int   win,
   Rect frct;
 
   thePort = GetQDGlobalsThePort();
-  GetPortBounds(thePort, &portRect); 
+  GetPortBounds(thePort, &portRect);
+
+  dassert(rct != NULL);
 
   if (text_win[win].overlay)
     {
@@ -937,23 +1009,29 @@ static void draw_window(int   win,
 		  fn = text_win[win].cline[y].font[x];
 		  
 		  /* We want to plot as much as possible in one go */
-		  while (text_win[win].cline[y].font[x+len] == fn &&
+		  while (x+len < size_x &&
+			 text_win[win].cline[y].font[x+len] == fn &&
 			 text_win[win].cline[y].fg[x+len]   == fg &&
 			 text_win[win].cline[y].bg[x+len]   == bg &&
 			 (bg != 255 ||
 			  text_win[win].cline[y].cell[x+len] != ' ' ||
 			  y*xfont_y<text_win[win].winly))
 		    len++;
+
+		  dassert(x + len <= size_x);
+		  dassert(fg >= 0);
 		  
 		  if (bg == 255)
 		    bg = fg;
+
+		  dassert(bg < 14);
 		  
 		  xfont_set_colours(fg, bg);
 		  xfont_plot_string(font[text_win[win].cline[y].font[x]],
-				    2 + x*xfont_x,
+				    BORDERWIDTH + (float)x*xfont_x,
 				    -(y*xfont_y +
 				      xfont_get_ascent(font[text_win[win].cline[y].font[x]]))
-				    - 2,
+				    - BORDERWIDTH,
 				    &text_win[win].cline[y].cell[x],
 				    len);
 
@@ -967,10 +1045,10 @@ static void draw_window(int   win,
 	    {
 	      Rect frct;
 
-	      frct.top    = portRect.top + y*xfont_y+2;
-	      frct.left   = portRect.left + xfont_x*size_x+2;
+	      frct.top    = portRect.top + y*xfont_y+BORDERWIDTH;
+	      frct.left   = portRect.left + xfont_x*size_x+BORDERWIDTH;
 	      frct.bottom = frct.top + xfont_y;
-	      frct.right  = portRect.left + win_x+2;
+	      frct.right  = portRect.left + win_x+BORDERWIDTH;
 	      RGBForeColor(&maccolour[bg]);
 	      PaintRect(&frct);
 	    }
@@ -986,10 +1064,10 @@ static void draw_window(int   win,
       newregion = NewRgn();
       GetClip(oldregion);
 
-      frct.left   = portRect.left+2;
-      frct.right  = portRect.left + win_x + 2;
-      frct.top    = portRect.top + text_win[win].winsy+2;
-      frct.bottom = portRect.top + text_win[win].winly+2;
+      frct.left   = portRect.left + BORDERWIDTH;
+      frct.right  = portRect.left + win_x + BORDERWIDTH;
+      frct.top    = portRect.top + text_win[win].winsy + BORDERWIDTH;
+      frct.bottom = portRect.top + text_win[win].winly + BORDERWIDTH;
       RectRgn(newregion, &frct);
 
       SectRgn(oldregion, newregion, newregion);
@@ -1000,48 +1078,58 @@ static void draw_window(int   win,
 
       /* Free any lines that scrolled off ages ago */
       if (line != NULL)
-	while (line->baseline < -262144)
-	  {
-	    struct line* n;
+	{
+	  while (line->baseline < -32768)
+	    {
+	      struct line* n;
+	      
+	      n = line->next;
+	      if (n == NULL)
+		break;
+	      
+	      if (text_win[win].topline == line)
+		text_win[win].topline = NULL;
+	      
+	      if (n->start != line->start)
+		{
+		  struct text* nt;
+		  
+		  if (line->start != text_win[win].text)
+		    zmachine_fatal("Programmer is a spoon");
+		  text_win[win].text = n->start;
+		  
+		  text = line->start;
+		  while (text != n->start)
+		    {
+		      if (text == NULL)
+			zmachine_fatal("Programmer is a spoon");
+		      nt = text->next;
+		      free(text);
+		      text = nt;
+		    }
+		}
+	      
+	      
+	      free(line);
+	      text_win[win].line = n;
 
-	    n = line->next;
-	    if (n == NULL)
-	      break;
+	      line = n;
+	    }
+	}
 
-	    if (text_win[win].topline == line)
-	      text_win[win].topline = NULL;
-
-	    if (n->start != line->start)
-	      {
-		struct text* nt;
-		
-		if (line->start != text_win[win].text)
-		  zmachine_fatal("Programmer is a spoon");
-		text_win[win].text = n->start;
-
-		text = line->start;
-		while (text != n->start)
-		  {
-		    if (text == NULL)
-		      zmachine_fatal("Programmer is a spoon");
-		    nt = text->next;
-		    free(text);
-		    text = nt;
-		  }
-	      }
-	    
-	    free(line);
-	    text_win[win].line = n;
-
-	    line = n;
-	  }
+      /* Skip to the first visible line */
+      if (line != NULL)
+	{
+	  while (line->baseline + line->descent - scrollpos < text_win[win].winsy)
+	    line = line->next;
+	}
 
       /* Fill in to the start of the lines */
       if (line != NULL)
 	{
-	  frct.top    = portRect.top+text_win[win].winsy+2;
-	  frct.bottom = portRect.top+line->baseline-line->ascent+2 - scrollpos;
-	  frct.left   = portRect.left+2;
+	  frct.top    = portRect.top+text_win[win].winsy + BORDERWIDTH;
+	  frct.bottom = portRect.top+line->baseline-line->ascent + BORDERWIDTH - scrollpos;
+	  frct.left   = portRect.left + BORDERWIDTH;
 	  frct.right  = frct.left + win_x;
 	  if (frct.top < frct.bottom)
 	    {
@@ -1052,10 +1140,11 @@ static void draw_window(int   win,
 	  lasty = frct.bottom;
 	}
       else
-	lasty = portRect.top + text_win[win].winsy + 2;
+	lasty = portRect.top + text_win[win].winsy + BORDERWIDTH;
 
       /* Iterate through the lines and plot what's necessary */
-      while (line != NULL)
+      while (line != NULL &&
+	     line->baseline - line->ascent - scrollpos < text_win[win].winly)
 	{
 	  text   = line->start;
 	  width     = 0;
@@ -1087,22 +1176,25 @@ static void draw_window(int   win,
 		      x++;
 		    }
 
+		  dassert(offset+toprint <= text->len);
 		  w = xfont_get_text_width(font[text->font],
 					   text->text + offset,
 					   toprint);
 
+		  frct.top    = portRect.top + line->baseline - line->ascent 
+		    + BORDERWIDTH - scrollpos;
+		  frct.bottom = frct.top + line->ascent + line->descent;
+		  frct.left   = portRect.left + width + BORDERWIDTH;
+		  frct.right  = frct.left + w;
+		  RGBForeColor(&maccolour[text->bg]);
+		  PaintRect(&frct);
+
 		  xfont_set_colours(text->fg, text->bg);
-		  if (line->baseline + line->descent - scrollpos >
-		      rct->top &&
-		      line->baseline - line->ascent - scrollpos <
-		      rct->bottom)
-		    {
-		      xfont_plot_string(font[text->font],
-					width+2,
-					-line->baseline - 2 + scrollpos,
-					text->text + offset,
-					toprint);
-		    }
+		  xfont_plot_string(font[text->font],
+				    width + BORDERWIDTH,
+				    -line->baseline - BORDERWIDTH + scrollpos,
+				    text->text + offset,
+				    toprint);
 
 		  x      += toprint;
 		  offset += toprint;
@@ -1117,11 +1209,11 @@ static void draw_window(int   win,
 	    }
 
 	  /* Fill in to the end of the line */
-	  frct.top    = portRect.top+line->baseline - line->ascent + 2 -
+	  frct.top    = portRect.top+line->baseline - line->ascent + BORDERWIDTH -
 	    scrollpos;
 	  frct.bottom = frct.top + line->ascent + line->descent;
-	  frct.left   = portRect.left + width+2;
-	  frct.right  = portRect.left + win_x+2;
+	  frct.left   = portRect.left + width + BORDERWIDTH;
+	  frct.right  = portRect.left + win_x + BORDERWIDTH;
 	  RGBForeColor(&maccolour[text_win[win].winback]);
 	  PaintRect(&frct);
 
@@ -1133,9 +1225,9 @@ static void draw_window(int   win,
 
       /* Fill in to the bottom of the window */
       frct.top    = lasty;
-      frct.bottom = win_y+2;
-      frct.left = 2;
-      frct.right = 2+win_x;
+      frct.bottom = win_y + BORDERWIDTH;
+      frct.left = BORDERWIDTH;
+      frct.right = BORDERWIDTH+win_x;
       if (frct.top < frct.bottom)
 	{
 	  RGBForeColor(&maccolour[text_win[win].winback]);
@@ -1163,29 +1255,92 @@ static void draw_borders()
   PenNormal();
   RGBForeColor(&maccolour[2]);
 
+#ifdef INSETBORDER
+  /* Gray border */
+  RGBForeColor(&maccolour[0]);
+
   /* Top */
   rct.left   = portRect.left;
-  rct.right  = portRect.left+win_x+4;
+  rct.right  = portRect.left+win_x+BORDERWIDTH*2;
   rct.top    = portRect.top;
-  rct.bottom = rct.top+2;
+  rct.bottom = rct.top+BORDERWIDTH-2;
   PaintRect(&rct);
 
   /* Bottom */
   rct.bottom = portRect.bottom;
-  rct.top    = rct.bottom-2;
+  rct.top    = rct.bottom-BORDERWIDTH+2;
   PaintRect(&rct);
 
   /* Left */
   rct.left   = portRect.left;
-  rct.right  = rct.left+2;
+  rct.right  = rct.left+BORDERWIDTH-2;
   rct.top    = portRect.top;
   rct.bottom = portRect.bottom;
   PaintRect(&rct);
   
   /* Right */
-  rct.left  = portRect.left+win_x+2;
-  rct.right = rct.left+2;
+  rct.left  = portRect.left+win_x+BORDERWIDTH+2;
+  rct.right = rct.left+BORDERWIDTH-2;
   PaintRect(&rct);
+
+  /* Inset border */
+
+  /* Top */
+  rct.left   = portRect.left+BORDERWIDTH-2;
+  rct.right  = rct.left+win_x+4;
+  rct.top    = portRect.top+BORDERWIDTH-2;
+  rct.bottom = rct.top+2;
+  RGBForeColor(&maccolour[1]);
+  PaintRect(&rct);
+
+  /* Bottom */
+  rct.top    = portRect.bottom-BORDERWIDTH;
+  rct.bottom = rct.top+2;
+  RGBForeColor(&maccolour[2]);
+  PaintRect(&rct);
+
+  /* Left */
+  rct.left   = portRect.left+BORDERWIDTH-2;
+  rct.right  = rct.left+2;
+  rct.top    = portRect.top+BORDERWIDTH-2;
+  rct.bottom = rct.top+win_y+4;
+  RGBForeColor(&maccolour[1]);
+  PaintRect(&rct);
+  
+  /* Right */
+  rct.left  = portRect.left+win_x+BORDERWIDTH;
+  rct.right = rct.left+2;
+  RGBForeColor(&maccolour[2]);
+  PaintRect(&rct);
+
+#else
+
+  RGBForeColor(&maccolour[2]);
+
+  /* Top */
+  rct.left   = portRect.left;
+  rct.right  = portRect.left+win_x+BORDERWIDTH*2;
+  rct.top    = portRect.top;
+  rct.bottom = rct.top+BORDERWIDTH;
+  PaintRect(&rct);
+
+  /* Bottom */
+  rct.bottom = portRect.bottom;
+  rct.top    = rct.bottom-BORDERWIDTH;
+  PaintRect(&rct);
+
+  /* Left */
+  rct.left   = portRect.left;
+  rct.right  = rct.left+BORDERWIDTH;
+  rct.top    = portRect.top;
+  rct.bottom = portRect.bottom;
+  PaintRect(&rct);
+  
+  /* Right */
+  rct.left  = portRect.left+win_x+BORDERWIDTH;
+  rct.right = rct.left+BORDERWIDTH;
+  PaintRect(&rct);
+#endif
 }
 
 static void update_scroll(void)
@@ -1199,10 +1354,10 @@ static void update_scroll(void)
     {
       scrollpos = newpos;
 
-      rct.top    = text_win[0].winsy+2;
-      rct.bottom = text_win[0].winly+2;
-      rct.left   = 2;
-      rct.right  = 2+win_x;
+      rct.top    = text_win[0].winsy+BORDERWIDTH;
+      rct.bottom = text_win[0].winly+BORDERWIDTH;
+      rct.left   = BORDERWIDTH;
+      rct.right  = BORDERWIDTH+win_x;
 
       redraw_window(&rct);
     }
@@ -1303,12 +1458,28 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 	    
 	    /* Redraw the window */
 	    updating = 1;
-	    SetPort(GetWindowPort(zoomWindow));	    
+	    SetPortWindowPort(zoomWindow);
 	    ClipRect(&rct);
 	    redraw_window(&rct);
 	    updating = 0;
 	  }
 	  break;
+
+	case kEventWindowFocusRelinquish:
+	case kEventWindowDeactivated:
+	  if (!more_on)
+	    show_caret();
+	  else
+	    hide_caret();
+	  caret_flashing = 0;
+	  return eventNotHandledErr;
+	  break;
+
+	case kEventWindowFocusAcquired:
+	case kEventWindowActivated:
+	  if (!more_on)
+	    caret_flashing = 1;
+	  return eventNotHandledErr;
 	}
       break;
 
@@ -1619,6 +1790,10 @@ static void rejig_fonts(void)
   int x;
   rc_font* fonts;
 
+#ifdef USE_QUARTZ
+  carbon_set_quartz(carbon_prefs.use_quartz);
+#endif
+
   fonts = rc_get_fonts(&n_fonts);
  
   /* Allocate fonts */
@@ -1636,9 +1811,10 @@ static void rejig_fonts(void)
       int y;
       
       for (x=0; x<16; x++)
-	style_font[x] = -1;
-      
-      font = realloc(font, sizeof(xfont*)*n_fonts);
+	style_font[x] = n_fonts;
+
+      font = realloc(font, sizeof(xfont*)*(n_fonts+1));
+      font[n_fonts] = xfont_load_font("'Courier' 16 bi");
       for (x=0; x<n_fonts; x++)
 	{
 	  font[x] = xfont_load_font(fonts[x].name);
@@ -1646,6 +1822,10 @@ static void rejig_fonts(void)
 	  for (y=0; y<fonts[x].n_attr; y++)
 	    style_font[fonts[x].attributes[y]] = x;
 	}
+      
+      for (x=8; x<16; x++)
+	if (style_font[x] == n_fonts)
+	  style_font[x] = style_font[8];
     }
 }
 
@@ -1689,6 +1869,8 @@ void display_initialise(void)
   int n_cols;
   int x;
 
+  NewSpeechChannel(NULL, &speechchan);
+
   target = GetEventDispatcherTarget();
 
   /* Initialise font structures */
@@ -1730,6 +1912,8 @@ void display_initialise(void)
 
   /* Yay, we can now show the window */
   ShowWindow(zoomWindow);
+  EnableMenuCommand(NULL,kAEShowPreferences);
+  
   window_available = 1;
 }
 
@@ -1739,6 +1923,26 @@ void display_reinitialise(void)
 
   display_clear();
   resize_window();
+}
+
+void carbon_display_rejig(void)
+{
+  struct text* txt;
+
+  txt = text_win[0].text;
+  while (txt != NULL)
+    {
+      free(txt->word);
+      txt->nwords = -1;
+      txt->word   = NULL;
+
+      txt = txt->next;
+    }
+
+  rejig_fonts();
+  total_x = total_y = 0;
+  resize_window();
+  display_update();
 }
 
 void display_finalise(void)
@@ -1916,7 +2120,8 @@ void display_clear(void)
   display_erase_window();
 }
 
-static void new_line(int more)
+static void new_line(int more,
+		     int fnum)
 {
   struct line* line;
   Rect rct;
@@ -1929,10 +2134,10 @@ static void new_line(int more)
       CURWIN.line->n_chars  = 0;
       CURWIN.line->offset   = 0;
       CURWIN.line->baseline =
-	CURWIN.ypos + xfont_get_ascent(font[style_font[(CURSTYLE>>1)&15]]);
-      CURWIN.line->ascent   = xfont_get_ascent(font[style_font[(CURSTYLE>>1)&15]]);
-      CURWIN.line->descent  = xfont_get_descent(font[style_font[(CURSTYLE>>1)&15]]);
-      CURWIN.line->height   = xfont_get_height(font[style_font[(CURSTYLE>>1)&15]]);
+	CURWIN.ypos + xfont_get_ascent(font[fnum]);
+      CURWIN.line->ascent   = xfont_get_ascent(font[fnum]);
+      CURWIN.line->descent  = xfont_get_descent(font[fnum]);
+      CURWIN.line->height   = xfont_get_height(font[fnum]);
       CURWIN.line->next     = NULL;
 
       displayed_text = CURWIN.lastline->ascent + CURWIN.lastline->descent;
@@ -1954,9 +2159,9 @@ static void new_line(int more)
       displayed_text += distext;
     }
 
-  rct.top    = CURWIN.lastline->baseline - CURWIN.lastline->ascent+2;
-  rct.bottom = CURWIN.lastline->baseline + CURWIN.lastline->descent+2;
-  rct.left   = 2;
+  rct.top    = CURWIN.lastline->baseline - CURWIN.lastline->ascent+BORDERWIDTH;
+  rct.bottom = CURWIN.lastline->baseline + CURWIN.lastline->descent+BORDERWIDTH;
+  rct.left   = BORDERWIDTH;
   rct.right  = rct.left+win_x;
   InvalWindowRect(zoomWindow, &rct);
   
@@ -1965,10 +2170,10 @@ static void new_line(int more)
   line->start     = NULL;
   line->n_chars   = 0;
   line->baseline  = CURWIN.lastline->baseline+CURWIN.lastline->descent;
-  line->baseline += xfont_get_ascent(font[style_font[(CURSTYLE>>1)&15]]);
-  line->ascent    = xfont_get_ascent(font[style_font[(CURSTYLE>>1)&15]]);
-  line->descent   = xfont_get_descent(font[style_font[(CURSTYLE>>1)&15]]);
-  line->height    = xfont_get_height(font[style_font[(CURSTYLE>>1)&15]]);
+  line->baseline += xfont_get_ascent(font[fnum]);
+  line->ascent    = xfont_get_ascent(font[fnum]);
+  line->descent   = xfont_get_descent(font[fnum]);
+  line->height    = xfont_get_height(font[fnum]);
   line->next      = NULL;
 
   CURWIN.lastline->next = line;
@@ -2026,7 +2231,8 @@ static void format_last_text(int more)
 {
   int x;
   struct text* text;
-  int word_start, word_len, total_len, xpos;
+  int word_start, word_len, total_len;
+  XFONT_MEASURE xpos;
   xfont* fn;
   struct line* line;
   Rect rct;
@@ -2037,21 +2243,21 @@ static void format_last_text(int more)
 
   if (CURWIN.lastline == NULL)
     {
-      new_line(more);
+      new_line(more, text->font);
     }
 
   if (text->spacer)
     {
       line = CURWIN.lastline;
       
-      new_line(more);
+      new_line(more, text->font);
 
       CURWIN.lastline->descent = 0;
       CURWIN.lastline->baseline =
 	line->baseline+line->descent+text->space;
       CURWIN.lastline->ascent = text->space;
 
-      new_line(more);
+      new_line(more, text->font);
     }
   else
     {
@@ -2060,6 +2266,37 @@ static void format_last_text(int more)
       total_len  = 0;
       xpos       = CURWIN.xpos;
       line       = CURWIN.lastline;
+
+      if (text->spoken == 0)
+	{
+	  int len,x;
+
+	  if (nextspeech == NULL)
+	    len = 0;
+	  else
+	    len = strlen(nextspeech);
+
+	  nextspeech = realloc(nextspeech, len+text->len+1);
+
+	  for (x=0; x<text->len; x++)
+	    {
+	      nextspeech[len+x] = text->text[x];
+	      switch (nextspeech[len+x])
+		{
+		case '\n':
+		  nextspeech[len+x] = '.';
+		  len++;
+		  nextspeech = realloc(nextspeech, len+text->len+1);
+		  nextspeech[len+x] = ' ';
+		  break;
+		case '>':
+		  nextspeech[len+x] = ' ';
+		  break;
+		}
+	    }
+	  nextspeech[len+x] = '\0';
+	  text->spoken = 1;
+	}
       
       /*
        * Move the other lines to make room if this font is bigger than
@@ -2117,81 +2354,107 @@ static void format_last_text(int more)
 	  CURWIN.lastline->descent = xfont_get_descent(font[text->font]);
 	}
       
-      for (x=0; x<text->len;)
+      if (text->word == NULL)
 	{
-	  if (text->text[x] == ' '  ||
-	      /* Hmm, the standard isn't detailed on whether or not to break 
-	       * on a hyphen. The MacOS version of Zoom is currently the only
-	       * version to do so */
-	      text->text[x] == '-'  ||
-	      text->text[x] == '\n' ||
-	      x == (text->len-1))
-	    {
-	      int w;
-	      int nl;
+	  /*
+	   * Measure and format the text. We measure each word individually,
+	   * see if it will fit on the current line, and create a newline
+	   * if not.
+	   */
+	  text->nwords = 0;
+	  text->word = malloc(sizeof(struct word));
 
-	      nl = 0;
-	      do
+	  for (x=0; x<text->len;)
+	    {
+	      if (text->text[x] == ' '  ||
+		  text->text[x] == '-'  ||
+		  text->text[x] == '\n' ||
+		  x == (text->len-1))
 		{
-		  if (text->text[x] == '\n')
+		  XFONT_MEASURE w;
+		  int nl;
+		  
+		  /* Skip any following spaces */
+		  nl = 0;
+		  do
 		    {
-		      nl = 1;
-		      break;
+		      if (text->text[x] == '\n')
+			{
+			  nl = 1;
+			  break;
+			}
+		      x++;
+		      word_len++;
 		    }
+		  while (!nl &&
+			 (x < text->len &&
+			  (text->text[x] == ' ' ||
+			   text->text[x] == '\n')));
+		  
+		  /* We've got a word - measure it */
+		  w = xfont_get_text_width(fn,
+					   text->text + word_start,
+					   word_len);
+
+		  /* Store the details */
+		  text->word = realloc(text->word,
+				       sizeof(struct word)*(text->nwords+1));
+		  text->word[text->nwords].start   = word_start;
+		  text->word[text->nwords].len     = word_len;
+		  text->word[text->nwords].width   = w;
+		  text->word[text->nwords].newline = nl;
+		  text->nwords++;
+		  
+		  /* Move swiftly along */
+		  word_start += word_len;
+		  total_len  += word_len;
+		  word_len    = 0;
+		  
+		  if (nl)
+		    {
+		      x++;
+		      total_len++;
+		      word_start++;
+		    }
+		}
+	      else
+		{
 		  x++;
 		  word_len++;
 		}
-	      while (!nl &&
-		     (x < text->len &&
-		      (text->text[x] == ' ' ||
-		       text->text[x] == '\n')));
-	      
-	      w = xfont_get_text_width(fn,
-				       text->text + word_start,
-				       word_len);
-
-	      /* We've got a word */
-	      xpos += w;
-	      
-	      if (xpos > CURWIN.winlx)
-		{
-		  /* Put this word on the next line */
-		  new_line(more);
-		  
-		  xpos = CURWIN.xpos + w;
-		  line = CURWIN.lastline;
-		}
-	      
-	      if (line->start == NULL)
-		{
-		  line->offset = word_start;
-		  line->start = text;
-		}
-	      line->n_chars += word_len;
-	      
-	      word_start += word_len;
-	      total_len  += word_len;
-	      word_len    = 0;
-	      
-	      if (nl)
-		{
-		  new_line(more);
-		  
-		  x++;
-		  total_len++;
-		  word_start++;
-		  
-		  xpos = CURWIN.xpos;
-		  line = CURWIN.lastline;
-		}
-	    }
-	  else
-	    {
-	      word_len++;
-	      x++;
 	    }
 	}
-      
+
+      /* Actually format the text */
+      for (x=0; x<text->nwords; x++)
+	{
+	  xpos += text->word[x].width;
+	  
+	  if (xpos > CURWIN.winlx)
+	    {
+	      /* This word goes on the next line */
+	      new_line(more, text->font);
+
+	      xpos = CURWIN.xpos + text->word[x].width;
+	      line = CURWIN.lastline;
+	    }
+
+	  if (line->start == NULL)
+	    {
+	      line->offset = text->word[x].start;
+	      line->start  = text;
+	    }
+	  line->n_chars += text->word[x].len;
+	  
+	  if (text->word[x].newline)
+	    {
+	      new_line(more, text->font);
+	      
+	      xpos = CURWIN.xpos;
+	      line = CURWIN.lastline;
+	    }
+	}
+
       CURWIN.xpos = xpos;
     }
 
@@ -2211,10 +2474,10 @@ static void format_last_text(int more)
       SetControl32BitValue  (zoomScroll, 0);
     }
   
-  rct.top    = CURWIN.lastline->baseline - CURWIN.lastline->ascent+2;
-  rct.bottom = CURWIN.lastline->baseline + CURWIN.lastline->descent+2;
-  rct.left   = 2;
-  rct.right  = win_x+2;
+  rct.top    = CURWIN.lastline->baseline - CURWIN.lastline->ascent+BORDERWIDTH;
+  rct.bottom = CURWIN.lastline->baseline + CURWIN.lastline->descent+BORDERWIDTH;
+  rct.left   = BORDERWIDTH;
+  rct.right  = win_x+BORDERWIDTH;
   InvalWindowRect(zoomWindow, &rct);
 }
 
@@ -2245,10 +2508,10 @@ void display_prints(const int* str)
 	    {
 	      if (CURWIN.xpos >= size_x)
 		{
-		  rct.top = CURWIN.ypos*xfont_y+2;
-		  rct.bottom = CURWIN.ypos*xfont_y+2+xfont_y;
-		  rct.left   = sx*xfont_x+2;
-		  rct.right  = win_x+2;
+		  rct.top = CURWIN.ypos*xfont_y+BORDERWIDTH;
+		  rct.bottom = CURWIN.ypos*xfont_y+BORDERWIDTH+xfont_y;
+		  rct.left   = sx*xfont_x+BORDERWIDTH;
+		  rct.right  = win_x+BORDERWIDTH;
 		  InvalWindowRect(zoomWindow, &rct);
 		  sx = 0;
 		  
@@ -2281,10 +2544,10 @@ void display_prints(const int* str)
 		{
 		case 10:
 		case 13:
-		  rct.top = CURWIN.ypos*xfont_y+2;
-		  rct.bottom = CURWIN.ypos*xfont_y+2+xfont_y;
-		  rct.left   = sx*xfont_x+2;
-		  rct.right  = CURWIN.xpos*xfont_x+2;
+		  rct.top = CURWIN.ypos*xfont_y+BORDERWIDTH;
+		  rct.bottom = CURWIN.ypos*xfont_y+BORDERWIDTH+xfont_y;
+		  rct.left   = sx*xfont_x+BORDERWIDTH;
+		  rct.right  = CURWIN.xpos*xfont_x+BORDERWIDTH;
 		  InvalWindowRect(zoomWindow, &rct);
 
 		  sx = 0;
@@ -2300,10 +2563,10 @@ void display_prints(const int* str)
 	    }
 	}
 
-      rct.top    = CURWIN.ypos*xfont_y+2;
-      rct.bottom = CURWIN.ypos*xfont_y+2+xfont_y;
-      rct.left   = sx*xfont_x+2;
-      rct.right  = CURWIN.xpos*xfont_x+2;
+      rct.top    = CURWIN.ypos*xfont_y+BORDERWIDTH;
+      rct.bottom = CURWIN.ypos*xfont_y+BORDERWIDTH+xfont_y;
+      rct.left   = sx*xfont_x+BORDERWIDTH;
+      rct.right  = CURWIN.xpos*xfont_x+BORDERWIDTH;
       InvalWindowRect(zoomWindow, &rct);
     }
   else
@@ -2330,6 +2593,8 @@ void display_prints(const int* str)
       text->len    = istrlen(str);
       text->text   = malloc(sizeof(int)*text->len);
       text->next   = NULL;
+      text->word   = NULL;
+      text->spoken = 0;
       memcpy(text->text, str, sizeof(int)*text->len);
 
       if (CURWIN.lasttext == NULL)
@@ -2409,6 +2674,8 @@ void display_set_title(const char* title)
   strcat(tit+1, title);
   tit[0] = strlen(tit+1);
   SetWTitle(zoomWindow, tit);
+
+  strcpy(carbon_title, title);
 }
 
 void display_update(void)
@@ -2465,7 +2732,9 @@ void display_split       (int lines, int window)
 	    (CURWIN.lastline->baseline + CURWIN.lastline->descent);
 	  CURWIN.lasttext->len    = 0;
 	  CURWIN.lasttext->text   = NULL;
-	  CURWIN.lasttext->font   = style_font[CURSTYLE];
+	  CURWIN.lasttext->font   = style_font[(CURSTYLE>>1)&15];
+	  CURWIN.lasttext->word   = NULL;
+	  CURWIN.lasttext->spoken = 0;
 
 	  if (CURWIN.style&1)
 	    {
@@ -2610,6 +2879,10 @@ int  display_set_style   (int style)
 	CURWIN.style &= ~(-style);
     }
 
+  dassert(CURWIN.style < 32);
+  dassert(style_font[(CURWIN.style>>1)&15] >= 0);
+  dassert(style_font[(CURWIN.style>>1)&15] <= n_fonts);
+
   return old_style;
 }
 
@@ -2624,6 +2897,8 @@ void display_erase_line  (int val)
       else
 	val += CURWIN.xpos;
 
+      dassert(style_font[4] >= 0 &&
+	      style_font[4] <= n_fonts);
       for (x=CURWIN.xpos; x<val; x++)
 	{
 	  CURWIN.cline[CURWIN.ypos].cell[x] = ' ';
@@ -2735,15 +3010,19 @@ int main(int argc, char** argv)
   Rect rct;
   EventTypeSpec   appevts[] = 
     { 
-      { kEventClassCommand, kEventCommandProcess },
-      { kEventClassMouse,   kEventMouseDown },
+      { kEventClassCommand,    kEventCommandProcess },
+      { kEventClassMouse,      kEventMouseDown },
       { kEventClassAppleEvent, kEventAppleEvent }
     };
   EventTypeSpec   wndevts[] = 
     { 
       { kEventClassWindow,     kEventWindowDrawContent },
       { kEventClassWindow,     kEventWindowResizeCompleted },
-      { kEventClassWindow,     kEventWindowBoundsChanged },
+      { kEventClassWindow,     kEventWindowBoundsChanged, },
+      { kEventClassWindow,     kEventWindowFocusAcquired },
+      { kEventClassWindow,     kEventWindowFocusRelinquish },
+      { kEventClassWindow,     kEventWindowActivated },
+      { kEventClassWindow,     kEventWindowDeactivated },
       { kEventClassMouse,      kEventMouseDown },
       { kEventClassCommand,    kEventProcessCommand },
       { kEventClassTextInput,  kEventTextInputUnicodeForKeyEvent }
@@ -2752,6 +3031,121 @@ int main(int argc, char** argv)
   EventTargetRef target;
   EventRef       event;
 
+  /* Create the default .zoomrc, if necessary */
+  {
+    char*       home;
+    char*       filename;
+
+    FILE* f;
+
+    /* Get the location of ~/.zoomrc */
+    home = getenv("HOME");
+    if (home == NULL)
+      {
+	carbon_display_message("Unable to locate home directory", "(Zoom probably won't start)");
+	filename = "zoomrc";
+      }
+    else
+      {
+	filename = malloc(strlen(home)+9);
+	strcpy(filename, home);
+	strcat(filename, "/.zoomrc");
+      }
+
+    /* See if it exists... */
+    f = fopen(filename, "r");
+    if (f == NULL)
+      {
+	CFBundleRef ourbundle;
+	CFURLRef    zoomrc;
+	CFStringRef path;
+
+	/* It doesn't... Get the location of the default zoomrc... */
+	ourbundle = CFBundleGetMainBundle();
+	zoomrc = CFBundleCopyResourceURL(ourbundle, CFSTR("zoomrc"), NULL,
+					 NULL);
+	if (zoomrc != nil)
+	  path = CFURLCopyFileSystemPath(zoomrc, kCFURLPOSIXPathStyle);
+
+	if (zoomrc == nil || path == nil)
+	  {
+	    carbon_display_message("Unable to locate default .zoomrc", "Zoom probably won't start. You may be able to try creating .zoomrc by hand");
+	  }
+	else
+	  {
+	    char name[512];
+	    FILE* o;
+
+	    CFStringGetCString(path, name, 511, kCFStringEncodingUTF8);
+
+	    /* Create the new one and copy the contents of the default one there */
+	    f = fopen(name, "r");
+	    o = fopen(filename, "w");
+
+	    if (f == NULL)
+	      carbon_display_message("Unable to open default .zoomrc", "Zoom probably won't start. You may be able to try creating .zoomrc by hand");
+	    if (o == NULL)
+	      carbon_display_message("Unable to open user .zoomrc", "Zoom probably won't start. You may be able to try creating .zoomrc by hand");
+
+	    if (f != NULL && o != NULL)
+	      while (!feof(f))
+		{
+		  char buf[128];
+		  int len;
+
+		  len = fread(buf, 1, 128, f);
+		  fwrite(buf, 1, len, o);
+		}
+
+	    if (f != NULL)
+	      fclose(f);
+	    if (o != NULL)
+	      fclose(o);
+	  }
+
+	CFRelease(zoomrc);
+	CFRelease(path);
+      }
+    else
+      fclose(f);
+  }
+
+  /* Read the preferences */
+  {
+    Boolean isvalid;
+
+    carbon_prefs.use_speech = 
+      CFPreferencesGetAppIntegerValue(CFSTR("useSpeech"),
+				      kCFPreferencesCurrentApplication,
+				      &isvalid);
+    if (!isvalid)
+      {
+	carbon_prefs.use_speech = 0;
+      }
+
+    carbon_prefs.show_warnings = 
+      CFPreferencesGetAppIntegerValue(CFSTR("showWarnings"),
+				      kCFPreferencesCurrentApplication,
+				      &isvalid);
+    if (!isvalid)
+      carbon_prefs.show_warnings = 0;
+
+    carbon_prefs.fatal_warnings = 
+      CFPreferencesGetAppIntegerValue(CFSTR("fatalWarnings"),
+				      kCFPreferencesCurrentApplication,
+				      &isvalid);
+    if (!isvalid)
+      carbon_prefs.fatal_warnings = 0;
+
+    carbon_prefs.use_quartz = 
+      CFPreferencesGetAppIntegerValue(CFSTR("useQuartz"),
+				      kCFPreferencesCurrentApplication,
+				      &isvalid);
+    if (!isvalid)
+      carbon_prefs.use_quartz = 0;
+  }
+
+  /* Set the menu bar */
   CreateNibReference(CFSTR("zoom"), &nib);
   SetMenuBarFromNib(nib, CFSTR("MenuBar"));
   DisposeNibReference(nib);
@@ -2777,10 +3171,8 @@ int main(int argc, char** argv)
   CreateScrollBarControl(zoomWindow, &rct, 0,0,0,0, true, 
 			 NewControlActionUPP(zoom_scroll_handler), 
 			 &zoomScroll);
-  
+
   /* Apple Event handlers */
-  EnableMenuCommand(NULL,kAEShowPreferences);
-  
   AEInstallEventHandler(kCoreEventClass, kAEOpenApplication, 
 			NewAEEventHandlerUPP(ae_open_handler), 0,
 			false);
@@ -2802,7 +3194,7 @@ int main(int argc, char** argv)
 				 3, appevts, 0, NULL);
   InstallWindowEventHandler(zoomWindow,
 			    NewEventHandlerUPP(zoom_wnd_handler),
-			    6, wndevts, 0, NULL);
+			    10, wndevts, 0, NULL);
 
   /* Wait for the open event to arrive */
 
@@ -2821,6 +3213,8 @@ int main(int argc, char** argv)
 	  ReleaseEvent(event);
 	}
     }
+
+  xfont_initialise();
 
   zoom_main(argc, argv);
 
@@ -2849,6 +3243,18 @@ static int process_events(long int timeout,
 
   target = GetEventDispatcherTarget();
 
+  if (nextspeech != NULL)
+    {
+      if (lastspeech != NULL)
+	free(lastspeech);
+      
+      lastspeech = nextspeech;
+      nextspeech = NULL;
+
+      if (carbon_prefs.use_speech)
+	SpeakBuffer(speechchan, lastspeech, strlen(lastspeech), 0);
+    }
+
   if (forceopenfs != NULL)
     {
       free(forceopenfs);
@@ -2870,9 +3276,16 @@ static int process_events(long int timeout,
 			    &ourtime);
     }
 			  
-
-  show_caret();
-  caret_flashing = 1;
+  if (!more_on)
+    {
+      show_caret();
+      caret_flashing = 1;
+    }
+  else
+    {
+      hide_caret();
+      caret_flashing = 0;
+    }
   display_update();
 
   if (buf != NULL)

@@ -26,6 +26,17 @@
 
 #include "../config.h"
 
+#if WINDOW_SYSTEM == 3
+# include "carbondisplay.h"
+# if defined(USE_QUARTZ) || defined(USE_ATS)
+#  define XFONT_MEASURE float
+# else
+#  define XFONT_MEASURE int
+# endif
+#else
+# define XFONT_MEASURE int
+#endif
+
 struct xfont;
 
 typedef struct xfont xfont;
@@ -38,13 +49,13 @@ extern void    xfont_release_font  (xfont*);
 
 extern void    xfont_set_colours   (int,
 				    int);
-extern int     xfont_get_width     (xfont*);
-extern int     xfont_get_height    (xfont*);
-extern int     xfont_get_ascent    (xfont*);
-extern int     xfont_get_descent   (xfont*);
-extern int     xfont_get_text_width(xfont*,
-				    const int*,
-				    int);
+extern XFONT_MEASURE xfont_get_width     (xfont*);
+extern XFONT_MEASURE xfont_get_height    (xfont*);
+extern XFONT_MEASURE xfont_get_ascent    (xfont*);
+extern XFONT_MEASURE xfont_get_descent   (xfont*);
+extern XFONT_MEASURE xfont_get_text_width(xfont*,
+					  const int*,
+					  int);
 #if WINDOW_SYSTEM==1
 extern void    xfont_plot_string   (xfont*,
 				    Drawable,
@@ -63,7 +74,7 @@ extern void xfont_choose_new_font(xfont*,
 				  int);
 #elif WINDOW_SYSTEM==3
 extern void xfont_plot_string(xfont*,
-			      int, int,
+			      XFONT_MEASURE, XFONT_MEASURE,
 			      const int*,
 			      int);
 #endif
