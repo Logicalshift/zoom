@@ -574,9 +574,9 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 			
 			if (![skeinItem played]) background = unplayed;
 			if ([skeinItem changed]) background = changed;
-			if (skeinItem == activeItem) background = active;
+			// if (skeinItem == activeItem) background = active;
 			if ([skeinItem parent] == activeItem) background = active;
-			if (skeinItem == [self selectedItem]) background = selected;
+			// if (skeinItem == [self selectedItem]) background = selected;
 			
 			[[self class] drawImage: background
 							atPoint: NSMakePoint(xpos - bgWidth/2.0, ypos-8 + (background==selected?2.0:0.0))
