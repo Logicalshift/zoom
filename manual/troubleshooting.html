@@ -45,6 +45,7 @@ Zoom Manual - Troubleshooting
       <ul>
         <li><a href="#macdata">Infocom data files</a>
 	<li><a href="#defterp">Making Zoom the default interpreter</a>
+	<li><a href="#osxfonts">Fonts</a>
 	<li><a href="#osximg">Images</a> (while compiling)
       </ul>
     <li><a href="#xwin">X-Windows</a>
@@ -132,6 +133,25 @@ cp &quot;~/Desktop/GAME&quot; &quot;~/Desktop/GAME.z5&quot;
     Info' (Command-I, or from the File menu), and choose Zoom from the
     'Open with Application' dialog. Click 'Change All' to set Zoom as
     the default interpreter for all games of this type.
+  </p>
+
+  <h3><a name="osxfonts">
+    Fonts
+  </h3>
+
+  <p>
+    Zoom offers both QuickDraw and Quartz font rendering. Unicode is
+    supported in both systems. The Quartz system is, however, much
+    slower than its QuickDraw equivalent (partly due to the lack of
+    adequate functions for measuring text dimensions). Under Quartz,
+    the upper window of version 5 games may not look quite right
+    (occasional large spaces, and possibly areas not being
+    redrawn). This is because ATSUI can sometimes compose characters
+    into ligatures (for example fi), occasionally reducing the length
+    of strings. Unfortunately, there does not appear to be a way of
+    turning off this behaviour - except by switching back to
+    QuickDraw, whose old-fashioned font renderer doesn't do this.
+    This may also affect the display in version 6 games.
   </p>
 
   <h3><a name="osximg">
