@@ -1724,11 +1724,11 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 			if ([[NSFileManager defaultManager] createFileAtPath:fn
 														   contents:[NSData data]
 														 attributes:
-			[NSDictionary dictionaryWithObjectsAndKeys: 
-                [NSNumber numberWithLong: creatorCode], NSFileHFSCreatorCode,
-                [NSNumber numberWithLong: typeCode], NSFileHFSTypeCode,
-                [NSNumber numberWithBool: [panel isExtensionHidden]], NSFileExtensionHidden,
-                nil]]) {
+				[NSDictionary dictionaryWithObjectsAndKeys: 
+					[NSNumber numberWithLong: creatorCode], NSFileHFSCreatorCode,
+					[NSNumber numberWithLong: typeCode], NSFileHFSTypeCode,
+					[NSNumber numberWithBool: [panel isExtensionHidden]], NSFileExtensionHidden,
+					nil]]) {
 				file = [NSFileHandle fileHandleForWritingAtPath: fn];
 			}
         
@@ -2022,7 +2022,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 
 // = NSCoding =
 - (void) encodeWithCoder: (NSCoder*) encoder {
-	int encodingVersion = 100;
+	int encodingVersion = 101;
 	
 	[encoder encodeValueOfObjCType: @encode(int) 
 								at: &encodingVersion];
@@ -2047,7 +2047,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		[decoder decodeValueOfObjCType: @encode(int)
 									at: &encodingVersion];
 		
-		if (encodingVersion == 100) {
+		if (encodingVersion == 100 || encodingVersion == 101) {
 			if (lastAutosave) [lastAutosave release];
 			if (upperWindows) [upperWindows release];
 			if (lowerWindows) [lowerWindows release];
@@ -2063,6 +2063,10 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 			
 			commandHistory = [[decoder decodeObject] retain];
 			
+			if (encodingVersion == 101) {
+				pixmapWindow = [[decoder decodeObject] retain];
+			}
+			
 			// Final setup
 			upperWindowsToRestore = [upperWindows count];
 			
@@ -2070,6 +2074,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 										  withObject: self];
 			[lowerWindows makeObjectsPerformSelector: @selector(setZoomView:)
 										  withObject: self];
+			if (pixmapWindow) [pixmapWindow setZoomView: self];
 			
 			// Load the state into the z-machine
 			if (zMachine) {

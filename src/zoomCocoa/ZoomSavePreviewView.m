@@ -90,8 +90,7 @@
 			// Presumably, this is a valid preview file...
 			ZoomUpperWindow* win = [NSUnarchiver unarchiveObjectWithFile: previewFile];
 			
-			if (win == nil) continue;
-			if (![win isKindOfClass: [ZoomUpperWindow class]]) continue;
+			if (win != nil && ![win isKindOfClass: [ZoomUpperWindow class]]) continue;
 			
 			// We've got a valid window - add to the list of upper windows
 			ZoomSavePreview* preview;

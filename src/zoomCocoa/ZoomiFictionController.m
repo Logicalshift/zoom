@@ -983,7 +983,7 @@ int tableSorter(id a, id b, void* context) {
 		NSString* dir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: ident 
 																			  create: NO];
 		[previewView setDirectoryToUse: [dir stringByAppendingPathComponent: @"Saves"]];
-
+		
 		[resourceDrop setDroppedFilename: [story objectForKey: @"ResourceFilename"]];
 		[resourceDrop setEnabled: YES];
 	} else {
@@ -1629,7 +1629,7 @@ int tableSorter(id a, id b, void* context) {
                                               forKey: @"ZoomiFictionSavePath"];
 }	
 
-// ResourceDrop delegate
+// = ResourceDrop delegate =
 
 - (void) resourceDropFilenameChanged: (ZoomResourceDrop*) drop {
 	ZoomStoryOrganiser* org = [ZoomStoryOrganiser sharedStoryOrganiser];
