@@ -1599,6 +1599,21 @@ static int process_events(long int to, int* buf, int buflen)
 	      break;
 
 	    case ConfigureNotify:
+#ifdef HAVE_XFT
+	      if (xft_drawable != NULL)
+		{
+		  /*
+		   * Sometimes the xft_drawable breaks when the window is 
+		   * resized - in particular when we're using DBE.
+		   * Recreating it fixes this...
+		   */
+		  XftDrawDestroy(xft_drawable);
+		  xft_drawable = XftDrawCreate(x_display, x_drawable,
+					       DefaultVisual(x_display, x_screen), 
+					       DefaultColormap(x_display, x_screen));
+		}
+#endif
+
 	      if (ev.xconfigure.width != win_width ||
 		  ev.xconfigure.height != win_height)
 		{
