@@ -776,10 +776,49 @@ static pascal OSStatus pref_wnd_evt(EventHandlerCallRef handler,
 		      }
 		    else
 		      {
+			int x;
+			int str1[] = { 'M' };
+			int str2[] = { 'i' };
+			XFONT_MEASURE base_width;
+			XFONT_MEASURE base_height;
+
 			pref_store();
 
 			DisposeWindow(carbon_prefdlog);
 			carbon_prefdlog = nil;
+
+			base_width =
+			  xfont_get_width(font[style_font[4]]);
+			base_height =
+			  xfont_get_height(font[style_font[4]]);
+
+			/* Check our stats */
+			for (x=4; x<7; x++)
+			  {
+			    if (xfont_get_text_width(font[style_font[x]], str1, 1) !=
+				xfont_get_text_width(font[style_font[x]], str2, 1))
+			      {
+				carbon_display_message("One of the 'fixed-pitch' fonts does not appear to be fixed pitch",
+						       "One of the fonts you have selected as a 'fixed-pitch' font (the fixed-* family of fonts) appears to have some characters that vary in width. Zoom can cope with this, but many games rely on truly fixed-pitch fonts (such as Courier or Monaco) to display correctly");
+				break;
+			      }
+
+			    if (xfont_get_width(font[style_font[x]]) !=
+				base_width)
+			      {
+				carbon_display_message("One of the fixed-pitch fonts you have selected is of a different width to the others",
+						       "Many games require that all the fixed-pitch fonts be the same shape: one of the ones you have selected has a different width to the others.");
+				break;
+			      }
+
+			    if (xfont_get_height(font[style_font[x]]) !=
+				base_height)
+			      {
+				carbon_display_message("One of the fixed-pitch fonts you have selected is of a different height to the others",
+						       "Many games require that all the fixed-pitch fonts be the same shape: one of the ones you have selected has a different height to the others.");
+				break;
+			      }
+			  }
 		      }
 		  }
 		return noErr;

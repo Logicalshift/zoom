@@ -258,6 +258,10 @@ dir &quot;/usr/X11R6/lib/X11/fonts/Type1&quot;
     <li>Various problems with promptless file saving under Mac OS X
     <li>You can load resources by dragging, but not savefiles
     <li>No drag highlights shown
+    <li>Under Mac OS X 10.2, some modal loops are never exitted 
+      (those initiated by carbon_display_message and 
+      carbon_ask_question. I *think* this bug never occurs in
+      OS X 10.1)
   </ul>
 
   <h3>1.0.1beta1</h3>

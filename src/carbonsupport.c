@@ -185,7 +185,7 @@ void carbon_display_message(char* title, char* message)
 	{
 	  carbon_questdlog = msgdlog;
 	  res = ShowSheetWindow(GetDialogWindow(msgdlog), carbon_message_win);
-	  RunAppModalLoopForWindow(GetDialogWindow(msgdlog));
+	  RunAppModalLoopForWindow(carbon_message_win);
 	}
 
       if (res != noErr)
@@ -339,7 +339,7 @@ enum carbon_file_type carbon_type_fsref(FSRef* file)
     case 'IFRS':
       return TYPE_IFRS;
 
-    case '????':
+    case '\?\?\?\?':
     case 'TEXT':
     case 'BINA':
     case 0:
@@ -587,9 +587,10 @@ static Boolean zcode_filter(AEDesc*        theItem,
 	      display = true;
 	      break;
 
-	    case '????':
+	    case '\?\?\?\?':
 	    case 'TEXT':
 	    case 0:
+	    default:
 	      {
 		HFSUniStr255 outName;
 		FSRef ourref;
@@ -605,11 +606,18 @@ static Boolean zcode_filter(AEDesc*        theItem,
 				 NULL,
 				 NULL);
 
-		/* See if the extension is .z[345678]*/
+		/* See if the extension is .z[345678]/.zlb */
 		if (outName.unicode[outName.length-3] == '.' &&
 		    outName.unicode[outName.length-2] == 'z' &&
 		    outName.unicode[outName.length-1] >= '3' &&
 		    outName.unicode[outName.length-1] <= '8')
+		  {
+		    display = true;
+		  }
+		else if (outName.unicode[outName.length-3] == '.' &&
+			 outName.unicode[outName.length-2] == 'z' &&
+			 outName.unicode[outName.length-1] >= 'l' &&
+			 outName.unicode[outName.length-1] <= 'b')
 		  {
 		    display = true;
 		  }
@@ -619,9 +627,6 @@ static Boolean zcode_filter(AEDesc*        theItem,
 		  }
 	      }
 	      break;
-	      
-	    default:
-	      display = false;
 	    }
 	}
     }
@@ -650,7 +655,7 @@ Boolean savegame_filter(AEDesc*        theItem,
 	      display = true;
 	      break;
 
-	    case '????':
+	    case '\?\?\?\?':
 	    case 'TEXT':
 	    case 0:
 	      {

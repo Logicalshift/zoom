@@ -15,10 +15,12 @@ Hmm, this file was a bit out of date.
  X startup message
  X Colour preference thing
  X Colour preference change redraw bug...
- * heirarchical fonts
- * warning for non-fixed font set as fixed font
- * reset pixmap display on restart under v6
  X drag and drop support for file loading
+ X warning for non-fixed font set as fixed font
+ X bug with Jaguar/carbon_display_message?
+ * heirarchical fonts
+ * reset pixmap display on restart under v6
+ * XSL documentation
 
  * Sound
  * Internationalisation support

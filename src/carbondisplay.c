@@ -1771,7 +1771,14 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 	    switch (cmd.commandID)
 	      {
 	      case kHICommandOK:
-		if (fataldlog != nil)
+		if (carbon_questdlog != nil)
+		  {
+		    QuitAppModalLoopForWindow(carbon_message_win);
+		    carbon_questdlog = nil;
+		    carbon_q_res = 1;
+		    return noErr;
+		  }
+		else if (fataldlog != nil)
 		  {
 		    fataldlog = nil;
 		    display_exit(1);
@@ -1783,19 +1790,19 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 		    display_exit(0);
 		    return noErr;
 		  }
-		else if (carbon_questdlog != nil)
-		  {
-		    QuitAppModalLoopForWindow(GetDialogWindow(carbon_questdlog));
-		    carbon_questdlog = nil;
-		    carbon_q_res = 1;
-		    return noErr;
-		  }
 
 		return eventNotHandledErr;
 		break;
 
 	      case kHICommandCancel:
-		if (fataldlog != nil)
+		if (carbon_questdlog != nil)
+		  {
+		    QuitAppModalLoopForWindow(GetDialogWindow(carbon_questdlog));
+		    carbon_questdlog = nil;
+		    carbon_q_res = 0;
+		    return noErr;
+		  }
+		else if (fataldlog != nil)
 		  {
 		    fataldlog = nil;
 		    return noErr;
@@ -1803,13 +1810,6 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 		else if (quitdlog != nil)
 		  {
 		    quitdlog = nil;
-		    return noErr;
-		  }
-		else if (carbon_questdlog != nil)
-		  {
-		    QuitAppModalLoopForWindow(GetDialogWindow(carbon_questdlog));
-		    carbon_questdlog = nil;
-		    carbon_q_res = 0;
 		    return noErr;
 		  }
 		break;
@@ -3398,7 +3398,7 @@ void display_plot_image(BlorbImage* img, int x, int y)
   int sc_n, sc_d;
 
   if (pixmap == NULL)
-    printf("Blech\n");
+    zmachine_fatal("Programmer is a spoon: tried to use pixmap display functions when none were available");
 
   if (img == NULL)
     return;
