@@ -172,6 +172,7 @@ int xfont_x = 0;
 int xfont_y = 0;
 static int win_x, win_y;
 static int total_x, total_y;
+static int start_y;
 
 static int  caret_x, caret_y, caret_height;
 static int  input_x, input_y;
@@ -190,6 +191,7 @@ static int   more_on = 0;
 static int   displayed_text = 0;
 
 static void draw_input_text(HDC dc);
+static void update_status_text(void);
 
 /***                           ----// 888 \\----                           ***/
 
@@ -314,6 +316,8 @@ void display_finalise(void)
 void display_clear(void)
 {
   int x, y, z;
+
+  displayed_text = 0;
   
   /* Clear the main text window */
   text_win[0].force_fixed = 0;
@@ -324,12 +328,14 @@ void display_clear(void)
   text_win[0].back        = DEFAULT_BACK+FIRST_ZCOLOUR;
   text_win[0].style       = 0;
   text_win[0].xpos        = 0;
-  text_win[0].ypos        = 0;
+  text_win[0].ypos        = win_y;
   text_win[0].winsx       = 0;
   text_win[0].winsy       = 0;
   text_win[0].winlx       = win_x;
   text_win[0].winly       = win_y;
   text_win[0].winback     = DEFAULT_BACK+FIRST_ZCOLOUR;
+
+  start_y = text_win[0].ypos;
 
   /* Clear the overlay windows */
   for (x=1; x<3; x++)
@@ -402,7 +408,25 @@ static void new_line(int more)
       CURWIN.line->height   = xfont_get_height(font[style_font[(CURSTYLE>>1)&15]]);
       CURWIN.line->next     = NULL;
 
+      displayed_text = CURWIN.lastline->ascent + CURWIN.lastline->descent;
+      
       return;
+    }
+
+  if (more != 0)
+    {
+      int distext;
+
+      distext = CURWIN.lastline->ascent + CURWIN.lastline->descent;
+      if (displayed_text+distext >= (CURWIN.winly - CURWIN.winsy))
+	{
+	  more_on = 1;
+	  update_status_text();
+	  display_readchar(0);
+	  more_on = 0;
+	  update_status_text();
+	}
+      displayed_text += distext;
     }
 
   rct.top    = CURWIN.lastline->baseline - CURWIN.lastline->ascent+4;
@@ -485,6 +509,62 @@ static void format_last_text(int more)
   total_len  = 0;
   xpos       = CURWIN.xpos;
   line       = CURWIN.lastline;
+
+  /*
+   * Move the other lines to make room if this font is bigger than
+   * ones previously used on this line
+   */
+  if (CURWIN.lastline->ascent < xfont_get_ascent(font[text->font]))
+    {
+      int toscroll;
+      struct line* l;
+
+      toscroll = xfont_get_ascent(font[text->font]) - CURWIN.lastline->ascent;
+      
+      l = CURWIN.line;
+      while (l != CURWIN.lastline)
+	{
+	  if (l == NULL)
+	    zmachine_fatal("Programmer is a spoon");
+
+	  l->baseline -= toscroll;
+	  l = l->next;
+	}
+      if (more != 0)
+	displayed_text += toscroll;
+      CURWIN.lastline->ascent = xfont_get_ascent(font[text->font]);
+      display_update();
+    }
+
+  /*
+   * Ditto
+   */
+  if (CURWIN.lastline->descent < xfont_get_descent(font[text->font]))
+    {
+      int toscroll;
+      
+      toscroll = xfont_get_descent(font[text->font]) -
+	CURWIN.lastline->descent;
+      if (CURWIN.lastline->baseline+xfont_get_descent(font[text->font]) 
+	  > CURWIN.winly)
+	{
+	  struct line* l;
+
+	  l = CURWIN.line;
+
+	  while (l != NULL)
+	    {
+	      l->baseline -= toscroll;
+	      l = l->next;
+	    }
+
+	  display_update();
+	}
+      
+      if (more != 0)
+	displayed_text += toscroll;
+      CURWIN.lastline->descent = xfont_get_descent(font[text->font]);
+    }
   
   for (x=0; x<text->len; x++)
     {
@@ -781,7 +861,7 @@ void printf_debug(char* format, ...)
     }
 }
 
-void printf_info (char* format, ...)
+void printf_info(char* format, ...)
 {
   va_list ap;
   char     string[512];
@@ -879,7 +959,8 @@ void printf_error_done(void)
 int display_readline(int* buf, int buflen, long int timeout)
 {
   int result;
-  
+
+  displayed_text = 0;
   result = process_events(timeout, buf, buflen);
 
   return result;
@@ -887,6 +968,7 @@ int display_readline(int* buf, int buflen, long int timeout)
 
 int display_readchar(long int timeout)
 {
+  displayed_text = 0;
   return process_events(timeout, NULL, 0);
 }
 
@@ -966,9 +1048,14 @@ void display_split(int lines, int window)
   text_win[window].xpos  = 0;
   text_win[window].ypos  = 0;
 
+  CURWIN.topline = NULL;
   CURWIN.winsy += xfont_y*lines;
   if (CURWIN.ypos < CURWIN.winsy)
-    CURWIN.ypos = CURWIN.winsy;
+    {
+      if (CURWIN.line == NULL)
+	start_y = CURWIN.winsy;
+      CURWIN.ypos = CURWIN.winsy;
+    }
 }
 
 void display_join(int window1, int window2)
@@ -976,7 +1063,9 @@ void display_join(int window1, int window2)
   if (text_win[window1].winsy != text_win[window2].winly)
     return; /* Windows can't be joined */
   text_win[window1].winsy = text_win[window2].winsy;
-  text_win[window2].winly = text_win[window2].winsy;  
+  text_win[window2].winly = text_win[window2].winsy;
+
+  text_win[window1].topline = text_win[window2].topline = NULL;
 }
 
 void display_set_cursor(int x, int y)
@@ -993,6 +1082,7 @@ void display_set_cursor(int x, int y)
 
       CURWIN.xpos = x*xfont_x;
       CURWIN.ypos = y*xfont_y;
+      start_y = CURWIN.ypos;
     }
 }
 
@@ -1063,7 +1153,7 @@ void display_set_window(int window)
 {
   text_win[window].fore = CURWIN.fore;
   text_win[window].back = CURWIN.back;
-  text_win[window].style = CURWIN.style;
+  // text_win[window].style = CURWIN.style;
   cur_win = window;
 }
 
@@ -1080,6 +1170,8 @@ void display_set_more(int window,
 void display_erase_window(void)
 {
   RECT rct;
+
+  displayed_text = 0;
   
   if (CURWIN.overlay)
     {
@@ -1126,7 +1218,7 @@ void display_erase_window(void)
       
       for (y=(CURWIN.winsy/xfont_y); y<size_y; y++)
 	{
-	  for (x=0; x<size_x; x++)
+	  for (x=0; x<max_x; x++)
 	    {
 	      for (z=1; z<=2; z++)
 		{
@@ -1180,7 +1272,6 @@ void display_force_fixed(int window,
   CURWIN.force_fixed = val;
 }
 
-
 /***                           ----// 888 \\----                           ***/
 
 void display_beep(void)
@@ -1211,13 +1302,13 @@ static void draw_window(int win,
 
       x = 0; y = 0;
 
-      for (y=0; y<size_y; y++)
+      for (y=(text_win[win].winsy/xfont_y); y<size_y; y++)
 	{
 	  for (x=0; x<size_x; x++)
 	    {
 	      if (text_win[win].cline[y].cell[x] != ' ' ||
 		  text_win[win].cline[y].bg[x]   != text_win[0].winback ||
-		  y*xfont_y<text_win[0].winsy)
+		  y*xfont_y<text_win[win].winly)
 		{
 		  int len;
 		  int fn, fg, bg;
@@ -1254,6 +1345,19 @@ static void draw_window(int win,
 		  x+=len-1;
 		}
 	    }
+
+	  if (xfont_x*size_x < win_x &&
+	      y*xfont_y<text_win[win].winly)
+	    {
+	      RECT frct;
+
+	      frct.top    = y*xfont_y+4;
+	      frct.left   = xfont_x*size_x+4;
+	      frct.bottom = frct.top + xfont_y;
+	      frct.right  = win_x+4;
+	      FillRect(dc, &frct,
+		       winbrush[text_win[win].cline[y].bg[size_x-1]]);
+	    }
 	}
     }
   else
@@ -1265,6 +1369,46 @@ static void draw_window(int win,
 
       struct text* lasttext;
       int lastchars, nchars, x, width, lasty;
+
+      line = text_win[win].line;
+
+      /* Free any lines that scrolled off ages ago */
+      if (line != NULL)
+	while (line->baseline < -8192)
+	  {
+	    struct line* n;
+
+	    n = line->next;
+	    if (n == NULL)
+	      break;
+
+	    if (text_win[win].topline == line)
+	      text_win[win].topline = NULL;
+
+	    if (n->start != line->start)
+	      {
+		struct text* nt;
+		
+		if (line->start != text_win[win].text)
+		  zmachine_fatal("Programmer is a spoon");
+		text_win[win].text = n->start;
+
+		text = line->start;
+		while (text != n->start)
+		  {
+		    if (text == NULL)
+		      zmachine_fatal("Programmer is a spoon");
+		    nt = text->next;
+		    free(text);
+		    text = nt;
+		  }
+	      }
+	    
+	    free(line);
+	    text_win[win].line = n;
+
+	    line = n;
+	  }
 
       line = text_win[win].topline;
       if (line == NULL)
@@ -1347,6 +1491,14 @@ static void draw_window(int win,
 					xfont_get_ascent(font[text->font])+4,
 					text->text + nchars,
 					toprint);
+
+		      frct.top    = line->baseline +
+			xfont_get_descent(font[text->font])+4;
+		      frct.bottom = line->baseline + line->descent+4;
+		      frct.left   = width+4;
+		      frct.right  = width+w+4;
+		      if (frct.top < frct.bottom)
+			FillRect(dc, &frct, winbrush[text->bg]);
 		    }
 
 		  x      += toprint;
@@ -1548,8 +1700,8 @@ static void resize_window()
 	      for (z=max_x; z<size_x; z++)
 		{
 		  CURWIN.cline[y].cell[z] = ' ';
-		  CURWIN.cline[y].fg[z]   = DEFAULT_FORE+FIRST_ZCOLOUR;
-		  CURWIN.cline[y].bg[z]   = DEFAULT_BACK+FIRST_ZCOLOUR;
+		  CURWIN.cline[y].fg[z]   = CURWIN.cline[y].fg[max_x-1];
+		  CURWIN.cline[y].bg[z]   = CURWIN.cline[y].bg[max_x-1];
 		  CURWIN.cline[y].font[z] = style_font[4];
 		}
 	    }
@@ -1583,13 +1735,13 @@ static void resize_window()
 	    }
 	}
 
-      if (CURWIN.line->baseline-CURWIN.line->ascent > CURWIN.winsy)
+      if (CURWIN.line->baseline-CURWIN.line->ascent > start_y)
 	{
 	  /* Scroll everything up */
 	  int up;
 	  struct line* l;
 
-	  up = (CURWIN.line->baseline-CURWIN.line->ascent) - CURWIN.winsy;
+	  up = (CURWIN.line->baseline-CURWIN.line->ascent) - start_y;
 
 	  l = CURWIN.line;
 	  while (l != NULL)
@@ -1685,6 +1837,7 @@ static LRESULT CALLBACK display_winproc(HWND hwnd,
 	BeginPaint(hwnd, &paint);
 	
 	draw_window(0, paint.hdc, &paint.rcPaint);
+	draw_window(1, paint.hdc, &paint.rcPaint);
 	draw_window(2, paint.hdc, &paint.rcPaint);
 
 	if (text_buf != NULL)
@@ -1918,7 +2071,13 @@ static int process_events(long int timeout,
 {
   MSG msg;
 
-  caret_flashing = 1;
+  if (!more_on)
+    caret_flashing = 1;
+  else
+    {
+      hide_caret();
+      caret_flashing = 0;
+    }
 
   timed_out = 0;
   if (timeout > 0)
@@ -2054,9 +2213,9 @@ static int process_events(long int timeout,
 		      break;
 
 		    case VK_RETURN:
-		      display_prints(text_buf);
-		      display_prints_c("\n");
 		      text_buf = NULL;
+		      display_prints(buf);
+		      display_prints_c("\n");
 		      event_return(1);
 		      
 		    default:

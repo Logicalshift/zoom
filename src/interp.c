@@ -431,7 +431,7 @@ static void draw_statusbar_123(ZStack* stack)
   stream_flush_buffer();
   stream_buffering(0);
   
-  display_set_window(1); display_set_font(3);
+  display_set_window(1); display_set_style(0); display_set_style(8);
   display_set_colour(7, 0);
 
   display_set_cursor(0, 0);
@@ -498,7 +498,7 @@ inline static int convert_colour(int col)
 char save_fname[256] = "savefile.qut";
 char script_fname[256] = "script.txt";
 
-static void get_filename(char* name, int len)
+static void get_filename(char* name, int len, int save)
 {
   char fname[256];
 

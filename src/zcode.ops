@@ -1499,6 +1499,12 @@ OPCODE "split_window"   VAR:0x0a ARGS:1               VERSION all # 3,4,5,6,7,8
 #endif
       
       win = display_get_window();
+
+      if (ver == 3)
+	{
+	  display_set_window(2);
+	  display_erase_window();
+	}
       
       display_set_window(0);
       display_join(0, 2);
@@ -1517,6 +1523,12 @@ OPCODE "split_window"   VAR:0x0a ARGS:1               VERSION all # 3,4,5,6,7,8
     }
   else
     {
+      if (Byte(0) == 3)
+	{
+	  display_set_window(2);
+	  display_erase_window();
+	}
+
       display_join(0, 2);
       display_set_window(0);
     }
