@@ -517,7 +517,7 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	[mainTableView reloadData];
 	[self configureFromMainTableSelection];	
 
-	queuedUpdate = NO;	
+	queuedUpdate = NO;
 }
 
 - (void)windowDidBecomeMain:(NSNotification *)aNotification {

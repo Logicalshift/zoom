@@ -315,6 +315,15 @@
 	if (rearranging) return;
 	
 	rearranging = YES;
+
+	[[NSRunLoop currentRunLoop] performSelector: @selector(finishChangingFrames:)
+										 target: self
+									   argument: self
+										  order: 32
+										  modes: [NSArray arrayWithObjects: NSDefaultRunLoopMode, NSModalPanelRunLoopMode, nil]];
+}
+
+- (void) finishChangingFrames: (id) sender {
 	int x;
 	NSRect bounds = [self bounds];
 	
