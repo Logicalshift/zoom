@@ -31,6 +31,7 @@
 	NSMutableArray* trackingRects;
 	NSMutableArray* trackingItems;
 	NSDictionary* trackedItem;
+	NSDictionary* clickedItem;
 	
 	BOOL    dragScrolling;
 	NSPoint dragOrigin;

@@ -210,6 +210,7 @@ enum ZSVbutton
 	
 	if (selectedItem)  [selectedItem release];
 	if (trackedItem)   [trackedItem release];
+	if (clickedItem)   [clickedItem release];
 	if (trackingItems) [trackingItems release];
 	
 	[super dealloc];
@@ -915,6 +916,9 @@ enum ZSVbutton
 		if (realItemD) [self mouseEnteredItem: realItemD];
 	}
 	
+	if (clickedItem) [clickedItem release];
+	clickedItem = [trackedItem retain];
+	
 	if (trackedItem == nil) {
 		// We're dragging to move the view around
 		[[NSCursor closedHandCursor] push];
@@ -951,11 +955,24 @@ enum ZSVbutton
 		if (activeButton != lastButton) activeButton = ZSVnoButton;
 		
 		if (activeButton != lastActiveButton) [self setNeedsDisplay: YES];
+	} else if (clickedItem != nil) {
+		// Drag this item. Default action is a copy action, but a move op is possible if command is held
+		// down.
+		
+		// Create an image of this item
+		NSRect itemRect = [self activeAreaForItem: clickedItem];
+		NSImage* itemImage;
+		
 	}
 }
 
 - (void) mouseUp: (NSEvent*) event {
 	[self iHateEditing];
+	
+	if (clickedItem) {
+		[clickedItem release];
+		clickedItem = nil;
+	}
 	
 	if (dragScrolling) {
 		dragScrolling = NO;
