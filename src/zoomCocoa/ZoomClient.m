@@ -62,6 +62,7 @@
 	
 	if (story == nil) {
 		story = [[ZoomStory alloc] init];
+		[story setTitle: [[[self fileName] lastPathComponent] stringByDeletingPathExtension]];
 	} else {
 		[story retain];
 	}
