@@ -6,6 +6,8 @@
 //  Copyright (c) 2004 Andrew Hunter. All rights reserved.
 //
 
+#import <objc/objc-runtime.h>
+
 #import "ZoomSkeinLayout.h"
 
 // The item dictionary

@@ -1,5 +1,6 @@
 %{
 #include <stdlib.h>
+#include <string.h>
 
 #include "operation.h"
 #include "gram.h"

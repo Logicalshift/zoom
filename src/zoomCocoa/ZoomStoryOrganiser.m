@@ -1044,15 +1044,15 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	[[NSRunLoop currentRunLoop] addPort: threadPort1
 								forMode: NSDefaultRunLoopMode];
 	
-	NSConnection* mainThread = [[NSConnection alloc] initWithReceivePort: threadPort1
-																sendPort: threadPort2];
-	[mainThread setRootObject: self];
+	NSConnection* mainThreadConnection = [[NSConnection alloc] initWithReceivePort: threadPort1
+																		  sendPort: threadPort2];
+	[mainThreadConnection setRootObject: self];
 	
 	// Create the information dictionary
 	NSDictionary* threadDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
 		threadPort1, @"threadPort1",
 		threadPort2, @"threadPort2",
-		mainThread,  @"mainThread",
+		mainThreadConnection,  @"mainThread",
 		nil];
 	
 	[storyLock lock];
@@ -1106,12 +1106,12 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	// Connect to the main thread
 	[[NSRunLoop currentRunLoop] addPort: threadPort2
                                 forMode: NSDefaultRunLoopMode];
-	NSConnection* subThread = [[NSConnection allocWithZone: [self zone]] initWithReceivePort: threadPort2
-																					sendPort: threadPort1];
-	[subThread setRootObject: self];
+	NSConnection* subThreadConnection = [[NSConnection allocWithZone: [self zone]] initWithReceivePort: threadPort2
+																							  sendPort: threadPort1];
+	[subThreadConnection setRootObject: self];
 	
 	// Start things rolling
-	[(ZoomStoryOrganiser*)[subThread rootProxy] startedActing];
+	[(ZoomStoryOrganiser*)[subThreadConnection rootProxy] startedActing];
 	
 	// Get the list of stories we need to update
 	// It is assumed any new stories at this point will be organised correctly
@@ -1137,7 +1137,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 				[filenamesToIdents removeObjectForKey: filename];
 				[identsToFilenames removeObjectForKey: oldID];
 				
-				[(ZoomStoryOrganiser*)[subThread rootProxy] organiserChanged];
+				[(ZoomStoryOrganiser*)[subThreadConnection rootProxy] organiserChanged];
 			}
 			
 			[storyLock unlock];
@@ -1147,7 +1147,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		
 		// OK, the story still exists with that filename. Pass this off to the main thread
 		// for organisation
-		[(ZoomStoryOrganiser*)[subThread rootProxy] reorganiseStoryWithFilename: filename];
+		[(ZoomStoryOrganiser*)[subThreadConnection rootProxy] reorganiseStoryWithFilename: filename];
 	}
 	
 	// Not organising any more
@@ -1158,8 +1158,8 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	// Tidy up
 	[self release];
 	
-	[(ZoomStoryOrganiser*)[subThread rootProxy] endedActing];
-	[subThread release];
+	[(ZoomStoryOrganiser*)[subThreadConnection rootProxy] endedActing];
+	[subThreadConnection release];
 	[p release];
 }
 

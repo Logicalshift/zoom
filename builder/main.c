@@ -32,6 +32,7 @@
 #include <string.h>
 
 #include "../config.h"
+#undef VERSION
 
 #include "operation.h"
 #include "gram.h"
@@ -42,7 +43,9 @@ extern int    yyparse();
 
 static char*  filename;
 
+#ifndef HAVE_COMPUTED_GOTOS
 static int    used_opcodes[256];
+#endif
 
 static int sortops(const void* un, const void* deux)
 {
@@ -65,10 +68,12 @@ static int sortops(const void* un, const void* deux)
 }
 
 /* The various sections of code that make up an interpreter */
+#ifndef HAVE_COMPUTED_GOTOS
 static char* header =
 "/*\n * Interpreter automatically generated for version %i\n * Do not alter this file\n */\n\n  switch (instr)\n    {\n";
 
 static char* notimpl = "    /* %s not implemented */\n";
+#endif
 
 #define VERSIONS \
 		  if (versions != -1) \
@@ -81,6 +86,7 @@ static char* notimpl = "    /* %s not implemented */\n";
 			} \
 		    }
 
+#ifndef HAVE_COMPUTED_GOTOS
 static void output_opname(FILE* dest,
 			  char* opname,
 			  int   versions)
@@ -91,6 +97,7 @@ static void output_opname(FILE* dest,
   VERSIONS;
   fprintf(dest, ";\n");
 }
+#endif
 
 #ifndef HAVE_COMPUTED_GOTOS
 void output_interpreter(FILE* dest,

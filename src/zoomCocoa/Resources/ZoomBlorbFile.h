@@ -45,6 +45,9 @@
 - (id) initWithData: (NSData*) blorbFile;
 - (id) initWithContentsOfFile: (NSString*) filename;
 
+// Cache control
+- (void) removeAdaptiveImagesFromCache;
+
 // Generic IFF data
 - (NSArray*) chunksWithType: (NSString*) chunkType;
 - (NSData*) dataForChunk: (id) chunk;

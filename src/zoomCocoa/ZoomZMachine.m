@@ -309,6 +309,10 @@ void cocoa_debug_handler(ZDWord pc) {
 }
 
 - (NSData*) staticMemory {
+	NSData* result = [NSData dataWithBytesNoCopy: machine.memory 
+										  length: machine.story_length<65536?machine.story_length:65536];
+	
+	return result;
 }
 
 // Macros from interp.c (copy those back for preference if they ever need to change)

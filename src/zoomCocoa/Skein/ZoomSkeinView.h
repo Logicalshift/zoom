@@ -75,6 +75,8 @@ extern NSString* ZoomSkeinItemPboardType;
 - (void) setSelectedItem: (ZoomSkeinItem*) skeinItem;
 - (ZoomSkeinItem*) selectedItem;
 
+- (void) layoutSkein;
+
 @end
 
 // = Using with the web kit =

@@ -376,7 +376,7 @@ BlorbImage* blorb_findimage(BlorbFile* blorb, int num) {
 	res->file_offset = 0;
 	res->file_len = 0;
 	res->number = num;
-	res->loaded = res; // HACK! See below
+	res->loaded = (image_data*)res; // HACK! See below
 	res->in_use = 1;
 	
 	res->width = ceilf(imageSize.width);

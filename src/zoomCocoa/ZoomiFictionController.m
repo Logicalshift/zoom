@@ -8,6 +8,8 @@
 
 // Incorporates changes contributed by Collin Pieper
 
+#import <objc/objc-runtime.h>
+
 #import "ZoomiFictionController.h"
 #import "ZoomStoryOrganiser.h"
 #import "ZoomStory.h"
