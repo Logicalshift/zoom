@@ -94,7 +94,7 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	[cornerImage setImageFrameStyle:NSImageFrameNone];
 	[cornerImage setImageAlignment:NSImageAlignCenter];
 	[cornerImage setImageScaling:NSScaleToFit];
-	[cornerImage setImage:[NSImage imageNamed:@"Groovy Metal Hump"]];
+	[cornerImage setImage:[NSImage imageNamed:@"Metal-Title"]];
 	
 	// The header label
 	NSTextField *headerText = [[NSTextField alloc] initWithFrame:superRect];
@@ -208,7 +208,7 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	[teaserView setRichText: NO];
     [[teaserView textContainer] setWidthTracksTextView: YES];
     [[teaserView textContainer] setContainerSize: NSMakeSize(1e8, 1e8)];	
-	[[teaserView layoutManager] setBackgroundLayoutEnabled: NO];
+	//[[teaserView layoutManager] setBackgroundLayoutEnabled: NO];
 	
 	[commentView setMaxSize: NSMakeSize(1e8, 1e8)];
     [commentView setHorizontallyResizable: NO];
@@ -216,7 +216,7 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	[commentView setRichText: NO];
     [[commentView textContainer] setWidthTracksTextView: YES];
     [[commentView textContainer] setContainerSize: NSMakeSize(1e8, 1e8)];	
-	[[commentView layoutManager] setBackgroundLayoutEnabled: NO];
+	//[[commentView layoutManager] setBackgroundLayoutEnabled: NO];
 	
 	[teaserView setDelegate: self];
 	[commentView setDelegate: self];
@@ -509,17 +509,18 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	}	
 }
 
+- (void) finishUpdatingStoryList: (id) sender {
+	queuedUpdate = NO;
+	
+	[mainTableView reloadData];
+	[self configureFromMainTableSelection];	
+}
+
 - (void) storyListChanged: (NSNotification*) not {
 	needsUpdating = YES;
 	
-	[self queueStoryUpdate];
-}
-
-- (void) finishUpdatingStoryList: (id) sender {
-	[mainTableView reloadData];
-	[self configureFromMainTableSelection];	
-
-	queuedUpdate = NO;
+	//[self queueStoryUpdate];
+	[self finishUpdatingStoryList: self];
 }
 
 - (void)windowDidBecomeMain:(NSNotification *)aNotification {
@@ -542,6 +543,11 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 		// If we ever support more formats (Z-Code blorb is probable, GLULX is likely, other are possible)
 		// we need to do this in a more intelligent way.
 		[story addID: [[[ZoomStoryID alloc] initWithZCodeFile: filename] autorelease]];
+		
+		// Store this in the user metadata for later
+		NSLog(@"Blonk");
+		[[[NSApp delegate] userMetadata] storeStory: story];
+		[[[NSApp delegate] userMetadata] writeToDefaultFile];
 	}
 	
 	return story;
@@ -900,7 +906,7 @@ int tableSorter(id a, id b, void* context) {
 	
 	if ([comment length] == 0 && [teaser length] == 0) {
 		[drawer close];
-	} else if (showDrawer) {
+	} else if (showDrawer && [[self window] isMainWindow]) {
 		[drawer open];
 	}
 }
@@ -1180,6 +1186,22 @@ int tableSorter(id a, id b, void* context) {
 			}
 		}
 	}
+}
+
+// = windowWillClose, etc =
+- (void) windowWillClose: (NSNotification*) notification {
+	[drawer close];
+}
+
+- (BOOL) windowShouldClose: (NSNotification*) notification {
+	[drawer close];
+	//if ([drawer state] == NSDrawerClosingState) return NO;
+	return YES;
+}
+
+// = Loading iFiction data =
+- (void) mergeiFictionFromFile: (NSString*) filename {
+	[[self window] makeKeyAndOrderFront: self];
 }
 
 @end

@@ -59,6 +59,21 @@
 	return YES;
 }
 
+- (BOOL)application: (NSApplication *)theApplication 
+		   openFile: (NSString *)filename {
+	if ([[NSDocumentController sharedDocumentController] openDocumentWithContentsOfFile: filename
+																				display: YES]) {
+		return YES;
+	}
+	
+	if ([[[filename pathExtension] lowercaseString] isEqualToString: @"ifiction"]) {
+		// Load extra iFiction data
+		[[ZoomiFictionController sharediFictionController] mergeiFictionFromFile: filename];
+	}
+	
+	return NO;
+}
+
 // = General actions =
 - (IBAction) showPreferences: (id) sender {
 	if (!preferencePanel) {

@@ -136,7 +136,7 @@
 	
 	[[ZoomStoryOrganiser sharedStoryOrganiser] addStory: [self fileName]
 											  withIdent: storyId
-										  organise: [[ZoomPreferences globalPreferences] keepGamesOrganised]];
+											   organise: [[ZoomPreferences globalPreferences] keepGamesOrganised]];
     
     return YES;
 }

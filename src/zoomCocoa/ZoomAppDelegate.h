@@ -11,6 +11,7 @@
 #import "ZoomPreferenceWindow.h"
 #import "ZoomMetadata.h"
 #import "ZoomStory.h"
+#import "ZoomiFictionController.h"
 
 @interface ZoomAppDelegate : NSObject {
 	ZoomPreferenceWindow* preferencePanel;

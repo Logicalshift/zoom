@@ -68,4 +68,6 @@
 - (void) configureFromMainTableSelection;
 - (void) reloadTableData;
 
+- (void) mergeiFictionFromFile: (NSString*) filename;
+
 @end

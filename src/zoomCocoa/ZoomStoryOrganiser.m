@@ -64,6 +64,8 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 		ZoomStoryID* fileID = [NSUnarchiver unarchiveObjectWithData: storyData];
 		ZoomStoryID* realID = [[ZoomStoryID alloc] initWithZCodeFile: filename];
 		
+		NSLog(@"%@", filename);
+		
 		if (fileID != nil && realID != nil && [fileID isEqual: realID]) {
 			// Check for a pre-existing entry
 			[storyLock lock];
@@ -278,6 +280,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 			[theStory setTitle: [[filename lastPathComponent] stringByDeletingPathExtension]];
 			
 			[[[NSApp delegate] userMetadata] storeStory: [theStory autorelease]];
+			[[[NSApp delegate] userMetadata] writeToDefaultFile];
 		}
 
 		// Copy to a standard directory, change the filename we're using
