@@ -47,7 +47,7 @@
 // (Actually, this is just saving in reverse, but with now with the involvement of
 // ZoomClient).
 //
-// Hmph, there may have been a better way to design this, but I really wanted (and needed)
+// Hmph, there may have been a better way to design this, but I really wanted (and need)
 // ZoomView to be a self-contained z-machine thingie. Which is what breaks the MVC
 // paradigm. Well, that and the need for two completely seperate models (game data and
 // game state). It makes sense if you don't care about autosave.

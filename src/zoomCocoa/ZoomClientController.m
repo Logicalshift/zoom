@@ -48,6 +48,8 @@
 		[zoomView setFrame: viewFrame];
 		[zoomView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
 	}
+	
+	[self setWindowFrameAutosaveName: @"ZoomClientWindow"];
 
     [zoomView setDelegate: self];
     [zoomView runNewServer: nil];
