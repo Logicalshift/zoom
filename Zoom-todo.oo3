@@ -17,8 +17,8 @@
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
     <selected-rows ids="fgwd2Q8V1Hj"/>
-    <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{31, 0}"/>
+    <selected-columns ids=":941128d340f2709e21a6e303"/>
+    <selected-characters range="{17, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -634,6 +634,15 @@
               <p/>
             </text>
           </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>endOfFile missing</lit>
+                </run>
+              </p>
+            </text>
+          </note>
         </item>
         <item id="n5azxE7Q5je">
           <values>
@@ -2344,6 +2353,20 @@
               <p>
                 <run>
                   <lit>Looks like transcripts are broken</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="p6UmtOpMs-2">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Can&apos;t use XLFDs with Xft 2: provide an alternative means of selecting Xft fonts (grr, this is the big problem with open source development: no quality control. *Implicit irony*)</lit>
                 </run>
               </p>
             </text>
