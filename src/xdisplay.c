@@ -45,6 +45,10 @@
 
 #include "format.h"
 
+#ifdef HAVE_XRENDER
+# include <X11/extensions/Xrender.h>
+#endif
+
 #ifdef HAVE_XFT
 # include <X11/Xft/Xft.h>
 #endif
@@ -62,6 +66,11 @@ int          x_screen = 0;
 Window         x_mainwin;
 GC             x_wingc, x_caretgc;
 Drawable       x_drawable = None;
+
+#ifdef HAVE_XRENDER
+XRenderPictFormat* x_picformat = NULL;
+Picture            x_winpic = None;
+#endif
 
 #ifdef HAVE_XDBE
 XdbeBackBuffer x_backbuffer = None;
@@ -1001,6 +1010,43 @@ static void draw_window()
 
       image_resample(img, 3, 2);
 
+#ifdef HAVE_XRENDER
+      {
+	Pixmap hum;
+	Picture drum;
+	XRenderPictFormat pf;
+	XRenderPictFormat* format;
+	GC mygc;
+
+	pf.depth = 32;
+	pf.type  = PictTypeDirect;
+	
+	format = XRenderFindFormat(x_display,
+				   PictFormatType|PictFormatDepth,
+				   &pf, 0);
+
+	/* Verry dodgy test :-) */
+	xim = image_to_ximage_render(img, x_display, DefaultVisual(x_display, 0));
+	hum = XCreatePixmap(x_display, RootWindow(x_display, 0),
+			    image_width(img), image_height(img),
+			    format->depth);
+	drum = XRenderCreatePicture(x_display, hum, format, 0, 0);
+
+	mygc = XCreateGC(x_display, hum, 0, NULL);
+
+	XPutImage(x_display, hum, 
+		  mygc, xim, 0,0,0,0,
+		  image_width(img), image_height(img));
+
+	XRenderComposite(x_display, PictOpOver,
+			 drum,
+			 None,
+			 x_winpic,
+			 0,0,0,0,
+			 0,0,
+			 image_width(img), image_height(img));
+      }
+#else
       xim = image_to_ximage_truecolour(img,
 				       x_display,
 				       DefaultVisual(x_display, 0));
@@ -1008,7 +1054,6 @@ static void draw_window()
 				      img,
 				      x_display,
 				      DefaultVisual(x_display, 0));
-
       
       XSetFunction(x_display, x_wingc, GXand);
       XPutImage(x_display, x_drawable,
@@ -1021,6 +1066,7 @@ static void draw_window()
 		0, 0, 0, 0,
 		image_width(img), image_height(img));
       XSetFunction(x_display, x_wingc, GXcopy);
+#endif
     }
 
   /* Flip buffers */
@@ -1677,6 +1723,14 @@ static int process_events(long int to, int* buf, int buflen)
 		}
 #endif
 
+#ifdef HAVE_XRENDER
+	      if (x_winpic != None)
+		{
+		  XRenderFreePicture(x_display, x_winpic);
+		  x_winpic = XRenderCreatePicture(x_display, x_drawable, x_picformat, 0, NULL);
+		}
+#endif
+
 	      if (ev.xconfigure.width != win_width ||
 		  ev.xconfigure.height != win_height)
 		{
@@ -2099,6 +2153,17 @@ void display_initialise(void)
 	}
       if (x_backbuffer != None)
 	x_drawable = x_backbuffer;
+    }
+#endif
+
+#ifdef HAVE_XRENDER
+  if (XRenderQueryExtension(x_display, &x, &y))
+    {
+      x_picformat = XRenderFindVisualFormat(x_display, DefaultVisual(x_display, DefaultScreen(x_display)));
+      if (x_picformat != NULL)
+	{
+	  x_winpic = XRenderCreatePicture(x_display, x_drawable, x_picformat, 0, NULL);
+	}
     }
 #endif
 

@@ -51,6 +51,10 @@
 
 #include <X11/Xlib.h>
 
+#ifdef HAVE_XRENDER
+# include <X11/extensions/Xrender.h>
+#endif
+
 /*
  * 16 or 32-bit truecolour images.
  */
@@ -126,6 +130,161 @@ static inline int topbit(unsigned long mask)
   return 0;
 }
 
+#ifdef HAVE_XRENDER
+static XRenderPictFormat* format = NULL;
+
+XImage* image_to_ximage_render(image_data* img,
+			       Display*    display,
+			       Visual*     visual)
+{
+  XImage* xim;
+
+  int rshift, gshift, bshift, ashift;
+  int rshift2, gshift2, bshift2, ashift2;
+
+  int width, height;
+
+  int x,y;
+  unsigned char* imgdata;
+
+  int bytes_per_pixel;
+
+  /* Find a suitable format... */
+  if (format == NULL)
+    {
+      XRenderPictFormat pf;
+
+      pf.depth = 32;
+      pf.type  = PictTypeDirect;
+
+      format = XRenderFindFormat(display,
+				 PictFormatType|PictFormatDepth,
+				 &pf, 0);
+      if (format == NULL)
+	{
+	  zmachine_fatal("Unable to find a suitable format for XRender");
+	  return NULL;
+	}
+    }
+
+  width = image_width(img);
+  height = image_height(img);
+
+  /* Create an XImage of that format... */
+  xim = XCreateImage(display, visual,
+		     format->depth,
+		     ZPixmap,
+		     0, NULL, 
+		     width, height,
+		     32,
+		     0);  
+
+  /* This algorithm limits us to byte-boundaries, and a maximum of 32bpp */
+  if (xim->bits_per_pixel != 16 &&
+      xim->bits_per_pixel != 24 &&
+      xim->bits_per_pixel != 32)
+    {
+      printf("Blech - %i\n", xim->bits_per_pixel);
+      zmachine_warning("Unable to anything useful with your display: switch to a 16- or 32-bpp display (images won't display)");
+      return xim;
+    }
+
+  /* Work out the shifts required to build our image... */  
+  rshift = format->direct.red;
+  gshift = format->direct.green;
+  bshift = format->direct.blue;
+  ashift = format->direct.alpha;
+  
+  /* 
+   * ... I think. Damn Xrender spec is ambiguous on the meanings of the
+   * masks (and it's trivial for 8888 formats)
+   */
+  rshift2 = 8 - (topbit(format->direct.redMask)+1);
+  gshift2 = 8 - (topbit(format->direct.greenMask)+1);
+  bshift2 = 8 - (topbit(format->direct.blueMask)+1);
+  ashift2 = 8 - (topbit(format->direct.alphaMask)+1);
+
+  /* Allocate image data */
+  xim->data = malloc(xim->bytes_per_line * xim->height);
+
+  imgdata = image_rgb(img);
+  bytes_per_pixel = xim->bits_per_pixel/8;
+  
+  /* Two iterators, depending on byte order */
+  if (xim->byte_order == LSBFirst)
+    {
+      for (y=0; y<height; y++)
+	{
+	  /* Line iterator */
+	  unsigned char* row;
+	  
+	  row = xim->data;
+	  row += y * xim->bytes_per_line;
+	  
+	  for (x=0; x<width; x++)
+	    {
+	      /* Row iterator */
+	      long int pixel;
+	      int z;
+	      
+	      pixel = 
+		((imgdata[0]>>rshift2)<<rshift)|
+		((imgdata[1]>>gshift2)<<gshift)|
+		((imgdata[2]>>bshift2)<<bshift)|
+		((imgdata[3]>>ashift2)<<ashift);;
+	      
+	      imgdata += 4;
+	      
+	      for (z=0; z<bytes_per_pixel; z++)
+		{
+		  *(row++) = pixel;
+		  pixel >>= 8;
+		}
+	    }
+	}
+    }
+  else
+    {
+      int s;
+
+      s = bytes_per_pixel-1;
+
+      for (y=0; y<height; y++)
+	{
+	  /* Line iterator */
+	  unsigned char* row;
+	  
+	  row = xim->data;
+	  row += y * xim->bytes_per_line;
+	  
+	  for (x=0; x<width; x++)
+	    {
+	      /* Row iterator */
+	      long int pixel;
+	      int z;
+	      
+	      pixel = 
+		((imgdata[0]>>rshift2)<<rshift)|
+		((imgdata[1]>>gshift2)<<gshift)|
+		((imgdata[2]>>bshift2)<<bshift)|
+		((imgdata[3]>>ashift2)<<ashift);
+	      
+	      imgdata += 4;
+	      
+	      for (z=s; z>=0; z--)
+		{
+		  row[z] = pixel;
+		  pixel >>= 8;
+		}
+	      row += bytes_per_pixel;
+	    }
+	}
+    }
+
+  return xim;
+}
+#endif
+
 XImage* image_to_ximage_truecolour(image_data* img,
 				   Display*    display,
 				   Visual*     visual)
@@ -143,7 +302,7 @@ XImage* image_to_ximage_truecolour(image_data* img,
 
   int bytes_per_pixel;
 
-  depth = DefaultDepth(display, 0);
+  depth = DefaultDepth(display, (DefaultScreen(display)));
 
   width = image_width(img);
   height = image_height(img);
@@ -169,6 +328,7 @@ XImage* image_to_ximage_truecolour(image_data* img,
       return xim;
     }
   
+  /* Work out the shifts required to build our image... */  
   rshift = bottombit(xim->red_mask);
   gshift = bottombit(xim->green_mask);
   bshift = bottombit(xim->blue_mask);
@@ -177,11 +337,13 @@ XImage* image_to_ximage_truecolour(image_data* img,
   gshift2 = 8 - (topbit(xim->green_mask)+1-gshift);
   bshift2 = 8 - (topbit(xim->blue_mask)+1-bshift);
 
+  /* Allocate image data */
   xim->data = malloc(xim->bytes_per_line * xim->height);
 
   imgdata = image_rgb(img);
   bytes_per_pixel = xim->bits_per_pixel/8;
 
+  /* Two iterators, depending on byte order */
   if (xim->byte_order == LSBFirst)
     {
       for (y=0; y<height; y++)
@@ -267,7 +429,7 @@ XImage* image_to_mask_truecolour(XImage*     orig,
 
   unsigned char* imgdata;
   
-  depth = DefaultDepth(display, 0);
+  depth = DefaultDepth(display, DefaultScreen(display));
 
   width = image_width(img);
   height = image_height(img);

@@ -35,6 +35,10 @@
 
 #  include <X11/Xlib.h>
 
+#  ifdef HAVE_XRENDER
+#   include <X11/extensions/Xrender.h>
+#  endif
+
 extern XImage* image_to_ximage_truecolour(image_data* img,
 					  Display*    display,
 					  Visual*     visual);
@@ -42,6 +46,11 @@ extern XImage* image_to_mask_truecolour  (XImage*     orig,
 					  image_data* img,
 					  Display*    display,
 					  Visual*     visual);
+#  ifdef HAVE_XRENDER
+extern XImage* image_to_ximage_render(image_data* img,
+				      Display*    display,
+				      Visual*     visual);
+#  endif
 
 # endif
 
