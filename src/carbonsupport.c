@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <ctype.h>
 
 #include <Carbon/Carbon.h>
 
@@ -348,24 +349,24 @@ enum carbon_file_type carbon_type_fsref(FSRef* file)
 	return TYPE_BINA;
 
       if (outname.unicode[outname.length-3] == '.' &&
-	  outname.unicode[outname.length-2] == 'z' &&
+	  tolower(outname.unicode[outname.length-2]) == 'z' &&
 	  outname.unicode[outname.length-1] >= '3' &&
 	  outname.unicode[outname.length-1] <= '8')
 	return TYPE_ZCOD;
       if (outname.unicode[outname.length-4] == '.' &&
-	  outname.unicode[outname.length-3] == 'q' &&
-	  outname.unicode[outname.length-2] == 'u' &&
-	  outname.unicode[outname.length-1] == 't')
+	  tolower(outname.unicode[outname.length-3]) == 'q' &&
+	  tolower(outname.unicode[outname.length-2]) == 'u' &&
+	  tolower(outname.unicode[outname.length-1]) == 't')
 	return TYPE_IFZS;
       if (outname.unicode[outname.length-4] == '.' &&
-	  outname.unicode[outname.length-3] == 'b' &&
-	  outname.unicode[outname.length-2] == 'l' &&
-	  outname.unicode[outname.length-1] == 'b')
+	  tolower( outname.unicode[outname.length-3]) == 'b' &&
+	  tolower(outname.unicode[outname.length-2]) == 'l' &&
+	  tolower(outname.unicode[outname.length-1]) == 'b')
 	return TYPE_IFRS;
       if (outname.unicode[outname.length-4] == '.' &&
-	  outname.unicode[outname.length-3] == 'z' &&
-	  outname.unicode[outname.length-2] == 'l' &&
-	  outname.unicode[outname.length-1] == 'b')
+	  tolower(outname.unicode[outname.length-3]) == 'z' &&
+	  tolower(outname.unicode[outname.length-2]) == 'l' &&
+	  tolower(outname.unicode[outname.length-1]) == 'b')
 	return TYPE_IFRS;
       break;
     }
@@ -608,16 +609,16 @@ static Boolean zcode_filter(AEDesc*        theItem,
 
 		/* See if the extension is .z[345678]/.zlb */
 		if (outName.unicode[outName.length-3] == '.' &&
-		    outName.unicode[outName.length-2] == 'z' &&
+		    tolower(outName.unicode[outName.length-2]) == 'z' &&
 		    outName.unicode[outName.length-1] >= '3' &&
 		    outName.unicode[outName.length-1] <= '8')
 		  {
 		    display = true;
 		  }
 		else if (outName.unicode[outName.length-3] == '.' &&
-			 outName.unicode[outName.length-2] == 'z' &&
-			 outName.unicode[outName.length-1] >= 'l' &&
-			 outName.unicode[outName.length-1] <= 'b')
+			 tolower(outName.unicode[outName.length-2]) == 'z' &&
+			 tolower(outName.unicode[outName.length-1]) >= 'l' &&
+			 tolower(outName.unicode[outName.length-1]) <= 'b')
 		  {
 		    display = true;
 		  }
