@@ -8,19 +8,15 @@
 
 #import <AppKit/AppKit.h>
 #import "ZoomView.h"
+#import "ZoomCursor.h"
 
 @class ZoomView;
 @interface ZoomUpperWindowView : NSView {
-    ZoomView* zoomView;
-	
-	BOOL cursorFlashing;
-	BOOL cursorShown;
-	
-	NSTimer* flasher;
+    ZoomView* zoomView;	
+	ZoomCursor* cursor;
 }
 
 - (void) updateCursor;
 - (void) setFlashCursor: (BOOL) flash;
-- (void) flashCursor;
 
 @end

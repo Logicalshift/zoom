@@ -16,17 +16,18 @@
     self = [super initWithFrame:frame];
     if (self) {
         zoomView = view;
-		flasher = nil;
-		cursorFlashing = cursorShown = NO;
+		
+		cursor = [[ZoomCursor alloc] init];
+		[cursor setDelegate: self];
+		
+		[cursor setShown: NO];
     }
     return self;
 }
 
 - (void) dealloc {
-	if (flasher) {
-		[flasher invalidate];
-		[flasher release];
-	}
+	[cursor setDelegate: nil];
+	[cursor release];
 	
 	[super dealloc];
 }
@@ -41,6 +42,7 @@
     
     NSEnumerator* upperEnum;
     int ypos = 0;
+	float width = [self bounds].size.width;
 
     upperEnum = [[zoomView upperWindows] objectEnumerator];
 
@@ -68,11 +70,18 @@
         for (y=0; y<maxY; y++) {
             NSMutableAttributedString* line = [lines objectAtIndex: y];
 
-            [line drawAtPoint: NSMakePoint(0, fixedSize.height*(ypos+y))];
+			// Only draw the lines that we actually need to draw: keeps the processor usage down when
+			// flashing the cursor
+			if (NSIntersectsRect(rect, NSMakeRect(0, fixedSize.height * (ypos+y), width, fixedSize.height))) {
+				[line drawAtPoint: NSMakePoint(0, fixedSize.height*(ypos+y))];
+			}
         }
         
         ypos += [win length];
     }
+	
+	// Draw the cursor
+	[cursor draw];
 }
 
 - (BOOL) isFlipped {
@@ -80,24 +89,6 @@
 }
 
 // = Flashing the cursor =
-- (void) makeTimer {
-	if (flasher) {
-		[flasher invalidate];
-		[flasher release];
-		flasher = nil;
-	}
-
-	if (cursorFlashing) {
-		flasher = [NSTimer timerWithTimeInterval: 0.7
-										  target: self
-										selector: @selector(flashCursor)
-										userInfo: nil
-										 repeats: YES];
-		[[NSRunLoop currentRunLoop] addTimer: flasher
-									 forMode: NSDefaultRunLoopMode];
-		[flasher retain];
-	}
-}
 
 - (void) updateCursor {
 	ZoomUpperWindow* activeWindow = (ZoomUpperWindow*)[zoomView focusedView];
@@ -108,6 +99,7 @@
 	}
 	
 	// Font size
+	NSFont* font = [zoomView fontWithStyle: ZFixedStyle];
     NSSize fixedSize = [@"M" sizeWithAttributes:
         [NSDictionary dictionaryWithObjectsAndKeys:
             [zoomView fontWithStyle:ZFixedStyle], NSFontAttributeName, nil]];
@@ -140,12 +132,9 @@
 			}
 			
 			// Draw the cursor
-			if (cursorShown) {
-				[[NSColor selectedTextBackgroundColor] set];
-			
-				NSRect cursorRect = NSMakeRect(fixedSize.width * xp, fixedSize.height * (yp + startY), fixedSize.width, fixedSize.height);
-				NSRectFill(cursorRect);
-			}
+			[cursor positionAt: NSMakePoint(fixedSize.width * xp, fixedSize.height * (yp + startY))
+					  withFont: font];
+			[cursor draw];
 		}
 		
 		startY += [win length];
@@ -155,17 +144,17 @@
 	[[self window] flushWindow];
 }
 
-- (void) setFlashCursor: (BOOL) flash {
-	cursorFlashing = flash;
-	cursorShown = NO;
-	
-	[self updateCursor];
-	[self makeTimer];
+- (void) blinkCursor: (ZoomCursor*) sender {
+	// Draw the cursor
+	[self setNeedsDisplayInRect: [cursor cursorRect]];
 }
 
-- (void) flashCursor {
-	cursorShown = !cursorShown;
+- (void) setFlashCursor: (BOOL) flash {
+	[cursor setShown: flash];
+	[cursor setBlinking: flash];
+	
 	[self updateCursor];
+	
 }
 
 @end
