@@ -574,8 +574,8 @@ void display_clear(void)
 	  for (z=0; z<size_x; z++)
 	    {
 	      text_win[x].cline[y].cell[z] = ' ';
-	      text_win[x].cline[y].fg[z]   = DEFAULT_FORE+FIRST_ZCOLOUR;
-	      text_win[x].cline[y].bg[z]   = DEFAULT_BACK+FIRST_ZCOLOUR;
+	      text_win[x].cline[y].fg[z]   = DEFAULT_BACK+FIRST_ZCOLOUR;
+	      text_win[x].cline[y].bg[z]   = 255;
 	      text_win[x].cline[y].font[z] = style_font[4];
 	    }
 	}
@@ -679,6 +679,14 @@ static void new_line(int more)
 	      text_win[2].cline[y].fg[x]   = text_win[2].cline[y+1].fg[x];
 	      text_win[2].cline[y].bg[x]   = text_win[2].cline[y+1].bg[x];
 	    }
+	}
+      
+      for (x=0; x<max_x; x++)
+	{
+	  text_win[2].cline[size_y-1].cell[x] = ' ';
+	  text_win[2].cline[size_y-1].font[x] = style_font[4];
+	  text_win[2].cline[size_y-1].fg[x]   = DEFAULT_BACK+FIRST_ZCOLOUR;
+	  text_win[2].cline[size_y-1].bg[x]   = 255;
 	}
 
       display_update();
@@ -1250,9 +1258,9 @@ void display_set_colour(int fore, int back)
   if (back == -1)
     back = DEFAULT_BACK;
   if (fore == -2)
-    fore = CURWIN.fore;
+    fore = CURWIN.fore - FIRST_ZCOLOUR;
   if (back == -2)
-    back = CURWIN.back;
+    back = CURWIN.back - FIRST_ZCOLOUR;
 
   CURWIN.fore = fore + FIRST_ZCOLOUR;
   CURWIN.back = back + FIRST_ZCOLOUR;
@@ -1401,8 +1409,8 @@ void display_erase_window(void)
 	  for (x=0; x<max_x; x++)
 	    {
 	      CURWIN.cline[y].cell[x] = ' ';
-	      CURWIN.cline[y].fg[x]   = CURWIN.fore;
-	      CURWIN.cline[y].bg[x]   = CURWIN.back;
+	      CURWIN.cline[y].fg[x]   = CURWIN.back;
+	      CURWIN.cline[y].bg[x]   = 255;
 	      CURWIN.cline[y].font[x] = style_font[4];
 	    }
 	}
@@ -1442,8 +1450,8 @@ void display_erase_window(void)
 	      for (z=1; z<=2; z++)
 		{
 		  text_win[z].cline[y].cell[x] = ' ';
-		  text_win[z].cline[y].fg[x]   = FIRST_ZCOLOUR+DEFAULT_FORE;
-		  text_win[z].cline[y].bg[x]   = CURWIN.winback;
+		  text_win[z].cline[y].fg[x]   = FIRST_ZCOLOUR+DEFAULT_BACK;
+		  text_win[z].cline[y].bg[x]   = 255;
 		  text_win[z].cline[y].font[x] = style_font[4];
 		}
 	    }
@@ -1472,8 +1480,8 @@ void display_erase_line(int val)
       for (x=CURWIN.xpos; x<val; x++)
 	{
 	  CURWIN.cline[CURWIN.ypos].cell[x] = ' ';
-	  CURWIN.cline[CURWIN.ypos].fg[x]   = CURWIN.fore;
-	  CURWIN.cline[CURWIN.ypos].bg[x]   = CURWIN.back;
+	  CURWIN.cline[CURWIN.ypos].fg[x]   = CURWIN.back;
+	  CURWIN.cline[CURWIN.ypos].bg[x]   = 255;
 	  CURWIN.cline[CURWIN.ypos].font[x] = style_font[4];
 	}
 
@@ -1564,7 +1572,7 @@ static void draw_window(int win,
 	  for (x=0; x<size_x; x++)
 	    {
 	      if (text_win[win].cline[y].cell[x] != ' ' ||
-		  text_win[win].cline[y].bg[x]   != text_win[0].winback ||
+		  text_win[win].cline[y].bg[x]   != 255  ||
 		  y*xfont_y<text_win[win].winly)
 		{
 		  int len;
@@ -1578,9 +1586,13 @@ static void draw_window(int win,
 		  while (text_win[win].cline[y].font[x+len] == fn &&
 			 text_win[win].cline[y].fg[x+len]   == fg &&
 			 text_win[win].cline[y].bg[x+len]   == bg &&
-			 (bg != DEFAULT_BACK+FIRST_ZCOLOUR ||
-			  text_win[win].cline[y].cell[x+len] != ' '))
+			 (bg != 255 ||
+			  text_win[win].cline[y].cell[x+len] != ' ' ||
+			  y*xfont_y<text_win[win].winly))
 		    len++;
+
+		  if (bg == 255)
+		    bg = fg;
 
 		  drct.left   = x*xfont_x+4;
 		  drct.top    = y*xfont_y+4;
@@ -1589,8 +1601,8 @@ static void draw_window(int win,
 
 		  if (isect_rect(rct, &drct))
 		    {
-		      xfont_set_colours(text_win[win].cline[y].fg[x],
-					text_win[win].cline[y].bg[x]);
+		      xfont_set_colours(fg,
+					bg);
 		      xfont_plot_string(font[text_win[win].cline[y].font[x]],
 					dc,
 					drct.left,
