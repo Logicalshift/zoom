@@ -1462,12 +1462,18 @@ OPCODE "aread"          VAR:0x04 ARGS:4 STORE CANJUMP VERSION 5,7,8
 
 OPCODE "print_char"     VAR:0x05 ARGS:1               VERSION all
 %{
+  int ch[2];
+
 #ifdef DEBUG
   printf_debug(">%c<\n", argblock.arg[0]);
 #endif
+  if (argblock.arg[0] >= 256)
+    argblock.arg[0] = '?';
   if (argblock.arg[0] == 0)
     argblock.arg[0] = 32;
-  stream_printf("%c", argblock.arg[0]);
+  ch[0] = zscii_unicode[argblock.arg[0]];
+  ch[1] = 0;
+  stream_prints(ch);
 %}
 
 OPCODE "print_num"      VAR:0x06 ARGS:1               VERSION all

@@ -236,6 +236,17 @@ void display_prints(const int* str)
 
   NOTV6;
 
+#ifdef DEBUG
+  {
+    int x;
+
+    printf_debug("Display: >");
+    for (x=0; str[x] != 0; x++)
+      printf_debug("%c", str[x]);
+    printf_debug("<\n");
+  }
+#endif
+
   if (CURWIN.overlay)
     {
       int x;

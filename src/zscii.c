@@ -297,19 +297,21 @@ int* zscii_to_unicode(ZByte* string, int* len)
 	      abet = 0;
 	      
 	      if (zchar < 256)
-		switch(zchar)
-		  {
-		  default:
-		    buf[y++] = zscii_unicode[zchar];
-		    
-		    if (buf[y-1] == 9)
-		      {
-			y--;
-			buf[y++] = ' ';
-			buf[y++] = ' ';
-			buf[y++] = ' ';
-		      }
+		{
+		  switch(zchar)
+		    {
+		    default:
+		      buf[y++] = zscii_unicode[zchar];
+		      
+		      if (buf[y-1] == 9)
+			{
+			  y--;
+			  buf[y++] = ' ';
+			  buf[y++] = ' ';
+			  buf[y++] = ' ';
+			}
 		  }
+		}
 	      else
 		{
 #ifdef SPEC_11

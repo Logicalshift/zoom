@@ -469,5 +469,8 @@ void stream_update_unicode_table(void)
       unitable[155+x] = (ztable[2*x]<<8)|ztable[2*x+1];
     }
   
+  if (unitable[13] == 13)
+    unitable[13] = 10;
+
   zscii_unicode = unitable;
 }
