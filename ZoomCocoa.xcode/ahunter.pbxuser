@@ -637,7 +637,7 @@
 					PBXProjectWorkspaceModule_EmbeddedNavigatorGroup = {
 						PBXSplitModuleInNavigatorKey = {
 							Split0 = {
-								bookmark = 4BECA7BF05B16F63006840BA;
+								bookmark = 4BECA7D105B17041006840BA;
 								history = (
 									4B1DE7D905947BE5009B2DE0,
 									4B418DCE0594FC0B009C44DE,
@@ -690,17 +690,18 @@
 									4B2EAFB205B0A47E0021A5E6,
 									4BECA76305B0AE0C006840BA,
 									4BECA77705B16D72006840BA,
-									4BECA77905B16D72006840BA,
 									4BECA77B05B16D72006840BA,
 									4BECA78C05B16EC5006840BA,
 									4BECA78D05B16EC5006840BA,
 									4BECA78E05B16EC5006840BA,
 									4BECA7A205B16F3D006840BA,
 									4BECA7A305B16F3D006840BA,
-									4BECA7B405B16F5C006840BA,
 									4BECA7B505B16F5C006840BA,
 									4BECA7B605B16F5C006840BA,
-									4BECA77805B16D72006840BA,
+									4BECA7C605B17041006840BA,
+									4BECA7C705B17041006840BA,
+									4BECA7C805B17041006840BA,
+									4BECA7C905B17041006840BA,
 								);
 								prevStack = (
 									4B1DE7DB05947BE5009B2DE0,
@@ -813,6 +814,13 @@
 									4BECA7B705B16F5C006840BA,
 									4BECA7B805B16F5C006840BA,
 									4BECA7B905B16F5C006840BA,
+									4BECA7CA05B17041006840BA,
+									4BECA7CB05B17041006840BA,
+									4BECA7CC05B17041006840BA,
+									4BECA7CD05B17041006840BA,
+									4BECA7CE05B17041006840BA,
+									4BECA7CF05B17041006840BA,
+									4BECA7D005B17041006840BA,
 								);
 							};
 							SplitCount = 1;
@@ -870,7 +878,7 @@
 							);
 							PBXSmartGroupTreeModuleOutlineStateSelectionKey = (
 								(
-									24,
+									25,
 									23,
 									13,
 									0,
@@ -988,10 +996,8 @@
 			"PBXWorkspaceGeometries:PBXConfiguration.PBXModule.PBXProjectWorkspaceModule" = {
 				Frame = "{{0, 0}, {924, 712}}";
 				PBXProjectWorkspaceModule_GeometryKey_Rev15 = {
-					PBXProjectWorkspaceModule_RunWindowVisible = true;
-					PBXProjectWorkspaceModule_SCMWindowVisible = true;
 				};
-				RubberWindowFrame = "377 191 924 754 0 0 1280 1002 ";
+				RubberWindowFrame = "184 198 924 754 0 0 1280 1002 ";
 			};
 			"PBXWorkspaceGeometries:PBXConfiguration.PBXModule.PBXRunSessionModule" = {
 				Frame = "{{0, 0}, {745, 387}}";
@@ -1249,6 +1255,18 @@
 			4BECA7BD05B16F60006840BA = 4BECA7BD05B16F60006840BA;
 			4BECA7BE05B16F61006840BA = 4BECA7BE05B16F61006840BA;
 			4BECA7BF05B16F63006840BA = 4BECA7BF05B16F63006840BA;
+			4BECA7C605B17041006840BA = 4BECA7C605B17041006840BA;
+			4BECA7C705B17041006840BA = 4BECA7C705B17041006840BA;
+			4BECA7C805B17041006840BA = 4BECA7C805B17041006840BA;
+			4BECA7C905B17041006840BA = 4BECA7C905B17041006840BA;
+			4BECA7CA05B17041006840BA = 4BECA7CA05B17041006840BA;
+			4BECA7CB05B17041006840BA = 4BECA7CB05B17041006840BA;
+			4BECA7CC05B17041006840BA = 4BECA7CC05B17041006840BA;
+			4BECA7CD05B17041006840BA = 4BECA7CD05B17041006840BA;
+			4BECA7CE05B17041006840BA = 4BECA7CE05B17041006840BA;
+			4BECA7CF05B17041006840BA = 4BECA7CF05B17041006840BA;
+			4BECA7D005B17041006840BA = 4BECA7D005B17041006840BA;
+			4BECA7D105B17041006840BA = 4BECA7D105B17041006840BA;
 			4BFE726905AD85CE00716D5A = 4BFE726905AD85CE00716D5A;
 			4BFE726D05AD85CE00716D5A = 4BFE726D05AD85CE00716D5A;
 			4BFE728A05AD977E00716D5A = 4BFE728A05AD977E00716D5A;
@@ -1534,7 +1552,7 @@
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {689, 713}}";
 			sepNavSelRange = "{438, 0}";
-			sepNavVisRect = "{{0, 128}, {689, 544}}";
+			sepNavVisRect = "{{0, 169}, {689, 544}}";
 		};
 	};
 	4B2D95C9053706CD00A8E303 = {
@@ -2018,14 +2036,14 @@
 	4B2EAFAD05B08D1E0021A5E6 = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {689, 544}}";
-			sepNavSelRange = "{209, 359}";
+			sepNavSelRange = "{462, 0}";
 			sepNavVisRect = "{{0, 0}, {689, 544}}";
 		};
 	};
 	4B2EAFAE05B08D1E0021A5E6 = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {689, 1357}}";
-			sepNavSelRange = "{1795, 0}";
+			sepNavSelRange = "{1305, 0}";
 			sepNavVisRect = "{{0, 557}, {689, 544}}";
 		};
 	};
@@ -4381,6 +4399,140 @@
 		rType = 0;
 		vrLen = 784;
 		vrLoc = 0;
+	};
+	4BECA7C605B17041006840BA = {
+		fRef = 4B23C64F053C9C8C00A8E303;
+		isa = PBXTextBookmark;
+		name = "ZoomAppDelegate.m: applicationShouldOpenUntitledFile:";
+		rLen = 0;
+		rLoc = 438;
+		rType = 0;
+		vrLen = 942;
+		vrLoc = 219;
+	};
+	4BECA7C705B17041006840BA = {
+		fRef = 4B2EAFAD05B08D1E0021A5E6;
+		isa = PBXTextBookmark;
+		name = "ZoomGameInfoController.h: 20";
+		rLen = 0;
+		rLoc = 462;
+		rType = 0;
+		vrLen = 784;
+		vrLoc = 0;
+	};
+	4BECA7C805B17041006840BA = {
+		fRef = 4B2EAFAE05B08D1E0021A5E6;
+		isa = PBXTextBookmark;
+		name = "ZoomGameInfoController.m: 60";
+		rLen = 0;
+		rLoc = 1305;
+		rType = 0;
+		vrLen = 1355;
+		vrLoc = 750;
+	};
+	4BECA7C905B17041006840BA = {
+		fRef = 4BECA7D205B1705F006840BA;
+		isa = PBXTextBookmark;
+		name = "(null): 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 858;
+		vrLoc = 0;
+	};
+	4BECA7CA05B17041006840BA = {
+		fRef = 4B2EAFAD05B08D1E0021A5E6;
+		isa = PBXTextBookmark;
+		name = "\tIBOutlet NSTextField* gameName;\n\tIBOutlet NSTextField* headline;\n\tIBOutlet NSTextField* author;\n\tIBOutlet NSTextField* genre;\n\tIBOutlet NSTextField* year;\n\tIBOutlet NSTextField* group;\n\t\n\tIBOutlet NSTextView*  comments;\n\tIBOutlet NSTextView*  teaser;\n\t\n\tIBOutlet NSPopUpButton* zarfRating;\n\tIBOutlet NSSlider*      rating;\n\tIBOutlet NSButton*      ratingOn;\n";
+		rLen = 359;
+		rLoc = 209;
+		rType = 0;
+		vrLen = 784;
+		vrLoc = 0;
+	};
+	4BECA7CB05B17041006840BA = {
+		fRef = 4B23C64F053C9C8C00A8E303;
+		isa = PBXTextBookmark;
+		name = "ZoomAppDelegate.m: applicationShouldOpenUntitledFile:";
+		rLen = 0;
+		rLoc = 438;
+		rType = 0;
+		vrLen = 942;
+		vrLoc = 219;
+	};
+	4BECA7CC05B17041006840BA = {
+		fRef = 4B2EAFAE05B08D1E0021A5E6;
+		isa = PBXTextBookmark;
+		name = "ZoomGameInfoController.m: 72";
+		rLen = 0;
+		rLoc = 1795;
+		rType = 0;
+		vrLen = 1355;
+		vrLoc = 750;
+	};
+	4BECA7CD05B17041006840BA = {
+		fRef = 4B2EAFAD05B08D1E0021A5E6;
+		isa = PBXTextBookmark;
+		name = "ZoomGameInfoController.h: 20";
+		rLen = 0;
+		rLoc = 462;
+		rType = 0;
+		vrLen = 784;
+		vrLoc = 0;
+	};
+	4BECA7CE05B17041006840BA = {
+		fRef = 4B2EAFAE05B08D1E0021A5E6;
+		isa = PBXTextBookmark;
+		name = "ZoomGameInfoController.m: 60";
+		rLen = 0;
+		rLoc = 1305;
+		rType = 0;
+		vrLen = 1355;
+		vrLoc = 750;
+	};
+	4BECA7CF05B17041006840BA = {
+		fRef = 4B2EAFAD05B08D1E0021A5E6;
+		isa = PBXTextBookmark;
+		name = "ZoomGameInfoController.h: 20";
+		rLen = 0;
+		rLoc = 462;
+		rType = 0;
+		vrLen = 784;
+		vrLoc = 0;
+	};
+	4BECA7D005B17041006840BA = {
+		fRef = 4B2EAFAE05B08D1E0021A5E6;
+		isa = PBXTextBookmark;
+		name = "ZoomGameInfoController.m: 60";
+		rLen = 0;
+		rLoc = 1305;
+		rType = 0;
+		vrLen = 1355;
+		vrLoc = 750;
+	};
+	4BECA7D105B17041006840BA = {
+		fRef = 4BECA7D305B1705F006840BA;
+		isa = PBXTextBookmark;
+		name = "(null): 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 858;
+		vrLoc = 0;
+	};
+	4BECA7D205B1705F006840BA = {
+		isa = PBXFileReference;
+		name = ahunter.pbxuser;
+		path = /Users/ahunter/prog/zoom/ZoomCocoa.xcode/ahunter.pbxuser;
+		refType = 0;
+		sourceTree = "<absolute>";
+	};
+	4BECA7D305B1705F006840BA = {
+		isa = PBXFileReference;
+		name = ahunter.pbxuser;
+		path = /Users/ahunter/prog/zoom/ZoomCocoa.xcode/ahunter.pbxuser;
+		refType = 0;
+		sourceTree = "<absolute>";
 	};
 	4BFE726905AD85CE00716D5A = {
 		fRef = 4BFE727105AD85CF00716D5A;

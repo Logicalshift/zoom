@@ -671,17 +671,21 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 
 - (void) setFonts: (NSArray*) newFonts {
     // FIXME: check that fonts is valid
-    // FIXME: update fonts displayed previously
+	// FIXME: better to do this with preferences now, but Inform still uses these calls
     
     [fonts release];
     fonts = [[NSArray allocWithZone: [self zone]] initWithArray: newFonts 
                                                       copyItems: YES];
+	
+	[self reformatWindow];
 }
 
 - (void) setColours: (NSArray*) newColours {
     [colours release];
     colours = [[NSArray allocWithZone: [self zone]] initWithArray: newColours
                                                         copyItems: YES];
+	
+	[self reformatWindow];
 }
 
 - (NSColor*) foregroundColourForStyle: (ZStyle*) style {
