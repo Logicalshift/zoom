@@ -257,8 +257,7 @@
 // = Input styles =
 
 - (void) setInputStyle: (ZStyle*) newInputStyle {
-	if (inputStyle) [inputStyle release];
-	inputStyle = [newInputStyle copy];
+	// Do nothing
 }
 
 @end
