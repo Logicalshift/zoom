@@ -1711,21 +1711,26 @@ void zmachine_runsome(const int version,
 #ifndef GLOBAL_PC
   ZDWord         pc;
 #endif
-  int            padding;
-  int            st     = 0;
-  int            tmp;
-  int            negate = 0;
-  int            result = 0;
-  ZDWord         branch = 0;
+  /* 
+   * 'register' here is intended as a hint to the optimiser... I list these
+   * things in order of priority, so a compiler with a shortage of registers 
+   * can behave appropriately.
+   */
+  register ZByte     instr;
+  register int       st     = 0;
+  int                padding;
+  int                tmp;
+  int                negate = 0;
+  int                result = 0;
+  ZDWord             branch = 0;
   /* Historical reasons */
 #define arg1 argblock.arg[0]
 #define arg2 argblock.arg[1]
 #define uarg1 ((ZUWord)argblock.arg[0])
 #define uarg2 ((ZUWord)argblock.arg[1])
-  ZArgblock      argblock;
-  ZStack*        stack;
-  int *          string;
-  register ZByte instr;
+  ZArgblock          argblock;
+  register ZStack*   stack;
+  int *              string;
 
   int x;
 
