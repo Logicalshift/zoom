@@ -26,6 +26,21 @@
 
 #include "../config.h"
 
+# if WINDOW_SYSTEM == 3
+#  undef FORMAT_ASSUME_BAD_MEASUREMENTS
+# else
+/*
+ * Define this to make the formatting routine measure whole strings,
+ * rather than assume that individual word measurements are
+ * sufficient. Some systems (*cough*t1lib*cough*) don't measure spaces
+ * at the end of words correctly. Defining this will correct any
+ * errors that might result from this, at the expense of reduced
+ * performance (which is only really an issue under Mac OS X, which
+ * provides inadequate facilities for measuring the length of text)
+ */
+#  define FORMAT_ASSUME_BAD_MEASUREMENTS
+# endif
+
 #include "xfont.h"
 
 /* Fonts */

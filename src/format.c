@@ -406,11 +406,14 @@ void format_last_text(int more)
 	  if (text->text[s] == '\n')
 	    s++;
 
+#ifdef FORMAT_ASSUME_BAD_MEASUREMENTS
 	  xpos = text_start + xfont_get_text_width(fn,
 						   text->text+s,
 						   text->word[x].start+
 						   text->word[x].len - s);
-	  /* xpos += text->word[x].width; */
+#else
+	  xpos += text->word[x].width;
+#endif
 	  
 	  if (xpos > CURWIN.winlx)
 	    {
