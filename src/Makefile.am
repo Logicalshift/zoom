@@ -28,23 +28,40 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/ZoomStory.m		  zoomCocoa/ZoomStoryID.h \
 	zoomCocoa/ZoomStoryID.m		  zoomCocoa/ZoomiFictionController.h \
 	zoomCocoa/ZoomiFictionController.m zoomCocoa/ZoomStoryOrganiser.h \
-	zoomCocoa/ZoomStoryOrganiser.h \
+	zoomCocoa/ZoomStoryOrganiser.m    zoomCocoa/ZoomGameInfoController.h \
+	zoomCocoa/ZoomGameInfoController.m zoomCocoa/ZoomiFButton.h \
+	zoomCocoa/ZoomiFButton.m \
 	zoomCocoa/MainMenu.nib/classes.nib zoomCocoa/MainMenu.nib/info.nib \
 	zoomCocoa/MainMenu.nib/keyedobjects.nib \
 	zoomCocoa/MainMenu.nib/objects.nib \
 	zoomCocoa/ZoomClient.nib/classes.nib zoomCocoa/ZoomClient.nib/info.nib \
 	zoomCocoa/ZoomClient.nib/keyedobjects.nib \
 	zoomCocoa/ZoomClient.nib/objects.nib \
+        zoomCocoa/GameInfo.nib/classes.nib \
+        zoomCocoa/GameInfo.nib/info.nib \
+        zoomCocoa/GameInfo.nib/keyedobjects.nib \
+        zoomCocoa/GameInfo.nib/objects.nib \
 	zoomCocoa/Preferences.nib/classes.nib \
 	zoomCocoa/Preferences.nib/info.nib \
 	zoomCocoa/Preferences.nib/keyedobjects.nib \
 	zoomCocoa/Preferences.nib/objects.nib \
 	zoomCocoa/iFiction.nib/classes.nib \
-	zoomCocoa/iFiction.nib/info.nib \
-	zoomCocoa/iFiction.nib/keyedobjects.nib \
-	zoomCocoa/iFiction.nib/objects.nib \
-	infocom.xml
-
+        zoomCocoa/iFiction.nib/info.nib \
+        zoomCocoa/iFiction.nib/keyedobjects.nib \
+        zoomCocoa/iFiction.nib/objects.nib \
+	zoomCocoa/iFiction-10.2.nib/classes.nib \
+	zoomCocoa/iFiction-10.2.nib/info.nib \
+	zoomCocoa/iFiction-10.2.nib/keyedobjects.nib \
+	zoomCocoa/iFiction-10.2.nib/objects.nib \
+	infocom.iFiction ifmetadata.c ifmetadata.h \
+	zoomCocoa/add-in.png 		zoomCocoa/add-out.png \
+	zoomCocoa/continue-in.png	zoomCocoa/continue-out.png \
+	zoomCocoa/colourSettings.png 	zoomCocoa/disabledButton.png \
+	zoomCocoa/drawer-in.png 	zoomCocoa/drawer-out.png \
+	zoomCocoa/fontSettings.png 	zoomCocoa/gameSettings.png \
+	zoomCocoa/generalSettings.png 	zoomCocoa/information-in.png \
+	zoomCocoa/information-out.png	zoomCocoa/newgame-in.png \
+	zoomCocoa/newgame-out.png	zoomCocoa/Z-Decal.png 
 
 zoom_SOURCES = \
 	main.c interp.c file.c options.c zmachine.c zscii.c display.c \
@@ -52,13 +69,13 @@ zoom_SOURCES = \
 	rc_parse.y rc_lex.l menu.c xfont.c windisplay.c winfont.c random.c \
 	format.c v6display.c carbondisplay.c carbonfont.c carbonsupport.c \
 	carbonprefs.c debug.c eval.y iff.c blorb.c image_libpng.c \
-	image_ximage.c image_carbon.c image_none.c ifmetadata.c \
+	image_ximage.c image_carbon.c image_none.c \
 	\
 	file.h zmachine.h options.h interp.h zscii.h display.h hash.h \
 	tokenise.h stream.h font3.h state.h rc.h rcp.h rc_parse.h \
 	menu.h xdisplay.h xfont.h zoomres.h windisplay.h random.h format.h \
 	carbondisplay.h v6display.h debug.h blorb.h image.h image_ximage.h \
-	sound.h ifmetadata.h
+	sound.h
 
 $(srcdir)/interp.c: interp_gen.h interp_z3.h interp_z4.h interp_z5.h interp_z6.h varop.h
 
