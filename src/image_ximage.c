@@ -63,8 +63,12 @@ struct x_data
   XImage* mask;
 
 #ifdef HAVE_XRENDER
+  XImage* render;
+
+  /*
   Pixmap  pmap;
   Picture piccy;
+  */
 #endif
 };
 
@@ -197,7 +201,6 @@ XImage* image_to_ximage_render(image_data* img,
       xim->bits_per_pixel != 24 &&
       xim->bits_per_pixel != 32)
     {
-      printf("Blech - %i\n", xim->bits_per_pixel);
       zmachine_warning("Unable to anything useful with your display: switch to a 16- or 32-bpp display (images won't display)");
       return xim;
     }
@@ -222,7 +225,7 @@ XImage* image_to_ximage_render(image_data* img,
 
   imgdata = image_rgb(img);
   bytes_per_pixel = xim->bits_per_pixel/8;
-  
+
   /* Two iterators, depending on byte order */
   if (xim->byte_order == LSBFirst)
     {
@@ -245,7 +248,7 @@ XImage* image_to_ximage_render(image_data* img,
 		((imgdata[1]>>gshift2)<<gshift)|
 		((imgdata[2]>>bshift2)<<bshift)|
 		((imgdata[3]>>ashift2)<<ashift);;
-	      
+
 	      imgdata += 4;
 	      
 	      for (z=0; z<bytes_per_pixel; z++)
@@ -522,13 +525,11 @@ static void x_destruct(image_data* img, void* data)
       XDestroyImage(d->mask);
     }
 #ifdef HAVE_XRENDER
-  if (d->pmap != None)
+  if (d->render != NULL)
     {
-      XFreePixmap(d->display, d->pmap);
-    }
-  if (d->piccy != None)
-    {
-      XRenderFreePicture(d->display, d->piccy);
+      free(d->render->data);
+      d->render->data = NULL;
+      XDestroyImage(d->render);
     }
 #endif
 
@@ -554,8 +555,7 @@ void image_plot_X(image_data* img,
       data->display = display;
 
 #ifdef HAVE_XRENDER
-      data->pmap = None;
-      data->piccy = None;
+      data->render = NULL;
 #endif
 
       image_set_data(img, data, x_destruct);
@@ -589,6 +589,11 @@ void image_plot_X(image_data* img,
 }
 
 #ifdef HAVE_XRENDER
+#define RENDER_TILE 200
+
+static Pixmap r_pix;
+static Picture r_pict;
+
 void image_plot_Xrender(image_data* img,
 			Display*  display,
 			Picture   pic,
@@ -598,6 +603,9 @@ void image_plot_Xrender(image_data* img,
   struct x_data* data;
 
   data = image_get_data(img);
+  int xpos, ypos;
+
+  GC agc;
 
   if (data == NULL)
     {
@@ -606,8 +614,7 @@ void image_plot_Xrender(image_data* img,
       data->mask  = NULL;
       data->display = display;
 
-      data->pmap = None;
-      data->piccy = None;
+      data->render = NULL;
 
       image_set_data(img, data, x_destruct);
     }
@@ -630,60 +637,72 @@ void image_plot_Xrender(image_data* img,
 	}
     }
 
-  if (data->piccy == None)
+  /* Render the image, if necessary */
+  if (data->render == NULL)
     {
-      if (data->pmap == None)
+      image_unload_rgb(img);
+      if (n != d)
+	image_resample(img, n, d);
+      
+      data->render = image_to_ximage_render(img, display, 
+					    DefaultVisual(display, DefaultScreen(display)));
+
+      image_unload_rgb(img);
+    }
+
+  /*
+   * Why do we things this roundabout way? Because Xrender (at least
+   * with my Nvidia drivers) goes... odd... with 'large' composites,
+   * so we transfer images a bit at a time. Yup, this sucks a bit for
+   * performance. Live with it, is about the best I can say...
+   */
+  if (r_pix == None)
+    {
+      r_pix = XCreatePixmap(display,
+			    RootWindow(display, DefaultScreen(display)),
+			    RENDER_TILE, RENDER_TILE,
+			    format->depth);
+    }
+  if (r_pict == None)
+    {
+      r_pict = XRenderCreatePicture(display,
+				    r_pix,
+				    format, 0, 0);
+    }
+
+  agc = XCreateGC(display, r_pix, 0, NULL);
+  XSetFunction(display, agc, GXcopy);
+  
+  xpos = 0; ypos = 0;
+  for (xpos = 0; xpos < image_width(img); xpos+=RENDER_TILE)
+    {
+      int w = RENDER_TILE;
+
+      if (xpos + w > image_width(img))
+	w = image_width(img)-xpos;
+
+      for (ypos = 0; ypos < image_height(img); ypos+=RENDER_TILE)
 	{
-	  XImage* xim;
-	  GC      agc = None;
+	  int h = RENDER_TILE;
 
-	  image_unload_rgb(img);
-	  if (n != d)
-	    image_resample(img, n, d);
-
-	  /* Create a pixmap of the appropriate format */
-	  data->pmap = XCreatePixmap(display,
-				     RootWindow(display, DefaultScreen(display)),
-				     image_width(img), image_height(img),
-				     format->depth);
-	  if (data->pmap == None)
-	    {
-	      return;
-	    }
-
-	  /* ... and create the XRender picture */
-	  data->piccy = XRenderCreatePicture(display,
-					     data->pmap,
-					     format, 0, 0);
-
-	  /* Now, create and render the image... */
-	  xim = image_to_ximage_render(img, display, 
-				       DefaultVisual(display, DefaultScreen(display)));
-
-	  agc = XCreateGC(display, data->pmap, 0, NULL);
-
-	  XSetFunction(display, agc, GXcopy);
-	  XPutImage(display, data->pmap, agc, xim,
-		    0,0,0,0,
-		    xim->width, xim->height);
-	  XFlushGC(display, agc);
-
-	  free(xim->data); xim->data = NULL;
-	  XDestroyImage(xim);
-	  XFreeGC(display, agc);
-
-	  /* Destroy all data that's now unnecessary */
-	  image_unload_rgb(img);
+	  if (ypos + h > image_height(img))
+	    h = image_height(img)-ypos;
+	  
+	  XPutImage(display, r_pix, agc, 
+		    data->render,
+		    xpos, ypos, 0,0, w, h);
+	  XRenderComposite(display, PictOpOver,
+			   r_pict,
+			   None,
+			   pic,
+			   0,0,0,0,
+			   x+xpos,y+ypos,
+			   w,h);
 	}
     }
-  
-  XRenderComposite(display, PictOpOver,
-		   data->piccy,
-		   None,
-		   pic,
-		   0,0,0,0,
-		   x,y,
-		   image_width(img), image_height(img));
+
+  XFlush(display);
+  XFreeGC(display, agc);
 }
 #endif
 

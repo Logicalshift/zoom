@@ -2738,6 +2738,8 @@ void display_plot_image(BlorbImage* img, int x, int y)
 
   v6_scale_image(img, &sc_n, &sc_d);
 
+  reset_clip();
+
   if (img->loaded == NULL)
     {
       return;

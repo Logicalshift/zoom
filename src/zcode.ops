@@ -2582,6 +2582,7 @@ OPCODE "draw_picture"  EXT:0x05 ARGS:3        VERSION 6
   if (machine.blorb != NULL)
     {
       img = blorb_findimage(machine.blorb, argblock.arg[0]);
+      // img = blorb_findimage(machine.blorb, 1);
     }
   else
     img = NULL;
