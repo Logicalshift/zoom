@@ -126,6 +126,9 @@
 - (void) setCursorPositionX: (int) xp
                           Y: (int) yp {
     xpos = xp; ypos = yp-startLine;
+	
+	if (xpos < 0) xpos = 0;
+	if (ypos < 0) ypos = 0;
 }
 
 - (NSPoint) cursorPosition {
