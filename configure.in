@@ -293,8 +293,8 @@ AC_TRY_LINK([
   ])
 )
 
-AC_CHECK_HEADERS([expat.h],,AC_MSG_ERROR([expat is required to compile Zoom]))
-AC_CHECK_LIB(expat, XML_ParserReset,,AC_MSG_ERROR([expat is required to compile Zoom]))
+#AC_CHECK_HEADERS([expat.h],,AC_MSG_ERROR([expat is required to compile Zoom]))
+#AC_CHECK_LIB(expat, XML_ParserReset,,AC_MSG_ERROR([expat is required to compile Zoom]))
 
 if test "$cross_compiling" = "yes"; then
   UTIL_DISPLAY_SECTION([native gcc (as we're X-compiling)])

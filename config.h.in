@@ -27,14 +27,8 @@
 #undef HAVE_COMPUTED_GOTOS
 
 
-/* Define to 1 if you have the <expat.h> header file. */
-#undef HAVE_EXPAT_H
-
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
-
-/* Define to 1 if you have the `expat' library (-lexpat). */
-#undef HAVE_LIBEXPAT
 
 /* Define to 1 if you have the `fontconfig' library (-lfontconfig). */
 #undef HAVE_LIBFONTCONFIG
