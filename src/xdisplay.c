@@ -1069,6 +1069,8 @@ void display_update(void)
     draw_window();
 }
 
+static struct timeval next_flash = { 0, 0 };
+
 /*
  * Process X events
  */
@@ -1084,8 +1086,6 @@ int process_events(long int to, int* buf, int buflen)
   int            x;
   KeySym         ks;
   history_item*  history = NULL;
-
-  caret = 0;
 
   caret_x = CURWIN.xpos;
   caret_y = CURWIN.ypos;
@@ -1122,18 +1122,36 @@ int process_events(long int to, int* buf, int buflen)
   connection_num = ConnectionNumber(x_display);
 
   gettimeofday(&now, NULL);
-  timeout.tv_sec  = now.tv_sec + (to/1000);
-  timeout.tv_usec = now.tv_usec + ((to%1000)*1000);
-  timeout.tv_sec += timeout.tv_usec/1000000;
+  timeout.tv_sec   = now.tv_sec + (to/1000);
+  timeout.tv_usec  = now.tv_usec + ((to%1000)*1000);
+  timeout.tv_sec  += timeout.tv_usec/1000000;
   timeout.tv_usec %= 1000000;
   
-  while (1) 
+  while (1)
     {
       XEvent ev;
       fd_set readfds;
       struct timeval tv;
       int isevent;
       int flash;
+
+      gettimeofday(&now, NULL);
+      if (next_flash.tv_sec < now.tv_sec ||
+	  (next_flash.tv_sec == now.tv_sec &&
+	   next_flash.tv_usec < now.tv_usec))
+	{
+	  next_flash.tv_sec   = now.tv_sec;
+	  next_flash.tv_usec  = now.tv_usec + 400000;
+	  next_flash.tv_sec  += next_flash.tv_usec/1000000;
+	  next_flash.tv_usec %= 1000000;
+
+	  caret = !caret;
+	  XDrawLine(x_display, x_mainwin, x_caretgc,
+		    caret_x+((win_width-win_x)>>1),
+		    caret_y+((win_height-win_y)>>1),
+		    caret_x+((win_width-win_x)>>1),
+		    caret_y+((win_height-win_y)>>1)+caret_h);
+	}
 
       FD_ZERO(&readfds);
       FD_SET(connection_num, &readfds);
@@ -1142,7 +1160,6 @@ int process_events(long int to, int* buf, int buflen)
 
       if (to != 0)
 	{
-	  gettimeofday(&now, NULL);
 	  tv.tv_sec  = timeout.tv_sec - now.tv_sec;
 	  tv.tv_usec = timeout.tv_usec - now.tv_usec;
 
@@ -1170,10 +1187,23 @@ int process_events(long int to, int* buf, int buflen)
 	    }
 	}
 
-      if ((tv.tv_sec >= 1 || to == 0) && caret_y+caret_h <= win_y)
+      if (((tv.tv_sec > next_flash.tv_sec ||
+	    (tv.tv_sec == next_flash.tv_sec &&
+	     tv.tv_usec > next_flash.tv_usec))
+	   || to == 0) && caret_y+caret_h <= win_y)
 	{
-	  tv.tv_sec  = 0;
-	  tv.tv_usec = 400000;
+	  tv.tv_sec  = next_flash.tv_sec - now.tv_sec;
+	  tv.tv_usec = next_flash.tv_usec - now.tv_usec;
+
+	  tv.tv_sec  += tv.tv_usec/1000000;
+	  tv.tv_usec %= 1000000;
+
+	  if (tv.tv_usec < 0)
+	    {
+	      tv.tv_usec += 1000000;
+	      tv.tv_sec  -= 1;
+	    }
+
 	  flash = 1;
 	}
 
@@ -1186,12 +1216,6 @@ int process_events(long int to, int* buf, int buflen)
 
       if (!isevent && flash)
 	{
-	  caret = !caret;
-	  XDrawLine(x_display, x_mainwin, x_caretgc,
-		    caret_x+((win_width-win_x)>>1),
-		    caret_y+((win_height-win_y)>>1),
-		    caret_x+((win_width-win_x)>>1),
-		    caret_y+((win_height-win_y)>>1)+caret_h);
 	  continue;
 	}
       
