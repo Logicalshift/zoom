@@ -234,6 +234,7 @@ typedef struct ZMachine
   ZUWord heblen;
 
   /* Output streams */
+  int    mouse_on;
   int    screen_on;
   int    transcript_on;
   int    transcript_commands;

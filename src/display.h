@@ -117,4 +117,3 @@ extern int  display_get_font_height     (void);
 extern void display_reset_windows       (void);
 
 #endif
-

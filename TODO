@@ -10,7 +10,7 @@
    print the buffer out (as aread will then do it itself), or if the
    game turns buffering off (or otherwise causes a flush) while
    printing the text.
- * make set_cursor have no effect in window 0 (v3-5)
+ * Unicode in input support (stream.c)
 
 --
 
