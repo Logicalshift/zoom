@@ -16,6 +16,8 @@
 				4B1E3FD9050F7E4300A8E303,
 				4B1E3F7F050F7C9500A8E303,
 				4B1E3F5E050F7B2C00A8E303,
+				4BCF3F41050FB1C300A8E303,
+				4BCF3F42050FB1D800A8E303,
 				4B1E3F5F050F7B8100A8E303,
 				4B1E3F55050F7B0E00A8E303,
 			);
@@ -27,6 +29,7 @@
 			);
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				OPTIMIZATION_CFLAGS = "-O0";
 			};
 			isa = PBXBuildStyle;
 			name = Development;
@@ -36,6 +39,7 @@
 			);
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				OPTIMIZATION_CFLAGS = "-O3";
 			};
 			isa = PBXBuildStyle;
 			name = Deployment;
@@ -54,6 +58,7 @@
 				4B1E3F5B050F7B2500A8E303,
 				4B1E3F67050F7BB700A8E303,
 				4B1E3F79050F7C3900A8E303,
+				4BCF3F3C050FB1B400A8E303,
 			);
 		};
 		4B1E3F55050F7B0E00A8E303 = {
@@ -66,6 +71,7 @@
 				4B1E3F6E050F7C2000A8E303,
 				4B1E3F5C050F7B2500A8E303,
 				4B1E3F7A050F7C3900A8E303,
+				4BCF3F3D050FB1B400A8E303,
 			);
 			isa = PBXGroup;
 			name = Products;
@@ -98,6 +104,12 @@
 				4B1E3FD0050F7DE200A8E303,
 				4B1E3FD8050F7E3800A8E303,
 				4B1E3FDA050F7E4300A8E303,
+				4BCF3F28050F8BB200A8E303,
+				4BCF3F2E050F8ECD00A8E303,
+				4BCF3F31050F9E8F00A8E303,
+				4BCF3F35050FAE5700A8E303,
+				4BCF3F61050FBAAF00A8E303,
+				4BCF3F63050FBB3F00A8E303,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -125,6 +137,12 @@
 				4B1E3FCD050F7DE200A8E303,
 				4B1E3FCE050F7DE200A8E303,
 				4B1E3FD1050F7DE200A8E303,
+				4BCF3F2A050F8E0000A8E303,
+				4BCF3F32050F9E8F00A8E303,
+				4BCF3F36050FAE5700A8E303,
+				4BCF3F60050FBAAF00A8E303,
+				4B4EF622050FD67C00A8E303,
+				4BE447B90510DE5900A8E303,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -133,6 +151,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4B1E3F61050F7BA000A8E303,
+				4BCF3F2C050F8E2400A8E303,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -152,6 +171,7 @@
 				4B1E3F5A050F7B2500A8E303,
 			);
 			buildSettings = {
+				OPTIMIZATION_CFLAGS = "-O3";
 				OTHER_CFLAGS = "-I\"ProjectBuilder/etc\" -Ibuild -DWINDOW_SYSTEM=4";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -189,6 +209,7 @@
 		4B1E3F5F050F7B8100A8E303 = {
 			children = (
 				4B1E3F60050F7BA000A8E303,
+				4BCF3F2B050F8E2400A8E303,
 			);
 			isa = PBXGroup;
 			name = Frameworks;
@@ -419,25 +440,30 @@
 		};
 		4B1E3F88050F7CF100A8E303 = {
 			children = (
-				4B1E3F89050F7D5200A8E303,
-				4B1E3F8A050F7D5200A8E303,
-				4B1E3F8B050F7D5200A8E303,
-				4B1E3F8C050F7D5200A8E303,
-				4B1E3F8D050F7D5200A8E303,
-				4B1E3F8E050F7D5200A8E303,
-				4B1E3F8F050F7D5200A8E303,
-				4B1E3F90050F7D5200A8E303,
+				4BCF3F2D050F8ECD00A8E303,
+				4BE447BA0510E0E000A8E303,
 				4B1E3F91050F7D5200A8E303,
-				4B1E3F92050F7D5200A8E303,
-				4B1E3F93050F7D5200A8E303,
-				4B1E3F94050F7D5200A8E303,
-				4B1E3F95050F7D5200A8E303,
-				4B1E3F96050F7D5200A8E303,
-				4B1E3F97050F7D5200A8E303,
-				4B1E3F98050F7D5200A8E303,
 				4B1E3F99050F7D5200A8E303,
+				4B1E3F8F050F7D5200A8E303,
 				4B1E3F9A050F7D5200A8E303,
+				4B1E3F94050F7D5200A8E303,
+				4B1E3F8B050F7D5200A8E303,
+				4B1E3F90050F7D5200A8E303,
 				4B1E3F9B050F7D5200A8E303,
+				4BCF3F62050FBB3F00A8E303,
+				4B1E3F89050F7D5200A8E303,
+				4B1E3F8C050F7D5200A8E303,
+				4B1E3F95050F7D5200A8E303,
+				4B1E3F98050F7D5200A8E303,
+				4B1E3F8E050F7D5200A8E303,
+				4B1E3F97050F7D5200A8E303,
+				4B1E3F92050F7D5200A8E303,
+				4B1E3F8A050F7D5200A8E303,
+				4B1E3F96050F7D5200A8E303,
+				4B1E3F8D050F7D5200A8E303,
+				4B1E3F93050F7D5200A8E303,
+				4BCF3F5E050FBAAF00A8E303,
+				4BCF3F5F050FBAAF00A8E303,
 			);
 			isa = PBXGroup;
 			name = Support;
@@ -673,28 +699,28 @@
 		};
 		4B1E3FAF050F7D8900A8E303 = {
 			children = (
-				4B1E3FB0050F7DE200A8E303,
-				4B1E3FB1050F7DE200A8E303,
-				4B1E3FB2050F7DE200A8E303,
-				4B1E3FB3050F7DE200A8E303,
-				4B1E3FB4050F7DE200A8E303,
-				4B1E3FB5050F7DE200A8E303,
-				4B1E3FB6050F7DE200A8E303,
 				4B1E3FB7050F7DE200A8E303,
-				4B1E3FB8050F7DE200A8E303,
-				4B1E3FB9050F7DE200A8E303,
-				4B1E3FBA050F7DE200A8E303,
-				4B1E3FBB050F7DE200A8E303,
-				4B1E3FBC050F7DE200A8E303,
+				4B1E3FB0050F7DE200A8E303,
+				4B1E3FB6050F7DE200A8E303,
+				4B1E3FC0050F7DE200A8E303,
+				4B1E3FBF050F7DE200A8E303,
 				4B1E3FBD050F7DE200A8E303,
 				4B1E3FBE050F7DE200A8E303,
-				4B1E3FBF050F7DE200A8E303,
-				4B1E3FC0050F7DE200A8E303,
+				4B1E3FB3050F7DE200A8E303,
+				4B1E3FB8050F7DE200A8E303,
+				4B1E3FBC050F7DE200A8E303,
+				4B1E3FBB050F7DE200A8E303,
+				4B1E3FB5050F7DE200A8E303,
+				4B1E3FB4050F7DE200A8E303,
+				4B1E3FB9050F7DE200A8E303,
+				4B1E3FB1050F7DE200A8E303,
+				4B1E3FBA050F7DE200A8E303,
+				4B1E3FB2050F7DE200A8E303,
 			);
 			isa = PBXGroup;
 			name = Interpreter;
-			path = "";
-			refType = 4;
+			path = src;
+			refType = 2;
 		};
 		4B1E3FB0050F7DE200A8E303 = {
 			fileEncoding = 30;
@@ -960,25 +986,18 @@
 		};
 		4B1E3FDB050F7E6F00A8E303 = {
 			children = (
-				4B1E3FDD050F7E9500A8E303,
-				4B1E3FDC050F7E8B00A8E303,
+				4BCF3F27050F8BB200A8E303,
+				4BCF3F29050F8E0000A8E303,
+				4BCF3F2F050F9E8F00A8E303,
+				4BCF3F30050F9E8F00A8E303,
+				4BCF3F33050FAE5700A8E303,
+				4BCF3F34050FAE5700A8E303,
+				4B4EF620050FD66E00A8E303,
+				4BE447B80510DE5900A8E303,
 			);
 			isa = PBXGroup;
+			name = ZoomCocoa;
 			path = zoomCocoa;
-			refType = 4;
-		};
-		4B1E3FDC050F7E8B00A8E303 = {
-			children = (
-			);
-			isa = PBXGroup;
-			name = Interface;
-			refType = 4;
-		};
-		4B1E3FDD050F7E9500A8E303 = {
-			children = (
-			);
-			isa = PBXGroup;
-			name = Server;
 			refType = 4;
 		};
 		4B1E3FDE050F80BB00A8E303 = {
@@ -1004,6 +1023,651 @@
 			isa = PBXBuildFile;
 			settings = {
 			};
+		};
+		4B4EF61C050FCEA600A8E303 = {
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				4B4EF61D050FCEAE00A8E303,
+			);
+			isa = PBXCopyFilesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4B4EF61D050FCEAE00A8E303 = {
+			fileRef = 4B1E3F5C050F7B2500A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B4EF620050FD66E00A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZFiles.m;
+			refType = 4;
+		};
+		4B4EF622050FD67C00A8E303 = {
+			fileRef = 4B4EF620050FD66E00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B4EF623050FDC6800A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomView.h;
+			refType = 4;
+		};
+		4B4EF624050FDC6800A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomView.m;
+			refType = 4;
+		};
+		4B4EF625050FDC6800A8E303 = {
+			fileRef = 4B4EF623050FDC6800A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B4EF626050FDC6800A8E303 = {
+			fileRef = 4B4EF624050FDC6800A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B7D1DAD0534999E00A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomLowerWindow.h;
+			refType = 4;
+		};
+		4B7D1DAE0534999E00A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomLowerWindow.m;
+			refType = 4;
+		};
+		4B7D1DAF0534999E00A8E303 = {
+			fileRef = 4B7D1DAD0534999E00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B7D1DB00534999E00A8E303 = {
+			fileRef = 4B7D1DAE0534999E00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F27050F8BB200A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomProtocol.h;
+			refType = 4;
+		};
+		4BCF3F28050F8BB200A8E303 = {
+			fileRef = 4BCF3F27050F8BB200A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F29050F8E0000A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomProtocol.m;
+			refType = 4;
+		};
+		4BCF3F2A050F8E0000A8E303 = {
+			fileRef = 4BCF3F29050F8E0000A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F2B050F8E2400A8E303 = {
+			isa = PBXFrameworkReference;
+			name = Foundation.framework;
+			path = /System/Library/Frameworks/Foundation.framework;
+			refType = 0;
+		};
+		4BCF3F2C050F8E2400A8E303 = {
+			fileRef = 4BCF3F2B050F8E2400A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F2D050F8ECD00A8E303 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = display.h;
+			refType = 4;
+		};
+		4BCF3F2E050F8ECD00A8E303 = {
+			fileRef = 4BCF3F2D050F8ECD00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F2F050F9E8F00A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomServer.h;
+			refType = 4;
+		};
+		4BCF3F30050F9E8F00A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomServer.m;
+			refType = 4;
+		};
+		4BCF3F31050F9E8F00A8E303 = {
+			fileRef = 4BCF3F2F050F9E8F00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F32050F9E8F00A8E303 = {
+			fileRef = 4BCF3F30050F9E8F00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F33050FAE5700A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomZMachine.h;
+			refType = 4;
+		};
+		4BCF3F34050FAE5700A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomZMachine.m;
+			refType = 4;
+		};
+		4BCF3F35050FAE5700A8E303 = {
+			fileRef = 4BCF3F33050FAE5700A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F36050FAE5700A8E303 = {
+			fileRef = 4BCF3F34050FAE5700A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F37050FB1B400A8E303 = {
+			buildActionMask = 2147483647;
+			files = (
+				4BCF3F3F050FB1B900A8E303,
+				4BCF3F55050FB47200A8E303,
+				4BCF3F5B050FB57A00A8E303,
+				4B4EF625050FDC6800A8E303,
+				4B7D1DAF0534999E00A8E303,
+				4BDFA46505358F1200A8E303,
+				4BDFA4AE0535C42C00A8E303,
+				4BDFA4B20535E10200A8E303,
+			);
+			isa = PBXHeadersBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4BCF3F38050FB1B400A8E303 = {
+			buildActionMask = 2147483647;
+			files = (
+				4BCF3F47050FB21C00A8E303,
+				4BCF3F48050FB21C00A8E303,
+				4BCF3F49050FB21C00A8E303,
+				4BCF3F4A050FB21C00A8E303,
+				4BCF3F52050FB42600A8E303,
+				4BCF3F58050FB49F00A8E303,
+			);
+			isa = PBXResourcesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4BCF3F39050FB1B400A8E303 = {
+			buildActionMask = 2147483647;
+			files = (
+				4BCF3F40050FB1B900A8E303,
+				4BCF3F4C050FB2C500A8E303,
+				4BCF3F56050FB47200A8E303,
+				4BCF3F5C050FB57A00A8E303,
+				4B4EF626050FDC6800A8E303,
+				4B7D1DB00534999E00A8E303,
+				4BDFA46605358F1200A8E303,
+				4BDFA4AF0535C42C00A8E303,
+				4BDFA4B30535E10200A8E303,
+			);
+			isa = PBXSourcesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4BCF3F3A050FB1B400A8E303 = {
+			buildActionMask = 2147483647;
+			files = (
+				4BCF3F4F050FB30100A8E303,
+				4BCF3F50050FB30100A8E303,
+			);
+			isa = PBXFrameworksBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4BCF3F3B050FB1B400A8E303 = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXRezBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4BCF3F3C050FB1B400A8E303 = {
+			buildPhases = (
+				4BCF3F37050FB1B400A8E303,
+				4BCF3F38050FB1B400A8E303,
+				4BCF3F39050FB1B400A8E303,
+				4BCF3F3A050FB1B400A8E303,
+				4BCF3F3B050FB1B400A8E303,
+				4B4EF61C050FCEA600A8E303,
+			);
+			buildSettings = {
+				OPTIMIZATION_CFLAGS = "-O0";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = Zoom;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
+				WRAPPER_EXTENSION = app;
+			};
+			dependencies = (
+				4BCF3F5D050FB5DD00A8E303,
+			);
+			isa = PBXApplicationTarget;
+			name = Zoom;
+			productInstallPath = "$(USER_APPS_DIR)";
+			productName = Zoom;
+			productReference = 4BCF3F3D050FB1B400A8E303;
+			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>z3</string>
+				<string>z4</string>
+				<string>z5</string>
+				<string>z6</string>
+				<string>z7</string>
+				<string>z8</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>zoom-game.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>ZCode file</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>ZCOD</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>NSDocumentClass</key>
+			<string>ZoomClient</string>
+		</dict>
+	</array>
+	<key>CFBundleExecutable</key>
+	<string>Zoom</string>
+	<key>CFBundleGetInfoString</key>
+	<string></string>
+	<key>CFBundleIconFile</key>
+	<string>zoom-app.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string>uk.org.logicalshift.zoom</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string></string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string></string>
+	<key>CFBundleSignature</key>
+	<string>YZZY</string>
+	<key>CFBundleVersion</key>
+	<string>1.0.2dev1</string>
+	<key>NSMainNibFile</key>
+	<string>MainMenu.nib</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+</dict>
+</plist>
+";
+		};
+		4BCF3F3D050FB1B400A8E303 = {
+			isa = PBXApplicationReference;
+			path = Zoom.app;
+			refType = 3;
+		};
+		4BCF3F3F050FB1B900A8E303 = {
+			fileRef = 4BCF3F27050F8BB200A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F40050FB1B900A8E303 = {
+			fileRef = 4BCF3F29050F8E0000A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F41050FB1C300A8E303 = {
+			children = (
+				4BCF3F4B050FB2C500A8E303,
+				4B4EF623050FDC6800A8E303,
+				4B4EF624050FDC6800A8E303,
+				4BCF3F59050FB57A00A8E303,
+				4BCF3F5A050FB57A00A8E303,
+				4BCF3F53050FB47200A8E303,
+				4BCF3F54050FB47200A8E303,
+				4B7D1DAD0534999E00A8E303,
+				4B7D1DAE0534999E00A8E303,
+				4BDFA46305358F1200A8E303,
+				4BDFA46405358F1200A8E303,
+				4BDFA4AC0535C42C00A8E303,
+				4BDFA4AD0535C42C00A8E303,
+				4BDFA4B00535E10200A8E303,
+				4BDFA4B10535E10200A8E303,
+			);
+			isa = PBXGroup;
+			name = ZoomClient;
+			path = src/zoomCocoa;
+			refType = 2;
+		};
+		4BCF3F42050FB1D800A8E303 = {
+			children = (
+				4BCF3F43050FB21C00A8E303,
+				4BCF3F44050FB21C00A8E303,
+				4BCF3F45050FB21C00A8E303,
+				4BCF3F46050FB21C00A8E303,
+				4BCF3F51050FB42600A8E303,
+				4BCF3F57050FB49F00A8E303,
+			);
+			isa = PBXGroup;
+			name = Resources;
+			path = src/zoomCocoa;
+			refType = 2;
+		};
+		4BCF3F43050FB21C00A8E303 = {
+			isa = PBXFileReference;
+			name = "zoom-app.icns";
+			path = "../macos/zoom-app.icns";
+			refType = 4;
+		};
+		4BCF3F44050FB21C00A8E303 = {
+			isa = PBXFileReference;
+			name = macreadme.rtf;
+			path = ../macos/macreadme.rtf;
+			refType = 4;
+		};
+		4BCF3F45050FB21C00A8E303 = {
+			isa = PBXFileReference;
+			name = "zoom-file.icns";
+			path = "../macos/zoom-file.icns";
+			refType = 4;
+		};
+		4BCF3F46050FB21C00A8E303 = {
+			isa = PBXFileReference;
+			name = "zoom-game.icns";
+			path = "../macos/zoom-game.icns";
+			refType = 4;
+		};
+		4BCF3F47050FB21C00A8E303 = {
+			fileRef = 4BCF3F43050FB21C00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F48050FB21C00A8E303 = {
+			fileRef = 4BCF3F44050FB21C00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F49050FB21C00A8E303 = {
+			fileRef = 4BCF3F45050FB21C00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F4A050FB21C00A8E303 = {
+			fileRef = 4BCF3F46050FB21C00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F4B050FB2C500A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = main.m;
+			refType = 4;
+		};
+		4BCF3F4C050FB2C500A8E303 = {
+			fileRef = 4BCF3F4B050FB2C500A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F4F050FB30100A8E303 = {
+			fileRef = 4B1E3F60050F7BA000A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F50050FB30100A8E303 = {
+			fileRef = 4BCF3F2B050F8E2400A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F51050FB42600A8E303 = {
+			isa = PBXFileReference;
+			path = MainMenu.nib;
+			refType = 4;
+		};
+		4BCF3F52050FB42600A8E303 = {
+			fileRef = 4BCF3F51050FB42600A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F53050FB47200A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomClient.h;
+			refType = 4;
+		};
+		4BCF3F54050FB47200A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomClient.m;
+			refType = 4;
+		};
+		4BCF3F55050FB47200A8E303 = {
+			fileRef = 4BCF3F53050FB47200A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F56050FB47200A8E303 = {
+			fileRef = 4BCF3F54050FB47200A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F57050FB49F00A8E303 = {
+			isa = PBXFileReference;
+			path = ZoomClient.nib;
+			refType = 4;
+		};
+		4BCF3F58050FB49F00A8E303 = {
+			fileRef = 4BCF3F57050FB49F00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F59050FB57A00A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomClientController.h;
+			refType = 4;
+		};
+		4BCF3F5A050FB57A00A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomClientController.m;
+			refType = 4;
+		};
+		4BCF3F5B050FB57A00A8E303 = {
+			fileRef = 4BCF3F59050FB57A00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F5C050FB57A00A8E303 = {
+			fileRef = 4BCF3F5A050FB57A00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F5D050FB5DD00A8E303 = {
+			isa = PBXTargetDependency;
+			target = 4B1E3F5B050F7B2500A8E303;
+		};
+		4BCF3F5E050FBAAF00A8E303 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = v6display.c;
+			refType = 4;
+		};
+		4BCF3F5F050FBAAF00A8E303 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = v6display.h;
+			refType = 4;
+		};
+		4BCF3F60050FBAAF00A8E303 = {
+			fileRef = 4BCF3F5E050FBAAF00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F61050FBAAF00A8E303 = {
+			fileRef = 4BCF3F5F050FBAAF00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCF3F62050FBB3F00A8E303 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = image.h;
+			refType = 4;
+		};
+		4BCF3F63050FBB3F00A8E303 = {
+			fileRef = 4BCF3F62050FBB3F00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BDFA46305358F1200A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomUpperWindow.h;
+			refType = 4;
+		};
+		4BDFA46405358F1200A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomUpperWindow.m;
+			refType = 4;
+		};
+		4BDFA46505358F1200A8E303 = {
+			fileRef = 4BDFA46305358F1200A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BDFA46605358F1200A8E303 = {
+			fileRef = 4BDFA46405358F1200A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BDFA4AC0535C42C00A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomMoreView.h;
+			refType = 4;
+		};
+		4BDFA4AD0535C42C00A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomMoreView.m;
+			refType = 4;
+		};
+		4BDFA4AE0535C42C00A8E303 = {
+			fileRef = 4BDFA4AC0535C42C00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BDFA4AF0535C42C00A8E303 = {
+			fileRef = 4BDFA4AD0535C42C00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BDFA4B00535E10200A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomTextView.h;
+			refType = 4;
+		};
+		4BDFA4B10535E10200A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomTextView.m;
+			refType = 4;
+		};
+		4BDFA4B20535E10200A8E303 = {
+			fileRef = 4BDFA4B00535E10200A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BDFA4B30535E10200A8E303 = {
+			fileRef = 4BDFA4B10535E10200A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BE447B80510DE5900A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZDisplay.m;
+			refType = 4;
+		};
+		4BE447B90510DE5900A8E303 = {
+			fileRef = 4BE447B80510DE5900A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BE447BA0510E0E000A8E303 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = display.c;
+			refType = 4;
 		};
 	};
 	rootObject = 4B1E3F4B050F7AD000A8E303;
