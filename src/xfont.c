@@ -203,20 +203,26 @@ xfont* xfont_load_font(char* font)
 	  XftResult   res;
 
 	  pat = XftXlfdParse(font, False, False);
-	  XftPatternAddBool(pat, XFT_ANTIALIAS,
-			    rc_get_antialias()?True:False);
+	  /* XftPatternAddBool(pat, XFT_ANTIALIAS,
+	     rc_get_antialias()?True:False); */
 
-	  res = XftResultMatch; /* Bug in Xft... */
-	  match = XftFontMatch(x_display, x_screen, pat, &res);
-	  if (match && res != XftResultNoMatch)
-	    {
-	      f->data.Xft = XftFontOpenPattern(x_display, match);
-	    }
-	  else
-	    {
-	      f->data.Xft = NULL;
-	    }
-	  XftPatternDestroy(pat);
+	  if (!pat) {
+	    f->data.Xft = NULL;
+	  } else {
+	    FcPatternPrint(pat);
+
+	    res = XftResultNoMatch; /* Bug in Xft... */
+	    match = XftFontMatch(x_display, x_screen, pat, &res);
+	    if (match && res != XftResultNoMatch)
+	      {
+		f->data.Xft = XftFontOpenPattern(x_display, match);
+	      }
+	    else
+	      {
+		f->data.Xft = NULL;
+	      }
+	    XftPatternDestroy(pat);
+	  }
 	}
       else
 	{

@@ -83,8 +83,8 @@ OPCODE "test_attr"     2OP:0x0a BRANCH VERSION 1,2,3
 %{
   ZByte* obj;
   int byte, bit;
-  
-  if (uarg1>255 || uarg1 == 0)
+
+  if (uarg1>255) /* || uarg1 == 0) HHGG bug */
     zmachine_fatal("Object out of range");
   if (uarg2>31)
     zmachine_fatal("Attribute out of range");
@@ -92,16 +92,20 @@ OPCODE "test_attr"     2OP:0x0a BRANCH VERSION 1,2,3
   byte = uarg2>>3;
   bit  = uarg2&7;
 
-  obj = Obj3(uarg1);
+  if (uarg1 != 0) {
+    obj = Obj3(uarg1);
 
 #ifdef TRACKING
-  if (machine.track_attributes)
-    tracking_print("Testing attribute %i of object \"%s\" (%s)",
-		   attr, tracking_object(uarg1),
-		   (obj[byte]&(0x80>>bit))?"Set":"Unset");
+    if (machine.track_attributes)
+      tracking_print("Testing attribute %i of object \"%s\" (%s)",
+	  	     attr, tracking_object(uarg1),
+		     (obj[byte]&(0x80>>bit))?"Set":"Unset");
 #endif
 
-  result = ((obj[byte]&(0x80>>bit)) != 0);
+    result = ((obj[byte]&(0x80>>bit)) != 0);
+  } else {
+    result = 0;
+  }
   dobranch;
 %}
 
