@@ -202,7 +202,7 @@ static inline int istrlen(const int* string)
 
 static void size_window(void)
 {
-  RECT rct, clrct;
+  RECT rct, clrct, strct;
   
   xfont_x = xfont_get_width(font[3]);
   xfont_y = xfont_get_height(font[3]);
@@ -212,11 +212,13 @@ static void size_window(void)
 
   GetWindowRect(mainwin, &rct);
   GetClientRect(mainwin, &clrct);
-  
+  GetWindowRect(mainwinstat, &strct);
+
   SetWindowPos(mainwin, HWND_TOP,
 	       rct.top, rct.left,
 	       win_x+8 + ((rct.right-rct.left)-clrct.right),
-	       win_y+8 + ((rct.bottom-rct.top)-clrct.bottom),
+	       win_y+8 + ((rct.bottom-rct.top)-clrct.bottom) +
+	       (strct.bottom-strct.top),
 	       0);
 
   total_x = win_x + 8;
@@ -1269,7 +1271,7 @@ static void draw_window(int win,
 	  if (text == NULL && line->n_chars > 0)
 	    zmachine_fatal("Programmer is a spoon");
 
-	  if (line->baseline + line->descent < text_win[win].winsy)
+	  if (line->baseline + line->descent <= text_win[win].winsy)
 	    {
 	      text_win[win].topline = line->next;
 	      line = line->next;
