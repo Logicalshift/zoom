@@ -184,6 +184,11 @@ static void pref_write_block(FILE*    f,
     {
       fprintf(f, "  size %i,%i\n", game->xsize, game->ysize);
     }
+
+  if (game->graphics != NULL)
+    {
+      fprintf(f, "  resources \"%s\"\n", game->graphics);
+    }
   fprintf(f, "}\n\n");
 }
 

@@ -676,7 +676,7 @@ static void draw_input_text(void)
 
       PenNormal();
       rct.left   = portRect.left + input_x + w + BORDERWIDTH;
-      rct.right  = rct.left + input_width;
+      rct.right  = portRect.left + input_x + input_width;
       rct.top    = portRect.top + caret_y + BORDERWIDTH;
       rct.bottom = rct.top + xfont_get_height(font[style_font[(style>>1)&15]]);
       RGBForeColor(carbon_get_colour(bg));
