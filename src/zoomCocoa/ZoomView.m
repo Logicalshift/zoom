@@ -1809,8 +1809,18 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     
     [self setupPanel: panel
                 type: type];
+
+	
+	NSString* directory = nil;
+	if (delegate && [delegate respondsToSelector: @selector(defaultSaveDirectory)]) {
+		directory = [delegate defaultSaveDirectory];
+	}
+	
+	if (directory == nil) {
+		directory = [[NSUserDefaults standardUserDefaults] objectForKey: @"ZoomSavePath"];
+	}	
     
-    [panel beginSheetForDirectory: [[NSUserDefaults standardUserDefaults] objectForKey: @"ZoomSavePath"]
+    [panel beginSheetForDirectory: directory
                              file: nil
                    modalForWindow: [self window]
                     modalDelegate: self
