@@ -16,7 +16,9 @@
   <editor should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="bhtNI9CHXrl"/>
+    <selected-rows ids="mLzCDLZD7ky"/>
+    <selected-columns ids=":078928d440f2709e21a6e303"/>
+    <selected-characters range="{83, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -835,7 +837,35 @@
             </item>
           </children>
         </item>
-        <item id="jB0jGi2zEea">
+        <item id="icIWCXitNrm">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Removing the last game from a group causes an exception</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="mLzCDLZD7ky">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Can run a game only once from the iFiction window (game not being freed correctly?)</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="jB0jGi2zEea" state="checked">
           <values>
             <text>
               <p>
@@ -849,7 +879,7 @@
             </text>
           </values>
         </item>
-        <item id="jQG-R3T8GU5">
+        <item id="jQG-R3T8GU5" state="checked">
           <values>
             <text>
               <p>
@@ -863,12 +893,12 @@
             </text>
           </values>
         </item>
-        <item id="icIWCXitNrm">
+        <item id="j4c53wmQtbS" state="checked">
           <values>
             <text>
               <p>
                 <run>
-                  <lit>Removing the last game from a group causes an exception</lit>
+                  <lit>Test new organiseStory: move function...</lit>
                 </run>
               </p>
             </text>

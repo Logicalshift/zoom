@@ -439,55 +439,29 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	oldFilename = [[identsToFilenames objectForKey: ident] stringByStandardizingPath];
 	oldIdent = [filenamesToIdents objectForKey: oldFilename];
 	
-	if (organise) {
-		ZoomStory* theStory = [[NSApp delegate] findStory: ident];
-		
-		// If there's no story registered, then we need to create one
-		if (theStory == nil) {
-			theStory = [[ZoomStory alloc] init];
-			
-			[theStory addID: ident];
-			[theStory setTitle: [[filename lastPathComponent] stringByDeletingPathExtension]];
-			
-			[[[NSApp delegate] userMetadata] storeStory: [theStory autorelease]];
-			[[[NSApp delegate] userMetadata] writeToDefaultFile];
-		}
-
-		// Copy to a standard directory, change the filename we're using
-		filename = [filename stringByStandardizingPath];
-		
-		NSString* fileDir = [self directoryForIdent: ident create: YES];
-		NSString* destFile = [fileDir stringByAppendingPathComponent: @"game.z5"];
-		destFile = [destFile stringByStandardizingPath];
-				
-		if (![filename isEqualToString: destFile]) {
-			if ([[filename lowercaseString] isEqualToString: [destFile lowercaseString]]) {
-				// *LIKELY* that these are in fact the same file with different case names
-				// Cocoa doesn't seem to provide a good way to see if too paths are actually the same:
-				// so the semantics of this might be incorrect in certain edge cases. We move to ensure
-				// that everything is nice and safe
-				[[NSFileManager defaultManager] movePath: filename
-												  toPath: destFile
-												 handler: nil];
-			} else {
-				[[NSFileManager defaultManager] removeFileAtPath: destFile handler: nil];
-				if ([[NSFileManager defaultManager] copyPath: filename
-													  toPath: destFile
-													 handler: nil]) {
-					filename = destFile;
-				} else {
-					NSLog(@"Warning: couldn't copy '%@' to '%@'", filename, destFile);
-				}
-			}
-			
-			[[NSWorkspace sharedWorkspace] noteFileSystemChanged: filename];
-			[[NSWorkspace sharedWorkspace] noteFileSystemChanged: destFile];
-		}
-	}
+	// Get the story from the metadata database
+	ZoomStory* theStory = [[NSApp delegate] findStory: ident];
 	
+	// If there's no story registered, then we need to create one
+	if (theStory == nil) {
+		theStory = [[ZoomStory alloc] init];
+		
+		[theStory addID: ident];
+		[theStory setTitle: [[filename lastPathComponent] stringByDeletingPathExtension]];
+		
+		[[[NSApp delegate] userMetadata] storeStory: [theStory autorelease]];
+		[[[NSApp delegate] userMetadata] writeToDefaultFile];
+	}
+		
 	if (oldFilename && oldIdent && [oldFilename isEqualToString: filename] && [oldIdent isEqualTo: ident]) {
 		// Nothing to do
 		[storyLock unlock];
+
+		
+		if (organise) {
+			[self organiseStory: theStory
+					  withIdent: ident] ;
+		}
 		return;
 	}
 	
@@ -507,7 +481,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	[identsToFilenames removeObjectForKey: ident];
 	
 	NSString* newFilename = [[filename copy] autorelease];
-	NSString* newIdent    = [[ident copy] autorelease];
+	ZoomStoryID* newIdent = [[ident copy] autorelease];
 		
 	[storyFilenames addObject: newFilename];
 	[storyIdents addObject: newIdent];
@@ -516,6 +490,12 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	[filenamesToIdents setObject: newIdent forKey: newFilename];
 	
 	[storyLock unlock];
+	
+	if (organise) {
+		[self organiseStory: theStory
+				  withIdent: newIdent] ;
+	}
+	
 	[self organiserChanged];
 }
 
