@@ -999,14 +999,14 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     
     zoomTaskStdout = [[NSPipe allocWithZone: [self zone]] init];
     [[NSNotificationCenter defaultCenter] addObserver: self
-                                             selector: @selector(_zoomTaskNotification:)
+                                             selector: @selector(zoomTaskNotification:)
                                                  name: NSFileHandleDataAvailableNotification
                                                object: [zoomTaskStdout fileHandleForReading]];
     [[zoomTaskStdout fileHandleForReading] waitForDataInBackgroundAndNotify];
 
     [zoomTask setStandardOutput: zoomTaskStdout];
     [[NSNotificationCenter defaultCenter] addObserver: self
-                                             selector: @selector(_zoomTaskFinished:)
+                                             selector: @selector(zoomTaskFinished:)
                                                  name: NSTaskDidTerminateNotification
                                                object: zoomTask];
     
@@ -1022,7 +1022,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 //		  \||/
 //         \/
 //	     (phut)
-- (void) _zoomTaskFinished: (NSNotification*) not {
+- (void) zoomTaskFinished: (NSNotification*) not {
     // The task has finished
     if (zMachine) {
         [zMachine release];
@@ -1093,7 +1093,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	return zMachine != nil;
 }
 
-- (void) _zoomTaskNotification: (NSNotification*) not {
+- (void) zoomTaskNotification: (NSNotification*) not {
     // Data is waiting on stdout: receive it
     NSData* inData = [[zoomTaskStdout fileHandleForReading] availableData];
 
