@@ -1,0 +1,26 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {
+                infoAuthorChanged = id; 
+                infoCommentsChanged = id; 
+                infoGenreChanged = id; 
+                infoGroupChanged = id; 
+                infoHeadlineChanged = id; 
+                infoNameChanged = id; 
+                infoTeaserChanged = id; 
+                infoYearChanged = id; 
+            }; 
+            CLASS = FirstResponder; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            ACTIONS = {selectGenre = id; showGenreMenu = id; }; 
+            CLASS = ZoomGameInfoController; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSWindowController; 
+        }
+    ); 
+    IBVersion = 1; 
+}
