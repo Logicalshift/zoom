@@ -23,6 +23,14 @@ extern NSString* ZoomStoryOrganiserChangedNotification;
 	// Dictionaries associating them
 	NSMutableDictionary* filenamesToIdents;
 	NSMutableDictionary* identsToFilenames;
+	
+	// Preference loading/checking thread
+	NSPort* port1;
+	NSPort* port2;
+	NSConnection* mainThread;
+	NSConnection* subThread;
+	
+	NSLock* storyLock;
 }
 
 // The shared organiser
