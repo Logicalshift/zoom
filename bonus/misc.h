@@ -5,11 +5,13 @@
 ! Miscellaneous strange tests
 ! ====================================
 
+Constant maxUndo = 4000;
+
 Test oddTests "Miscellaneous tests"
     with
     Run [ x y;
 	print "Undo: ";
-	for (x=0: x<50: x++)
+	for (x=0: x<maxUndo: x++)
 	{
 	    @save_undo -> y;
 	    if (y == -1)
@@ -25,13 +27,16 @@ Test oddTests "Miscellaneous tests"
 	    }
 	}
 
+	@read_char 1 -> x;
+	
 	.undoRestored;
+	print "x ";
 	@restore_undo -> y;
 
 	if (x == 0)
-	    print ">= 50 levels of undo supported^";
+	    print ">=", maxUndo, " levels of undo supported^";
 	else
-	 print 50-x, " levels of undo supported^";
+	 print maxUndo-x, " levels of undo supported^";
 
 	jump undone;
 
