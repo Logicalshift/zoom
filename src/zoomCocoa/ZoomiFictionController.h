@@ -27,6 +27,8 @@
 	IBOutlet NSTableView* filterTable1;
 	IBOutlet NSTableView* filterTable2;
 	
+	IBOutlet NSTextField* searchField;
+	
 	BOOL showDrawer;
 	
 	BOOL needsUpdating;
@@ -45,6 +47,8 @@
 - (IBAction) drawerButtonPressed: (id) sender;
 - (IBAction) startNewGame: (id) sender;
 - (IBAction) restoreAutosave: (id) sender;
+- (IBAction) searchFieldChanged: (id) sender;
+- (IBAction) changeFilter: (id) sender;
 
 - (ZoomStory*) storyForID: (ZoomStoryID*) ident;
 - (void) configureFromMainTableSelection;

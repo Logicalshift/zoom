@@ -179,6 +179,33 @@ static ZoomiFictionController* sharedController = nil;
 	}
 }
 
+- (IBAction) searchFieldChanged: (id) sender {
+	[self reloadTableData]; [mainTableView reloadData];
+}
+
+- (IBAction) changeFilter: (id) sender {
+	NSString* filterName = [ZoomStory keyForTag: [sender tag]];
+	
+	NSString* filterTitle = [ZoomStory nameForKey: filterName];
+	
+	if (!filterName || !filterTitle) {
+		return;
+	}
+	
+	// For the moment, we only change the filter of the first filter table
+	// Need to find a way of discovering which table the user brought the menu up
+	// for (preferably without using a duplicate menu)
+	NSTableColumn* filterColumn = [[filterTable1 tableColumns] objectAtIndex: 0];
+
+	[filterColumn setIdentifier: filterName];
+	[[filterColumn headerCell] setStringValue: filterTitle];
+	
+	[filterTable1 selectRow: 0 byExtendingSelection: NO];
+	[filterTable2 selectRow: 0 byExtendingSelection: NO];
+	
+	[self reloadTableData]; [mainTableView reloadData];
+}
+
 // = Notifications =
 - (void) storyListChanged: (NSNotification*) not {
 	needsUpdating = YES;
@@ -290,28 +317,47 @@ int tableSorter(id a, id b, void* context) {
 	NSEnumerator* selEnum = [filterTable2 selectedRowEnumerator];
 	NSNumber* selRow;
 	
+	BOOL tableFilter;
+	
+	tableFilter = YES;
 	while (selRow = [selEnum nextObject]) {
 		if ([selRow intValue] == 0) {
 			// All selected - no filtering
 			[filterTable2 selectRow: 0 byExtendingSelection: NO];
-			return;
+			tableFilter = NO;
+			break;
 		}
 		
 		[filterFor addObject: [filterSet2 objectAtIndex: [selRow intValue]-1]];
 	}
 	
-	// Remove anything that doesn't match the filter
+	// Remove anything that doesn't match the filter (second filter table *or* the search field)
 	int num;
+	NSString* searchText = [searchField stringValue];
 	
+	if (!tableFilter && [searchText length] <= 0) return; // Nothing to do
+		
 	for (num = 0; num < [storyList count]; num++) {
 		ZoomStoryID* ident = [storyList objectAtIndex: num];
 		
 		ZoomStory* thisStory = [self storyForID: ident];
+		
+		// Filter table
 		NSString* storyKey = [thisStory objectForKey: filterKey];
 		
-		if (![filterFor containsObject: storyKey]) {
+		if (tableFilter && ![filterFor containsObject: storyKey]) {
 			[storyList removeObjectAtIndex: num];
 			num--;
+			continue;
+		}
+		
+		// Search field
+		if ([searchText length] > 0) {
+			if (![thisStory containsText: searchText]) {
+				[storyList removeObjectAtIndex: num];
+				num--;
+				continue;				
+			}
 		}
 	}
 }

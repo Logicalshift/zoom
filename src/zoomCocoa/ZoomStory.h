@@ -14,12 +14,19 @@
 	BOOL   needsFreeing;
 }
 
+// Information
++ (NSString*) nameForKey: (NSString*) key;
++ (NSString*) keyForTag: (int) tag;
+
 // Initialisation
 - (id) init;								// New story
 - (id) initWithStory: (struct IFMDStory*) story;   // Existing story (not freed)
 
 - (struct IFMDStory*) story;
 - (void) addID: (ZoomStoryID*) newID;
+
+// Searching
+- (BOOL) containsText: (NSString*) text;
 
 // Accessors
 - (NSString*) title;

@@ -13,6 +13,48 @@
 
 @implementation ZoomStory
 
++ (NSString*) nameForKey: (NSString*) key {
+	// FIXME: internationalisation (this FIXME applies to most of Zoom, which is why it hasn't happened yet)
+	static NSDictionary* keyNameDict = nil;
+	
+	if (keyNameDict == nil) {
+		keyNameDict = [NSDictionary dictionaryWithObjectsAndKeys:
+			@"Title", @"title",
+			@"Headline", @"headline",
+			@"Author", @"author",
+			@"Genre", @"genre",
+			@"Group", @"group",
+			@"Year", @"year",
+			@"Zarfian rating", @"zarfian",
+			@"Teaser", @"teaser",
+			@"Comments", @"comment",
+			@"My Rating", @"rating",
+			nil];
+		
+		[keyNameDict retain];
+	}
+	
+	return [keyNameDict objectForKey: key];
+}
+
++ (NSString*) keyForTag: (int) tag {
+	switch (tag) {
+		case 0: return @"title";
+		case 1: return @"headline";
+		case 2: return @"author";
+		case 3: return @"genre";
+		case 4: return @"group";
+		case 5: return @"year";
+		case 6: return @"zarfian";
+		case 7: return @"teaser";
+		case 8: return @"comment";
+		case 9: return @"rating";
+	}
+	
+	return nil;
+}
+
+// = Initialisation =
 - (id) init {
 	self = [super init];
 	
@@ -327,6 +369,44 @@
 	} else {
 		[NSException raise: @"ZoomKeyNotKnown" format: @"Metadata key '%@' is not known", key];
 	}
+}
+
+// Searching
+- (BOOL) containsText: (NSString*) text {
+	// List of strings to check against
+	NSArray* stringsToCheck = [[NSArray alloc] initWithObjects: 
+		[self title], [self headline], [self author], [self genre], [self group], nil];
+	
+	// List of words to match against (we take off a word for each match)
+	NSMutableArray* words = [[text componentsSeparatedByString: @" "] mutableCopy];
+	
+	// Loop through each string to check against
+	NSEnumerator* searchEnum = [stringsToCheck objectEnumerator];
+	NSString* string;
+	
+	while ([words count] > 0 && (string = [searchEnum nextObject])) {
+		int num;
+		
+		for (num=0; num<[words count]; num++) {
+			if ([[words objectAtIndex: num] length] == 0 || 
+				[string rangeOfString: [words objectAtIndex: num]
+							  options: NSCaseInsensitiveSearch].location != NSNotFound) {
+				// Found this word
+				[words removeObjectAtIndex: num];
+				num--;
+				continue;
+			}
+		}
+	}
+
+	// Finish up
+	BOOL success = [words count] <= 0;
+	
+	[words release];
+	[stringsToCheck release];
+	
+	// Is true if there are no words left to match
+	return success;
 }
 
 @end
