@@ -1,1 +1,1 @@
-SUBDIRS = m4 blorb builder src bonus
+SUBDIRS = m4 builder src bonus

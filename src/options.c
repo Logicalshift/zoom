@@ -116,7 +116,7 @@ void get_options(int argc, char** argv, arguments* args)
 # if OPT_TYPE==1
 
 # include <unistd.h>
-# include <getopt.h>
+/* # include <getopt.h> */
 
 void get_options(int argc, char** argv, arguments* args)
 {

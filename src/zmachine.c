@@ -62,7 +62,7 @@ void zmachine_load_story(char* filename, ZMachine* machine)
 #endif
 
 #ifdef GLOBAL_PC
-  machine->pc = -1;
+  machine->zpc = -1;
 #endif
   
   machine->stack.stack_size    = 2048;
@@ -182,7 +182,7 @@ void zmachine_fatal(char* format, ...)
       display_set_colour(3, 1);
       display_printf("INTERPRETER PANIC: %s", string);
 #ifdef GLOBAL_PC
-      display_printf(" (PC = #%x)", machine.pc);
+      display_printf(" (PC = #%x)", machine.zpc);
 #endif
       display_set_colour(7, 0);
       display_set_style(0);
@@ -195,7 +195,7 @@ void zmachine_fatal(char* format, ...)
       char erm[512];
 
 # ifdef GLOBAL_PC
-      sprintf(erm, "INTERPRETER PANIC - %s (PC = #%x)", string, machine.pc);
+      sprintf(erm, "INTERPRETER PANIC - %s (PC = #%x)", string, machine.zpc);
 # else
       sprintf(erm, "INTERPRETER PANIC - %s", string);
 # endif
@@ -204,7 +204,7 @@ void zmachine_fatal(char* format, ...)
 #else
       fprintf(stderr, "\nINTERPRETER PANIC - %s", string);
 #ifdef GLOBAL_PC
-      fprintf(stderr, " (PC = #%x)\n\n", machine.pc);
+      fprintf(stderr, " (PC = #%x)\n\n", machine.zpc);
 #endif
 #endif
     }
@@ -231,7 +231,7 @@ void zmachine_warning(char* format, ...)
     {
       display_printf("[ WARNING - %s", string);
 #ifdef GLOBAL_PC
-      display_printf(" (PC = #%x)", machine.pc);
+      display_printf(" (PC = #%x)", machine.zpc);
 #endif
       display_prints_c(" ]\n");
     }
@@ -241,7 +241,7 @@ void zmachine_warning(char* format, ...)
       char erm[512];
 
 # ifdef GLOBAL_PC
-      sprintf(erm, "%s (PC = #%x)", string, machine.pc);
+      sprintf(erm, "%s (PC = #%x)", string, machine.zpc);
 # else
       sprintf(erm, "%s", string);
 # endif
@@ -250,7 +250,7 @@ void zmachine_warning(char* format, ...)
 #else
       fprintf(stderr, "[ WARNING - %s", string);
 # ifdef GLOBAL_PC
-      fprintf(stderr, " (PC = #%x)", machine.pc);
+      fprintf(stderr, " (PC = #%x)", machine.zpc);
 # endif
       fprintf(stderr, " ]\n");
 #endif
@@ -258,7 +258,7 @@ void zmachine_warning(char* format, ...)
 #ifdef DEBUG
   fprintf(stderr, "\nWARNING - %s", string);
 #ifdef GLOBAL_PC
-  fprintf(stderr, " (PC = #%x)", machine.pc);
+  fprintf(stderr, " (PC = #%x)", machine.zpc);
 #endif
   fprintf(stderr, "\n\n");
 #endif

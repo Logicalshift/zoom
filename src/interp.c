@@ -1410,7 +1410,7 @@ void zmachine_run(const int version,
 		  char* savefile)
 {
 #ifdef GLOBAL_PC
-# define pc machine.pc
+# define pc machine.zpc
 #else
   ZDWord         pc;
 #endif
@@ -1562,6 +1562,6 @@ void zmachine_run(const int version,
 	default:
 	  zmachine_fatal("Unsupported version");
 	}
-      loop:
+      loop: ;
     }
 }
