@@ -15,6 +15,7 @@
 #import "ZoomCursor.h"
 #import "ZoomInputLine.h"
 #import "ZoomBlorbFile.h"
+#import "ZoomTextToSpeech.h"
 
 #define ZBoldStyle 1
 #define ZUnderlineStyle 2
@@ -97,6 +98,7 @@ extern NSString* ZoomStyleAttributeName;
 	
 	// Output receivers
 	NSMutableArray* outputReceivers;
+	ZoomTextToSpeech* textToSpeechReceiver;
 	
 	// Input source
 	NSObject* inputSource;

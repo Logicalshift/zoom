@@ -137,7 +137,8 @@ static void finalizeViews(void) {
         [moreView setAutoresizingMask: NSViewMinXMargin|NSViewMinYMargin];
 
         // Styles, fonts, etc
-		viewPrefs = [[ZoomPreferences globalPreferences] retain];
+		viewPrefs = nil;
+		[self setPreferences: [ZoomPreferences globalPreferences]];
 		fonts = [[viewPrefs fonts] retain];
 		colours = [[viewPrefs colours] retain];
 
@@ -173,6 +174,11 @@ static void finalizeViews(void) {
 }
 
 - (void) dealloc {    
+	if (textToSpeechReceiver) {
+		[textToSpeechReceiver release];
+		textToSpeechReceiver = nil;
+	}
+	
     if (zMachine) {
         [zMachine release];
     }
@@ -1905,10 +1911,12 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 
 // = Setting/updating preferences =
 - (void) setPreferences: (ZoomPreferences*) prefs {
-	[[NSNotificationCenter defaultCenter] removeObserver: self
-													name: ZoomPreferencesHaveChangedNotification
-												  object: viewPrefs];
-	[viewPrefs release];
+	if (viewPrefs) {
+		[[NSNotificationCenter defaultCenter] removeObserver: self
+														name: ZoomPreferencesHaveChangedNotification
+													  object: viewPrefs];
+		[viewPrefs release];
+	}
 	
 	viewPrefs = [prefs retain];
 	
@@ -1933,6 +1941,18 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	
 	fonts = [[viewPrefs fonts] retain];
 	colours = [[viewPrefs colours] retain];
+	
+	// Switch on the text-to-speech if required
+	if ([viewPrefs speakGameText] && !textToSpeechReceiver) {
+		textToSpeechReceiver = [[ZoomTextToSpeech alloc] init];
+		[self addOutputReceiver: textToSpeechReceiver];
+	}
+	
+	if (![viewPrefs speakGameText] && textToSpeechReceiver) {
+		[self removeOutputReceiver: textToSpeechReceiver];
+		[textToSpeechReceiver release];
+		textToSpeechReceiver = nil;
+	}
 	
 	[self reformatWindow];
 }

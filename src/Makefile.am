@@ -50,6 +50,7 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/Skein/ZoomSkeinViewWeb.m zoomCocoa/Skein/ZoomSkeinWeb.m \
 	zoomCocoa/Skein/ZoomSkeinXML.m \
 	zoomCocoa/ZoomStoryTableView.h    zoomCocoa/ZoomStoryTableView.m \
+	zoomCocoa/ZoomTextToSpeech.h	  zoomCocoa/ZoomTextToSpeech.m \
 	zoomCocoa/MainMenu.nib/classes.nib zoomCocoa/MainMenu.nib/info.nib \
 	zoomCocoa/MainMenu.nib/keyedobjects.nib \
 	zoomCocoa/MainMenu.nib/objects.nib \

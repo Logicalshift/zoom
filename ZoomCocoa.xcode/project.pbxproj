@@ -3102,6 +3102,7 @@
 				4BC5562206B83F4600F0DD4A,
 				4BF1576706BAD036001A3C27,
 				4B4D512406E38951007FAD2B,
+				4BE5F51C0751220000C25A70,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3735,6 +3736,7 @@
 				4BC3B03706AE8563008FCD35,
 				4BF1576506BAD034001A3C27,
 				4B4D512206E3894F007FAD2B,
+				4BE5F512075121A400C25A70,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3785,6 +3787,7 @@
 				4BC3B03806AE8563008FCD35,
 				4BF1576606BAD034001A3C27,
 				4B4D512306E3894F007FAD2B,
+				4BE5F513075121A400C25A70,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4049,6 +4052,8 @@
 				4BE6236C068CB86300369528,
 				4B3DA12F068DAF9E00B7090F,
 				4B3DA130068DAF9E00B7090F,
+				4BE5F510075121A400C25A70,
+				4BE5F511075121A400C25A70,
 			);
 			isa = PBXGroup;
 			name = ZoomView;
@@ -4093,6 +4098,40 @@
 			refType = 4;
 			sourceTree = "<group>";
 			tabWidth = 8;
+		};
+		4BE5F510075121A400C25A70 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = ZoomTextToSpeech.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BE5F511075121A400C25A70 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = ZoomTextToSpeech.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BE5F512075121A400C25A70 = {
+			fileRef = 4BE5F510075121A400C25A70;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BE5F513075121A400C25A70 = {
+			fileRef = 4BE5F511075121A400C25A70;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BE5F51C0751220000C25A70 = {
+			fileRef = 4BE5F510075121A400C25A70;
+			isa = PBXBuildFile;
+			settings = {
+			};
 		};
 		4BE621CF068C20D500369528 = {
 			fileEncoding = 4;
