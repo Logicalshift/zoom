@@ -12,6 +12,8 @@
 
 extern NSAutoreleasePool* displayPool;
 
+extern void cocoa_debug_handler(ZDWord pc);
+
 @interface ZoomZMachine : NSObject<ZMachine> {
     // Remote objects
     NSObject<ZDisplay>* display;
@@ -30,6 +32,9 @@ extern NSAutoreleasePool* displayPool;
     int              lastSize;
 	
 	BOOL wasRestored;
+	
+	// Debugging state
+	BOOL waitingForBreakpoint;
 }
 
 - (NSObject<ZDisplay>*) display;
@@ -44,5 +49,7 @@ extern NSAutoreleasePool* displayPool;
 
 - (ZBuffer*) buffer;
 - (void) flushBuffers;
+
+- (void) breakpoint: (int) pc;
 
 @end

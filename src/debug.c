@@ -40,6 +40,8 @@ debug_routine*    debug_expr_routine = NULL;
 int*			  debug_expr      = NULL;
 int				  debug_expr_pos  = 0;
 
+static debug_breakpoint_handler bp_handler = NULL;
+
 typedef struct debug_display
 {
   int*  expr;
@@ -51,6 +53,8 @@ typedef struct debug_display
 static int            ndisps = 0;
 static debug_display* dbdisp = NULL;
 
+static debug_address addr;
+
 /***                           ----// 888 \\----                           ***/
 
 /* The debugger console */
@@ -60,7 +64,6 @@ static int stepinto = 0;
 /* Action when a breakpoint occurs */
 void debug_run_breakpoint(ZDWord pc)
 {
-  debug_address addr;
   debug_breakpoint* bp;
   static int banner = 0;
   int x;
@@ -93,11 +96,17 @@ void debug_run_breakpoint(ZDWord pc)
 	  x--;
 	}
     }
-
+  
+  stepinto = 0;
+  
+  if (bp_handler != NULL) {
+	  /* Run the handler instead of the standard debugging routines */
+	  (*bp_handler)(pc);
+	  return;
+  }
+  
   display_sanitise();
   display_printf("=\n");
-
-  stepinto = 0;
 
   /* Print a quick banner if we're just starting up... */
   if (banner == 0)
@@ -174,7 +183,7 @@ void debug_run_breakpoint(ZDWord pc)
 	free(debug_eval_type);
       debug_eval_type = NULL;
     }
-
+  
   /* Process commands */
   while (1)
     {
@@ -1537,3 +1546,39 @@ char* debug_print_value(ZWord value, char* type)
   return res;
 }
 
+void debug_set_bp_handler(debug_breakpoint_handler handler) {
+	bp_handler = handler;
+}
+
+void debug_set_temp_breakpoints(debug_step_type step) {
+	int ln;
+	
+	if (addr.routine != NULL) {	
+		ln = addr.line_no;
+		if (ln != -1) {
+			ln++;
+		}
+	
+		if (ln >= addr.routine->nlines) {
+			ln = -1;
+		}
+		
+		if (step == debug_step_over) {
+		} else if (step == debug_step_into) {
+			stepinto = 1;
+		} else if (step == debug_step_out) {
+		}
+		
+		/* Set a breakpoint on each line... */
+		if (step != debug_step_out) {
+			for (ln = 0; ln < addr.routine->nlines; ln++) {
+				debug_set_breakpoint(addr.routine->line[ln].address, 1, 0);
+			}
+		}
+	}
+	
+	/* Set a breakpoint on the return location of this function */
+	if (machine.stack.current_frame != NULL) {
+		debug_set_breakpoint(machine.stack.current_frame->ret, 1, 0);
+	}
+}

@@ -188,6 +188,9 @@
     for (x=0; x<3; x++) {
         [windows[x] setProtocolForProxy: @protocol(ZVendor)];
     }
+	
+	// Setup our debugger callback
+	debug_set_bp_handler(cocoa_debug_handler);
 
     // Setup the display, etc
     rc_set_game(zmachine_get_serial(), Word(ZH_release), Word(ZH_checksum));
@@ -241,6 +244,72 @@
 }
 
 // = Debugging =
+void cocoa_debug_handler(ZDWord pc) {
+	[mainMachine breakpoint: pc];
+}
+
+- (void) breakpoint: (ZDWord) pc {
+	if (display) {
+		// Notify the display of the breakpoint
+		waitingForBreakpoint = YES;
+		[display hitBreakpointAt: pc];
+		
+		// Wait for the display to request resumption
+		NSAutoreleasePool* breakpointPool = [[NSAutoreleasePool alloc] init];
+		
+		NSLog(@"Waiting for breakpoint...");
+		while (waitingForBreakpoint && (mainConnection != nil || mainMachine != nil)) {
+			[breakpointPool release];
+			breakpointPool = [[NSAutoreleasePool alloc] init];
+			
+			[mainLoop acceptInputForMode: NSDefaultRunLoopMode
+							  beforeDate: [NSDate distantFuture]];
+		}
+		NSLog(@"Done");
+		
+		[breakpointPool release];
+	}
+}
+
+- (void) continueFromBreakpoint {
+	if (!waitingForBreakpoint) {
+		[NSException raise: @"BreakpointException" format: @"Attempt to call a continuation function when Zoom was not waiting at a breakpoint"];
+		return;
+	}
+	
+	waitingForBreakpoint = NO;
+}
+
+- (void) stepFromBreakpoint {
+	if (!waitingForBreakpoint) {
+		[NSException raise: @"BreakpointException" format: @"Attempt to call a continuation function when Zoom was not waiting at a breakpoint"];
+		return;
+	}
+	
+	debug_set_temp_breakpoints(debug_step_over);
+	waitingForBreakpoint = NO;
+}
+
+- (void) stepIntoFromBreakpoint {
+	if (!waitingForBreakpoint) {
+		[NSException raise: @"BreakpointException" format: @"Attempt to call a continuation function when Zoom was not waiting at a breakpoint"];
+		return;
+	}
+	
+	debug_set_temp_breakpoints(debug_step_into);
+	waitingForBreakpoint = NO;
+}
+
+- (void) finishFromBreakpoint {
+	if (!waitingForBreakpoint) {
+		[NSException raise: @"BreakpointException" format: @"Attempt to call a continuation function when Zoom was not waiting at a breakpoint"];
+		return;
+	}
+	
+	debug_set_temp_breakpoints(debug_step_out);
+	waitingForBreakpoint = NO;
+}
+
 - (NSData*) staticMemory {
 }
 

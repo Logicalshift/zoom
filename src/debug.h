@@ -50,6 +50,14 @@ typedef struct debug_routine    debug_routine;
 /* Information structures */
 typedef struct debug_address    debug_address;
 
+/* External debuggers */
+typedef void(*debug_breakpoint_handler)(ZDWord pc);
+typedef enum debug_step_type {
+	debug_step_over,
+	debug_step_into,
+	debug_step_out
+} debug_step_type;
+
 struct debug_file
 {
   int number;
@@ -265,6 +273,10 @@ extern ZWord             debug_symbol_value(const char*    symbol,
 					    debug_routine* r);
 extern char*             debug_print_value (ZWord          value,
 					    char*          type);
+
+/* === Alternative breakpoint handling === */
+extern void debug_set_bp_handler(debug_breakpoint_handler handler);
+extern void debug_set_temp_breakpoints(debug_step_type step);
 
 #endif
 

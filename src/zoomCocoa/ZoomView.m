@@ -1709,4 +1709,14 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	inputPos = [[textView textStorage] length];
 }
 
+// = Debugging =
+- (void) hitBreakpointAt: (int) pc {
+	if (delegate && [delegate respondsToSelector: @selector(hitBreakpoint:)]) {
+		[delegate hitBreakpoint: pc];
+	} else {
+		NSLog(@"Breakpoint without handler");
+		[zMachine continueFromBreakpoint];
+	}
+}
+
 @end

@@ -76,6 +76,11 @@ typedef enum {
 - (void) loadDebugSymbolsFrom: (NSString*) symbolFile
 			   withSourcePath: (NSString*) sourcePath;
 
+- (void) continueFromBreakpoint;
+- (void) stepFromBreakpoint;
+- (void) stepIntoFromBreakpoint;
+- (void) finishFromBreakpoint;
+
 - (out bycopy NSData*) staticMemory;
 - (int)    evaluateExpression: (NSString*) expression;
 - (void)   setBreakpointAt: (int) address;
@@ -177,6 +182,10 @@ typedef enum {
 // Error messages and warnings
 - (void) displayFatalError: (in bycopy NSString*) error;
 - (void) displayWarning:    (in bycopy NSString*) warning;
+
+// Debugging
+- (void) hitBreakpointAt: (int) programCounter;
+
 @end
 
 // Some useful standard classes
