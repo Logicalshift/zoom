@@ -71,6 +71,9 @@
 - (void) zMachineStarted: (id) sender {
 	[[self window] setDocumentEdited: YES];
 	
+	finished = NO;
+	[self synchronizeWindowTitleWithDocumentName];
+	
 	[zoomView setResources: [[self document] resources]];
     [[zoomView zMachine] loadStoryFile: [[self document] gameData]];
 	
@@ -94,8 +97,8 @@
 - (void) zMachineFinished: (id) sender {
 	[[self window] setDocumentEdited: NO];
 
-	[[self window] setTitle: [NSString stringWithFormat: @"%@ (finished)", [[self window] title]]];
 	finished = YES;
+	[self synchronizeWindowTitleWithDocumentName];
 	
 	if (isFullscreen) [self playInFullScreen: self];
 }
@@ -422,6 +425,16 @@
 }
 
 // = Window title =
+
+- (NSString *)windowTitleForDocumentDisplayName:(NSString *)displayName {
+	if (finished) {
+		return [displayName stringByAppendingString: @" (finished)"];
+	}
+	
+	return displayName;
+}
+
+/*
 - (NSString *) windowTitleForDocumentDisplayName: (NSString *)displayName {
 	ZoomStory* story = [[self document] storyInfo];
 	
@@ -433,6 +446,7 @@
 	
 	return [story title];
 }
+*/
 
 - (ZoomView*) zoomView {
 	return zoomView;

@@ -270,6 +270,8 @@ Bug reported by Chris Klimas}</string>
 
 \f0\fs24 \cf0 (Finished) (Finished) syndrome when you use 'Force restart' or the skein on a finished game}</string>
 						</array>
+						<key>State</key>
+						<integer>1</integer>
 					</dict>
 					<dict>
 						<key>Cols</key>

@@ -197,6 +197,12 @@
 	return storyId;
 }
 
+- (NSString*) displayName {
+	if (story && [story title]) return [story title];
+	
+	return [super displayName];
+}
+
 // = Autosave =
 
 - (void) setAutosaveData: (NSData*) data {
