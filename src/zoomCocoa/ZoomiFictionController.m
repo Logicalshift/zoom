@@ -158,6 +158,9 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 				[titleView setAttributedStringValue: headerString];
 			}
 		}
+		
+		[headerString release];
+		[shadow release];
 	} else {
 		NSTableColumn* filterColumn = [[table tableColumns] objectAtIndex: 0];
 		

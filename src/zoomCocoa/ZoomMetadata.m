@@ -57,6 +57,7 @@
 
 - (void) dealloc {
 	IFMD_Free(metadata);
+	[dataLock release];
 	
 	[super dealloc];
 }

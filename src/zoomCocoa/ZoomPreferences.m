@@ -145,6 +145,8 @@ static NSArray* DefaultColours(void) {
 	self = [self init];
 	
 	if (self) {
+		NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+		
 		// Defaults
 		[prefs setObject: [NSNumber numberWithBool: NO]
 				  forKey: displayWarnings];
@@ -164,6 +166,8 @@ static NSArray* DefaultColours(void) {
 				  forKey: fonts];
 		[prefs setObject: DefaultColours()
 				  forKey: colours];
+		
+		[pool release];
 	}
 	
 	return self;

@@ -212,6 +212,9 @@ static void finalizeViews(void) {
 	}
 
     [[NSNotificationCenter defaultCenter] removeObserver: self];
+	
+	if (lowerWindows) [lowerWindows release];
+	if (upperWindows) [upperWindows release];
 
     [textScroller release];
     [textView release];
@@ -690,6 +693,7 @@ static void finalizeViews(void) {
 		
 		NSRect textSize = [textView frame];
 		NSSize fontSize = [@"M" sizeWithAttributes: [self attributesForStyle: standardStyle]];
+		[standardStyle release];
 		
 		if (textSize.size.height < fontSize.height * 1.25) {
 			moreOn = NO;
