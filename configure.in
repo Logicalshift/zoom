@@ -2,7 +2,7 @@
 AC_PREREQ(2.13)
 AC_INIT()
 
-VERSION=1.0.0
+VERSION=1.0.1dev1
 PACKAGE=zoom
 
 UTIL_DISPLAY_INIT()
@@ -279,8 +279,52 @@ fi
 
 AC_SUBST(BUILDERCC)
 
+HAVE_T1LIB=0
 if test "$WINDOW_SYSTEM" = "1"; then
-    LIBS="$LIBS -lX11"
+    LIBS="$LIBS $X_LIBS $X_EXTRA_LIBS"
+    CFLAGS="$CFLAGS $X_CFLAGS"
+    LDFLAGS="$LDFLAGS $X_PRE_LIBS -lX11"
+
+    AC_CHECK_LIB(m, sin)
+    AC_CHECK_LIB(t1, T1_InitLib, 
+      [
+        LDFLAGS="$LDFLAGS -lt1"
+        AC_CHECK_LIB(t1x, T1_SetCharX,
+	  [ LDFLAGS="$LDFLAGS -lt1x"; HAVE_T1LIB=1 ])
+      ])
+
+    if test "$HAVE_T1LIB" = "1"; then
+        AC_MSG_CHECKING([that we can compile a T1Lib program])
+	AC_TRY_LINK(
+	  [ #include <t1lib.h> ],
+	  [ T1_InitLib(0); ],
+	  [
+	    AC_MSG_RESULT(yes)
+	    AC_DEFINE(HAVE_T1LIB)
+	  ],
+	  [
+	    AC_MSG_RESULT([no])
+	  ])
+    fi
+
+    AC_CHECK_LIB(Xft, XftInit,
+      [
+        LDFLAGS="$LDFLAGS -lXft"
+	HAVE_XFT=1
+      ])
+    if test "$HAVE_XFT" = "1"; then
+      AC_MSG_CHECKING([that we can compile an Xft program])
+      AC_TRY_LINK(
+        [ #include <X11/Xft/Xft.h> ],
+	[ XftDrawCreate(NULL, 0, NULL, 0); ],
+	[ 
+	  AC_MSG_RESULT(yes)
+	  AC_DEFINE(HAVE_XFT)
+	],
+	[
+	  AC_MSG_RESULT(no)
+	])
+    fi
 fi
 
 UTIL_DISPLAY_INFO(Generating files)

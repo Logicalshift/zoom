@@ -6,3 +6,9 @@
 
 /* Do we have gettimeofday? */
 #undef HAVE_GETTIMEOFDAY
+
+/* T1Lib available? */
+#undef HAVE_T1LIB
+
+/* XFT available? */
+#undef HAVE_XFT
