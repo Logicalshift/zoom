@@ -222,18 +222,17 @@ void image_resample(image_data* data, int n, int d)
   int nx, ny;
   float origx, origy;
   float step;
-  float halfstep, quarterstep;
+  float halfstep, thirdstep;
 
   int newwidth, newheight;
 
-  int filter[4][4] =
-    { { 1, 2, 2, 1 },
-      { 2, 4, 4, 2 },
-      { 2, 4, 4, 2 },
-      { 1, 2, 2, 1 } };
+  int filter[3][3] =
+    { { 1, 2, 1 },
+      { 2, 4, 2 },
+      { 1, 2, 1 } };
 
   /*
-   * Very simple resampling algorithm
+   * Very simple resampling algorithm; naive, slow
    */
 
   if (data->image == NULL)
@@ -245,7 +244,7 @@ void image_resample(image_data* data, int n, int d)
     }
 
   step = (float)d/(float)n;
-  halfstep = step/2.0; quarterstep = step/4.0;
+  halfstep = step/2.0; thirdstep = step/3.0;
   
   origx = 0;
   origy = 0;
@@ -267,10 +266,10 @@ void image_resample(image_data* data, int n, int d)
 
 	  rs = gs = bs = 0;
 
-	  for (y = 0; y<4; y++)
+	  for (y = 0; y<3; y++)
 	    {
 	      xp = origx;
-	      for (x=0; x<4; x++)
+	      for (x=0; x<3; x++)
 		{
 		  int xpos, ypos;
 
@@ -282,12 +281,12 @@ void image_resample(image_data* data, int n, int d)
 		  gs += data->row[ypos][xpos++]*filter[x][y];
 		  bs += data->row[ypos][xpos++]*filter[x][y];
 
-		  xp += quarterstep;
+		  xp += thirdstep;
 		}
-	      yp += quarterstep;
+	      yp += thirdstep;
 	    }
 
-	  rs /= 36; gs /= 36; bs /= 36;
+	  rs >>= 4; gs >>= 4; bs >>= 4;
 
 	  *(ip++) = rs;
 	  *(ip++) = gs;
