@@ -18,6 +18,11 @@
 	if (self) {
 		const unsigned char* bytes = [gameData bytes];
 		
+		if ([gameData length] < 64) {
+			[self release];
+			return nil;
+		}
+		
 		ident = IFID_Alloc();
 		needsFreeing = YES;
 		

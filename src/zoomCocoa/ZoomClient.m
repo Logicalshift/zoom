@@ -53,6 +53,13 @@
     gameData = [data retain];
 	
 	storyId = [[[ZoomStoryID alloc] initWithZCodeStory: gameData] autorelease];
+
+	if (storyId == nil) {
+		// Can't ID this story
+		[gameData release];
+		gameData = nil;
+		return NO;
+	}
 	
 	story = [[[NSApp delegate] userMetadata] findStory: storyId];
 	

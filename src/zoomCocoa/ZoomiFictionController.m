@@ -370,6 +370,8 @@ int tableSorter(id a, id b, void* context) {
 - (void) reloadTableData {
 	ZoomStoryOrganiser* org = [ZoomStoryOrganiser sharedStoryOrganiser];
 	
+	needsUpdating = NO;
+	
 	// Store the previous list of selected IDs
 	NSMutableArray* previousIDs = [NSMutableArray array];
 	NSEnumerator* selEnum = [mainTableView selectedRowEnumerator];
@@ -444,8 +446,6 @@ int tableSorter(id a, id b, void* context) {
 				byExtendingSelection: YES];
 		}
 	}
-	
-	needsUpdating = NO;
 }
 
 - (int)numberOfRowsInTableView:(NSTableView *)aTableView {
