@@ -549,6 +549,7 @@ BlorbImage* blorb_findimage(BlorbFile* blb, int number)
 		      blb->index.picture[x].is_adaptive)
 		    {
 		      image_unload(blb->index.picture[x].loaded);
+
 		      blb->index.picture[x].loaded = NULL;
 		    }
 		}

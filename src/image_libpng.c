@@ -339,6 +339,9 @@ void image_unload(image_data* data)
       (data->data_destruct)(data, data->data);
     }
 
+  if (data->pal != NULL)
+    free(data->pal);
+
   if (data->image != NULL)
     free(data->image);
   if (data->row != NULL)
