@@ -396,13 +396,12 @@ void image_resample(image_data* data, int n, int d)
 
 #ifdef QUALITY_HIGH
   int filter[5][5] = 
-    { {  1,  2,  4,  2,  1 },
-      {  2,  4,  8,  4,  2 },
-      {  4,  8, 16,  8,  4 },
-      {  2,  4,  8,  4,  2 },
-      {  1,  2,  4,  2,  1 } };
-#else
-  int filter[3][3] =
+    { {  1,  2,  3,  2,  1 },
+      {  2,  3,  4,  3,  2 },
+      {  3,  4,  5,  4,  3 },
+      {  2,  3,  4,  3,  2 },
+      {  1,  2,  3,  2,  1 } };
+#else  int filter[3][3] =
     { { 1, 2, 1 },
       { 2, 4, 2 },
       { 1, 2, 1 } };
@@ -512,7 +511,7 @@ void image_resample(image_data* data, int n, int d)
 
 	      /* Scale the sample */
 # ifdef QUALITY_HIGH
-	      rs /= 100; gs /= 100; bs /= 100; as /= 100;
+	      rs /= 65; gs /= 65; bs /= 65; as /= 65;
 # else
 	      rs >>= 4; gs >>= 4; bs >>= 4; as >>= 4;
 # endif
@@ -673,7 +672,7 @@ void image_resample(image_data* data, int n, int d)
 
 	      /* Scale the sample */
 # ifdef QUALITY_HIGH
-	      rs /= 100; gs /= 100; bs /= 100; as /= 100;
+	      rs /= 65; gs /= 65; bs /= 65; as /= 65;
 # else
 	      rs >>= 4; gs >>= 4; bs >>= 4; as >>= 4;
 # endif
