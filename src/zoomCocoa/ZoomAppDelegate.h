@@ -9,9 +9,16 @@
 #import <Cocoa/Cocoa.h>
 
 #import "ZoomPreferenceWindow.h"
+#import "ZoomMetadata.h"
+#import "ZoomStory.h"
 
 @interface ZoomAppDelegate : NSObject {
 	ZoomPreferenceWindow* preferencePanel;
+	
+	NSMutableArray* gameIndices;
 }
+
+- (NSArray*) gameIndices;
+- (ZoomStory*) findStory: (ZoomStoryID*) gameID;
 
 @end

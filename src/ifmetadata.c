@@ -471,6 +471,28 @@ void IFMD_Free(IFMetadata* oldData) {
 	free(oldData);
 }
 
+IFMDStory* IFMD_Find(IFMetadata* data, const IFMDIdent* id) {
+	int top, bottom;
+	
+	bottom = 0;
+	top = data->numberOfIndexEntries-1;
+	
+	while (bottom < top) {
+		int middle = (bottom + top)>>1;
+		int cmp = IFID_Compare(data->index[middle].ident, id);
+		
+		if (cmp == 0) return data->index[middle].story;
+		else if (cmp < 0) bottom = middle+1;
+		else if (cmp > 0) top    = middle-1;
+	}
+	
+	if (bottom == top && IFID_Compare(id, data->index[bottom].ident) == 0) {
+		return data->index[bottom].story;
+	}
+	
+	return NULL;
+}
+
 /* == Parser functions == */
 static XMLCALL void startElement(void *userData,
 								 const XML_Char *name,
@@ -535,6 +557,7 @@ static XMLCALL void startElement(void *userData,
 			if (state->story == NULL) return;
 			
 			newID.format = IFFormat_Unknown;
+			newID.dataFormat = IFFormat_Unknown;
 			newID.usesMd5 = 0;
 			for (x=0; x<16; x++) newID.md5Sum[x] = 0;
 			
@@ -561,9 +584,9 @@ static XMLCALL void startElement(void *userData,
 		/* ID tags */
 		if (XCstrcmp(current, "format") == 0) {
 			/* Format of the story */
-		} else if (XCstrcmp(current, "md5")) {
+		} else if (XCstrcmp(current, "md5") == 0) {
 			/* MD5 data */
-		} else if (XCstrcmp(current, "zcode")) {
+		} else if (XCstrcmp(current, "zcode") == 0) {
 			/* ZCode data */
 			if (state->ident) {
 				int x;
@@ -572,7 +595,7 @@ static XMLCALL void startElement(void *userData,
 				state->ident->data.zcode.release  = 0;				
 				for (x=0; x<6; x++) state->ident->data.zcode.serial[x] = 0;
 			}
-		} else if (XCstrcmp(current, "glulx")) {
+		} else if (XCstrcmp(current, "glulx") == 0) {
 			/* Glulx data */
 		} else {
 			/* Unrecognised ID tag */
@@ -704,25 +727,25 @@ static XMLCALL void endElement(void *userData,
 					
 					free(format);
 				}
-			} else if (XCstrcmp(parent, "zcode")) {
+			} else if (XCstrcmp(parent, "zcode") == 0) {
 				/* zcode identification section */
 				XML_Char* text = Xlower(Xchomp(currentText));
 				
 				state->ident->dataFormat = IFFormat_ZCode;
 				
-				if (XCstrcmp(current, "serial")) {
+				if (XCstrcmp(current, "serial") == 0) {
 					int x;
 					
 					for (x=0; x<6 && text[x] != 0; x++) {
 						state->ident->data.zcode.serial[x] = text[x];
 					}
-				} else if (XCstrcmp(current, "release")) {
+				} else if (XCstrcmp(current, "release") == 0) {
 					char* release = Xascii(text);
 					
 					state->ident->data.zcode.release = atoi(release);
 					
 					free(release);
-				} else if (XCstrcmp(current, "checksum")) {
+				} else if (XCstrcmp(current, "checksum") == 0) {
 					char* checksum = Xascii(text);
 					int x, val;
 					
@@ -744,19 +767,19 @@ static XMLCALL void endElement(void *userData,
 				}
 				
 				free(text);
-			} else if (XCstrcmp(parent, "glulx")) {
+			} else if (XCstrcmp(parent, "glulx") == 0) {
 				/* glulx identification section */
 				XML_Char* text = Xlower(Xchomp(currentText));
 				
 				state->ident->dataFormat = IFFormat_Glulx;
 				
-				if (XCstrcmp(current, "serial")) {
+				if (XCstrcmp(current, "serial") == 0) {
 					int x;
 					
 					for (x=0; x<6 && text[x] != 0; x++) {
 						state->ident->data.glulx.serial[x] = text[x];
 					}
-				} else if (XCstrcmp(current, "release")) {
+				} else if (XCstrcmp(current, "release") == 0) {
 					char* release = Xascii(text);
 					
 					state->ident->data.glulx.release = atoi(release);
@@ -1027,3 +1050,53 @@ CFStringRef IFStrCpyCF(const IFMDChar* src) {
 	return string;
 }
 #endif
+
+/* = Allocation functions = */
+
+IFMetadata* IFMD_Alloc(void) {
+	IFMetadata* md;
+	
+	md = malloc(sizeof(IFMetadata));
+	
+	md->numberOfStories = md->numberOfErrors = md->numberOfIndexEntries = 0;
+	md->stories = NULL;
+	md->error   = NULL;
+	md->index   = NULL;
+	
+	return md;
+}
+
+IFMDStory* IFStory_Alloc(void) {
+	IFMDStory* st;
+	
+	st = malloc(sizeof(IFMDStory));
+	
+	st->numberOfIdents = 0;
+	st->idents = NULL;
+	st->error = 0;
+	
+	st->data.title = NULL;
+	st->data.headline = NULL;
+	st->data.author = NULL;
+	st->data.genre = NULL;
+	st->data.year = 0;
+	st->data.group = NULL;
+	st->data.zarfian = IFMD_Unrated;
+	st->data.teaser = NULL;
+	st->data.comment = NULL;
+	st->data.rating = -1.0;
+	
+	return st;
+}
+
+IFMDIdent* IFID_Alloc(void) {
+	IFMDIdent* id;
+	
+	id = malloc(sizeof(IFMDIdent));
+	
+	id->format = IFFormat_Unknown;
+	id->dataFormat = IFFormat_Unknown;
+	id->usesMd5 = 0;
+	
+	return id;
+}

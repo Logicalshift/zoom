@@ -173,18 +173,28 @@ struct IFMDError {
 };
 
 /* Functions */
-extern IFMetadata* IFMD_Parse		(const IFMDByte* data, size_t length);
-extern char*       IFMD_LastError   (void);
-extern void        IFMD_Free		(IFMetadata* oldData);
 
+/* Parsing the file */
+extern IFMetadata* IFMD_Parse		(const IFMDByte* data, size_t length);
+extern void        IFMD_Free		(IFMetadata* oldData);
+extern IFMDStory*  IFMD_Find		(IFMetadata* data, const IFMDIdent* id);
+
+/* ID functions */
 extern int         IFID_Compare		(const IFMDIdent* a,
 									 const IFMDIdent* b);
 extern void		   IFID_Free        (IFMDIdent* oldId);
 
+/* Story functions */
 extern void        IFStory_Free     (IFMDStory* oldStory);
 
+/* String functions */
 extern int		   IFStrLen(const IFMDChar* string);
 extern char*	   IFStrnCpyC(char* dst, const IFMDChar* src, size_t sz); /* ASCII */
+
+/* Allocation functions */
+extern IFMetadata* IFMD_Alloc(void);
+extern IFMDStory*  IFStory_Alloc(void);
+extern IFMDIdent*  IFID_Alloc(void);
 
 #ifdef HAVE_WCHAR_H
 extern wchar_t*    IFStrnCpyW(wchar_t* dst, const IFMDChar* src, size_t sz); /* UTF-16 */

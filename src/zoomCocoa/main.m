@@ -29,15 +29,5 @@ int main(int argc, const char *argv[])
 #ifdef DEBUG_BUILD
     atexit(reportLeaks);
 #endif
-	
-	NSData* mdata = [NSData dataWithContentsOfFile: @"/Users/ahunter/testdata.xml"];
-	IFMetadata* md = IFMD_Parse([mdata bytes], [mdata length]);
-	
-	NSString* str = (NSString*)IFStrCpyCF(md->stories[0].data.title);	
-	NSLog(@"%@", str);
-	[str release];
-	
-	IFMD_Free(md);
-	
     return NSApplicationMain(argc, argv);
 }

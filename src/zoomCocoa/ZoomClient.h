@@ -8,9 +8,12 @@
 
 #import <AppKit/AppKit.h>
 #import "ZoomProtocol.h"
+#import "ZoomStory.h"
 
 @interface ZoomClient : NSDocument {
     NSData* gameData;
+	
+	ZoomStory* story;
 }
 
 - (NSData*) gameData;

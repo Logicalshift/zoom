@@ -9,19 +9,48 @@
 #import "ZoomAppDelegate.h"
 #import "ZoomGameInfoController.h"
 
+#import "ZoomMetadata.h"
 
 @implementation ZoomAppDelegate
 
+// = Initialisation =
+- (id) init {
+	self = [super init];
+	
+	if (self) {
+		gameIndices = [[NSMutableArray alloc] init];
+		
+		NSData* userData = nil;
+		NSData* infocomData = [NSData dataWithContentsOfFile: [[NSBundle mainBundle] pathForResource: @"infocom" ofType: @"xml"]];
+		NSData* archiveData = [NSData dataWithContentsOfFile: [[NSBundle mainBundle] pathForResource: @"archive" ofType: @"xml"]];
+		
+		if (userData) 
+			[gameIndices addObject: [[[ZoomMetadata alloc] initWithData: userData] autorelease]];
+		else
+			[gameIndices addObject: [[[ZoomMetadata alloc] init] autorelease]];
+		
+		if (infocomData) 
+			[gameIndices addObject: [[[ZoomMetadata alloc] initWithData: infocomData] autorelease]];
+		if (archiveData) 
+			[gameIndices addObject: [[[ZoomMetadata alloc] initWithData: archiveData] autorelease]];
+	}
+	
+	return self;
+}
+
 - (void) dealloc {
 	if (preferencePanel) [preferencePanel release];
+	[gameIndices release];
 	
 	[super dealloc];
 }
 
+// = Opening files =
 - (BOOL) applicationShouldOpenUntitledFile: (NSApplication*) sender {
     return NO;
 }
 
+// = General actions =
 - (IBAction) showPreferences: (id) sender {
 	if (!preferencePanel) {
 		preferencePanel = [[ZoomPreferenceWindow alloc] init];
@@ -45,6 +74,24 @@
 }
 
 - (IBAction) displayNoteWindow: (id) sender {
+}
+
+// = Application-wide data =
+- (NSArray*) gameIndices {
+	return gameIndices;
+}
+
+- (ZoomStory*) findStory: (ZoomStoryID*) gameID {
+	NSEnumerator* indexEnum = [gameIndices objectEnumerator];
+	ZoomMetadata* repository;
+	
+	while (repository = [indexEnum nextObject]) {
+		ZoomStory* res = [repository findStory: gameID];
+		
+		if (res) return res;
+	}
+	
+	return nil;
 }
 
 @end

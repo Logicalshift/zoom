@@ -10,6 +10,8 @@
 #import "ZoomProtocol.h"
 #import "ZoomClientController.h"
 
+#import "ZoomAppDelegate.h"
+
 @implementation ZoomClient
 
 - (id) init {
@@ -50,6 +52,8 @@
 - (BOOL)loadDataRepresentation:(NSData *)data ofType:(NSString *)type {
     if (gameData) [gameData release];
     gameData = [data retain];
+	
+	story = [[NSApp delegate] findStory: [[[ZoomStoryID alloc] initWithZCodeStory: gameData] autorelease]];
     
     return YES;
 }
