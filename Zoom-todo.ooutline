@@ -612,6 +612,8 @@
 
 \f0\fs24 \cf0 Scroll support}</string>
 								</array>
+								<key>State</key>
+								<integer>1</integer>
 							</dict>
 							<dict>
 								<key>Cols</key>
