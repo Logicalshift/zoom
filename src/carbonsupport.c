@@ -967,6 +967,8 @@ ZFile* get_file_write(int* fsize, char* save_fname)
 
   dlOpts.parentWindow = zoomWindow;
   dlOpts.modality     = kWindowModalityWindowModal;
+  dlOpts.saveFileName = CFStringCreateWithCString(NULL, save_fname, 
+						  kCFStringEncodingMacRoman);
 
   /* Create the dialog box */
   NavCreatePutFileDialog(&dlOpts,
