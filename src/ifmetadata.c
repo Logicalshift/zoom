@@ -37,6 +37,11 @@
 
 #include "ifmetadata.h"
 
+#ifndef XMLCALL
+/* Not always defined? */
+# define XMLCALL
+#endif
+
 /* == Parser function declarations == */
 static XMLCALL void startElement(void *userData,
 								 const XML_Char *name,

@@ -23,7 +23,10 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/ZoomProtocol.m          zoomCocoa/main.m \
 	zoomCocoa/ZoomScrollView.h 	  zoomCocoa/ZoomPreferences.m \
 	zoomCocoa/ZoomPreferences.h	  zoomCocoa/ZoomPreferenceWindow.h \
-	zoomCocoa/ZoomPreferenceWindow.m  \
+	zoomCocoa/ZoomPreferenceWindow.m  zoomCocoa/ZoomMetadata.h \
+	zoomCocoa/ZoomMetadata.m	  zoomCocoa/ZoomStory.h \
+	zoomCocoa/ZoomStory.m		  zoomCocoa/ZoomStoryID.h \
+	zoomCocoa/ZoomStoryID.m		  \
 	zoomCocoa/MainMenu.nib/classes.nib zoomCocoa/MainMenu.nib/info.nib \
 	zoomCocoa/MainMenu.nib/keyedobjects.nib \
 	zoomCocoa/MainMenu.nib/objects.nib \
