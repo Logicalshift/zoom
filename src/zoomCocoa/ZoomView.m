@@ -18,6 +18,7 @@ static NSMutableArray* defaultFonts = nil;
 static NSArray* defaultColours = nil;
 
 + (void) initialize {
+    // Default settings
     NSString* defaultFont = @"Gill Sans";
     NSString* fixedFont = @"Courier";
     NSFontManager* mgr = [NSFontManager sharedFontManager];
@@ -57,6 +58,15 @@ static NSArray* defaultColours = nil;
         [NSColor colorWithDeviceRed: .53 green: .53 blue: .53 alpha: 1],
         [NSColor colorWithDeviceRed: .26 green: .26 blue: .26 alpha: 1],
         nil] retain];
+    
+    // Preferences
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
+        [@"~/Documents" stringByStandardizingPath], @"ZoomSavePath",
+        [NSNumber numberWithBool: YES], @"ZoomHiddenExtension",
+        nil];
+    
+    [defaults registerDefaults:appDefaults];    
 }
 
 - (id)initWithFrame:(NSRect)frame {
@@ -70,6 +80,9 @@ static NSArray* defaultColours = nil;
         delegate = nil;
 
         [self setAutoresizesSubviews: YES];
+        
+        creatorCode = 'YZZY';
+        typeCode = '\?\?\?\?';
 
         // Set up the scroll view...
         textScroller = [[ZoomScrollView allocWithZone: [self zone]] initWithFrame:
@@ -938,58 +951,87 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 // = Prompting for files =
 - (void) setupPanel: (NSSavePanel*) panel
                type: (ZFileType) type {
-    [panel setPrompt: @"Save"];
-    
     BOOL supportsMessage = [panel respondsToSelector: @selector(setMessage:)];
     [panel setCanSelectHiddenExtension: YES];
+    
+    NSString* saveOpen = @"Save as";
+    
+    if ([panel isKindOfClass: [NSOpenPanel class]]) {
+        saveOpen = @"Open";
+    } else {
+        saveOpen = @"Save as";
+    }
+    
+    [panel setExtensionHidden: 
+        [[[NSUserDefaults standardUserDefaults] objectForKey: 
+            @"ZoomHiddenExtension"] boolValue]];
     
     switch (type) {
         default:
         case ZFileQuetzal:
+            [panel setRequiredFileType: @"qut"];
+            typeCode = 'IFZS';
             if (supportsMessage) {
-                [panel setMessage: @"Save as savegame (quetzal) file"];
+                [panel setMessage: [NSString stringWithFormat: @"%@ savegame (quetzal) file", saveOpen]];
+                [panel setAllowedFileTypes: [NSArray arrayWithObjects: @"qut", nil]];
             }
-            [panel setAllowedFileTypes: [NSArray arrayWithObjects: @"qut", nil]];
             break;
             
         case ZFileData:
+            [panel setRequiredFileType: @"dat"];
+            typeCode = '\?\?\?\?';
             if (supportsMessage) {
-                [panel setMessage: @"Save as data file"];
+                [panel setMessage: [NSString stringWithFormat: @"%@ data file", saveOpen]];
                 
                 // (Assume if setMessage is supported, we have 10.3)
                 [panel setAllowsOtherFileTypes: YES];
+                [panel setAllowedFileTypes: [NSArray arrayWithObjects: @"dat", @"qut", nil]];
             }
-            [panel setAllowedFileTypes: [NSArray arrayWithObjects: @"dat", @"qut", nil]];
             break;
             
         case ZFileRecording:
+            [panel setRequiredFileType: @"txt"];
+            typeCode = 'TEXT';
             if (supportsMessage) {
-                [panel setMessage: @"Save as command recording file"];
+                [panel setMessage: [NSString stringWithFormat: @"%@ command recording file", saveOpen]];
+                [panel setAllowedFileTypes: [NSArray arrayWithObjects: @"txt", nil]];
             }
-            [panel setPrompt: @"Record"];
-            [panel setAllowedFileTypes: [NSArray arrayWithObjects: @"txt", nil]];
             break;
             
         case ZFileTranscript:
+            [panel setRequiredFileType:  [NSString stringWithFormat: @"txt"]];
+            typeCode = 'TEXT';
             if (supportsMessage) {
-                [panel setMessage: @"Save as transcript recording file"];
+                [panel setMessage: [NSString stringWithFormat: @"%@ transcript recording file", saveOpen]];
+                [panel setAllowedFileTypes: [NSArray arrayWithObjects: @"txt", nil]];
             }
-            [panel setPrompt: @"Record"];
-            [panel setAllowedFileTypes: [NSArray arrayWithObjects: @"txt", nil]];
             break;
     }
 }
 
+- (void) storePanelPrefs: (NSSavePanel*) panel {
+    [[NSUserDefaults standardUserDefaults] setObject: [panel directory]
+                                              forKey: @"ZoomSavePath"];
+    [[NSUserDefaults standardUserDefaults] setObject: [NSNumber numberWithBool: [panel isExtensionHidden]]
+                                              forKey: @"ZoomHiddenExtension"];
+}
+
+- (long) creatorCode {
+    return creatorCode;
+}
+
+- (void) setCreatorCode: (long) code {
+    creatorCode = code;
+}
+
 - (void) promptForFileToWrite: (ZFileType) type
                   defaultName: (NSString*) name {
-    // FIXME: preferences
-    
     NSSavePanel* panel = [NSSavePanel savePanel];
     
     [self setupPanel: panel
                 type: type];
     
-    [panel beginSheetForDirectory: @"~" // FIXME: prefs
+    [panel beginSheetForDirectory: [[NSUserDefaults standardUserDefaults] objectForKey: @"ZoomSavePath"]
                              file: nil
                    modalForWindow: [self window]
                     modalDelegate: self
@@ -1006,9 +1048,16 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         NSString* fn = [panel filename];
         NSFileHandle* file = nil;
         
+        [self storePanelPrefs: panel];
+        
         if ([[NSFileManager defaultManager] createFileAtPath:fn
                                                         contents:[NSData data]
-                                                      attributes:nil]) {
+                                                      attributes:
+            [NSDictionary dictionaryWithObjectsAndKeys: 
+                [NSNumber numberWithLong: creatorCode], NSFileHFSCreatorCode,
+                [NSNumber numberWithLong: typeCode], NSFileHFSTypeCode,
+                [NSNumber numberWithBool: [panel isExtensionHidden]], NSFileExtensionHidden,
+                nil]]) {
             file = [NSFileHandle fileHandleForWritingAtPath: fn];
         }
         
@@ -1027,6 +1076,44 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 
 - (void) promptForFileToRead: (ZFileType) type
                  defaultName: (NSString*) name {
+    NSOpenPanel* panel = [NSOpenPanel openPanel];
+    
+    [self setupPanel: panel
+                type: type];
+    
+    [panel beginSheetForDirectory: [[NSUserDefaults standardUserDefaults] objectForKey: @"ZoomSavePath"]
+                             file: nil
+                   modalForWindow: [self window]
+                    modalDelegate: self
+                   didEndSelector: @selector(openPanelDidEnd:returnCode:contextInfo:) 
+                      contextInfo: nil];
+}
+
+- (void)openPanelDidEnd: (NSOpenPanel *) panel 
+             returnCode: (int) returnCode 
+            contextInfo: (void*) contextInfo {
+    if (returnCode != NSOKButton) {
+        [zMachine filePromptCancelled];
+    } else {
+        NSString* fn = [panel filename];
+        NSFileHandle* file = nil;
+
+        [self storePanelPrefs: panel];
+
+        file = [NSFileHandle fileHandleForReadingAtPath: fn];
+        
+        if (file) {
+            ZDataFile* f;
+            NSData* fData = [file readDataToEndOfFile];
+            
+            f = [[ZDataFile alloc] initWithData: fData];
+            
+            [zMachine promptedFileIs: [f autorelease]
+                                size: [fData length]];
+        } else {
+            [zMachine filePromptCancelled];
+        }
+    }
 }
 
 // = The delegate =

@@ -55,6 +55,10 @@
 
     // The delegate
     NSObject* delegate;
+    
+    // Details about the file we're currently saving
+    long creatorCode; // 'YZZY' for Zoom
+    long typeCode;
 }
 
 // The delegate
@@ -91,6 +95,10 @@
 - (void) setFonts:   (NSArray*) fonts;
 - (void) setColours: (NSArray*) colours;
 
+// File saving
+- (long) creatorCode;
+- (void) setCreatorCode: (long) code;
+
 // The upper window
 - (int)  upperWindowSize;
 - (void) setUpperBuffer: (double) bufHeight;
@@ -111,6 +119,5 @@
 
 - (void) zMachineStarted: (id) sender;
 - (void) zMachineFinished: (id) sender;
-
 
 @end
