@@ -1,47 +1,5 @@
- * The display library deviates slightly from the standard - to save me some
-   hair-pulling, setting fonts, colours and styles produce a flush of the
-   display buffer. This means that multicoloured/fonted words may get split
-   across lines (it's only a cosmetic problem :-)
- * The display library can't cope with word longer than a line yet
- * aread with a non-empty buffer may not always work correctly. This 
-   version assumes anything that the game has printed is in the
-   buffer, and removes it so that the readline routine can use its own 
-   display capabilities. This will look wrong if the game doesn't
-   print the buffer out (as aread will then do it itself), or if the
-   game turns buffering off (or otherwise causes a flush) while
-   printing the text.
- * Unicode in input support (stream.c)
+Hmm, this file was a bit out of date.
 
---
-
-Notes on the level of support of the Z-Machine specification:
-
- * The specification is unclear on a number of items, in particular:
-    - The result of get_child/sibling/parent(0). Zoom returns 0 and
-      will display a warning if warnings are turned on. Many (if not all)
-      Inform games do this; none of the Infocom games I've tried do. Note
-      that other interpreters (eg Frotz), do not bother with bounds checking
-      the object number, so returning details for an object that is in a
-      negative position in the object tree. Zoom returns default properties,
-      a parent, child and sibling of 0 and produces a runtime error if
-      an attempt is made to write to the object.
-
- * This interpreter usually uses a hash to look up dictionary entries. Some
-   games may alter their dictionaries while running - these games tend to
-   use the 'tokenise' opcode. This interpreter makes the assumption that
-   only /unsorted/ dictionaries can be altered. (There will be a
-   commandline flag to alter this behaviour)
-
- * Font 3 is defined in vectors in the file font3.c - hopefully if
-   someone wants to port Zoom to some other architecture, this should
-   make things easier (though I just draw the thing as polygons
-   without using any hinting, so characters can look a bit odd at some 
-   font sizes)
-
- * Hum, we used to clip to the bottom of window 0, but it seems Sherlock
-   sets this window and then moves the cursor outside of it... I've changed
-   the behaviour so that the clipping only happens on newline...
-   The standards document should probably be updated to indicate what we should
-   do in these circumstances... (Also, is the window coordinates relative to
-   the top left of the screen or the top left of the window... used to do
-   top-left of the window, now do top-left of the window)
+ * Header extension word for Spec 1.1
+ X @sound_data, such as it can be
+ X @save/@restore prompt thing
