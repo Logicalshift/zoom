@@ -85,14 +85,21 @@ static NSDictionary*  itemDictionary = nil;
 - (void) switchToPane: (NSView*) preferencePane {
 	if ([[self window] contentView] == preferencePane) return;
 	
-	// (FIXME: this is OS X 10.3 only)
-	NSRect currentFrame = [[self window] contentRectForFrameRect: [[self window] frame]];
+	NSRect currentFrame = [[[self window] contentView] frame];
+	NSRect oldFrame = currentFrame;
+	NSRect windowFrame = [[self window] frame];
 	
 	currentFrame.origin.y    -= [preferencePane frame].size.height - currentFrame.size.height;
 	currentFrame.size.height  = [preferencePane frame].size.height;
 	
+	// Grr, complicated, as OS X provides no way to work out toolbar proportions except in 10.3
+	windowFrame.origin.x    += (currentFrame.origin.x - oldFrame.origin.x);
+	windowFrame.origin.y    += (currentFrame.origin.y - oldFrame.origin.y);
+	windowFrame.size.width  += (currentFrame.size.width - oldFrame.size.width);
+	windowFrame.size.height += (currentFrame.size.height - oldFrame.size.height);
+	
 	[[self window] setContentView: [[[NSView alloc] init] autorelease]];
-	[[self window] setFrame: [[self window] frameRectForContentRect: currentFrame]
+	[[self window] setFrame: windowFrame
 					display: YES
 					animate: YES];
 	[[self window] setContentView: preferencePane];
