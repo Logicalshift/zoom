@@ -192,7 +192,6 @@ ZFile* open_file(char* filename)
 
   if (f->file == INVALID_HANDLE_VALUE)
     {
-      zmachine_fatal("Unable to open %s", filename);
       free(f);
       return NULL;
     }

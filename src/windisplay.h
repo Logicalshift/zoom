@@ -32,4 +32,6 @@ extern HBRUSH   winbrush[14];
 extern HPEN     winpen  [14];
 extern COLORREF wincolour[14];
 
+extern int xfont_x, xfont_y;
+
 #endif

@@ -31,6 +31,7 @@
 #include <windows.h>
 
 #include "zmachine.h"
+#include "font3.h"
 #include "windisplay.h"
 #include "xfont.h"
 
@@ -52,6 +53,105 @@ struct xfont
 
 static int fore;
 static int back;
+
+/***                           ----// 888 \\----                           ***/
+
+/*
+ * Function to plot a font 3 definition
+ */
+
+static int bitmap_x = 0;
+static int bitmap_y = 0;
+static int created_bitmaps = 0;
+static HBITMAP f3mask[96];
+static HDC     compat_dc = NULL;
+
+static void create_font3_bitmaps(HDC dc)
+{
+  int x;
+  HBRUSH black, white;
+  RECT rct;
+  POINT point[32];
+  int i;
+  HDC bdc;
+  
+  bitmap_x = xfont_x;
+  bitmap_y = xfont_y;
+
+  if (created_bitmaps)
+    {
+      for (x=0; x<96; x++)
+	{
+	  DeleteObject(f3mask[x]);
+	}
+    }
+
+  black = CreateSolidBrush(RGB(0,0,0));
+  white = CreateSolidBrush(RGB(255,255,255));
+
+  rct.top = rct.left = 0;
+  rct.right   = xfont_x;
+  rct.bottom = xfont_y;
+
+  bdc = CreateCompatibleDC(NULL);
+  for (x=0; x<96; x++)
+    {      
+      f3mask[x] = CreateBitmap(xfont_x, xfont_y, 1, 1, NULL);
+      
+      SelectObject(bdc, f3mask[x]);
+
+      FillRect(bdc, &rct, white);
+      SelectObject(bdc, black);
+
+      for (i=0; i<font_3.chr[x].num_coords; i++)
+	{
+	  point[i].x = font_3.chr[x].coords[i<<1];
+	  point[i].y = font_3.chr[x].coords[(i<<1)+1];
+	  
+	  point[i].x *= xfont_x; point[i].x /= 8;
+	  point[i].y *= xfont_y; point[i].y /= 8;
+	}
+      
+      BeginPath(bdc);
+      Polygon(bdc, point, font_3.chr[x].num_coords);
+      EndPath(bdc);
+      FillPath(bdc);
+    }
+
+  DeleteObject(black);
+  DeleteObject(white);
+
+  DeleteDC(bdc);
+  
+  created_bitmaps = 1;
+}
+
+static void plot_font_3(HDC dc, int chr, int xpos, int ypos)
+{
+  if (chr > 127 || chr < 32)
+    chr = 32;
+  chr-=32;
+
+  if (!created_bitmaps || xfont_x != bitmap_x || xfont_y != bitmap_y)
+    {
+      create_font3_bitmaps(dc);
+    }
+
+  if (font_3.chr[chr].num_coords < 0)
+    {
+      zmachine_warning("Attempt to plot unspecified character %i",
+		       chr+32);
+      return;
+    }
+
+  if (compat_dc == NULL)
+    compat_dc = CreateCompatibleDC(dc);
+
+  SelectObject(compat_dc, f3mask[chr]);
+  BitBlt(dc, xpos, ypos, xfont_x, xfont_y, compat_dc, 0, 0, SRCCOPY);
+}
+
+/***                           ----// 888 \\----                           ***/
 
 void xfont_initialise(void)
 {
@@ -284,7 +384,7 @@ int xfont_get_width(xfont* font)
       }
       
     case WINFONT_FONT3:
-      break;
+      return xfont_x;
     }
 
   zmachine_fatal("Programmer is a spoon");
@@ -308,7 +408,7 @@ int xfont_get_height(xfont* font)
       }
 
     case WINFONT_FONT3:
-      break;
+      return xfont_y;
     }
   
   zmachine_fatal("Programmer is a spoon");
@@ -332,7 +432,7 @@ int xfont_get_ascent(xfont* font)
       }
 
     case WINFONT_FONT3:
-      break;
+      return xfont_y;
     }
   
   zmachine_fatal("Programmer is a spoon");
@@ -395,7 +495,7 @@ int xfont_get_text_width(xfont*     font,
       }
 
     case WINFONT_FONT3:
-      return 0;
+      return xfont_x * len;
     }
   
   zmachine_fatal("Programmer is a spoon");
@@ -459,6 +559,18 @@ void xfont_plot_string(xfont*     font,
       break;
 
     case WINFONT_FONT3:
+      SetTextColor(dc, wincolour[fore]);
+      SetBkColor(dc, wincolour[back]);
+      {
+	int pos;
+
+	for (pos=0; pos<len; pos++)
+	  {
+	    plot_font_3(dc, string[pos], xpos, ypos);
+	    xpos+=xfont_x;
+	  }	
+      }
+      break;
 
     default:
       zmachine_fatal("Programmer is a spoon");

@@ -186,6 +186,9 @@ static int  timed_out = 0;
 static int*  text_buf = NULL;
 static int   buf_offset;
 
+static int   more_on = 0;
+static int   displayed_text = 0;
+
 static void draw_input_text(HDC dc);
 
 /***                           ----// 888 \\----                           ***/
@@ -1186,9 +1189,22 @@ void display_beep(void)
 
 /***                           ----// 888 \\----                           ***/
 
-static void draw_window(int win,
-			HDC dc)
+static inline int isect_rect(RECT* r1, RECT* r2)
 {
+  RECT tmp;
+
+  if (IntersectRect(&tmp, r1, r2))
+    return 1;
+  else
+    return 0;
+}
+
+static void draw_window(int win,
+			HDC dc,
+			RECT* rct)
+{
+  RECT drct;
+
   if (text_win[win].overlay)
     {
       int x, y;
@@ -1218,14 +1234,22 @@ static void draw_window(int win,
 			  text_win[win].cline[y].cell[x+len] != ' '))
 		    len++;
 
-		  xfont_set_colours(text_win[win].cline[y].fg[x],
-				    text_win[win].cline[y].bg[x]);
-		  xfont_plot_string(font[text_win[win].cline[y].font[x]],
-				    dc,
-				    x*xfont_x+4,
-				    y*xfont_y+4,
-				    &text_win[win].cline[y].cell[x],
-				    len);
+		  drct.left   = x*xfont_x+4;
+		  drct.top    = y*xfont_y+4;
+		  drct.right  = drct.left+ xfont_x*len;
+		  drct.bottom = drct.top + xfont_y;
+
+		  if (isect_rect(rct, &drct))
+		    {
+		      xfont_set_colours(text_win[win].cline[y].fg[x],
+					text_win[win].cline[y].bg[x]);
+		      xfont_plot_string(font[text_win[win].cline[y].font[x]],
+					dc,
+					drct.left,
+					drct.top,
+					&text_win[win].cline[y].cell[x],
+					len);
+		    }
 
 		  x+=len-1;
 		}
@@ -1234,7 +1258,7 @@ static void draw_window(int win,
     }
   else
     {
-      RECT rct;
+      RECT frct;
       
       struct line* line;
       struct text* text;
@@ -1250,17 +1274,17 @@ static void draw_window(int win,
 
       if (line != NULL)
 	{
-	  rct.top    = text_win[win].winsy;
-	  rct.bottom = line->baseline - line->ascent+4;
-	  rct.left   = 4;
-	  rct.right  = 4+win_x;
-	  if (rct.top < rct.bottom)
-	    FillRect(dc, &rct, winbrush[text_win[win].winback]);
+	  frct.top    = text_win[win].winsy;
+	  frct.bottom = line->baseline - line->ascent+4;
+	  frct.left   = 4;
+	  frct.right  = 4+win_x;
+	  if (frct.top < frct.bottom)
+	    FillRect(dc, &frct, winbrush[text_win[win].winback]);
 
-	  lasty = rct.bottom;
+	  lasty = frct.bottom;
 	}
       else
-	lasty = 4;
+	lasty = text_win[win].winsy;
       
       while (line != NULL)
 	{
@@ -1298,24 +1322,32 @@ static void draw_window(int win,
 		  w = xfont_get_text_width(font[text->font],
 					   text->text + nchars,
 					   toprint);
-		  
-		  rct.top    = line->baseline - line->ascent+4;
-		  rct.bottom = line->baseline -
-		    xfont_get_ascent(font[text->font])+4;
-		  rct.left   = width+4;
-		  rct.right  = width+w+4;
-		  if (rct.top < rct.bottom)
-		    FillRect(dc, &rct, winbrush[text->bg]);
-		  
-		  xfont_set_colours(text->fg,
-				    text->bg);
-		  xfont_plot_string(font[text->font],
-				    dc,
-				    width+4,
-				    line->baseline-
-				    xfont_get_ascent(font[text->font])+4,
-				    text->text + nchars,
-				    toprint);
+
+		  drct.left   = width+4;
+		  drct.top    = line->baseline-line->ascent+4;
+		  drct.right  = drct.left+w;
+		  drct.bottom = line->baseline+line->descent+4;
+
+		  if (isect_rect(rct, &drct))
+		    {
+		      frct.top    = line->baseline - line->ascent+4;
+		      frct.bottom = line->baseline -
+			xfont_get_ascent(font[text->font])+4;
+		      frct.left   = width+4;
+		      frct.right  = width+w+4;
+		      if (frct.top < frct.bottom)
+			FillRect(dc, &frct, winbrush[text->bg]);
+		      
+		      xfont_set_colours(text->fg,
+					text->bg);
+		      xfont_plot_string(font[text->font],
+					dc,
+					width+4,
+					line->baseline-
+					xfont_get_ascent(font[text->font])+4,
+					text->text + nchars,
+					toprint);
+		    }
 
 		  x      += toprint;
 		  nchars += toprint;
@@ -1328,24 +1360,24 @@ static void draw_window(int win,
 		}
 	    }
 	  
-	  rct.top    = line->baseline-line->ascent+4;
-	  rct.bottom = line->baseline+line->descent+4;
-	  rct.left   = width+4;
-	  rct.right  = win_x+4;
+	  frct.top    = line->baseline-line->ascent+4;
+	  frct.bottom = line->baseline+line->descent+4;
+	  frct.left   = width+4;
+	  frct.right  = win_x+4;
 	  if (line->baseline+line->descent > text_win[win].winsy)
-	    FillRect(dc, &rct, winbrush[text_win[win].winback]);
+	    FillRect(dc, &frct, winbrush[text_win[win].winback]);
 	      
-	  lasty = rct.bottom;
+	  lasty = frct.bottom;
 	  
 	  line = line->next;
 	}
 
-      rct.top    = lasty;
-      rct.bottom = win_y+4;
-      rct.left   = 4;
-      rct.right  = 4+win_x;
-      if (rct.top < rct.bottom)
-	FillRect(dc, &rct, winbrush[text_win[win].winback]); 
+      frct.top    = lasty;
+      frct.bottom = win_y+4;
+      frct.left   = 4;
+      frct.right  = 4+win_x;
+      if (frct.top < frct.bottom)
+	FillRect(dc, &frct, winbrush[text_win[win].winback]); 
     }
 }
 
@@ -1362,9 +1394,9 @@ static void draw_caret(HDC dc)
       LineTo(dc, caret_x+1, caret_y+caret_height); */
 
       if (insert)
-	tpen = CreatePen(PS_SOLID, 2, wincolour[CURWIN.back]);
+	tpen = CreatePen(PS_SOLID, 1, wincolour[CURWIN.back]);
       else
-	tpen = CreatePen(PS_SOLID, 4, wincolour[CURWIN.back]);
+	tpen = CreatePen(PS_SOLID, 2, wincolour[CURWIN.back]);
       SelectObject(dc, tpen);
       MoveToEx(dc, caret_x+5, caret_y+4, NULL);
       LineTo(dc, caret_x+5, caret_y+4+caret_height);
@@ -1373,6 +1405,18 @@ static void draw_caret(HDC dc)
       SetROP2(dc, R2_COPYPEN);
       caret_shown = !caret_shown;
     }
+}
+
+static void update_status_text(void)
+{
+  SendMessage(mainwinstat,
+	      SB_SETTEXT,
+	      1,
+	      (LPARAM) (LPSTR) (insert?"INS":"OVR"));
+  SendMessage(mainwinstat,
+	      SB_SETTEXT,
+	      2,
+	      (LPARAM) (LPSTR) (more_on?"[ MORE ]":""));
 }
 
 static void redraw_caret(void)
@@ -1640,8 +1684,8 @@ static LRESULT CALLBACK display_winproc(HWND hwnd,
 	
 	BeginPaint(hwnd, &paint);
 	
-	draw_window(0, paint.hdc);
-	draw_window(2, paint.hdc);
+	draw_window(0, paint.hdc, &paint.rcPaint);
+	draw_window(2, paint.hdc, &paint.rcPaint);
 
 	if (text_buf != NULL)
 	  {
@@ -1700,6 +1744,20 @@ static LRESULT CALLBACK display_winproc(HWND hwnd,
     case WM_SIZE:
       SendMessage(mainwinstat, WM_SIZE, 0, 0);
       resize_window();
+      {
+	RECT rct;
+#define n_parts 3
+	int parts[n_parts] = { 0, 30, 100 };
+	int x;
+
+	GetClientRect(mainwin, &rct);
+
+	for (x=0; x<n_parts; x++)
+	  parts[x] += rct.right - parts[n_parts-1];
+	
+	SendMessage(mainwinstat, SB_SETPARTS, n_parts, (LPARAM) (LPINT) parts);
+      }
+      update_status_text();
       return DefWindowProc(hwnd, message, wparam, lparam);
       
     case WM_CLOSE:
@@ -1832,9 +1890,13 @@ int WINAPI WinMain(HINSTANCE hInst,
   mainwindc = GetDC(mainwin);
 
   mainwinstat = CreateStatusWindow(WS_CHILD|WS_VISIBLE,
-				   "Status test",
+				   "",
 				   mainwin,
 				   0x57a75);
+  SendMessage(mainwinstat,
+	      SB_SETTEXT,
+	      0|SBT_NOBORDERS,
+	      (LPARAM) (LPSTR) "Zoom " VERSION);
   
   SetTimer(mainwin, 1, FLASH_TIME, NULL);
   
@@ -1958,6 +2020,7 @@ static int process_events(long int timeout,
 			on = caret_on;
 			hide_caret();
 			insert = !insert;
+			update_status_text();
 			if (on)
 			  show_caret();
 		      }
