@@ -16,6 +16,7 @@ Hmm, this file was a bit out of date.
  * '>>' '<<' bug? again?
  
  * Cocoa version 'bounces' around when 
+ * Really need to just send the entire buffer rather than individual commands
 
  * Sound
  * Internationalisation support

@@ -53,6 +53,18 @@
     [style setFixed: YES];
 
     // FIXME: \ns in string
+    int x;
+    int len = [string length];
+    for (x=0; x<len; x++) {
+        if ([string characterAtIndex: x] == '\n') {
+            [self writeString: [string substringToIndex: x]
+                    withStyle: style];
+            ypos++; xpos = 0;
+            [self writeString: [string substringFromIndex: x+1]
+                    withStyle: style];
+            return;
+        }
+    }
 
     if (ypos >= [lines count]) {
         int x;

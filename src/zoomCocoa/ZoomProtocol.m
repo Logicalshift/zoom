@@ -380,11 +380,9 @@ NSString* ZStyleAttributeName = @"ZStyleAttribute";
 }
 
 - (void) encodeWithCoder: (NSCoder*) coder {
-    [coder encodeValueOfObjCType: @encode(BOOL) at:& isBold];
-    [coder encodeValueOfObjCType: @encode(BOOL) at:& isUnderline];
-    [coder encodeValueOfObjCType: @encode(BOOL) at:& isFixed];
-    [coder encodeValueOfObjCType: @encode(BOOL) at:& isSymbolic];
-    [coder encodeValueOfObjCType: @encode(BOOL) at:& isReversed];
+    int flags = (isBold?1:0) | (isUnderline?2:0) | (isFixed?4:0) | (isSymbolic?8:0) | (isReversed?16:0);
+    
+    [coder encodeValueOfObjCType: @encode(int) at: &flags];
 
     [coder encodeObject: foregroundTrue];
     [coder encodeObject: backgroundTrue];
@@ -395,11 +393,14 @@ NSString* ZStyleAttributeName = @"ZStyleAttribute";
 - (id) initWithCoder: (NSCoder*) coder {
     self = [super init];
     if (self) {
-        [coder decodeValueOfObjCType: @encode(BOOL) at:& isBold];
-        [coder decodeValueOfObjCType: @encode(BOOL) at:& isUnderline];
-        [coder decodeValueOfObjCType: @encode(BOOL) at:& isFixed];
-        [coder decodeValueOfObjCType: @encode(BOOL) at:& isSymbolic];
-        [coder decodeValueOfObjCType: @encode(BOOL) at:& isReversed];
+        int flags;
+        
+        [coder decodeValueOfObjCType: @encode(int) at: &flags];
+        isBold = (flags&1)?YES:NO;
+        isUnderline = (flags&2)?YES:NO;
+        isFixed = (flags&4)?YES:NO;
+        isSymbolic = (flags&8)?YES:NO;
+        isReversed = (flags&16)?YES:NO;
 
         foregroundTrue   = [[coder decodeObject] retain];
         backgroundTrue   = [[coder decodeObject] retain];

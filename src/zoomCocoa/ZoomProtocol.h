@@ -51,7 +51,8 @@
 
 // Recieving text/characters
 - (oneway void) inputText: (in bycopy NSString*) text;
-- (oneway void) inputChar: (in bycopy int)       character;
+- (oneway void) inputMouseAtPositionX: (int) x
+                                    Y: (int) y;
 @end
 
 // == Client-side objects ==
@@ -126,6 +127,8 @@
 - (oneway void) shouldReceiveCharacters;
 - (oneway void) shouldReceiveText: (in int) maxLength;
 - (void)        stopReceiving;
+
+- (oneway void) setTerminatingCharacters: (in bycopy NSArray*) characters;
 
 // 'Exclusive' mode - lock the UI so no updates occur while we're sending
 // large blocks of varied text

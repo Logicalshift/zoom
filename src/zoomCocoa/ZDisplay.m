@@ -213,13 +213,25 @@ int display_readline(int* buf, int len, long int timeout) {
     [display shouldReceiveText: len];
     [[mainMachine windowNumber: currentWindow] setFocus];
 
+    NSDate* when;
+
+    if (timeout > 0) {
+        when = [NSDate dateWithTimeIntervalSinceNow: ((double)timeout)/1000.0];
+    } else {
+        when = [NSDate distantFuture];
+    }
+
+    [when retain];
+    
     // Wait for input
-    // FIXME: timeouts
     while (mainMachine != nil &&
-           [[mainMachine inputBuffer] length] == 0) {
+           [[mainMachine inputBuffer] length] == 0 &&
+           [when compare: [NSDate date]] == NSOrderedDescending) {
         [mainLoop acceptInputForMode: NSDefaultRunLoopMode
                           beforeDate: [NSDate distantFuture]];
     }
+
+    [when release];
 
     // Cycle the autorelease pool
     [displayPool release];
@@ -256,7 +268,7 @@ int display_readline(int* buf, int len, long int timeout) {
     return realLen;
 }
 
-int  display_readchar(long int timeout) {
+int display_readchar(long int timeout) {
     [mainMachine flushBuffers];
 
     NSObject<ZDisplay>* display = [mainMachine display];
@@ -271,13 +283,25 @@ int  display_readchar(long int timeout) {
     [display shouldReceiveCharacters];
     [[mainMachine windowNumber: currentWindow] setFocus];
 
-    // Wait for input
-    // FIXME: timeouts
-    while (mainMachine != nil &&
-           [[mainMachine inputBuffer] length] == 0) {
-        [mainLoop acceptInputForMode: NSDefaultRunLoopMode
-                          beforeDate: [NSDate distantFuture]];
+    NSDate* when;
+
+    if (timeout > 0) {
+        when = [NSDate dateWithTimeIntervalSinceNow: ((double)timeout)/1000.0];
+    } else {
+        when = [NSDate distantFuture];
     }
+
+    [when retain];
+
+    // Wait for input
+    while (mainMachine != nil &&
+           [[mainMachine inputBuffer] length] == 0 &&
+           [when compare: [NSDate date]] == NSOrderedDescending) {
+        [mainLoop acceptInputForMode: NSDefaultRunLoopMode
+                          beforeDate: when];
+    }
+
+    [when release];
 
     // Cycle the autorelease pool
     [displayPool release];
@@ -287,8 +311,14 @@ int  display_readchar(long int timeout) {
     [display stopReceiving];
 
     // Copy the data
-    NSMutableString* inputBuffer = [mainMachine inputBuffer];
-    unichar theChar = [inputBuffer characterAtIndex: 0];
+    unichar theChar;
+    
+    if ([[mainMachine inputBuffer] length] == 0) {
+        theChar = 0; // Timeout occured
+    } else {
+        NSMutableString* inputBuffer = [mainMachine inputBuffer];
+        theChar = [inputBuffer characterAtIndex: 0];
+    }
 
     return theChar;
 }
@@ -297,6 +327,7 @@ int  display_readchar(long int timeout) {
 void display_sanitise  (void) {
     NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
 }
+
 void display_desanitise(void) {
     NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
 }
@@ -422,14 +453,46 @@ void display_set_cursor(int x, int y) {
     }
 }
 
-int  display_get_cur_x   (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-int  display_get_cur_y   (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-void display_force_fixed (int window, int val) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
+int display_get_cur_x(void) {
+    int x, y;
+    [(NSObject<ZUpperWindow>*)[mainMachine windowNumber: currentWindow] cursorPositionX: &x
+                                                             Y: &y];
 
-void display_terminating (unsigned char* table) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-int  display_get_mouse_x (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-int  display_get_mouse_y (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
+    return x;
+}
 
-void display_set_title(const char* title) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-void display_update   (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-void display_beep     (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
+int display_get_cur_y(void) {
+    int x, y;
+    [(NSObject<ZUpperWindow>*)[mainMachine windowNumber: currentWindow] cursorPositionX: &x
+                                                                                      Y: &y];
+
+    return y;
+}
+
+void display_force_fixed (int window, int val) {
+    NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
+}
+
+void display_terminating (unsigned char* table) {
+    NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
+}
+
+int  display_get_mouse_x(void) {
+    NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
+}
+
+int display_get_mouse_y(void) {
+    NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
+}
+
+void display_set_title(const char* title) {
+    NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
+}
+
+void display_update(void) {
+    [mainMachine flushBuffers];
+}
+
+void display_beep(void) {
+    NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
+}
