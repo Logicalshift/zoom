@@ -340,7 +340,7 @@ static NSArray* defaultColours = nil;
 
     NSRect endRect = [mgr boundingRectForGlyphRange: endGlyph
                                     inTextContainer: [textView textContainer]];
-    double endPoint = endRect.origin.y;
+    double endPoint = endRect.origin.y + endRect.size.height;
     NSSize maxSize = [textView maxSize];
 
     if (endPoint > maxSize.height) {
