@@ -16,6 +16,8 @@
     if (self) {
         theView = view;
         lines = [[NSMutableArray allocWithZone: [self zone]] init];
+
+        backgroundColour = [[NSColor blueColor] retain];
     }
     return self;
 }
@@ -23,14 +25,18 @@
 - (void) dealloc {
     //[theView release];
     [lines release];
+    [backgroundColour release];
     [super dealloc];
 }
 
 // Clears the window
-- (void) clear {
+- (void) clearWithStyle: (ZStyle*) style {
     [lines release];
     lines = [[NSMutableArray allocWithZone: [self zone]] init];
     xpos = ypos = 0;
+
+    [backgroundColour release];
+    backgroundColour = [[theView backgroundColourForStyle: style] retain];
 }
 
 // Sets the input focus to this window
@@ -61,7 +67,6 @@
         NSFont* fixedFont = [theView fontWithStyle: ZFixedStyle];
         NSDictionary* clearStyle = [NSDictionary dictionaryWithObjectsAndKeys:
             fixedFont, NSFontAttributeName,
-            [NSColor clearColor], NSBackgroundColorAttributeName,
             nil];
         char* spaces = malloc((xpos+strlen)-[thisLine length]);
 
@@ -124,6 +129,10 @@
 
 - (NSArray*) lines {
     return lines;
+}
+
+- (NSColor*) backgroundColour {
+    return backgroundColour;
 }
 
 @end

@@ -92,11 +92,15 @@ void display_reinitialise(void) {
 }
 
 void display_finalise(void) {
+    [mainMachine flushBuffers];
+    NSLog(@"Display finalised");
     if (currentStyle) [currentStyle release];
     currentStyle = nil;
 }
 
 void display_exit(int code) {
+    [mainMachine flushBuffers];
+    NSLog(@"Server exited with code %i (clean)", code);
     exit(code);
 }
 
@@ -109,22 +113,22 @@ void display_clear(void) {
     [mainMachine flushBuffers];
 
     win = [mainMachine windowNumber: 1];
-    [win clear];
+    [win clearWithStyle: currentStyle];
     [(NSObject<ZUpperWindow>*)win startAtLine: -1];
     [(NSObject<ZUpperWindow>*)win endAtLine: -1];
 
     win = [mainMachine windowNumber: 2];
-    [win clear];
+    [win clearWithStyle: currentStyle];
     [(NSObject<ZUpperWindow>*)win startAtLine: -1];
     [(NSObject<ZUpperWindow>*)win endAtLine: -1];
     
     win = [mainMachine windowNumber: 0];
-    [win clear];
+    [win clearWithStyle: currentStyle];
 }
 
 void display_erase_window(void) {
     [mainMachine flushBuffers];
-    [[mainMachine windowNumber: currentWindow] clear];
+    [[mainMachine windowNumber: currentWindow] clearWithStyle: currentStyle];
 }
 
 void display_erase_line(int val) {
@@ -296,6 +300,7 @@ int display_set_style(int style) {
         [newStyle setUnderline: NO];
         [newStyle setFixed: NO];
         [newStyle setSymbolic: NO];
+        [newStyle setReversed: NO];
 
         currentStyle = newStyle;
         return oldStyle;
@@ -313,7 +318,43 @@ int display_set_style(int style) {
     return oldStyle;
 }
 
-void display_set_colour  (int fore, int back) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
+static NSColor* getTrue(int col) {
+    double r,g,b;
+
+    r = ((double)(col&0x1f))/31.0;
+    g = ((double)(col&0x3e0))/992.0;
+    b = ((double)(col&0x7c00))/31744.0;
+
+    return [NSColor colorWithDeviceRed: r
+                                 green: g
+                                  blue: b
+                                 alpha: 1.0];
+}
+
+void display_set_colour(int fore, int back) {
+    currentStyle = [[currentStyle autorelease] copy];
+
+    if (fore == -1) fore = 0;
+    if (back == -1) back = 7;
+    
+    if (fore < 16) {
+        if (fore >= 0) {
+            [currentStyle setForegroundTrue: nil];
+            [currentStyle setForegroundColour: fore];
+        }
+    } else {
+        [currentStyle setForegroundTrue: getTrue(fore)];
+    }
+
+    if (back < 16) {
+        if (back >= 0) {
+            [currentStyle setBackgroundTrue: nil];
+            [currentStyle setBackgroundColour: back];
+        }
+    } else {
+        [currentStyle setBackgroundTrue: getTrue(back)];
+    }
+}
 
 void display_split(int lines, int window) {
     [mainMachine flushBuffers];
@@ -351,11 +392,6 @@ void display_set_cursor(int x, int y) {
     if (currentWindow > 0) {
         [mainMachine bufferMovement: NSMakePoint(x,y)
                           forWindow: currentWindow];
-        /*
-        [mainMachine flushBuffers];
-        NSObject<ZUpperWindow>* win = [mainMachine windowNumber: currentWindow];
-        [win setCursorPositionX: x Y: y];
-         */
     }
 }
 

@@ -15,6 +15,7 @@
 @implementation ZoomView
 
 static NSMutableArray* defaultFonts = nil;
+static NSArray* defaultColours = nil;
 
 + (void) initialize {
     NSString* defaultFont = @"Gill Sans";
@@ -42,6 +43,21 @@ static NSMutableArray* defaultFonts = nil;
 
         [defaultFonts addObject: thisFont];
     }
+
+    defaultColours = [[NSArray arrayWithObjects:
+        [NSColor colorWithDeviceRed: 0 green: 0 blue: 0 alpha: 1],
+        [NSColor colorWithDeviceRed: 1 green: 0 blue: 0 alpha: 1],
+        [NSColor colorWithDeviceRed: 0 green: 1 blue: 0 alpha: 1],
+        [NSColor colorWithDeviceRed: 1 green: 1 blue: 0 alpha: 1],
+        [NSColor colorWithDeviceRed: 0 green: 0 blue: 1 alpha: 1],
+        [NSColor colorWithDeviceRed: 1 green: 0 blue: 1 alpha: 1],
+        [NSColor colorWithDeviceRed: 0 green: 1 blue: 1 alpha: 1],
+        [NSColor colorWithDeviceRed: 1 green: 1 blue: .8 alpha: 1],
+        
+        [NSColor colorWithDeviceRed: .73 green: .73 blue: .73 alpha: 1],
+        [NSColor colorWithDeviceRed: .53 green: .53 blue: .53 alpha: 1],
+        [NSColor colorWithDeviceRed: .26 green: .26 blue: .26 alpha: 1],
+        nil] retain];
 }
 
 - (id)initWithFrame:(NSRect)frame {
@@ -95,6 +111,7 @@ static NSMutableArray* defaultFonts = nil;
 
         // Styles, fonts, etc
         fonts = [defaultFonts retain];
+        colours = [defaultColours retain];
     }
     return self;
 }
@@ -108,6 +125,7 @@ static NSMutableArray* defaultFonts = nil;
     [textView release];
     [moreView release];
     [fonts release];
+    [colours release];
 
     [super dealloc];
 }
@@ -133,6 +151,7 @@ static NSMutableArray* defaultFonts = nil;
 
     NSLog(@"Creating lower window");
 
+    [win clearWithStyle: [[[ZStyle alloc] init] autorelease]];
     return [win autorelease];
 }
 
@@ -144,6 +163,7 @@ static NSMutableArray* defaultFonts = nil;
 
     NSLog(@"Creating upper window");
 
+    [win clearWithStyle: [[[ZStyle alloc] init] autorelease]];
     return [win autorelease];
 }
 
@@ -392,8 +412,22 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     fontToUse = [fonts objectAtIndex: fontnum];
 
     // Colour
-    NSColor* foregroundColour = [NSColor blackColor];
-    NSColor* backgroundColour = [NSColor whiteColor];
+    NSColor* foregroundColour = [style foregroundTrue];
+    NSColor* backgroundColour = [style backgroundTrue];
+
+    if (foregroundColour == nil) {
+        foregroundColour = [colours objectAtIndex: [style foregroundColour]];
+    }
+    if (backgroundColour == nil) {
+        backgroundColour = [colours objectAtIndex: [style backgroundColour]];
+    }
+
+    if ([style reversed]) {
+        NSColor* tmp = foregroundColour;
+
+        foregroundColour = backgroundColour;
+        backgroundColour = tmp;
+    }
 
     // Generate the new attributes
     NSDictionary* newAttr = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -407,6 +441,46 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
                                                     attributes: newAttr];
 
     return [result autorelease];
+}
+
+- (NSColor*) foregroundColourForStyle: (ZStyle*) style {
+    NSColor* res;
+
+    if ([style reversed]) {
+        res = [style backgroundTrue];
+    } else {
+        res = [style foregroundTrue];
+    }
+
+    if (res == nil) {
+        if ([style reversed]) {
+            res = [colours objectAtIndex: [style backgroundColour]];
+        } else {
+            res = [colours objectAtIndex: [style foregroundColour]];
+        }
+    }
+    
+    return res;
+}
+
+- (NSColor*) backgroundColourForStyle: (ZStyle*) style {
+    NSColor* res;
+
+    if (![style reversed]) {
+        res = [style backgroundTrue];
+    } else {
+        res = [style foregroundTrue];
+    }
+
+    if (res == nil) {
+        if (![style reversed]) {
+            res = [colours objectAtIndex: [style backgroundColour]];
+        } else {
+            res = [colours objectAtIndex: [style foregroundColour]];
+        }
+    }
+
+    return res;
 }
 
 - (NSFont*) fontWithStyle: (int) style {

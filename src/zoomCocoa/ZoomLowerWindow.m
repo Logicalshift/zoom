@@ -27,8 +27,9 @@
 }
 
 // Clears the window
-- (void) clear {
+- (void) clearWithStyle: (ZStyle*) style {
     [[[[zoomView textView] textStorage] mutableString] setString: @""];
+    [[zoomView textView] setBackgroundColor: [zoomView backgroundColourForStyle: style]];
     [zoomView scrollToEnd];
     [zoomView resetMorePrompt];
 }

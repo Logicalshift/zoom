@@ -223,6 +223,8 @@ static NSString* bufferedMovement = @"bufferedMovement";
             zmachine_fatal("Unsupported ZMachine version %i", machine.header[0]);
             break;
     }
+
+    display_finalise();
 }
 
 // = Debugging =

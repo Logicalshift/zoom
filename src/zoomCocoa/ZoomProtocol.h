@@ -81,7 +81,7 @@
 // protocol)
 
 // Clears the window
-- (oneway void) clear;
+- (oneway void) clearWithStyle: (in bycopy ZStyle*) style;
 
 // Sets the input focus to this window
 - (oneway void) setFocus;

@@ -17,11 +17,14 @@
 
     NSMutableArray* lines;
     int xpos, ypos;
+
+    NSColor* backgroundColour;
 }
 
 - (id) initWithZoomView: (ZoomView*) view;
 
 - (int) length;
 - (NSArray*) lines;
+- (NSColor*) backgroundColour;
 
 @end

@@ -59,6 +59,8 @@
 - (NSTextView*) textView;
 
 - (NSFont*) fontWithStyle: (int) style;
+- (NSColor*) foregroundColourForStyle: (ZStyle*) style;
+- (NSColor*) backgroundColourForStyle: (ZStyle*) style;
 
 - (int)  upperWindowSize;
 - (void) rearrangeUpperWindows;
