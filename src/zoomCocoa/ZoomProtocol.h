@@ -109,25 +109,25 @@ enum ZValueTypeMasks {
 
 // == Client-side objects ==
 @protocol ZFile
-- (out int)            readByte;
-- (out unsigned int)   readWord;
-- (out unsigned int)   readDWord;
+- (int)				   readByte;
+- (unsigned int)	   readWord;
+- (unsigned int)	   readDWord;
 - (out bycopy NSData*) readBlock: (int) length;
 
-- (oneway void)        seekTo: (int) pos;
+- (oneway void)		   seekTo: (int) pos;
 
 - (oneway void) writeByte:  (int) byte;
 - (oneway void) writeWord:  (int) word;
 - (oneway void) writeDWord: (unsigned int) dword;
 - (oneway void) writeBlock: (in bycopy NSData*) block;
 
-- (out BOOL)                sufferedError;
+- (BOOL)					sufferedError;
 - (out bycopy NSString*)    errorMessage;
 
-- (out int)                 fileSize;
-- (out BOOL)				endOfFile;
+- (int)			fileSize;
+- (BOOL)		endOfFile;
 
-- (oneway void)             close;
+- (oneway void) close;
 @end
 
 @protocol ZWindow

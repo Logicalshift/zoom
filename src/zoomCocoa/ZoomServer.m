@@ -59,14 +59,14 @@ int main(int argc, char** argv) {
 	
 	NSLog(@"Server connected");
 
-    // Main runloop
-    while (mainMachine != nil) {
-        [mainPool release];
-        mainPool = [[NSAutoreleasePool alloc] init];
+	// Main runloop
+	while (mainMachine != nil) {
+		[mainPool release];
+		mainPool = [[NSAutoreleasePool alloc] init];
         
         [mainLoop acceptInputForMode: NSDefaultRunLoopMode
                           beforeDate: [NSDate distantFuture]];
-    }
+	}
 
 #ifdef DEBUG
     NSLog(@"Finalising...");

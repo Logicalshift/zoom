@@ -1756,13 +1756,21 @@ OPCODE "input_stream"   VAR:0x14 ARGS:1               VERSION all # 3,4,5,7,8
       machine.script_on = 0;
       if (!machine.script_file)
         {
-	  machine.script_file = get_file_read(NULL, script_fname, ZFile_transcript);
+	  int sz;
+	  machine.script_file = get_file_read(&sz, script_fname, ZFile_transcript);
 	}
       machine.script_on = 1;
       if (!machine.script_file)
         {
 	  stream_printf("Couldn't open %s for reading.\n", script_fname);
           machine.script_on = 0;
+	}
+      if (machine.script_file && end_of_file(machine.script_file))
+        {
+	  close_file(machine.script_file);
+	  stream_printf("Couldn't read any data from %s\n", script_fname);
+	  machine.script_file = NULL;
+	  machine.script_on = 0;
 	}
       break;
 
