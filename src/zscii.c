@@ -251,18 +251,18 @@ int* zscii_to_unicode(ZByte* string, int* len)
 					      addr,
 					      &ablen);
 		    
+		    buf = oldbuf;
+		    maxlen = oldmaxlen;
+			    
 		    for (z=0; abbrev[z]!=0; z++)
 		      zlen++;
-		    
+	    		    
 		    while ((zlen+2) > maxlen)
 		      {
 			maxlen += 1024;
 			buf = realloc(buf, sizeof(int)*(maxlen));
 		      }
-		    
-		    buf = oldbuf;
-		    maxlen = oldmaxlen;
-		    
+
 		    for (z=0; abbrev[z] != 0; z++)
 		      {
 			buf[y++] = abbrev[z];

@@ -241,7 +241,7 @@ static void scroll_to_height(int height, int change_baseline)
 
       if (bg >= 0)
 	{
-	  display_pixmap_cols(1, 0);
+	  display_pixmap_cols(bg, 0);
 	  display_plot_rect(ACTWIN.xpos+ACTWIN.lmargin, ACTWIN.cury,
 			    ACTWIN.width-ACTWIN.lmargin-ACTWIN.rmargin,
 			    scrollby);
