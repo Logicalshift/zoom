@@ -67,7 +67,7 @@
 
 // Allows the player to designate certain areas of the skein as having specific annotations and colours
 // (So, for example an area can be called 'solution to the maximum mouse melee puzzle')
-// Each 'annotation' colours a new area of the skein. Maybe the UI could allow annotations to 
+// Each 'annotation' colours a new area of the skein.
 - (NSString*) annotation;
 - (void)      setAnnotation: (NSString*) newAnnotation;
 

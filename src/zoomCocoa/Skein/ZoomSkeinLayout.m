@@ -22,10 +22,14 @@ static const float itemWidth = 120.0; // Pixels
 static const float itemHeight = 96.0;
 static const float itemPadding = 56.0;
 
-static NSDictionary* itemTextAttributes;
+static NSDictionary* itemTextAttributes = nil;
+static NSDictionary* labelTextAttributes = nil;
+
+// Bug in weak linking? Can't use NSShadowAttributeName... Hmph
+static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 
 // Images
-static NSImage* unplayed, *selected, *active, *unchanged, *changed;
+static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 
 @implementation ZoomSkeinLayout
 
@@ -50,16 +54,33 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed;
 }
 
 + (void) initialize {
+	NSShadow* labelShadow = nil;
+	
+	if (objc_lookUpClass("NSShadow") != nil) {
+		labelShadow = [[NSShadow alloc] init];
+		[labelShadow setShadowOffset: NSMakeSize(0.4, -1)];
+		[labelShadow setShadowBlurRadius: 1.5];
+		[labelShadow setShadowColor: [NSColor colorWithCalibratedWhite:0.0 alpha:0.7]];
+	}
+	
 	unplayed   = [[[self class] imageNamed: @"Skein-unplayed"] retain];
 	selected   = [[[self class] imageNamed: @"Skein-selected"] retain];
 	active     = [[[self class] imageNamed: @"Skein-active"] retain];
 	unchanged  = [[[self class] imageNamed: @"Skein-unchanged"] retain];
 	changed    = [[[self class] imageNamed: @"Skein-changed"] retain];
+	annotation = [[[self class] imageNamed: @"Skein-annotation"] retain];
 	
 	itemTextAttributes = [[NSDictionary dictionaryWithObjectsAndKeys:
 		[NSFont systemFontOfSize: 10], NSFontAttributeName,
 		[NSColor blackColor], NSForegroundColorAttributeName,
 		nil] retain];
+	labelTextAttributes = [[NSDictionary dictionaryWithObjectsAndKeys:
+		[NSFont systemFontOfSize: 13], NSFontAttributeName,
+		[NSColor blackColor], NSForegroundColorAttributeName,
+		labelShadow, ZoomNSShadowAttributeName,
+		nil] retain];
+	
+	if (labelShadow) [labelShadow release];
 }
 
 + (void) drawImage: (NSImage*) img
@@ -233,6 +254,10 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed;
 	
 	// Adjust the width to fit the text, if required
 	float ourWidth = [[item command] sizeWithAttributes: itemTextAttributes].width;
+	float labelWidth = [item annotation]?[[item annotation] sizeWithAttributes: labelTextAttributes].width:0;
+	
+	if (labelWidth > ourWidth) ourWidth = labelWidth;
+	
 	if (position < (ourWidth + itemPadding)) position = ourWidth + itemPadding;
 	
 	// Return the result
@@ -582,6 +607,19 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed;
 				
 				[NSBezierPath strokeLineFromPoint: NSMakePoint(xpos, startYPos)
 										  toPoint: NSMakePoint(childXPos, endYPos)];
+			}
+			
+			// Draw the annotation, if present
+			if ([[skeinItem annotation] length] > 0) {
+				float itemWidth = [self widthForItem: skeinItem];
+				float labelWidth = [[skeinItem annotation] sizeWithAttributes: labelTextAttributes].width;
+				
+				[[self class] drawImage: annotation
+								atPoint: NSMakePoint(xpos - itemWidth/2.0, ypos-30)
+							  withWidth: itemWidth];
+				
+				[[skeinItem annotation] drawAtPoint: NSMakePoint(xpos - (labelWidth/2), ypos - 23)
+									 withAttributes: labelTextAttributes];
 			}
 		}
 	}

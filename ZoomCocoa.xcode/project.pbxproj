@@ -1962,6 +1962,19 @@
 				);
 			};
 		};
+		4B4B98E40733EE2400E40F96 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			path = "Skein-annotation.png";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B4B98E50733EE2400E40F96 = {
+			fileRef = 4B4B98E40733EE2400E40F96;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		4B4D512006E3894F007FAD2B = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -3417,6 +3430,7 @@
 				4B1885B40698B867004D8501,
 				4B1885B50698B867004D8501,
 				4B1885B60698B867004D8501,
+				4B4B98E40733EE2400E40F96,
 				4B1C13FD05C5A94B00E5796D,
 				4BCF3F43050FB21C00A8E303,
 				4BCF3F44050FB21C00A8E303,
@@ -3742,6 +3756,7 @@
 				4B5CBC64069D9EB700C0AA88,
 				4B0F042C06A04FBF00BE1EA9,
 				4B5983DB070F059E0078165F,
+				4B4B98E50733EE2400E40F96,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

@@ -99,7 +99,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	unlocked   = [[[self class] imageNamed: @"SkeinUnlocked"] retain];
 	annotate   = [[[self class] imageNamed: @"SkeinAnnotate"] retain];
 	transcript = [[[self class] imageNamed: @"SkeinTranscript"] retain];
-
+	
 	itemTextAttributes = [[NSDictionary dictionaryWithObjectsAndKeys:
 		[NSFont systemFontOfSize: 10], NSFontAttributeName,
 		[NSColor blackColor], NSForegroundColorAttributeName,
