@@ -24,9 +24,12 @@
 	IBOutlet NSButton* autosaveGames;
 	IBOutlet NSButton* keepGamesOrganised;
 	IBOutlet NSSlider* transparencySlider;
-	
+		
 	IBOutlet NSPopUpButton* interpreter;
 	IBOutlet NSTextField* revision;
+	IBOutlet NSButton* reorganiseGames;
+	IBOutlet NSProgressIndicator* organiserIndicator;
+	int      indicatorCount;
 	
 	IBOutlet NSTextView* organiseDir;
 	
@@ -54,5 +57,6 @@
 
 - (IBAction) changeOrganiseDir: (id) sender;
 - (IBAction) resetOrganiseDir: (id) sender;
+- (IBAction) reorganiseGames: (id) sender;
 
 @end

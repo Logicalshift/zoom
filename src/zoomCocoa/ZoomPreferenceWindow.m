@@ -9,6 +9,7 @@
 // Modifications by Collin Pieper to add transparency support
 
 #import "ZoomPreferenceWindow.h"
+#import "ZoomStoryOrganiser.h"
 
 
 static NSToolbarItem* generalSettingsItem;
@@ -59,6 +60,8 @@ static NSDictionary*  itemDictionary = nil;
 - (void) dealloc {
 	if (toolbar) [toolbar release];
 	if (prefs) [prefs release];
+
+	[[NSNotificationCenter defaultCenter] removeObserver: self];
 	
 	[super dealloc];
 }
@@ -80,6 +83,11 @@ static NSDictionary*  itemDictionary = nil;
 	[fonts setDelegate: self];
 	[colours setDataSource: self];
 	[colours setDelegate: self];
+	
+	[[NSNotificationCenter defaultCenter] addObserver: self
+											 selector: @selector(storyProgressChanged:)
+												 name: ZoomStoryOrganiserProgressNotification
+											   object: [ZoomStoryOrganiser sharedStoryOrganiser]];	
 }
 
 // == Setting the pane that's being displayed ==
@@ -156,6 +164,7 @@ static NSDictionary*  itemDictionary = nil;
 	[speakGameText setState: [prefs speakGameText]?NSOnState:NSOffState];
 	[keepGamesOrganised setState: [prefs keepGamesOrganised]?NSOnState:NSOffState];
 	[autosaveGames setState: [prefs autosaveGames]?NSOnState:NSOffState];
+	[reorganiseGames setEnabled: [prefs keepGamesOrganised]];
 	
 	// a kind of chessy way to get the current alpha setting
 	float red, green, blue, alpha;
@@ -396,6 +405,7 @@ static void appendStyle(NSMutableString* styleName,
 
 - (IBAction) keepOrganisedChanged: (id) sender {
 	[prefs setKeepGamesOrganised: [sender state]==NSOnState];
+	[reorganiseGames setEnabled: [sender state]==NSOnState];
 	if ([sender state]==NSOffState) {
 		[autosaveGames setState: NSOffState];
 		[prefs setAutosaveGames: NO];
@@ -433,6 +443,34 @@ static void appendStyle(NSMutableString* styleName,
 - (IBAction) resetOrganiseDir: (id) sender {
 	[prefs setOrganiserDirectory: nil];
 	[organiseDir setString: [prefs organiserDirectory]];
+}
+
+// = Story progress meter =
+
+- (void) storyProgressChanged: (NSNotification*) not {
+	NSDictionary* userInfo = [not userInfo];
+	BOOL activated = [[userInfo objectForKey: @"ActionStarting"] boolValue];
+	
+	if (activated) {
+		indicatorCount++;
+	} else {
+		indicatorCount--;
+	}
+	
+	if (indicatorCount <= 0) {
+		indicatorCount = 0;
+		[organiserIndicator stopAnimation: self];
+	} else {
+		[organiserIndicator startAnimation: self];
+	}
+}
+
+- (IBAction) reorganiseGames: (id) sender {
+	// Can't use this if keepGamesOrganised is off
+	if (![prefs keepGamesOrganised]) return;
+	
+	// Reorganise all the stories
+	[[ZoomStoryOrganiser sharedStoryOrganiser] organiseAllStories];
 }
 
 @end

@@ -402,7 +402,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	NSString* oldFilename;
 	ZoomStoryID* oldIdent;
 	
-	oldFilename = [identsToFilenames objectForKey: ident];
+	oldFilename = [[identsToFilenames objectForKey: ident] stringByStandardizingPath];
 	oldIdent = [filenamesToIdents objectForKey: oldFilename];
 	
 	if (organise) {
@@ -425,16 +425,29 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		NSString* fileDir = [self directoryForIdent: ident create: YES];
 		NSString* destFile = [fileDir stringByAppendingPathComponent: @"game.z5"];
 		destFile = [destFile stringByStandardizingPath];
-		
+				
 		if (![filename isEqualToString: destFile]) {
-			[[NSFileManager defaultManager] removeFileAtPath: destFile handler: nil];
-			if ([[NSFileManager defaultManager] copyPath: filename
+			if ([[filename lowercaseString] isEqualToString: [destFile lowercaseString]]) {
+				// *LIKELY* that these are in fact the same file with different case names
+				// Cocoa doesn't seem to provide a good way to see if too paths are actually the same:
+				// so the semantics of this might be incorrect in certain edge cases. We move to ensure
+				// that everything is nice and safe
+				[[NSFileManager defaultManager] movePath: filename
 												  toPath: destFile
-												 handler: nil]) {
-				filename = destFile;
+												 handler: nil];
 			} else {
-				NSLog(@"Warning: couldn't copy '%@' to '%@'", filename, destFile);
+				[[NSFileManager defaultManager] removeFileAtPath: destFile handler: nil];
+				if ([[NSFileManager defaultManager] copyPath: filename
+													  toPath: destFile
+													 handler: nil]) {
+					filename = destFile;
+				} else {
+					NSLog(@"Warning: couldn't copy '%@' to '%@'", filename, destFile);
+				}
 			}
+			
+			[[NSWorkspace sharedWorkspace] noteFileSystemChanged: filename];
+			[[NSWorkspace sharedWorkspace] noteFileSystemChanged: destFile];
 		}
 	}
 	
@@ -769,6 +782,8 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		return YES;
 	
 	// If they don't match, then idealDir should be new (or something weird has just occured)
+	// Hmph. HFS+ is case-insensitve, and stringByStandardizingPath does not take account of this. This could
+	// cause some major problems with organiseStory:withIdent:, as that deletes/copies files...
 	if ([[NSFileManager defaultManager] fileExistsAtPath: idealDir]) {
 		// Doh!
 		NSLog(@"Wanted to move game from '%@' to '%@', but '%@' already exists", currentDir, idealDir, idealDir);
@@ -895,14 +910,28 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	destFile = [destFile stringByStandardizingPath];
 		
 	if (![filename isEqualToString: destFile]) {
-		[[NSFileManager defaultManager] removeFileAtPath: destFile handler: nil];
-		if ([[NSFileManager defaultManager] copyPath: filename
+		if ([[filename lowercaseString] isEqualToString: [destFile lowercaseString]]) {
+			// *LIKELY* that these are in fact the same file with different case names
+			// Cocoa doesn't seem to provide a good way to see if too paths are actually the same:
+			// so the semantics of this might be incorrect in certain edge cases. We move to ensure
+			// that everything is nice and safe
+			[[NSFileManager defaultManager] movePath: filename
 											  toPath: destFile
-											 handler: nil]) {
-			filename = destFile;
+											 handler: nil];
 		} else {
-			NSLog(@"Warning: couldn't copy '%@' to '%@'", filename, destFile);
+			[[NSFileManager defaultManager] removeFileAtPath: destFile handler: nil];
+			if ([[NSFileManager defaultManager] copyPath: filename
+												  toPath: destFile
+												 handler: nil]) {
+				filename = destFile;
+			} else {
+				NSLog(@"Warning: couldn't copy '%@' to '%@'", filename, destFile);
+			}
 		}
+		
+		// Notify the workspace of the change
+		[[NSWorkspace sharedWorkspace] noteFileSystemChanged: filename];
+		[[NSWorkspace sharedWorkspace] noteFileSystemChanged: destFile];
 	}
 	
 	// Update the indexes
@@ -975,16 +1004,21 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	// This is useful if, for example, the 'keep games organised' option is switched on/off
 	
 	// Create the ports for the thread
-	NSPort* threadPort1 = [NSMachPort port];
-	NSPort* threadPort2 = [NSMachPort port];
+	NSPort* threadPort1 = [NSPort port];
+	NSPort* threadPort2 = [NSPort port];
 	
 	[[NSRunLoop currentRunLoop] addPort: threadPort1
 								forMode: NSDefaultRunLoopMode];
+	
+	NSConnection* mainThread = [[NSConnection alloc] initWithReceivePort: threadPort1
+																sendPort: threadPort2];
+	[mainThread setRootObject: self];
 	
 	// Create the information dictionary
 	NSDictionary* threadDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
 		threadPort1, @"threadPort1",
 		threadPort2, @"threadPort2",
+		mainThread,  @"mainThread",
 		nil];
 	
 	[storyLock lock];
@@ -1038,9 +1072,8 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	// Connect to the main thread
 	[[NSRunLoop currentRunLoop] addPort: threadPort2
                                 forMode: NSDefaultRunLoopMode];
-	subThread = [[NSConnection allocWithZone: [self zone]]
-        initWithReceivePort: threadPort2
-                   sendPort: threadPort1];
+	NSConnection* subThread = [[NSConnection allocWithZone: [self zone]] initWithReceivePort: threadPort2
+																					sendPort: threadPort1];
 	[subThread setRootObject: self];
 	
 	// Start things rolling

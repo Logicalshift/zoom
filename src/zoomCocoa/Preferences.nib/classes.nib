@@ -10,6 +10,7 @@
                 fatalWarningsChanged = id; 
                 interpreterChanged = id; 
                 keepOrganisedChanged = id; 
+                reorganiseGames = id; 
                 resetOrganiseDir = id; 
                 revisionChanged = id; 
                 speakGameTextChanged = id; 
@@ -29,6 +30,8 @@
                 interpreter = NSPopUpButton; 
                 keepGamesOrganised = NSButton; 
                 organiseDir = NSTextView; 
+                organiserIndicator = NSProgressIndicator; 
+                reorganiseGames = NSButton; 
                 revision = NSTextField; 
                 speakGameText = NSButton; 
                 transparencySlider = NSSlider; 

@@ -447,7 +447,7 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 		return;
 	}
 	
-	if (![value isKindOfClass: [NSString class]]) {
+	if (![value isKindOfClass: [NSString class]] && value != nil) {
 		[NSException raise: @"ZoomBadValue" format: @"Metadata value is not a string"];
 		return;
 	}
@@ -482,8 +482,12 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 		NSLog(@"Setting extra metadata: %@ = %@", key, value);
 		
 		[self loadExtraMetadata];
-		[extraMetadata setObject: value
-						  forKey: key];
+		if (value == nil) {
+			[extraMetadata removeObjectForKey: key];
+		} else {
+			[extraMetadata setObject: value
+							  forKey: key];
+		}
 		[self storeExtraMetadata];
 	}
 }
