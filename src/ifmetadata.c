@@ -284,6 +284,24 @@ static IFMDChar* Xmdchar(XML_Char* s) {
 	return res;
 }
 
+static IFMDChar* Xcopy(IFMDChar* stringIn) {
+	int x;
+	IFMDChar* stringOut;
+	int len;
+	
+	if (stringIn == NULL) return NULL;
+	for (len=0; stringIn[len]!=0; len++);
+	if (len == 0) return NULL;
+	
+	stringOut = malloc(sizeof(IFMDChar)*(len+1)); 
+	for (x=0; x<len; x++) {
+		stringOut[x] = stringIn[x];
+	}
+	stringOut[x] = 0;
+	
+	return stringOut;
+}
+
 /* State functions */
 static void pushTag(IFMDState* s, const XML_Char* tag) {
 	int len = Xstrlen(tag);
@@ -397,7 +415,8 @@ IFMetadata* IFMD_Parse(const IFMDByte* data, size_t length) {
 				IFMDIndexEntry newEntry;
 				
 				newEntry.ident = res->stories[story].idents + ident;
-				newEntry.story = res->stories + story;
+				/* newEntry.story = res->stories + story; */
+				newEntry.storyNum = story;
 				
 				res->numberOfIndexEntries++;
 				res->index = realloc(res->index, sizeof(IFMDIndexEntry)*res->numberOfIndexEntries);
@@ -415,7 +434,7 @@ IFMetadata* IFMD_Parse(const IFMDByte* data, size_t length) {
 		if (cmp > 0) addError(currentState, IFMDErrorProgrammerIsASpoon, "Index not sorted");
 		if (cmp == 0) {
 			/* Duplicate entry */
-			if (res->index[entry].story != res->index[entry+1].story) {
+			if (res->index[entry].storyNum != res->index[entry+1].storyNum) {
 				char msg[512];
 				
 				snprintf(msg, 512, "FIX THIS MESSAGE");
@@ -486,13 +505,13 @@ IFMDStory* IFMD_Find(IFMetadata* data, const IFMDIdent* id) {
 		int middle = (bottom + top)>>1;
 		int cmp = IFID_Compare(data->index[middle].ident, id);
 		
-		if (cmp == 0) return data->index[middle].story;
+		if (cmp == 0) return data->stories + data->index[middle].storyNum;
 		else if (cmp < 0) bottom = middle+1;
 		else if (cmp > 0) top    = middle-1;
 	}
 	
 	if (bottom == top && IFID_Compare(id, data->index[bottom].ident) == 0) {
-		return data->index[bottom].story;
+		return data->stories + data->index[bottom].storyNum;
 	}
 	
 	return NULL;
@@ -1054,6 +1073,48 @@ CFStringRef IFStrCpyCF(const IFMDChar* src) {
 	
 	return string;
 }
+
+IFMDChar* IFMakeStrCF(const CFStringRef src) {
+	/* UTF-16 to UCS-4 */
+	IFMDChar* res;
+	UniChar* buffer;
+	int len = CFStringGetLength(src);
+	int pos, x;
+	
+	CFRange r;
+	
+	/* Allocate buffers */
+	buffer = malloc(sizeof(UniChar)*len); /* Always same length or shorter */
+	res = malloc(sizeof(IFMDChar)*(len+1));
+	
+	r.location = 0; r.length = len;
+	CFStringGetCharacters(src, r, buffer);
+	
+	/* Perform conversion */
+	pos = 0;
+	for (x=0; x<len; x++) {
+		UniChar chr = buffer[x];
+		
+		if (chr >= 0xd800 && chr <= 0xdbff && (x+1)<len) {
+			/* High surrogate */
+			UniChar chr2 = buffer[++x];
+			
+			if (chr2 >= 0xdc00 && chr2 <= 0xdfff) {
+				/* Low surrogate */
+				res[pos++] = ((chr-0xd800)<<10) + (chr2-0xdfff) + 0x10000;
+			}
+		} else {
+			res[pos++] = chr;
+		}
+	}
+	
+	/* Tidy up */
+	res[pos] = 0;
+	free(buffer);
+	
+	/* Return results */
+	return res;
+}
 #endif
 
 /* = Allocation functions = */
@@ -1104,4 +1165,182 @@ IFMDIdent* IFID_Alloc(void) {
 	id->usesMd5 = 0;
 	
 	return id;
+}
+
+/* = Copying = */
+void IFIdent_Copy(IFMDIdent* dst, const IFMDIdent* src) {
+	*dst = *src;
+}
+
+void IFStory_Copy(IFMDStory* dst, const IFMDStory* src) {
+	IFStory_Free(dst);
+
+	/* Idents, etc */
+	dst->error = src->error;
+	dst->numberOfIdents = src->numberOfIdents;
+	
+	if (src->numberOfIdents > 0) {
+		int x;
+		
+		dst->idents = malloc(sizeof(IFMDIdent)*src->numberOfIdents);
+		
+		for (x=0; x<src->numberOfIdents; x++) {
+			IFIdent_Copy(dst->idents + x, src->idents + x);
+		}
+	} else {
+		dst->idents = NULL;
+	}
+	
+	/* Data */
+	dst->data.title = Xcopy(src->data.title);
+	dst->data.headline = Xcopy(src->data.headline);
+	dst->data.author = Xcopy(src->data.author);
+	dst->data.genre = Xcopy(src->data.genre);
+	dst->data.group = Xcopy(src->data.group);
+	dst->data.teaser = Xcopy(src->data.teaser);
+	dst->data.comment = Xcopy(src->data.comment);
+	
+	dst->data.year = src->data.year;
+	dst->data.zarfian = src->data.zarfian;
+	dst->data.rating = src->data.rating;
+}
+
+/* = Modification functions = */
+void IFMD_AddStory(IFMetadata* data, IFMDStory* newStory) {
+	int x;
+	IFMDStory* newEntry;
+	
+	/* Add story to the list */
+	if (!(newStory >= data->stories && newStory < (data->stories + data->numberOfStories))) {
+		/* Story doesn't exist yet */
+		IFMDStory template;
+		
+		template.numberOfIdents = 0;
+		template.idents = NULL;
+		template.error = 0;
+		
+		template.data.title = NULL;
+		template.data.headline = NULL;
+		template.data.author = NULL;
+		template.data.genre = NULL;
+		template.data.year = 0;
+		template.data.group = NULL;
+		template.data.zarfian = IFMD_Unrated;
+		template.data.teaser = NULL;
+		template.data.comment = NULL;
+		template.data.rating = -1.0;		
+		
+		data->numberOfStories++;
+		data->stories = realloc(data->stories, sizeof(IFMDStory)*data->numberOfStories);
+		
+		data->stories[data->numberOfStories-1] = template;
+		IFStory_Copy(data->stories + (data->numberOfStories-1), newStory);
+		
+		newEntry = data->stories + (data->numberOfStories-1);
+	} else {
+		newEntry = newStory;
+	}
+	
+	/* Add story to the index, remove any idents that appear twice */
+	for (x=0; x<newStory->numberOfIdents; x++) {
+		int top, bottom, res, cmp;
+		IFMDIdent* id = newStory->idents + x;
+		
+		bottom = 0;
+		top = data->numberOfIndexEntries-1;
+		res = -1;
+		
+		while (bottom < top) {
+			int middle = (bottom + top)>>1;
+			cmp = IFID_Compare(data->index[middle].ident, id);
+			
+			if (cmp == 0) { res = middle; break; }
+			else if (cmp < 0) bottom = middle+1;
+			else if (cmp > 0) top    = middle-1;
+		}
+		
+		if (bottom == top && IFID_Compare(id, data->index[bottom].ident) == 0) res = bottom;
+		
+		if (res != -1) {
+			if ((data->stories + data->index[res].storyNum) != newEntry) {
+				int storyId, y;
+				IFMDStory* thisStory = data->stories + data->index[res].storyNum;
+				
+				/* Delete this ident from the index */
+				data->numberOfIndexEntries--;
+				memmove(data->index+res,
+						data->index+res+1,
+						sizeof(IFMDIndexEntry)*(data->numberOfIndexEntries-res));
+				
+				/* Delete this ident from its story */
+				storyId = -1;
+				
+				for (y=0; y<thisStory->numberOfIdents; y++) {
+					if (thisStory->idents + y == id) storyId = y;
+				}
+				
+				if (storyId >= 0) {
+					thisStory->numberOfIdents--;
+					memmove(thisStory->idents+storyId,
+							thisStory->idents+storyId+1,
+							sizeof(IFMDIdent)*(thisStory->numberOfIdents-storyId));
+					
+					if (thisStory->numberOfIdents == 0) {
+						/* Used to do this: */
+						/* thisStory->error = 1; */ /* Won't be saved/indexed any more */
+						/* Was simple, and slightly problematic for what I want to do */
+						/* Ergo, must delete this story from the list */
+						int storyNum;
+						
+						/* thisStory must be in data->stories */
+						storyNum = thisStory - data->stories;
+						
+						if (storyNum < 0 || storyNum >= data->numberOfStories) {
+							/* Subtly handle this error condition */
+							abort(); /* BLEAAARRRGH */
+						}
+						
+						/* Move newEntry if required */
+						if (newEntry > thisStory) newEntry--;
+						
+						if (newEntry == thisStory) {
+							/* Programmer is a spoon */
+							abort();
+						}
+						
+						/* Rearrange the stories */
+						data->numberOfStories--;
+						memmove(data->index+storyNum,
+								data->index+storyNum+1,
+								sizeof(IFMDIndexEntry)*(data->numberOfStories-storyNum));						
+					}
+				}
+			}
+		}
+		
+		/* Add this ident to the index */
+		if (top >= data->numberOfIndexEntries) top = data->numberOfIndexEntries-1;
+		
+		res = top;
+		if (res < 0) res = 0;
+		
+		if (data->numberOfIndexEntries > 0)
+			cmp = IFID_Compare(id, data->index[res].ident); 
+		else
+			cmp = 0;
+		
+		if (cmp > 0) {
+			res++;
+		}
+		
+		/* Res should now be equal to the first place where cmp = 1 */
+		data->numberOfIndexEntries++;
+		data->index = realloc(data->index, sizeof(IFMDIndexEntry)*data->numberOfIndexEntries);
+		memmove(data->index+res + 1, data->index+res, sizeof(IFMDIndexEntry)*(data->numberOfIndexEntries-res-1));
+		
+		data->index[res].storyNum = newEntry - data->stories;
+		data->index[res].ident = newEntry->idents + x;
+	}
+	
+	return;
 }

@@ -20,5 +20,6 @@
 
 - (NSArray*) gameIndices;
 - (ZoomStory*) findStory: (ZoomStoryID*) gameID;
+- (ZoomMetadata*) userMetadata;
 
 @end

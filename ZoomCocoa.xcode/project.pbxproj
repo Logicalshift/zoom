@@ -1901,7 +1901,7 @@
 			<key>CFBundleTypeIconFile</key>
 			<string>zoom-game.icns</string>
 			<key>CFBundleTypeName</key>
-			<string>ZCode file</string>
+			<string>ZCode story</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
 				<string>ZCOD</string>

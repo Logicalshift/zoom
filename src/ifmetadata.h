@@ -130,7 +130,7 @@ struct IFMDStory {
 
 struct IFMDIndexEntry {
 	IFMDIdent* ident;
-	IFMDStory* story;
+	int		   storyNum;
 };
 
 struct IFMetadata {
@@ -187,14 +187,17 @@ extern void		   IFID_Free        (IFMDIdent* oldId);
 /* Story functions */
 extern void        IFStory_Free     (IFMDStory* oldStory);
 
-/* String functions */
-extern int		   IFStrLen(const IFMDChar* string);
-extern char*	   IFStrnCpyC(char* dst, const IFMDChar* src, size_t sz); /* ASCII */
-
 /* Allocation functions */
 extern IFMetadata* IFMD_Alloc(void);
 extern IFMDStory*  IFStory_Alloc(void);
 extern IFMDIdent*  IFID_Alloc(void);
+
+extern void IFIdent_Copy(IFMDIdent* dst, const IFMDIdent* src);
+extern void IFStory_Copy(IFMDStory* dst, const IFMDStory* src);
+	
+/* String functions */
+extern int		   IFStrLen(const IFMDChar* string);
+extern char*	   IFStrnCpyC(char* dst, const IFMDChar* src, size_t sz); /* ASCII */
 
 #ifdef HAVE_WCHAR_H
 extern wchar_t*    IFStrnCpyW(wchar_t* dst, const IFMDChar* src, size_t sz); /* UTF-16 */
@@ -202,5 +205,10 @@ extern wchar_t*    IFStrnCpyW(wchar_t* dst, const IFMDChar* src, size_t sz); /* 
 
 #ifdef HAVE_COREFOUNDATION
 extern CFStringRef IFStrCpyCF(const IFMDChar* src); /* UTF-16 */
+extern IFMDChar*   IFMakeStrCF(const CFStringRef src);
 #endif
+
+/* Modification functions */
+extern void IFMD_AddStory(IFMetadata* data, IFMDStory* newStory); /* newStory can already exist, replaces any story with the same ID */
+
 #endif

@@ -52,12 +52,32 @@
 }
 
 - (BOOL)loadDataRepresentation:(NSData *)data ofType:(NSString *)type {
+	ZoomStoryID* storyId;
+	
     if (gameData) [gameData release];
     gameData = [data retain];
 	
-	story = [[NSApp delegate] findStory: [[[ZoomStoryID alloc] initWithZCodeStory: gameData] autorelease]];
+	storyId = [[[ZoomStoryID alloc] initWithZCodeStory: gameData] autorelease];
+	
+	story = [[NSApp delegate] findStory: storyId];
+	
+	if ([[[NSApp delegate] userMetadata] findStory: storyId] != nil) {
+		NSLog(@"Already user story!");
+	}
 	
 	if (story == nil) {
+		story = [[ZoomStory alloc] init];
+		[story addID: storyId];
+	} else {
+		[story retain];
+	}
+	
+	[[[NSApp delegate] userMetadata] storeStory: [[story copy] autorelease]];
+	[story release];
+	
+	story = [[[NSApp delegate] userMetadata] findStory: storyId];
+	if (story == nil) {
+		NSLog(@"Story not found!");
 		story = [[ZoomStory alloc] init];
 	} else {
 		[story retain];

@@ -8,8 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-
-@interface ZoomStory : NSObject {
+@class ZoomStoryID;
+@interface ZoomStory : NSObject<NSCopying> {
 	struct IFMDStory* story;
 	BOOL   needsFreeing;
 }
@@ -17,6 +17,9 @@
 // Initialisation
 - (id) init;								// New story
 - (id) initWithStory: (struct IFMDStory*) story;   // Existing story (not freed)
+
+- (struct IFMDStory*) story;
+- (void) addID: (ZoomStoryID*) newID;
 
 // Accessors
 - (NSString*) title;
@@ -29,5 +32,17 @@
 - (NSString*) teaser;
 - (NSString*) comment;
 - (float)     rating;
+
+// Setting data
+- (void) setTitle:    (NSString*) newTitle;
+- (void) setHeadline: (NSString*) newHeadline;
+- (void) setAuthor:   (NSString*) newAuthor;
+- (void) setGenre:    (NSString*) genre;
+- (void) setYear:     (int) year;
+- (void) setGroup:    (NSString*) group;
+- (void) setZarfian:  (unsigned) zarfian;
+- (void) setTeaser:   (NSString*) teaser;
+- (void) setComment:  (NSString*) comment;
+- (void) setRating:   (float) rating;
 
 @end

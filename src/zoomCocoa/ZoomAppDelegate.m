@@ -94,4 +94,8 @@
 	return nil;
 }
 
+- (ZoomMetadata*) userMetadata {
+	return [gameIndices objectAtIndex: 0];
+}
+
 @end

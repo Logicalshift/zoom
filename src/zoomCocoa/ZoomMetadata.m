@@ -62,4 +62,9 @@
 	}
 }
 
+// Storing information
+- (void) storeStory: (ZoomStory*) story {
+	IFMD_AddStory(metadata, [story story]);
+}
+
 @end

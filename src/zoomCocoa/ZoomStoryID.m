@@ -26,6 +26,7 @@
 		memcpy(ident->data.zcode.serial, bytes + 0x12, 6);
 		ident->data.zcode.release  = (((int)bytes[0x2])<<8)|((int)bytes[0x3]);
 		ident->data.zcode.checksum = (((int)bytes[0x1c])<<8)|((int)bytes[0x1d]);
+		ident->usesMd5 = 0;
 	}
 	
 	return self;

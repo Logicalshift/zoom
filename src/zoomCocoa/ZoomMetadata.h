@@ -26,4 +26,7 @@
 // Retrieving information
 - (ZoomStory*) findStory: (ZoomStoryID*) ident;
 
+// Storing information
+- (void) storeStory: (ZoomStory*) story;
+
 @end
