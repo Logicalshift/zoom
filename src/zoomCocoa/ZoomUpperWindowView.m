@@ -33,9 +33,6 @@
 }
 
 - (void)drawRect:(NSRect)rect {
-    [[NSColor whiteColor] set];
-    NSRectFill(rect);
-    
     NSSize fixedSize = [@"M" sizeWithAttributes:
         [NSDictionary dictionaryWithObjectsAndKeys:
             [zoomView fontWithStyle:ZFixedStyle], NSFontAttributeName, nil]];
@@ -130,45 +127,28 @@
 	NSPoint cursorPos = [activeWindow cursorPosition];
 	int xp = cursorPos.x;
 	int yp = cursorPos.y;
-	
-	[self lockFocus];
-	
+
     NSEnumerator* upperEnum = [[zoomView upperWindows] objectEnumerator];
 	
     ZoomUpperWindow* win;
 	int startY = 0;
     while (win = [upperEnum nextObject]) {
-		if (win == activeWindow) {			
-			// Draw the line
-			NSArray* lines = [win lines];
-			
-			NSRect winRect = NSMakeRect(0,
-										fixedSize.height * (yp + startY),
-										[self bounds].size.width,
-										fixedSize.height);
-			[[win backgroundColour] set];
-			NSRectFill(winRect);			
-			
-			if (yp < [lines count] && yp < [win length]) {
-				[(NSAttributedString*)[lines objectAtIndex: yp] drawAtPoint: NSMakePoint(0, fixedSize.height*(yp+startY))];
-			}
-			
-			// Draw the cursor
+		if (win == activeWindow) {
+			// Position the cursor
 			[cursor positionAt: NSMakePoint(fixedSize.width * xp, fixedSize.height * (yp + startY))
 					  withFont: font];
-			[cursor draw];
 		}
 		
 		startY += [win length];
 	}
-			
-	[self unlockFocus];
-	[[self window] flushWindow];
+
+	[self setNeedsDisplay: YES];
 }
 
 - (void) blinkCursor: (ZoomCursor*) sender {
 	// Draw the cursor
-	[self setNeedsDisplayInRect: [cursor cursorRect]];
+	[self setNeedsDisplay: YES];
+	// [self setNeedsDisplayInRect: [cursor cursorRect]]; -- FAILS, for some reason the window does not get redrawn correctly
 }
 
 - (void) setFlashCursor: (BOOL) flash {

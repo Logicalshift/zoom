@@ -13,12 +13,9 @@
     </style-attribute>
   </style-attribute-registry>
   <settings/>
-  <editor scroll-position="{0, 61}" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
+  <editor should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="gfU_Q1yHlny"/>
-    <selected-columns ids=":941128d340f2709e21a6e303"/>
-    <selected-characters range="{24, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -752,20 +749,6 @@
             </text>
           </values>
         </item>
-        <item id="cHLZB4o_ai2">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Exception thrown when closing a window with upper window focus</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
         <item id="m9hL7srSzjO">
           <values>
             <text>
@@ -793,7 +776,7 @@
             </text>
           </note>
         </item>
-        <item id="g9H8U-s3ymD" expanded="yes" state="indeterminate">
+        <item id="g9H8U-s3ymD" state="indeterminate">
           <values>
             <text>
               <p>
@@ -931,6 +914,15 @@
               <p/>
             </text>
           </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>Er, not happening any more. Might have been a knock-on effect of another bug.</lit>
+                </run>
+              </p>
+            </text>
+          </note>
         </item>
         <item id="mLzCDLZD7ky" state="checked">
           <values>
@@ -1017,6 +1009,20 @@
             </text>
           </values>
           <children>
+            <item id="cHLZB4o_ai2" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Exception thrown when closing a window with upper window focus</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
             <item id="oT5FWMDPl-G" state="checked">
               <values>
                 <text>
