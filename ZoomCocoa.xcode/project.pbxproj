@@ -5,6 +5,48 @@
 	};
 	objectVersion = 39;
 	objects = {
+		4B0A32AE06A5966D00BB8878 = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.framework;
+			name = WebKit.framework;
+			path = /System/Library/Frameworks/WebKit.framework;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		4B0A32AF06A5966D00BB8878 = {
+			fileRef = 4B0A32AE06A5966D00BB8878;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B0A32B506A596DB00BB8878 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = ZoomSkeinWeb.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B0A32B606A596DB00BB8878 = {
+			fileRef = 4B0A32B506A596DB00BB8878;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B0A32E406A59ADA00BB8878 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = ZoomSkeinViewWeb.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B0A32E506A59ADA00BB8878 = {
+			fileRef = 4B0A32E406A59ADA00BB8878;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		4B0DC63C05C0A0EB000B96A3 = {
 			isa = PBXFileReference;
 			lastKnownFileType = image.png;
@@ -566,6 +608,7 @@
 				4BDFA4BA0535E64900A8E303,
 				4B1E3F60050F7BA000A8E303,
 				4BCF3F2B050F8E2400A8E303,
+				4B0A32AE06A5966D00BB8878,
 			);
 			isa = PBXGroup;
 			name = Frameworks;
@@ -2377,10 +2420,12 @@
 				4BA2BCEB06949E730082C022,
 				4BA2BCEC06949E730082C022,
 				4B14632106A2DD9E00398650,
+				4B0A32B506A596DB00BB8878,
 				4BA2BCF20694A0830082C022,
 				4BA2BCF30694A0830082C022,
 				4B1884AF06975647004D8501,
 				4B1884B006975647004D8501,
+				4B0A32E406A59ADA00BB8878,
 				4B18852906987AC6004D8501,
 				4B18852A06987AC6004D8501,
 			);
@@ -3018,6 +3063,20 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>skein</string>
+			</array>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>application/x-zoom-skein</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Skein XML file</string>
+			<key>CFBundleTypeRole</key>
+			<string>None</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>zoomSave</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
@@ -3496,6 +3555,8 @@
 				4BA2BCF60694A08D0082C022,
 				4B1884B206975647004D8501,
 				4B14632206A2DD9E00398650,
+				4B0A32B606A596DB00BB8878,
+				4B0A32E506A59ADA00BB8878,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3506,6 +3567,7 @@
 				4BDFA4DD0535E6BE00A8E303,
 				4BDFA4DE0535E6BE00A8E303,
 				4B14638806A2F1B500398650,
+				4B0A32AF06A5966D00BB8878,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
