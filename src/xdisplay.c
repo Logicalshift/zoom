@@ -1753,6 +1753,9 @@ void display_set_scroll_position(XFONT_MEASURE pos)
 {
   int oldpos;
 
+  if (scroll_height > scroll_range)
+    return;
+
   oldpos = scroll_pos;
   scroll_pos = pos - scroll_top;
 
