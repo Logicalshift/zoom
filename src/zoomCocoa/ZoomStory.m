@@ -3,7 +3,7 @@
 //  ZoomCocoa
 //
 //  Created by Andrew Hunter on Tue Jan 13 2004.
-//  Copyright (c) 2004 __MyCompanyName__. All rights reserved.
+//  Copyright (c) 2004 Andrew Hunter. All rights reserved.
 //
 
 #import "ZoomStory.h"
