@@ -12,17 +12,15 @@
 @implementation ZoomTextView
 
 - (void) keyDown: (NSEvent*) event {
-    [super keyDown: event];
-    
-    if (![self isEditable]) {
-        NSView* superview = [self superview];
+    NSView* superview = [self superview];
 
-        while (![superview isKindOfClass: [ZoomView class]]) {
-            superview = [superview superview];
-            if (superview == NULL) break;
-        }
+    while (![superview isKindOfClass: [ZoomView class]]) {
+        superview = [superview superview];
+        if (superview == NULL) break;
+    }
 
-        [superview keyDown: event];
+    if (![(ZoomView*)superview handleKeyDown: event]) {
+        [super keyDown: event];
     }
 }
 

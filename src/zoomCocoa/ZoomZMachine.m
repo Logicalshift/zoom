@@ -26,6 +26,7 @@
 
 static NSString* bufferedString = @"bufferedString";
 static NSString* bufferedMovement = @"bufferedMovement";
+static NSString* bufferedEraseLine = @"bufferedEraseLine";
 
 @implementation ZoomZMachine
 
@@ -259,6 +260,13 @@ static NSString* bufferedMovement = @"bufferedMovement";
 
 // = Buffering =
 
+- (void) bufferEraseLine: (int) windowNumber {
+    [outputBuffer addObject: [NSArray arrayWithObjects:
+        bufferedEraseLine,
+        [NSNumber numberWithInt: windowNumber],
+        nil]];
+}
+
 - (void) bufferString: (NSString*) string
             forWindow: (int) windowNumber
             withStyle: (ZStyle*) style {
@@ -350,6 +358,11 @@ static NSString* bufferedMovement = @"bufferedMovement";
             [(NSObject<ZUpperWindow>*)[self windowNumber:
                 [lastWindow intValue]] setCursorPositionX: (int)pos.x
                                                         Y: (int)pos.y];
+        } else if ([bufType isEqualToString: bufferedEraseLine]) {
+            NSNumber* lastWindow = [bufEntry objectAtIndex: 1];
+            
+            [(NSObject<ZUpperWindow>*)[self windowNumber:
+                [lastWindow intValue]] eraseLine];
         }
     }
 

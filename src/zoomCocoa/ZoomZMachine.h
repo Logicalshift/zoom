@@ -35,6 +35,7 @@ extern NSAutoreleasePool* displayPool;
             withStyle: (ZStyle*) style;
 - (void) bufferMovement: (NSPoint) point
               forWindow: (int) windowNumber;
+- (void) bufferEraseLine: (int) windowNumber;
 - (void) flushBuffers;
 
 @end

@@ -120,6 +120,9 @@
 
 // Line erasure
 - (void) eraseLine {
+    if (ypos < [lines count]) {
+        [[[lines objectAtIndex: ypos] mutableString] setString: @""];
+    }
 }
 
 // Maintainance

@@ -27,6 +27,7 @@
 
     int inputPos;
     BOOL receiving;
+    BOOL receivingCharacters;
 
     double morePoint;
     BOOL moreOn;
@@ -67,5 +68,6 @@
 - (NSArray*) upperWindows;
 
 - (void) upperWindowNeedsRedrawing;
+- (BOOL) handleKeyDown:(NSEvent*) theEvent;
 
 @end

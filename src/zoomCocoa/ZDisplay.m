@@ -132,8 +132,7 @@ void display_erase_window(void) {
 }
 
 void display_erase_line(int val) {
-    [mainMachine flushBuffers];
-    NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
+    [mainMachine bufferEraseLine: currentWindow];
 }
 
 // Display functions
@@ -259,8 +258,39 @@ int display_readline(int* buf, int len, long int timeout) {
 
 int  display_readchar(long int timeout) {
     [mainMachine flushBuffers];
-    
-    NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
+
+    NSObject<ZDisplay>* display = [mainMachine display];
+
+    // Cycle the autorelease pool
+    [displayPool release];
+    displayPool = [[NSAutoreleasePool alloc] init];
+
+    // Request input
+    [[mainMachine inputBuffer] setString: @""];
+
+    [display shouldReceiveCharacters];
+    [[mainMachine windowNumber: currentWindow] setFocus];
+
+    // Wait for input
+    // FIXME: timeouts
+    while (mainMachine != nil &&
+           [[mainMachine inputBuffer] length] == 0) {
+        [mainLoop acceptInputForMode: NSDefaultRunLoopMode
+                          beforeDate: [NSDate distantFuture]];
+    }
+
+    // Cycle the autorelease pool
+    [displayPool release];
+    displayPool = [[NSAutoreleasePool alloc] init];
+
+    // Finish up
+    [display stopReceiving];
+
+    // Copy the data
+    NSMutableString* inputBuffer = [mainMachine inputBuffer];
+    unichar theChar = [inputBuffer characterAtIndex: 0];
+
+    return theChar;
 }
 
 // = Used by the debugger =
