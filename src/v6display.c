@@ -186,8 +186,8 @@ void v6_prints(const int* text)
 	      text[text_pos] == '-')
 	    {
 	      /* Possible break point */
-	      width += display_measure_text(text + this_word,
-					    text_pos - this_word + 1,
+	      width  = display_measure_text(text + start_pos,
+					    text_pos - start_pos + 1,
 					    ACTWIN.style);
 
 	      last_word = this_word;
@@ -196,13 +196,22 @@ void v6_prints(const int* text)
 	  text_pos++;
 	}
 
+      if (text[text_pos] == 0 || text[text_pos] == 10)
+	width  = display_measure_text(text + start_pos,
+				      text_pos - start_pos + 1,
+				      ACTWIN.style);
+
       /* Back up a word, if necessary */
-      if (text[text_pos] != 0 && text[text_pos] != 10)
+      if (ACTWIN.curx + width >= ACTWIN.xpos + ACTWIN.width - ACTWIN.rmargin)
 	{
 	  text_pos = last_word;
 	  this_word = last_word;
-	}
 
+	  width  = display_measure_text(text + start_pos,
+					text_pos - start_pos + 1,
+					ACTWIN.style);
+	}
+      
       /* Work out the new height of this line... */
       if (text_pos != start_pos ||
 	  (text_pos == start_pos && text[text_pos] == 10))
@@ -321,8 +330,7 @@ void v6_prints(const int* text)
 	}
       else
 	{
-	  ACTWIN.curx += display_measure_text(text + start_pos, text_pos - start_pos,
-					      ACTWIN.style);
+	  ACTWIN.curx += width;
 	}
 
       if (text[text_pos] == 10 || text[text_pos] == 32)
