@@ -10,7 +10,6 @@
 #include "hash.h"
 
 #define YYERROR_VERBOSE 1
-#define YYDEBUG 1
 
 extern int _rc_line;
 extern hash rc_hash;
@@ -156,6 +155,7 @@ static inline rc_game merge_games(const rc_game* a, const rc_game* b)
 %type <col>   ColourDefn
 %type <game>  ColourList
 %type <slist> RevisionList
+%type <slist> GoodRevisionList
 %type <num>   FontQual
 %type <num>   FontDefn
 %type <font>  FontType
@@ -244,7 +244,7 @@ RCDefn:		  DEFAULT STRING RCBlock
 			}
 		      else
 		        {
-		          zmachine_info("Erroneous entry for game '%s' skipped", $2);
+		          zmachine_info(".zoomrc has erroneous entry for game '%s' (line %i)", $2, _rc_line);
 			}
 		    }
 		| GAME STRING RevisionList RCBlock
@@ -273,7 +273,7 @@ RCDefn:		  DEFAULT STRING RCBlock
 		        }
 		      else
 		        {
-		          zmachine_info("Erroneous entry for game '%s' skipped", $2);
+		          zmachine_info(".zoomrc has erroneous entry for game '%s' (line %i)", $2, _rc_line);
 			}
 		    }
 		;
@@ -286,18 +286,13 @@ RCBlock:	  '{' RCOptionList '}'
                     {
 		      EMPTY_GAME($$);
                     }
-		| '{' error '}'
+		| '{' ErrorList
 		    {
 		      yyerrok;
 		      zmachine_info(".zoomrc options block ending at line %i makes no sense", _rc_line);
 		      EMPTY_GAME($$);
 		    }
-		| '{' RCOptionList error { zmachine_info(".zoomrc syntax error at line %i", _rc_line); } RCOptionList '}'
-		    {
-		      yyerrok;
-		      $$ = merge_games(&$2, &$5);
-		    }
-		| '{' RCOptionList error '}'
+		| '{' RCOptionList ErrorList
 		    {
 		      yyerrok;
 		      $$ = $2;
@@ -431,7 +426,16 @@ ColourDefn:	  '(' NUMBER ',' NUMBER ',' NUMBER ')'
 		    }
 		;
 
-RevisionList:	  GAMEID 
+RevisionList:	  GoodRevisionList
+		| BadRevisionList
+		    { $$ = NULL; }
+		;
+
+BadRevisionList:  ErrorList
+		    { yyerrok; }
+		;
+
+GoodRevisionList: GAMEID 
 		    {
 		      $$ = malloc(sizeof(stringlist));
 		      $$->next = NULL;
@@ -450,6 +454,9 @@ RevisionList:	  GAMEID
 		          $$->string = $3;
 			}
 		    }
+		;
+
+ErrorList:	  error '}' { yyerrok; }
 		;
 
 %%

@@ -122,7 +122,10 @@ void rc_merge(char* filename)
       return;
     }
   _rc_line = 1;
-  rc_parse();
+  if (rc_parse() == 1)
+    {
+      zmachine_info("Zoomrc file '%s' has errors", filename);
+    }
   fclose(yyin);
 }
 

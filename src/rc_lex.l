@@ -66,6 +66,6 @@ no				return NO;
 
 [ \t]+				/* Yum */
 \n				_rc_line++;
-.				return yytext[0];
+.				return (unsigned char) yytext[0];
 
 %%
