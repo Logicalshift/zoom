@@ -30,18 +30,10 @@
 - (void) windowDidLoad {
     [zoomView runNewServer: nil];
     [zoomView setDelegate: self];
-    //NSLog(@"Setting ZMachine...");
-    //[zoomView setZMachine: [[self document] zMachine]];
 }
 
 - (void) zMachineStarted: (id) sender {
     [[zoomView zMachine] loadStoryFile: [[self document] gameData]];
 }
 
-/*
-- (void)windowWillClose:(NSNotification *)aNotification {
-    NSLog(@"Close window");
-    [self close];
-}
-*/
 @end

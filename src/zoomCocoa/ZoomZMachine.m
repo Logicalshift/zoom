@@ -31,9 +31,6 @@
     self = [super init];
 
     if (self) {
-#ifdef DEBUG
-        NSLog(@"Allocated ZMachine object");
-#endif
         display = nil;
         machineFile = NULL;
 
@@ -53,10 +50,6 @@
 }
 
 - (void) dealloc {
-#ifdef DEBUG
-    NSLog(@"Deallocated ZMachine object");
-#endif
-
     if (windows[0])
         [windows[0] release];
     if (windows[1])
@@ -89,10 +82,6 @@
 // = Setup =
 - (void) loadStoryFile: (NSData*) storyFile {
     // Create the machine file
-#ifdef DEBUG
-    NSLog(@"Loading story file...");
-#endif
-
     ZDataFile* file = [[ZDataFile alloc] initWithData: storyFile];
     machineFile = open_file_from_object([file autorelease]);
 }
@@ -112,10 +101,6 @@
 // = Running =
 - (void) startRunningInDisplay: (in byref NSObject<ZDisplay>*) disp {
     NSAutoreleasePool* mainPool = [[NSAutoreleasePool alloc] init];
-#ifdef DEBUG
-    NSLog(@"Started running");
-#endif
-
     /*
     {
         int x;
@@ -173,12 +158,6 @@
     for (x=0; x<3; x++) {
         [windows[x] setProtocolForProxy: @protocol(ZVendor)];
     }
-
-    /*
-    NSLog(@"Wait...");
-    sleep(10);
-    NSLog(@"OK");
-     */
 
     // Setup the display, etc
     rc_set_game(zmachine_get_serial(), Word(ZH_release), Word(ZH_checksum));

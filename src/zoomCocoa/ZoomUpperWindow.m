@@ -37,8 +37,6 @@
     lines = [[NSMutableArray allocWithZone: [self zone]] init];
     xpos = ypos = 0;
 
-    NSLog(@"Upper window clear");
-
     [backgroundColour release];
     backgroundColour = [[theView backgroundColourForStyle: style] retain];
 }

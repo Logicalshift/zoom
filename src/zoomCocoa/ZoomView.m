@@ -21,7 +21,6 @@ static NSArray* defaultColours = nil;
     NSString* defaultFont = @"Gill Sans";
     NSString* fixedFont = @"Courier";
     NSFontManager* mgr = [NSFontManager sharedFontManager];
-    NSLog(@"ZoomView initialise");
 
     defaultFonts = [[NSMutableArray alloc] init];
 
@@ -129,9 +128,7 @@ static NSArray* defaultColours = nil;
     return self;
 }
 
-- (void) dealloc {
-    NSLog(@"ZoomView dealloc");
-    
+- (void) dealloc {    
     if (zMachine) {
         [zMachine release];
     }
@@ -168,7 +165,6 @@ static NSArray* defaultColours = nil;
 - (void) setZMachine: (NSObject<ZMachine>*) machine {
     if (zMachine) [zMachine release];
 
-    NSLog(@"Kick start!");
     zMachine = [machine retain];
     [zMachine startRunningInDisplay: self];
 }
@@ -184,8 +180,6 @@ static NSArray* defaultColours = nil;
 
     [lowerWindows addObject: win];
 
-    NSLog(@"Creating lower window");
-
     [win clearWithStyle: [[[ZStyle alloc] init] autorelease]];
     return [win autorelease];
 }
@@ -195,8 +189,6 @@ static NSArray* defaultColours = nil;
         initWithZoomView: self];
 
     [upperWindows addObject: win];
-
-    NSLog(@"Creating upper window");
 
     [win clearWithStyle: [[[ZStyle alloc] init] autorelease]];
     return [win autorelease];
@@ -846,7 +838,6 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         if (zMachine == nil) {
             // Task data could be indicating that we should start up the ZMachine
             if ([zoomTaskData rangeOfString: @"ZoomServer: Ready"].location != NSNotFound) {
-                NSLog(@"Got startup signal");
                 NSObject<ZVendor>* theVendor = nil;
                 NSString* connectionName = [NSString stringWithFormat: @"ZoomVendor-%i",
                     [zoomTask processIdentifier]];
