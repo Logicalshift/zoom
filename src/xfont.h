@@ -27,6 +27,8 @@
 #include "../config.h"
 
 #if WINDOW_SYSTEM == 3
+# include <Carbon/Carbon.h>
+
 # include "carbondisplay.h"
 # if defined(USE_QUARTZ) || defined(USE_ATS)
 #  define XFONT_MEASURE float

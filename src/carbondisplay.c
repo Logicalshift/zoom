@@ -37,6 +37,7 @@
 
 #include "zmachine.h"
 #include "display.h"
+#include "format.h"
 #include "zoomres.h"
 #include "rc.h"
 #include "hash.h"
@@ -101,12 +102,8 @@ carbon_preferences carbon_prefs = { 0, 0, 0, 0 };
 
 /* Speech */
 static SpeechChannel speechchan;
-static char*         nextspeech = NULL;
-static char*         lastspeech = NULL;
 
 /* Font information */
-static xfont** font = NULL;
-static int     n_fonts = 9;
 int            mac_openflag = 0;
 
 static char*   fontlist[] =
@@ -122,142 +119,18 @@ static char*   fontlist[] =
   "'Courier New' 10 fib"
 };
 
-static int style_font[16] = { 0, 1, 2, 5, 3, 6, 7, 8,
-			      4, 4, 4, 4, 4, 4, 4, 4 };
-
-/* Z-Machine window layout */
-struct word
-{
-  int           start;
-  int           len;
-  XFONT_MEASURE width;
-  int           newline;
-};
-
-struct text
-{
-  int fg, bg;
-  int font;
-
-  int spacer;
-  int space;
-  int spoken;
-  
-  int len;
-  int* text;
-  
-  struct text* next;
-
-  int          nwords;
-  struct word* word;
-};
-
-struct line
-{
-  struct text* start;
-  int          n_chars;
-  int          offset;
-  XFONT_MEASURE baseline;
-  XFONT_MEASURE ascent;
-  XFONT_MEASURE descent;
-  XFONT_MEASURE height;
-
-  struct line* next;
-};
-
-struct cellline
-{
-  int*           cell;
-  unsigned char* fg;
-  unsigned char* bg;
-  unsigned char* font;
-};
-
-struct window
-{
-  int xpos, ypos;
-
-  XFONT_MEASURE winsx, winsy;
-  XFONT_MEASURE winlx, winly;
-
-  int overlay;
-  int force_fixed;
-  int no_more;
-  int no_scroll;
-
-  int fore, back;
-  int style;
-
-  int winback;
-
-  struct text* text;
-  struct text* lasttext;
-  
-  struct line* line;
-  struct line* topline;
-  struct line* lastline;
-
-  struct cellline* cline;
-};
-
-/* Window data structures 'emselves */
-int cur_win;
-struct window text_win[3];
-
-#define CURWIN text_win[cur_win]
-#define CURSTYLE (text_win[cur_win].style|(text_win[cur_win].force_fixed<<3))
-
 /* Window parameters */
-#define DEFAULTX 80
-#define DEFAULTY 30
-static int size_x, size_y;
-static int max_x, max_y;
-
-XFONT_MEASURE xfont_x = 0;
-XFONT_MEASURE xfont_y = 0;
-static XFONT_MEASURE win_x   = 0;
-static XFONT_MEASURE win_y   = 0;
-static XFONT_MEASURE total_x = 0;
-static XFONT_MEASURE total_y = 0;
-static XFONT_MEASURE start_y;
-
-static int scroll_overlays = 1;
 
 #define DEFAULT_FORE 0
 #define DEFAULT_BACK 7
 #define FIRST_ZCOLOUR 3
-
-static int more_on = 0;
-static int displayed_text = 0;
 
 /* The caret */
 #define FLASH_DELAY (kEventDurationSecond*3)/5
 
 EventLoopTimerRef caret_timer;
 
-static int  caret_x, caret_y, caret_height;
-static int  input_x, input_y;
-static int  caret_on = 0;
-static int  caret_shown = 0;
-static int  caret_flashing = 0;
-static int  insert = 1;
-
 /* Input and history buffers */
-
-static char* force_text = NULL;
-static int*  text_buf   = NULL;
-static int   buf_offset = 0;
-static int   max_buflen = 0;
-static int   read_key   = -1;
-
-typedef struct history_item
-{
-  int* string;
-  struct history_item* next;
-  struct history_item* last;
-} history_item;
-static history_item* last_string = NULL;
-static history_item* history_pos = NULL;
 
 static unsigned char terminating[256] =
 {
@@ -311,10 +184,43 @@ Boolean display_force_input(char* text)
 
 /* Support functions */
 
-static void format_last_text(int more);
 static void redraw_input_text(void);
 static void draw_window(int win, Rect* rct);
 static void draw_borders(void);
+
+/* Required by format.c */
+void display_update_region(XFONT_MEASURE left,
+			   XFONT_MEASURE top,
+			   XFONT_MEASURE right,
+			   XFONT_MEASURE bottom)
+{
+  Rect rct;
+
+  rct.top    = top;
+  rct.left   = left;
+  rct.right  = right;
+  rct.bottom = bottom;
+  InvalWindowRect(zoomWindow, &rct);
+}
+
+void display_set_scroll_range(XFONT_MEASURE top,
+			      XFONT_MEASURE bottom)
+{
+  SetControl32BitMinimum(zoomScroll,
+			  top);
+  SetControl32BitMaximum(zoomScroll,
+			 bottom - GetControlViewSize(zoomScroll));
+}
+
+void display_set_scroll_region(XFONT_MEASURE size)
+{
+  SetControlViewSize(zoomScroll, size);
+}
+
+void display_set_scroll_position(XFONT_MEASURE pos)
+{
+  SetControl32BitValue(zoomScroll, pos);
+}
 
 /* Reformat the text in a window that has been resized */
 static void resize_window()
@@ -702,14 +608,14 @@ static void draw_input_text(void)
       rct.right  = portRect.left + win_x + BORDERWIDTH;
       rct.top    = portRect.top + caret_y + BORDERWIDTH;
       rct.bottom = rct.top + xfont_get_height(font[style_font[(CURSTYLE>>1)&15]]);
-      RGBForeColor(&maccolour[bg]);
+      RGBForeColor(&maccolour[bg+FIRST_ZCOLOUR]);
       PaintRect(&rct);
 
       caret_x += xfont_get_text_width(font[style_font[(CURSTYLE>>1)&15]],
 				      text_buf,
 				      buf_offset);
 
-      xfont_set_colours(fg, bg);
+      xfont_set_colours(fg + FIRST_ZCOLOUR, bg + FIRST_ZCOLOUR);
       xfont_plot_string(font[style_font[(CURSTYLE>>1)&15]],
 			input_x+BORDERWIDTH, -input_y-BORDERWIDTH,
 			text_buf,
@@ -1026,7 +932,7 @@ static void draw_window(int   win,
 
 		  dassert(bg < 14);
 		  
-		  xfont_set_colours(fg, bg);
+		  xfont_set_colours(fg + FIRST_ZCOLOUR, bg + FIRST_ZCOLOUR);
 		  xfont_plot_string(font[text_win[win].cline[y].font[x]],
 				    BORDERWIDTH + (float)x*xfont_x,
 				    -(y*xfont_y +
@@ -1049,7 +955,7 @@ static void draw_window(int   win,
 	      frct.left   = portRect.left + xfont_x*size_x+BORDERWIDTH;
 	      frct.bottom = frct.top + xfont_y;
 	      frct.right  = portRect.left + win_x+BORDERWIDTH;
-	      RGBForeColor(&maccolour[bg]);
+	      RGBForeColor(&maccolour[bg+FIRST_ZCOLOUR]);
 	      PaintRect(&frct);
 	    }
 	}
@@ -1133,7 +1039,7 @@ static void draw_window(int   win,
 	  frct.right  = frct.left + win_x;
 	  if (frct.top < frct.bottom)
 	    {
-	      RGBForeColor(&maccolour[text_win[win].winback]);
+	      RGBForeColor(&maccolour[text_win[win].winback+FIRST_ZCOLOUR]);
 	      PaintRect(&frct);
 	    }
 
@@ -1186,10 +1092,11 @@ static void draw_window(int   win,
 		  frct.bottom = frct.top + line->ascent + line->descent;
 		  frct.left   = portRect.left + width + BORDERWIDTH;
 		  frct.right  = frct.left + w;
-		  RGBForeColor(&maccolour[text->bg]);
+		  RGBForeColor(&maccolour[text->bg+FIRST_ZCOLOUR]);
 		  PaintRect(&frct);
 
-		  xfont_set_colours(text->fg, text->bg);
+		  xfont_set_colours(text->fg + FIRST_ZCOLOUR,
+				    text->bg + FIRST_ZCOLOUR);
 		  xfont_plot_string(font[text->font],
 				    width + BORDERWIDTH,
 				    -line->baseline - BORDERWIDTH + scrollpos,
@@ -1214,7 +1121,7 @@ static void draw_window(int   win,
 	  frct.bottom = frct.top + line->ascent + line->descent;
 	  frct.left   = portRect.left + width + BORDERWIDTH;
 	  frct.right  = portRect.left + win_x + BORDERWIDTH;
-	  RGBForeColor(&maccolour[text_win[win].winback]);
+	  RGBForeColor(&maccolour[text_win[win].winback+FIRST_ZCOLOUR]);
 	  PaintRect(&frct);
 
 	  lasty = frct.bottom;
@@ -1230,7 +1137,7 @@ static void draw_window(int   win,
       frct.right = BORDERWIDTH+win_x;
       if (frct.top < frct.bottom)
 	{
-	  RGBForeColor(&maccolour[text_win[win].winback]);
+	  RGBForeColor(&maccolour[text_win[win].winback+FIRST_ZCOLOUR]);
 	  PaintRect(&frct);
 	}
 
@@ -1927,7 +1834,7 @@ void display_initialise(void)
   /* Resize the window */
   max_x = size_x = rc_get_xsize();
   max_y = size_y = rc_get_ysize();
-  
+
   size_window();
 
   /* Setup the display */
@@ -1988,698 +1895,6 @@ void display_finalise(void)
 
 /***                           ----// 888 \\----                           ***/
 
-void display_erase_window(void)
-{
-  Rect rct;
-
-  SetControlViewSize    (zoomScroll, CURWIN.winly-CURWIN.winsy);
-  SetControl32BitMinimum(zoomScroll, 0);
-  SetControl32BitMaximum(zoomScroll, 0);
-  SetControl32BitValue  (zoomScroll, 0);
-
-  displayed_text = 0;
-  
-  if (CURWIN.overlay)
-    {
-      int x,y;
-
-      /* Blank an overlay window */
-
-      for (y=0; y<(CURWIN.winly/xfont_y); y++)
-	{
-	  for (x=0; x<max_x; x++)
-	    {
-	      CURWIN.cline[y].cell[x] = ' ';
-	      CURWIN.cline[y].fg[x]   = CURWIN.back;
-	      CURWIN.cline[y].bg[x]   = 255;
-	      CURWIN.cline[y].font[x] = style_font[4];
-	    }
-	}
-    }
-  else
-    {
-      /* Blank a proportional text window */
-      struct text* text;
-      struct text* nexttext;
-      struct line* line;
-      struct line* nextline;
-      int x, y, z;
-
-      text = CURWIN.text;
-      while (text != NULL)
-	{
-	  nexttext = text->next;
-	  free(text->text);
-	  free(text);
-	  text = nexttext;
-	}
-      CURWIN.text = CURWIN.lasttext = NULL;
-      CURWIN.winback = CURWIN.back;
-
-      line = CURWIN.line;
-      while (line != NULL)
-	{
-	  nextline = line->next;
-	  free(line);
-	  line = nextline;
-	}
-      CURWIN.line = CURWIN.topline = CURWIN.lastline = NULL;
-      
-      for (y=(CURWIN.winsy/xfont_y); y<size_y; y++)
-	{
-	  for (x=0; x<max_x; x++)
-	    {
-	      for (z=1; z<=2; z++)
-		{
-		  text_win[z].cline[y].cell[x] = ' ';
-		  text_win[z].cline[y].fg[x]   = FIRST_ZCOLOUR+DEFAULT_BACK;
-		  text_win[z].cline[y].bg[x]   = 255;
-		  text_win[z].cline[y].font[x] = style_font[4];
-		}
-	    }
-	}
-    }
-
-  /* Redraw the main window */
-  rct.top = 0;
-  rct.left = 0;
-  rct.right = total_x;
-  rct.bottom = total_y;
-  InvalWindowRect(zoomWindow, &rct);
-}
-
-void display_clear(void)
-{
-  int x, y, z;
-
-  displayed_text = 0;
-  
-  /* Clear the main text window */
-  text_win[0].force_fixed = 0;
-  text_win[0].overlay     = 0;
-  text_win[0].no_more     = 0;
-  text_win[0].no_scroll   = 0;
-  text_win[0].fore        = DEFAULT_FORE+FIRST_ZCOLOUR;
-  text_win[0].back        = DEFAULT_BACK+FIRST_ZCOLOUR;
-  text_win[0].style       = 0;
-  text_win[0].xpos        = 0;
-  text_win[0].ypos        = win_y;
-  text_win[0].winsx       = 0;
-  text_win[0].winsy       = 0;
-  text_win[0].winlx       = win_x;
-  text_win[0].winly       = win_y;
-  text_win[0].winback     = DEFAULT_BACK+FIRST_ZCOLOUR;
-
-  start_y = text_win[0].ypos;
-
-  /* Clear the overlay windows */
-  for (x=1; x<3; x++)
-    {
-      text_win[x].force_fixed = 1;
-      text_win[x].overlay     = 1;
-      text_win[x].no_more     = 1;
-      text_win[x].no_scroll   = 1;
-      text_win[x].xpos        = 0;
-      text_win[x].ypos        = 0;
-      text_win[x].winsx       = 0;
-      text_win[x].winsy       = 0;
-      text_win[x].winlx       = win_x;
-      text_win[x].winly       = 0;
-
-      text_win[0].winback     = DEFAULT_BACK+FIRST_ZCOLOUR;
-      text_win[x].fore        = DEFAULT_FORE+FIRST_ZCOLOUR;
-      text_win[x].back        = DEFAULT_BACK+FIRST_ZCOLOUR;
-      text_win[x].style       = 4;
-
-      text_win[x].text        = NULL;
-      text_win[x].line        = NULL;
-
-      if (text_win[x].cline != NULL)
-	{
-	  for (y=0; y<max_y; y++)
-	    {
-	      free(text_win[x].cline[y].cell);
-	      free(text_win[x].cline[y].fg);
-	      free(text_win[x].cline[y].bg);
-	      free(text_win[x].cline[y].font);
-	    }
-	  free(text_win[x].cline);
-	}
-      
-      text_win[x].cline       = malloc(sizeof(struct cellline)*size_y);
-	  
-      for (y=0; y<size_y; y++)
-	{
-	  text_win[x].cline[y].cell = malloc(sizeof(int)*size_x);
-	  text_win[x].cline[y].fg   = malloc(sizeof(char)*size_x);
-	  text_win[x].cline[y].bg   = malloc(sizeof(char)*size_x);
-	  text_win[x].cline[y].font = malloc(sizeof(char)*size_x);
-	  
-	  for (z=0; z<size_x; z++)
-	    {
-	      text_win[x].cline[y].cell[z] = ' ';
-	      text_win[x].cline[y].fg[z]   = DEFAULT_BACK+FIRST_ZCOLOUR;
-	      text_win[x].cline[y].bg[z]   = 255;
-	      text_win[x].cline[y].font[z] = style_font[4];
-	    }
-	}
-      
-      max_x = size_x;
-      max_y = size_y;
-    }
-
-  cur_win = 0;
-  display_erase_window();
-}
-
-static void new_line(int more,
-		     int fnum)
-{
-  struct line* line;
-  Rect rct;
-
-  if (CURWIN.lastline == NULL)
-    {
-      CURWIN.lastline = CURWIN.line = malloc(sizeof(struct line));
-
-      CURWIN.line->start    = NULL;
-      CURWIN.line->n_chars  = 0;
-      CURWIN.line->offset   = 0;
-      CURWIN.line->baseline =
-	CURWIN.ypos + xfont_get_ascent(font[fnum]);
-      CURWIN.line->ascent   = xfont_get_ascent(font[fnum]);
-      CURWIN.line->descent  = xfont_get_descent(font[fnum]);
-      CURWIN.line->height   = xfont_get_height(font[fnum]);
-      CURWIN.line->next     = NULL;
-
-      displayed_text = CURWIN.lastline->ascent + CURWIN.lastline->descent;
-      
-      return;
-    }
-
-  if (more != 0)
-    {
-      int distext;
-
-      distext = CURWIN.lastline->ascent + CURWIN.lastline->descent;
-      if (displayed_text+distext >= (CURWIN.winly - CURWIN.winsy))
-	{
-	  more_on = 1;
-	  display_readchar(0);
-	  more_on = 0;
-	}
-      displayed_text += distext;
-    }
-
-  rct.top    = CURWIN.lastline->baseline - CURWIN.lastline->ascent+BORDERWIDTH;
-  rct.bottom = CURWIN.lastline->baseline + CURWIN.lastline->descent+BORDERWIDTH;
-  rct.left   = BORDERWIDTH;
-  rct.right  = rct.left+win_x;
-  InvalWindowRect(zoomWindow, &rct);
-  
-  line = malloc(sizeof(struct line));
-
-  line->start     = NULL;
-  line->n_chars   = 0;
-  line->baseline  = CURWIN.lastline->baseline+CURWIN.lastline->descent;
-  line->baseline += xfont_get_ascent(font[fnum]);
-  line->ascent    = xfont_get_ascent(font[fnum]);
-  line->descent   = xfont_get_descent(font[fnum]);
-  line->height    = xfont_get_height(font[fnum]);
-  line->next      = NULL;
-
-  CURWIN.lastline->next = line;
-  CURWIN.lastline = line;
-
-  CURWIN.xpos = 0;
-  CURWIN.ypos = line->baseline - line->ascent;
-
-  if (line->baseline+line->descent > CURWIN.winly)
-    {
-      int toscroll;
-      struct line* l;
-      int x, y;
-
-      toscroll = (line->baseline+line->descent)-CURWIN.winly;
-      l = CURWIN.line;
-
-      /* Scroll the lines upwards */
-      while (l != NULL)
-	{
-	  l->baseline -= toscroll;
-	  l = l->next;
-	}
-
-      /* Scroll the overlays upwards */
-      if (scroll_overlays)
-	{
-	  for (y=CURWIN.winsy/xfont_y;
-	       y<(size_y-1);
-	       y++)
-	    {
-	      for (x=0; x<max_x; x++)
-		{
-		  text_win[2].cline[y].cell[x] = text_win[2].cline[y+1].cell[x];
-		  text_win[2].cline[y].font[x] = text_win[2].cline[y+1].font[x];
-		  text_win[2].cline[y].fg[x]   = text_win[2].cline[y+1].fg[x];
-		  text_win[2].cline[y].bg[x]   = text_win[2].cline[y+1].bg[x];
-		}
-	    }
-	}
-      
-      for (x=0; x<max_x; x++)
-	{
-	  text_win[2].cline[size_y-1].cell[x] = ' ';
-	  text_win[2].cline[size_y-1].font[x] = style_font[4];
-	  text_win[2].cline[size_y-1].fg[x]   = DEFAULT_BACK+FIRST_ZCOLOUR;
-	  text_win[2].cline[size_y-1].bg[x]   = 255;
-	}
-
-      display_update();
-    }
-}
-
-static void format_last_text(int more)
-{
-  int x;
-  struct text* text;
-  int word_start, word_len, total_len;
-  XFONT_MEASURE xpos;
-  xfont* fn;
-  struct line* line;
-  Rect rct;
-  
-  text = CURWIN.lasttext;
-
-  fn = font[text->font];
-
-  if (CURWIN.lastline == NULL)
-    {
-      new_line(more, text->font);
-    }
-
-  if (text->spacer)
-    {
-      line = CURWIN.lastline;
-      
-      new_line(more, text->font);
-
-      CURWIN.lastline->descent = 0;
-      CURWIN.lastline->baseline =
-	line->baseline+line->descent+text->space;
-      CURWIN.lastline->ascent = text->space;
-
-      new_line(more, text->font);
-    }
-  else
-    {
-      word_start = 0;
-      word_len   = 0;
-      total_len  = 0;
-      xpos       = CURWIN.xpos;
-      line       = CURWIN.lastline;
-
-      if (text->spoken == 0)
-	{
-	  int len,x;
-
-	  if (nextspeech == NULL)
-	    len = 0;
-	  else
-	    len = strlen(nextspeech);
-
-	  nextspeech = realloc(nextspeech, len+text->len+1);
-
-	  for (x=0; x<text->len; x++)
-	    {
-	      nextspeech[len+x] = text->text[x];
-	      switch (nextspeech[len+x])
-		{
-		case '\n':
-		  nextspeech[len+x] = '.';
-		  len++;
-		  nextspeech = realloc(nextspeech, len+text->len+1);
-		  nextspeech[len+x] = ' ';
-		  break;
-		case '>':
-		  nextspeech[len+x] = ' ';
-		  break;
-		}
-	    }
-	  nextspeech[len+x] = '\0';
-	  text->spoken = 1;
-	}
-      
-      /*
-       * Move the other lines to make room if this font is bigger than
-       * ones previously used on this line
-       */
-      if (CURWIN.lastline->ascent < xfont_get_ascent(font[text->font]))
-	{
-	  int toscroll;
-	  struct line* l;
-	  
-	  toscroll = xfont_get_ascent(font[text->font]) - CURWIN.lastline->ascent;
-	  
-	  l = CURWIN.line;
-	  while (l != CURWIN.lastline)
-	    {
-	      if (l == NULL)
-		zmachine_fatal("Programmer is a spoon");
-	      
-	      l->baseline -= toscroll;
-	      l = l->next;
-	    }
-	  if (more != 0)
-	    displayed_text += toscroll;
-	  CURWIN.lastline->ascent = xfont_get_ascent(font[text->font]);
-	  display_update();
-	}
-      
-      /*
-       * Ditto
-       */
-      if (CURWIN.lastline->descent < xfont_get_descent(font[text->font]))
-	{
-	  int toscroll;
-	  
-	  toscroll = xfont_get_descent(font[text->font]) -
-	    CURWIN.lastline->descent;
-	  if (CURWIN.lastline->baseline+xfont_get_descent(font[text->font]) 
-	      > CURWIN.winly)
-	    {
-	      struct line* l;
-	      
-	      l = CURWIN.line;
-	      
-	      while (l != NULL)
-		{
-		  l->baseline -= toscroll;
-		  l = l->next;
-		}
-	      
-	      display_update();
-	    }
-	  
-	  if (more != 0)
-	    displayed_text += toscroll;
-	  CURWIN.lastline->descent = xfont_get_descent(font[text->font]);
-	}
-      
-      if (text->word == NULL)
-	{
-	  /*
-	   * Measure and format the text. We measure each word individually,
-	   * see if it will fit on the current line, and create a newline
-	   * if not.
-	   */
-	  text->nwords = 0;
-	  text->word = malloc(sizeof(struct word));
-
-	  for (x=0; x<text->len;)
-	    {
-	      if (text->text[x] == ' '  ||
-		  text->text[x] == '-'  ||
-		  text->text[x] == '\n' ||
-		  x == (text->len-1))
-		{
-		  XFONT_MEASURE w;
-		  int nl;
-		  
-		  /* Skip any following spaces */
-		  nl = 0;
-		  do
-		    {
-		      if (text->text[x] == '\n')
-			{
-			  nl = 1;
-			  break;
-			}
-		      x++;
-		      word_len++;
-		    }
-		  while (!nl &&
-			 (x < text->len &&
-			  (text->text[x] == ' ' ||
-			   text->text[x] == '\n')));
-		  
-		  /* We've got a word - measure it */
-		  w = xfont_get_text_width(fn,
-					   text->text + word_start,
-					   word_len);
-
-		  /* Store the details */
-		  text->word = realloc(text->word,
-				       sizeof(struct word)*(text->nwords+1));
-		  text->word[text->nwords].start   = word_start;
-		  text->word[text->nwords].len     = word_len;
-		  text->word[text->nwords].width   = w;
-		  text->word[text->nwords].newline = nl;
-		  text->nwords++;
-		  
-		  /* Move swiftly along */
-		  word_start += word_len;
-		  total_len  += word_len;
-		  word_len    = 0;
-		  
-		  if (nl)
-		    {
-		      x++;
-		      total_len++;
-		      word_start++;
-		    }
-		}
-	      else
-		{
-		  x++;
-		  word_len++;
-		}
-	    }
-	}
-
-      /* Actually format the text */
-      for (x=0; x<text->nwords; x++)
-	{
-	  xpos += text->word[x].width;
-	  
-	  if (xpos > CURWIN.winlx)
-	    {
-	      /* This word goes on the next line */
-	      new_line(more, text->font);
-
-	      xpos = CURWIN.xpos + text->word[x].width;
-	      line = CURWIN.lastline;
-	    }
-
-	  if (line->start == NULL)
-	    {
-	      line->offset = text->word[x].start;
-	      line->start  = text;
-	    }
-	  line->n_chars += text->word[x].len;
-	  
-	  if (text->word[x].newline)
-	    {
-	      new_line(more, text->font);
-	      
-	      xpos = CURWIN.xpos;
-	      line = CURWIN.lastline;
-	    }
-	}
-
-      CURWIN.xpos = xpos;
-    }
-
-  if (CURWIN.line != NULL)
-    {
-      SetControlViewSize    (zoomScroll, (CURWIN.winly-CURWIN.winsy));
-      SetControl32BitMinimum(zoomScroll, 
-			     CURWIN.line->baseline - CURWIN.line->ascent - 
-			     CURWIN.winsy);
-      SetControl32BitMaximum(zoomScroll, 0);
-    }
-  else
-    {
-      SetControlViewSize    (zoomScroll, CURWIN.winly-CURWIN.winsy);
-      SetControl32BitMinimum(zoomScroll, 0);
-      SetControl32BitMaximum(zoomScroll, 0);
-      SetControl32BitValue  (zoomScroll, 0);
-    }
-  
-  rct.top    = CURWIN.lastline->baseline - CURWIN.lastline->ascent+BORDERWIDTH;
-  rct.bottom = CURWIN.lastline->baseline + CURWIN.lastline->descent+BORDERWIDTH;
-  rct.left   = BORDERWIDTH;
-  rct.right  = win_x+BORDERWIDTH;
-  InvalWindowRect(zoomWindow, &rct);
-}
-
-void display_prints(const int* str)
-{
-  if (CURWIN.overlay)
-    {
-      int x;
-      Rect rct;
-      int sx;
-
-      if (CURWIN.xpos >= max_x)
-	CURWIN.xpos = max_x-1;
-      if (CURWIN.xpos < 0)
-	CURWIN.xpos = 0;
-      if (CURWIN.ypos >= max_y)
-	CURWIN.ypos = max_y-1;
-      if (CURWIN.ypos < 0)
-	CURWIN.ypos = 0;
-      
-      CURWIN.style |= 8;
-      sx = CURWIN.xpos;
-      
-      /* Is an overlay window */
-      for (x=0; str[x] != 0; x++)
-	{
-	  if (str[x] > 31)
-	    {
-	      if (CURWIN.xpos >= size_x)
-		{
-		  rct.top = CURWIN.ypos*xfont_y+BORDERWIDTH;
-		  rct.bottom = CURWIN.ypos*xfont_y+BORDERWIDTH+xfont_y;
-		  rct.left   = sx*xfont_x+BORDERWIDTH;
-		  rct.right  = win_x+BORDERWIDTH;
-		  InvalWindowRect(zoomWindow, &rct);
-		  sx = 0;
-		  
-		  CURWIN.xpos = 0;
-		  CURWIN.ypos++;
-		}
-	      if (CURWIN.ypos >= size_y)
-		{
-		  CURWIN.ypos = size_y-1;
-		}
-
-	      CURWIN.cline[CURWIN.ypos].cell[CURWIN.xpos] = str[x];
-	      if (CURWIN.style&1)
-		{
-		  CURWIN.cline[CURWIN.ypos].fg[CURWIN.xpos]   = CURWIN.back;
-		  CURWIN.cline[CURWIN.ypos].bg[CURWIN.xpos]   = CURWIN.fore;
-		}
-	      else
-		{
-		  CURWIN.cline[CURWIN.ypos].fg[CURWIN.xpos]   = CURWIN.fore;
-		  CURWIN.cline[CURWIN.ypos].bg[CURWIN.xpos]   = CURWIN.back;
-		}
-	      CURWIN.cline[CURWIN.ypos].font[CURWIN.xpos] = style_font[(CURSTYLE>>1)&15];
-	      
-	      CURWIN.xpos++;
-	    }
-	  else
-	    {
-	      switch (str[x])
-		{
-		case 10:
-		case 13:
-		  rct.top = CURWIN.ypos*xfont_y+BORDERWIDTH;
-		  rct.bottom = CURWIN.ypos*xfont_y+BORDERWIDTH+xfont_y;
-		  rct.left   = sx*xfont_x+BORDERWIDTH;
-		  rct.right  = CURWIN.xpos*xfont_x+BORDERWIDTH;
-		  InvalWindowRect(zoomWindow, &rct);
-
-		  sx = 0;
-		  CURWIN.xpos = 0;
-		  CURWIN.ypos++;
-		  
-		  if (CURWIN.ypos >= size_y)
-		    {
-		      CURWIN.ypos = size_y-1;
-		    }
-		  break;
-		}
-	    }
-	}
-
-      rct.top    = CURWIN.ypos*xfont_y+BORDERWIDTH;
-      rct.bottom = CURWIN.ypos*xfont_y+BORDERWIDTH+xfont_y;
-      rct.left   = sx*xfont_x+BORDERWIDTH;
-      rct.right  = CURWIN.xpos*xfont_x+BORDERWIDTH;
-      InvalWindowRect(zoomWindow, &rct);
-    }
-  else
-    {
-      struct text* text;
-
-      if (str[0] == 0)
-	return;
-
-      text = malloc(sizeof(struct text));
-
-      if (CURWIN.style&1)
-	{
-	  text->fg   = CURWIN.back;
-	  text->bg   = CURWIN.fore;
-	}
-      else
-	{
-	  text->fg   = CURWIN.fore;
-	  text->bg   = CURWIN.back;
-	}
-      text->spacer = 0;
-      text->font   = style_font[(CURSTYLE>>1)&15];
-      text->len    = istrlen(str);
-      text->text   = malloc(sizeof(int)*text->len);
-      text->next   = NULL;
-      text->word   = NULL;
-      text->spoken = 0;
-      memcpy(text->text, str, sizeof(int)*text->len);
-
-      if (CURWIN.lasttext == NULL)
-	{
-	  CURWIN.text = text;
-	  CURWIN.lasttext = text;
-	}
-      else
-	{
-	  CURWIN.lasttext->next = text;
-	  CURWIN.lasttext = text;
-	}
-
-      format_last_text(-1);
-    }
-}
-
-void display_prints_c(const char* str)
-{
-  int* txt;
-  int x, len;
-
-  txt = malloc((len=strlen(str))*sizeof(int)+sizeof(int));
-  for (x=0; x<=len; x++)
-    {
-      txt[x] = str[x];
-    }
-  display_prints(txt);
-  free(txt);
-}
-
-void display_printf(const char* format, ...)
-{
-  va_list  ap;
-  char     string[512];
-  int x,len;
-  int      istr[512];
-
-  va_start(ap, format);
-  vsprintf(string, format, ap);
-  va_end(ap);
-
-  len = strlen(string);
-  
-  for (x=0; x<=len; x++)
-    {
-      istr[x] = string[x];
-    }
-  display_prints(istr);
-}
-
-/***                           ----// 888 \\----                           ***/
-
 int display_readline(int* buf, int buflen, long int timeout)
 {
   int result;
@@ -2723,107 +1938,6 @@ void display_update(void)
 
 /***                           ----// 888 \\----                           ***/
 
-void display_set_colour  (int fore, int back)
-{
-  if (fore == -1)
-    fore = DEFAULT_FORE;
-  if (back == -1)
-    back = DEFAULT_BACK;
-  if (fore == -2)
-    fore = CURWIN.fore - FIRST_ZCOLOUR;
-  if (back == -2)
-    back = CURWIN.back - FIRST_ZCOLOUR;
-
-  CURWIN.fore = fore + FIRST_ZCOLOUR;
-  CURWIN.back = back + FIRST_ZCOLOUR;
-}
-
-/***                           ----// 888 \\----                           ***/
-
-void display_split       (int lines, int window)
-{
-  text_win[window].winsx = CURWIN.winsx;
-  text_win[window].winlx = CURWIN.winsx;
-  text_win[window].winsy = CURWIN.winsy;
-  text_win[window].winly = CURWIN.winsy + xfont_y*lines;
-  text_win[window].xpos  = 0;
-  text_win[window].ypos  = 0;
-
-  CURWIN.topline = NULL;
-  CURWIN.winsy += xfont_y*lines;
-  if (CURWIN.ypos < CURWIN.winsy)
-    {
-      if (CURWIN.line == NULL)
-	start_y = CURWIN.winsy;
-      else
-	{
-	  CURWIN.lasttext->next   = malloc(sizeof(struct text));
-	  CURWIN.lasttext         = CURWIN.lasttext->next;
-	  CURWIN.lasttext->spacer = 1;
-	  CURWIN.lasttext->space  = CURWIN.winsy -
-	    (CURWIN.lastline->baseline + CURWIN.lastline->descent);
-	  CURWIN.lasttext->len    = 0;
-	  CURWIN.lasttext->text   = NULL;
-	  CURWIN.lasttext->font   = style_font[(CURSTYLE>>1)&15];
-	  CURWIN.lasttext->word   = NULL;
-	  CURWIN.lasttext->spoken = 0;
-
-	  if (CURWIN.style&1)
-	    {
-	      CURWIN.lasttext->fg   = CURWIN.back;
-	      CURWIN.lasttext->bg   = CURWIN.fore;
-	    }
-	  else
-	    {
-	      CURWIN.lasttext->fg   = CURWIN.fore;
-	      CURWIN.lasttext->bg   = CURWIN.back;
-	    }
-
-	  format_last_text(0);
-	}
-      CURWIN.ypos = CURWIN.winsy;
-    }
-
-  if (CURWIN.line != NULL)
-    {
-      SetControlViewSize    (zoomScroll, (CURWIN.winly-CURWIN.winsy));
-      SetControl32BitMinimum(zoomScroll, 
-			     CURWIN.line->baseline - CURWIN.line->ascent - 
-			     CURWIN.winsy);
-      SetControl32BitMaximum(zoomScroll, 0);
-    }
-  else
-    {
-      SetControlViewSize    (zoomScroll, CURWIN.winly-CURWIN.winsy);
-      SetControl32BitMinimum(zoomScroll, 0);
-      SetControl32BitMaximum(zoomScroll, 0);
-      SetControl32BitValue  (zoomScroll, 0);
-    }
-}
-
-void display_join        (int window1, int window2)
-{
-  if (text_win[window1].winsy != text_win[window2].winly)
-    return; /* Windows can't be joined */
-  text_win[window1].winsy = text_win[window2].winsy;
-  text_win[window2].winly = text_win[window2].winsy;
-
-  text_win[window1].topline = text_win[window2].topline = NULL;
-}
-
-void display_set_window  (int window)
-{
-  text_win[window].fore  = CURWIN.fore;
-  text_win[window].back  = CURWIN.back;
-  text_win[window].style = CURWIN.style;
-  cur_win = window;
-}
-
-int  display_get_window  (void)
-{
-  return cur_win;
-}
-
 void display_set_more    (int window,
 				 int more)
 {
@@ -2831,120 +1945,11 @@ void display_set_more    (int window,
 
 /***                           ----// 888 \\----                           ***/
 
-void display_set_cursor  (int x, int y)
-{
-  if (CURWIN.overlay)
-    {
-      CURWIN.xpos = x;
-      CURWIN.ypos = y;
-    }
-  else
-    {
-      if (CURWIN.line != NULL)
-	zmachine_fatal("Can't move the cursor in a non-overlay window when text has been printed");
-
-      CURWIN.xpos = x*xfont_x;
-      CURWIN.ypos = y*xfont_y;
-      start_y = CURWIN.ypos;
-    }
-}
-
-void display_set_gcursor (int x, int y)
-{
-  display_set_cursor(x, y);
-}
-
 void display_set_scroll  (int scroll)
 {
 }
 
-int  display_get_gcur_x  (void)
-{
-  return CURWIN.xpos;
-}
-
-int  display_get_gcur_y  (void)
-{
-  return CURWIN.ypos;
-}
-
-int  display_get_cur_x   (void)
-{
-  return CURWIN.xpos;
-}
-
-int  display_get_cur_y   (void)
-{
-  return CURWIN.ypos;
-}
-
 /***                           ----// 888 \\----                           ***/
-
-int  display_set_font    (int font)
-{
-  switch (font)
-    {
-    case -1:
-      display_set_style(-16);
-      break;
-
-    default:
-      break;
-    }
-
-  return 0;
-}
-
-int  display_set_style   (int style)
-{
-  int old_style;
-
-  old_style = CURWIN.style;
-  
-  if (style == 0)
-    CURWIN.style = 0;
-  else
-    {
-      if (style > 0)
-	CURWIN.style |= style;
-      else
-	CURWIN.style &= ~(-style);
-    }
-
-  dassert(CURWIN.style < 32);
-  dassert(style_font[(CURWIN.style>>1)&15] >= 0);
-  dassert(style_font[(CURWIN.style>>1)&15] <= n_fonts);
-
-  return old_style;
-}
-
-void display_erase_line  (int val)
-{
-  if (CURWIN.overlay)
-    {
-      int x;
-      
-      if (val == 1)
-	val = size_x;
-      else
-	val += CURWIN.xpos;
-
-      dassert(style_font[4] >= 0 &&
-	      style_font[4] <= n_fonts);
-      for (x=CURWIN.xpos; x<val; x++)
-	{
-	  CURWIN.cline[CURWIN.ypos].cell[x] = ' ';
-	  CURWIN.cline[CURWIN.ypos].fg[x]   = CURWIN.back;
-	  CURWIN.cline[CURWIN.ypos].bg[x]   = 255;
-	  CURWIN.cline[CURWIN.ypos].font[x] = style_font[4];
-	}
-    }
-}
-
-void display_force_fixed (int window, int val)
-{
-  CURWIN.force_fixed = val;
-}
 
 void display_beep        (void)
 {

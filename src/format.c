@@ -401,6 +401,9 @@ void format_last_text(int more)
 	  int s;
 
 	  s = line->start==text?line->offset:0;
+	  if (text->text[s] == '\n')
+	    s++;
+
 	  xpos = text_start + xfont_get_text_width(fn,
 						   text->text+s,
 						   text->word[x].start+
