@@ -189,8 +189,6 @@ int zoom_main(int argc, char** argv)
 	file[x] = 0;
 	strcat(file, ".blb");
 
-	printf("Checking for '%s'\n", file);
-
 	if (get_file_size(file) > 64)
 	  {
 	    ZFile* bf;

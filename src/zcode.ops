@@ -2630,7 +2630,20 @@ OPCODE "picture_data"  EXT:0x06 BRANCH        VERSION 6
   if (argblock.arg[0] == 0)
     {
       if (machine.blorb != NULL)
-        result = 1;
+	{
+          result = 1;
+	  if (argblock.n_args > 1)
+	    {
+	      unsigned char* mem;
+
+              mem = Address(argblock.arg[1]);
+	      mem[0] = machine.blorb->index.npictures>>8;
+	      mem[1] = machine.blorb->index.npictures;
+
+	      mem[2] = machine.blorb->release>>8;
+              mem[3] = machine.blorb->release;
+	    }
+ 	}
       else
         result = 0;
 

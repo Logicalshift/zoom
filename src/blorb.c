@@ -98,6 +98,8 @@ BlorbFile* blorb_loadfile(ZFile* file)
 
   res->reso.offset     = -1;
   res->reso.length     = -1;
+  
+  res->release = -1;
 
   /* Decode and allocate space for each of the chunks in the file */
   for (x=0; x<iff->nchunks; x++)
@@ -110,6 +112,11 @@ BlorbFile* blorb_loadfile(ZFile* file)
 
 	  if (x != 0)
 	    zmachine_warning("Blorb: Technically, the index chunk should be the very first chunk in a file. Zoom doesn't care, though");
+	}
+      else if (cmp_token(iff->chunk[x].id, "JPEG"))
+	{
+	  /* JPEG image chunk */
+	  zmachine_warning("Due to patent restrictions, Zoom does not support JPEG images");
 	}
       else if (cmp_token(iff->chunk[x].id, "PNG "))
 	{
@@ -173,17 +180,14 @@ BlorbFile* blorb_loadfile(ZFile* file)
       else if (cmp_token(iff->chunk[x].id, "FORM"))
 	{
 	  /* FORM chunk */
-	  printf("FORM chunk: most likely an AIFF iff\n");
 	}
       else if (cmp_token(iff->chunk[x].id, "MOD "))
 	{
 	  /* MOD chunk */
-	  printf("MOD chunk\n");
 	}
       else if (cmp_token(iff->chunk[x].id, "SONG"))
 	{
 	  /* SONG chunk */
-	  printf("SONG chunk\n");
 	}
       else if (cmp_token(iff->chunk[x].id, "Plte"))
 	{
@@ -202,6 +206,11 @@ BlorbFile* blorb_loadfile(ZFile* file)
       else if (cmp_token(iff->chunk[x].id, "RelN"))
 	{
 	  /* Release number chunk */
+	  data = read_block(file,
+			    iff->chunk[x].offset, 
+			    iff->chunk[x].offset+2);
+	  res->release = (data[0]<<8)|data[1];
+	  free(data);
 	}
       else if (cmp_token(iff->chunk[x].id, "IFhd"))
 	{
@@ -327,7 +336,46 @@ BlorbFile* blorb_loadfile(ZFile* file)
 	}
       else if (cmp_token(data, "Snd "))
 	{
-	  printf("Sound...\n");
+	  int y;
+
+	  /* Check that this does indeed point to a chunk within the file */
+	  for (y=0; y<iff->nchunks; y++)
+	    {
+	      if (iff->chunk[y].offset == offset+8)
+		break;
+	    }
+
+	  if (y>=iff->nchunks)
+	    {
+	      zmachine_warning("Blorb: sound #%i does not refer to a resource");
+	    }
+	  else
+	    {
+	      BlorbSound snd;
+
+	      snd.type = TYPE_UNKNOWN;
+	      snd.file_offset = iff->chunk[y].offset;
+	      snd.file_len    = iff->chunk[y].length;
+	      snd.number      = number;
+
+	      if (cmp_token(iff->chunk[y].id, "FORM"))
+		{
+		  snd.type = TYPE_AIFF;
+		}
+	      else if (cmp_token(iff->chunk[y].id, "MOD "))
+		{
+		  snd.type = TYPE_MOD;
+		}
+	      else if (cmp_token(iff->chunk[y].id, "SONG"))
+		{
+		  snd.type = TYPE_SONG;
+		}
+
+	      res->index.nsounds++;
+	      res->index.sound = realloc(res->index.sound,
+					 sizeof(BlorbSound)*res->index.nsounds);
+	      res->index.sound[res->index.nsounds-1] = snd;
+	    }
 	}
       else if (cmp_token(data, "Exec"))
 	{
@@ -430,6 +478,19 @@ BlorbImage* blorb_findimage(BlorbFile* blb, int number)
   return res;
 }
 
+BlorbSound* blorb_findsound(BlorbFile* blorb, int num)
+{
+  int x;
+
+  for (x=0; x<blorb->index.nsounds; x++)
+    {
+      if (blorb->index.sound[x].number == num)
+	return &blorb->index.sound[x];
+    }
+
+  return NULL;
+}
+
 void blorb_closefile(BlorbFile* blorb)
 {
   if (blorb->game_id != NULL)
@@ -447,6 +508,9 @@ void blorb_closefile(BlorbFile* blorb)
 
       free(blorb->index.picture);
     }
+
+  if (blorb->index.sound != NULL)
+    free(blorb->index.sound);
 
   if (blorb->copyright != NULL)
     free(blorb->copyright);

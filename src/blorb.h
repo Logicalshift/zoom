@@ -100,7 +100,17 @@ struct BlorbImage
 
 struct BlorbSound
 {
+  enum
+    {
+      TYPE_AIFF,
+      TYPE_MOD,
+      TYPE_SONG,
+      
+      TYPE_UNKNOWN
+    }
+  type;
   int file_offset;
+  int file_len;
   int number;
 };
 
@@ -134,6 +144,8 @@ struct BlorbFile
 
   IffFile* file;
 
+  int release;
+
   char* copyright;
   char* author;
 };
@@ -142,5 +154,6 @@ int         blorb_is_blorbfile(ZFile* file);
 BlorbFile*  blorb_loadfile    (ZFile* file);
 void        blorb_closefile   (BlorbFile* file);
 BlorbImage* blorb_findimage   (BlorbFile* blorb, int num);
+BlorbSound* blorb_findsound   (BlorbFile* blorb, int num);
 
 #endif
