@@ -860,6 +860,30 @@ static void zcode_op_readchar(ZDWord* pc,
 	  return;
 	}
     }
+
+  if (chr == 254 || chr == 253)
+    {
+      if (machine.heb != NULL && machine.heblen >= 3)
+	{
+	  int x,y;
+
+	  x = display_get_mouse_x();
+	  y = display_get_mouse_y();
+
+	  if (!machine.graphical)
+	    {
+	      x /= machine.dinfo->font_width;
+	      y /= machine.dinfo->font_height;
+	      x += 1;
+	      y += 1;
+	    }
+
+	  machine.heb[ZHEB_xmouse]   = x>>8;
+	  machine.heb[ZHEB_xmouse+1] = x;
+	  machine.heb[ZHEB_ymouse]   = y>>8;
+	  machine.heb[ZHEB_ymouse+1] = y;
+	}
+    }
   
   store(stack, st, chr);
 }
@@ -911,15 +935,48 @@ static void zcode_op_aread_5678(ZDWord* pc,
 
   stream_flush_buffer();
 
+  if (Word(ZH_termtable) != 0)
+    {
+      char* table = NULL;
+      int pos, tablelen;
+
+      tablelen = 0;
+
+      for (pos = Word(ZH_termtable);
+	   Byte(pos) != 0;
+	   pos++)
+	{
+	  if (Byte(pos) < 129 || (Byte(pos) > 154 &&
+				  Byte(pos) < 252))
+	    {
+	      zmachine_warning("Only characters in the range 129-154 (and 252-255) are valid terminating characters");
+	    }
+	  table = realloc(table, tablelen+2);
+	  table[tablelen++] = Byte(pos);
+	  table[tablelen]   = 0;
+	}
+
+      display_terminating(table);
+    }
+  else
+    display_terminating(NULL);
+
   if (args->arg[2] == 0)
     {
-      stream_readline(buf, mem[0], 0);
+      int res;
+      
+      res = stream_readline(buf, mem[0], 0);
+      display_terminating(NULL);
+
+      store(stack, st, res);
     }
   else
     {
       int res;
 
       res = stream_readline(buf, mem[0], args->arg[2]*100);
+      display_terminating(NULL);
+      store(stack, st, res);
       
       if (!res)
 	{
@@ -980,8 +1037,6 @@ static void zcode_op_aread_5678(ZDWord* pc,
     }
 
   free(buf);
-
-  store(stack, st, 10);
 }
 
 static ZDWord scan_table(ZUWord word,

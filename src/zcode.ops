@@ -1708,13 +1708,13 @@ OPCODE "sound_effect"   VAR:0x15                      VERSION all # 3,4,5,6,7,8
   display_beep();
 %}
 
-OPCODE "read_char"      VAR:0x16 ARGS:3 STORE         VERSION 4,5,6,7,8
+OPCODE "read_char"      VAR:0x16 ARGS:3 STORE CANJUMP VERSION 4,5,6,7,8
 %{
   stream_flush_buffer();
 
   if (argblock.n_args < 2)
     {
-      store(stack, st, display_readchar(0));
+      zcode_op_readchar(&pc, stack, &argblock, st);
     }
   else
     {

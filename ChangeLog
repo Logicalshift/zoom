@@ -1,3 +1,7 @@
+2000-12-14  Andrew Hunter    <andrew@logicalshift.co.uk>
+
+	* finally added function key and mouse support
+
 2000-12-11  Andrew Hunter    <andrew@logicalshift.co.uk>
 
 	* fixed equally stupid bug where argp was no longer being detected

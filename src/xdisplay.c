@@ -134,6 +134,8 @@ static int style_font[16] = {  0, 0, 0, 0, 3, 3, 3, 3,
 			      -1,-1,-1,-1,-1,-1,-1,-1 };
 static int reverse = 0;
 
+static int click_x, click_y;
+
 static int (*newline_func)(const int*, int) = NULL;
 
 typedef struct history_item
@@ -172,7 +174,19 @@ static int process_events(long int, int*, int);
 static void draw_window(void);
 static void display_more(void);
 
-int moretext[] = { 91, 77, 79, 82, 69, 93, 0 };
+int moretext[] = { '[', 'M', 'O', 'R', 'E', ']', 0 };
+
+static unsigned char terminating[256] =
+{
+  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 
+  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 
+  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 
+  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 
+  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 
+  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 
+  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 
+  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0
+};
 
 /***                           ----// 888 \\----                           ***/
 
@@ -286,7 +300,7 @@ void display_initialise(void)
       x_colour[x+FIRST_ZCOLOUR].blue  = cols[x].b<<8;
     }
   
-  win_attr.event_mask = ExposureMask|KeyPressMask|KeyReleaseMask|StructureNotifyMask;
+  win_attr.event_mask = ExposureMask|KeyPressMask|KeyReleaseMask|StructureNotifyMask|ButtonPressMask;
   win_attr.background_pixel = x_colour[0].pixel;
 
   /* Create the main window */
@@ -924,7 +938,7 @@ int display_readline(int* buf, int buflen, long int timeout)
   printf("Input >%s<\n", buf);
 #endif
 
-  if (result)
+  if (result == 10)
     new_line(0);
 
   return result;
@@ -1358,6 +1372,43 @@ int process_events(long int to, int* buf, int buflen)
 			case XK_Delete:
 			  keybuf[bufsize++] = 8;
 			  goto gotkeysym;
+
+			case XK_F1:
+			  keybuf[bufsize++] = 133;
+			  goto gotkeysym;
+			case XK_F2:
+			  keybuf[bufsize++] = 134;
+			  goto gotkeysym;
+			case XK_F3:
+			  keybuf[bufsize++] = 135;
+			  goto gotkeysym;
+			case XK_F4:
+			  keybuf[bufsize++] = 136;
+			  goto gotkeysym;
+			case XK_F5:
+			  keybuf[bufsize++] = 137;
+			  goto gotkeysym;
+			case XK_F6:
+			  keybuf[bufsize++] = 138;
+			  goto gotkeysym;
+			case XK_F7:
+			  keybuf[bufsize++] = 139;
+			  goto gotkeysym;
+			case XK_F8:
+			  keybuf[bufsize++] = 140;
+			  goto gotkeysym;
+			case XK_F9:
+			  keybuf[bufsize++] = 141;
+			  goto gotkeysym;
+			case XK_F10:
+			  keybuf[bufsize++] = 142;
+			  goto gotkeysym;
+			case XK_F11:
+			  keybuf[bufsize++] = 143;
+			  goto gotkeysym;
+			case XK_F12:
+			  keybuf[bufsize++] = 144;
+			  goto gotkeysym;
 			}
 		    }
 		gotkeysym:
@@ -1389,30 +1440,89 @@ int process_events(long int to, int* buf, int buflen)
 		      switch (ks)
 			{
 			case XK_Left:
+			  if (terminating[131])
+			    {
+			      if (caret)
+				{
+				  caret = 0;
+				  XDrawLine(x_display, x_mainwin, x_caretgc,
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1),
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1)+caret_h);
+				}
+			      
+			      return 131;
+			    }
 			  if (inputpos>0)
 			    inputpos--;
 			  goto gotkeysym2;
 
 			case XK_Right:
+			  if (terminating[132])
+			    {
+			      if (caret)
+				{
+				  caret = 0;
+				  XDrawLine(x_display, x_mainwin, x_caretgc,
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1),
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1)+caret_h);
+				}
+			      
+			      return 132;
+			    }
 			  if (buf[inputpos] != 0)
 			    inputpos++;
 			  goto gotkeysym2;
 
 			case XK_Up:
-			  if (history == NULL)
-			    history = last_string;
-			  else
-			    if (history->next != NULL)
-			      history = history->next;
-			  if (history != NULL)
+			  if (terminating[129])
 			    {
-			      if (istrlen(history->string) < buflen)
-				istrcpy(buf, history->string);
-			      inputpos = istrlen(buf);
+			      if (caret)
+				{
+				  caret = 0;
+				  XDrawLine(x_display, x_mainwin, x_caretgc,
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1),
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1)+caret_h);
+				}
+			      
+			      return 129;
+			    }
+			  else
+			    {
+			      if (history == NULL)
+				history = last_string;
+			      else
+				if (history->next != NULL)
+				  history = history->next;
+			      if (history != NULL)
+				{
+				  if (istrlen(history->string) < buflen)
+				    istrcpy(buf, history->string);
+				  inputpos = istrlen(buf);
+				}
 			    }
 			  goto gotkeysym2;
 
 			case XK_Down:
+			  if (terminating[130])
+			    {
+			      if (caret)
+				{
+				  caret = 0;
+				  XDrawLine(x_display, x_mainwin, x_caretgc,
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1),
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1)+caret_h);
+				}
+			      
+			      return 130;
+			    }
 			  if (history != NULL)
 			    {
 			      history = history->last;
@@ -1482,7 +1592,188 @@ int process_events(long int to, int* buf, int buflen)
 					caret_y+((win_height-win_y)>>1)+caret_h);
 			    }
 
-			  return 1;
+			  return 10;
+
+			case XK_F1:
+			  if (terminating[133])
+			    {
+			      if (caret)
+				{
+				  caret = 0;
+				  XDrawLine(x_display, x_mainwin, x_caretgc,
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1),
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1)+caret_h);
+				}
+			      return 133;
+			    }
+			  break;
+			case XK_F2:
+			  if (terminating[134])
+			    {
+			      if (caret)
+				{
+				  caret = 0;
+				  XDrawLine(x_display, x_mainwin, x_caretgc,
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1),
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1)+caret_h);
+				}
+			      return 134;
+			    }
+			  break;
+			case XK_F3:
+			  if (terminating[135])
+			    {
+			      if (caret)
+				{
+				  caret = 0;
+				  XDrawLine(x_display, x_mainwin, x_caretgc,
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1),
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1)+caret_h);
+				}
+			      return 135;
+			    }
+			  break;
+			case XK_F4:
+			  if (terminating[136])
+			    {
+			      if (caret)
+				{
+				  caret = 0;
+				  XDrawLine(x_display, x_mainwin, x_caretgc,
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1),
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1)+caret_h);
+				}
+			      return 136;
+			    }
+			  break;
+			case XK_F5:
+			  if (terminating[137])
+			    {
+			      if (caret)
+				{
+				  caret = 0;
+				  XDrawLine(x_display, x_mainwin, x_caretgc,
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1),
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1)+caret_h);
+				}
+			      return 137;
+			    }
+			  break;
+			case XK_F6:
+			  if (terminating[138])
+			    {
+			      if (caret)
+				{
+				  caret = 0;
+				  XDrawLine(x_display, x_mainwin, x_caretgc,
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1),
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1)+caret_h);
+				}
+			      return 138;
+			    }
+			  break;
+			case XK_F7:
+			  if (terminating[139])
+			    {
+			      if (caret)
+				{
+				  caret = 0;
+				  XDrawLine(x_display, x_mainwin, x_caretgc,
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1),
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1)+caret_h);
+				}
+			      return 139;
+			    }
+			  break;
+			case XK_F8:
+			  if (terminating[140])
+			    {
+			      if (caret)
+				{
+				  caret = 0;
+				  XDrawLine(x_display, x_mainwin, x_caretgc,
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1),
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1)+caret_h);
+				}
+			      return 140;
+			    }
+			  break;
+			case XK_F9:
+			  if (terminating[141])
+			    {
+			      if (caret)
+				{
+				  caret = 0;
+				  XDrawLine(x_display, x_mainwin, x_caretgc,
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1),
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1)+caret_h);
+				}
+			      return 141;
+			    }
+			  break;
+			case XK_F10:
+			  if (terminating[142])
+			    {
+			      if (caret)
+				{
+				  caret = 0;
+				  XDrawLine(x_display, x_mainwin, x_caretgc,
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1),
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1)+caret_h);
+				}
+			      return 142;
+			    }
+			  break;
+			case XK_F11:
+			  if (terminating[143])
+			    {
+			      if (caret)
+				{
+				  caret = 0;
+				  XDrawLine(x_display, x_mainwin, x_caretgc,
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1),
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1)+caret_h);
+				}
+			      return 143;
+			    }
+			  break;
+			case XK_F12:
+			  if (terminating[144])
+			    {
+			      if (caret)
+				{
+				  caret = 0;
+				  XDrawLine(x_display, x_mainwin, x_caretgc,
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1),
+					    caret_x+((win_width-win_x)>>1),
+					    caret_y+((win_height-win_y)>>1)+caret_h);
+				}
+			      return 144;
+			    }
+			  break;
 			}
 		    }
 		gotkeysym2:
@@ -1526,6 +1817,24 @@ int process_events(long int to, int* buf, int buflen)
 	      win_top    = (win_height-win_y)>>1;
 	      break;
 
+	    case ButtonPress:
+	      if (terminating[254] || buf == NULL)
+		{
+		  if (caret)
+		    {
+		      caret = 0;
+		      XDrawLine(x_display, x_mainwin, x_caretgc,
+				caret_x+((win_width-win_x)>>1),
+				caret_y+((win_height-win_y)>>1),
+				caret_x+((win_width-win_x)>>1),
+				caret_y+((win_height-win_y)>>1)+caret_h);
+		    }
+		  click_x = ev.xbutton.x-win_left;
+		  click_y = ev.xbutton.y-win_top;
+		  return 254;
+		}
+	      break;
+
 	    case ClientMessage:
 	      if (ev.xclient.message_type == wmprots)
 		{
@@ -1565,6 +1874,45 @@ int process_events(long int to, int* buf, int buflen)
 void display_beep(void)
 {
   XBell(x_display, 70);
+}
+
+/*
+ * Sets the terminating characters selection
+ */
+void display_terminating(unsigned char* table)
+{
+  int x;
+
+  for (x=0; x<256; x++)
+    terminating[x] = 0;
+
+  if (table != NULL)
+    {
+      for (x=0; table[x] != 0; x++)
+	{
+	  terminating[table[x]] = 1;
+
+	  if (table[x] == 255)
+	    {
+	      int y;
+
+	      for (y=129; y<=154; y++)
+		terminating[y] = 1;
+	      for (y=252; y<255; y++)
+		terminating[y] = 1;
+	    }
+	}
+    }
+}
+
+int display_get_mouse_x(void)
+{
+  return click_x;
+}
+
+int display_get_mouse_y(void)
+{
+  return click_y;
 }
 
 /***                           ----// 888 \\----                           ***/

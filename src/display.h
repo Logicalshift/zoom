@@ -112,6 +112,10 @@ extern void display_erase_line  (int val);
 extern void display_force_fixed (int window, int val);
 extern void display_beep        (void);
 
+extern void display_terminating (unsigned char* table);
+extern int  display_get_mouse_x (void);
+extern int  display_get_mouse_y (void);
+
 /* Version 6 display */
 extern void display_set_window (int window);
 

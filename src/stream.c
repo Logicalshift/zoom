@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <ctype.h>
 
 #include "zmachine.h"
 #include "stream.h"
@@ -338,8 +339,9 @@ void stream_remove_buffer(const char* s)
 
   for (x=len-1; x>=0; x--)
     {
-      if (buffer[bufpos-1] != s[x])
+      if (tolower(buffer[bufpos-1]) != tolower(s[x]))
 	return;
+      printf("Removing %i\n", s[x]);
       bufpos--;
     }
 }

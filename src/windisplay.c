@@ -211,6 +211,19 @@ static history_item* last_string = NULL;
 static void draw_input_text(HDC dc);
 static void update_status_text(void);
 
+static unsigned char terminating[256] =
+{
+  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 
+  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 
+  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 
+  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 
+  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 
+  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 
+  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 
+  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0
+};
+static int click_x, click_y;
+
 /***                           ----// 888 \\----                           ***/
 
 static inline int istrlen(const int* string)
@@ -1471,6 +1484,44 @@ void display_force_fixed(int window,
 			 int val)
 {
   CURWIN.force_fixed = val;
+}
+
+/***                           ----// 888 \\----                           ***/
+
+void display_terminating(unsigned char* table)
+{
+  int x;
+
+  for (x=0; x<256; x++)
+    terminating[x] = 0;
+
+  if (table != NULL)
+    {
+      for (x=0; table[x] != 0; x++)
+	{
+	  terminating[table[x]] = 1;
+
+	  if (table[x] == 255)
+	    {
+	      int y;
+
+	      for (y=129; y<=154; y++)
+		terminating[y] = 1;
+	      for (y=252; y<255; y++)
+		terminating[y] = 1;
+	    }
+	}
+    }
+}
+
+int display_get_mouse_x(void)
+{
+  return click_x;
+}
+
+int display_get_mouse_y(void)
+{
+  return click_y;
 }
 
 /***                           ----// 888 \\----                           ***/
@@ -2749,11 +2800,94 @@ static int process_events(long int timeout,
 		      text_buf = NULL;
 		      display_prints(buf);
 		      display_prints_c("\n");
-		      event_return(1);
+		      event_return(10);
+
+		    case VK_F1:
+		      if (terminating[133])
+			{
+			  event_return(133);
+			}
+		      break;
+		    case VK_F2:
+		      if (terminating[134])
+			{
+			  event_return(134);
+			}
+		      break;
+		    case VK_F3:
+		      if (terminating[135])
+			{
+			  event_return(135);
+			}
+		      break;
+		    case VK_F4:
+		      if (terminating[136])
+			{
+			  event_return(136);
+			}
+		      break;
+		    case VK_F5:
+		      if (terminating[137])
+			{
+			  event_return(137);
+			}
+		      break;
+		    case VK_F6:
+		      if (terminating[138])
+			{
+			  event_return(138);
+			}
+		      break;
+		    case VK_F7:
+		      if (terminating[139])
+			{
+			  event_return(139);
+			}
+		      break;
+		    case VK_F8:
+		      if (terminating[140])
+			{
+			  event_return(140);
+			}
+		      break;
+		    case VK_F9:
+		      if (terminating[141])
+			{
+			  event_return(141);
+			}
+		      break;
+		    case VK_F10:
+		      if (terminating[142])
+			{
+			  event_return(142);
+			}
+		      break;
+		    case VK_F11:
+		      if (terminating[143])
+			{
+			  event_return(143);
+			}
+		      break;
+		    case VK_F12:
+		      if (terminating[144])
+			{
+			  event_return(144);
+			}
+		      break;
 		      
 		    default:
 		      TranslateMessage(&msg);
 		    }
+		}
+	      break;
+
+	    case WM_LBUTTONDOWN:
+	      if (terminating[254] || buf == NULL)
+		{
+		  click_x = (LOWORD(msg.lParam)-4)/xfont_x;
+		  click_y = (HIWORD(msg.lParam)-4)/xfont_y;
+
+		  event_return(254);
 		}
 	      break;
 	      
