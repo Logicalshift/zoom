@@ -871,7 +871,7 @@ static pascal OSStatus pref_wnd_evt(EventHandlerCallRef handler,
 		  if (!islocal)
 		    {
 		      if (!carbon_ask_question("Make these fonts global?",
-					  "You are changing the font settings from applying only to this game to applying to all games: this will make these fonts the default for all games. If you want to revert to the current global settings, use the 'Restore Defaults' button",
+					       "You are changing the font settings from applying only to this game to applying to all games: this will make these fonts the default for all games. If you want to revert to the current global settings, use the 'Use global fonts' button",
 					  "Use these fonts", "Cancel", 2))
 			{
 			  islocal = 1;
@@ -897,6 +897,104 @@ static pascal OSStatus pref_wnd_evt(EventHandlerCallRef handler,
 		  /* Update... */
 		  pref_store();
 		}
+		break;
+
+	      case CARBON_RESCOLS:
+		{
+		  ControlID cid;
+		  ControlRef cntl;
+		  
+		  DataBrowserItemID items[40];
+
+		  int x;
+
+		  cid.signature = CARBON_COLLIST;
+		  cid.id        = CARBON_COLLISTID;
+		  GetControlByID(carbon_prefdlog, &cid, &cntl);
+
+		  /* Redo the colours with the defaults */
+		  for (x=0; x<rc_defgame->n_colours; x++)
+		    {
+		      maccolour[x+6].red =
+			colour_copy[x].red =
+			rc_defgame->colours[x].r<<8;
+		      maccolour[x+6].green =
+			colour_copy[x].green =
+			rc_defgame->colours[x].g<<8;
+		      maccolour[x+6].blue =
+			colour_copy[x].blue =
+			rc_defgame->colours[x].b<<8;
+		    }
+
+		  /* Update the display */		  
+		  for (x=0; x < 11; x++)
+		    {
+		      items[x] = x+1;
+		    }
+		  UpdateDataBrowserItems(cntl, kDataBrowserNoItem, 11, items, 0, 'Samp');
+
+		  /* Mark as using the global colours */	  
+		  cid.signature = CARBON_COLLOC;
+		  cid.id = CARBON_COLLOCID;
+		  GetControlByID(carbon_prefdlog, &cid, &cntl);
+		  SetControlValue(cntl, kControlCheckBoxUncheckedValue);
+
+		  /* Deactivate the control */
+		  cid.signature = CARBON_RESCOLS;
+		  cid.id = CARBON_RESCOLSID;
+		  GetControlByID(carbon_prefdlog, &cid, &cntl);
+		  DeactivateControl(cntl);
+
+		  /* Store */
+		  pref_store();
+		}
+		break;
+		
+	      case CARBON_COLLOC:
+		{
+		  WindowRef lastmsg;
+		  ControlID cid;
+		  ControlRef cntl;
+		  int islocal;
+
+		  lastmsg = carbon_message_win;
+		  carbon_message_win = carbon_prefdlog;
+
+		  cid.signature = CARBON_COLLOC;
+		  cid.id = CARBON_COLLOCID;
+		  GetControlByID(carbon_prefdlog, &cid, &cntl);
+
+		  islocal = GetControlValue(cntl)==kControlCheckBoxCheckedValue;
+
+		  if (!islocal)
+		    {
+		      if (!carbon_ask_question("Make these colours global?",
+					       "You are changing the colour settings from applying only to this game to applying to all games: this will make these colours the default for all games. If you want to revert to the current global settings, use the 'Use global colours' button",
+					  "Use these colours", "Cancel", 2))
+			{
+			  islocal = 1;
+			  SetControlValue(cntl, kControlCheckBoxCheckedValue);
+			}
+		    }
+
+		  cid.signature = CARBON_RESCOLS;
+		  cid.id = CARBON_RESCOLSID;
+		  GetControlByID(carbon_prefdlog, &cid, &cntl);
+
+		  if (islocal)
+		    {
+		      ActivateControl(cntl);
+		    }
+		  else
+		    {
+		      DeactivateControl(cntl);
+		    }
+		      
+		  carbon_message_win = lastmsg;
+
+		  /* Update... */
+		  pref_store();
+		}		
 		break;
 
 	      case CARBON_RENDER:

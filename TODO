@@ -13,7 +13,8 @@ Hmm, this file was a bit out of date.
  X segfault on window resize occasionally
  X problem with resize when 'MORE' is displayed.
  X startup message
- * Colour preference thing
+ X Colour preference thing
+ * Colour preference change redraw bug...
  * warning for non-fixed font set as fixed font
  * reset pixmap display on restart under v6
  * drag and drop support for file loading
