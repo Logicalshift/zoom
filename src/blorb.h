@@ -37,6 +37,7 @@ typedef struct BlorbIndex      BlorbIndex;
 typedef struct BlorbImage      BlorbImage;
 typedef struct BlorbSound      BlorbSound;
 typedef struct BlorbResolution BlorbResolution;
+typedef struct BlorbID         BlorbID;
 typedef struct BlorbFile       BlorbFile;
 
 /* General IFF-reading routines */
@@ -112,15 +113,22 @@ struct BlorbResolution
   int maxx, maxy;
 };
 
+struct BlorbID
+{
+  ZUWord release;
+  ZByte  serial[6];
+  ZUWord checksum;
+};
+
 struct BlorbFile
 {
   BlorbIndex index;
 
   ZFile* source;
 
-  int zcode_offset, zcode_len;
-  int release_number;
-  char* game_id;
+  int      zcode_offset, zcode_len;
+  int      release_number;
+  BlorbID* game_id;
   
   BlorbResolution reso;
 
@@ -132,6 +140,7 @@ struct BlorbFile
 
 int         blorb_is_blorbfile(ZFile* file);
 BlorbFile*  blorb_loadfile    (ZFile* file);
+void        blorb_closefile   (BlorbFile* file);
 BlorbImage* blorb_findimage   (BlorbFile* blorb, int num);
 
 #endif

@@ -206,6 +206,23 @@ BlorbFile* blorb_loadfile(ZFile* file)
       else if (cmp_token(iff->chunk[x].id, "IFhd"))
 	{
 	  /* Game ID chunk */
+	  if (iff->chunk[x].length == 13)
+	    {
+	      data = read_block(file,
+				iff->chunk[x].offset,
+				iff->chunk[x].offset+64);
+	      res->game_id = malloc(sizeof(BlorbID));
+	      res->game_id->release = (data[0]<<8)|data[1];
+	      res->game_id->checksum = (data[8]<<8)|data[9];
+	      memcpy(res->game_id->serial,
+		     data + 2,
+		     6);
+	      free(data);
+	    }
+	  else
+	    {
+	      zmachine_warning("Blorb: IFhd chunk is apparently not a Z-Code IFhd");
+	    }
 	}
       else if (cmp_token(iff->chunk[x].id, "(c) "))
 	{
@@ -411,4 +428,30 @@ BlorbImage* blorb_findimage(BlorbFile* blb, int number)
     }
 
   return res;
+}
+
+void blorb_closefile(BlorbFile* blorb)
+{
+  if (blorb->game_id != NULL)
+    free(blorb->game_id);
+
+  if (blorb->index.picture != NULL)
+    {
+      int x;
+
+      for (x=0; x<blorb->index.npictures; x++)
+	{
+	  if (blorb->index.picture[x].loaded != NULL)
+	    image_unload(blorb->index.picture[x].loaded);
+	}
+
+      free(blorb->index.picture);
+    }
+
+  if (blorb->copyright != NULL)
+    free(blorb->copyright);
+  if (blorb->author != NULL)
+    free(blorb->author);
+
+  free(blorb);
 }

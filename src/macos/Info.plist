@@ -51,11 +51,23 @@
 			<key>CFBundleTypeIconFile</key>
 			<string>zoom-file.icns</string>
 			<key>CFBundleTypeName</key>
-			<string>Blorb bundle</string>
+			<string>Blorb resource bundle</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
 				<string>IFRS</string>
 			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+	                        <string>zlb</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>zoom-game.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>Z-Code blorb bundle</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 		</dict>

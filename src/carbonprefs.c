@@ -1057,6 +1057,62 @@ static pascal void font_draw_cb(ControlRef            browser,
 #endif
 }
 
+void carbon_prefs_set_resources(char* path)
+{
+  BlorbFile* file;
+  ZFile*     rfile;
+ 
+  /* Read the file... See if it looks good... */
+  rfile = open_file(path);
+  if (rfile != NULL)
+    file = blorb_loadfile(rfile);
+  
+  /* Read failure? */
+  if (rfile == NULL || file == NULL)
+    {
+      char* msg;
+
+      if (rfile == NULL)
+	msg = "Unable to read file: access error";
+      else
+	{
+	  close_file(rfile);
+	  msg = "Unable to read file: not a Blorb file";
+	}
+      
+      carbon_display_message("Resource file load error", msg);
+      
+      return;
+    }
+  
+  /* Doesn't belong to this game? */
+  if (file->game_id != NULL)
+    {
+      if ((ZUWord)Word(ZH_release) != file->game_id->release ||
+	  (ZUWord)Word(ZH_checksum) != file->game_id->checksum ||
+	  memcmp(Address(ZH_serial), file->game_id->serial, 6) != 0)
+	{
+	  if (!carbon_ask_question("Resource file does not match currently loaded game", "The resource file you are trying to load does not appear to correspond to the game you are running: are you sure you want to use this file?",
+				   "Use file", "Cancel", 1))
+	    {
+	      blorb_closefile(file);
+	      close_file(rfile);
+	      return;
+	    }
+	}
+    }
+  
+  if (machine.blorb != NULL)
+    {
+      blorb_closefile(machine.blorb);
+      close_file(machine.blorb_file);
+    }
+  
+  machine.blorb = file;
+  machine.blorb_tokens = file->file;
+  machine.blorb_file = rfile; 
+}
+
 /* Function to set up the contents of the preferences dialog */
 static void pref_setup(void)
 {

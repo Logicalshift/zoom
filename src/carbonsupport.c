@@ -38,6 +38,7 @@
 #include "zoomres.h"
 #include "rc.h"
 #include "hash.h"
+#include "blorb.h"
 #include "xfont.h"
 #include "carbondisplay.h"
 
@@ -45,6 +46,7 @@ enum zcode_type
   {
     TYPE_ZCOD,
     TYPE_IFZS,
+    TYPE_IFRS,
     TYPE_BORING
   };
 
@@ -129,6 +131,111 @@ void carbon_display_message(char* title, char* message)
     }
 }
 
+/* Ask a question */
+extern DialogRef questdlog;
+extern int       carbon_q_res;
+
+int carbon_ask_question(char* title, char* message,
+			char* OK, char* cancel, int def)
+{
+  if (window_available == 0)
+    {
+      Str255 tit, erm;
+      Str255 okstr, cancelstr;
+      SInt16 item;
+
+      AlertStdAlertParamRec par;
+
+    evil_hack:
+      strcpy(okstr+1, OK);
+      okstr[0] = strlen(OK);
+
+      strcpy(cancelstr+1, cancel);
+      cancelstr[0] = strlen(cancel);
+
+      par.movable = false;
+      par.helpButton = false;
+      par.filterProc = nil;
+      par.defaultText = okstr;
+      par.cancelText = cancelstr;
+      par.otherText = nil;
+      if (def == 0)
+	par.defaultButton = kAlertStdAlertOKButton;
+      else
+	par.defaultButton = kAlertStdAlertCancelButton;
+      par.cancelButton = 0;
+      par.position = 0;
+
+      strcpy(tit+1, title);
+      strcpy(erm+1, message);
+      tit[0] = strlen(title);
+      erm[0] = strlen(message);
+      
+      StandardAlert(kAlertNoteAlert, tit, erm, &par, &item);
+
+      return (item == 1);
+    }
+  else
+    {
+      AlertStdCFStringAlertParamRec par;
+      OSStatus res;
+      CFStringRef tit = nil;
+      CFStringRef erm = nil;
+      CFStringRef yup = nil;
+      CFStringRef nope = nil;
+      DialogRef msgdlog;
+
+      tit = CFStringCreateWithCString(NULL, title, kCFStringEncodingMacRoman);
+      erm = CFStringCreateWithCString(NULL, message, kCFStringEncodingMacRoman);
+      yup = CFStringCreateWithCString(NULL, OK, kCFStringEncodingMacRoman);
+      nope = CFStringCreateWithCString(NULL, cancel, kCFStringEncodingMacRoman);
+      
+      par.version       = kStdCFStringAlertVersionOne;
+      par.movable       = false;
+      par.helpButton    = false;
+      par.otherText     = nil;
+      par.defaultText   = yup;
+      par.cancelText    = nope;
+      if (def == 0)
+	{
+	  par.defaultButton = kAlertStdAlertOKButton;
+	  par.cancelButton  = kAlertStdAlertCancelButton;
+	}
+      else
+	{
+	  par.defaultButton = kAlertStdAlertCancelButton;
+	  par.cancelButton  = kAlertStdAlertOKButton;
+	}
+      par.position      = kWindowDefaultPosition;
+      par.flags         = 0;
+      
+      res = CreateStandardSheet(kAlertNoteAlert, 
+				tit,
+				erm,
+				&par,
+				GetWindowEventTarget(zoomWindow),
+				&msgdlog);
+
+      if (res == noErr)
+	{
+	  questdlog = msgdlog;
+	  res = ShowSheetWindow(GetDialogWindow(msgdlog), zoomWindow);
+	  RunAppModalLoopForWindow(GetDialogWindow(msgdlog));
+	}
+
+      if (res != noErr)
+	goto evil_hack;
+
+      CFRelease(tit);
+      CFRelease(erm);
+      CFRelease(yup);
+      CFRelease(nope);
+
+      questdlog = nil;
+      return carbon_q_res;
+    }
+}
+
 /* A utility function for getting the type of a file */
 static enum zcode_type type_fsref(FSRef* file)
 {
@@ -167,7 +274,17 @@ static enum zcode_type type_fsref(FSRef* file)
 	  outname.unicode[outname.length-2] == 'u' &&
 	  outname.unicode[outname.length-1] == 't')
 	return TYPE_IFZS;
-      break;
+       if (outname.unicode[outname.length-4] == '.' &&
+	  outname.unicode[outname.length-3] == 'b' &&
+	  outname.unicode[outname.length-2] == 'l' &&
+	  outname.unicode[outname.length-1] == 'b')
+	return TYPE_IFRS;
+       if (outname.unicode[outname.length-4] == '.' &&
+	   outname.unicode[outname.length-3] == 'z' &&
+	   outname.unicode[outname.length-2] == 'l' &&
+	   outname.unicode[outname.length-1] == 'b')
+	 return TYPE_IFRS;
+    break;
     }
 
   return TYPE_BORING;
@@ -203,7 +320,7 @@ OSErr ae_print_handler(const AppleEvent* evt,
 		       AppleEvent* reply,
 		       SInt32      handlerRefIcon)
 {
-  carbon_display_message("Zoom " VERSION " - error",
+  carbon_display_message("Can't print this",
 			 "You cannot print ZCode files");
 
   return noErr;
@@ -240,7 +357,7 @@ OSErr ae_opendocs_handler(const AppleEvent* evt,
   if (numdocs > 1)
     {
       /* Display a warning */
-      carbon_display_message("Zoom " VERSION " - note", "Zoom can only handle one game file (or save game file) at once - only the first of the specified files will be opened");
+      carbon_display_message("Unable to handle multiple files", "Zoom can only handle one game file (or save game file) at once - only the first of the specified files will be opened");
     }
 
   AEGetNthPtr(&docs, 1, typeFSRef, &key, &actualtype, &thefile, 
@@ -263,10 +380,11 @@ OSErr ae_opendocs_handler(const AppleEvent* evt,
        */
       if (opengame_finished != 0)
 	{
-	  if (thetype != TYPE_IFZS)
+	  if (thetype != TYPE_IFZS &&
+	      thetype != TYPE_IFRS)
 	    {
 	      /* Display a warning */
-	      carbon_display_message("Zoom " VERSION " - note",
+	      carbon_display_message("Unable to load new game",
 				     "Zoom cannot load a new game while one is being played: quit and restart Zoom to start a new game");
 	    }
 	}
@@ -289,10 +407,54 @@ OSErr ae_opendocs_handler(const AppleEvent* evt,
 	}
       break;
 
+    case TYPE_IFRS:
+      if (window_available == 0)
+	{
+	  if (mac_openflag == 0)
+	    {
+	      startref = malloc(sizeof(FSRef));
+	      *startref = thefile;
+	    }
+	  else
+	    {
+	      fileref = malloc(sizeof(FSRef));
+	      *fileref = thefile;
+	      opengame_finished = 1;
+	    }
+	}
+      else
+	{
+	  char       path[512];
+
+	  /* Confirm if we've already got a blorb file loaded */
+	  if (machine.blorb != NULL)
+	    {
+	      if (!carbon_ask_question("Resources already loaded", "This game already has a resource file associated with it: are you sure you wish to replace it with a new one?",
+				   "Replace", "Cancel", 1))
+		return noErr;
+	    }
+
+	  /* Try to get the POSIX path */
+	  /* 
+	   * FIXME -- is it possible to get the length of the path before we
+	   * call this?
+	   */
+	  if (FSRefMakePath(&thefile, path, 512) != noErr)
+	    {
+	      carbon_display_message("Resource file load error",
+				     "Unable to find the path to that file");
+
+	      return noErr;
+	    }
+
+	  carbon_prefs_set_resources(path);
+	}
+      break;
+
     case TYPE_IFZS:
       if (window_available == 0)
 	{
-	  carbon_display_message("Zoom " VERSION " - note",
+	  carbon_display_message("Unable to locate game",
 				 "Zoom cannot currently locate a game from its save file alone - you will need to run the game before restoring the save file");
 	}
       else
@@ -300,13 +462,15 @@ OSErr ae_opendocs_handler(const AppleEvent* evt,
 	  display_force_restore(&thefile);
 	  if (!display_force_input("restore"))
 	    {
-	      carbon_display_message("Zoom " VERSION " - note",
+	      carbon_display_message("Unable to load savefile",
 				     "Zoom is not currently in a state where it can force a restore");
 	    }
 	}
       break;
 
     case TYPE_BORING:
+      carbon_display_message("THE WORLD IS ENDING!",
+			     "Hmm, this appears to be a bug. Zoom can't work out the type of this file");
       break; /* Well, we're broken, at any rate */
     }
 

@@ -93,8 +93,8 @@ void zmachine_load_story(char* filename, ZMachine* machine)
       int test[] = { 'T', 'e', 's', 't' };
 
       machine->blorb_file = machine->file;
-      machine->blorb_tokens = iff_decode_file(machine->file);
       machine->blorb = blorb_loadfile(machine->file);
+      machine->blorb_tokens = machine->blorb->file;
 
       rc_set_game("xxxxxx", 65535);
 

@@ -85,6 +85,8 @@ ControlRef    zoomScroll;
 
 DialogRef  fataldlog = nil;
 DialogRef  quitdlog  = nil;
+DialogRef  questdlog = nil;
+int        carbon_q_res = 0;
 int        window_available = 0;
 int        quitflag = 0;
 static int updating = 0;
@@ -797,16 +799,16 @@ static pascal OSStatus zoom_evt_handler(EventHandlerCallRef myHandlerChain,
 	    case 'REST':
 	      if (!display_force_input("restore"))
 		{
-		  carbon_display_message("Zoom " VERSION " - note",
-					 "Unable to force a restore at this point");
+		  carbon_display_message("Unable to force restore",
+					 "Unable to force a restore at this point (the game is probably not waiting for the right kind of input)");
 		}
 	      break;
 
 	    case 'SAVE':
 	      if (!display_force_input("save"))
 		{
-		  carbon_display_message("Zoom " VERSION " - note",
-					 "Unable to force a save at this point");
+		  carbon_display_message("Unable to force save",
+					 "Unable to force a save at this point (the game is probably not waiting for the right kind of input)");
 		}
 	      break;
 
@@ -819,7 +821,10 @@ static pascal OSStatus zoom_evt_handler(EventHandlerCallRef myHandlerChain,
 		{
 		  AlertStdCFStringAlertParamRec par;
 		  OSStatus res;
-		  
+	
+		  printf("%i\n", carbon_ask_question("Hmm", "La", "Yeep", "Neep", 1));
+		  printf("%i\n", carbon_ask_question("Hmm", "La", "Yeep", "Neep", 0));
+	  
 		  par.version       = kStdCFStringAlertVersionOne;
 		  par.movable       = false;
 		  par.helpButton    = false;
@@ -1552,8 +1557,35 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 		    display_exit(0);
 		    return noErr;
 		  }
+		else if (questdlog != nil)
+		  {
+		    QuitAppModalLoopForWindow(GetDialogWindow(questdlog));
+		    questdlog = nil;
+		    carbon_q_res = 1;
+		    return noErr;
+		  }
 
 		return eventNotHandledErr;
+		break;
+
+	      case kHICommandCancel:
+		if (fataldlog != nil)
+		  {
+		    fataldlog = nil;
+		    return noErr;
+		  }
+		else if (quitdlog != nil)
+		  {
+		    quitdlog = nil;
+		    return noErr;
+		  }
+		else if (questdlog != nil)
+		  {
+		    QuitAppModalLoopForWindow(GetDialogWindow(questdlog));
+		    questdlog = nil;
+		    carbon_q_res = 0;
+		    return noErr;
+		  }
 		break;
 		
 	      default:
