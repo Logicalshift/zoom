@@ -39,6 +39,8 @@ extern int    yyparse();
 
 static char*  filename;
 
+static int    used_opcodes[256];
+
 static int sortops(const void* un, const void* deux)
 {
   operation* one;
@@ -94,6 +96,9 @@ void output_interpreter(FILE* dest,
   int x,y;
   int pcadd;
 
+  for (x=0; x<256; x++)
+    used_opcodes[x] = 0;
+
   vmask = 1<<version;
   fprintf(dest, header, version);
 
@@ -112,9 +117,10 @@ void output_interpreter(FILE* dest,
 	      pcadd = 1;
 	      fprintf(dest, "    case 0x%x: /* %s */\n",
 		      op->value|0xb0, op->name);
-
+				   
 	      fprintf(dest, "#ifdef DEBUG\nprintf_debug(\"%s\\n\");\n#endif\n",
 		      op->name);
+	      used_opcodes[op->value|0xb0] = 1;
 
 	      if (op->flags.isstore)
 		{
@@ -165,6 +171,7 @@ void output_interpreter(FILE* dest,
 
 		  fprintf(dest, "#ifdef DEBUG\nprintf_debug(\"%s\\n\");\n#endif\n",
 			  op->name);
+		  used_opcodes[op->value|0x80|(y<<4)] = 1;
 
 		  switch (y)
 		    {
@@ -235,6 +242,7 @@ void output_interpreter(FILE* dest,
 
 		  fprintf(dest, "#ifdef DEBUG\nprintf_debug(\"%s\\n\");\n#endif\n",
 			  op->name);
+		  used_opcodes[op->value|(y<<5)] = 1;
 
 		  if (op->flags.reallyvar)
 		    fprintf(dest, "      argblock.n_args = 2;\n");
@@ -294,6 +302,7 @@ void output_interpreter(FILE* dest,
 	      
 	      fprintf(dest, "#ifdef DEBUG\nprintf_debug(\"%s (var form)\\n\");\n#endif\n",
 		      op->name);
+	      used_opcodes[op->value|0xc0] = 1;
 	      
 	      pcadd = 4;
 #if 0
@@ -405,6 +414,7 @@ void output_interpreter(FILE* dest,
 		      op->value|0xe0, op->name);
 	      fprintf(dest, "#ifdef DEBUG\nprintf_debug(\"%s\\n\");\n#endif\n",
 		      op->name);
+	      used_opcodes[op->value|0xe0] = 1;
 	      pcadd = 2;
 	      if (op->flags.islong)
 		{
@@ -528,6 +538,14 @@ void output_interpreter(FILE* dest,
       fprintf(dest, "      goto version;\n");
     }
   fprintf(dest, "    }\n");
+
+  fprintf(dest, "  /* Unused opcodes are:\n * ");
+  for (x=0; x<256; x++)
+    {
+      if (used_opcodes[x] == 0)
+	fprintf(dest, "%02x ", x);
+    }
+  fprintf(dest, "\n */\n");
 }
 
 void output_operations(FILE* dest,
