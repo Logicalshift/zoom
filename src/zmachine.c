@@ -87,6 +87,9 @@ void zmachine_load_story(char* filename, ZMachine* machine)
   
   machine->header = machine->memory;
 
+  if (machine->header[0] > 8)
+    zmachine_fatal("Not a ZCode file");
+  
   machine->dynamic_ceiling     = (ZUWord)GetWord(machine->header, ZH_static);
   machine->buffering           = 1;
 
@@ -107,18 +110,28 @@ void zmachine_load_story(char* filename, ZMachine* machine)
   machine->heblen = 0;
   if (machine->header[0] >= 5)
     {
-      machine->heb    = &machine->memory[GetWord(machine->header,
-						 ZH_extntable)];
-      machine->heblen = GetWord(machine->heb, ZHEB_len);
-
-      if (machine->heblen > 32)
+      if (GetWord(machine->header, ZH_extntable) > 32 &&
+	  GetWord(machine->header, ZH_extntable) < machine->story_length)
 	{
-	  zmachine_warning("Dodgy-looking header extension table (%i bytes long??), ignoring", machine->heblen);
-	  machine->heb    = NULL;
-	  machine->heblen = 0;
+	  machine->heb    = machine->memory + GetWord(machine->header,
+						      ZH_extntable);
+	  machine->heblen = GetWord(machine->heb, ZHEB_len);
+	  
+	  if (machine->heblen > 32)
+	    {
+	      zmachine_warning("Dodgy-looking header extension table (%i bytes long??), ignoring", machine->heblen);
+	      machine->heb    = NULL;
+	      machine->heblen = 0;
+	    }
+	  else
+	    stream_update_unicode_table();
 	}
       else
-	stream_update_unicode_table();
+	{
+	  zmachine_warning("Dodgy-looking header extension table, ignoring");
+	  machine->heb = NULL;
+	  machine->heblen = 0;
+	}
     }
 
   /* Parse the abbreviations table */

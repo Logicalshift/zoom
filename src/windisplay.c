@@ -752,15 +752,29 @@ static void format_last_text(int more)
       CURWIN.lastline->descent = xfont_get_descent(font[text->font]);
     }
   
-  for (x=0; x<text->len; x++)
+  for (x=0; x<text->len;)
     {
       if (text->text[x] == ' '  ||
 	  text->text[x] == '\n' ||
 	  x == (text->len-1))
 	{
 	  int w;
+	  int nl;
 
-	  word_len++;
+	  nl = 0;
+	  do
+	    {
+	      x++;
+	      word_len++;
+	      if (text->text[x-1] == '\n')
+		{
+		  nl = 1;
+		  break;
+		}
+	    }
+	  while (x <= (text->len-1) &&
+		 (text->text[x] == ' ' ||
+		  text->text[x] == '\n'));
 
 	  w = xfont_get_text_width(fn,
 				   text->text + word_start,
@@ -789,7 +803,7 @@ static void format_last_text(int more)
 	  total_len  += word_len;
 	  word_len    = 0;
 
-	  if (text->text[x] == '\n')
+	  if (nl)
 	    {
 	      new_line(more);
 
@@ -800,6 +814,7 @@ static void format_last_text(int more)
       else
 	{
 	  word_len++;
+	  x++;
 	}
     }
 

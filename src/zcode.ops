@@ -1601,6 +1601,15 @@ OPCODE "erase_window"   VAR:0x0d ARGS:1               VERSION 4,5,7,8
       if (Byte(0) != 4)
 	display_set_cursor(0,0);
       break;
+
+    case -2:
+      old_win = display_get_window();
+      display_set_window(0);
+      display_erase_window();
+      display_set_window(2);
+      display_erase_window();
+      display_set_window(old_win);
+      break;
     }
 %}
 
