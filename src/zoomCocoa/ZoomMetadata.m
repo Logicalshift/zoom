@@ -46,6 +46,12 @@
 	return self;
 }
 
+- (void) dealloc {
+	IFMD_Free(metadata);
+	
+	[super dealloc];
+}
+
 // = Finding information =
 
 - (ZoomStory*) findStory: (ZoomStoryID*) ident {

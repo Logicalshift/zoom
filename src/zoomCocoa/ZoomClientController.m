@@ -59,15 +59,35 @@
 
 // = Setting up the game info window =
 
+- (IBAction) recordGameInfo: (id) sender {
+	ZoomGameInfoController* sgI = [ZoomGameInfoController sharedGameInfoController];
+	ZoomStory* storyInfo = [[self document] storyInfo];
+
+	if ([sgI gameInfo] == storyInfo) {
+		[storyInfo setTitle: [sgI title]];
+		[storyInfo setHeadline: [sgI headline]];
+		[storyInfo setAuthor: [sgI author]];
+		[storyInfo setGenre: [sgI genre]];
+		[storyInfo setYear: [sgI year]];
+		[storyInfo setGroup: [sgI group]];
+		[storyInfo setComment: [sgI comments]];
+		[storyInfo setTeaser: [sgI teaser]];
+		[storyInfo setZarfian: [sgI zarfRating]];
+		[storyInfo setRating: [sgI rating]];
+	}
+}
+
 - (IBAction) updateGameInfo: (id) sender {
 	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: [[self document] storyInfo]];
 }
 
 - (void)windowDidResignMain:(NSNotification *)aNotification {
+	[self recordGameInfo: self];
 	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
 }
 
 - (void)windowWillClose:(NSNotification *)aNotification {
+	[self recordGameInfo: self];
 	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
 }
 

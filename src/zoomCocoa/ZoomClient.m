@@ -32,13 +32,7 @@
     [super dealloc];
 }
 
-/*
-- (NSString *)windowNibName {
-    // Implement this to return a nib to load OR implement -makeWindowControllers to manually create your controllers.
-    return @"ZoomClient";
-}
-*/
-
+// = Creating the document =
 - (void) makeWindowControllers {
     ZoomClientController* controller = [[ZoomClientController allocWithZone: [self zone]] init];
 
@@ -86,6 +80,8 @@
     return YES;
 }
 
+// = Document info =
+
 - (NSData*) gameData {
     return gameData;
 }
@@ -93,5 +89,9 @@
 - (ZoomStory*) storyInfo {
 	return story;
 }
+
+// = Document closedown =
+
+// How?
 
 @end

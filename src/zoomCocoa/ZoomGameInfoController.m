@@ -19,12 +19,15 @@
 	self = [self initWithWindowNibName: @"GameInfo"];
 	
 	if (self) {
+		gameInfo = nil;
 	}
 	
 	return self;
 }
 
 - (void) dealloc {
+	if (gameInfo) [gameInfo release];
+
 	[super dealloc];
 }
 
@@ -75,6 +78,9 @@
 	[self window]; // (Make sure the window is loaded)
 	
 	if (info == nil) {
+		if (gameInfo) [gameInfo release];
+		gameInfo = nil;
+		
 		[gameName setEnabled: NO];		[gameName setStringValue: @"No game selected"];
 		[headline setEnabled: NO];		[headline setStringValue: @""];
 		[author setEnabled: NO];		[author setStringValue: @""];
@@ -89,6 +95,9 @@
 		[rating setEnabled: NO];		[rating setIntValue: 5.0];
 		[ratingOn setEnabled: NO];		[ratingOn setState: NSOffState];
 	} else {
+		if (gameInfo) [gameInfo release];
+		gameInfo = [info retain];
+
 		[gameName setEnabled: YES];		[gameName setStringValue: [info title]];
 		[headline setEnabled: YES];		[headline setStringValue: [info headline]];
 		[author setEnabled: YES];		[author setStringValue: [info author]];
@@ -118,6 +127,10 @@
 			[ratingOn setEnabled: YES];		[ratingOn setState: NSOffState];
 		}
 	}
+}
+
+- (ZoomStory*) gameInfo {
+	return gameInfo;
 }
 
 // Reading the current (updated) contents of the game info window
@@ -158,7 +171,11 @@
 }
 
 - (float) rating {
-	return [rating floatValue];
+	if ([ratingOn state] == NSOnState) {
+		return [rating floatValue];
+	} else {
+		return -1;
+	}
 }
 
 @end

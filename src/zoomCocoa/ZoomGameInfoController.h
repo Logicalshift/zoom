@@ -23,6 +23,8 @@
 	IBOutlet NSButton*      ratingOn;
 	
 	IBOutlet NSTabView*     tabs;
+	
+	ZoomStory* gameInfo;
 }
 
 + (ZoomGameInfoController*) sharedGameInfoController;
@@ -34,6 +36,7 @@
 
 // Setting up the game info window
 - (void) setGameInfo: (ZoomStory*) info;
+- (ZoomStory*) gameInfo;
 
 // Reading the current (updated) contents of the game info window
 - (NSString*) title;

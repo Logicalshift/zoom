@@ -15,4 +15,7 @@
     IBOutlet ZoomView* zoomView;
 }
 
+- (IBAction) recordGameInfo: (id) sender;
+- (IBAction) updateGameInfo: (id) sender;
+
 @end
