@@ -62,36 +62,36 @@
             <string name="bounds">12 -1 308 439 </string>
             <array count="5" name="subviews">
               <object class="IBCarbonUserPane" id="237">
-                <string name="bounds">42 -1 308 439 </string>
+                <string name="bounds">55 -11 321 429 </string>
                 <array count="6" name="subviews">
                   <object class="IBCarbonCheckBox" id="245">
-                    <string name="bounds">62 17 80 162 </string>
+                    <string name="bounds">75 7 93 152 </string>
                     <ostype name="controlSignature">Warn</ostype>
                     <int name="controlID">600</int>
                     <string name="title">Display warnings</string>
                     <string name="helpTagText">Zoom will display information about any minor (recoverable) errors the game file causes</string>
                   </object>
                   <object class="IBCarbonCheckBox" id="246">
-                    <string name="bounds">115 17 133 162 </string>
+                    <string name="bounds">128 7 146 152 </string>
                     <ostype name="controlSignature">Spek</ostype>
                     <int name="controlID">602</int>
                     <string name="title">Speak game text</string>
                     <string name="helpTagText">Zoom can make use of the Apple speech manager to read game text as it is printed</string>
                   </object>
                   <object class="IBCarbonCheckBox" id="247">
-                    <string name="bounds">84 17 102 162 </string>
+                    <string name="bounds">97 7 115 152 </string>
                     <ostype name="controlSignature">FWar</ostype>
                     <int name="controlID">601</int>
                     <string name="title">Warnings are fatal</string>
                     <string name="helpTagText">Mainly of use to authors, this option will cause any warning to be fatal: enforcing strict conformance to the Z-Machine specification</string>
                   </object>
                   <object class="IBCarbonSeparator" id="258">
-                    <string name="bounds">106 11 107 427 </string>
+                    <string name="bounds">119 1 120 417 </string>
                     <ostype name="controlSignature">bar </ostype>
                     <int name="controlID">200</int>
                   </object>
                   <object class="IBCarbonRadioGroup" id="304">
-                    <string name="bounds">137 17 175 197 </string>
+                    <string name="bounds">150 7 188 187 </string>
                     <ostype name="controlSignature">Rend</ostype>
                     <int name="controlID">603</int>
                     <ostype name="command">Rend</ostype>
@@ -106,7 +106,7 @@
                     </array>
                   </object>
                   <object class="IBCarbonCheckBox" id="305">
-                    <string name="bounds">179 37 197 128 </string>
+                    <string name="bounds">192 27 210 118 </string>
                     <ostype name="controlSignature">Anti</ostype>
                     <int name="controlID">604</int>
                     <string name="title">Antialias</string>
@@ -121,73 +121,73 @@
                 <int name="featureBits">2</int>
               </object>
               <object class="IBCarbonUserPane" id="238">
-                <string name="bounds">42 -1 308 439 </string>
+                <string name="bounds">55 -11 321 429 </string>
                 <array count="12" name="subviews">
                   <object class="IBCarbonStaticText" id="270">
-                    <string name="bounds">64 19 80 106 </string>
+                    <string name="bounds">77 9 93 96 </string>
                     <string name="title">Serial #:</string>
                   </object>
                   <object class="IBCarbonStaticText" id="271">
-                    <string name="bounds">64 111 80 258 </string>
+                    <string name="bounds">77 101 93 248 </string>
                     <ostype name="controlSignature">Seri</ostype>
                     <int name="controlID">700</int>
                     <string name="title">976573</string>
                     <string name="helpTagText">This is the serial number stored in the game file. It usually indicates the release data of the game. Together with the serial number, Zoom uses this to identify the game you are playing.</string>
                   </object>
                   <object class="IBCarbonStaticText" id="272">
-                    <string name="bounds">88 19 104 106 </string>
+                    <string name="bounds">101 9 117 96 </string>
                     <string name="title">Release:</string>
                   </object>
                   <object class="IBCarbonStaticText" id="273">
-                    <string name="bounds">88 111 104 258 </string>
+                    <string name="bounds">101 101 117 248 </string>
                     <ostype name="controlSignature">Rele</ostype>
                     <int name="controlID">701</int>
                     <string name="title">4</string>
                     <string name="helpTagText">This is the release number of the game, stored in the game file. Together with the serial number, Zoom uses this to identify the game you are playing.</string>
                   </object>
                   <object class="IBCarbonSeparator" id="275">
-                    <string name="bounds">110 11 111 427 </string>
+                    <string name="bounds">123 1 124 417 </string>
                     <ostype name="controlSignature">bar </ostype>
                     <int name="controlID">201</int>
                   </object>
                   <object class="IBCarbonEditText" id="276">
-                    <string name="bounds">124 114 140 416 </string>
+                    <string name="bounds">137 104 153 406 </string>
                     <ostype name="controlSignature">Titl</ostype>
                     <int name="controlID">702</int>
                     <string name="helpTagText">Enter the name you want to appear in the title bar here</string>
                   </object>
                   <object class="IBCarbonStaticText" id="277">
-                    <string name="bounds">123 19 139 106 </string>
+                    <string name="bounds">136 9 152 96 </string>
                     <string name="title">Game title:</string>
                   </object>
                   <object class="IBCarbonEditText" id="279">
-                    <string name="bounds">154 114 170 416 </string>
+                    <string name="bounds">167 104 183 406 </string>
                     <ostype name="controlSignature">Terp</ostype>
                     <int name="controlID">704</int>
                     <string name="helpTagText">Enter the interpreter identifier you want Zoom to use here. Few games pay any attention to this</string>
                   </object>
                   <object class="IBCarbonEditText" id="280">
-                    <string name="bounds">184 114 200 416 </string>
+                    <string name="bounds">197 104 213 406 </string>
                     <ostype name="controlSignature">Revi</ostype>
                     <int name="controlID">706</int>
                     <string name="helpTagText">Enter the interpreter revision you want Zoom to report here. Few games pay any attention to this</string>
                   </object>
                   <object class="IBCarbonCheckBox" id="282">
-                    <string name="bounds">153 17 171 108 </string>
+                    <string name="bounds">166 7 184 98 </string>
                     <ostype name="controlSignature">ILoc</ostype>
                     <int name="controlID">703</int>
                     <string name="title">Interpreter:</string>
                     <string name="helpTagText">Check this box to make the interpreter settings only apply to this game</string>
                   </object>
                   <object class="IBCarbonCheckBox" id="283">
-                    <string name="bounds">183 17 201 108 </string>
+                    <string name="bounds">196 7 214 98 </string>
                     <ostype name="controlSignature">RLoc</ostype>
                     <int name="controlID">705</int>
                     <string name="title">Revision:</string>
                     <string name="helpTagText">If checked, Zoom will only use the revision setting for this game</string>
                   </object>
                   <object class="IBCarbonStaticText" id="284">
-                    <string name="bounds">236 19 288 419 </string>
+                    <string name="bounds">249 9 301 409 </string>
                     <ostype name="controlSignature">TogB</ostype>
                     <int name="controlID">799</int>
                     <string name="title">* Toggle buttons indicate whether an option applies globally (to all games), or just to this game (turn them on to make an option local)</string>
@@ -198,10 +198,10 @@
                 <int name="featureBits">2</int>
               </object>
               <object class="IBCarbonUserPane" id="287">
-                <string name="bounds">42 -1 308 439 </string>
+                <string name="bounds">55 -11 321 429 </string>
                 <array count="4" name="subviews">
                   <object class="IBCarbonCheckBox" id="292">
-                    <string name="bounds">62 17 80 231 </string>
+                    <string name="bounds">75 7 93 221 </string>
                     <ostype name="controlSignature">Fapp</ostype>
                     <int name="controlID">800</int>
                     <string name="title">Applies only to this game</string>
@@ -209,12 +209,12 @@
                     <string name="helpTagText">Check this to make the font settings exclusive to this game (uncheck it to make the settings apply to all games)</string>
                   </object>
                   <object class="IBCarbonSeparator" id="293">
-                    <string name="bounds">84 11 85 427 </string>
+                    <string name="bounds">97 1 98 417 </string>
                     <ostype name="controlSignature">bar </ostype>
                     <int name="controlID">202</int>
                   </object>
                   <object class="IBCarbonDBListView" id="294">
-                    <string name="bounds">92 16 291 422 </string>
+                    <string name="bounds">105 6 304 412 </string>
                     <ostype name="controlSignature">Flis</ostype>
                     <int name="controlID">801</int>
                     <int name="selectionFlags">11</int>
@@ -280,7 +280,7 @@
                     </array>
                   </object>
                   <object class="IBCarbonButton" id="314">
-                    <string name="bounds">59 295 76 422 </string>
+                    <string name="bounds">72 285 89 412 </string>
                     <ostype name="controlSignature">ResF</ostype>
                     <int name="controlID">802</int>
                     <boolean name="small">TRUE</boolean>
@@ -293,10 +293,10 @@
                 <int name="featureBits">2</int>
               </object>
               <object class="IBCarbonUserPane" id="288">
-                <string name="bounds">42 -1 308 439 </string>
+                <string name="bounds">55 -11 321 429 </string>
                 <array count="4" name="subviews">
                   <object class="IBCarbonCheckBox" id="289">
-                    <string name="bounds">62 17 80 214 </string>
+                    <string name="bounds">75 7 93 204 </string>
                     <ostype name="controlSignature">Capp</ostype>
                     <int name="controlID">900</int>
                     <string name="title">Applies only to this game</string>
@@ -304,12 +304,12 @@
                     <string name="helpTagText">Check this to make the colour settings apply to only this game (uncheck it to make the settings apply to all games)</string>
                   </object>
                   <object class="IBCarbonSeparator" id="290">
-                    <string name="bounds">84 11 85 427 </string>
+                    <string name="bounds">97 1 98 417 </string>
                     <ostype name="controlSignature">bar </ostype>
                     <int name="controlID">203</int>
                   </object>
                   <object class="IBCarbonDBListView" id="291">
-                    <string name="bounds">92 16 291 422 </string>
+                    <string name="bounds">105 6 304 412 </string>
                     <ostype name="controlSignature">Clis</ostype>
                     <int name="controlID">901</int>
                     <int name="selectionFlags">11</int>
@@ -332,7 +332,7 @@
                     </array>
                   </object>
                   <object class="IBCarbonButton" id="315">
-                    <string name="bounds">59 280 76 419 </string>
+                    <string name="bounds">72 270 89 409 </string>
                     <ostype name="controlSignature">ResC</ostype>
                     <int name="controlID">902</int>
                     <boolean name="small">TRUE</boolean>
@@ -345,20 +345,20 @@
                 <int name="featureBits">2</int>
               </object>
               <object class="IBCarbonUserPane" id="306">
-                <string name="bounds">42 -1 308 439 </string>
+                <string name="bounds">55 -11 321 429 </string>
                 <array count="3" name="subviews">
                   <object class="IBCarbonStaticText" id="307">
-                    <string name="bounds">64 19 98 419 </string>
+                    <string name="bounds">77 9 111 409 </string>
                     <ostype name="controlSignature">FilB</ostype>
                     <int name="controlID">1099</int>
                     <string name="title">Double-click or drag a Blorb resource file to associate it with this game.</string>
                   </object>
                   <object class="IBCarbonStaticText" id="308">
-                    <string name="bounds">108 19 124 50 </string>
+                    <string name="bounds">121 9 137 40 </string>
                     <string name="title">File:</string>
                   </object>
                   <object class="IBCarbonEditText" id="309">
-                    <string name="bounds">109 61 125 416 </string>
+                    <string name="bounds">122 51 138 406 </string>
                     <ostype name="controlSignature">ReFN</ostype>
                     <int name="controlID">1000</int>
                   </object>
@@ -474,9 +474,9 @@
             <string name="title">Zoom - a Z-Machine</string>
           </object>
           <object class="IBCarbonStaticText" id="300">
-            <string name="bounds">44 113 60 185 </string>
+            <string name="bounds">44 131 60 168 </string>
             <ostype name="controlSignature">Vers</ostype>
-            <string name="title">1.0.1beta3</string>
+            <string name="title">1.0.1</string>
           </object>
           <object class="IBCarbonStaticText" id="301">
             <string name="bounds">68 17 84 281 </string>
