@@ -26,10 +26,7 @@
 
 #include "ztypes.h"
 
-typedef struct ZFile
-{
-  FILE* handle;
-} ZFile;
+typedef struct ZFile ZFile;
 
 extern ZFile* open_file      (char*  filename);
 extern ZFile* open_file_write(char* filename);

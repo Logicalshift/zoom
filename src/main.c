@@ -21,10 +21,19 @@
  * Time to get this show on the road
  */
 
+#include "../config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/time.h>
-#include <unistd.h>
+#include <string.h>
+#include <time.h>
+
+#ifdef HAVE_SYS_TIME_H
+# include <sys/time.h>
+#endif
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
 
 #include "zmachine.h"
 #include "file.h"
@@ -40,16 +49,22 @@ ZMachine machine;
 extern char save_fname[256];
 extern char script_fname[256];
 
-int main(int argc, char** argv)
+int zoom_main(int argc, char** argv)
 {
   arguments args;
+#ifdef HAVE_GETTIMEOFDAY
   struct timeval tv;
+#endif
 
   machine.display_active = 0;
   
   /* Seed RNG */
+#ifdef HAVE_GETTIMEOFDAY
   gettimeofday(&tv, NULL);
   srand(tv.tv_sec|tv.tv_usec);
+#else
+  srand((unsigned int)time(NULL));
+#endif
 
   get_options(argc, argv, &args);
   machine.warning_level = args.warning_level;
@@ -123,41 +138,42 @@ int main(int argc, char** argv)
   }
 #endif
   
-  display_set_font(1);
+  display_set_style(2);
   display_prints_c("\n\nMaze\n");
-  display_set_font(0);
-  display_prints_c("You are in a maze of twisty little software licences, all different.\nA warranty lurks in a corner.\n\n> read warranty\n");
+  display_set_style(0);
+  display_prints_c("You are in a maze of twisty little software licences, all different.\nA warranty lurks in a corner.\n\n>read warranty\n");
   display_prints_c("WELCOME, adventurer, to ");
-  display_set_font(2);
-  display_prints_c("Zoom " VERSION " Copyright (C) Andrew Hunter, 2000\n");
-  display_set_font(0);
+  display_set_style(6);
+  display_prints_c("Zoom " VERSION);
+  display_set_style(-4);
+  display_prints_c(" Copyright \xa9 Andrew Hunter, 2000\n");
+  display_set_style(0);
   
   display_prints_c("This program is free software; you can redistribute and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.\n\n");
   display_prints_c("This program is distributed in the hope that it will be useful, but ");
-  display_set_font(1);
+  display_set_style(2);
   display_prints_c("WITHOUT ANY WARRANTY");
-  display_set_font(0);
+  display_set_style(0);
   display_prints_c("; without even the implied warranty of ");
-  display_set_font(1);
+  display_set_style(2);
   display_prints_c("MERCHANTABILITY");
-  display_set_font(0);
+  display_set_style(0);
   display_prints_c(" or ");
-  display_set_font(1);
+  display_set_style(2);
   display_prints_c("FITNESS FOR A PARTICULAR PURPOSE");
-  display_set_font(0);
+  display_set_style(0);
   display_prints_c(". See the GNU General Public Licence for more details.\n\n");
   display_prints_c("You should have received a copy of the GNU General Public License along with this program. If not, write to the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.\n");
   display_prints_c("\nThe Zoom homepage can be located at ");
-  display_set_font(2);
+  display_set_style(4);
   display_prints_c("http://www.logicalshift.co.uk/unix/zoom/");
-  display_set_font(0);
+  display_set_style(0);
   display_prints_c(" - check this page for any updates\n\n\n");
   display_set_colour(0, 6);
   display_prints_c("[ Press any key to begin ]");
   display_set_colour(0, 7);
   display_readchar(0);
   display_clear();
-  display_prints_c(" \n");
 
   machine.graphical = args.graphical;
   

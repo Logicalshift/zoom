@@ -21,6 +21,10 @@
  * Display for X-Windows
  */
 
+#include "../config.h"
+
+#if WINDOW_SYSTEM == 1
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -1982,3 +1986,14 @@ void display_reset_windows(void)
   text_win[0].force_fixed = 0;
   text_win[0].no_scroll = 0;  
 }
+
+/***                           ----// 888 \\----                           ***/
+
+extern int zoom_main(int, char**);
+
+int main(int argc, char** argv)
+{
+  return zoom_main(argc, argv);
+}
+
+#endif

@@ -116,28 +116,48 @@ void get_options(int argc, char** argv, arguments* args)
 # if OPT_TYPE==1
 
 # include <unistd.h>
+# include <getopt.h>
 
 void get_options(int argc, char** argv, arguments* args)
 {
   int opt;
 
-  while ((opt=getopt(argc, argv, "?hV")) != -1)
+  args->warning_level = 0;
+  args->graphical = 0;
+
+  while ((opt=getopt(argc, argv, "?hVWwg")) != -1)
     {
       switch (opt)
 	{
 	case '?': /* ? */
 	case 'h': /* h */
-	  printf("Usage: %s [OPTION...] story-file [save-file]\n", argv[0]);
-	  printf("  Where option is one of:\n");
-	  printf("    -? or -h   display this text\n");
-	  printf("    -V         display version information\n");
-	  printf("Zoom is copyright (C) Andrew Hunter, 2000\n");
-	  exit(0);
+	  printf_info("Usage: %s [OPTION...] [story-file] [save-file]\n", argv[0]);
+	  printf_info("  Where option is one of:\n");
+	  printf_info("    -? or -h   display this text\n");
+	  printf_info("    -V         display version information\n");
+	  printf_info("    -w         display warnings\n");
+	  printf_info("    -W         make all warnings fatal (strict standards compliance)\n");
+	  printf_info("    -g         use graphical display mode (if available)\n");
+	  printf_info("Zoom is copyright (C) Andrew Hunter, 2000\n");
+	  printf_info_done();
+	  display_exit(0);
 	  break;
 
 	case 'V': /* V */
 	  printf("Zoom version " VERSION "\n");
-	  exit(0);
+	  display_exit(0);
+	  break;
+
+	case 'W': /* W */
+	  args->warning_level = 2;
+	  break;
+
+	case 'w': /* w */
+	  args->warning_level = 1;
+	  break;
+
+	case 'g': /* g */
+	  args->graphical = 1;
 	  break;
 	}
     }
@@ -146,11 +166,8 @@ void get_options(int argc, char** argv, arguments* args)
     {
       printf("Usage: %s [OPTION...] story-file [save-file]\n",
 	     argv[0]);
-      exit (1);
+      display_exit(1);
    }
-
-  args->warning_level = 0;
-  args->graphical = 0;
   
   args->track_objs  = 0;
   args->track_attr  = 0;
@@ -192,8 +209,9 @@ void get_options(int argc, char** argv, arguments* args)
     }
   else
     {
-      printf("Usage: %s story-file [save-file]\n", argv[0]);
-      exit(1);
+      printf_error("Usage: %s story-file [save-file]\n", argv[0]);
+      printf_error_done();
+      display_exit(1);
     }
 }
 

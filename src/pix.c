@@ -70,7 +70,7 @@ void pix_open_file(char* filename)
   pix_file = open_file(filename);
   if (pix_file == NULL)
     {
-      fprintf(stderr, "*** PIX: unable to open file '%s'\n", filename);
+      printf_debug("*** PIX: unable to open file '%s'\n", filename);
       return;
     }
 
@@ -102,8 +102,8 @@ void pix_open_file(char* filename)
 	(read_byte(pix_file)<<16)|(read_byte(pix_file)<<8)|
 	(read_byte(pix_file));
       read_byte(pix_file);
-      printf("Image #%i %ix%i ($%x)\n", pix_dir[x].num, pix_dir[x].width,
-	     pix_dir[x].height, pix_dir[x].addr);
+      printf_debug("Image #%i %ix%i ($%x)\n", pix_dir[x].num, pix_dir[x].width,
+		   pix_dir[x].height, pix_dir[x].addr);
 
       pix_dir[x].data = NULL;
     }

@@ -55,7 +55,7 @@ ZDictionary* dictionary_cache(const ZUWord dict_pos)
     }
 
 #ifdef DEBUG
-  printf("Caching dictionary $%x\n", dict_pos);
+  printf_debug("Caching dictionary $%x\n", dict_pos);
 #endif
   
   dct = machine.memory + dict_pos;
@@ -72,7 +72,7 @@ ZDictionary* dictionary_cache(const ZUWord dict_pos)
   for (x=0; x<dct[0]; x++)
     {
 #ifdef DEBUG
-      printf("%i is a seperator\n", dct[x+1]);
+      printf_debug("%i is a seperator\n", dct[x+1]);
 #endif
       dict->sep[dct[x+1]] = 1;
     }
@@ -110,15 +110,15 @@ ZDictionary* dictionary_cache(const ZUWord dict_pos)
 	entry->address = dpos+3+entry_length*x;
 
 #ifdef DEBUG
-	printf("Adding word $%x%x $%x%x (@%x) - ",
-	       dct[3+entry_length*x],
-	       dct[3+entry_length*x+1],
-	       dct[3+entry_length*x+2],
-	       dct[3+entry_length*x+3],
-	       entry->address);
+	printf_debug("Adding word $%x%x $%x%x (@%x) - ",
+		     dct[3+entry_length*x],
+		     dct[3+entry_length*x+1],
+		     dct[3+entry_length*x+2],
+		     dct[3+entry_length*x+3],
+		     entry->address);
 	{
 	  int blob;
-	  printf("%s\n", zscii_to_ascii(dct + 3+entry_length*x, &blob));
+	  printf_debug("%s\n", zscii_to_ascii(dct + 3+entry_length*x, &blob));
 	}
 #endif
 
@@ -148,13 +148,13 @@ inline ZUWord lookup_word(unsigned char* word,
   int x;
 
 #ifdef DEBUG
-  printf("Looking up '");
+  printf_debug("Looking up '");
   {
     int x;
     for (x=0; x<wordlen; x++)
-      printf("%c", word[x]);
+      printf_debug("%c", word[x]);
   }
-  printf("'... ");
+  printf_debug("'... ");
 #endif
 
   if (Byte(ZH_version) <= 3)
@@ -184,7 +184,7 @@ inline ZUWord lookup_word(unsigned char* word,
       struct dict_entry* ent;
 
 #ifdef DEBUG
-      printf("Using cached version of dictionary $%x\n", dct);
+      printf_debug("Using cached version of dictionary $%x\n", dct);
 #endif
 
       ent = hash_get(cached->words, packed, text_len);
@@ -198,7 +198,7 @@ inline ZUWord lookup_word(unsigned char* word,
 	no_entries = -no_entries;
 
 #ifdef DEBUG
-      printf("Using linear search of dictionary $%x\n", dct);
+      printf_debug("Using linear search of dictionary $%x\n", dct);
 #endif
       
       for (x=0; x<no_entries; x++)
@@ -263,9 +263,9 @@ void tokenise_string(unsigned char* string,
 
 #ifdef DEBUG
 	  if (ent != 0)
-	    printf("Found\n");
+	    printf_debug("Found\n");
 	  else
-	    printf("Not found\n");
+	    printf_debug("Not found\n");
 #endif
 
 	  if (ent != 0)
@@ -298,7 +298,7 @@ void tokenise_string(unsigned char* string,
       if (string[strpos] != 0)
 	{
 #ifdef DEBUG
-	  printf("Whitespace %x\n", string[strpos]);
+	  printf_debug("Whitespace %x\n", string[strpos]);
 #endif
 	  ent = 0;
 	  if (string[strpos] != 32)

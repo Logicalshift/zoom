@@ -21,6 +21,8 @@
  * General ZMachine utility functions
  */
 
+#include "../config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -31,6 +33,10 @@
 #include "display.h"
 #include "rc.h"
 #include "stream.h"
+
+#if WINDOW_SYSTEM == 2
+# include <windows.h>
+#endif
 
 void zmachine_load_story(char* filename, ZMachine* machine)
 {
@@ -46,7 +52,11 @@ void zmachine_load_story(char* filename, ZMachine* machine)
     zmachine_fatal("Story file is way too small (%i bytes)", size);
 
   machine->file = open_file(filename);
+  if (machine->file == NULL)
+    zmachine_fatal("Unable to open story file");
   machine->memory = read_block(machine->file, 0, size);
+  if (machine->memory == NULL)
+    zmachine_fatal("Unable to read story file");
   /* close_file(machine->file); */
 #endif
 
@@ -167,13 +177,25 @@ void zmachine_fatal(char* format, ...)
     }
   else
     {
+#if WINDOW_SYSTEM == 2
+      char erm[512];
+
+# ifdef GLOBAL_PC
+      sprintf(erm, "INTERPRETER PANIC - %s (PC = #%x)", string, machine.pc);
+# else
+      sprintf(erm, "INTERPRETER PANIC - %s", string);
+# endif
+      MessageBox(NULL, erm, "Zoom " VERSION " - fatal error",
+		 MB_OK|MB_ICONSTOP|MB_TASKMODAL);
+#else
       fprintf(stderr, "\nINTERPRETER PANIC - %s", string);
 #ifdef GLOBAL_PC
       fprintf(stderr, " (PC = #%x)\n\n", machine.pc);
 #endif
+#endif
     }
   
-  exit(1);
+  display_exit(1);
 }
 
 void zmachine_warning(char* format, ...)
@@ -201,11 +223,23 @@ void zmachine_warning(char* format, ...)
     }
   else
     {
+#if WINDOW_SYSTEM == 2
+      char erm[512];
+
+# ifdef GLOBAL_PC
+      sprintf(erm, "%s (PC = #%x)", string, machine.pc);
+# else
+      sprintf(erm, "%s", string);
+# endif
+      MessageBox(NULL, erm, "Zoom " VERSION " - warning",
+		 MB_OK|MB_ICONWARNING|MB_TASKMODAL);
+#else
       fprintf(stderr, "[ WARNING - %s", string);
-#ifdef GLOBAL_PC
+# ifdef GLOBAL_PC
       fprintf(stderr, " (PC = #%x)", machine.pc);
-#endif
+# endif
       fprintf(stderr, " ]\n");
+#endif
     }
 #ifdef DEBUG
   fprintf(stderr, "\nWARNING - %s", string);
@@ -335,6 +369,56 @@ void zmachine_setup_header(void)
     }
 # endif
 #endif
+}
+
+void zmachine_resize_display(ZDisplay* dis)
+{
+  machine.dinfo = dis;
+
+  switch (machine.memory[0])
+    {
+    case 6:
+      Flag(1, 0, machine.dinfo->colours);
+      machine.memory[ZH_width] = machine.dinfo->width>>8;
+      machine.memory[ZH_width+1] = machine.dinfo->width;
+      machine.memory[ZH_height] = machine.dinfo->height>>8;
+      machine.memory[ZH_height+1] = machine.dinfo->height;
+      /* Note that these are backwards in v6 :-) */
+      machine.memory[ZH_fontwidth] = machine.dinfo->font_height;
+      machine.memory[ZH_fontheight] = machine.dinfo->font_width;
+
+      machine.memory[ZH_lines] = machine.dinfo->lines;
+      machine.memory[ZH_columns] = machine.dinfo->columns;
+      break;
+      
+    case 8:
+    case 7:
+    case 5:
+      if (!machine.graphical)
+	{
+	  machine.memory[ZH_width]      = machine.dinfo->columns>>8;
+	  machine.memory[ZH_width+1]    = machine.dinfo->columns;
+	  machine.memory[ZH_height]     = machine.dinfo->lines>>8;
+	  machine.memory[ZH_height+1]   = machine.dinfo->lines;
+	  machine.memory[ZH_fontwidth]  = 1;
+	  machine.memory[ZH_fontheight] = 1;
+
+	  Flag(11, 3, 0);
+	}
+      else
+	{
+	  machine.memory[ZH_width]      = machine.dinfo->width>>8;
+	  machine.memory[ZH_width+1]    = machine.dinfo->width;
+	  machine.memory[ZH_height]     = machine.dinfo->height>>8;
+	  machine.memory[ZH_height+1]   = machine.dinfo->height;
+	  machine.memory[ZH_fontwidth]  = machine.dinfo->font_width;
+	  machine.memory[ZH_fontheight] = machine.dinfo->font_height;
+	}
+    case 4:
+      machine.memory[ZH_lines]     = machine.dinfo->lines;
+      machine.memory[ZH_columns]   = machine.dinfo->columns;
+      break;
+    }
 }
 
 #ifdef DEBUG

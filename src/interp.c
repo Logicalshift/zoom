@@ -21,14 +21,16 @@
  * Main interpreter loop
  */
 
+#include "../config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <sys/time.h>
+#ifdef HAVE_SYS_TIME_H
+# include <sys/time.h>
+#endif
 #include <ctype.h>
 #include <string.h>
-
-#include "../config.h"
 
 #include "zmachine.h"
 #include "zscii.h"
@@ -58,7 +60,7 @@
 	} \
      }
 
-inline void push(ZStack* stack, const ZWord word)
+static inline void push(ZStack* stack, const ZWord word)
 {
   *(stack->stack_top++) = word;
   stack->stack_size--;
@@ -79,7 +81,7 @@ inline void push(ZStack* stack, const ZWord word)
 
 #ifdef DEBUG
   if (stack->current_frame)
-    printf("Stack: push - size now %i, frame usage %i (pushed #%x)\n",
+    printf_debug("Stack: push - size now %i, frame usage %i (pushed #%x)\n",
 	   stack->stack_size, stack->current_frame->frame_size,
 	   stack->stack_top[-1]);
 #endif
@@ -105,7 +107,7 @@ inline ZWord pop(ZStack* stack)
   
 #ifdef DEBUG
   if (stack->current_frame)
-    printf("Stack: pop - size now %i, frame usage %i (value #%x)\n",
+    printf_debug("Stack: pop - size now %i, frame usage %i (value #%x)\n",
 	   stack->stack_size, stack->current_frame->frame_size,
 	   stack->stack_top[-1]);
 #endif
@@ -169,7 +171,7 @@ ZFrame* call_routine(ZDWord* pc, ZStack* stack, ZDWord start)
 inline void store(ZStack* stack, int var, ZWord value)
 {
 #ifdef DEBUG
-  printf("Storing %i in Variable #%x\n", value, var);
+  printf_debug("Storing %i in Variable #%x\n", value, var);
 #endif
   if (var == 0)
     {
@@ -331,14 +333,14 @@ static inline struct prop* get_object_prop_4(ZUWord object, ZWord property)
 	    }
 	  
 #ifdef DEBUG
-	  printf("(Property %i, (looking for %i) length %i: ", pnum,
+	  printf_debug("(Property %i, (looking for %i) length %i: ", pnum,
 		 property, len);
 	  {
 	    int x;
 	    
 	    for (x=0; x<=len+pad; x++)
-	      printf("$%x ", prop[x]);
-	    printf(")\n");
+	      printf_debug("$%x ", prop[x]);
+	    printf_debug(")\n");
 	  }
 #endif
 	  
@@ -394,7 +396,7 @@ static void tracking_print(char* format, ...)
   vsprintf(str, format, ap);
   va_end(ap);
 
-  fprintf(stderr, "TRACKING: %s\n", str);
+  printf_debug(stderr, "TRACKING: %s\n", str);
 }
 #endif
 
@@ -408,7 +410,7 @@ static void zcode_op_print_obj_123(ZStack* stack, ZWord arg)
   prop = machine.memory + ((obj[7]<<8)|obj[8]) + 1;
 
 #ifdef DEBUG
-  printf(">%s<\n", zscii_to_ascii(prop, &len));
+  printf_debug(">%s<\n", zscii_to_ascii(prop, &len));
 #endif
 
   stream_prints(zscii_to_ascii(prop, &len));
@@ -431,7 +433,8 @@ static void draw_statusbar_123(ZStack* stack)
   display_set_window(1); display_set_font(3);
   display_set_colour(7, 0);
 
-  display_prints_c("\n ");
+  display_set_cursor(0, 0);
+  display_erase_line(1);
   display_set_cursor(2, 0);
 
   display_prints(zscii_to_unicode(prop, &len));
@@ -867,14 +870,14 @@ static void zcode_op_aread_5678(ZDWord* pc,
       {
 	ZByte* tokbuf;
 	tokbuf = Address((ZUWord)args->arg[1]);
-	printf("Dump of parse buffer $%x\n", args->arg[1]);
+	printf_debug("Dump of parse buffer $%x\n", args->arg[1]);
 	for (x=0; x<tokbuf[1]; x++)
 	  {
-	    printf("  Token $%x%x word at %i, length %i\n",
-		   tokbuf[2+x*4],
-		   tokbuf[3+x*4],
-		   tokbuf[5+x*4],
-		   tokbuf[4+x*4]);
+	    printf_debug("  Token $%x%x word at %i, length %i\n",
+			 tokbuf[2+x*4],
+			 tokbuf[3+x*4],
+			 tokbuf[5+x*4],
+			 tokbuf[4+x*4]);
 	  }
       }
 #endif
@@ -999,11 +1002,11 @@ static void zcode_op_sread_4(ZDWord* pc,
 	tokbuf = machine.memory + (ZUWord) args->arg[1];
 	for (x=0; x<tokbuf[1]; x++)
 	  {
-	    printf("Token $%x%x word at %i, length %i\n",
-			   tokbuf[2+x*4],
-			   tokbuf[3+x*4],
-			   tokbuf[5+x*4],
-			   tokbuf[4+x*4]);
+	    printf_debug("Token $%x%x word at %i, length %i\n",
+			 tokbuf[2+x*4],
+			 tokbuf[3+x*4],
+			 tokbuf[5+x*4],
+			 tokbuf[4+x*4]);
 	  }
       }
 #endif
@@ -1071,7 +1074,7 @@ static void newline_return(ZDWord*    pc,
 			   ZArgblock* args,
 			   int        st)
 {
-  printf("-- Newline return\n");
+  printf_debug("-- Newline return\n");
   if (pending_text != NULL)
     {
       char* oldtext;
@@ -1109,7 +1112,7 @@ static int newline_function(const char* remaining,
 	  memcpy(pending_text, remaining, rem_len);
 	  pending_text[rem_len] = 0;
 
-	  printf("Calling newline_return\n");
+	  printf_debug("Calling newline_return\n");
 
 	  newframe = call_routine(&machine.pc, &machine.stack,
 				  UnpackR(windows[win].newline_routine));
@@ -1348,7 +1351,7 @@ void zmachine_run(const int version,
       instr = GetCode(pc);
 
 #ifdef DEBUG
-      printf("PC = %x\n", pc);
+      printf_debug("PC = %x\n", pc);
 #endif
 
 #ifdef SAFE

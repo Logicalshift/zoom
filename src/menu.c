@@ -21,11 +21,15 @@
  * Some functions to do with menus
  */
 
+#include "../config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <dirent.h>
-#include <unistd.h>
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
 #include <string.h>
 
 #include "zmachine.h"
@@ -33,7 +37,8 @@
 #include "display.h"
 #include "rc.h"
 #include "file.h"
-#include "../config.h"
+
+#if WINDOW_SYSTEM != 2
 
 static void center(char* text, int columns)
 {
@@ -193,7 +198,7 @@ char* menu_get_story(void)
 	{
 	case 'Q':
 	case 'q':
-	  exit(1);
+	  display_exit(1);
 	  
 	case 129:
 	  selection--;
@@ -213,3 +218,11 @@ char* menu_get_story(void)
   return game[selection].filename;
 }
 
+#else
+
+char* menu_get_story(void)
+{
+  return NULL;
+}
+
+#endif

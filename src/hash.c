@@ -61,7 +61,7 @@ hash hash_create(void)
     }
 
 #ifdef DEBUG
-  fprintf(stderr, "*** Hash - created new hash (%i elements)\n", hash->n_buckets);
+  printf_debug("*** Hash - created new hash (%i elements)\n", hash->n_buckets);
 #endif
   
   return hash;
@@ -138,7 +138,7 @@ void hash_store_happy(hash  hash,
 	new_size *= 2;
  
 #ifdef DEBUG
-      fprintf(stderr, "*** Hash - unhappy hash, resizing to %i\n", new_size);
+      printf_debug("*** Hash - unhappy hash, resizing to %i\n", new_size);
 #endif
      
       hash_resize(hash, new_size);
@@ -163,7 +163,7 @@ void hash_store(hash  hash,
       bucket = malloc(sizeof(struct bucket));
 
 #ifdef DEBUG
-      fprintf(stderr, "*** Hash - storing new value in bucket 0x%x\n", value);
+      printf_debug("*** Hash - storing new value in bucket 0x%x\n", value);
 #endif
 
       bucket->key = malloc(len+1);
@@ -185,7 +185,7 @@ void hash_store(hash  hash,
 #ifdef DEBUG
   else
     {
-      fprintf(stderr, "*** Hash - replacing value in bucket 0x%x\n", key, value);
+      printf_debug("*** Hash - replacing value in bucket 0x%x\n", key, value);
     }
 #endif
 
@@ -290,7 +290,7 @@ void hash_resize(hash hsh,
   new_hash = hash_create();
 
 #ifdef DEBUG
-  fprintf(stderr, "*** Hash - resizing to %i\n", n_buckets);
+  printf_debug("*** Hash - resizing to %i\n", n_buckets);
 #endif
 
   free(new_hash->bucket);

@@ -24,6 +24,8 @@
 #ifndef __XFONT_H
 #define __XFONT_H
 
+#include "../config.h"
+
 struct xfont;
 
 typedef struct xfont xfont;
@@ -34,8 +36,8 @@ extern void    xfont_shutdown      (void);
 extern xfont*  xfont_load_font     (char* font);
 extern void    xfont_release_font  (xfont*);
 
-extern void    xfont_set_colours   (int foreground,
-				    int background);
+extern void    xfont_set_colours   (int,
+				    int);
 extern int     xfont_get_width     (xfont*);
 extern int     xfont_get_height    (xfont*);
 extern int     xfont_get_ascent    (xfont*);
@@ -43,11 +45,19 @@ extern int     xfont_get_descent   (xfont*);
 extern int     xfont_get_text_width(xfont*,
 				    const int*,
 				    int);
+#if WINDOW_SYSTEM==1
 extern void    xfont_plot_string   (xfont*,
 				    Drawable,
 				    GC,
 				    int, int,
 				    const int*,
 				    int);
+#else
+extern void xfont_plot_string(xfont*,
+			      HDC,
+			      int, int,
+			      const int*,
+			      int);
+#endif
 
 #endif

@@ -129,6 +129,7 @@ char* zscii_to_ascii(ZByte* string, int* len)
 		  break;
 		default:
 		  /* Ignore */
+		  break;
 		}
 	    }
 	  break;

@@ -21,6 +21,10 @@
  * Font handling for X-Windows
  */
 
+#include "../config.h"
+
+#if WINDOW_SYSTEM == 1
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -28,8 +32,6 @@
 #include "xdisplay.h"
 #include "xfont.h"
 #include "font3.h"
-
-#include "../config.h"
 
 /* Definition of an xfont */
 
@@ -263,3 +265,5 @@ void xfont_plot_string(xfont* f,
       break;
     }
 }
+
+#endif

@@ -31,6 +31,16 @@
 #define __DISPLAY_H
 
 /***                           ----// 888 \\----                           ***/
+/* Printing & housekeeping functions */
+extern void printf_debug(char* format, ...);
+extern void printf_info (char* format, ...);
+extern void printf_info_done(void);
+extern void printf_error(char* format, ...);
+extern void printf_error_done(void);
+
+extern void display_exit(int code);
+
+/***                           ----// 888 \\----                           ***/
 
 /* Misc functions */
 extern void display_initialise  (void); /* Called on startup */
@@ -42,14 +52,14 @@ extern void display_finalise    (void); /* Called on shutdown */
 /* Output functions */
 extern void display_clear     (void);
 extern void display_prints    (const int*);
-extern void display_prints_c  (const char* string);
+extern void display_prints_c  (const char*);
 extern void display_printc    (int);
 extern void display_printf    (const char*, ...);
 extern int  display_check_char(int);
 
 /* Input functions */
 extern int  display_readline(int*, int, long int);
-extern int  display_readchar(long int timeout); /* Timeout is milliseconds */
+extern int  display_readchar(long int); /* Timeout is milliseconds */
 
 /* Information about this display module */
 typedef struct

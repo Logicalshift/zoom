@@ -1,0 +1,4 @@
+#include "@srcdir@/zoomres.h"
+
+ID_ICON ICON "@srcdir@/zoom.ico"
+ID_SMICON ICON "@srcdir@/zoomsmall.ico"

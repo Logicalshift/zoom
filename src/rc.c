@@ -38,6 +38,14 @@ hash rc_hash = NULL;
 static rc_game* game = NULL;
 static rc_game* defgame = NULL;
 
+#ifdef DATADIR
+# define ZOOMRC DATADIR "/zoomrc"
+# define GAMEDIR DATADIR "/games"
+#else
+# define ZOOMRC "zoomrc"
+# define GAMEDIR "games"
+#endif
+
 void rc_error(char* erm)
 {
   zmachine_fatal("Error while parsing .zoomrc (line %i): %s",
@@ -54,18 +62,23 @@ void rc_load(void)
   
   home = getenv("HOME");
   if (home==NULL)
-    zmachine_fatal("Unable to work out where your home directory is");
-
-  filename = malloc(strlen(home)+9);
-  strcpy(filename, home);
-  strcat(filename, "/.zoomrc");
+    {
+      filename = "zoomrc";
+    }
+  else
+    {
+      filename = malloc(strlen(home)+9);
+      strcpy(filename, home);
+      strcat(filename, "/.zoomrc");
+    }
 
   yyin = fopen(filename, "r");
+  
   if (yyin==NULL)
     {
-      yyin = fopen(DATADIR "/zoomrc", "r");
+      yyin = fopen(ZOOMRC, "r");
       if (yyin == NULL)
-	zmachine_fatal("Unable to open resource file '%s', or the systems default file at " DATADIR "/zoomrc", filename);
+	zmachine_fatal("Unable to open resource file '%s', or the systems default file at " ZOOMRC, filename);
     }
 
   _rc_line = 1;
@@ -180,7 +193,7 @@ char* rc_get_gamedir(void)
   if (game->gamedir == NULL)
     {
       if (defgame->gamedir == NULL)
-	return DATADIR "/games";
+	return GAMEDIR;
       return defgame->gamedir;
     }
   return game->gamedir;

@@ -23,6 +23,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <time.h>
 
@@ -66,6 +67,37 @@ static struct
 static ZByte* stacks = NULL;
 static char*  detail = NULL;
 static ZWord* stackpos = NULL;
+
+/*
+ * Push is redefined here to avoid a conflict between the way gcc
+ * compiles things, and the way Borland C compiles things
+ */
+void push(ZStack* stack, const ZWord word)
+{
+  *(stack->stack_top++) = word;
+  stack->stack_size--;
+
+  if (stack->current_frame != NULL)
+    stack->current_frame->frame_size++;
+  
+  if (stack->stack_size <= 0)
+    {
+      stack->stack_total += 2048;
+      if (!(stack->stack = realloc(stack->stack,
+				   stack->stack_total*sizeof(ZWord))))
+	{
+	  zmachine_fatal("Stack overflow");
+	}
+      stack->stack_size = 2048;
+    }
+
+#ifdef DEBUG
+  if (stack->current_frame)
+    printf_debug("Stack: push - size now %i, frame usage %i (pushed #%x)\n",
+	   stack->stack_size, stack->current_frame->frame_size,
+	   stack->stack_top[-1]);
+#endif
+}
 
 static int format_stacks(ZStack* stack, ZFrame* frame)
 {
@@ -138,6 +170,47 @@ static inline void xor_memory(void)
     }
 }
 
+static inline void wblock(ZByte*  x,
+			  int     len,
+			  ZDWord* flen,
+			  ZByte** data)
+{
+  *flen += len;
+  *data = realloc(*data, *flen+16);
+  memcpy(*data + *flen - len, x, len);
+}
+
+static inline void wdword(ZDWord  w,
+			  ZDWord* flen,
+			  ZByte** data)
+{
+  *flen +=4;
+  *data = realloc(*data, *flen+16);
+  (*data)[*flen-4] = w>>24;
+  (*data)[*flen-3] = w>>16;
+  (*data)[*flen-2] = w>>8;
+  (*data)[*flen-1] = w;
+}
+
+static inline void wword(ZUWord  w,
+			 ZDWord* flen,
+			 ZByte** data)
+{
+  *flen += 2;
+  *data = realloc(*data, *flen+16);
+  (*data)[*flen-2] = w>>8;
+  (*data)[*flen-1] = w;
+}
+
+static inline void wbyte(ZUWord  w,
+			 ZDWord* flen,
+			 ZByte** data)
+{
+  flen += 1;
+  *data = realloc(*data, *flen+16);
+  (*data)[*flen-1] = w;
+}
+
 ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
 {
   ZByte* data = NULL;
@@ -145,39 +218,7 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
   int size;
   char anno[256];
   time_t now;
-  ZByte version;
-  
-  static inline void wblock(ZByte* x, int len)
-    {
-      flen += len;
-      data = realloc(data, flen+16);
-      memcpy(data + flen - len, x, len);
-    }
-  
-  static inline void wdword(ZDWord w)
-    {
-      flen +=4;
-      data = realloc(data, flen+16);
-      data[flen-4] = w>>24;
-      data[flen-3] = w>>16;
-      data[flen-2] = w>>8;
-      data[flen-1] = w;
-    }
-  
-  static inline void wword(ZUWord w)
-    {
-      flen += 2;
-      data = realloc(data, flen+16);
-      data[flen-2] = w>>8;
-      data[flen-1] = w;
-    }
-  
-  static inline void wbyte(ZUWord w)
-    {
-      flen += 1;
-      data = realloc(data, flen+16);
-      data[flen-1] = w;
-    }
+  ZByte version;  
 
   *len = -1;
   version = Byte(0);
@@ -197,19 +238,19 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
 #endif
   
   /* header */
-  wblock(blocks[IFhd].text, 4);
-  wdword(13);
-  wword(Word(ZH_release));
-  wblock(Address(ZH_serial), 6);
-  wword(Word(ZH_checksum));
+  wblock(blocks[IFhd].text, 4, &flen, &data);
+  wdword(13, &flen, &data);
+  wword(Word(ZH_release), &flen, &data);
+  wblock(Address(ZH_serial), 6, &flen, &data);
+  wword(Word(ZH_checksum), &flen, &data);
 #ifdef DEBUG
-  printf("Save: release %i, checksum %i\n", Word(ZH_release), Word(ZH_checksum));
+  printf_debug("Save: release %i, checksum %i\n", Word(ZH_release), Word(ZH_checksum));
 #endif
-  wbyte(pc>>16);
-  wbyte(pc>>8);
-  wbyte(pc);
+  wbyte(pc>>16, &flen, &data);
+  wbyte(pc>>8, &flen, &data);
+  wbyte(pc, &flen, &data);
 
-  wbyte(0);
+  wbyte(0, &flen, &data);
 
   /* Dynamic memory */
   if (compress)
@@ -220,7 +261,7 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
       ZByte running;
 
 #ifdef DEBUG
-      printf("Compile: compressing memory from 0 to %x\n", machine.dynamic_ceiling);
+      printf_debug("Compile: compressing memory from 0 to %x\n", machine.dynamic_ceiling);
 #endif
       
       xor_memory();
@@ -267,12 +308,12 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
 	    }
 	}
 
-      wblock(blocks[CMem].text, 4);
-      wdword(clen);
-      wblock(comp, clen);
+      wblock(blocks[CMem].text, 4, &flen, &data);
+      wdword(clen, &flen, &data);
+      wblock(comp, clen, &flen, &data);
 
       if (clen&1)
-	wbyte(0);
+	wbyte(0, &flen, &data);
 
       free(comp);
       
@@ -280,27 +321,27 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
     }
   else
     {
-      wblock(blocks[UMem].text, 4);
-      wdword(machine.dynamic_ceiling);
-      wblock(Address(0), machine.dynamic_ceiling);
+      wblock(blocks[UMem].text, 4, &flen, &data);
+      wdword(machine.dynamic_ceiling, &flen, &data);
+      wblock(Address(0), machine.dynamic_ceiling, &flen, &data);
 
       if (machine.dynamic_ceiling&1)
-	wbyte(0);
+	wbyte(0, &flen, &data);
     }
 
   /* Stack frames */
   stackpos = stack->stack;
   size = format_stacks(stack, stack->current_frame);
-  wblock(blocks[Stks].text, 4);
-  wdword(size);
-  wblock(stacks, size);
+  wblock(blocks[Stks].text, 4, &flen, &data);
+  wdword(size, &flen, &data);
+  wblock(stacks, size, &flen, &data);
 
   free(stacks);
   stacks = NULL;
 
   /* Annotations */
   now = time(NULL);
-  wblock(blocks[ANNO].text, 4);
+  wblock(blocks[ANNO].text, 4, &flen, &data);
   if (version <= 3)
     {
       char score[64];
@@ -323,10 +364,10 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
       sprintf(anno, "Version %i game, saved from Zoom version "
 	      VERSION " @%s", version, ctime(&now));
     }
-  wdword(strlen(anno));
-  wblock(anno, strlen(anno));
+  wdword(strlen(anno), &flen, &data);
+  wblock(anno, strlen(anno), &flen, &data);
   if (strlen(anno)&1)
-    wbyte(0);
+    wbyte(0, &flen, &data);
   
   *len = flen;
   return data;
@@ -399,12 +440,12 @@ int state_decompile(ZByte* st, ZStack* stack, ZDWord* pc, ZDWord len)
       
       blen = (st[pos]<<24) | (st[pos+1]<<16) | (st[pos+2]<<8) | (st[pos+3]);
 #ifdef DEBUG
-      printf("Decompile: found block ");
+      printf_debug("Decompile: found block ");
       {
 	int x;
-	for (x=-4; x<0; x++) printf("%c", st[pos+x]);
+	for (x=-4; x<0; x++) printf_debug("%c", st[pos+x]);
       }
-      printf("\n");
+      printf_debug("\n");
 #endif
 
       for (x=0; x<N_BLOCKS; x++)
@@ -427,7 +468,7 @@ int state_decompile(ZByte* st, ZStack* stack, ZDWord* pc, ZDWord len)
       blocks[Stks].pos == 0)
     {
 #ifdef DEBUG
-      printf("Decompile: missing block\n");
+      printf_debug("Decompile: missing block\n");
 #endif
       detail = "Required block missing from savefile";
       return 0;
@@ -444,7 +485,7 @@ int state_decompile(ZByte* st, ZStack* stack, ZDWord* pc, ZDWord len)
 	(ZUWord)Word(ZH_checksum) != checksum)
       {
 #ifdef DEBUG
-	printf("Decompile: bad release/checksum (savefile rel=%i, our rel=%i, savefile checksum=%i, our checksum=%i)\n",
+	printf_debug("Decompile: bad release/checksum (savefile rel=%i, our rel=%i, savefile checksum=%i, our checksum=%i)\n",
 	       release, Word(ZH_release), checksum, Word(ZH_checksum));
 #endif
 	detail = "Savefile is not for this game";
@@ -454,7 +495,7 @@ int state_decompile(ZByte* st, ZStack* stack, ZDWord* pc, ZDWord len)
     if (memcmp(Address(ZH_serial), blocks[IFhd].pos + 2, 6) != 0)
       {
 #ifdef DEBUG
-	printf("Decompile: bad serial number");
+	printf_debug("Decompile: bad serial number");
 #endif
 	detail = "Savefile is not for this game";
 	return 0;
@@ -463,7 +504,7 @@ int state_decompile(ZByte* st, ZStack* stack, ZDWord* pc, ZDWord len)
     if (blocks[UMem].pos != NULL && blocks[UMem].len != machine.dynamic_ceiling)
       {
 #ifdef DEBUG
-	printf("Decompile: Memory sizes do not match");
+	printf_debug("Decompile: Memory sizes do not match");
 #endif
 	detail = "Corrupt savefile";
 	return 0;
@@ -472,7 +513,7 @@ int state_decompile(ZByte* st, ZStack* stack, ZDWord* pc, ZDWord len)
     if (blocks[IFhd].len != 13)
       {
 #ifdef DEBUG
-	printf("Decompile: IFhd len is %i", blocks[IFhd].len);
+	printf_debug("Decompile: IFhd len is %i", blocks[IFhd].len);
 #endif
 	detail = "Savefile is not compatable quetzal 1.3b format";
 	return 0;
@@ -647,7 +688,7 @@ int state_load(char* filename, ZStack* stack, ZDWord* pc)
       memcmp(file + 8, "IFZS", 4) != 0)
     {
 #ifdef DEBUG
-      printf("Load: Not a quetzal file\n");
+      printf_debug("Load: Not a quetzal file\n");
 #endif
       detail = "Not a quetzal file";
       return 0;
@@ -656,7 +697,7 @@ int state_load(char* filename, ZStack* stack, ZDWord* pc)
   if (formsize > fsize-8)
     {
 #ifdef DEBUG
-      printf("Load: File is truncated\n");
+      printf_debug("Load: File is truncated\n");
 #endif
       detail = "File is truncated";
       return 0;
