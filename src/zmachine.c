@@ -72,7 +72,7 @@ void zmachine_load_file(ZFile* file, ZMachine* machine) {
 
         if (machine->blorb->zcode_offset < 0)
         {
-            zmachine_fatal("This blorb file is not executable");
+            zmachine_fatal("This blorb file does not contain an executable Z-Code section");
         }
 
         machine->memory = read_block(machine->file,
