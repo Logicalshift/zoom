@@ -1767,6 +1767,8 @@ void zmachine_runsome(const int version,
 # endif
 # ifdef SUPPORT_VERSION_3
     case 5:
+    case 7:
+    case 8:
       decode = decode_v5;
       decode_ext = decode_ext_v5;
       exec = exec_v5;
