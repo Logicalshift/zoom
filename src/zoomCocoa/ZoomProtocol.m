@@ -923,14 +923,14 @@ NSString* ZBufferSetWindow   = @"ZBSW";
 	}
 }
 
-- (void) addData: (NSData*) data
+- (void) addData: (NSData*) newData
 	 forFilename: (NSString*) filename {
 	if (!forWriting) {
 		[NSException raise: @"ZoomFileWriteException" format: @"Tried to write to a file open for reading"];
 		return;
 	}
 	
-	[wrapper addRegularFileWithContents: data
+	[wrapper addRegularFileWithContents: newData
 					  preferredFilename: filename];
 }
 
