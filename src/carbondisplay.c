@@ -107,6 +107,11 @@ static int pix_w, pix_h;
 static int pix_fore;
 static int pix_back;
 
+static int pix_cstyle = 0;
+static int pix_cx = 0;
+static int pix_cy = 0;
+static int pix_cw = 0;
+
 static int mousew_x, mousew_y, mousew_w, mousew_h = -1;
 
 /* Preferences */
@@ -561,11 +566,14 @@ static void draw_input_text(void)
   int w;
   int on;
   int fg, bg;
+  int style;
 
   fg = CURWIN.fore;
   bg = CURWIN.back;
+  
+  style = CURWIN.style;
 
-  if (CURWIN.style&1)
+  if (style&1)
     {
       fg = CURWIN.back;
       bg = CURWIN.fore;
@@ -574,27 +582,53 @@ static void draw_input_text(void)
   on = caret_on;
   hide_caret();
 
-  if (CURWIN.overlay)
+  if (pixmap != NULL)
     {
-      input_x = caret_x = xfont_x*CURWIN.xpos;
-      input_y = caret_y = xfont_y*CURWIN.ypos;
-      input_y += xfont_get_ascent(font[style_font[(CURSTYLE>>1)&15]]);
-      caret_height = xfont_y;
+      int xp, yp;
+
+      xp = win_x/2-pix_w/2;
+      yp = win_y/2-pix_h/2;
+
+      style = pix_cstyle;
+
+      input_x = caret_x = pix_cx;
+      input_y = caret_y = pix_cy;
+      input_y += xfont_get_ascent(font[style_font[(pix_cstyle>>1)&15]]);
+      input_width = pix_cw;
+      caret_height = xfont_get_height(font[style_font[(pix_cstyle>>1)&15]])-1;
+
+      input_x += xp; input_y += yp;
+      caret_x += xp; caret_y += yp;
+
+      fg = pix_fore;
+      bg = pix_back;
     }
   else
     {
-      if (CURWIN.lastline != NULL)
+      if (CURWIN.overlay)
 	{
-	  input_x = caret_x = CURWIN.xpos;
-	  input_y = caret_y = CURWIN.lastline->baseline-scrollpos;
-	  caret_y -= CURWIN.lastline->ascent;
-	  caret_height = CURWIN.lastline->ascent+CURWIN.lastline->descent-1;
+	  input_x = caret_x = xfont_x*CURWIN.xpos;
+	  input_y = caret_y = xfont_y*CURWIN.ypos;
+	  input_y += xfont_get_ascent(font[style_font[(style>>1)&15]]);
+	  caret_height = xfont_y;
 	}
       else
 	{
-	  input_x = input_y = caret_x = caret_y = 0;
-	  caret_height = xfont_y-1;
+	  if (CURWIN.lastline != NULL)
+	    {
+	      input_x = caret_x = CURWIN.xpos;
+	      input_y = caret_y = CURWIN.lastline->baseline-scrollpos;
+	      caret_y -= CURWIN.lastline->ascent;
+	      caret_height = CURWIN.lastline->ascent+CURWIN.lastline->descent-1;
+	    }
+	  else
+	    {
+	      input_x = input_y = caret_x = caret_y = 0;
+	      caret_height = xfont_y-1;
+	    }
 	}
+
+      input_width = win_x - input_x;
     }
 
   if (text_buf != NULL)
@@ -607,28 +641,28 @@ static void draw_input_text(void)
       thePort = GetQDGlobalsThePort();
       GetPortBounds(thePort, &portRect); 
 
-      dassert(CURSTYLE < 32);
-      dassert(CURSTYLE >= 0);
-      dassert(style_font[(CURSTYLE>>1)&15] <= n_fonts &&
-	      style_font[(CURSTYLE>>1)&15] >= 0);
-      w = xfont_get_text_width(font[style_font[(CURSTYLE>>1)&15]],
+      dassert(style < 32);
+      dassert(style >= 0);
+      dassert(style_font[(style>>1)&15] <= n_fonts &&
+	      style_font[(style>>1)&15] >= 0);
+      w = xfont_get_text_width(font[style_font[(style>>1)&15]],
 			       text_buf,
 			       istrlen(text_buf));
 
       PenNormal();
       rct.left   = portRect.left + input_x + w + BORDERWIDTH;
-      rct.right  = portRect.left + win_x + BORDERWIDTH;
+      rct.right  = rct.left + input_width;
       rct.top    = portRect.top + caret_y + BORDERWIDTH;
-      rct.bottom = rct.top + xfont_get_height(font[style_font[(CURSTYLE>>1)&15]]);
+      rct.bottom = rct.top + xfont_get_height(font[style_font[(style>>1)&15]]);
       RGBForeColor(&maccolour[bg+FIRST_ZCOLOUR]);
       PaintRect(&rct);
 
-      caret_x += xfont_get_text_width(font[style_font[(CURSTYLE>>1)&15]],
+      caret_x += xfont_get_text_width(font[style_font[(style>>1)&15]],
 				      text_buf,
 				      buf_offset);
 
       xfont_set_colours(fg + FIRST_ZCOLOUR, bg + FIRST_ZCOLOUR);
-      xfont_plot_string(font[style_font[(CURSTYLE>>1)&15]],
+      xfont_plot_string(font[style_font[(style>>1)&15]],
 			input_x+BORDERWIDTH, -input_y-BORDERWIDTH,
 			text_buf,
 			istrlen(text_buf));
@@ -903,21 +937,50 @@ static void draw_window(int   win,
 
   if (pixmap != NULL)
     {
-      Rect src, dst;
+      Rect src, dst, r;
       PixMapHandle winPix, pixPix;
 
       static const RGBColor black = { 0,0,0 };
       static const RGBColor white = { 0xffff, 0xffff, 0xffff };
+      int xp, yp;
 
       if (win != 0)
 	return;
+
+      xp = win_x/2-pix_w/2;
+      yp = win_y/2-pix_h/2;
 
       src.left   = 0;
       src.top    = 0;
       src.right  = pix_w;
       src.bottom = pix_h;
 
-      dst = src;
+      dst.left   = BORDERWIDTH+xp;
+      dst.top    = BORDERWIDTH+yp;
+      dst.right  = dst.left + pix_w;
+      dst.bottom = dst.top + pix_h;
+
+      RGBForeColor(&white);
+      r.left = 0;
+      r.top  = 0;
+      r.right = total_x - 15;
+      r.bottom = yp+BORDERWIDTH;
+      PaintRect(&r);
+      
+      r.right = xp + BORDERWIDTH;
+      r.bottom = total_y;
+      PaintRect(&r);
+
+      r.right = total_x-15;
+      r.bottom = total_y;
+
+      r.left = total_x-15-BORDERWIDTH-xp;
+      r.top  = 0;
+      PaintRect(&r);
+
+      r.left = 0;
+      r.top  = total_y-BORDERWIDTH-yp;
+      PaintRect(&r);
 
       RGBForeColor(&black);
       RGBBackColor(&white);
@@ -2556,6 +2619,19 @@ void display_plot_gtext(const int* text, int len,
 			int style, int x, int y)
 {
   int ft;
+  int fg, bg;
+
+  if (len == 0)
+    return;
+
+  if (x<0 || y<0)
+    return;
+
+  fg = pix_fore; bg = pix_back;
+  if ((style&1))
+    { fg = pix_back; bg = pix_fore; }
+  if (fg < 0)
+    fg = 7;
 
   ft = style_font[(style>>1)&15];
 
@@ -2567,7 +2643,7 @@ void display_plot_gtext(const int* text, int len,
   carbon_set_context();
 #endif
 
-  xfont_set_colours(pix_fore + FIRST_ZCOLOUR, pix_back + FIRST_ZCOLOUR);
+  xfont_set_colours(fg + FIRST_ZCOLOUR, bg + FIRST_ZCOLOUR);
   xfont_plot_string(font[ft], x, -y,
 		    text, len);
   
@@ -2656,6 +2732,9 @@ int display_get_pix_mouse_y(void)
 
 void display_set_input_pos(int style, int x, int y, int width)
 {
+  pix_cstyle = style;
+  pix_cx = x; pix_cy = y;
+  pix_cw = width;
 }
 
 void display_set_mouse_win(int x, int y, int width, int height)

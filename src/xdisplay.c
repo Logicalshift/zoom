@@ -2992,6 +2992,9 @@ float display_measure_text(const int* text, int len, int style)
 {
   int ft;
 
+  if (len <= 0)
+    return 0;
+
   ft = style_font[(style>>1)&15];
 
   return xfont_get_text_width(font[ft], text, len);
