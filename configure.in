@@ -212,6 +212,17 @@ if test "$MINGW32" != "yes"; then
     if test "x$quicktime_present" = "xno"; then
       AC_MSG_ERROR([QuickTime not found (?)])
     fi
+
+    AC_CHECK_LIB(z, inflate, [ LDFLAGS="$LDFLAGS -lz" ])
+
+    AC_CHECK_LIB(png, png_get_IHDR,
+      [
+	AC_DEFINE(HAVE_LIBPNG)
+	LDFLAGS="$LDFLAGS -lpng"
+      ],
+      [
+	AC_MSG_WARN([libpng not detected: blecherous QuickTime alpha blending will be used (Ew)])
+      ])
   fi
 fi
 fi
