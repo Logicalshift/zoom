@@ -86,9 +86,9 @@ extern void  blorb_free_sfx (blorb, int);
 /*
  * Functions to add resources to a new blorb file
  */
-extern void blorb_add_pict (blorb, char* file);
-extern void blorb_add_aiff (blorb, char* file);
-extern void blorb_add_mod  (blorb, char* file);
-extern void blorb_add_zcode(blorb, char* file);
+extern void blorb_add_pict (blorb, char* file, int num);
+extern void blorb_add_aiff (blorb, char* file, int num);
+extern void blorb_add_mod  (blorb, char* file, int num);
+extern void blorb_add_zcode(blorb, char* file, int num);
 
 #endif

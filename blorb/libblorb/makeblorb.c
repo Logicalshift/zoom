@@ -25,4 +25,38 @@
 #include <stdlib.h>
 
 #include "libblorb/blorb.h"
+#include "blorbint.h"
 
+blorb blorb_create_file(char* file)
+{
+  blorb newfile;
+
+  newfile = malloc(sizeof(struct blorb));
+
+  newfile->creating = 1;
+  newfile->fh       = fopen(file, "w");
+
+  if (!newfile->fh)
+    {
+      free(newfile);
+      return NULL;
+    }
+
+  newfile->n_sfx       = 0;
+  newfile->sfx_block   = NULL;
+  newfile->sfx         = NULL;
+
+  newfile->n_picts     = 0;
+  newfile->pict_block  = NULL;
+  newfile->pict        = NULL;
+
+  newfile->zcode       = NULL;
+  newfile->release_num = 0;
+  
+  return newfile;
+}
+
+void blorb_add_pict(blorb bl, char* file, int num)
+{
+  
+}

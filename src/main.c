@@ -172,7 +172,7 @@ int zoom_main(int argc, char** argv)
   display_prints_c("You should have received a copy of the GNU General Public License along with this program. If not, write to the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.\n");
   display_prints_c("\nThe Zoom homepage can be located at ");
   display_set_style(4);
-  display_prints_c("http://www.logicalshift.co.uk/unix/zoom/");
+  display_prints_c("http://www.logicalshift.demon.co.uk/unix/zoom/");
   display_set_style(0);
   display_prints_c(" - check this page for any updates\n\n\n");
   display_set_colour(0, 6);
