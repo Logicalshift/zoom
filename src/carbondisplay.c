@@ -267,7 +267,12 @@ int main(int argc, char** argv)
 {
   Rect bounds;
 
-  CreateNewWindow(kPlainWindowClass, 0, 
+  bounds.origin.x = 0;
+  bounds.origin.y = 0;
+  bounds.size.x = 100;
+  bounds.size.y = 100;
+
+  CreateNewWindow(kPlainWindowClass, 0, &bounds);
 
   RunApplicationEventLoop();
 }
