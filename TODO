@@ -7,11 +7,9 @@ GENERAL:
  * taipan.z5 text display underneath upper window bug
  * [More] and recorded scripts broken?
  * Option to turn on debugging mode for Mac OS X
- * heirarchical fonts
  * reset pixmap display on restart under v6
  * XSL documentation
- * disable quicktime rendering
- * crash when moving a file and it's resources in OS X?
+ * crash when moving a file and its resources in OS X?
  * Remove font numbering
  * '>>' '<<' bug? again?
  
