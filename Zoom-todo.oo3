@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!DOCTYPE outline PUBLIC "-//omnigroup.com//DTD OUTLINE 3.0//EN" "http://www.omnigroup.com/namespace/OmniOutliner/xmloutline-v3.dtd">
 <outline xmlns="http://www.omnigroup.com/namespace/OmniOutliner/v3">
+  <style-attribute-registry>
+    <style-attribute version="0" key="font-weight" group="font" name="weight" class="number">5</style-attribute>
+    <style-attribute version="0" key="text-background-color" group="text" name="background color" class="color">
+      <color w="0" a="0"/>
+    </style-attribute>
+  </style-attribute-registry>
   <settings/>
-  <editor is-spellchecking-enabled="yes"/>
+  <editor is-spellchecking-enabled="yes">
+    <drawer display="sections"/>
+  </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
       <title>
@@ -11,7 +19,7 @@
         </text>
       </title>
     </column>
-    <column id=":078928d440f2709e21a6e303" type="text" width="510" minimum-width="13" maximum-width="1000000" text-export-width="72" is-outline-column="yes">
+    <column id=":078928d440f2709e21a6e303" type="text" width="406" minimum-width="13" maximum-width="1000000" text-export-width="72" is-outline-column="yes">
       <title>
         <text>
           <p>
@@ -22,8 +30,27 @@
         </text>
       </title>
     </column>
+    <column id="bJSTis5k9jH" type="text" width="100" minimum-width="13" maximum-width="1000000" text-export-width="40">
+      <title>
+        <text>
+          <p>
+            <run>
+              <lit>Reported by</lit>
+            </run>
+          </p>
+        </text>
+      </title>
+    </column>
   </columns>
   <root>
+    <style>
+      <value key="font-weight">9</value>
+    </style>
+    <style>
+      <value key="text-background-color">
+        <color r="0.815686" g="0.870588" b="1"/>
+      </value>
+    </style>
     <item id="kzPdhsKinRx" expanded="yes" state="indeterminate">
       <values>
         <text>
@@ -32,6 +59,9 @@
               <lit>Bugs</lit>
             </run>
           </p>
+        </text>
+        <text>
+          <p/>
         </text>
       </values>
       <children>
@@ -43,6 +73,9 @@
                   <lit>When &apos;Keep games organised&apos; is on, we default to the last save directory, not the save directory for the specific game</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
           <note>
@@ -64,6 +97,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
           <note>
             <text>
@@ -84,6 +120,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
         <item id="n5azxE7Q5je">
@@ -94,6 +133,9 @@
                   <lit>Debugger doesn&apos;t work for certain types of object property</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
           <note>
@@ -114,6 +156,9 @@
                   <lit>Double-clicking games broken again</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
           <note>
@@ -147,6 +192,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
           <note>
             <text>
@@ -167,6 +215,9 @@
                   <lit>Gets slow after long play sessions</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
           <note>
@@ -194,6 +245,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
         <item id="hG0bTrug_84">
@@ -204,6 +258,9 @@
                   <lit>Killing ZoomServer causes a crash? At least, it does in Inform.app</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
           <note>
@@ -237,6 +294,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
         <item id="kh6jp8i6CnS" state="checked">
@@ -247,6 +307,9 @@
                   <lit>Zoom window is faintly transparent</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
           <note>
@@ -268,6 +331,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
           <note>
             <text>
@@ -288,6 +354,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
         <item id="gFqoEqjI-mB" state="checked">
@@ -298,6 +367,9 @@
                   <lit>0-line lower window bug</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
           <note>
@@ -331,6 +403,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
           <note>
             <text>
@@ -351,6 +426,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
         <item id="o6FZTTYE9jr">
@@ -361,6 +439,9 @@
                   <lit>Allow line input in the upper window</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
         </item>
@@ -373,6 +454,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
         <item id="gQ-Z8LZBP-X" state="checked">
@@ -383,6 +467,9 @@
                   <lit>(Finished) (Finished) syndrome when you use &apos;Force restart&apos; or the skein on a finished game</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
         </item>
@@ -395,6 +482,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
         <item id="dLfdx_zNEBY" state="checked">
@@ -405,6 +495,9 @@
                   <lit>Double-clicking on a savegame file produces a blank screen for some reason now</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
         </item>
@@ -417,6 +510,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
         <item id="cTv3eO13qs1" state="checked">
@@ -427,6 +523,9 @@
                   <lit>If we create more than one story object and change the extra metadata in one, then it won&apos;t be updated across all stories</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
         </item>
@@ -439,6 +538,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
         <item id="mqWj9eCE5o7">
@@ -449,6 +551,9 @@
                   <lit>Need to show an error message when a game has resources set but they cannot be found</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
         </item>
@@ -461,6 +566,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
         <item id="f899YDFVn7y">
@@ -471,6 +579,9 @@
                   <lit>Need a way to set the input style</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
         </item>
@@ -483,6 +594,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
         <item id="bQj78BtAQc9" state="checked">
@@ -493,6 +607,9 @@
                   <lit>Typing &apos;help&apos; in LDoDoom scrolls the text window back to the top (might be a bug with the way [More] is handled)</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
         </item>
@@ -507,6 +624,9 @@
             </run>
           </p>
         </text>
+        <text>
+          <p/>
+        </text>
       </values>
       <children>
         <item id="ghrosIJchxh">
@@ -517,6 +637,9 @@
                   <lit>Need to do something appropriate when resources are found+loaded automatically by ZoomClient, and game organisation is turned on</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
         </item>
@@ -529,6 +652,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
         <item id="dCvn-8cOzUS">
@@ -539,6 +665,9 @@
                   <lit>Remove games that fail to launch</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
           <note>
@@ -560,6 +689,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
         <item id="h1lSb8If3u8">
@@ -570,6 +702,9 @@
                   <lit>Competition &amp; other games?</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
         </item>
@@ -582,6 +717,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
         <item id="p49wlwhTJYh">
@@ -592,6 +730,9 @@
                   <lit>&lt;url&gt; tags, and downloading for iFiction files</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
         </item>
@@ -604,6 +745,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
         <item id="hY1PnAqpUtp">
@@ -614,6 +758,9 @@
                   <lit>Documentation for file format</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
         </item>
@@ -626,6 +773,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
           <children>
             <item id="jZql8eaNC6t">
@@ -637,6 +787,9 @@
                     </run>
                   </p>
                 </text>
+                <text>
+                  <p/>
+                </text>
               </values>
             </item>
             <item id="kxjr6mLid09">
@@ -647,6 +800,9 @@
                       <lit>Develop metadata format 1.0, adjust interface</lit>
                     </run>
                   </p>
+                </text>
+                <text>
+                  <p/>
                 </text>
               </values>
             </item>
@@ -663,6 +819,9 @@
             </run>
           </p>
         </text>
+        <text>
+          <p/>
+        </text>
       </values>
       <children>
         <item id="iami8oTCV2w">
@@ -674,6 +833,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
         <item id="pLVhn-SEdK_" state="checked">
@@ -684,6 +846,9 @@
                   <lit>Document close problem? (not sure)</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
           <note>
@@ -705,6 +870,9 @@
                   <lit>Foreground/background colours</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
           <note>
@@ -732,6 +900,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
           <note>
             <text>
@@ -758,6 +929,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
           <note>
             <text>
@@ -777,6 +951,9 @@
                   <lit>Transcripting</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
           <note>
@@ -798,6 +975,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
           <note>
             <text>
@@ -818,6 +998,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
         <item id="oPAqEhMoZG8" state="checked">
@@ -828,6 +1011,9 @@
                   <lit>Terminating character support</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
         </item>
@@ -840,6 +1026,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
           <children>
             <item id="hgEtVIb7pyZ" state="checked">
@@ -850,6 +1039,9 @@
                       <lit>Scroll support</lit>
                     </run>
                   </p>
+                </text>
+                <text>
+                  <p/>
                 </text>
               </values>
             </item>
@@ -862,6 +1054,9 @@
                     </run>
                   </p>
                 </text>
+                <text>
+                  <p/>
+                </text>
               </values>
             </item>
             <item id="bw5G64a32ru">
@@ -872,6 +1067,9 @@
                       <lit>Sound support (?)</lit>
                     </run>
                   </p>
+                </text>
+                <text>
+                  <p/>
                 </text>
               </values>
               <note>
@@ -909,6 +1107,9 @@
             </run>
           </p>
         </text>
+        <text>
+          <p/>
+        </text>
       </values>
       <children>
         <item id="hy0Gf2_NIxR">
@@ -920,6 +1121,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
         <item id="pec1lh_e8Z9" state="checked">
@@ -930,6 +1134,9 @@
                   <lit>Saving</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
           <note>
@@ -951,6 +1158,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
         <item id="ib30HqKDQ3x">
@@ -962,6 +1172,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
         <item id="flUCzke2NRG">
@@ -972,6 +1185,9 @@
                   <lit>Change transcript button to arrow facing the other way</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
           <note>
@@ -993,6 +1209,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
         <item id="oqK_cIRyJuH" state="checked">
@@ -1004,6 +1223,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
         <item id="gxgCA4Nu-qI">
@@ -1014,6 +1236,9 @@
                   <lit>How to handle terminating characters?</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
           <note>
@@ -1036,6 +1261,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
           <note>
             <text>
@@ -1056,6 +1284,9 @@
                   <lit>Graham&apos;s docs wrong on the purpose of the lock button... Is his idea better?</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
           <note>
@@ -1084,6 +1315,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
       </children>
@@ -1097,6 +1331,9 @@
             </run>
           </p>
         </text>
+        <text>
+          <p/>
+        </text>
       </values>
       <children>
         <item id="ba6SlZMJ-CJ">
@@ -1108,6 +1345,9 @@
                 </run>
               </p>
             </text>
+            <text>
+              <p/>
+            </text>
           </values>
         </item>
         <item id="iry7leqj68J">
@@ -1118,6 +1358,9 @@
                   <lit>Perhaps rewrite with another toolkit?</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
           <note>
@@ -1138,6 +1381,9 @@
                   <lit>Looks like transcripts are broken</lit>
                 </run>
               </p>
+            </text>
+            <text>
+              <p/>
             </text>
           </values>
         </item>
