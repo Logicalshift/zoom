@@ -942,7 +942,8 @@ int tableSorter(id a, id b, void* context) {
 		comment = [story comment];
 		teaser = [story teaser];
 		
-	//	[drawerButton setEnabled: YES];
+		[teaserView setEditable: YES];
+		[commentView setEditable: YES];
 		
 		NSString* dir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: ident 
 																			  create: NO];
@@ -957,8 +958,10 @@ int tableSorter(id a, id b, void* context) {
 		
 		comment = @"";
 		teaser = @"";
+		
+		[teaserView setEditable: NO];
+		[commentView setEditable: NO];
 
-//		[drawerButton setEnabled: NO];
 		[previewView setDirectoryToUse: nil];
 		
 		[resourceDrop setDroppedFilename: nil];
@@ -1291,6 +1294,8 @@ int tableSorter(id a, id b, void* context) {
 
 - (void)textDidEndEditing:(NSNotification *)aNotification {
 	NSTextView* textView = [aNotification object];
+	
+	if ([self selectedStory] == nil) return;
 
 	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
 	
