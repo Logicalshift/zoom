@@ -373,8 +373,7 @@ void zmachine_info(char* format, ...)
 #endif
       display_set_colour(7, 0);
       display_set_style(0);
-      display_prints_c("\n\n[Press any key to exit]\n");
-      display_readchar(0);
+      display_prints_c("\n");
     }
   else
 #endif
@@ -405,7 +404,7 @@ void zmachine_info(char* format, ...)
 	  par.movable = false;
 	  par.helpButton = false;
 	  par.filterProc = nil;
-	  par.defaultText = "\004Quit";
+	  par.defaultText = "\010Continue";
 	  par.cancelText = nil;
 	  par.otherText = nil;
 	  par.defaultButton = kAlertStdAlertOKButton;
