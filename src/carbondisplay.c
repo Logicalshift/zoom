@@ -60,10 +60,14 @@ static int process_events(long int timeout,
 			  int  buflen);
 
 /* Colour information */
-RGBColor maccolour[14] = {
+RGBColor maccolour[17] = {
   { 0xdd00, 0xdd00, 0xdd00 },
   { 0xaa00, 0xaa00, 0xaa00 },
   { 0xff00, 0xff00, 0xff00 },
+
+  { 0x0080, 0x9900, 0xee00 },
+  { 0x00bb, 0xdd00, 0xff00 },
+  { 0x0020, 0x4400, 0x8800 },
 
   { 0x0000, 0x0000, 0x0000 },
   { 0xff00, 0x0000, 0x0000 },
@@ -142,7 +146,7 @@ static char*   fontlist[] =
 
 #define DEFAULT_FORE 0
 #define DEFAULT_BACK 7
-#define FIRST_ZCOLOUR 3
+#define FIRST_ZCOLOUR 6
 
 /* The caret */
 #define FLASH_DELAY (kEventDurationSecond*3)/5
@@ -844,22 +848,93 @@ void redraw_window(Rect* rct)
   draw_input_text();
   draw_borders();
 
-  if (more_on)
-    {
-      int more[] = { '[', 'M', 'O', 'R', 'E', ']' };
-      int w, h;
-
-      h = xfont_get_descent(font[style_font[2]]);
-      w = xfont_get_text_width(font[style_font[2]], more, 6);
-
-      xfont_set_colours(0, 6);
-      xfont_plot_string(font[style_font[2]], total_x-w-15, -(total_y-h), more, 6);
-    }
-
   if (!updating)
     {
       SetClip(oldclip);
       DisposeRgn(oldclip);
+    }
+
+  if (more_on)
+    {
+      int more[] = { '[', 'M', 'O', 'R', 'E', ']' };
+      XFONT_MEASURE w, h;
+      XFONT_MEASURE hgt;
+
+      h   = xfont_get_descent(font[style_font[1]]);
+      hgt = xfont_get_height(font[style_font[1]]);
+      w   = xfont_get_text_width(font[style_font[1]], more, 6);
+
+      if (carbon_prefs.use_quartz)
+	{
+	  CGRect morebg;
+
+	  CGContextSetAlpha(carbon_quartz_context, 0.80);
+
+	  morebg = CGRectMake(total_x-w-17-1.5,
+			      0,
+			      w+1.5, hgt+1.5);
+
+	  CGContextSetRGBFillColor(carbon_quartz_context, 
+				   (float)maccolour[3].red/65536.0,
+				   (float)maccolour[3].green/65536.0,
+				   (float)maccolour[3].blue/65536.0,
+				   1.0);
+	  CGContextFillRect(carbon_quartz_context, morebg);
+
+	  CGContextSetRGBStrokeColor(carbon_quartz_context, 
+				     (float)maccolour[4].red/65536.0,
+				     (float)maccolour[4].green/65536.0,
+				     (float)maccolour[4].blue/65536.0,
+				     1.0);
+	  CGContextSetLineWidth(carbon_quartz_context, 1.0);
+	  CGContextBeginPath(carbon_quartz_context);
+	  CGContextMoveToPoint(carbon_quartz_context, total_x-w-17-1.5, 0.5);
+	  CGContextAddLineToPoint(carbon_quartz_context, total_x-w-17-1.5, hgt+1.5);
+	  CGContextAddLineToPoint(carbon_quartz_context, total_x-17-1.5, hgt+1.5);
+	  CGContextStrokePath(carbon_quartz_context);
+
+	  CGContextSetRGBStrokeColor(carbon_quartz_context, 
+				     (float)maccolour[5].red/65536.0,
+				     (float)maccolour[5].green/65536.0,
+				     (float)maccolour[5].blue/65536.0,
+				     1.0);
+	  CGContextSetLineWidth(carbon_quartz_context, 1.5);
+	  CGContextBeginPath(carbon_quartz_context);
+	  CGContextMoveToPoint(carbon_quartz_context, total_x-w-17-1.5, 0.5);
+	  CGContextAddLineToPoint(carbon_quartz_context, total_x-17-0.5, 0.5);
+	  CGContextAddLineToPoint(carbon_quartz_context, total_x-17-0.5, hgt+1.5);
+	  CGContextStrokePath(carbon_quartz_context);
+	}
+      else
+	{
+	  Rect frct;
+
+	  frct.left   = total_x-w-17-2;
+	  frct.right  = total_x-17;
+	  frct.top    = total_y-hgt-2;
+	  frct.bottom = total_y;
+	  RGBForeColor(&maccolour[3]);
+	  PaintRect(&frct);
+
+	  PenNormal();
+	  PenSize(1,1);
+
+	  RGBForeColor(&maccolour[4]);
+	  MoveTo(total_x-w-17-3, total_y-1);
+	  Line(0, -(hgt+2));
+	  Line(w+2, 0);
+	  RGBForeColor(&maccolour[5]);
+	  Line(0, hgt+2);
+	  Line(-(w+2), 0);
+	}
+
+      xfont_set_colours(0, 6);
+      xfont_plot_string(font[style_font[1]], total_x-w-17-1, -(total_y-h-1), more, 6);
+
+      if (carbon_prefs.use_quartz)
+	{
+	  CGContextSetAlpha(carbon_quartz_context, 1.0);
+	}
     }
 
   CGContextSynchronize(carbon_quartz_context);
@@ -2351,13 +2426,13 @@ void display_initialise(void)
   
   if (colours != NULL)
     {
-      for (x=3; x<14; x++)
+      for (x=FIRST_ZCOLOUR; x<FIRST_ZCOLOUR+11; x++)
 	{
-	  if ((x-3)<n_cols)
+	  if ((x-FIRST_ZCOLOUR)<n_cols)
 	    {
-	      maccolour[x].red   = colours[x-3].r<<8;
-	      maccolour[x].green = colours[x-3].g<<8;
-	      maccolour[x].blue  = colours[x-3].b<<8;
+	      maccolour[x].red   = colours[x-FIRST_ZCOLOUR].r<<8;
+	      maccolour[x].green = colours[x-FIRST_ZCOLOUR].g<<8;
+	      maccolour[x].blue  = colours[x-FIRST_ZCOLOUR].b<<8;
 	    }
 	}
     }
@@ -2773,7 +2848,7 @@ int main(int argc, char** argv)
 		  &rct,
 		  &zoomWindow);
 
-  // SetWindowModified(zoomWindow, true);
+  SetWindowModified(zoomWindow, true);
 
   /* Create the scrollback scrollbar */
   rct.top    = 0;

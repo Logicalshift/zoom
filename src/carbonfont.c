@@ -125,9 +125,9 @@ void carbon_set_context(void)
     }
   else
     {
-       CGContextSetShouldAntialias(carbon_quartz_context,
-				   0);
-   }
+      CGContextSetShouldAntialias(carbon_quartz_context,
+				  0);
+    }
 }
 
 void carbon_set_quartz(int q)

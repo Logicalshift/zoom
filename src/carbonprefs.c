@@ -479,7 +479,7 @@ static void pref_store(void)
 
   for (x=0; x<11; x++)
     {
-      maccolour[x+3] = colour_copy[x];
+      maccolour[x+6] = colour_copy[x];
     }
 
   /* Reset the display */
@@ -1773,7 +1773,7 @@ static void pref_setup(void)
   for (x=0; x < 11; x++)
     {
       items[x] = x+1;
-      colour_copy[x] = maccolour[x+3];
+      colour_copy[x] = maccolour[x+6];
     }
   AddDataBrowserItems(cntl, kDataBrowserNoItem, 11, items, 0);
   

@@ -45,7 +45,7 @@
 
 extern WindowRef zoomWindow;
 extern WindowRef carbon_message_win;
-extern RGBColor  maccolour[14];
+extern RGBColor  maccolour[17];
 extern int       window_available;
 extern DialogRef fataldlog;
 extern FSRef*    lastopenfs;
