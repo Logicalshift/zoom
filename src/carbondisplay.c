@@ -537,9 +537,6 @@ static void size_window(void)
   Rect bounds;
   Boolean isvalid;
 
-  xfont_x = xfont_get_width(font[style_font[4]]);
-  xfont_y = xfont_get_height(font[style_font[4]]);
-  
   bounds.left =
     CFPreferencesGetAppIntegerValue(CFSTR("winLeft"),
 				    kCFPreferencesCurrentApplication,
@@ -569,7 +566,9 @@ static void size_window(void)
       
       MoveControl(zoomScroll, total_x - 15, 0);
       SizeControl(zoomScroll, 15, total_y - 14);
-      
+
+      bounds.left = bounds.top = 100;
+
       GetWindowBounds(zoomWindow, kWindowContentRgn, &bounds);
       bounds.right = bounds.left + total_x;
       bounds.bottom = bounds.top + total_y;
@@ -577,8 +576,8 @@ static void size_window(void)
     }
   else
     {
+      //GetWindowBounds(zoomWindow, kWindowContentRgn, &bounds);
       SetWindowBounds(zoomWindow, kWindowContentRgn, &bounds);
-      GetWindowBounds(zoomWindow, kWindowContentRgn, &bounds);
 
       total_x = bounds.right - bounds.left;
       total_y = bounds.bottom - bounds.top;
@@ -588,6 +587,8 @@ static void size_window(void)
       MoveControl(zoomScroll, total_x - 15, 0);
       SizeControl(zoomScroll, 15, total_y - 14);
     }
+
+  total_y = 0; resize_window();
 }
 
 /* Draw the caret */
@@ -858,7 +859,7 @@ void redraw_window(Rect* rct)
 
   if (more_on)
     {
-      int more[] = { '[', 'M', 'O', 'R', 'E', ']' };
+      int more[] = { '[', 'M', 'o', 'r', 'e', ']' };
       XFONT_MEASURE w, h;
       XFONT_MEASURE hgt;
 
