@@ -261,27 +261,32 @@ void image_resample(image_data* data, int n, int d)
 	  int rs, gs, bs;
 	  int x, y;
 	  float xp, yp;
+	  int xpos[3];
 
 	  yp = origy;
 
 	  rs = gs = bs = 0;
+	  
+	  xp = origx;
+	  for (x=0; x<3; x++)
+	    {
+	      xpos[x] = xp;
+	      xpos[x] *= 3;
+	      xp += thirdstep;
+	    }
 
 	  for (y = 0; y<3; y++)
 	    {
-	      xp = origx;
 	      for (x=0; x<3; x++)
 		{
-		  int xpos, ypos;
+		  int p, ypos;
 
-		  xpos = (int)xp;
-		  xpos *= 3;
+		  p = xpos[x];
 		  ypos = yp;
 
-		  rs += data->row[ypos][xpos++]*filter[x][y];
-		  gs += data->row[ypos][xpos++]*filter[x][y];
-		  bs += data->row[ypos][xpos++]*filter[x][y];
-
-		  xp += thirdstep;
+		  rs += data->row[ypos][p++]*filter[x][y];
+		  gs += data->row[ypos][p++]*filter[x][y];
+		  bs += data->row[ypos][p++]*filter[x][y];
 		}
 	      yp += thirdstep;
 	    }
