@@ -43,6 +43,9 @@ extern NSString* ZoomStoryOrganiserChangedNotification;
 		withIdent: (ZoomStoryID*) ident
 		 organise: (BOOL) organise;
 
+// Sending notifications
+- (void) organiserChanged;
+
 // Retrieving story information
 - (NSString*) filenameForIdent: (ZoomStoryID*) ident;
 - (ZoomStoryID*) identForFilename: (NSString*) filename;

@@ -9,6 +9,7 @@
 #import <Cocoa/Cocoa.h>
 
 #import "ZoomStoryOrganiser.h"
+#import "ZoomAppDelegate.h"
 
 NSString* ZoomStoryOrganiserChangedNotification = @"ZoomStoryOrganiserChangedNotification";
 static NSString* defaultName = @"ZoomStoryOrganiser";
@@ -104,11 +105,11 @@ static NSString* defaultName = @"ZoomStoryOrganiser";
 		counter++;
 		if (counter > 20) {
 			counter = 0;
-			[[subThread rootProxy] organiserChanged];
+			[(ZoomStoryOrganiser*)[subThread rootProxy] organiserChanged];
 		}
 	}	
 	
-	[[subThread rootProxy] organiserChanged];
+	[(ZoomStoryOrganiser*)[subThread rootProxy] organiserChanged];
 	
 	// Tidy up
 	[subThread release];
