@@ -237,13 +237,8 @@ void image_resample(image_data* data, int n, int d)
     }
 
   /*
-   * The algorithm we use is a sort of bastardisation of the Weiman
-   * algorith. In particular, instead of actually calculating the
-   * Rothstein code, we just use Bresenham and work it out for ourselves
-   * as we go.
-   *
-   * The filter we use is a rather simple 3x3 filter; this produces
-   * acceptable results. At least, it does IMO.
+   * Not a very complicated resampling w/filter routine. We use bresenham
+   * to generate pixels and a 3x3 filter. The results are usually OK.
    */
    
   newwidth  = (data->width*n)/d;
@@ -356,7 +351,119 @@ void image_resample(image_data* data, int n, int d)
     }
   else
     {
-      zmachine_fatal("Hoojamah!");
+      /* 
+       * Less likely: the new image is less than 1/3 of the size of
+       * the original.
+       */
+      int dfx, dfy, E, NE;
+      unsigned char* xp[3];
+      int yp, dstx, dsty;
+      int subyp;
+
+      int i;
+
+      /* Minor adjustment (ensures we don't overrun) */
+      if (newwidth < newheight)
+	{ n = newwidth*3; d = data->width+1; }
+      else
+	{ n = newheight*3; d = data->height+1; }
+
+      /* Set up for bresenham */
+      dfx = dfy = 2*n-d;
+      E = 2*n;
+      NE = 2*(n-d);
+
+      /* Set up initial 3 y positions*/
+      yp = 0;
+      subyp = 0;
+      for (i=0; i<3; i++)
+	{
+	  xp[i] = data->row[yp];
+
+	  /* Next position */
+	  while (dfy > 0)
+	    {
+	      dfy += NE;
+	      subyp++;
+	      if (subyp >= 3)
+		{ subyp = 0; yp++; }
+	    }
+	  subyp++; if (subyp >= 3)  { subyp = 0; yp++; }
+
+	  dfy += E;
+	}
+
+      ip = newimage; /* Current position */
+
+      for (dsty = 0; dsty<newheight; dsty++)
+	{
+	  int subx;
+
+	  subx = 0;
+
+	  for (dstx = 0; dstx<newwidth; dstx++)
+	    {
+	      int rs, gs, bs;
+
+	      /* Do the sampling */
+	      rs = gs = bs = 0;
+
+	      for (i=0; i<3; i++)
+		{
+		  int j,k;
+
+		  for (j=0; j<3; j++)
+		    {
+		      rs += xp[j][0]*filter[i][j];
+		      gs += xp[j][1]*filter[i][j];
+		      bs += xp[j][2]*filter[i][j];
+		    }
+
+		  /* Next X */
+		  j = 0;
+		  while (dfx > 0)
+		    {
+		      dfx += NE;
+		      subx++;
+		      if (subx >= 3) { subx = 0; j+=3; }
+		    }
+		  subx++;
+		  if (subx >= 3) { subx = 0; j+=3; }
+
+		  for (k=0; k<3; k++)
+		    xp[k] += j;
+		  dfx += E;
+		}
+
+	      /* Scale the sample */
+	      rs >>= 4; gs >>= 4; bs >>= 4;
+
+	      /* store the sample */
+	      (*ip++) = rs;
+	      (*ip++) = gs;
+	      (*ip++) = bs;
+	    }
+
+	  /* Next 3 y positions */
+	  for (i=0; i<3; i++)
+	    {
+	      xp[i] = data->row[yp];
+	      
+	      /* Next position */
+	      while (dfy > 0)
+		{
+		  dfy += NE;
+		  subyp++;
+		  if (subyp >= 3)
+		    { subyp = 0; yp++; }
+		}
+	      subyp++; if (subyp >= 3) { subyp=0; yp++; }
+	      
+	      dfy += E;
+	    }
+
+	  dfx = 2*n-d;
+	}
     }
 
   /* Reset the data structures */
