@@ -437,7 +437,7 @@ void pack_zscii(int* string, int strlen, ZByte* packed, int packlen)
 
 	  zchr[x] = chr;
 	}
-      else if (string[strpos] < 256)
+      else if (string[strpos] < 128)
 	{
 	  zchr[x++] = 5;
 	  zchr[x++] = 6;
@@ -446,6 +446,30 @@ void pack_zscii(int* string, int strlen, ZByte* packed, int packlen)
 	}
       else
 	{
+	  int ch = 0;
+
+	  for (x=155; x<=251; x++)
+	    {
+	      if (zscii_unicode[x] == string[strpos])
+		{
+		  ch = x;
+		}
+	    }
+
+	  if (ch != 0)
+	    {
+	      zchr[x++] = 5;
+	      zchr[x++] = 6;
+	      zchr[x++] = ch>>5;
+	      zchr[x] = ch&0x1f;
+	    }
+
+	  /* FIXME: we could encode using the spec 1.1 unicode stuff here... */
+	  /* 
+	   * (But, it'd be pretty pointless. 9 z-chars = 6 bytes, a maximum of 
+	   * 2 unicode characters. o'course, we only get 2 characters that
+	   * aren't in the standard alphabet in anyway)
+	   */
 	}
 
       strpos++;

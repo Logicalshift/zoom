@@ -331,6 +331,7 @@ void v6_prints(const int* text)
 	{
 	  int more;
 
+#if 0
 	  if (bg >= 0)
 	    {
 	      display_pixmap_cols(bg, 0);
@@ -338,6 +339,7 @@ void v6_prints(const int* text)
 				(ACTWIN.xpos+ACTWIN.width-ACTWIN.rmargin)-(ACTWIN.curx+width),
 				ACTWIN.line_height);
 	    }
+#endif
 	  
 	  ACTWIN.text_amount += ACTWIN.line_height;
 	  ACTWIN.cury += ACTWIN.line_height;
