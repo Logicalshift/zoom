@@ -46,14 +46,23 @@
 # include <X11/Xft/Xft.h>
 #endif
 
+#ifdef HAVE_XDBE
+# include <X11/extensions/Xdbe.h>
+#endif
+
 /* #define DEBUG */
 
 /* Globals */
 Display*     x_display;
 int          x_screen = 0;
 
-Window       x_mainwin;
-GC           x_wingc, x_caretgc;
+Window         x_mainwin;
+GC             x_wingc, x_caretgc;
+Drawable       x_drawable = None;
+
+#ifdef HAVE_XDBE
+XdbeBackBuffer x_backbuffer = None;
+#endif
 
 static Region dregion = None;
 static int    resetregion = 0;
@@ -452,7 +461,7 @@ static void draw_scrollbar(int isselected)
   for (x=0; x<8; x++)
     {
       XSetForeground(x_display, x_wingc, scroll_grade[x].pixel);
-      XFillRectangle(x_display, x_mainwin, x_wingc,
+      XFillRectangle(x_display, x_drawable, x_wingc,
 		     win_x+BORDER_SIZE*2 + ((x*SCROLLBAR_SIZE)/8), 0,
 		     SCROLLBAR_SIZE, total_y);
     }
@@ -479,23 +488,23 @@ static void draw_scrollbar(int isselected)
 
   /* Draw the scrollbar tab */
   XSetForeground(x_display, x_wingc, x_colour[4].pixel);
-  XFillRectangle(x_display, x_mainwin, x_wingc,
+  XFillRectangle(x_display, x_drawable, x_wingc,
 		 win_x+BORDER_SIZE*2, pos,
 		 SCROLLBAR_SIZE, height);
 
   XSetForeground(x_display, x_wingc, x_colour[ca].pixel);
-  XDrawLine(x_display, x_mainwin, x_wingc,
+  XDrawLine(x_display, x_drawable, x_wingc,
 	    win_x+BORDER_SIZE*2, pos,
 	    win_x+BORDER_SIZE*2+SCROLLBAR_SIZE, pos);
-  XDrawLine(x_display, x_mainwin, x_wingc,
+  XDrawLine(x_display, x_drawable, x_wingc,
 	    win_x+BORDER_SIZE*2, pos,
 	    win_x+BORDER_SIZE*2, pos+height);
 
   XSetForeground(x_display, x_wingc, x_colour[cb].pixel);
-  XDrawLine(x_display, x_mainwin, x_wingc,
+  XDrawLine(x_display, x_drawable, x_wingc,
 	    win_x+BORDER_SIZE*2, pos+height,
 	    win_x+BORDER_SIZE*2+SCROLLBAR_SIZE, pos+height);
-  XDrawLine(x_display, x_mainwin, x_wingc,
+  XDrawLine(x_display, x_drawable, x_wingc,
 	    win_x+BORDER_SIZE*2+SCROLLBAR_SIZE-1, pos,
 	    win_x+BORDER_SIZE*2+SCROLLBAR_SIZE-1, pos+height);
 
@@ -506,7 +515,7 @@ static void draw_scrollbar(int isselected)
       int ypos;
 
       ypos = pos + (height/2) - 4 + x*4;
-      XDrawLine(x_display, x_mainwin, x_wingc,
+      XDrawLine(x_display, x_drawable, x_wingc,
 		win_x+BORDER_SIZE*2+3, ypos,
 		win_x+BORDER_SIZE*2+SCROLLBAR_SIZE-4, ypos);
     }
@@ -517,7 +526,7 @@ static void draw_scrollbar(int isselected)
       int ypos;
 
       ypos = pos + (height/2) - 3 + x*4;
-      XDrawLine(x_display, x_mainwin, x_wingc,
+      XDrawLine(x_display, x_drawable, x_wingc,
 		win_x+BORDER_SIZE*2+3, ypos,
 		win_x+BORDER_SIZE*2+SCROLLBAR_SIZE-4, ypos);
     }
@@ -570,60 +579,60 @@ static void draw_window()
 #ifndef BORDER_3D
   /* Plain white border */
   XSetForeground(x_display, x_wingc, x_colour[2].pixel);
-  XFillRectangle(x_display, x_mainwin, x_wingc, 
+  XFillRectangle(x_display, x_drawable, x_wingc, 
 		 0, 0,
 		 left, bottom);
-  XFillRectangle(x_display, x_mainwin, x_wingc, 
+  XFillRectangle(x_display, x_drawable, x_wingc, 
 		 0, 0,
 		 right, top);
-  XFillRectangle(x_display, x_mainwin, x_wingc, 
+  XFillRectangle(x_display, x_drawable, x_wingc, 
 		 right, 0,
 		 BORDER_SIZE, bottom);
-  XFillRectangle(x_display, x_mainwin, x_wingc, 
+  XFillRectangle(x_display, x_drawable, x_wingc, 
 		 0, bottom,
 		 right+BORDER_SIZE, BORDER_SIZE);
 #else
   /* Inset 3D border */
   XSetForeground(x_display, x_wingc, x_colour[3].pixel);
-  XFillRectangle(x_display, x_mainwin, x_wingc, 
+  XFillRectangle(x_display, x_drawable, x_wingc, 
 		 0, 0,
 		 left, bottom);
-  XFillRectangle(x_display, x_mainwin, x_wingc, 
+  XFillRectangle(x_display, x_drawable, x_wingc, 
 		 0, 0,
 		 right, top);
-  XFillRectangle(x_display, x_mainwin, x_wingc, 
+  XFillRectangle(x_display, x_drawable, x_wingc, 
 		 right, 0,
 		 BORDER_SIZE, bottom);
-  XFillRectangle(x_display, x_mainwin, x_wingc, 
+  XFillRectangle(x_display, x_drawable, x_wingc, 
 		 0, bottom,
 		 right+BORDER_SIZE, BORDER_SIZE);
 
   XSetForeground(x_display, x_wingc, x_colour[0].pixel);
-  XFillRectangle(x_display, x_mainwin, x_wingc, 
+  XFillRectangle(x_display, x_drawable, x_wingc, 
 		 0, 0,
 		 left-3, bottom+BORDER_SIZE);
-  XFillRectangle(x_display, x_mainwin, x_wingc, 
+  XFillRectangle(x_display, x_drawable, x_wingc, 
 		 0, 0,
 		 right+BORDER_SIZE, top-3);
-  XFillRectangle(x_display, x_mainwin, x_wingc, 
+  XFillRectangle(x_display, x_drawable, x_wingc, 
 		 right+3, 0,
 		 BORDER_SIZE-3, bottom+BORDER_SIZE);
-  XFillRectangle(x_display, x_mainwin, x_wingc, 
+  XFillRectangle(x_display, x_drawable, x_wingc, 
 		 0, bottom+3,
 		 right+BORDER_SIZE, BORDER_SIZE-3);
 
   XSetLineAttributes(x_display, x_wingc, 1, LineSolid,
 		     CapProjecting, JoinBevel);
   XSetForeground(x_display, x_wingc, x_colour[1].pixel);
-  XDrawLine(x_display, x_mainwin, x_wingc,
+  XDrawLine(x_display, x_drawable, x_wingc,
 	    left-3, top-3, right+2, top-3);
-  XDrawLine(x_display, x_mainwin, x_wingc,
+  XDrawLine(x_display, x_drawable, x_wingc,
 	    left-3, top-3, left-3, bottom+2);
 
   XSetForeground(x_display, x_wingc, x_colour[2].pixel);
-  XDrawLine(x_display, x_mainwin, x_wingc,
+  XDrawLine(x_display, x_drawable, x_wingc,
 	    right+2, bottom+2, right+2, top-3);
-  XDrawLine(x_display, x_mainwin, x_wingc,
+  XDrawLine(x_display, x_drawable, x_wingc,
 	    right+2, bottom+2, left-3, bottom+2);
 #endif
 
@@ -681,7 +690,7 @@ static void draw_window()
 			bg = fg;
 
 		      XSetForeground(x_display, x_wingc, x_colour[bg+FIRST_ZCOLOUR].pixel);
-		      XFillRectangle(x_display, x_mainwin, x_wingc,
+		      XFillRectangle(x_display, x_drawable, x_wingc,
 				     x*xfont_x + BORDER_SIZE,
 				     y*xfont_y + BORDER_SIZE,
 				     len*xfont_x,
@@ -689,7 +698,7 @@ static void draw_window()
 
 		      xfont_set_colours(fg+FIRST_ZCOLOUR, bg+FIRST_ZCOLOUR);
 		      xfont_plot_string(font[fn],
-					x_mainwin, x_wingc,
+					x_drawable, x_wingc,
 					x*xfont_x+BORDER_SIZE,
 					y*xfont_y+BORDER_SIZE +
 					xfont_get_ascent(font[fn]),
@@ -785,7 +794,7 @@ static void draw_window()
 			     x_colour[text_win[win].winback+FIRST_ZCOLOUR].pixel);
 	      if (line->baseline-line->ascent-scrollpos > text_win[win].winsy)
 		{
-		  XFillRectangle(x_display, x_mainwin, x_wingc,
+		  XFillRectangle(x_display, x_drawable, x_wingc,
 				 BORDER_SIZE, text_win[win].winsy+BORDER_SIZE,
 				 win_x, line->baseline-line->ascent-scrollpos);
 		}
@@ -839,7 +848,7 @@ static void draw_window()
 			    {
 			      XSetForeground(x_display, x_wingc,
 					     x_colour[text->bg+FIRST_ZCOLOUR].pixel);
-			      XFillRectangle(x_display, x_mainwin, x_wingc,
+			      XFillRectangle(x_display, x_drawable, x_wingc,
 					     width + BORDER_SIZE,
 					     line->baseline + BORDER_SIZE - line->ascent - scrollpos,
 					     w,
@@ -850,7 +859,7 @@ static void draw_window()
 			      xfont_set_colours(text->fg+FIRST_ZCOLOUR, 
 						text->bg+FIRST_ZCOLOUR);
 			      xfont_plot_string(font[text->font],
-						x_mainwin, x_wingc,
+						x_drawable, x_wingc,
 						width + BORDER_SIZE,
 						line->baseline + BORDER_SIZE - scrollpos,
 						text->text + offset,
@@ -873,7 +882,7 @@ static void draw_window()
 		  if (phase == 0)
 		    {
 		      XSetForeground(x_display, x_wingc, x_colour[text_win[win].winback+FIRST_ZCOLOUR].pixel);
-		      XFillRectangle(x_display, x_mainwin, x_wingc,
+		      XFillRectangle(x_display, x_drawable, x_wingc,
 				     width + BORDER_SIZE,
 				     line->baseline - line->ascent + BORDER_SIZE - scrollpos,
 				     win_x-width,
@@ -891,7 +900,7 @@ static void draw_window()
 	  XSetForeground(x_display, x_wingc, x_colour[text_win[win].winback+FIRST_ZCOLOUR].pixel);
 	  if ((lasty-BORDER_SIZE) < win_y)
 	    {
-	      XFillRectangle(x_display, x_mainwin, x_wingc,
+	      XFillRectangle(x_display, x_drawable, x_wingc,
 			     BORDER_SIZE,
 			     lasty,
 			     win_x,
@@ -915,27 +924,27 @@ static void draw_window()
 #endif
 
       XSetForeground(x_display, x_wingc, x_colour[4].pixel);
-      XFillRectangle(x_display, x_mainwin, x_wingc,
+      XFillRectangle(x_display, x_drawable, x_wingc,
 		     clip.x, clip.y, morew+1, moreh+1);
 
       xfont_set_colours(0+FIRST_ZCOLOUR, 4);
       xfont_plot_string(font[style_font[2]],
-			x_mainwin, x_wingc,
+			x_drawable, x_wingc,
 			win_x+BORDER_SIZE*2-(morew+1), 
 			win_y+BORDER_SIZE*2-(moreh) +
 			xfont_get_ascent(font[style_font[2]]), 
 			more, 6);
 
       XSetForeground(x_display, x_wingc, x_colour[6].pixel);
-      XDrawLine(x_display, x_mainwin, x_wingc,
+      XDrawLine(x_display, x_drawable, x_wingc,
 		clip.x+morew+1, clip.y+moreh+1, clip.x, clip.y+moreh+1);
-      XDrawLine(x_display, x_mainwin, x_wingc,
+      XDrawLine(x_display, x_drawable, x_wingc,
 		clip.x+morew+1, clip.y+moreh+1, clip.x+morew+1, clip.y);
 
       XSetForeground(x_display, x_wingc, x_colour[5].pixel);
-      XDrawLine(x_display, x_mainwin, x_wingc,
+      XDrawLine(x_display, x_drawable, x_wingc,
 		clip.x, clip.y, clip.x+morew+1, clip.y);
-      XDrawLine(x_display, x_mainwin, x_wingc,
+      XDrawLine(x_display, x_drawable, x_wingc,
 		clip.x, clip.y, clip.x, clip.y+moreh+1);
   }
 
@@ -945,6 +954,18 @@ static void draw_window()
   dregion = None;
 
   resetregion = 1;
+
+  /* Flip buffers */
+#ifdef HAVE_XDBE
+  if (x_backbuffer != None)
+    {
+      XdbeSwapInfo i;
+
+      i.swap_window = x_mainwin;
+      i.swap_action = XdbeCopied;
+      XdbeSwapBuffers(x_display, &i, 1);
+    }
+#endif
 
   /* Caret */
   caret_shown = 0;
@@ -2026,8 +2047,23 @@ void display_initialise(void)
   
   XMapWindow(x_display, x_mainwin);
 
+  /* Give it a back buffer, if the extension is available */
+  x_drawable = x_mainwin;
+
+#ifdef HAVE_XDBE
+  x_backbuffer = None;
+  if (XdbeQueryExtension(x_display, &x, &y))
+    {
+      x_backbuffer = XdbeAllocateBackBufferName(x_display, 
+						x_mainwin,
+						XdbeCopied);
+      if (x_backbuffer != None)
+	x_drawable = x_backbuffer;
+    }
+#endif
+
 #ifdef HAVE_XFT
-  xft_drawable = XftDrawCreate(x_display, x_mainwin,
+  xft_drawable = XftDrawCreate(x_display, x_drawable,
 			       DefaultVisual(x_display, x_screen), 
 			       DefaultColormap(x_display, x_screen));
 #endif
@@ -2094,7 +2130,7 @@ void display_initialise(void)
 #endif
 
   /* Create the display pixmap */
-  x_wingc   = XCreateGC(x_display, x_mainwin, 0, NULL);
+  x_wingc   = XCreateGC(x_display, x_drawable, 0, NULL);
   x_caretgc = XCreateGC(x_display, x_mainwin, 0, NULL);
 
   XSetForeground(x_display, x_caretgc,

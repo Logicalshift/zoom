@@ -307,6 +307,23 @@ if test "$WINDOW_SYSTEM" = "1"; then
 	  ])
     fi
 
+    AC_CHECK_LIB(Xext, XdbeQueryExtension, [ LDFLAGS="$LDFLAGS -lXext" ])
+    AC_MSG_CHECKING([for the DBE X extension library])
+    AC_TRY_LINK(
+      [ #include <X11/Xlib.h>
+        #include <X11/Xatom.h>
+	#include <X11/Xutil.h>
+	#include <X11/Xresource.h>
+        #include <X11/extensions/Xdbe.h> ],
+      [ XdbeQueryExtension(NULL, NULL, NULL); ],
+      [
+        AC_MSG_RESULT(yes)
+	AC_DEFINE(HAVE_XDBE)
+      ],
+      [
+        AC_MSG_RESULT(no)
+      ])
+
     AC_CHECK_LIB(Xft, XftInit,
       [
         LDFLAGS="$LDFLAGS -lXft"

@@ -12,3 +12,6 @@
 
 /* XFT available? */
 #undef HAVE_XFT
+
+/* XDBE available? */
+#undef HAVE_XDBE

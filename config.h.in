@@ -14,6 +14,9 @@
 /* XFT available? */
 #undef HAVE_XFT
 
+/* XDBE available? */
+#undef HAVE_XDBE
+
 /* Define if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
