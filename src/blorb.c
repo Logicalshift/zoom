@@ -28,6 +28,8 @@
 #include "file.h"
 #include "blorb.h"
 
+#include "image.h"
+
 static inline int cmp_token(const char* data, const char* token)
 {
   if (*((ZDWord*)data) == *((ZDWord*)token))
@@ -113,6 +115,8 @@ BlorbFile* blorb_loadfile(ZFile* file)
 				       sizeof(BlorbImage)*res->index.npictures);
 	  res->index.picture[res->index.npictures-1].file_offset =
 	    iff->chunk[x].offset;
+	  res->index.picture[res->index.npictures-1].file_len -
+	    iff->chunk[x].length;
 	  res->index.picture[res->index.npictures-1].number = -1;
 	  res->index.picture[res->index.npictures-1].width = -1;
 	  res->index.picture[res->index.npictures-1].height = -1;
@@ -123,7 +127,7 @@ BlorbFile* blorb_loadfile(ZFile* file)
 	  res->index.picture[res->index.npictures-1].max_n = 1;
 	  res->index.picture[res->index.npictures-1].max_d = 0;
 	  
-	  image_load(file, iff->chunk[x].offset);
+	  image_load(file, iff->chunk[x].offset, iff->chunk[x].length);
 	}
       else if (cmp_token(iff->chunk[x].id, "FORM"))
 	{

@@ -79,6 +79,7 @@ struct BlorbIndex
 struct BlorbImage
 {
   int file_offset;
+  int file_len;
   int number;
   
   int width;

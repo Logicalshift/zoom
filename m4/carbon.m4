@@ -22,3 +22,26 @@ AC_DEFUN(CARBON_DETECT, [
      LDFLAGS="$LDFLAGS -framework Carbon"
    fi
 ])
+
+AC_DEFUN(QUICKTIME_DETECT, [
+   AC_CACHE_CHECK([for QuickTime], quicktime_present, [
+     AC_TRY_COMPILE([
+	#include <QuickTime/QuickTime.h>
+	], [ GetGraphicsImporterForDataRef(NULL, 'xxxx', NULL); ],
+	[
+	  carbon_old_LDFLAGS="$LDFLAGS"
+	  LDFLAGS="$LDFLAGS -framework QuickTime"
+	  AC_TRY_LINK([
+	    #include <QuickTime/QuickTime.h>
+	    ], [ GetGraphicsImporterForDataRef(NULL, 'xxxx', NULL); ],
+	    [ quicktime_present=yes ],
+	    [ quicktime_present=no
+	      LDFLAGS="$quicktime_old_LD_FLAGS" ])
+	],
+	quicktime_present=no)
+     ])
+
+   if test "x$quicktime_present" = "xyes"; then
+     LDFLAGS="$LDFLAGS -framework QuickTime"
+   fi
+])

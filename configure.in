@@ -206,6 +206,12 @@ if test "$MINGW32" != "yes"; then
     AM_CONDITIONAL(WINDOWS_VERSION, false)
     AM_CONDITIONAL(BORLAND_VERSION, false)
     AM_CONDITIONAL(CARBON_VERSION, true)
+
+    QUICKTIME_DETECT
+
+    if test "x$quicktime_present" = "xno"; then
+      AC_MSG_ERROR([QuickTime not found (?)])
+    fi
   fi
 fi
 fi

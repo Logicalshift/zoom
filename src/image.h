@@ -40,7 +40,7 @@
 
 typedef struct image_data image_data; /* Black box data type */
 
-image_data*    image_load      (ZFile* file, int offset);
+image_data*    image_load      (ZFile* file, int offset, int len);
 void           image_unload    (image_data*);
 void           image_unload_rgb(image_data*);
 
