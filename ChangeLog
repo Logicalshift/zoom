@@ -1,3 +1,13 @@
+2002-02-12  Andrew Hunter    <andrew@logicalshift.demon.co.uk>
+
+	* (Failed to update the ChangeLog in *ages*...)
+
+	* Mac OS X version ready
+
+	* Might as well bump the version to 1.0.0
+
+	* Many minor bugs fixed
+
 2000-12-14  Andrew Hunter    <andrew@logicalshift.co.uk>
 
 	* finally added function key and mouse support
