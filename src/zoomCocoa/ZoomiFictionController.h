@@ -41,6 +41,8 @@
 
 - (IBAction) addButtonPressed: (id) sender;
 - (IBAction) drawerButtonPressed: (id) sender;
+- (IBAction) startNewGame: (id) sender;
+- (IBAction) restoreAutosave: (id) sender;
 
 - (void) configureFromMainTableSelection;
 

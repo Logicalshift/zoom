@@ -74,6 +74,39 @@ static ZoomiFictionController* sharedController = nil;
 	[[self window] saveFrameUsingName: @"iFiction"];
 }
 
+// = Useful functions for getting info about the table =
+- (ZoomStoryID*) selectedStoryID {
+	if (needsUpdating) [self reloadTableData];
+	
+	if ([mainTableView numberOfSelectedRows] == 1) {
+		ZoomStoryID* ident = [storyList objectAtIndex: [mainTableView selectedRow]];
+		
+		return ident;
+	}
+	
+	return nil;
+}
+
+- (ZoomStory*) selectedStory {
+	ZoomStoryID* ident = [self selectedStoryID];
+	
+	if (ident != nil) {
+		return [self storyForID: ident];
+	}
+	
+	return nil;
+}
+
+- (NSString*) selectedFilename {
+	ZoomStoryID* ident = [self selectedStoryID];
+	
+	if (ident != nil) {
+		return [[ZoomStoryOrganiser sharedStoryOrganiser] filenameForIdent: ident];
+	}
+	
+	return nil;
+}
+   
 // = IB actions =
 
 - (IBAction) addButtonPressed: (id) sender {
@@ -90,6 +123,30 @@ static ZoomiFictionController* sharedController = nil;
 	}
 }
 
+- (IBAction) startNewGame: (id) sender {
+	NSString* filename = [self selectedFilename];
+	
+	// FIXME: multiple selections?
+	if (filename) {
+		[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfFile: filename
+																				display: YES];
+		
+		[self configureFromMainTableSelection];
+	}
+}
+
+- (IBAction) restoreAutosave: (id) sender {
+	NSString* filename = [self selectedFilename];
+	
+	// FIXME: multiple selections?, actually save/restore autosaves
+	if (filename) {
+		[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfFile: filename
+																				display: YES];
+		
+		[self configureFromMainTableSelection];
+	}
+}
+
 // = Notifications =
 - (void) storyListChanged: (NSNotification*) not {
 	needsUpdating = YES;
@@ -97,6 +154,10 @@ static ZoomiFictionController* sharedController = nil;
 	[mainTableView reloadData];
 	[filterTable1 reloadData];
 	[filterTable2 reloadData];	
+}
+
+- (void)windowDidBecomeMain:(NSNotification *)aNotification {
+	[self configureFromMainTableSelection];
 }
 
 // = Our life as a data source =
