@@ -1542,12 +1542,30 @@ static void draw_window(int win,
 
       struct text* lasttext;
       int lastchars, nchars, x, width, lasty;
+      HRGN oldclip, newclip;
+      int res;
 
       line = text_win[win].line;
 
+      oldclip = CreateRectRgn(0,0,0,0);
+      newclip = CreateRectRgn(4, text_win[win].winsy+4,
+			      win_x+5, text_win[win].winly+5);
+      res = GetClipRgn(dc, oldclip);
+      if (res == 1)
+	{
+	  HRGN cl;
+
+	  cl = CreateRectRgn(0,0,0,0);
+	  CombineRgn(cl, oldclip, newclip, RGN_AND);
+	  DeleteObject(newclip);
+	  newclip = cl;
+	}
+
+      SelectClipRgn(dc, newclip);
+
       /* Free any lines that scrolled off ages ago */
       if (line != NULL)
-	while (line->baseline < -8192)
+	while (line->baseline < -1024)
 	  {
 	    struct line* n;
 
@@ -1591,7 +1609,7 @@ static void draw_window(int win,
 
       if (line != NULL)
 	{
-	  frct.top    = text_win[win].winsy;
+	  frct.top    = text_win[win].winsy+4;
 	  frct.bottom = line->baseline - line->ascent+4;
 	  frct.left   = 4;
 	  frct.right  = 4+win_x;
@@ -1703,6 +1721,17 @@ static void draw_window(int win,
       frct.right  = 4+win_x;
       if (frct.top < frct.bottom)
 	FillRect(dc, &frct, winbrush[text_win[win].winback]); 
+
+      if (res == 1)
+	{
+	  SelectClipRgn(dc, oldclip);
+	}
+      else
+	{
+	  SelectClipRgn(dc, NULL);
+	}
+      DeleteObject(oldclip);
+      DeleteObject(newclip);
     }
 }
 
