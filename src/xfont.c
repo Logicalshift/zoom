@@ -209,7 +209,7 @@ xfont* xfont_load_font(char* font)
 	  if (!pat) {
 	    f->data.Xft = NULL;
 	  } else {
-	    FcPatternPrint(pat);
+	    // FcPatternPrint(pat);
 
 	    res = XftResultNoMatch; /* Bug in Xft... */
 	    match = XftFontMatch(x_display, x_screen, pat, &res);

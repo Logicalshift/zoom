@@ -222,6 +222,7 @@ if test "$MINGW32" != "yes"; then
       AC_DEFINE(WINDOW_SYSTEM, 1)
 
       AM_CONDITIONAL(WINDOWS_VERSION, false)
+      AM_CONDITIONAL(BORLAND_VERSION, false)
       AM_CONDITIONAL(CARBON_VERSION, false)
     fi
   else
@@ -408,6 +409,7 @@ if test "$WINDOW_SYSTEM" = "1"; then
 	])
     fi
 
+    AC_CHECK_LIB(z, inflate, [ LIBS="$LIBS -lz" ])
     AC_CHECK_LIB(png, png_get_IHDR,
       [
 	AC_DEFINE(HAVE_LIBPNG)

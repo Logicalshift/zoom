@@ -240,7 +240,9 @@ void image_quartz_prepare(image_data* img)
       };
       static CGColorSpaceRef cspace = NULL;
 
-      cspace = CGColorSpaceCreateDeviceRGB();
+      if (cspace == NULL) {
+          cspace = CGColorSpaceCreateDeviceRGB();
+      }
 
       data = malloc(sizeof(quartz_data));
 

@@ -1,26 +1,5 @@
 Hmm, this file was a bit out of date.
 
- X click on colour sample problem
- X Resizing of carbon prefs dialog
- X font redraw problem under Carbon
- X insta-changes for preferences
- X save window size under Carbon
- X text corruption under Shogun
- X Zork Zero colour changing
- X bug with XDBE and v6 games
- X 'MORE' not displayed in Shogun
- X sigh, creating files under Carbon still broken (set file type)
- X segfault on window resize occasionally
- X problem with resize when 'MORE' is displayed.
- X startup message
- X Colour preference thing
- X Colour preference change redraw bug...
- X drag and drop support for file loading
- X warning for non-fixed font set as fixed font
- X bug with Jaguar/carbon_display_message?
- X .ZX file recognition bug under Mac OS X
- X varicella/oad colour display bug - Not My Fault (TM)
- X Comp2002 games need adding to database2
  * Crash with graphics set to a directory?
  * Allow for graphics directories
  * Hang with Xft2
@@ -31,6 +10,9 @@ Hmm, this file was a bit out of date.
  * heirarchical fonts
  * reset pixmap display on restart under v6
  * XSL documentation
+ * FOO.Z5 bug under OS X
+ * restarting the game seems to leave some variables intact
+     (eg, pick up the phone booth and die...)
 
  * Sound
  * Internationalisation support
