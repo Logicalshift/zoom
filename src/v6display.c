@@ -114,8 +114,17 @@ void v6_reset        (void)
 
   if (machine.blorb != NULL && machine.blorb->reso.offset != -1)
     {
-      erf_n = machine.dinfo->width;
-      erf_d = machine.blorb->reso.px;
+      if (machine.dinfo->width*machine.blorb->reso.py >
+	  machine.dinfo->height*machine.blorb->reso.px)
+	{
+	  erf_n = machine.dinfo->height;
+	  erf_d = machine.blorb->reso.py;
+	}
+      else
+	{
+	  erf_n = machine.dinfo->width;
+	  erf_d = machine.blorb->reso.px;
+	}
     }
 }
 
@@ -123,6 +132,17 @@ void v6_scale_image(BlorbImage* img, int* img_n, int* img_d)
 {
   *img_n = erf_n*img->std_n;
   *img_d = erf_d;
+
+  if ((*img_n * img->max_d) > (img->max_n * *img_d))
+    {
+      *img_n = img->max_n;
+      *img_d = img->max_d;
+    }
+  else if ((*img_n * img->min_d) < (img->min_n * *img_d))
+    {
+      *img_n = img->min_n;
+      *img_d = img->min_d;
+    }
 }
 
 void v6_reset_windows(void)

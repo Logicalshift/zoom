@@ -193,8 +193,6 @@ static image_data* iload(image_data* resin, ZFile* file, int offset, int realrea
       /* Premultiply */
       for (x=0; x<(res->width*res->height)*4; x += 4)
 	{
-	  int pm;
-
 	  res->image[x+0] = ((int)res->image[x+0]*(int)res->image[x+3])>>8;
 	  res->image[x+1] = ((int)res->image[x+1]*(int)res->image[x+3])>>8;
 	  res->image[x+2] = ((int)res->image[x+2]*(int)res->image[x+3])>>8;

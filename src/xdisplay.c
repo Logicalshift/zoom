@@ -2295,7 +2295,9 @@ void display_update_region(XFONT_MEASURE left,
   if (left > right ||
       top > bottom)
     {
-      printf_debug("Blag: %i, %i, %i, %i\n", (int)left, (int)top, (int)right, (int)bottom);
+#ifdef DEBUG
+      printf_debug("Bad update: %i, %i, %i, %i\n", (int)left, (int)top, (int)right, (int)bottom);
+#endif
       return;
     }
 
@@ -3107,6 +3109,8 @@ void display_wait_for_more(void)
   more_on = 1;
   display_readchar(0);
   more_on = 0;
+
+  draw_window();
 }
 
 void display_set_mouse_win(int x, int y, int w, int h)

@@ -48,8 +48,6 @@
 # if !defined(HAVE_LIBPNG) || !defined(USE_QUARTZ)
 #  include <QuickTime/QuickTime.h>
 
-# error QuickTime sucks: highly recommend you install libpng
-
 struct image_data
 {
   PointerDataRef          dataRef;
