@@ -104,9 +104,15 @@ int xfont_x;
 int xfont_y;
 static int win_x;
 static int win_y;
+static int win_left, win_top;
 static int win_width;
 static int win_height;
 static int do_redraw = 0;
+
+static int redraw_minx = -1;
+static int redraw_miny = -1;
+static int redraw_maxx = -1;
+static int redraw_maxy = -1;
 
 static int caret = 0;
 static int caret_x, caret_y;
@@ -182,6 +188,29 @@ static inline void istrcpy(int* dest, const int* src)
       dest[x] = src[x];
     }
   dest[x] = 0;
+}
+
+static void redraw_area(int x, int y, int w, int h)
+{
+  if (do_redraw == 0)
+    {
+      redraw_minx = x;
+      redraw_maxx = x+w;
+      redraw_miny = y;
+      redraw_maxy = y+h;
+
+      do_redraw = 1;
+      return;
+    }
+
+  if (x < redraw_minx)
+    redraw_minx = x;
+  if (y < redraw_miny)
+    redraw_miny = y;
+  if (x+w > redraw_maxx)
+    redraw_maxx = x+w;
+  if (y+h > redraw_maxy)
+    redraw_maxy = y+h;
 }
 
 static Atom x_prot[5];
@@ -266,6 +295,8 @@ void display_initialise(void)
 			    CopyFromParent,
 			    CWEventMask|CWBackPixel,
 			    &win_attr);
+  win_left = (win_width-win_x)>>1;
+  win_top  = (win_height-win_y)>>1;
   
   XMapWindow(x_display, x_mainwin);
 
@@ -508,6 +539,8 @@ void display_clear(void)
   XSetForeground(x_display, x_pixgc, x_colour[FIRST_ZCOLOUR+DEFAULT_BACK].pixel);
 
   XFillRectangle(x_display, x_pix, x_pixgc, 0, 0, win_x, win_y);
+
+  redraw_area(win_left, win_top, win_x, win_y);
 }
 
 /*
@@ -566,6 +599,9 @@ static void new_line(int more)
 			 CURWIN.winlx-CURWIN.winsx, scrollby);
 	  
 	  CURWIN.ypos -= scrollby;
+
+	  redraw_area(CURWIN.winsx+win_left, CURWIN.winsy+win_top,
+		      CURWIN.winlx-CURWIN.winsx, CURWIN.winly-CURWIN.winsy);
 	}
     }  
 }
@@ -575,11 +611,20 @@ static void new_line(int more)
  */
 static void display_more(void)
 {
+  int w;
+  
+  w = xfont_get_text_width(x_fonts[3], moretext, 6);
+  
   more_on = 1;
+  redraw_area(win_width-w-2, win_height-xfont_get_height(x_fonts[3])-2,
+	      w, xfont_get_height(x_fonts[3]));
   draw_window();
   display_readchar(0);
+  
   more_on = 0;
-  do_redraw = 1;
+  redraw_area(win_width-w-2, win_height-xfont_get_height(x_fonts[3])-2,
+	      w, xfont_get_height(x_fonts[3]));
+  draw_window();
 }
 
 /*
@@ -693,6 +738,9 @@ static int outputs(const int* string, int font, int len, int split)
 			 CURWIN.winlx-CURWIN.winsx, scrollby);
 	  
 	  CURWIN.ypos -= scrollby;
+
+	  redraw_area(CURWIN.winsx+win_left, CURWIN.winsy+win_top,
+		      CURWIN.winlx-CURWIN.winsx, CURWIN.winly-CURWIN.winsy);
 	}
     }
 
@@ -707,6 +755,9 @@ static int outputs(const int* string, int font, int len, int split)
 		CURWIN.winsx, CURWIN.ypos,
 		CURWIN.winlx-CURWIN.winsx, oldheight,
 		CURWIN.winsx, CURWIN.ypos+scrollby);
+
+      redraw_area(CURWIN.winsx+win_left, CURWIN.ypos+win_top,
+		  CURWIN.winlx-CURWIN.winsx, height);
 
       /*
        * This isn't ideal: Jigsaw fails if we set this to the current
@@ -734,7 +785,8 @@ static int outputs(const int* string, int font, int len, int split)
 		    CURWIN.ypos+CURWIN.line_height-xfont_get_descent(x_fonts[font]),
 		    string, len);
 
-  do_redraw = 1;
+  redraw_area(CURWIN.xpos+win_left, CURWIN.ypos+win_top,
+	      width, CURWIN.line_height);
 
   CURWIN.xpos += width;
 
@@ -880,12 +932,22 @@ int display_readline(int* buf, int buflen, long int timeout)
 static void draw_window(void)
 {
   int top, left, bottom, right;
+  XRectangle cl[2];
   
-  left   = (win_width-win_x)>>1;
-  top    = (win_height-win_y)>>1;
+  left   = win_left;
+  top    = win_top;
   right  = left + win_x;
   bottom = top + win_y;
   /* Draw the text area */
+  if (do_redraw)
+    {
+      cl[0].x = redraw_minx;
+      cl[0].y = redraw_miny;
+      cl[0].width = redraw_maxx - redraw_minx;
+      cl[0].height = redraw_maxy - redraw_miny;
+      XSetClipRectangles(x_display, x_wingc, 0, 0, cl, 1, YXSorted);
+    }
+
   XCopyArea(x_display, x_pix, x_mainwin,
 	    x_wingc, 0,0, win_x, win_y,
 	    left, top);
@@ -917,7 +979,7 @@ static void draw_window(void)
 	    right+1, bottom+1, left, bottom+1);
 
   /* Draw the caret */
-  if (caret)
+  if (caret && !do_redraw)
     XDrawLine(x_display, x_mainwin, x_caretgc,
 	      caret_x+left, caret_y+top, caret_x+left, caret_y+top+caret_h);
 
@@ -942,6 +1004,16 @@ static void draw_window(void)
 			win_height-xfont_get_descent(x_fonts[3])-2,
 			moretext, 6);
     }
+
+  if (do_redraw)
+    {
+      cl[0].x = 0;
+      cl[0].y = 0;
+      cl[0].width = win_width;
+      cl[0].height = win_height;
+      XSetClipRectangles(x_display, x_wingc, 0, 0, cl, 1, YXSorted);
+      do_redraw = 0;
+    }
 }
 
 /*
@@ -962,9 +1034,11 @@ static void draw_input_text(int* buf, int inputpos)
 		caret_y+((win_height-win_y)>>1),
 		caret_x+((win_width-win_x)>>1),
 		caret_y+((win_height-win_y)>>1)+caret_h);
-      caret = 0;
     }
 
+  caret_y = input_sy;
+  caret_h = input_sh;
+  
   /* Erase any old text */
   XSetForeground(x_display, x_pixgc,
 		 x_colour[CURWIN.back+FIRST_ZCOLOUR].pixel);
@@ -1050,13 +1124,16 @@ static void draw_input_text(int* buf, int inputpos)
   else
     XSetLineAttributes(x_display, x_caretgc, 4, LineSolid,
 		       CapButt, JoinBevel);
-  
-  XDrawLine(x_display, x_mainwin, x_caretgc,
-	    caret_x+((win_width-win_x)>>1),
-	    caret_y+((win_height-win_y)>>1),
-	    caret_x+((win_width-win_x)>>1),
-	    caret_y+((win_height-win_y)>>1)+caret_h);
-  caret = 1;
+
+  /* Redisplay the caret */
+  if (caret)
+    {
+      XDrawLine(x_display, x_mainwin, x_caretgc,
+		caret_x+((win_width-win_x)>>1),
+		caret_y+((win_height-win_y)>>1),
+		caret_x+((win_width-win_x)>>1),
+		caret_y+((win_height-win_y)>>1)+caret_h);
+    }
 }
 
 /*
@@ -1087,16 +1164,12 @@ int process_events(long int to, int* buf, int buflen)
   KeySym         ks;
   history_item*  history = NULL;
 
-  caret_x = CURWIN.xpos;
-  caret_y = CURWIN.ypos;
-  caret_h = CURWIN.line_height;
+  if (do_redraw)
+    draw_window();
 
   XSetForeground(x_display, x_caretgc,
 		 x_colour[FIRST_ZCOLOUR+1].pixel^x_colour[FIRST_ZCOLOUR+CURWIN.back].pixel);
-
-  /* display_prints(" "); */  CURWIN.xpos = caret_x;
-  do_redraw = 1;
-      
+  
   if (buf != NULL)
     {
       /* Display any text that's already in the buffer */
@@ -1108,11 +1181,34 @@ int process_events(long int to, int* buf, int buflen)
       
       draw_input_text(buf, inputpos);
     }
-
-  if (do_redraw)
-    draw_window();
-  do_redraw = 0;
-
+  else
+    {
+      /* Hide caret */
+      if (caret)
+	{
+	  XDrawLine(x_display, x_mainwin, x_caretgc,
+		    caret_x+((win_width-win_x)>>1),
+		    caret_y+((win_height-win_y)>>1),
+		    caret_x+((win_width-win_x)>>1),
+		    caret_y+((win_height-win_y)>>1)+caret_h);
+	}
+      
+      /* Move caret */
+      caret_x = CURWIN.xpos;
+      caret_y = CURWIN.ypos;
+      caret_h = CURWIN.line_height;
+      
+      /* Show caret */
+      if (caret)
+	{
+	  XDrawLine(x_display, x_mainwin, x_caretgc,
+		    caret_x+((win_width-win_x)>>1),
+		    caret_y+((win_height-win_y)>>1),
+		    caret_x+((win_width-win_x)>>1),
+		    caret_y+((win_height-win_y)>>1)+caret_h);
+	}
+    }
+  
   if (bufsize > 0)
     {
       bufsize--;
@@ -1136,9 +1232,10 @@ int process_events(long int to, int* buf, int buflen)
       int flash;
 
       gettimeofday(&now, NULL);
-      if (next_flash.tv_sec < now.tv_sec ||
-	  (next_flash.tv_sec == now.tv_sec &&
-	   next_flash.tv_usec < now.tv_usec))
+      if ((next_flash.tv_sec < now.tv_sec ||
+	   (next_flash.tv_sec == now.tv_sec &&
+	    next_flash.tv_usec < now.tv_usec)) &&
+	  caret_y+caret_h <= win_y)
 	{
 	  next_flash.tv_sec   = now.tv_sec;
 	  next_flash.tv_usec  = now.tv_usec + 400000;
@@ -1231,36 +1328,47 @@ int process_events(long int to, int* buf, int buflen)
 	      
 	      if (buf == NULL)
 		{
-		  x = 1;
-		  for (ks=XLookupKeysym(&ev.xkey, x++); ks != NoSymbol;
-		       ks=XLookupKeysym(&ev.xkey, x++))
+		  x = 0;
+		  for (ks=XKeycodeToKeysym(x_display, ev.xkey.keycode, x++);
+		       ks != NoSymbol;
+		       ks=XKeycodeToKeysym(x_display, ev.xkey.keycode, x++))
 		    {
 		      switch (ks)
 			{
 			case XK_Left:
 			  keybuf[bufsize++] = 131;
-			  break;
+			  goto gotkeysym;
 			  
 			case XK_Right:
 			  keybuf[bufsize++] = 132;
-			  break;
+			  goto gotkeysym;
 			  
 			case XK_Up:
 			  keybuf[bufsize++] = 129;
-			  break;
+			  goto gotkeysym;
 			  
 			case XK_Down:
 			  keybuf[bufsize++] = 130;
-			  break;
+			  goto gotkeysym;
 			  
 			case XK_Delete:
 			  keybuf[bufsize++] = 8;
-			  break;
+			  goto gotkeysym;
 			}
 		    }
+		gotkeysym:
 		  
 		  if (bufsize > 0)
 		    {
+		      if (caret)
+			{
+			  caret = 0;
+			  XDrawLine(x_display, x_mainwin, x_caretgc,
+				    caret_x+((win_width-win_x)>>1),
+				    caret_y+((win_height-win_y)>>1),
+				    caret_x+((win_width-win_x)>>1),
+				    caret_y+((win_height-win_y)>>1)+caret_h);
+			}
 		      bufsize--;
 		      return keybuf[bufpos++];
 		    }
@@ -1269,21 +1377,22 @@ int process_events(long int to, int* buf, int buflen)
 		{
 		  int x, y;
 
-		  x = 1;
-		  for (ks=XLookupKeysym(&ev.xkey, x++); ks != NoSymbol;
-		       ks=XLookupKeysym(&ev.xkey, x++))
+		  x = 0;
+		  for (ks=XKeycodeToKeysym(x_display, ev.xkey.keycode, x++);
+		       ks != NoSymbol;
+		       ks=XKeycodeToKeysym(x_display, ev.xkey.keycode, x++))
 		    {
 		      switch (ks)
 			{
 			case XK_Left:
 			  if (inputpos>0)
 			    inputpos--;
-			  break;
+			  goto gotkeysym2;
 
 			case XK_Right:
 			  if (buf[inputpos] != 0)
 			    inputpos++;
-			  break;
+			  goto gotkeysym2;
 
 			case XK_Up:
 			  if (history == NULL)
@@ -1297,7 +1406,7 @@ int process_events(long int to, int* buf, int buflen)
 				istrcpy(buf, history->string);
 			      inputpos = istrlen(buf);
 			    }
-			  break;
+			  goto gotkeysym2;
 
 			case XK_Down:
 			  if (history != NULL)
@@ -1315,24 +1424,24 @@ int process_events(long int to, int* buf, int buflen)
 				  inputpos = 0;
 				}
 			    }
-			  break;
+			  goto gotkeysym2;
 
 			case XK_Home:
 			  inputpos = 0;
-			  break;
+			  goto gotkeysym2;
 
 			case XK_Insert:
 			  insert_mode = !insert_mode;
-			  break;
+			  goto gotkeysym2;
 
 			case XK_End:
 			  inputpos = istrlen(buf);
-			  break;
+			  goto gotkeysym2;
 
 			case XK_BackSpace:
 			case XK_Delete:
 			  if (inputpos == 0)
-			    break;
+			    goto gotkeysym2;
 			  
 			  if (buf[inputpos] == 0)
 			    buf[--inputpos] = 0;
@@ -1342,7 +1451,7 @@ int process_events(long int to, int* buf, int buflen)
 				buf[y] = buf[y+1];
 			      inputpos--;
 			    }
-			  break;
+			  goto gotkeysym2;
 
 			case XK_Return:
 			  {
@@ -1358,9 +1467,21 @@ int process_events(long int to, int* buf, int buflen)
 			    last_string = newhist;
 			  }
 			  bufsize = 0;
+			  
+			  if (caret)
+			    {
+			      caret = 0;
+			      XDrawLine(x_display, x_mainwin, x_caretgc,
+					caret_x+((win_width-win_x)>>1),
+					caret_y+((win_height-win_y)>>1),
+					caret_x+((win_width-win_x)>>1),
+					caret_y+((win_height-win_y)>>1)+caret_h);
+			    }
+
 			  return 1;
 			}
 		    }
+		gotkeysym2:
 		  
 		  for (x=0; x<bufsize; x++)
 		    {
@@ -1395,8 +1516,10 @@ int process_events(long int to, int* buf, int buflen)
 	      break;
 
 	    case ConfigureNotify:
-	      win_width = ev.xconfigure.width;
+	      win_width  = ev.xconfigure.width;
 	      win_height = ev.xconfigure.height;
+	      win_left   = (win_width-win_x)>>1;
+	      win_top    = (win_height-win_y)>>1;
 	      break;
 
 	    case ClientMessage:
@@ -1634,7 +1757,10 @@ void display_erase_window(void)
   CURWIN.xpos = CURWIN.winsx + CURWIN.lmargin;
   CURWIN.ypos = CURWIN.winlx - height;
   CURWIN.line_height = height;
-  do_redraw =  1;
+
+  redraw_area(win_left+CURWIN.winsx, win_left+CURWIN.winsy,
+	      CURWIN.winlx-CURWIN.winsx,
+	      CURWIN.winly-CURWIN.winsy);
 }
 
 /*
@@ -1649,7 +1775,11 @@ void display_erase_line(int val)
 		     CURWIN.xpos, CURWIN.ypos,
 		     CURWIN.winlx-CURWIN.xpos,
 		     CURWIN.line_height);
-    }
+
+      redraw_area(CURWIN.xpos+win_left, CURWIN.ypos+win_top,
+		  CURWIN.winlx-CURWIN.xpos,
+		  CURWIN.line_height);
+   }
   else
     {
       if (CURWIN.xpos + val > CURWIN.winlx)
@@ -1658,6 +1788,9 @@ void display_erase_line(int val)
 		     CURWIN.xpos, CURWIN.ypos,
 		     val-1,
 		     CURWIN.line_height);
+      redraw_area(CURWIN.xpos+win_left, CURWIN.ypos+win_top,
+		  val-1,
+		  CURWIN.line_height);
     }
 }
 
