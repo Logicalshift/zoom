@@ -23,8 +23,6 @@
 #include "blorb.h"
 #include "v6display.h"
 
-#define DEBUG
-
 @implementation ZoomZMachine
 
 - (id) init {

@@ -26,8 +26,6 @@
 #include "zmachine.h"
 #include "zscii.h"
 
-#define DEBUG
-
 static int *buf  = NULL;
 static int maxlen = 0;
 
