@@ -684,8 +684,6 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
                                                                        attributes: fixedAttributes]
             autorelease];
 
-        NSTextContainer* theContainer;
-
         double sepHeight = fixedSize.height * (double)newSize;
         sepHeight -= [upperWindowBuffer containerSize].height;
 

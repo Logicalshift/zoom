@@ -529,3 +529,37 @@ void display_update(void) {
 void display_beep(void) {
     NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
 }
+
+// = Getting filenames =
+ZFile* get_file_write (int* size, char* name) {
+    // FIXME: fill in size
+    int sz;
+    
+    ZFile* res = [[mainMachine display] promptForFileToWrite: ZFileQuetzal
+                                                 defaultName: [NSString stringWithCString: name]
+                                                        size: &sz];
+
+    if (res) {
+        if (size) *size = sz;
+        return res;
+    } else {
+        if (size) *size = 0;
+        return NULL;
+    }
+}
+
+ZFile* get_file_read  (int* size, char* name) {
+    int sz;
+    
+    ZFile* res = [[mainMachine display] promptForFileToRead: ZFileQuetzal
+                                                defaultName: [NSString stringWithCString: name]
+                                                       size: &sz];
+
+    if (res) {
+        if (size) *size = sz;
+        return res;
+    } else {
+        if (size) *size = 0;
+        return NULL;
+    }
+}

@@ -738,7 +738,7 @@ static void get_fname(char* name, int len, int save)
 #endif
 }
 
-#if WINDOW_SYSTEM != 3
+#if WINDOW_SYSTEM != 3 && WINDOW_SYSTEM != 4
 ZFile* get_file_write(int* fsize,
 		      char* save_fname)
 {

@@ -47,6 +47,7 @@ extern void display_exit(int code);
 /***                           ----// 888 \\----                           ***/
 
 /* Architecture-independant functions (display.c/format.c) */
+/* NOTE: display.c/format.c are NOT used in the Cocoa port (we use NSTextView instead) */
 
 /* Output functions */
 extern void display_clear     (void);

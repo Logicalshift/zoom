@@ -94,7 +94,7 @@
     return NO; // IMPLEMENT ME
 }
 
-- (BOOL) loadResourcesFromZFile: (in byref NSObject<ZFile>) file {
+- (BOOL) loadResourcesFromZFile: (in byref NSObject<ZFile>*) file {
     return NO; // IMPLEMENT ME
 }
 

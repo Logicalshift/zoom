@@ -17,8 +17,6 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#define DEBUG
-
 /*
  * Protocol for an application to talk to/from Zoom
  */
@@ -31,6 +29,13 @@
 @class ZStyle;
 @class ZBuffer;
 
+typedef enum {
+    ZFileQuetzal,
+    ZFileTranscript,
+    ZFileRecording,
+    ZFileData
+} ZFileType;
+
 // == Server-side objects ==
 @protocol ZVendor
 - (out byref NSObject<ZMachine>*) createNewZMachine;
@@ -42,7 +47,7 @@
 - (void) loadStoryFile: (in bycopy NSData*) storyFile;
 - (BOOL) loadResourcesFromData: (in bycopy NSData*) resources;
 - (BOOL) loadResourcesFromFile: (in bycopy NSFileHandle*) file;
-- (BOOL) loadResourcesFromZFile: (in byref NSObject<ZFile>) file;
+- (BOOL) loadResourcesFromZFile: (in byref NSObject<ZFile>*) file;
 
 // Running
 - (oneway void) startRunningInDisplay: (in byref NSObject<ZDisplay>*) display;
@@ -137,6 +142,14 @@
 - (oneway void) startExclusive;
 - (oneway void) stopExclusive;
 - (oneway void) flushBuffer: (in bycopy ZBuffer*) toFlush;
+
+// Prompting for files
+- (out bycopy NSObject<ZFile>*) promptForFileToWrite: (in ZFileType) type
+                                         defaultName: (in bycopy NSString*) name
+                                                size: (out int*) sz;
+- (out bycopy NSObject<ZFile>*) promptForFileToRead: (in ZFileType) type
+                                        defaultName: (in bycopy NSString*) name
+                                               size: (out int*) sz;
 @end
 
 // Some useful standard classes
