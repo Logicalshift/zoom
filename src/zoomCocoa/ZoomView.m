@@ -607,6 +607,21 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     return [result autorelease];
 }
 
+- (void) setFonts: (NSArray*) newFonts {
+    // FIXME: check that fonts is valid
+    // FIXME: update fonts displayed previously
+    
+    [fonts release];
+    fonts = [[NSArray allocWithZone: [self zone]] initWithArray: newFonts 
+                                                      copyItems: YES];
+}
+
+- (void) setColours: (NSArray*) newColours {
+    [colours release];
+    colours = [[NSArray allocWithZone: [self zone]] initWithArray: newColours
+                                                        copyItems: YES];
+}
+
 - (NSColor*) foregroundColourForStyle: (ZStyle*) style {
     NSColor* res;
 
