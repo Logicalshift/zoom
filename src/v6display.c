@@ -385,7 +385,7 @@ void v6_erase_window(void)
 
   ACTWIN.cury = ACTWIN.ypos;
   ACTWIN.curx = ACTWIN.xpos + ACTWIN.lmargin;
-  ACTWIN.line_height = display_get_font_height(ACTWIN.style);
+  ACTWIN.line_height = ACTWIN.text_amount = display_get_font_height(ACTWIN.style);
 }
 
 void v6_erase_line(int val)
