@@ -29,6 +29,7 @@
 #include "zmachine.h"
 #include "stream.h"
 #include "display.h"
+#include "zscii.h"
 
 static int  buffering = 1;
 static int  buflen    = 0;
@@ -71,7 +72,29 @@ static int  zscii_unicode_table[256] =
   0x3f,0x3f,0x3f,0x3f, 0x3f,0x3f,0x3f,0x3f  /* 248-255 */
 };
 
-static int* zscii_to_unicode = zscii_unicode_table;
+static int* zscii_unicode = zscii_unicode_table;
+
+/*
+ * Translate a ZSCII string to a ISO 10646 one (well, Unicode, really)
+ */
+int* zscii_to_unicode(ZByte* string, int* len)
+{
+  static int* unistring = NULL;
+  unsigned char* ascii;
+  int x, l;
+
+  ascii = zscii_to_ascii(string, len);
+
+  l = strlen(ascii);
+  unistring = realloc(unistring, sizeof(int)*(l+1));
+  for (x=0; x<l; x++)
+    {
+      unistring[x] = zscii_unicode[ascii[x]];
+    }
+  unistring[l] = 0;
+
+  return unistring;
+}
   
 static void prints(const int* const s)
 {
@@ -140,7 +163,7 @@ void stream_prints(const unsigned char* s)
 
       txt = malloc(sizeof(int)*(strlen(s)+1));
       for (x=0; s[x] != 0; x++)
-	txt[x] = zscii_to_unicode[s[x]];
+	txt[x] = zscii_unicode[s[x]];
       txt[x] = 0;
       prints(txt);
       free(txt);
@@ -167,7 +190,7 @@ void stream_prints(const unsigned char* s)
 		display_update();
 	    }
 	}
-      buffer[bufpos++] = zscii_to_unicode[s[x]];
+      buffer[bufpos++] = zscii_unicode[s[x]];
     }
 }
 
@@ -329,13 +352,13 @@ void stream_update_unicode_table(void)
 
   if (machine.heblen < 3)
     {
-      zscii_to_unicode = zscii_unicode_table;
+      zscii_unicode = zscii_unicode_table;
       return;
     }
 
   if (GetWord(machine.heb, ZHEB_unitable) == 0)
     {
-      zscii_to_unicode = zscii_unicode_table;
+      zscii_unicode = zscii_unicode_table;
       return;
     }
   
@@ -364,5 +387,5 @@ void stream_update_unicode_table(void)
       unitable[155+x] = (ztable[2*x]<<8)|ztable[2*x+1];
     }
   
-  zscii_to_unicode = unitable;
+  zscii_unicode = unitable;
 }

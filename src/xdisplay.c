@@ -1533,6 +1533,8 @@ int process_events(long int to, int* buf, int buflen)
 	      break;
 	      
 	    case Expose:
+	      redraw_area(ev.xexpose.x, ev.xexpose.y,
+			  ev.xexpose.width, ev.xexpose.height);
 	      draw_window();
 	      break;
 	    }

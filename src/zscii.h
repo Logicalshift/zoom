@@ -26,12 +26,13 @@
 
 #include "ztypes.h"
 
-extern char* zscii_to_ascii       (ZByte* string, int* len);
-extern int  zstrlen               (ZByte* string);
-extern void pack_zscii            (ZByte* string,
+extern char* zscii_to_ascii        (ZByte* string, int* len);
+extern int*  zscii_to_unicode      (ZByte* string, int* len);
+extern int   zstrlen               (ZByte* string);
+extern void  pack_zscii            (ZByte* string,
 				   int strlen,
 				   ZByte* packed,
 			           int packlen);
-extern void zscii_install_alphabet(void);
+extern void  zscii_install_alphabet(void);
 
 #endif

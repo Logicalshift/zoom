@@ -418,6 +418,12 @@ static void draw_statusbar_123(ZStack* stack)
 {
   ZWord score;
   ZWord moves;
+  ZByte* obj;
+  ZByte* prop;
+  int len;
+
+  obj = Obj3(GetVar(16));
+  prop = machine.memory + ((obj[7]<<8)|obj[8]) + 1;
 
   stream_flush_buffer();
   stream_buffering(0);
@@ -427,7 +433,8 @@ static void draw_statusbar_123(ZStack* stack)
 
   display_prints_c("\n ");
   display_set_cursor(2, 0);
-  zcode_op_print_obj_123(stack, GetVar(16));
+
+  display_prints(zscii_to_unicode(prop, &len));
 
   score = GetVar(17);
   moves = GetVar(18);
