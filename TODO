@@ -18,9 +18,10 @@ Hmm, this file was a bit out of date.
  X drag and drop support for file loading
  X warning for non-fixed font set as fixed font
  X bug with Jaguar/carbon_display_message?
- * Comp2002 games need adding to database
+ X .ZX file recognition bug under Mac OS X
+ X varicella/oad colour display bug - Not My Fault (TM)
+ X Comp2002 games need adding to database2
  * taipan.z5 text display underneath upper window bug
- * varicella/oad colour display bug
  * [More] and recorded scripts broken?
  * Option to turn on debugging mode for Mac OS X
  * heirarchical fonts

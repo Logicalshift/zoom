@@ -40,6 +40,7 @@ Zoom Manual - Troubleshooting
       <ul>
         <li><a href="#genimg">Version 6 images</a>
         <li><a href="#genfont">Fonts</a>
+	<li><a href="#issues">Issues with specific games</a>
       </ul>
     <li><a href="#osx">Mac OS X</a>
       <ul>
@@ -90,6 +91,33 @@ Zoom Manual - Troubleshooting
     adequately: if you find a game is drawing text in the wrong place,
     try using a fixed pitch font for the 'roman' style.
   </p>
+
+  <h3><a name="issues">
+    Issues with specific games
+  </h3>
+
+  <p>
+    This section details some general problems that exist within specific
+    games.
+  </p>
+
+  <dl>
+    <dt>'Black on black' problem (Varicella, Only After Dark)</dt>
+    <dl>
+      It seems that some games expect a white-on-black default colour
+      scheme. Zoom uses black-on-white by default (and as of 1.0.1 has
+      no way to change this), which is default in some
+      interpreters. This problem is <b>not</b> a bug in Zoom, rather
+      the game: Varicella, for instance, asks for a black
+      background with the default foreground, which is to say black
+      on black.
+    <p>
+      To fix this in Varicella, you have to play without colour. In
+      Only After Dark, you can save the game after the colours make
+      the game illegible, then restart and restore to produce a
+      legible game.
+    </dl>
+  </dl>
 
   <h2><a name="osx">
     Mac OS X
