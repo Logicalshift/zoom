@@ -42,22 +42,22 @@ enum ZSVbutton
 // UI
 - (void) mouseEnteredView;
 - (void) mouseLeftView;
-- (void) mouseEnteredItem: (NSDictionary*) item;
-- (void) mouseLeftItem: (NSDictionary*) item;
+- (void) mouseEnteredItem: (ZoomSkeinItem*) item;
+- (void) mouseLeftItem: (ZoomSkeinItem*) item;
 
 - (enum ZSVbutton) buttonUnderPoint: (NSPoint) point
-							 inItem: (NSDictionary*) item;
+							 inItem: (ZoomSkeinItem*) item;
 
 - (void) addButtonClicked: (NSEvent*) event
-				 withItem: (NSDictionary*) item;
+				 withItem: (ZoomSkeinItem*) item;
 - (void) deleteButtonClicked: (NSEvent*) event
-					withItem: (NSDictionary*) item;
+					withItem: (ZoomSkeinItem*) item;
 - (void) annotateButtonClicked: (NSEvent*) event
-					  withItem: (NSDictionary*) item;
+					  withItem: (ZoomSkeinItem*) item;
 - (void) transcriptButtonClicked: (NSEvent*) event
-						withItem: (NSDictionary*) item;
+						withItem: (ZoomSkeinItem*) item;
 - (void) lockButtonClicked: (NSEvent*) event
-				  withItem: (NSDictionary*) item;
+				  withItem: (ZoomSkeinItem*) item;
 - (void) playToPoint: (ZoomSkeinItem*) item;
 
 - (void) cancelEditing: (id) sender;
@@ -195,9 +195,9 @@ enum ZSVbutton
 	
 	// Draw the control icons for the tracked item
 	if (trackedItem != nil) {
-		float xpos = [layout xposForData: trackedItem];
-		float ypos = ((float)[layout levelForData: trackedItem])*itemHeight + (itemHeight / 2.0);
-		float bgWidth = [layout widthForData: trackedItem];
+		float xpos = [layout xposForItem: trackedItem];
+		float ypos = ((float)[layout levelForItem: trackedItem])*itemHeight + (itemHeight / 2.0);
+		float bgWidth = [layout widthForItem: trackedItem];
 		
 		// Layout is:
 		//    A T        x +
@@ -211,7 +211,7 @@ enum ZSVbutton
 		float left = xpos - w/2.0;
 		float right = xpos + w/2.0;
 		
-		ZoomSkeinItem* itemParent = [[layout itemForData: trackedItem] parent];
+		ZoomSkeinItem* itemParent = [trackedItem parent];
 		
 		// Correct for shadow
 		right -= 20.0;
@@ -241,7 +241,7 @@ enum ZSVbutton
 		
 		if (itemParent != nil) {
 			// Can't unlock the 'start' item
-			NSImage* lock = [[layout itemForData: trackedItem] temporary]?unlocked:locked;
+			NSImage* lock = [trackedItem temporary]?unlocked:locked;
 			
 			[[self class] drawButton: lock
 							 atPoint: NSMakePoint(right, ypos + 18)
@@ -421,8 +421,8 @@ enum ZSVbutton
 	[trackingRects addObject: [NSNumber numberWithInt: tag]];
 	
 	for (level = startLevel; level<=endLevel; level++) {
-		NSEnumerator* itemEnum = [[layout dataForLevel: level] objectEnumerator];
-		NSDictionary* item;
+		NSEnumerator* itemEnum = [[layout itemsOnLevel: level] objectEnumerator];
+		ZoomSkeinItem* item;
 		
 		while (item = [itemEnum nextObject]) {
 			NSRect itemRect = [layout activeAreaForItem: item];
@@ -458,7 +458,7 @@ enum ZSVbutton
 	trackedItem = nil;
 }
 
-- (void) mouseEnteredItem: (NSDictionary*) item {
+- (void) mouseEnteredItem: (ZoomSkeinItem*) item {
 	if (skeinNeedsLayout) {
 		[self layoutSkein];
 		[self updateTrackingRects];
@@ -491,7 +491,7 @@ enum ZSVbutton
 	}
 }
 
-- (void) mouseLeftItem: (NSDictionary*) item {
+- (void) mouseLeftItem: (ZoomSkeinItem*) item {
 	if (overItem) [NSCursor pop];
 	if (trackedItem) [self setNeedsDisplay: YES];
 	overItem = NO;
@@ -537,13 +537,12 @@ enum ZSVbutton
 	pointInView = [self convertPoint: pointInView fromView: nil];
 	
 	ZoomSkeinItem* realItem = [layout itemAtPoint: pointInView];
-	NSDictionary* realItemD = [layout dataForItem: realItem];
 	
-	if (realItemD != trackedItem) {
+	if (realItem != trackedItem) {
 		if (!overWindow) [self mouseEnteredView];
 		
 		if (trackedItem) [self mouseLeftItem: trackedItem];
-		if (realItemD) [self mouseEnteredItem: realItemD];
+		if (realItem) [self mouseEnteredItem: realItem];
 	}
 	
 	if (clickedItem) [clickedItem release];
@@ -645,24 +644,18 @@ enum ZSVbutton
 				case ZSVmainItem:
 					if ([event modifierFlags]&NSAlternateKeyMask && [event clickCount] == 1) {
 						// Clicking with the option key edits immediately
-						ZoomSkeinItem* skeinItem = [layout itemForData: trackedItem];
-
-						[self editItem: skeinItem];
+						[self editItem: trackedItem];
 					} else if ([event modifierFlags]&NSCommandKeyMask || [event clickCount] == 2) {
 						// Run the game to this point (double- or command- click)
-						ZoomSkeinItem* skeinItem = [layout itemForData: trackedItem];
-
-						[self playToPoint: skeinItem];
+						[self playToPoint: trackedItem];
 					} else if ([event clickCount] == 1) {
 						// Select this item - queue up for editing if required
-						ZoomSkeinItem* skeinItem = [layout itemForData: trackedItem];
-						
-						if ([layout selectedItem] != skeinItem) {
+						if ([layout selectedItem] != trackedItem) {
 							// Change the selected item
-							[self setSelectedItem: skeinItem];
+							[self setSelectedItem: trackedItem];
 						} else {
 							// Edit soon
-							[self editSoon: skeinItem];
+							[self editSoon: trackedItem];
 						}
 					}
 					//[self editItem: [trackedItem objectForKey: ZSitem]];
@@ -680,14 +673,14 @@ enum ZSVbutton
 }
 
 - (enum ZSVbutton) buttonUnderPoint: (NSPoint) point
-							 inItem: (NSDictionary*) item {
+							 inItem: (ZoomSkeinItem*) item {
 	// Calculate info about the location of this item
-	float xpos = [layout xposForData: item];
-	float ypos = ((float)[layout levelForData: item]) * itemHeight + (itemHeight/2.0);
+	float xpos = [layout xposForItem: item];
+	float ypos = ((float)[layout levelForItem: item]) * itemHeight + (itemHeight/2.0);
 
 	NSDictionary* fontAttrs = itemTextAttributes;
 	
-	NSSize size = [[[layout itemForData: item] command] sizeWithAttributes: fontAttrs];
+	NSSize size = [[item command] sizeWithAttributes: fontAttrs];
 
 	float w = size.width; //[[item objectForKey: ZSwidth] floatValue];
 	if (w < 32.0) w = 32.0;
@@ -725,9 +718,7 @@ enum ZSVbutton
 // = Item control buttons =
 
 - (void) addButtonClicked: (NSEvent*) event
-				 withItem: (NSDictionary*) item {
-	ZoomSkeinItem* skeinItem = [layout itemForData: item];
-	
+				 withItem: (ZoomSkeinItem*) skeinItem {
 	// Add a new, blank item
 	ZoomSkeinItem* newItem = 
 		[skeinItem addChild: [ZoomSkeinItem skeinItemWithCommand: @""]];
@@ -745,8 +736,7 @@ enum ZSVbutton
 }
 
 - (void) deleteButtonClicked: (NSEvent*) event
-					withItem: (NSDictionary*) item {
-	ZoomSkeinItem* skeinItem = [layout itemForData: item];
+					withItem: (ZoomSkeinItem*) skeinItem {
 	ZoomSkeinItem* itemParent = [skeinItem parent];
 	
 	if ([skeinItem parent] == nil) return;
@@ -773,9 +763,7 @@ enum ZSVbutton
 }
 
 - (void) lockButtonClicked: (NSEvent*) event
-				  withItem: (NSDictionary*) item {
-	ZoomSkeinItem* skeinItem = [layout itemForData: item];
-
+				  withItem: (ZoomSkeinItem*) skeinItem {
 	if ([skeinItem parent] == nil) return;
 
 	if ([skeinItem temporary]) {
@@ -806,13 +794,11 @@ enum ZSVbutton
 }
 
 - (void) annotateButtonClicked: (NSEvent*) event
-					  withItem: (NSDictionary*) item {
-	//ZoomSkeinItem* skeinItem = [item objectForKey: ZSitem];
+					  withItem: (ZoomSkeinItem*) skeinItem {
 }
 
 - (void) transcriptButtonClicked: (NSEvent*) event
-						withItem: (NSDictionary*) item {
-	//ZoomSkeinItem* skeinItem = [item objectForKey: ZSitem];
+						withItem: (ZoomSkeinItem*) skeinItem {
 }
 
 // = Editing items =
@@ -878,15 +864,15 @@ enum ZSVbutton
 	}
 	
 	// Allows you to edit an item's command
-	NSDictionary* item = [layout dataForItem: skeinItem];
+	NSDictionary* itemD = [layout dataForItem: skeinItem];
 	
-	if (item == nil) {
+	if (itemD == nil) {
 		NSLog(@"ZoomSkeinView: Item not found for editing");
 		return;
 	}
 		
 	// Area of the text for this item
-	NSRect itemFrame = [layout textAreaForItem: item];
+	NSRect itemFrame = [layout textAreaForItem: skeinItem];
 	
 	// Make sure the item is the right size
 	float minItemWidth = itemWidth - 32.0;

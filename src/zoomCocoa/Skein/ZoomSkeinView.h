@@ -26,8 +26,8 @@
 	
 	NSMutableArray* trackingRects;
 	NSMutableArray* trackingItems;
-	NSDictionary* trackedItem;
-	NSDictionary* clickedItem;
+	ZoomSkeinItem* trackedItem;
+	ZoomSkeinItem* clickedItem;
 	
 	BOOL    dragScrolling;
 	NSPoint dragOrigin;

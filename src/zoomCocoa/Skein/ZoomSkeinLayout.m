@@ -392,7 +392,7 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed;
 
 // = Item positioning data =
 
-- (NSRect) activeAreaForItem: (NSDictionary*) item {
+- (NSRect) activeAreaForData: (NSDictionary*) item {
 	NSRect itemRect;
 	float ypos = ((float)[[item objectForKey: ZSlevel] intValue]) * itemHeight + (itemHeight/2.0);
 	float position = [[item objectForKey: ZSposition] floatValue];
@@ -418,7 +418,7 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed;
 	return itemRect;
 }
 
-- (NSRect) textAreaForItem: (NSDictionary*) item {
+- (NSRect) textAreaForData: (NSDictionary*) item {
 	NSRect itemRect;
 	float ypos = ((float)[[item objectForKey: ZSlevel] intValue]) * itemHeight + (itemHeight/2.0);
 	float position = [[item objectForKey: ZSposition] floatValue];
@@ -436,6 +436,14 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed;
 	}
 	
 	return itemRect;
+}
+
+- (NSRect) activeAreaForItem: (ZoomSkeinItem*) itemData {
+	return [self activeAreaForData: [self dataForItem: itemData]];
+}
+
+- (NSRect) textAreaForItem: (ZoomSkeinItem*) itemData {
+	return [self textAreaForData: [self dataForItem: itemData]];
 }
 
 - (ZoomSkeinItem*) itemAtPoint: (NSPoint) point {
