@@ -7,10 +7,19 @@
 //
 
 #import <AppKit/AppKit.h>
-
+#import "ZoomiFButton.h"
 
 @interface ZoomiFictionController : NSWindowController {
-
+	IBOutlet ZoomiFButton* addButton;
+	IBOutlet ZoomiFButton* drawerButton;
+	
+	IBOutlet NSDrawer* drawer;
+	IBOutlet NSView*   drawerView;
 }
+
++ (ZoomiFictionController*) sharediFictionController;
+
+- (IBAction) addButtonPressed: (id) sender;
+- (IBAction) drawerButtonPressed: (id) sender;
 
 @end

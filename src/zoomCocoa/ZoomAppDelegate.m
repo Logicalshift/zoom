@@ -10,6 +10,7 @@
 #import "ZoomGameInfoController.h"
 
 #import "ZoomMetadata.h"
+#import "ZoomiFictionController.h"
 
 @implementation ZoomAppDelegate
 
@@ -47,7 +48,13 @@
 
 // = Opening files =
 - (BOOL) applicationShouldOpenUntitledFile: (NSApplication*) sender {
-    return NO;
+    return YES;
+}
+
+- (BOOL) applicationOpenUntitledFile:(NSApplication *)theApplication {
+	[[[ZoomiFictionController sharediFictionController] window] makeKeyAndOrderFront: self];
+	
+	return YES;
 }
 
 // = General actions =
@@ -74,6 +81,10 @@
 }
 
 - (IBAction) displayNoteWindow: (id) sender {
+}
+
+- (IBAction) showiFiction: (id) sender {
+	[[[ZoomiFictionController sharediFictionController] window] makeKeyAndOrderFront: self];
 }
 
 // = Application-wide data =
