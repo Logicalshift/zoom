@@ -14,7 +14,7 @@ Test saveTest "1.1 File handling test"
 	if (standard_interpreter < $101)
 	{
 	    print "(Your interpreter is not standard 1.1)^";
-	    rtrue;
+	    return -1;
 	}
 	
 	print "Save/restore test (no prompt)...";
@@ -101,6 +101,12 @@ Test uniTest "1.1 Unicode"
     zork3 $13F4 $14D8 $82F0 $DEDD,
     beyondzork $13E5 $1B00 $DEDD $D2F0,
     Run [ x;
+	if (standard_interpreter < $101)
+	{
+	    print "(Your interpreter is not standard 1.1)^";
+	    return -1;
+	}
+	
 	print "This will attempt to display some Unicode
 	    strings (the examples from the specification). You'll
 	    have to verify for yourself if they're correct^";
@@ -127,7 +133,7 @@ Test miscTest "1.1 miscellany"
 	     if (standard_interpreter < $101)
 	     {
 	    	 print "(Your interpreter is not standard 1.1)^";
-	    	 rtrue;
+	    	 return -1;
 	     }
 
 	     pass = 1;
