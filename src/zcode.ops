@@ -2148,12 +2148,19 @@ OPCODE "save_undo"     EXT:0x09 ARGS:0 STORE CANJUMP VERSION 5,6,7,8
 %{
 #ifdef CAN_UNDO
   ZWord tmp;
+  int x;
 
-  if (machine.undo)
-    free(machine.undo);
+  if (machine.undo[UNDO_LEVEL-1])
+    free(machine.undo[UNDO_LEVEL-1]);
+
+  for (x=UNDO_LEVEL-2; x>=0; x--)
+    {
+      machine.undo[x+1] = machine.undo[x];
+      machine.undo_len[x+1] = machine.undo_len[x];
+    }
   
   store(stack, st, 2);
-  machine.undo = state_compile(stack, pc, &machine.undo_len,
+  machine.undo[0] = state_compile(stack, pc, &machine.undo_len[0],
 #ifdef SQUEEZE_UNDO
 			       1
 #else
@@ -2174,12 +2181,20 @@ OPCODE "save_undo"     EXT:0x09 ARGS:0 STORE CANJUMP VERSION 5,6,7,8
 OPCODE "restore_undo"  EXT:0x0a ARGS:0 STORE CANJUMP VERSION 5,6,7,8
 %{
 #ifdef CAN_UNDO
-  if (machine.undo)
+  if (machine.undo[0])
     {
-      if (state_decompile(machine.undo, stack, &pc, machine.undo_len))
+      if (state_decompile(machine.undo[0], stack, &pc, machine.undo_len[0]))
 	{
-	  free(machine.undo);
-	  machine.undo = NULL;
+	  int x;
+
+	  free(machine.undo[0]);
+	  for (x=1; x<UNDO_LEVEL; x++)
+	    {
+	      machine.undo[x-1] = machine.undo[x];
+	      machine.undo_len[x-1] = machine.undo_len[x];
+	    }
+	  machine.undo[UNDO_LEVEL-1] = NULL;
+
 	  goto loop;
 	}
       if (state_fail())

@@ -68,6 +68,7 @@
 #undef  PAGED_MEMORY /* Not implemented, anyway ;-) */
 #define GLOBAL_PC    /* Set to make the program counter global */
 #define CAN_UNDO     /* Support the undo commands */
+#define UNDO_LEVEL 5 /* Number of levels of undo that we support */
 #undef  SQUEEZEUNDO  /* Store undo information in a compressed format (slow) */
 #undef  TRACKING     /* Enable object tracking options */
 #define SPEC_10      /*
@@ -201,8 +202,8 @@ typedef struct ZMachine
 
   ZFile*   file;
 
-  ZByte* undo;
-  ZDWord undo_len;
+  ZByte* undo    [UNDO_LEVEL];
+  ZDWord undo_len[UNDO_LEVEL];
 
   ZByte  version;
 

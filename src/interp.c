@@ -1465,6 +1465,8 @@ void zmachine_run(const int version,
 #endif
   ZStack*        stack;
 
+  int x;
+
   pc    = GetWord(machine.header, ZH_initpc);
   stack = &machine.stack;
 
@@ -1476,7 +1478,11 @@ void zmachine_run(const int version,
 #endif
 
   zmachine_setup_header();
-  machine.undo = NULL;
+
+  for (x=0; x<UNDO_LEVEL; x++)
+    {
+      machine.undo[x] = NULL;
+    }
 
 #if defined(SUPPORT_VERSION_6)
   if (version == 6)
