@@ -1811,8 +1811,8 @@
 			fileEncoding = 4;
 			isa = PBXFileReference;
 			lastKnownFileType = text.plist.xml;
-			name = infocom.xml;
-			path = src/infocom.xml;
+			name = infocom.iFiction;
+			path = src/infocom.iFiction;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
@@ -2196,6 +2196,16 @@
 			<string>Editor</string>
 			<key>NSDocumentClass</key>
 			<string>ZoomClient</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>iFiction</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>iFiction metadata</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>

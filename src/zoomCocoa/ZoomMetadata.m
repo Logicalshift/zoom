@@ -100,7 +100,7 @@ static int dataWrite(const char* bytes, int length, void* userData) {
 	// would be better?
 	NSString* configDir = [[NSApp delegate] zoomConfigDirectory];
 	
-	return [self writeToFile: [configDir stringByAppendingPathComponent: @"metadata.xml"]
+	return [self writeToFile: [configDir stringByAppendingPathComponent: @"metadata.iFiction"]
 				  atomically: YES];
 }
 
