@@ -386,6 +386,7 @@
 				4B1E3FD7050F7E3100A8E303,
 				4B1E3FD9050F7E4300A8E303,
 				4BACE9FA05B428C700A9B6DC,
+				4B5983DA070F059E0078165F,
 				4B1E3F7F050F7C9500A8E303,
 				4B1E3F5E050F7B2C00A8E303,
 				4BCF3F41050FB1C300A8E303,
@@ -2003,6 +2004,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
+				4B5983DE070F05B60078165F,
 				4BACEA6605B43C1E00A9B6DC,
 			);
 			isa = PBXCopyFilesBuildPhase;
@@ -2046,6 +2048,32 @@
 		};
 		4B58A09306039995003D1828 = {
 			fileRef = 4BCF3F46050FB21C00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B5983DA070F059E0078165F = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.xml;
+			path = archive.iFiction;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B5983DB070F059E0078165F = {
+			fileRef = 4B5983DA070F059E0078165F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B5983DC070F05A00078165F = {
+			fileRef = 4B5983DA070F059E0078165F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B5983DE070F05B60078165F = {
+			fileRef = 4B5983DA070F059E0078165F;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -3106,6 +3134,7 @@
 				4B5CBCEF069DD94000C0AA88,
 				4BD81B4E06B6E9F400AD14E1,
 				4B7FA9CD06B99EE400EE766A,
+				4B5983DC070F05A00078165F,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3329,7 +3358,7 @@
 	<key>CFBundleSignature</key>
 	<string>YZZY</string>
 	<key>CFBundleVersion</key>
-	<string>1.0.2alpha2</string>
+	<string>1.0.2beta1</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu.nib</string>
 	<key>NSPrincipalClass</key>
@@ -3711,6 +3740,7 @@
 				4B5CBC63069D9EB700C0AA88,
 				4B5CBC64069D9EB700C0AA88,
 				4B0F042C06A04FBF00BE1EA9,
+				4B5983DB070F059E0078165F,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3807,9 +3837,9 @@
 	<key>CFBundleShortVersionString</key>
 	<string></string>
 	<key>CFBundleSignature</key>
-	<string>????</string>
+	<string>YZZY</string>
 	<key>CFBundleVersion</key>
-	<string>0.0.1d1</string>
+	<string>2.0.0beta1</string>
 </dict>
 </plist>
 ";
