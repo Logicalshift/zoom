@@ -21,7 +21,7 @@ by Andrew Hunter
 Versions
 ========
 
-   This is 1.0.2alpha1 of Zoom. The main reason this release is alpha
+   This is 1.0.2alpha2 of Zoom. The main reason this release is alpha
    is because of the still very new and slightly unfinished Cocoa
    interface. As the components have gained an increasing tendency to 
    change at different, I've given them seperate versions:
@@ -30,7 +30,7 @@ Versions
    X11 interface: 1.0.2
    Windows interface: 0.9.99beta5
    Carbon interface: 1.0.1
-   Cocoa interface: 2.0.0alpha1
+   Cocoa interface: 2.0.0alpha2
    
    Note that Zoom's display system underwent a fairly major change
    between 1.0.0 and 1.0.1 due to the addition of version 6 support. This

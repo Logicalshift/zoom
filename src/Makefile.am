@@ -33,7 +33,7 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/ZoomiFButton.m 	  zoomCocoa/ZoomCollapsableView.h \
 	zoomCocoa/ZoomCollapsableView.m	  zoomCocoa/ZoomSavePreview.h \
 	zoomCocoa/ZoomSavePreview.m	  zoomCocoa/ZoomSavePreviewView.h \
-	zoomCooca/ZoomSavePreviewView.m	  zoomCocoa/ZoomRatingCell.h \
+	zoomCocoa/ZoomSavePreviewView.m	  zoomCocoa/ZoomRatingCell.h \
 	zoomCocoa/ZoomRatingCell.m	  \
 	zoomCocoa/MainMenu.nib/classes.nib zoomCocoa/MainMenu.nib/info.nib \
 	zoomCocoa/MainMenu.nib/keyedobjects.nib \
@@ -68,6 +68,8 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/newgame-out.png	zoomCocoa/Z-Decal.png  \
 	zoomCocoa/Metal-Title.png 	zoomCocoa/stars-grey.png \
 	zoomCocoa/stars-red.png		zoomCocoa/stars-none.png \
+	zoomCocoa/iFiction.icns 	zoomCocoa/saveBackground.png \
+	zoomCocoa/saveHighlightActive.png zoomCocoa/saveHighlightInactive.png \
 	zoomCocoa/English.lproj/Credits.rtf
 
 zoom_SOURCES = \

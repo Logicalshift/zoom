@@ -1,11 +1,17 @@
 {
     IBClasses = (
         {
-            ACTIONS = {displayGameInfoWindow = id; }; 
+            ACTIONS = {
+                deleteSavegame = id; 
+                displayGameInfoWindow = id; 
+                revealInFinder = id; 
+                saveMetadata = id; 
+            }; 
             CLASS = FirstResponder; 
             LANGUAGE = ObjC; 
             SUPERCLASS = NSObject; 
         }, 
+        {CLASS = ZoomCollapsableView; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
         {
             CLASS = ZoomiFButton; 
             LANGUAGE = ObjC; 
@@ -17,6 +23,7 @@
                 addButtonPressed = id; 
                 changeFilter1 = id; 
                 changeFilter2 = id; 
+                deleteSavegame = id; 
                 drawerButtonPressed = id; 
                 restoreAutosave = id; 
                 searchFieldChanged = id; 
@@ -26,7 +33,7 @@
             LANGUAGE = ObjC; 
             OUTLETS = {
                 addButton = ZoomiFButton; 
-                commentView = NSTextView; 
+                collapseView = ZoomCollapsableView; 
                 continueButton = ZoomiFButton; 
                 drawer = NSDrawer; 
                 drawerButton = ZoomiFButton; 
@@ -36,8 +43,9 @@
                 infoButton = ZoomiFButton; 
                 mainTableView = NSTableView; 
                 newgameButton = ZoomiFButton; 
+                saveMenu = NSMenu; 
                 searchField = NSTextField; 
-                teaserView = NSTextView; 
+                storyMenu = NSMenu; 
             }; 
             SUPERCLASS = NSWindowController; 
         }
