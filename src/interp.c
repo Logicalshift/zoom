@@ -1134,8 +1134,6 @@ static void zcode_op_aread_5678(ZDWord* pc,
 		  machine.heb[ZHEB_xmouse+1] = x;
 		  machine.heb[ZHEB_ymouse]   = y>>8;
 		  machine.heb[ZHEB_ymouse+1] = y;
-
-		  printf("Yeep! - %i, %i\n", x, y);
 		}
 	    }
 	}

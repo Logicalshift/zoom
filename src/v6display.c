@@ -306,6 +306,11 @@ void v6_prints(const int* text)
       if (text[text_pos] != 0)
 	{
 	  int more;
+
+	  display_pixmap_cols(bg, 0);
+	  display_plot_rect(ACTWIN.curx+width, ACTWIN.cury,
+			    (ACTWIN.xpos+ACTWIN.width-ACTWIN.rmargin)-(ACTWIN.curx+width),
+			    ACTWIN.line_height);
 	  
 	  ACTWIN.text_amount += ACTWIN.line_height;
 	  ACTWIN.cury += ACTWIN.line_height;
