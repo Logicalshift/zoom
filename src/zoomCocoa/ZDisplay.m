@@ -253,7 +253,10 @@ int display_readline(int* buf, int len, long int timeout) {
         realLen = len-1;
     }
 
+    printf("%i %i\n", realLen, len-1);
+
     int chr;
+    int termChar = 0;
 
     for (chr = 0; chr<realLen; chr++) {
         buf[chr] = [inputBuffer characterAtIndex: chr];
@@ -261,16 +264,18 @@ int display_readline(int* buf, int len, long int timeout) {
         if (buf[chr] == 10 ||
             buf[chr] == 13) {
             realLen = chr;
-            buf[chr++] = 0;
+            termChar = 10;
 
             [inputBuffer deleteCharactersInRange: NSMakeRange(chr-1, 1)];
             break;
         }
     }
 
+    buf[realLen] = 0;
+
     [inputBuffer deleteCharactersInRange: NSMakeRange(0, realLen)];
 
-    return realLen;
+    return termChar;
 }
 
 int display_readchar(long int timeout) {

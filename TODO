@@ -18,7 +18,7 @@ Hmm, this file was a bit out of date.
  * Cocoa version 'bounces' around when 
  * Really need to just send the entire buffer rather than individual commands
  * Cocoa version has the restart bug again (erg)
- * Beyond Zork weirdness continues
+ * Problem with overwriting things in the upper window?
 
  * Sound
  * Internationalisation support
