@@ -462,9 +462,9 @@ OPCODE "get_prop_addr" 2OP:0x12 STORE  VERSION 1,2,3
   obj_adr = Obj3(uarg1);
 
   prop_adr  = (obj_adr[7]<<8)|obj_adr[8];
-  prop_adr += Byte(prop_adr)*2 + 1;
+  prop_adr += ReadByte(prop_adr)*2 + 1;
 
-  while ((size = Byte(prop_adr)) != 0)
+  while ((size = ReadByte(prop_adr)) != 0)
     {
       if ((size&0x1f) == uarg2)
 	{
@@ -498,7 +498,7 @@ OPCODE "get_prop_addr" 2OP:0x12 STORE  VERSION 4,5,6,7,8
   obj_adr = Obj4(uarg1);
   
   prop_adr = GetPropAddr4(obj_adr);
-  prop_adr += (Byte(prop_adr)*2)+1;
+  prop_adr += (ReadByte(prop_adr)*2)+1;
   
   do
     {
@@ -527,16 +527,16 @@ OPCODE "get_next_prop" 2OP:0x13 STORE  VERSION 1,2,3
   obj_adr = Obj3(uarg1);
 
   prop_adr  = (obj_adr[7]<<8)|obj_adr[8];
-  prop_adr += Byte(prop_adr)*2 + 1;
+  prop_adr += ReadByte(prop_adr)*2 + 1;
 
   if (uarg2 == 0)
     {
-      store(stack, st, Byte(prop_adr)&0x1f);
+      store(stack, st, ReadByte(prop_adr)&0x1f);
       goto loop;
     }
   
   state = 0;
-  while ((size = Byte(prop_adr)) != 0)
+  while ((size = ReadByte(prop_adr)) != 0)
     {
       if (state)
 	{
@@ -572,7 +572,7 @@ OPCODE "get_next_prop" 2OP:0x13 STORE  VERSION 4,5,6,7,8
       obj_adr = Obj4(uarg1);
 
       prop_adr = GetPropAddr4(obj_adr);
-      prop_adr += (Byte(prop_adr)*2)+1;
+      prop_adr += (ReadByte(prop_adr)*2)+1;
 
       inf = get_object_propinfo_4(Address(prop_adr));
       store(stack, st, inf->number);
@@ -615,7 +615,7 @@ OPCODE "loadb"        2OP:0x10 STORE  VERSION all
 #ifdef DEBUG
   printf_debug("Loading byte at #%x\n", (ZUWord)arg1+(ZUWord)arg2);
 #endif
-  store(stack, st, Byte((ZUWord)arg1+(ZUWord)arg2));
+  store(stack, st, ReadByte((ZUWord)arg1+(ZUWord)arg2));
 %}
 
 OPCODE "or"           2OP:0x08 STORE  VERSION all
@@ -1121,7 +1121,7 @@ OPCODE "restart"     0OP:0x07 CANJUMP VERSION 3,4,5,7,8
   display_join(0, 2);
   display_set_window(0);
   display_erase_window();
-  if (Byte(0) > 4)
+  if (ReadByte(0) > 4)
     display_set_cursor(0,0);
   
   read_block2(machine.memory, machine.file, 0, machine.dynamic_ceiling);
@@ -1492,7 +1492,7 @@ OPCODE "split_window"   VAR:0x0a ARGS:1               VERSION all # 3,4,5,6,7,8
       int win;
       int ver;
 
-      ver = Byte(0);
+      ver = ReadByte(0);
 
 #ifdef DEBUG
       printf_debug("Top window bottom is now %i\n", argblock.arg[0]);
@@ -1523,7 +1523,7 @@ OPCODE "split_window"   VAR:0x0a ARGS:1               VERSION all # 3,4,5,6,7,8
     }
   else
     {
-      if (Byte(0) == 3)
+      if (ReadByte(0) == 3)
 	{
 	  display_set_window(2);
 	  display_erase_window();
@@ -1553,7 +1553,7 @@ OPCODE "set_window"     VAR:0x0b ARGS:1               VERSION 3,4,5,7,8
     case 1:
       stream_buffering(0);
       display_set_window(2);
-      if (Byte(0) == 3)
+      if (ReadByte(0) == 3)
 	display_set_cursor(0,1);
 
       if (machine.transcript_on == 1)
@@ -1582,7 +1582,7 @@ OPCODE "erase_window"   VAR:0x0d ARGS:1               VERSION 4,5,7,8
     case 0:
       display_set_window(0);
       display_erase_window();
-      if (Byte(0) != 4)
+      if (ReadByte(0) != 4)
 	display_set_cursor(0,0);
       display_set_window(old_win);
       break;
@@ -1598,7 +1598,7 @@ OPCODE "erase_window"   VAR:0x0d ARGS:1               VERSION 4,5,7,8
       display_join(0, 2);
       display_set_window(0);
       display_erase_window();
-      if (Byte(0) != 4)
+      if (ReadByte(0) != 4)
 	display_set_cursor(0,0);
       break;
 
@@ -1995,8 +1995,8 @@ OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
         {
 	  strncpy(fname, 
 	          Address(argblock.arg[2]+1),
-		  Byte(argblock.arg[2]));
-          fname[Byte(argblock.arg[2])] = 0;
+		  ReadByte(argblock.arg[2]));
+          fname[ReadByte(argblock.arg[2])] = 0;
 	}
       else
 	strcpy(fname, "table.dat");
@@ -2048,8 +2048,8 @@ OPCODE "restore"       EXT:0x01 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
         {
 	  strncpy(fname,
 	          Address(argblock.arg[2]+1),
-		  Byte(argblock.arg[2]));
-	  fname[Byte(argblock.arg[2])] = 0;
+		  ReadByte(argblock.arg[2]));
+	  fname[ReadByte(argblock.arg[2])] = 0;
 	}
       else
 	strcpy(fname, "table.dat");
