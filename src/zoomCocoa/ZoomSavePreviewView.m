@@ -48,7 +48,7 @@
 	if (directory == nil || ![[NSFileManager defaultManager] fileExistsAtPath: directory]) {
 		NSRect ourFrame = [self frame];
 		ourFrame.size.height = 2;
-		[self setFrameSize: ourFrame.size];
+		[self setFrame: ourFrame];
 		[self setNeedsDisplay: YES];
 		return;
 	}
@@ -100,6 +100,7 @@
 													  filename: previewFile];
 			
 			[preview setAutoresizingMask: NSViewWidthSizable];
+			[preview setMenu: [self menu]];
 			[self addSubview: preview];
 			[upperWindowViews addObject: [preview autorelease]];
 		}
@@ -148,6 +149,14 @@
 		
 		ZoomClient* newDoc = [[NSDocumentController sharedDocumentController] openDocumentWithContentsOfFile: directory
 																									 display: YES];
+	}
+}
+
+- (NSString*) selectedSaveGame {
+	if (selected >= 0 && selected != NSNotFound) {
+		return [[upperWindowViews objectAtIndex: selected] filename];
+	} else {
+		return nil;
 	}
 }
 

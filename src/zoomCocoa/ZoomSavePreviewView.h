@@ -18,5 +18,6 @@
 - (void) setDirectoryToUse: (NSString*) directory;
 - (void) previewMouseUp: (NSEvent*) evt
 				 inView: (ZoomSavePreview*) view;
+- (NSString*) selectedSaveGame;
 
 @end

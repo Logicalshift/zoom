@@ -33,6 +33,9 @@
 	
 	IBOutlet NSTextField* searchField;
 	
+	IBOutlet NSMenu* storyMenu;
+	IBOutlet NSMenu* saveMenu;
+	
 	BOOL showDrawer;
 	
 	BOOL needsUpdating;
@@ -57,6 +60,7 @@
 - (IBAction) searchFieldChanged: (id) sender;
 - (IBAction) changeFilter1: (id) sender;
 - (IBAction) changeFilter2: (id) sender;
+- (IBAction) deleteSavegame: (id) sender;
 
 - (ZoomStory*) storyForID: (ZoomStoryID*) ident;
 - (void) configureFromMainTableSelection;

@@ -221,9 +221,9 @@
 	}
 	
 	// Final stage: tidy up, redraw if necessary
-	if (needsRedrawing) {
+	//if (needsRedrawing) {
 		[self setNeedsDisplay: YES];
-	}
+	//}
 	
 	rearranging = NO;
 }

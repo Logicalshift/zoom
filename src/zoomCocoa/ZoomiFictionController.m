@@ -200,6 +200,7 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	commentView = [[NSTextView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
 	teaserView = [[NSTextView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
 	previewView = [[ZoomSavePreviewView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
+	[previewView setMenu: saveMenu];
 	
 	[teaserView setMaxSize: NSMakeSize(1e8, 1e8)];
     [teaserView setHorizontallyResizable: NO];
@@ -325,7 +326,7 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 		
 		NSString* fileType = [filename pathExtension];
 		
-		if (isDir) {
+		if (isDir) { // FIXME
 			NSArray* dirContents = [[NSFileManager defaultManager] directoryContentsAtPath: filename];
 			
 			NSEnumerator* dirContentsEnum = [dirContents objectEnumerator];
@@ -340,8 +341,10 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 			ZoomStoryID* fileID = [[ZoomStoryID alloc] initWithZCodeFile: filename];
 			
 			if (fileID != nil) {
+				NSLog(@"Add: %@", filename);
 				[[ZoomStoryOrganiser sharedStoryOrganiser] addStory: filename
-														  withIdent: fileID];
+														  withIdent: fileID
+														   organise: [[ZoomPreferences globalPreferences] keepGamesOrganised]];
 				
 				[fileID release];
 			}
@@ -497,6 +500,7 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	needsUpdating = YES;
 	
 	[mainTableView reloadData];
+	[self configureFromMainTableSelection];
 }
 
 - (void)windowDidBecomeMain:(NSNotification *)aNotification {
@@ -1003,6 +1007,57 @@ int tableSorter(id a, id b, void* context) {
 
 	[self reloadTableData]; [mainTableView reloadData];
 	[[[NSApp delegate] userMetadata] writeToDefaultFile];		
+}
+
+// = Various menus =
+
+- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem {
+	SEL sel = [menuItem action];
+	
+	if (sel == @selector(delete:)) {
+		// Allow only if at least one game is selected
+		return [mainTableView numberOfSelectedRows] > 0;
+	} else if (sel == @selector(revealInFinder:)) {
+		return [mainTableView numberOfSelectedRows] == 1;
+	} else if (sel == @selector(deleteSavegame:)) {
+		// Allow only if at least one savegame is selected
+		NSLog(@"%@", [previewView selectedSaveGame]);
+		return [previewView selectedSaveGame] != nil;
+	}
+	
+	return YES;
+}
+
+- (IBAction) delete: (id) sender {
+	// Delete the selected games
+	ZoomStoryID* ident;
+	
+	NSEnumerator* rowEnum = [mainTableView selectedRowEnumerator];
+	NSNumber* row;
+	
+	while (row = [rowEnum nextObject]) {
+		ident = [storyList objectAtIndex: [row intValue]];
+
+		NSString* filename = [[ZoomStoryOrganiser sharedStoryOrganiser] filenameForIdent: ident];
+
+		[[ZoomStoryOrganiser sharedStoryOrganiser] removeStoryWithIdent: ident];
+	}
+	
+	// FIXME: move to trash?
+}
+
+- (IBAction) revealInFinder: (id) sender {
+	if ([self selectedFilename] != nil) {
+		NSString* dir = [[self selectedFilename] stringByDeletingLastPathComponent];
+		BOOL isDir;
+		
+		if ([[NSFileManager defaultManager] fileExistsAtPath: dir
+												 isDirectory: &isDir]) {
+			if (isDir) {
+				[[NSWorkspace sharedWorkspace] openFile: dir];
+			}
+		}
+	}
 }
 
 @end
