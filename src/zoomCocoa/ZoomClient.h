@@ -28,6 +28,8 @@
 	ZoomBlorbFile* resources;
 	
 	BOOL wasRestored;
+	
+	NSMutableArray* loadingErrors;
 }
 
 - (NSData*) gameData;
@@ -48,5 +50,9 @@
 // Resources
 - (void)           setResources: (ZoomBlorbFile*) resources;
 - (ZoomBlorbFile*) resources;
+
+// Errors that might have happened but we recovered from (for example, resources not found)
+- (void) addLoadingError: (NSString*) loadingError;
+- (NSArray*) loadingErrors;
 
 @end

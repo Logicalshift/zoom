@@ -16,9 +16,9 @@
   <editor should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="jOXCxfJLojv"/>
-    <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{58, 0}"/>
+    <selected-rows ids="b2oX2vP-L4o"/>
+    <selected-columns ids=":941128d340f2709e21a6e303"/>
+    <selected-characters range="{92, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -657,7 +657,7 @@
               <p/>
             </text>
           </values>
-          <note expanded="yes">
+          <note>
             <text>
               <p>
                 <run>
@@ -681,8 +681,14 @@
               <p/>
             </text>
           </values>
-          <note>
+          <note expanded="yes">
             <text>
+              <p>
+                <run>
+                  <lit>Is fine with DreamHold. Strongly suspect the status bar thing: not much I can do about this.</lit>
+                </run>
+              </p>
+              <p/>
               <p>
                 <run>
                   <lit>Depends on the game, I think. New games that like to fiddle with the status bar are particularly bad. Some seem fine (Dreamhold being an example of a game that runs fine).</lit>
@@ -710,7 +716,7 @@
               <p/>
             </text>
           </values>
-          <note>
+          <note expanded="yes">
             <text>
               <p>
                 <run>
@@ -746,34 +752,6 @@
             </text>
           </values>
         </item>
-        <item id="gVVi72GTiUQ">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Need to check behaviour when resources are deleted (ex: keep games organised and deleting a story) - do we remember the old location for too long when the resources cannot be found?</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
-        <item id="mqWj9eCE5o7">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Need to show an error message when a game has resources set but they cannot be found</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
         <item id="m9hL7srSzjO">
           <values>
             <text>
@@ -801,12 +779,12 @@
             </text>
           </note>
         </item>
-        <item id="jOXCxfJLojv" state="checked">
+        <item id="jJMBXeb7ZyL" state="checked">
           <values>
             <text>
               <p>
                 <run>
-                  <lit>Cursor keeps blinking in upper window when we switch focus</lit>
+                  <lit>Fixed bugs</lit>
                 </run>
               </p>
             </text>
@@ -814,433 +792,477 @@
               <p/>
             </text>
           </values>
-        </item>
-        <item id="nVRfjqe-Kzi" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Using up/down arrows in upper window doesn&apos;t work right</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
-        <item id="f899YDFVn7y" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Need a way to set the input style</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-          <note expanded="yes">
-            <text>
-              <p>
-                <run>
-                  <lit>(We have this for v6 windows, but not for the general case)</lit>
-                </run>
-              </p>
-            </text>
-          </note>
-        </item>
-        <item id="o6FZTTYE9jr" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Allow line input in the upper window</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
-        <item id="dg44Q4Z-9Kj" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>New replay system broken</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-          <note expanded="yes">
-            <text>
-              <p>
-                <run>
-                  <lit>Just hangs when we call end_of_file for some reason :-/ Something up with the result of get_file_read? Something corrupting machine.script_file?</lit>
-                </run>
-              </p>
-            </text>
-          </note>
-        </item>
-        <item id="khqGBjKR9DT" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>When &apos;Keep games organised&apos; is on, we default to the last save directory, not the save directory for the specific game</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-          <note>
-            <text>
-              <p>
-                <run>
-                  <lit>Store &apos;last save directory&apos; individually for specific games?</lit>
-                </run>
-              </p>
-            </text>
-          </note>
-        </item>
-        <item id="nzuEk-0MOzS" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Restoring a savegame by double-clicking displays [MORE] erroneously</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-          <note>
-            <text>
-              <p>
-                <run>
-                  <lit>You have to page through the entire game text, sigh</lit>
-                </run>
-              </p>
-            </text>
-          </note>
-        </item>
-        <item id="hu5EaI2XntN" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Double-clicking games broken again</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-          <note>
-            <text>
-              <p>
-                <run>
-                  <lit>Fixed the problem with the thing crashing: (weird bug with NSTextStorage there. If you unarchive an NSTextStorage, and then call setAttributedString: with the unarchived NSTextStorage on *another* NSTextStorage, then -beginEditing and -endEditing blow up).</lit>
-                </run>
-              </p>
-              <p/>
-              <p>
-                <run>
-                  <lit>However, we&apos;re getting an &apos;undefined opcode&apos; error when double-clicking a save file now, so something somewhere isn&apos;t setting things up right: either a bad PC or we&apos;re restoring the wrong file, and ZoomServer&apos;s error checking isn&apos;t working.</lit>
-                </run>
-              </p>
-              <p/>
-              <p>
-                <run>
-                  <lit>FIXED: this only happened on v8 files, because we weren&apos;t setting the address packtype before calling zmachine_runsome() - ie, not performing the setup tasks that are done by zmachine_run() by default.</lit>
-                </run>
-              </p>
-            </text>
-          </note>
-        </item>
-        <item id="akf-RrBwIZi" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>[MORE] prompts while replaying skeins</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
-        <item id="ne0BD-AlzHR" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Hitting return while editing the middle of a command splits the command</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
-        <item id="kh6jp8i6CnS" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Zoom window is faintly transparent</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-          <note>
-            <text>
-              <p>
-                <run>
-                  <lit>(Might be fixed)</lit>
-                </run>
-              </p>
-            </text>
-          </note>
-        </item>
-        <item id="ial0N9bnd1G" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Colour preference window not working properly?</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-          <note>
-            <text>
-              <p>
-                <run>
-                  <lit>Transparency was being inverted</lit>
-                </run>
-              </p>
-            </text>
-          </note>
-        </item>
-        <item id="g_vjtUhfcK1" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Doesn&apos;t appear to be loading games in the iFiction directory correctly when prefs are deleted (oops: it does, but only if keep games organised is turned on/off first)</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
-        <item id="gFqoEqjI-mB" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>0-line lower window bug</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-          <note>
-            <text>
-              <p>
-                <run>
-                  <lit>If the upper window is set to cover the whole screen, then the [MORE] prompt malfunctions</lit>
-                </run>
-              </p>
-              <p/>
-              <p>
-                <run>
-                  <lit>(ex: Blue Chairs)</lit>
-                </run>
-              </p>
-              <p/>
-              <p>
-                <run>
-                  <lit>Bug reported by Chris Klimas</lit>
-                </run>
-              </p>
-            </text>
-          </note>
-        </item>
-        <item id="ewZug3LIJpO" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Games appearing twice</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-          <note>
-            <text>
-              <p>
-                <run>
-                  <lit>Finally fixed? Thanks to Collin Pieper</lit>
-                </run>
-              </p>
-            </text>
-          </note>
-        </item>
-        <item id="dI3aSEDlDu3" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>@read_char needs to use ZSCII conversion</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
-        <item id="dN-YtvxCqII" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Confirmation window for closing games that are running</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
-        <item id="gQ-Z8LZBP-X" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>(Finished) (Finished) syndrome when you use &apos;Force restart&apos; or the skein on a finished game</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
-        <item id="dLfdx_zNEBY" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Double-clicking on a savegame file produces a blank screen for some reason now</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
-        <item id="kxrnzw7H6Eg" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>When no game is selected, choosing a genre or clicking in the greyed out teaser box causes a crash</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
-        <item id="cTv3eO13qs1" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>If we create more than one story object and change the extra metadata in one, then it won&apos;t be updated across all stories</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
-        <item id="lCRnH2kYnF9" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Upper window cursor causes a crash if you close the window while it is displaying (should really use the new standard cursor class)</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
-        <item id="nkL0EOcNQ6_" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Need to use a separate object for connecting ZoomView: can&apos;t use ZoomAppDelegate as we are now - this will fail when ZoomView is put in other tasks</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
-        <item id="bQj78BtAQc9" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Typing &apos;help&apos; in LDoDoom scrolls the text window back to the top (might be a bug with the way [More] is handled)</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
+          <children>
+            <item id="gVVi72GTiUQ" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Need to check behaviour when resources are deleted (ex: keep games organised and deleting a story) - do we remember the old location for too long when the resources cannot be found?</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="mqWj9eCE5o7" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Need to show an error message when a game has resources set but they cannot be found</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="jOXCxfJLojv" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Cursor keeps blinking in upper window when we switch focus</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="nVRfjqe-Kzi" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Using up/down arrows in upper window doesn&apos;t work right</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="f899YDFVn7y" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Need a way to set the input style</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <lit>(We have this for v6 windows, but not for the general case)</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="o6FZTTYE9jr" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Allow line input in the upper window</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="dg44Q4Z-9Kj" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>New replay system broken</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <lit>Just hangs when we call end_of_file for some reason :-/ Something up with the result of get_file_read? Something corrupting machine.script_file?</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="khqGBjKR9DT" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>When &apos;Keep games organised&apos; is on, we default to the last save directory, not the save directory for the specific game</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+              <note>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Store &apos;last save directory&apos; individually for specific games?</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="nzuEk-0MOzS" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Restoring a savegame by double-clicking displays [MORE] erroneously</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+              <note>
+                <text>
+                  <p>
+                    <run>
+                      <lit>You have to page through the entire game text, sigh</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="hu5EaI2XntN" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Double-clicking games broken again</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+              <note>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Fixed the problem with the thing crashing: (weird bug with NSTextStorage there. If you unarchive an NSTextStorage, and then call setAttributedString: with the unarchived NSTextStorage on *another* NSTextStorage, then -beginEditing and -endEditing blow up).</lit>
+                    </run>
+                  </p>
+                  <p/>
+                  <p>
+                    <run>
+                      <lit>However, we&apos;re getting an &apos;undefined opcode&apos; error when double-clicking a save file now, so something somewhere isn&apos;t setting things up right: either a bad PC or we&apos;re restoring the wrong file, and ZoomServer&apos;s error checking isn&apos;t working.</lit>
+                    </run>
+                  </p>
+                  <p/>
+                  <p>
+                    <run>
+                      <lit>FIXED: this only happened on v8 files, because we weren&apos;t setting the address packtype before calling zmachine_runsome() - ie, not performing the setup tasks that are done by zmachine_run() by default.</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="akf-RrBwIZi" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>[MORE] prompts while replaying skeins</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="ne0BD-AlzHR" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Hitting return while editing the middle of a command splits the command</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="kh6jp8i6CnS" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Zoom window is faintly transparent</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+              <note>
+                <text>
+                  <p>
+                    <run>
+                      <lit>(Might be fixed)</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="ial0N9bnd1G" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Colour preference window not working properly?</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+              <note>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Transparency was being inverted</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="g_vjtUhfcK1" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Doesn&apos;t appear to be loading games in the iFiction directory correctly when prefs are deleted (oops: it does, but only if keep games organised is turned on/off first)</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="gFqoEqjI-mB" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>0-line lower window bug</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+              <note>
+                <text>
+                  <p>
+                    <run>
+                      <lit>If the upper window is set to cover the whole screen, then the [MORE] prompt malfunctions</lit>
+                    </run>
+                  </p>
+                  <p/>
+                  <p>
+                    <run>
+                      <lit>(ex: Blue Chairs)</lit>
+                    </run>
+                  </p>
+                  <p/>
+                  <p>
+                    <run>
+                      <lit>Bug reported by Chris Klimas</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="ewZug3LIJpO" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Games appearing twice</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+              <note>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Finally fixed? Thanks to Collin Pieper</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="dI3aSEDlDu3" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>@read_char needs to use ZSCII conversion</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="dN-YtvxCqII" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Confirmation window for closing games that are running</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="gQ-Z8LZBP-X" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>(Finished) (Finished) syndrome when you use &apos;Force restart&apos; or the skein on a finished game</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="dLfdx_zNEBY" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Double-clicking on a savegame file produces a blank screen for some reason now</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="kxrnzw7H6Eg" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>When no game is selected, choosing a genre or clicking in the greyed out teaser box causes a crash</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="cTv3eO13qs1" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>If we create more than one story object and change the extra metadata in one, then it won&apos;t be updated across all stories</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="lCRnH2kYnF9" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Upper window cursor causes a crash if you close the window while it is displaying (should really use the new standard cursor class)</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="nkL0EOcNQ6_" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Need to use a separate object for connecting ZoomView: can&apos;t use ZoomAppDelegate as we are now - this will fail when ZoomView is put in other tasks</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="bQj78BtAQc9" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Typing &apos;help&apos; in LDoDoom scrolls the text window back to the top (might be a bug with the way [More] is handled)</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+          </children>
         </item>
       </children>
     </item>
@@ -1548,7 +1570,7 @@
             </text>
           </note>
         </item>
-        <item id="j9PhsYoN6mI">
+        <item id="j9PhsYoN6mI" state="checked">
           <values>
             <text>
               <p>
@@ -1646,7 +1668,7 @@
             </text>
           </values>
         </item>
-        <item id="jCsCwpJQjhv" expanded="yes" state="indeterminate">
+        <item id="jCsCwpJQjhv" state="checked">
           <values>
             <text>
               <p>
@@ -1688,42 +1710,42 @@
                 </text>
               </values>
             </item>
-            <item id="bw5G64a32ru">
-              <values>
-                <text>
-                  <p>
-                    <run>
-                      <lit>Sound support (?)</lit>
-                    </run>
-                  </p>
-                </text>
-                <text>
-                  <p/>
-                </text>
-              </values>
-              <note>
-                <text>
-                  <p>
-                    <run>
-                      <lit>BWUAHAHAHAHAAHA</lit>
-                    </run>
-                  </p>
-                  <p/>
-                  <p>
-                    <run>
-                      <lit>Oh, I kill me. </lit>
-                    </run>
-                  </p>
-                  <p/>
-                  <p>
-                    <run>
-                      <lit>Finding a decent sound library for both Linux and OS X would be a help here, I think. (Grr, AIFFs are hard to play under Linux, and mods are hard to play under OS X. It gets even harder when you have to keep the interpreter running as well. Then you have to be able to interrupt playback reliably...)</lit>
-                    </run>
-                  </p>
-                </text>
-              </note>
-            </item>
           </children>
+        </item>
+        <item id="bw5G64a32ru">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Sound support (?)</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+          <note>
+            <text>
+              <p>
+                <run>
+                  <lit>BWUAHAHAHAHAAHA</lit>
+                </run>
+              </p>
+              <p/>
+              <p>
+                <run>
+                  <lit>Oh, I kill me. </lit>
+                </run>
+              </p>
+              <p/>
+              <p>
+                <run>
+                  <lit>Finding a decent sound library for both Linux and OS X would be a help here, I think. (Grr, AIFFs are hard to play under Linux, and mods are hard to play under OS X. It gets even harder when you have to keep the interpreter running as well. Then you have to be able to interrupt playback reliably...)</lit>
+                </run>
+              </p>
+            </text>
+          </note>
         </item>
       </children>
     </item>

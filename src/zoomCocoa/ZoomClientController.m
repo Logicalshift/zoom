@@ -62,13 +62,46 @@
 	
 	// Add a skein view as an output receiver for the ZoomView
 	[zoomView addOutputReceiver: [[self document] skein]];
+	
+	shownOnce = NO;
+}
+
+- (void) showWindow: (id) sender {
+	[super showWindow: sender];
+	
+	if (!shownOnce) {
+		// Display any errors that happened while loading
+		if ([[[self document] loadingErrors] count] > 0) {
+			// Combine them all into one huge error
+			NSMutableString* errorText = [NSMutableString string];
+			
+			NSEnumerator* errorEnum = [[[self document] loadingErrors] objectEnumerator];
+			NSString* error;
+			BOOL newline = NO;
+			
+			while (error = [errorEnum nextObject]) {
+				if (newline) [errorText appendString: @"\n\n"];
+				[errorText appendString: error];
+				newline = YES;
+			}
+			
+			// Show an alert			
+			NSBeginAlertSheet(@"Problems were encountered while loading this game", @"Continue",nil, nil,
+							  [self window],
+							  nil, nil, nil, nil, errorText);
+		}
+	}
+	
+	shownOnce = YES;
 }
 
 - (IBAction) restartZMachine: (id) sender {
+	// Request from (eg) a menu item
 	[zoomView runNewServer: nil];
 }
 
 - (void) zMachineStarted: (id) sender {
+	// A new Z-Machine has started (ZoomView delegate method)
 	[[self window] setDocumentEdited: YES];
 	
 	finished = NO;
@@ -96,6 +129,7 @@
 }
 
 - (void) zMachineFinished: (id) sender {
+	// The z-machine has terminated (ZoomView delegate method)
 	[[self window] setDocumentEdited: NO];
 
 	finished = YES;
@@ -105,14 +139,12 @@
 }
 
 - (void) zoomViewIsNotResizable {
-	//[[self window] setContentMaxSize: [zoomView frame].size];
 	[[self window] setContentMinSize: [zoomView frame].size];
-	//[[self window] setShowsResizeIndicator: NO];
 }
 
 - (BOOL) useSavePackage {
 	// Using a save package allows us to restore games without needing to restart them first
-	// It also allows us to show a preview in the iFiction window
+	// It also allows us to show a preview in the iFiction window (ZoomView delegate method)
 	return YES;
 }
 

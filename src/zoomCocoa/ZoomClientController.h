@@ -16,6 +16,7 @@
 	BOOL isFullscreen;
 	BOOL finished;
 	BOOL closeConfirmed;
+	BOOL shownOnce;
 	
 	NSRect oldWindowFrame;
 }

@@ -479,8 +479,6 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 		if (value == nil || [value length] == 0) [self setRating: -1];
 		else [self setRating: atof([value cString])];
 	} else {
-		NSLog(@"Setting extra metadata: %@ = %@", key, value);
-		
 		[self loadExtraMetadata];
 		if (value == nil) {
 			[extraMetadata removeObjectForKey: key];

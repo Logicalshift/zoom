@@ -104,6 +104,7 @@
 - (BOOL)loadDataRepresentation:(NSData *)data
 						ofType:(NSString *)type {
 	if ([[type lowercaseString] isEqualToString: @"blorb resource file"]) {
+		// Blorb files already have their resources pre-packaged: get the Z-Code chunk out of this file
 		if (gameData) [gameData release];
 		gameData = nil;
 		
@@ -123,10 +124,12 @@
 		
 		[gameData retain];
 	} else {
+		// Just a plain z-code file: load the lot
 		if (gameData) [gameData release];
 		gameData = [data retain];
 	}
 	
+	// Discover the metadata for this game
 	storyId = [[ZoomStoryID alloc] initWithZCodeStory: gameData];
 
 	if (storyId == nil) {
@@ -139,6 +142,7 @@
 	story = [[[NSApp delegate] userMetadata] findStory: storyId];
 	
 	if (!story) {
+		// If there is no metadata, then make some up
 		story = [[NSApp delegate] findStory: storyId];
 		
 		if (story == nil) {
@@ -160,20 +164,32 @@
 			[story retain];
 		}
 	} else {
+		// If there is some metadata, then keep it around
 		[story retain];
 	}
 	
 	// Retrieve story resources (if available)
 	NSString* resourceFilename = [story objectForKey: @"ResourceFilename"];
 	if (resourceFilename != nil && [[NSFileManager defaultManager] fileExistsAtPath: resourceFilename]) {
-		NSLog(@"Loading resources from %@", resourceFilename);
-		
+		// Try to load the resources set for this game
 		ZoomBlorbFile* newResources = [[ZoomBlorbFile alloc] initWithContentsOfFile: resourceFilename];
 		
 		if (newResources) {
+			// Resources loaded OK: discard any resources we may have loaded earlier in findResourcesForFile
 			[resources release];
 			resources = newResources;
+		} else {
+			// Failed to load the resources that were set
+			[self addLoadingError: @"Failed to load resources: the resource file set for the story was found but is not a valid Blorb resource file"];
+			[story setObject: nil
+					  forKey: @"ResourceFilename"];
 		}
+	} else if (resourceFilename != nil) {
+		// Resource file not found
+		[self addLoadingError: resources==nil?@"Failed to load resources: the resources set for this story could not be found":
+			@"Failed to load resources that were set for this story, but found alternatives in directory with story file"];
+		[story setObject: nil
+				  forKey: @"ResourceFilename"];
 	}
 	
 	// Store/organise this story
@@ -442,6 +458,20 @@
 
 - (ZoomBlorbFile*) resources {
 	return resources;
+}
+
+// = Errors that might have happened but we recovered from =
+
+- (void) addLoadingError: (NSString*) loadingError {
+	// Using this mechanism allows us to report that we couldn't find any resources (for instance) to the
+	// controller, so it can display a proper error messages
+	if (!loadingErrors) loadingErrors = [[NSMutableArray alloc] init];
+	
+	[loadingErrors addObject: [[loadingError copy] autorelease]];
+}
+
+- (NSArray*) loadingErrors {
+	return loadingErrors;
 }
 
 @end
