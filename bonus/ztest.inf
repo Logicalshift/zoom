@@ -5,7 +5,7 @@
 ! Requires a v5 or v6 interpreter
 ! ====================================
 
-! Switches v6;
+Switches v6;
 
 Global standard_interpreter = 0;
 
@@ -39,11 +39,7 @@ Class Test
 	    new_line;
 	];
 
-#IFV5;
-! Lalalala
-#IFNOT;
 #include "v6tests";
-#ENDIF;
 
 #include "spec11";
 
