@@ -1814,7 +1814,7 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 		    zmachine_warning("Multiple Unicode characters received - only returning one to the game");
 		  }
 		
-		if (mod == 0)
+		if ((mod&(cmdKey|optionKey|controlKey|rightOptionKey|rightControlKey)) == 0)
 		  {
 		    switch (text[0])
 		      {
@@ -1861,7 +1861,7 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 	    else
 	      {
 		/* We're dealing with an input buffer */
-		if (mod == 0)
+		if ((mod&(cmdKey|optionKey|controlKey|rightOptionKey|rightControlKey)) == 0)
 		  {
 		    switch (text[0])
 		      {
@@ -1948,7 +1948,7 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 			break;
 			
 		      case kFunctionKeyCharCode:
-			/* FIXME: how do we deal with this? */
+			/* FIXME... */
 			break;
 			
 		      default:
@@ -1991,8 +1991,11 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 		      read_key = text[0] - '0' + 132; 
 		    if (text[0] == '0')
 		      read_key = 142;
-		    
-		    if (read_key != 0)
+
+		    if (read_key != -1 && terminating[read_key] == 0)
+		      read_key = -1;
+
+		    if (read_key != -1)
 		      {
 			text_buf = NULL;
 		      }
