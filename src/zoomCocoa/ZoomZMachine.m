@@ -187,7 +187,7 @@
 
     int x;
     for (x=0; x<3; x++) {
-        [windows[x] setProtocolForProxy: @protocol(ZWindow)];
+        [(NSDistantObject*)windows[x] setProtocolForProxy: @protocol(ZWindow)];
     }
 
     // Setup the display, etc
@@ -475,7 +475,7 @@ static NSString* zscii_to_string(ZByte* buf) {
 
 - (void) loadDebugSymbolsFrom: (NSString*) symbolFile
 			   withSourcePath: (NSString*) sourcePath {	
-	debug_load_symbols([symbolFile cString], [sourcePath cString]);
+	debug_load_symbols((char*)[symbolFile cString], (char*)[sourcePath cString]);
 
 	// Setup our debugger callback
 	debug_set_bp_handler(cocoa_debug_handler);

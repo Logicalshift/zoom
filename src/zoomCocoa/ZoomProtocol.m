@@ -305,6 +305,10 @@ NSString* ZStyleAttributeName = @"ZStyleAttribute";
     isFixed = fixed;
 }
 
+- (void) setForceFixed: (BOOL) forceFixed {
+	isForceFixed = forceFixed;
+}
+
 - (void) setBold: (BOOL) bold {
     isBold = bold;
 }
@@ -342,7 +346,11 @@ NSString* ZStyleAttributeName = @"ZStyleAttribute";
 }
 
 - (BOOL) fixed {
-    return isFixed;
+    return isFixed || isForceFixed;
+}
+
+- (BOOL) forceFixed {
+	return isForceFixed;
 }
 
 - (BOOL) bold {
@@ -366,11 +374,12 @@ NSString* ZStyleAttributeName = @"ZStyleAttribute";
     [style setForegroundTrue: foregroundTrue];
     [style setBackgroundTrue: backgroundTrue];
 
-    [style setReversed:  isReversed];
-    [style setFixed:     isFixed];
-    [style setBold:      isBold];
-    [style setUnderline: isUnderline];
-    [style setSymbolic:  isSymbolic];
+    [style setReversed:   isReversed];
+    [style setFixed:      isFixed];
+    [style setBold:       isBold];
+    [style setUnderline:  isUnderline];
+    [style setSymbolic:   isSymbolic];
+	[style setForceFixed: isForceFixed];
 
     return style;
 }
@@ -384,7 +393,7 @@ NSString* ZStyleAttributeName = @"ZStyleAttribute";
 }
 
 - (void) encodeWithCoder: (NSCoder*) coder {
-    int flags = (isBold?1:0) | (isUnderline?2:0) | (isFixed?4:0) | (isSymbolic?8:0) | (isReversed?16:0);
+    int flags = (isBold?1:0) | (isUnderline?2:0) | (isFixed?4:0) | (isSymbolic?8:0) | (isReversed?16:0) | (isForceFixed?32:0);
     
     [coder encodeValueOfObjCType: @encode(int) at: &flags];
 
@@ -405,6 +414,7 @@ NSString* ZStyleAttributeName = @"ZStyleAttribute";
         isFixed = (flags&4)?YES:NO;
         isSymbolic = (flags&8)?YES:NO;
         isReversed = (flags&16)?YES:NO;
+		isForceFixed = (flags&32)?YES:NO;
 
         foregroundTrue   = [[coder decodeObject] retain];
         backgroundTrue   = [[coder decodeObject] retain];

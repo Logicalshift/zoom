@@ -25,6 +25,7 @@
 
 // = Display state =
 NSAutoreleasePool* displayPool = nil;
+static BOOL zDisplayForceFixed[8] = { NO, NO, NO, NO, NO, NO, NO, NO };
 static int is_v6 = 0;
 
 int zDisplayCurrentWindow = 0;
@@ -536,6 +537,8 @@ void display_desanitise(void) {
     NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
 }
 
+// = Display styling =
+
 void display_is_v6(void) { 
 	NOTE(@"display_is_v6");
 	
@@ -543,9 +546,17 @@ void display_is_v6(void) {
 }
 
 int display_set_font(int font) {
-	NOTE(@"display_set_font");
-    NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
-    return 0;
+	switch (font)
+    {
+		case -1:
+			display_set_style(-16);
+			break;
+			
+		default:
+			break;
+    }
+	
+	return 0;
 }
 
 int display_set_style(int style) {
@@ -589,6 +600,8 @@ int display_set_style(int style) {
     if (style&4)  [newStyle setUnderline: flag];
     if (style&8)  [newStyle setFixed: flag];
     if (style&16) [newStyle setSymbolic: flag];
+	
+	[newStyle setForceFixed: zDisplayForceFixed[zDisplayCurrentWindow]];
 
     // Set as the current style
     zDisplayCurrentStyle = newStyle;
@@ -664,6 +677,13 @@ void display_set_window(int window) {
 #endif
 
     zDisplayCurrentWindow = window;
+	
+	// Set the 'force fixed' attribute appropriately
+	ZStyle* newStyle = [zDisplayCurrentStyle copy];
+	[newStyle setForceFixed: zDisplayForceFixed[zDisplayCurrentWindow]];
+
+	[zDisplayCurrentStyle autorelease];
+	zDisplayCurrentStyle = newStyle;
 }
 
 int  display_get_window(void) {
@@ -713,8 +733,17 @@ int display_get_cur_y(void) {
 }
 
 void display_force_fixed (int window, int val) {
+	if (window >= 0 && window <= 8) 
+		zDisplayForceFixed[window] = (val!=0);
+	
 	NOTE(@"display_force_fixed");
-    NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
+}
+
+BOOL zdisplay_is_fixed(int window) {
+	if (window >= 0 && window <= 8) 
+		return zDisplayForceFixed[window];
+	else
+		return NO;
 }
 
 void display_terminating (unsigned char* table) {
@@ -805,8 +834,10 @@ void display_update(void) {
 }
 
 void display_beep(void) {
+	[mainMachine flushBuffers];
+	[[mainMachine display] beep];
+	
 	NOTE(@"display_beep");
-    NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
 }
 
 // = Getting files =

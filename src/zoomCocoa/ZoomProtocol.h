@@ -258,6 +258,9 @@ enum ZValueTypeMasks {
 - (BOOL)   containsImageWithNumber: (int) number;
 - (NSSize) sizeOfImageWithNumber: (int) number;
 
+// Sound (such as Zoom's support is at the moment)
+- (void)  beep;
+
 @end
 
 // Some useful standard classes
@@ -321,6 +324,8 @@ extern NSString* ZStyleAttributeName;
     BOOL isBold;
     BOOL isUnderline;
     BOOL isSymbolic;
+	
+	BOOL isForceFixed;
 }
 
 - (void) setForegroundColour: (int) zColour;
@@ -328,6 +333,7 @@ extern NSString* ZStyleAttributeName;
 - (void) setForegroundTrue:   (NSColor*) colour;
 - (void) setBackgroundTrue:   (NSColor*) colour;
 - (void) setFixed:            (BOOL) fixed;
+- (void) setForceFixed:		  (BOOL) forceFixed;
 - (void) setBold:             (BOOL) bold;
 - (void) setUnderline:        (BOOL) underline;
 - (void) setSymbolic:         (BOOL) symbolic;
@@ -339,6 +345,7 @@ extern NSString* ZStyleAttributeName;
 - (NSColor*) backgroundTrue;
 - (BOOL)     reversed;
 - (BOOL)     fixed;
+- (BOOL)	 forceFixed;
 - (BOOL)     bold;
 - (BOOL)     underline;
 - (BOOL)     symbolic;

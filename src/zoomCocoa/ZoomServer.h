@@ -22,3 +22,5 @@ extern ZoomZMachine*      mainMachine;
 // Utility functions
 extern ZFile* open_file_from_object(NSObject<ZFile>* file);
 extern ZDWord get_size_of_file(ZFile* file);
+
+extern BOOL zdisplay_is_fixed(int window);

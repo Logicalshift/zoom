@@ -236,6 +236,8 @@ extern NSString* ZoomStyleAttributeName;
 
 - (void) zoomWaitingForInput;
 
+- (void) beep;
+
 @end
 
 // ZoomView input/output receivers

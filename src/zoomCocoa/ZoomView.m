@@ -306,6 +306,15 @@ static void finalizeViews(void) {
 
 // = ZDisplay functions =
 
+- (void) beep {
+	// All the sound we support at the moment
+	if (delegate && [delegate respondsToSelector: @selector(beep)]) {
+		[delegate beep];
+	} else {
+		NSBeep();
+	}
+}
+
 - (NSObject<ZLowerWindow>*) createLowerWindow {
 	// Can only have one lower window
 	if ([lowerWindows count] > 0) return [lowerWindows objectAtIndex: 0];
