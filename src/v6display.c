@@ -482,6 +482,11 @@ int  v6_get_window(void)
 
 void v6_set_window(int window)
 {
+  if (window < 0 || window >= 8)
+    {
+      zmachine_fatal("Attempt to use nonexistant window %i", window);
+    }
+
 #ifdef DEBUG
   printf_debug("V6: window set to %i\n", window);
 #endif
@@ -517,8 +522,8 @@ void v6_define_window(int window,
 
   if (win[window].cury+win[window].line_height > win[window].ypos + win[window].height)
     {
-      win[window].line_height = 0;
-      win[window].cury = win[window].ypos + win[window].height;
+      win[window].line_height = display_get_font_height(win[window].style);
+      win[window].cury = win[window].ypos + win[window].height - win[window].line_height;
       
       if (!ACTWIN.no_scroll)
 	scroll_to_height(display_get_font_height(ACTWIN.style), 0);
@@ -571,6 +576,10 @@ void v6_set_newline_function(int (*func)(const int * remaining,
 
 void v6_scroll_window(int window, int amount)
 {
+#ifdef DEBUG
+  printf_debug("Scrolling window %i by %i\n", window, amount);
+#endif
+
   if (amount > 0)
     {
       display_scroll_region(win[window].xpos, win[window].ypos+amount,
@@ -584,18 +593,18 @@ void v6_scroll_window(int window, int amount)
 			    win[window].ypos+win[window].height-amount,
 			    win[window].width, amount);
 	}
-    }
+   }
   else
     {
       display_scroll_region(win[window].xpos, win[window].ypos,
-			    win[window].width, win[window].height-amount,
-			    0, amount);
+			    win[window].width, win[window].height+amount,
+			    0, -amount);
 
       if (win[window].back >= 0)
 	{
 	  display_pixmap_cols(win[window].back, 0);
 	  display_plot_rect(win[window].xpos, win[window].ypos,
-			    win[window].width, amount);
+			    win[window].width, -amount);
 	}
     }
 }

@@ -2944,7 +2944,7 @@ float display_get_font_height(int style)
 
   ft = style_font[(style>>1)&15];
 
-  return xfont_get_height(font[ft]);
+  return xfont_get_height(font[ft])+0.5;
 }
 
 float display_get_font_ascent(int style)

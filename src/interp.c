@@ -52,6 +52,8 @@
 #endif
 
 #ifdef SUPPORT_VERSION_6
+#define WinNum(x) ((x)==-3?v6_get_window():(x))
+
 #define StyleSet(x, y) switch (argblock.arg[2]) { case 0: x = (y)!=0; \
    break; case 1: if ((y)!=0) x=1; break; case 2: if ((y)==0) x=0; break; \
    case 3: x ^= (y)!=0; }
@@ -1294,7 +1296,6 @@ static void newline_return(ZDWord*    pc,
 			   ZArgblock* args,
 			   int        st)
 {
-  printf_debug("-- Newline return\n");
   if (pending_text != NULL)
     {
       int* oldtext;
@@ -1331,8 +1332,6 @@ static int newline_function(const int* remaining,
 	  pending_len  = rem_len;
 	  memcpy(pending_text, remaining, rem_len*sizeof(int));
 	  pending_text[rem_len] = 0;
-
-	  printf_debug("Calling newline_return\n");
 
 	  newframe = call_routine(&machine.zpc, &machine.stack,
 				  UnpackR(windows[win].newline_routine));

@@ -2417,8 +2417,8 @@ OPCODE "set_colour"    2OP:0x1b REALLYVAR     VERSION 6
   if (argblock.n_args > 2)
     {
       win = v6_get_window();
-      v6_set_window(argblock.arg[2]);
-      working = argblock.arg[2];
+      v6_set_window(WinNum(argblock.arg[2]));
+      working = WinNum(argblock.arg[2]);
     }
   
   v6_set_colours(convert_colour(arg1),
@@ -2462,10 +2462,7 @@ OPCODE "erase_window"   VAR:0x0d ARGS:1               VERSION 6
   if (argblock.n_args == 0)
     argblock.arg[0] = -3;
 
-  if (argblock.arg[0] == -3)
-    ewin = old_win;  
-  else
-    ewin = argblock.arg[0];
+  ewin = WinNum(argblock.arg[0]);
   
   if (argblock.arg[0] == -1)
     {
@@ -2514,7 +2511,7 @@ OPCODE "set_window"    VAR:0x0b ARGS:1        VERSION 6
 %{
   stream_flush_buffer();
 
-  v6_set_window(argblock.arg[0]);
+  v6_set_window(WinNum(argblock.arg[0]));
 %}
 
 OPCODE "set_cursor"    VAR:0x0f ARGS:3        VERSION 6
@@ -2527,7 +2524,7 @@ OPCODE "set_cursor"    VAR:0x0f ARGS:3        VERSION 6
     argblock.arg[2] = v6_get_window();
 
   owin = v6_get_window();
-  v6_set_window(argblock.arg[2]);
+  v6_set_window(WinNum(argblock.arg[2]));
   v6_set_cursor(argblock.arg[1],
 		argblock.arg[0]);
   v6_set_window(owin);
@@ -2628,6 +2625,16 @@ OPCODE "picture_data"  EXT:0x06 BRANCH        VERSION 6
   int width, height;
   BlorbImage* img;
 
+  if (argblock.arg[0] == 0)
+    {
+      if (machine.blorb != NULL)
+        result = 1;
+      else
+        result = 0;
+
+      goto draw_pict_branch;
+    }
+
   d = Address((ZUWord)argblock.arg[1]);
 
   if (machine.blorb != NULL)
@@ -2661,6 +2668,7 @@ OPCODE "picture_data"  EXT:0x06 BRANCH        VERSION 6
       result = 0;
     }
 
+ draw_pict_branch:
   dobranch;
 %}
 
@@ -2678,7 +2686,7 @@ OPCODE "set_margins"   EXT:0x08 ARGS:3        VERSION 6
   if (argblock.n_args < 3)
     argblock.arg[2] = v6_get_window();
   win = v6_get_window();
-  v6_set_window(argblock.arg[2]);
+  v6_set_window(WinNum(argblock.arg[2]));
 
 #ifdef DEBUG
   printf_debug("Margins set to %i, %i\n", argblock.arg[0], argblock.arg[1]);
@@ -2706,7 +2714,7 @@ OPCODE "move_window"   EXT:0x10               VERSION 6
   stream_flush_buffer();
 
   win = v6_get_window();
-  v6_set_window(argblock.arg[0]);
+  v6_set_window(WinNum(argblock.arg[0]));
 
   xmove = argblock.arg[2]-windows[argblock.arg[0]].x;
   ymove = argblock.arg[1]-windows[argblock.arg[0]].y;
@@ -2734,10 +2742,10 @@ OPCODE "window_size"   EXT:0x11               VERSION 6
 %{
   stream_flush_buffer();
 
-  windows[argblock.arg[0]].xsize = argblock.arg[2];
-  windows[argblock.arg[0]].ysize = argblock.arg[1];
-  windows[argblock.arg[0]].leftmar = 0;
-  windows[argblock.arg[0]].rightmar = 0;
+  windows[WinNum(argblock.arg[0])].xsize = argblock.arg[2];
+  windows[WinNum(argblock.arg[0])].ysize = argblock.arg[1];
+  windows[WinNum(argblock.arg[0])].leftmar = 0;
+  windows[WinNum(argblock.arg[0])].rightmar = 0;
 
 #ifdef DEBUG
   printf_debug("Window %i size is now %i, %i\n",	
@@ -2758,9 +2766,7 @@ OPCODE "window_style"  EXT:0x12               VERSION 6
 %{
   int win, owin;
 
-  win = argblock.arg[0];
-  if (win == -3)
-    win = v6_get_window();
+  win = WinNum(argblock.arg[0]);
 
   stream_flush_buffer();
 
@@ -2783,7 +2789,7 @@ OPCODE "get_wind_prop" EXT:0x13        STORE  VERSION 6
   argblock.arg[0] = v6_window(argblock.arg[0]);
   if (argblock.arg[0] < 0)
     zmachine_fatal("Bad window for get_wind_prop: %i", argblock.arg[0]);
-  v6_set_window(argblock.arg[0]);
+  v6_set_window(WinNum(argblock.arg[0]));
 
   switch(argblock.arg[1])
     {
@@ -2822,6 +2828,7 @@ OPCODE "get_wind_prop" EXT:0x13        STORE  VERSION 6
       break;
     case 11:
       store(stack, st, windows[argblock.arg[0]].colour);
+	printf("Foop\n");
       break;
     case 12:
       store(stack, st, windows[argblock.arg[0]].font_num);
@@ -2850,10 +2857,14 @@ OPCODE "get_wind_prop" EXT:0x13        STORE  VERSION 6
 
 OPCODE "scroll_window" EXT:0x14               VERSION 6
 %{
-  if (argblock.arg[0] == v6_get_window())
+  int win;
+
+  win = WinNum(argblock.arg[0]);
+
+  if (win == v6_get_window())
     stream_flush_buffer();
 
-  v6_scroll_window(argblock.arg[0], argblock.arg[1]);
+  v6_scroll_window(win, argblock.arg[1]);
 %}
 
 OPCODE "pop_stack"     EXT:0x15               VERSION 6
@@ -2901,7 +2912,7 @@ OPCODE "put_wind_prop" EXT:0x19               VERSION 6
   stream_flush_buffer();
 
   win = v6_get_window();
-  v6_set_window(argblock.arg[0]);
+  v6_set_window(WinNum(argblock.arg[0]));
   switch(argblock.arg[1])
     {
     case 0:

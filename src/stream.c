@@ -209,7 +209,7 @@ static void prints(const int* const s)
 	  for (x=0; x<len; x++)
 	    text[x] = mem[x+2];
 	  
-	  width = v6_measure_text(text, len);
+	  width = v6_measure_text(text, len)+1;
 
 	  machine.memory[0x30] = width>>8;
 	  machine.memory[0x31] = width;
