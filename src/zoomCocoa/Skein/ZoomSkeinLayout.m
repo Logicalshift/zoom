@@ -24,15 +24,90 @@ static const float itemPadding = 56.0;
 
 static NSDictionary* itemTextAttributes;
 
+// Images
+static NSImage* unplayed, *selected, *active, *unchanged, *changed;
+
 @implementation ZoomSkeinLayout
 
 // = Factory methods =
 
++ (NSImage*) imageNamed: (NSString*) name {
+	NSImage* img = [NSImage imageNamed: name];
+	
+	if (img == nil) {
+		// Try to load from the framework instead
+		NSBundle* ourBundle = [NSBundle bundleForClass: [self class]];
+		NSString* filename = [ourBundle pathForResource: name
+												 ofType: @"png"];
+		
+		if (filename) {
+			img = [[[NSImage alloc] initWithContentsOfFile: filename] autorelease];
+		}
+	}
+	
+	[img setFlipped: YES];
+	return img;
+}
+
 + (void) initialize {
+	unplayed   = [[[self class] imageNamed: @"Skein-unplayed"] retain];
+	selected   = [[[self class] imageNamed: @"Skein-selected"] retain];
+	active     = [[[self class] imageNamed: @"Skein-active"] retain];
+	unchanged  = [[[self class] imageNamed: @"Skein-unchanged"] retain];
+	changed    = [[[self class] imageNamed: @"Skein-changed"] retain];
+	
 	itemTextAttributes = [[NSDictionary dictionaryWithObjectsAndKeys:
 		[NSFont systemFontOfSize: 10], NSFontAttributeName,
 		[NSColor blackColor], NSForegroundColorAttributeName,
 		nil] retain];
+}
+
++ (void) drawImage: (NSImage*) img
+		   atPoint: (NSPoint) pos
+		 withWidth: (float) width {
+	pos.x = floorf(pos.x);
+	pos.y = floorf(pos.y);
+	width = floorf(width);
+	
+	// Images must be 90x30
+	if (width == 90.0) {
+		[img drawAtPoint: pos
+				fromRect: NSMakeRect(0,0,90,30)
+			   operation: NSCompositeSourceOver
+				fraction: 1.0];
+		
+		return;
+	}
+	
+	if (width <= 0.0) width = 1.0;
+	
+	// Draw the middle bit
+	NSRect bitToDraw = NSMakeRect(pos.x, pos.y, 50, 30);
+	NSRect bitToDrawFrom = NSMakeRect(20, 0, 50, 30);
+	float p;
+	
+	for (p=width; p>=0.0; p-=50.0) {
+		if (p < 50.0) {
+			bitToDrawFrom.size.width = bitToDraw.size.width = p;
+		}
+		
+		bitToDraw.origin.x = pos.x + p - bitToDraw.size.width;
+		
+		[img drawInRect: bitToDraw
+			   fromRect: bitToDrawFrom
+			  operation: NSCompositeSourceOver
+			   fraction: 1.0];	
+	}
+	
+	// Draw the edge bits
+	[img drawInRect: NSMakeRect(pos.x-20, pos.y, 20, 30)
+		   fromRect: NSMakeRect(0,0,20,30)
+		  operation: NSCompositeSourceOver
+		   fraction: 1.0];	
+	[img drawInRect: NSMakeRect(pos.x+width, pos.y, 20, 30)
+		   fromRect: NSMakeRect(70,0,20,30)
+		  operation: NSCompositeSourceOver
+		   fraction: 1.0];	
 }
 
 + (NSMutableDictionary*) item: (ZoomSkeinItem*) item
@@ -423,6 +498,79 @@ static NSDictionary* itemTextAttributes;
 		return res;
 	} else {
 		return NSMakeSize(0,0);
+	}
+}
+
+// = Drawing the layout =
+
+- (void) drawInRect: (NSRect) rect {
+	// Fill in the background
+	[[NSColor whiteColor] set];
+	NSRectFill(rect);
+	
+	// Actually draw the skein
+	int startLevel = floorf(NSMinY(rect) / itemHeight)-1;
+	int endLevel = ceilf(NSMaxY(rect) / itemHeight);
+	int level;
+	
+	for (level = startLevel; level < endLevel; level++) {
+		if (level < 0) continue;
+		if (level >= [self levels]) break;
+		
+		// Iterate through the items on this level...
+		NSEnumerator* levelEnum = [[self dataForLevel: level] objectEnumerator];
+		NSDictionary* item;
+		
+		float ypos = ((float)level)*itemHeight + (itemHeight / 2.0);
+		
+		while (item = [levelEnum nextObject]) {
+			ZoomSkeinItem* skeinItem = [self itemForData: item];
+			float xpos = [self xposForData: item];
+			NSSize size = [[skeinItem command] sizeWithAttributes: itemTextAttributes];
+			
+			// Draw the background
+			NSImage* background = unchanged;
+			float bgWidth = size.width;
+			//if (bgWidth < 90.0) bgWidth = 90.0;
+			
+			if (![skeinItem played]) background = unplayed;
+			if ([skeinItem changed]) background = changed;
+			if (skeinItem == activeItem) background = active;
+			if ([skeinItem parent] == activeItem) background = active;
+			if (skeinItem == [self selectedItem]) background = selected;
+			
+			[[self class] drawImage: background
+							atPoint: NSMakePoint(xpos - bgWidth/2.0, ypos-8 + (background==selected?2.0:0.0))
+						  withWidth: bgWidth];
+			
+			// Draw the item
+			[[skeinItem command] drawAtPoint: NSMakePoint(xpos - (size.width/2), ypos + (background==selected?2.0:0.0))
+							  withAttributes: itemTextAttributes];
+			
+			// Draw links to the children
+			[[NSColor blackColor] set];
+			NSEnumerator* childEnumerator = [[self childrenForData: item] objectEnumerator];
+			
+			float startYPos = ypos + 10.0 + size.height;
+			float endYPos = ypos - 10.0 + itemHeight;
+			
+			NSColor* tempChildLink = [NSColor blueColor];
+			NSColor* permChildLink = [NSColor blackColor];
+			
+			NSDictionary* child;
+			while (child = [childEnumerator nextObject]) {
+				float childXPos = [self xposForData: child];
+				
+				if ([[self itemForData: child] temporary]) {
+					[tempChildLink set];
+				} else {
+					[permChildLink set];
+				}
+				
+				[NSBezierPath strokeLineFromPoint: NSMakePoint(xpos, startYPos)
+										  toPoint: NSMakePoint(childXPos, endYPos)];
+			}
+		}
 	}
 }
 

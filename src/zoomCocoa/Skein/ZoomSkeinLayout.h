@@ -59,7 +59,7 @@
 
 - (float)    xposForData:      (NSDictionary*) item;
 - (int)      levelForData:     (NSDictionary*) item;
-- (float)    widthForData:     (NSDictionary*) item;
+- (float)    widthForData:     (NSDictionary*) item; // === THESE FUNCTIONS ARE DEPRECATED ===
 - (float)    fullWidthForData: (NSDictionary*) item;
 - (NSArray*) childrenForData:  (NSDictionary*) item;
 
@@ -69,5 +69,8 @@
 - (NSRect) activeAreaForItem: (NSDictionary*) itemData;
 - (NSRect) textAreaForItem: (NSDictionary*) itemData;
 - (ZoomSkeinItem*) itemAtPoint: (NSPoint) point;
+
+// Drawing
+- (void) drawInRect: (NSRect) rect;
 
 @end

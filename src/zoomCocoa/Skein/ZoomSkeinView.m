@@ -16,7 +16,6 @@ static const float itemHeight = 96.0;
 static NSDictionary* itemTextAttributes;
 
 // Images
-static NSImage* unplayed, *selected, *active, *unchanged, *changed;
 static NSImage* add, *delete, *locked, *unlocked, *annotate, *transcript;
 
 // Buttons
@@ -89,68 +88,14 @@ enum ZSVbutton
 	return img;
 }
 
-+ (void) drawImage: (NSImage*) img
-		   atPoint: (NSPoint) pos
-		 withWidth: (float) width {
-	pos.x = floorf(pos.x);
-	pos.y = floorf(pos.y);
-	width = floorf(width);
-	
-	// Images must be 90x30
-	if (width == 90.0) {
-		[img drawAtPoint: pos
-				fromRect: NSMakeRect(0,0,90,30)
-			   operation: NSCompositeSourceOver
-				fraction: 1.0];
-		
-		return;
-	}
-	
-	if (width <= 0.0) width = 1.0;
-	
-	// Draw the middle bit
-	NSRect bitToDraw = NSMakeRect(pos.x, pos.y, 50, 30);
-	NSRect bitToDrawFrom = NSMakeRect(20, 0, 50, 30);
-	float p;
-	
-	for (p=width; p>=0.0; p-=50.0) {
-		if (p < 50.0) {
-			bitToDrawFrom.size.width = bitToDraw.size.width = p;
-		}
-		
-		bitToDraw.origin.x = pos.x + p - bitToDraw.size.width;
-
-		[img drawInRect: bitToDraw
-			   fromRect: bitToDrawFrom
-			  operation: NSCompositeSourceOver
-			   fraction: 1.0];	
-	}
-	
-	// Draw the edge bits
-	[img drawInRect: NSMakeRect(pos.x-20, pos.y, 20, 30)
-		   fromRect: NSMakeRect(0,0,20,30)
-		  operation: NSCompositeSourceOver
-		   fraction: 1.0];	
-	[img drawInRect: NSMakeRect(pos.x+width, pos.y, 20, 30)
-		   fromRect: NSMakeRect(70,0,20,30)
-		  operation: NSCompositeSourceOver
-		   fraction: 1.0];	
-}
-
 + (void) initialize {
-	unplayed   = [[[self class] imageNamed: @"Skein-unplayed"] retain];
-	selected   = [[[self class] imageNamed: @"Skein-selected"] retain];
-	active     = [[[self class] imageNamed: @"Skein-active"] retain];
-	unchanged  = [[[self class] imageNamed: @"Skein-unchanged"] retain];
-	changed    = [[[self class] imageNamed: @"Skein-changed"] retain];
-	
 	add        = [[[self class] imageNamed: @"SkeinAdd"] retain];
 	delete     = [[[self class] imageNamed: @"SkeinDelete"] retain];
 	locked     = [[[self class] imageNamed: @"SkeinLocked"] retain];
 	unlocked   = [[[self class] imageNamed: @"SkeinUnlocked"] retain];
 	annotate   = [[[self class] imageNamed: @"SkeinAnnotate"] retain];
 	transcript = [[[self class] imageNamed: @"SkeinTranscript"] retain];
-	
+
 	itemTextAttributes = [[NSDictionary dictionaryWithObjectsAndKeys:
 		[NSFont systemFontOfSize: 10], NSFontAttributeName,
 		[NSColor blackColor], NSForegroundColorAttributeName,
@@ -245,124 +190,62 @@ enum ZSVbutton
 	}
 	lastVisibleRect = visRect;
 	
-	// Fill in the background
-	[[NSColor whiteColor] set];
-	NSRectFill(rect);
+	[layout setActiveItem: [skein activeItem]];
+	[layout drawInRect: rect];
 	
-	// Actually draw the skein
-	int startLevel = floorf(NSMinY(rect) / itemHeight)-1;
-	int endLevel = ceilf(NSMaxY(rect) / itemHeight);
-	int level;
+	// Draw the control icons for the tracked item
+	if (trackedItem != nil) {
+		float xpos = [layout xposForData: trackedItem];
+		float ypos = ((float)[layout levelForData: trackedItem])*itemHeight + (itemHeight / 2.0);
+		float bgWidth = [layout widthForData: trackedItem];
 		
-	for (level = startLevel; level < endLevel; level++) {
-		if (level < 0) continue;
-		if (level >= [layout levels]) break;
+		// Layout is:
+		//    A T        x +
+		//    ( ** ITEM ** )
+		//                 L
+		// 
+		// Where A = Annotate, T = transcript, x = delete, + = add, L = lock
+		float w = bgWidth;
+		if (w < 32.0) w = 32.0;
+		w += 40.0;
+		float left = xpos - w/2.0;
+		float right = xpos + w/2.0;
 		
-		// Iterate through the items on this level...
-		NSEnumerator* levelEnum = [[layout dataForLevel: level] objectEnumerator];
-		NSDictionary* item;
+		ZoomSkeinItem* itemParent = [[layout itemForData: trackedItem] parent];
 		
-		float ypos = ((float)level)*itemHeight + (itemHeight / 2.0);
+		// Correct for shadow
+		right -= 20.0;
+		left  += 2.0;
 		
-		while (item = [levelEnum nextObject]) {
-			ZoomSkeinItem* skeinItem = [layout itemForData: item];
-			float xpos = [layout xposForData: item];
-			NSSize size = [[skeinItem command] sizeWithAttributes: itemTextAttributes];
+		// Draw the buttons
+		NSRect imgRect;
+		imgRect.origin = NSMakePoint(0,0);
+		imgRect.size   = [add size];
+		
+		[[self class] drawButton: annotate
+						 atPoint: NSMakePoint(left, ypos - 18)
+					 highlighted: activeButton == ZSVannotateButton];
+		[[self class] drawButton: transcript
+						 atPoint: NSMakePoint(left + 14, ypos - 18)
+					 highlighted: activeButton==ZSVtranscriptButton];
+		
+		[[self class] drawButton: add
+						 atPoint: NSMakePoint(right, ypos - 18)
+					 highlighted: activeButton==ZSVaddButton];
+		if (itemParent != nil) {
+			// Can only delete items other than the parent 'start' item
+			[[self class] drawButton: delete
+							 atPoint: NSMakePoint(right - 14, ypos - 18)
+						 highlighted: activeButton==ZSVdeleteButton];
+		}
+		
+		if (itemParent != nil) {
+			// Can't unlock the 'start' item
+			NSImage* lock = [[layout itemForData: trackedItem] temporary]?unlocked:locked;
 			
-			// Draw the background
-			NSImage* background = unchanged;
-			float bgWidth = size.width;
-			//if (bgWidth < 90.0) bgWidth = 90.0;
-			
-			if (![skeinItem played]) background = unplayed;
-			if ([skeinItem changed]) background = changed;
-			if (skeinItem == [skein activeItem]) background = active;
-			if ([skeinItem parent] == [skein activeItem]) background = active;
-			if (skeinItem == [layout selectedItem]) background = selected;
-			
-			[ZoomSkeinView drawImage: background
-							 atPoint: NSMakePoint(xpos - bgWidth/2.0, ypos-8 + (background==selected?2.0:0.0))
-						   withWidth: bgWidth];
-
-			// Draw the item
-			[[skeinItem command] drawAtPoint: NSMakePoint(xpos - (size.width/2), ypos + (background==selected?2.0:0.0))
-							  withAttributes: itemTextAttributes];
-			
-			// Draw links to the children
-			[[NSColor blackColor] set];
-			NSEnumerator* childEnumerator = [[layout childrenForData: item] objectEnumerator];
-			
-			float startYPos = ypos + 10.0 + size.height;
-			float endYPos = ypos - 10.0 + itemHeight;
-			
-			NSColor* tempChildLink = [NSColor blueColor];
-			NSColor* permChildLink = [NSColor blackColor];
-			
-			NSDictionary* child;
-			while (child = [childEnumerator nextObject]) {
-				float childXPos = [layout xposForData: child];
-				
-				if ([[layout itemForData: child] temporary]) {
-					[tempChildLink set];
-				} else {
-					[permChildLink set];
-				}
-				
-				[NSBezierPath strokeLineFromPoint: NSMakePoint(xpos, startYPos)
-										  toPoint: NSMakePoint(childXPos, endYPos)];
-			}
-			
-			// Draw the control icons (if this is the item that the mouse is over)
-			if (item == trackedItem) {
-				// Layout is:
-				//    A T        x +
-				//    ( ** ITEM ** )
-				//                 L
-				// 
-				// Where A = Annotate, T = transcript, x = delete, + = add, L = lock
-				float w = bgWidth;
-				if (w < 32.0) w = 32.0;
-				w += 40.0;
-				float left = xpos - w/2.0;
-				float right = xpos + w/2.0;
-				
-				ZoomSkeinItem* itemParent = [[layout itemForData: item] parent];
-
-				// Correct for shadow
-				right -= 20.0;
-				left  += 2.0;
-				
-				// Draw the buttons
-				NSRect imgRect;
-				imgRect.origin = NSMakePoint(0,0);
-				imgRect.size   = [add size];
-				
-				[[self class] drawButton: annotate
-								 atPoint: NSMakePoint(left, ypos - 18)
-							 highlighted: activeButton == ZSVannotateButton];
-				[[self class] drawButton: transcript
-								 atPoint: NSMakePoint(left + 14, ypos - 18)
-							 highlighted: activeButton==ZSVtranscriptButton];
-				
-				[[self class] drawButton: add
-								 atPoint: NSMakePoint(right, ypos - 18)
-							 highlighted: activeButton==ZSVaddButton];
-				if (itemParent != nil) {
-					// Can only delete items other than the parent 'start' item
-					[[self class] drawButton: delete
-									 atPoint: NSMakePoint(right - 14, ypos - 18)
-								 highlighted: activeButton==ZSVdeleteButton];
-				}
-				
-				if (itemParent != nil) {
-					// Can't unlock the 'start' item
-					NSImage* lock = [[layout itemForData: item] temporary]?unlocked:locked;
-					
-					[[self class] drawButton: lock
-									 atPoint: NSMakePoint(right, ypos + 18)
-								 highlighted: activeButton==ZSVlockButton];
-				}
-			}
+			[[self class] drawButton: lock
+							 atPoint: NSMakePoint(right, ypos + 18)
+						 highlighted: activeButton==ZSVlockButton];
 		}
 	}
 }
