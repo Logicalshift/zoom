@@ -140,9 +140,13 @@ extern NSString* ZoomStyleAttributeName;
 
 - (ZoomTextView*) textView;
 
-// Setting the focussed view
+// Setting the focused view
 - (void) setFocusedView: (NSObject<ZWindow>*) view;
 - (NSObject<ZWindow>*) focusedView;
+
+// Dealing with the history
+- (NSString*) lastHistoryItem;
+- (NSString*) nextHistoryItem;
 
 // Fonts, colours, etc
 - (NSFont*) fontWithStyle: (int) style;

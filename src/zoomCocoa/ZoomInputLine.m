@@ -119,6 +119,33 @@
 			} else {
 				NSBeep();
 			}
+		} else if (chr == NSUpArrowFunctionKey) {
+			NSString* newItem = [self lastHistoryItem];
+			
+			if (newItem) {
+				[lineString setString: newItem];
+				insertionPos = [lineString length];
+				
+				[self stringHasUpdated];
+				[self updateCursor];
+				[inString setString: @""];
+				break;
+			}
+		} else if (chr == NSDownArrowFunctionKey) {
+			NSString* newItem = [self nextHistoryItem];
+			
+			if (newItem) {
+				[lineString setString: newItem];
+			} else {
+				[lineString setString: @""];
+			}
+
+			insertionPos = [lineString length];
+
+			[self stringHasUpdated];
+			[self updateCursor];
+			[inString setString: @""];
+			break;
 		} else if (chr == NSLeftArrowFunctionKey) {
 			if (insertionPos > 0) {
 				insertionPos--;
@@ -178,6 +205,22 @@
 
 - (id) delegate {
 	return delegate;
+}
+
+- (NSString*) lastHistoryItem {
+	if (delegate && [delegate respondsToSelector: @selector(lastHistoryItem)]) {
+		return [delegate lastHistoryItem];
+	} else {
+		return nil;
+	}
+}
+
+- (NSString*) nextHistoryItem {
+	if (delegate && [delegate respondsToSelector: @selector(nextHistoryItem)]) {
+		return [delegate nextHistoryItem];
+	} else {
+		return nil;
+	}
 }
 
 // Results

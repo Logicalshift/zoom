@@ -34,11 +34,17 @@
 - (void) setDelegate: (id) delegate;
 - (id)   delegate;
 
+- (NSString*) lastHistoryItem;
+- (NSString*) nextHistoryItem;
+
 @end
 
 @interface NSObject(ZoomInputLineDelegate)
 
 - (void) inputLineHasChanged: (ZoomInputLine*) sender;
 - (void) endOfLineReached: (ZoomInputLine*) sender;
+
+- (NSString*) lastHistoryItem;
+- (NSString*) nextHistoryItem;
 
 @end

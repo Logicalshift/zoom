@@ -478,6 +478,9 @@ static void finalizeViews(void) {
 		// Display the cursor
 		[pixmapCursor setShown: YES];
 		
+		// Setup the command history
+		historyPos = [commandHistory count];
+		
 		// Setup the input line
 		[self setInputLinePos: [pixmapWindow inputPos]];
 		[self setInputLine: [[[ZoomInputLine alloc] initWithCursor: pixmapCursor
@@ -2358,6 +2361,43 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 
 - (NSSet*) terminatingCharacters {
 	return terminatingChars;
+}
+
+
+// = Dealing with the history =
+
+- (NSString*) lastHistoryItem {
+	int oldPos = historyPos;
+	
+	historyPos--;
+				
+	if (historyPos < 0) historyPos = 0;
+	if (historyPos > [commandHistory count]) historyPos = [commandHistory count];
+
+	if (historyPos == oldPos) return nil;
+
+	if (historyPos < [commandHistory count]) {
+		return [commandHistory objectAtIndex: historyPos];
+	} else {
+		return nil;
+	}
+}
+
+- (NSString*) nextHistoryItem {
+	int oldPos = historyPos;
+				
+	historyPos++;
+				
+	if (historyPos < 0) historyPos = 0;
+	if (historyPos > [commandHistory count]) historyPos = [commandHistory count];
+	
+	if (historyPos == oldPos) return nil;
+	
+	if (historyPos < [commandHistory count]) {
+		return [commandHistory objectAtIndex: historyPos];
+	} else {
+		return nil;
+	}
 }
 
 @end
