@@ -137,7 +137,9 @@ NSString* ZoomSkeinChangedNotification = @"ZoomSkeinChangedNotification";
 	ZoomSkeinItem* parent = item2;
 	
 	while (parent != item1) {
-		[commandsToExecute addObject: [parent command]];
+		NSString* cmd = [parent command];
+		if (cmd == nil) cmd = @"";
+		[commandsToExecute addObject: cmd];
 		
 		parent = [parent parent];
 		if (parent == nil) return nil;

@@ -315,6 +315,7 @@ static NSString* xmlEncode(NSString* str) {
 		
 		if (command == nil) {
 			NSLog(@"ZoomSkein: Warning: item with no command found");
+			command = @"";
 		}
 		
 		[newItem setCommand: command];

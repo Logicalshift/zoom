@@ -101,7 +101,6 @@
 	}
 }
 
-#ifdef _DEBUG
 - (IBAction) displaySkein: (id) sender {
 	[[ZoomSkeinController sharedSkeinController] showWindow: self];
 
@@ -109,7 +108,6 @@
 				   to: nil
 				 from: self];
 }
-#endif
 
 - (IBAction) displayNoteWindow: (id) sender {
 }
