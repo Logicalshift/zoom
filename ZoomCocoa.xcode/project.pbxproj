@@ -441,8 +441,8 @@
 		};
 		4B1E3F4B050F7AD000A8E303 = {
 			buildSettings = {
-				MACOSX_DEPLOYMENT_TARGET = 10.1;
-				SDKROOT = /Developer/SDKs/MacOSX10.1.5.sdk;
+				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				SDKROOT = /Developer/SDKs/MacOSX10.2.8.sdk;
 			};
 			buildStyles = (
 				4B1E3F49050F7AD000A8E303,

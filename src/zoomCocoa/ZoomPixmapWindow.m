@@ -216,8 +216,6 @@
 	destRect.size = [[zView resources] sizeForImageWithNumber: number
 												forPixmapSize: [pixmap size]];
 	
-	NSLog(@"Draw image number %i (%g %g) at point %g %g", number, destRect.size.width, destRect.size.height, point.x, point.y);
-	
 	[pixmap lockFocus];
 	[img setFlipped: [pixmap isFlipped]];
 	[img drawInRect: destRect

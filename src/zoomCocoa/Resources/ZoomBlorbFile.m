@@ -425,11 +425,26 @@ static unsigned int Int4(const unsigned char* bytes) {
 
 // = Caching images =
 
+- (void) setActivePalette: (NSData*) palette {
+	if (adaptive && palette != nil) {
+		if (![activePalette isEqualToData: palette]) {
+			NSLog(@"Palette shift");
+			
+			[activePalette release];
+			activePalette = [palette retain];
+			
+			[self removeAdaptiveImagesFromCache];
+		}
+	}
+}
+
 static const int cacheLowerLimit = 32;
 static const int cacheUpperLimit = 64;
 
 - (NSImage*) cachedImageWithNumber: (int) num {
-	return [[cache objectForKey: [NSNumber numberWithUnsignedInt: num]] objectForKey: @"image"];
+	NSDictionary* entry = [cache objectForKey: [NSNumber numberWithUnsignedInt: num]];
+	[self setActivePalette: [entry objectForKey: @"palette"]];
+	return [entry objectForKey: @"image"];
 }
 
 - (NSData*) cachedPaletteForImage: (int) num {
@@ -437,13 +452,15 @@ static const int cacheUpperLimit = 64;
 }
 
 - (void) usedImageInCache: (int) num {
-	//[[cache objectForKey: [NSNumber numberWithUnsignedInt: num]]
-	//	setObject: ];
+	NSMutableDictionary* entry = [cache objectForKey: [NSNumber numberWithUnsignedInt: num]];
+	
+	[entry setObject: [NSNumber numberWithUnsignedInt: maxCacheNum++]
+			  forKey: @"usageNumber"];
 }
 
 - (void) cacheImage: (NSImage*) img
 		withPalette: (NSData*) palette
-		   adaptive: (BOOL) adaptive
+		   adaptive: (BOOL) isAdaptive
 			 number: (int) num {
 	if (cache == nil) {
 		cache = [[NSMutableDictionary alloc] init];
@@ -452,10 +469,10 @@ static const int cacheUpperLimit = 64;
 	// Add to the cache
 	[cache setObject: [NSMutableDictionary dictionaryWithObjectsAndKeys:
 		img, @"image",
-		palette, @"palette",
-		[NSNumber numberWithBool: adaptive], @"adaptive",
+		[NSNumber numberWithBool: isAdaptive], @"adaptive",
 		[NSNumber numberWithUnsignedInt: maxCacheNum++], @"usageNumber",
 		[NSNumber numberWithUnsignedInt: num], @"number",
+		palette, @"palette",
 		nil]
 			  forKey: [NSNumber numberWithUnsignedInt: num]];
 	
@@ -468,12 +485,59 @@ static const int cacheUpperLimit = 64;
 		NSNumber* key;
 		
 		while (key = [keyEnum nextObject]) {
+			// Find the place to put this particular entry
+			// Yeah, could binary search here. *Probably* not worth it
+			NSMutableDictionary* entry = [cache objectForKey: key];
+			unsigned int thisUsage = [[entry objectForKey: @"usageNumber"] unsignedIntValue];
 			
+			int x;
+			for (x=0; x<[oldestEntries count]; x++) {
+				NSDictionary* thisEntry = [oldestEntries objectAtIndex: x];
+				unsigned int usage = [[thisEntry objectForKey: @"usageNumber"] unsignedIntValue];
+				
+				if (usage > thisUsage) break;
+			}
+			
+			[oldestEntries insertObject: entry
+								atIndex: x];
+		}
+		
+		// Remove objects from the cache until there are cacheLowerLimit left
+		int x;
+		int numToRemove = [oldestEntries count] - cacheLowerLimit;
+		
+		NSLog(@"%i entries to remove", numToRemove);
+
+		for (x=0; x<numToRemove; x++) {
+			NSDictionary* entry = [oldestEntries objectAtIndex: x];
+			
+			[cache removeObjectForKey: [entry objectForKey: @"num"]];
 		}
 	}
 }
 
 - (void) removeAdaptiveImagesFromCache {
+	NSEnumerator* keyEnum = [cache keyEnumerator];
+	NSNumber* key;
+	
+	NSMutableArray* keysToRemove = [NSMutableArray array];
+	
+	while (key = [keyEnum nextObject]) {
+		NSDictionary* entry = [cache objectForKey: key];
+		
+		if ([[entry objectForKey: @"adaptive"] boolValue]) {
+			// This is an adaptive entry: cache for later removal
+			// (Have to cache to avoid mucking up the key enumerator)
+			[keysToRemove addObject: key];
+		}
+	}
+	
+	NSLog(@"Removing %i adaptive entries from the cache", [keysToRemove count]);
+	
+	keyEnum = [keysToRemove objectEnumerator];
+	while (key = [keyEnum nextObject]) {
+		[cache removeObjectForKey: key];
+	}
 }
 
 // = Decoded data =
@@ -559,7 +623,15 @@ static const int cacheUpperLimit = 64;
 	NSString* type = [imageBlock objectForKey: @"id"];
 	NSImage* res = nil;
 	
-	// IMPLEMENT ME: cache/retrieve the image
+	// Retrieve the image from the cache if possible
+	res = [[[self cachedImageWithNumber: num] retain] autorelease];
+	if (res != nil) {
+		[self usedImageInCache: num];
+		return res;
+	}
+	
+	// Load the image from resources if not
+	BOOL wasAdaptive = NO;
 	
 	if ([type isEqualToString: @"Rect"]) {
 		// Nonstandard extension: rectangle
@@ -584,9 +656,10 @@ static const int cacheUpperLimit = 64;
 			if ([adaptiveImages containsObject: [NSNumber numberWithUnsignedInt: num]]) {
 				pngData = [self adaptPng: pngData
 							 withPalette: activePalette];
+				wasAdaptive = YES;
 			} else {
-				if (activePalette) [activePalette release];
-				activePalette = [[self paletteForPng: pngData] retain];
+				[self setActivePalette: [self paletteForPng: pngData]];
+				wasAdaptive = NO;
 			}
 		}
 		
@@ -600,7 +673,13 @@ static const int cacheUpperLimit = 64;
 		res = [[[NSImage alloc] initWithData: [self dataForChunk: imageBlock]] autorelease];
 	}
 	
-	// IMPLEMENT ME: scale according to resolution
+	// Cache the image
+	[self cacheImage: res
+		 withPalette: activePalette
+			adaptive: wasAdaptive
+			  number: num];
+	
+	NSLog(@"Cache miss");
 	
 	// Return the result
 	return res;
