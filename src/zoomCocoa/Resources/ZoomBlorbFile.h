@@ -21,6 +21,11 @@
 	NSMutableDictionary* locationsToBlocks;
 	
 	NSMutableDictionary* resourceIndex;
+	
+	NSSize stdSize;
+	NSSize minSize;
+	NSSize maxSize;
+	NSMutableDictionary* resolution;
 }
 
 // Testing files
@@ -48,5 +53,6 @@
 
 // Decoded data
 - (NSImage*) imageWithNumber: (int) num;
-
+- (NSSize) sizeForImageWithNumber: (int) num
+					forPixmapSize: (NSSize) pixmapSize;
 @end

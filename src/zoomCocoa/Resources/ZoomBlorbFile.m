@@ -10,6 +10,10 @@
 
 @implementation ZoomBlorbFile
 
+static unsigned int Int4(const unsigned char* bytes) {
+	return (bytes[0]<<24)|(bytes[1]<<16)|(bytes[2]<<8)|(bytes[3]<<0);
+}
+
 // = Testing files =
 
 + (BOOL) dataIsBlorbFile: (NSData*) data {
@@ -171,6 +175,7 @@
 	if (locationsToBlocks) [locationsToBlocks release];
 	
 	if (resourceIndex) [resourceIndex release];
+	if (resolution) [resolution release];
 	
 	[super dealloc];
 }
@@ -245,6 +250,53 @@
 	return YES;
 }
 
+- (void) parseResolutionChunk {
+	if (resolution != nil) return;
+	
+	NSData* resData = [self dataForChunkWithType: @"Reso"];
+	if (resData == nil) return;
+	if ([resData length] < 24) return;
+	
+	const unsigned char* data = [resData bytes];
+	
+	// Decode the window heights
+	stdSize.width  = Int4(data + 0);
+	stdSize.height = Int4(data + 4);
+	minSize.width  = Int4(data + 8);
+	minSize.height = Int4(data + 12);
+	maxSize.width  = Int4(data + 16);
+	maxSize.height = Int4(data + 20);
+	
+	// Decode image resource information
+	resolution = [[NSMutableDictionary alloc] init];
+	int x;
+	
+	for (x=24; x<[resData length]; x += 28) {
+		NSNumber* imageNum = [NSNumber numberWithUnsignedInt: Int4(data + x)];
+
+		unsigned int num, denom;
+		double ratio;
+		
+		num = Int4(data + x + 4); denom = Int4(data + x + 8);
+		if (denom == 0) ratio = 0; else ratio = ((double)num)/((double)denom);
+		NSNumber* stdRatio = [NSNumber numberWithDouble: ratio];
+		
+		num = Int4(data + x + 12); denom = Int4(data + x + 16);
+		if (denom == 0) ratio = 0; else ratio = ((double)num)/((double)denom);
+		NSNumber* minRatio = [NSNumber numberWithDouble: ratio];
+		
+		num = Int4(data + x + 20); denom = Int4(data + x + 24);
+		if (denom == 0) ratio = 0; else ratio = ((double)num)/((double)denom);
+		NSNumber* maxRatio = [NSNumber numberWithDouble: ratio];
+		
+		NSDictionary* entry = [NSDictionary dictionaryWithObjectsAndKeys:
+			stdRatio, @"stdRatio", minRatio, @"minRatio", maxRatio, @"maxRatio", nil];
+
+		[resolution setObject: entry
+					   forKey: imageNum];
+	}
+}
+
 - (BOOL) containsImageWithNumber: (int) num {
 	if (!resourceIndex) {
 		if (![self parseResourceIndex]) return NO;
@@ -294,6 +346,77 @@
 // Fiddling with PNG palettes
 
 // Decoded data
+- (NSSize) sizeForImageWithNumber: (int) num
+					forPixmapSize: (NSSize) pixmapSize {
+	// Decode the resolution chunk if necessary
+	[self parseResolutionChunk];
+	
+	// Get the image
+	NSSize result;
+
+	NSDictionary* imageBlock = [locationsToBlocks objectForKey: 
+		[[resourceIndex objectForKey: @"Pict"] objectForKey: 
+			[NSNumber numberWithUnsignedInt: num]]];
+	
+	if (imageBlock == nil) return NSMakeSize(0,0);
+	
+	NSString* type = [imageBlock objectForKey: @"id"];
+	
+	if ([type isEqualToString: @"Rect"]) {
+		// Nonstandard extension: rectangle
+		NSData* rData = [self dataForChunk: imageBlock];
+		const unsigned char* data = [rData bytes];
+		
+		if ([rData length] >= 8) {
+			result.width = Int4(data);
+			result.height = Int4(data + 4);
+		} else {
+			result.width = result.height = 0;
+		}
+	} else {
+		NSImage* img = [self imageWithNumber: num];
+		if (img == nil) return NSMakeSize(0,0);
+		result = [img size];
+	}
+	
+	// Get the resolution data
+	NSDictionary* resData = [resolution objectForKey: [NSNumber numberWithUnsignedInt: num]];
+	if (resData == nil) return result;
+	
+	// Work out the scaling factor
+	double erf1, erf2, erf;
+	
+	erf1 = pixmapSize.width / stdSize.width;
+	erf2 = pixmapSize.height / stdSize.height;
+	
+	if (erf1 < erf2)
+		erf = erf1;
+	else
+		erf = erf2;
+	
+	double minRatio = [[resData objectForKey: @"minRatio"] doubleValue];
+	double maxRatio = [[resData objectForKey: @"maxRatio"] doubleValue];
+	double stdRatio = [[resData objectForKey: @"stdRatio"] doubleValue];
+	
+	double factor = 0;
+	
+	factor = erf * stdRatio;
+	if (minRatio > 0 && factor < minRatio) 
+		factor = minRatio;
+	else if (maxRatio > 0 && factor > maxRatio)
+		factor = maxRatio;
+	
+	if (factor <= 0)
+		factor = 1.0;
+	
+	// Calculate the final result
+	
+	result.width *= factor;
+	result.height *= factor;
+	
+	return result;
+}
+
 - (NSImage*) imageWithNumber: (int) num {
 	NSDictionary* imageBlock = [locationsToBlocks objectForKey: 
 		[[resourceIndex objectForKey: @"Pict"] objectForKey: 
@@ -308,17 +431,30 @@
 	
 	if ([type isEqualToString: @"Rect"]) {
 		// Nonstandard extension: rectangle
-		res = nil; // Implement me
+		NSData* rData = [self dataForChunk: imageBlock];
+		const unsigned char* data = [rData bytes];
+		unsigned int width, height;
+		
+		if ([rData length] == 8) {
+			width = Int4(data);
+			height = Int4(data + 4);
+		} else {
+			width = height = 0;
+		}
+		
+		NSLog(@"Warning: drawing Rect image");
+		res = [[[NSImage alloc] initWithSize: NSMakeSize(width, height)] autorelease];
 	} else if ([type isEqualToString: @"PNG "]) {
 		// PNG file
 		NSData* pngData = [self dataForChunk: imageBlock];
 		
 		res = [[[NSImage alloc] initWithData: pngData] autorelease];
 	} else if ([type isEqualToString: @"JPEG"]) {
-		// JPEG file
+		// JPEG file (no patent worries here, really)
 		res = [[[NSImage alloc] initWithData: [self dataForChunk: imageBlock]] autorelease];
 	} else {
 		// Could be anything
+		NSLog(@"WARNING: Unknown image chunk type: %@", type);
 		res = [[[NSImage alloc] initWithData: [self dataForChunk: imageBlock]] autorelease];
 	}
 	

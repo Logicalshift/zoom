@@ -2262,6 +2262,8 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 }
 
 - (NSSize) sizeOfImageWithNumber: (int) number {
+	return [resources sizeForImageWithNumber: number
+							   forPixmapSize: [pixmapWindow size]];
 	NSImage* img = [resources imageWithNumber: number];
 	
 	if (img != nil) {

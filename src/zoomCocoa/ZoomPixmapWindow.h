@@ -22,6 +22,7 @@
 - (id) initWithZoomView: (ZoomView*) view;
 
 // Getting the pixmap
+- (NSSize) size;
 - (NSImage*) pixmap;
 
 // Input information

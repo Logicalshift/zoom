@@ -34,6 +34,10 @@
 }
 
 // Getting the pixmap
+- (NSSize) size {
+	return [pixmap size];
+}
+
 - (NSImage*) pixmap {
 	return pixmap;
 }
@@ -207,14 +211,19 @@
 	imgRect.origin = NSMakePoint(0,0);
 	imgRect.size = [img size];
 	
-	NSLog(@"Draw image number %i (%g %g) at point %g %g", number, imgRect.size.width, imgRect.size.height, point.x, point.y);
+	NSRect destRect;
+	destRect.origin = point;
+	destRect.size = [[zView resources] sizeForImageWithNumber: number
+												forPixmapSize: [pixmap size]];
+	
+	NSLog(@"Draw image number %i (%g %g) at point %g %g", number, destRect.size.width, destRect.size.height, point.x, point.y);
 	
 	[pixmap lockFocus];
 	[img setFlipped: [pixmap isFlipped]];
-	[img drawAtPoint: point
-			fromRect: imgRect
-		   operation: NSCompositeSourceOver
-			fraction: 1.0];
+	[img drawInRect: destRect
+		   fromRect: imgRect
+		  operation: NSCompositeSourceOver
+		   fraction: 1.0];
 	[pixmap unlockFocus];
 }
 
