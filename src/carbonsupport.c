@@ -935,7 +935,7 @@ void save_evt_handler(NavEventCallbackMessage select,
     }
 }
 
-ZFile* get_file_write(int* fsize)
+ZFile* get_file_write(int* fsize, char* save_fname)
 {
   NavDialogCreationOptions  dlOpts;
   static NavEventUPP        nvUPP = NULL;
@@ -997,7 +997,7 @@ ZFile* get_file_write(int* fsize)
   return NULL;
 }
 
-ZFile* get_file_read(int* fsize)
+ZFile* get_file_read(int* fsize, char* save_fname)
 {
   NavDialogCreationOptions  dlOpts;
   static NavEventUPP        nvUPP = NULL;
