@@ -605,6 +605,8 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     // Update the upper window buffer
     NSSize contentSize = [textScroller contentSize];
     [upperWindowBuffer setContainerSize: NSMakeSize(contentSize.width, bufHeight)];
+
+    [self padToLowerWindow];
 }
 
 - (double) upperBufferHeight {
@@ -635,6 +637,54 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 
 - (void) upperWindowNeedsRedrawing {
     upperWindowNeedsRedrawing = YES;
+}
+
+- (void) padToLowerWindow {
+    // This is a kind of poorly documented feature of the Z-Machine display model
+    // (But often used in modern games, unfortunately)
+    // It is usually impossible to move the cursor while in the lower window.
+    // However, there is one way to move it vertically: split the window so that
+    // the upper window overlaps the cursor. Officially this is not reliable
+    // behaviour, but a sufficient number of games make use of it (not helped
+    // by the Glk interpreter window model) that we have to emulate it or
+    // things start to look a bit crappy.
+    //
+    // Behaviour is: if the upper window overlaps the cursor, then we move the cursor
+    // until this is no longer the case. Text previously printed is unaffected.
+    // Only applies when the lower window is sufficiently empty to contain no
+    //
+    // Here we do this by adding newlines. This may occasionally cause some
+    // 'bouncing', as Cocoa is not designed to allow for a line of text that
+    // appears in two containers (you can probably hack it to do it, though,
+    // so there's a project for some brave future volunteer)
+    //
+    // Er, right, the code:
+    NSTextContainer* theContainer;
+
+    if (upperWindowBuffer == nil) return;
+
+    if ([[textView textStorage] length] == 0) {
+        [[[textView textStorage] mutableString] appendString: @"\n"];
+    }
+    
+    do {
+        NSRange endGlyph = [textView selectionRangeForProposedRange:
+            NSMakeRange([[textView textStorage] length]-1, 1)
+                                                    granularity: NSSelectByCharacter];
+        if (endGlyph.location > 0xf0000000) {
+            return; // Doesn't exist
+        }
+
+        NSRange eRange;
+        theContainer = [[textView layoutManager] textContainerForGlyphAtIndex: endGlyph.location effectiveRange: &eRange];
+
+        if (theContainer == upperWindowBuffer) {
+            [[[textView textStorage] mutableString] appendString: @"\n"];
+            NSLog(@"%@", [[textView textStorage] mutableString]);
+        }
+
+        // I suppose there's an outside chance of an infinite loop here
+    } while (theContainer == upperWindowBuffer);
 }
 
 @end

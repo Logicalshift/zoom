@@ -1026,6 +1026,30 @@
 			settings = {
 			};
 		};
+		4B23C64E053C9C8C00A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomAppDelegate.h;
+			refType = 4;
+		};
+		4B23C64F053C9C8C00A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomAppDelegate.m;
+			refType = 4;
+		};
+		4B23C650053C9C8C00A8E303 = {
+			fileRef = 4B23C64E053C9C8C00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B23C651053C9C8C00A8E303 = {
+			fileRef = 4B23C64F053C9C8C00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		4B2D95C9053706CD00A8E303 = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -1250,6 +1274,7 @@
 				4B2D95CD0537071400A8E303,
 				4B2D95D205372EFB00A8E303,
 				4BFD6B3C0538A71700A8E303,
+				4B23C650053C9C8C00A8E303,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1273,6 +1298,7 @@
 				4BCF3F4C050FB2C500A8E303,
 				4BDFA4E10535E81300A8E303,
 				4BDFA4E20535E85900A8E303,
+				4B23C651053C9C8C00A8E303,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1401,6 +1427,8 @@
 				4BCF3F54050FB47200A8E303,
 				4BCF3F59050FB57A00A8E303,
 				4BCF3F5A050FB57A00A8E303,
+				4B23C64E053C9C8C00A8E303,
+				4B23C64F053C9C8C00A8E303,
 				4BDFA4E80535E9DE00A8E303,
 			);
 			isa = PBXGroup;

@@ -23,6 +23,11 @@ GENERAL:
       cursor should be moved to accomodate it.
     - Really, upper window things pasted onto the lower window need to have an
       'attached character', so they move correctly when the window is resized
+    - readline in upper window?
+ * line editing (up/down arrows)
+ * Fullscreen mode
+ * Ability to reformat display
+ * crash when running spacest2.z5?
 
 FUTURE:
  * Sound
@@ -36,5 +41,5 @@ FUTURE:
       from system-specific ones
     * Need to sort out the naming of things like the 'text' structure
       (layout_text?)
- * Copy/paste
+ * Copy/paste (implemented in the Cocoa version)
  * Way of changing default foreground/background colours

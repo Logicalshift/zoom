@@ -72,6 +72,7 @@
 - (double) upperBufferHeight;
 - (void) rearrangeUpperWindows;
 - (NSArray*) upperWindows;
+- (void) padToLowerWindow;
 
 - (void) upperWindowNeedsRedrawing;
 - (BOOL) handleKeyDown:(NSEvent*) theEvent;
