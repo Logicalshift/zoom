@@ -36,7 +36,7 @@
 # include <CoreFoundation/CoreFoundation.h>
 #endif
 
-#undef IFMD_ALLOW_TESTING
+#undef  IFMD_ALLOW_TESTING
 
 /*
  * Some notes:

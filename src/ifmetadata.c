@@ -453,7 +453,7 @@ IFMetadata* IFMD_Parse(const IFMDByte* data, size_t length) {
 					snprintf(name2, 256, "(untitled)");
 				}
 				
-				snprintf(msg, 512, "Duplicate story entry (%s/%s)", name1, name2);
+				snprintf(msg, 512, "Duplicate story entry (%s (%x)/%s (%x))", name1, res->index[entry].ident->data.zcode.checksum, name2,  res->index[entry+1].ident->data.zcode.checksum);
 				msg[511] = 0;
 				
 				addError(currentState, IFMDErrorStoriesShareIDs, msg);
@@ -816,6 +816,8 @@ static XMLCALL void endElement(void *userData,
 						val |= hex;
 					}
 					
+					state->ident->data.zcode.checksum = val;
+					
 					free(checksum);
 				}
 				
@@ -951,12 +953,6 @@ int IFID_Compare(const IFMDIdent* a, const IFMDIdent* b) {
 		case IFFormat_ZCode:
 			/* ZCode comparison is considered desisive: skip any future tests */
 			
-			/* Checksum */
-			if (a->data.zcode.checksum < 0x10000 && b->data.zcode.checksum < 0x10000) {
-				if (a->data.zcode.checksum > b->data.zcode.checksum) return 1;
-				if (a->data.zcode.checksum < b->data.zcode.checksum) return -1;
-			}
-			
 			/* Serial number */
 			for (x=0; x<6; x++) {
 				if (a->data.zcode.serial[x] > b->data.zcode.serial[x]) return 1;
@@ -966,7 +962,13 @@ int IFID_Compare(const IFMDIdent* a, const IFMDIdent* b) {
 			/* Release */
 			if (a->data.zcode.release > b->data.zcode.release) return 1;
 			if (a->data.zcode.release < b->data.zcode.release) return -1;
-			
+				
+			/* Checksum */
+			if (a->data.zcode.checksum < 0x10000 && b->data.zcode.checksum < 0x10000) {
+				if (a->data.zcode.checksum > b->data.zcode.checksum) return 1;
+				if (a->data.zcode.checksum < b->data.zcode.checksum) return -1;
+			}
+
 			/* They're the same */
 			return 0;
 			
@@ -1311,6 +1313,8 @@ void IFMD_AddStory(IFMetadata* data, IFMDStory* storyToAdd) {
 		}
 #endif
 		
+		/* Res should now be equal to the first place where cmp = 1 */
+		
 		if (res != -1 && cmp == 0) {
 			if (data->index[res].story != newEntry) {
 				int storyId, y;
@@ -1320,7 +1324,7 @@ void IFMD_AddStory(IFMetadata* data, IFMDStory* storyToAdd) {
 				data->numberOfIndexEntries--;
 				memmove(data->index+res,
 						data->index+res+1,
-						sizeof(IFMDIndexEntry)*(data->numberOfIndexEntries-res));
+						sizeof(*data->index)*(data->numberOfIndexEntries-res));
 				
 				/* Delete this ident from its story */
 				storyId = -1;
@@ -1376,23 +1380,6 @@ void IFMD_AddStory(IFMetadata* data, IFMDStory* storyToAdd) {
 				}
 			}
 		}
-		
-#if 0
-		/* Add this ident to the index */
-		if (top >= data->numberOfIndexEntries) top = data->numberOfIndexEntries-1;
-		
-		res = top;
-		if (res < 0) res = 0;
-		
-		if (data->numberOfIndexEntries > 0)
-			cmp = IFID_Compare(id, data->index[res].ident); 
-		else
-			cmp = 0;
-		
-		if (cmp > 0) {
-			res++;
-		}
-#endif
 		
 		/* Res should now be equal to the first place where cmp = 1 */
 		data->numberOfIndexEntries++;
@@ -1748,7 +1735,7 @@ void IFMD_testrepository(IFMetadata* data) {
 	
 	// Test three: create a new metadata set, add all the stories from this one to it, several times
 	// (additional passes determine the failure pattern in
-	printf("== TEST THREE: new data test:");
+	printf("== TEST THREE: new data test:\n");
 	
 	newData = IFMD_Alloc();
 	
@@ -1757,9 +1744,10 @@ void IFMD_testrepository(IFMetadata* data) {
 			int y;
 		
 			IFMD_AddStory(newData, data->stories[x]);
+			indexCheck(newData);
 		}
 		
-		printf(" %i - %s/%s", iter, indexCheck(newData)?"Passed":"Failed", storyCheck(newData)?"Passed":"Failed");
+		printf("=== %i - %s/%s\n", iter, indexCheck(newData)?"Passed":"Failed", storyCheck(newData)?"Passed":"Failed");
 	}
 	printf("\n");
 	

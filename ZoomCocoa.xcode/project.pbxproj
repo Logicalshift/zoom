@@ -2439,8 +2439,6 @@
 			<string>iFiction metadata</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
-			<key>NSDocumentClass</key>
-			<string>ZoomIFiction</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>

@@ -957,6 +957,7 @@ Untied Press International
 	<group>Infocom</group>
 	<author>Jeff O'Neill</author>
 	<year>1987</year>
+	<genre>Language games</genre>
   </story>
   
   <story>
@@ -1059,6 +1060,7 @@ Hier ist ein kleiner Briefkasten.
 	</id>
 	<title>Border Zone</title>
 	<group>Infocom</group>
+	<genre>Espionage</genre>
 	<headline>BORDER ZONE: A Game of Intrigue</headline>
 	<author>Marc Blank</author>
 	<year>1987</year>
