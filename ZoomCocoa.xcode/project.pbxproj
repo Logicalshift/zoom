@@ -185,12 +185,6 @@
 			settings = {
 			};
 		};
-		4B15078C07BE12DD006416A7 = {
-			fileRef = 4BCF3F29050F8E0000A8E303;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		4B1884AF06975647004D8501 = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -3228,7 +3222,6 @@
 				4B5CBB7A069D656000C0AA88,
 				4BC5562306B83F4600F0DD4A,
 				4B9E2D4A06E2217100783BE8,
-				4B15078C07BE12DD006416A7,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

@@ -252,4 +252,8 @@
 	}
 }
 
+- (BOOL) acceptsFirstResponder {
+	return inputLine != nil;
+}
+
 @end
