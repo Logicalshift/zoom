@@ -1324,7 +1324,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.h: 17";
 		rLen = 0;
-		rLoc = 375;
+		rLoc = 373;
 		rType = 0;
 		vrLen = 309;
 		vrLoc = 147;
@@ -1404,7 +1404,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: initWithFrame:";
 		rLen = 0;
-		rLoc = 778;
+		rLoc = 753;
 		rType = 0;
 		vrLen = 821;
 		vrLoc = 427;
@@ -1444,7 +1444,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.h: setZMachine:";
 		rLen = 0;
-		rLoc = 515;
+		rLoc = 513;
 		rType = 0;
 		vrLen = 363;
 		vrLoc = 0;
@@ -1464,7 +1464,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.h: 20";
 		rLen = 0;
-		rLoc = 517;
+		rLoc = 515;
 		rType = 0;
 		vrLen = 456;
 		vrLoc = 0;
@@ -1474,7 +1474,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: initWithFrame:";
 		rLen = 0;
-		rLoc = 1122;
+		rLoc = 1099;
 		rType = 0;
 		vrLen = 597;
 		vrLoc = 150;
@@ -1484,7 +1484,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.h: 20";
 		rLen = 0;
-		rLoc = 517;
+		rLoc = 515;
 		rType = 0;
 		vrLen = 456;
 		vrLoc = 0;
@@ -1494,7 +1494,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: dealloc";
 		rLen = 0;
-		rLoc = 1122;
+		rLoc = 1099;
 		rType = 0;
 		vrLen = 691;
 		vrLoc = 150;
@@ -1504,7 +1504,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.h: 20";
 		rLen = 0;
-		rLoc = 517;
+		rLoc = 515;
 		rType = 0;
 		vrLen = 456;
 		vrLoc = 0;
@@ -1514,7 +1514,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: dealloc";
 		rLen = 0;
-		rLoc = 1122;
+		rLoc = 1099;
 		rType = 0;
 		vrLen = 691;
 		vrLoc = 150;
@@ -1524,7 +1524,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.h: 18";
 		rLen = 0;
-		rLoc = 408;
+		rLoc = 406;
 		rType = 0;
 		vrLen = 456;
 		vrLoc = 0;
@@ -1544,7 +1544,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: dealloc";
 		rLen = 0;
-		rLoc = 1122;
+		rLoc = 1099;
 		rType = 0;
 		vrLen = 700;
 		vrLoc = 292;
@@ -1554,7 +1554,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.h: 18";
 		rLen = 0;
-		rLoc = 408;
+		rLoc = 406;
 		rType = 0;
 		vrLen = 456;
 		vrLoc = 0;
@@ -1564,7 +1564,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: setZMachine:";
 		rLen = 0;
-		rLoc = 1565;
+		rLoc = 1542;
 		rType = 0;
 		vrLen = 750;
 		vrLoc = 398;
@@ -1574,7 +1574,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.h: 18";
 		rLen = 0;
-		rLoc = 408;
+		rLoc = 406;
 		rType = 0;
 		vrLen = 398;
 		vrLoc = 0;
@@ -1583,8 +1583,8 @@
 		fRef = 4B4EF624050FDC6800A8E303;
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: initWithFrame:";
-		rLen = 75;
-		rLoc = 845;
+		rLen = 77;
+		rLoc = 820;
 		rType = 0;
 		vrLen = 752;
 		vrLoc = 353;
@@ -1594,7 +1594,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.h: 18";
 		rLen = 0;
-		rLoc = 376;
+		rLoc = 374;
 		rType = 0;
 		vrLen = 372;
 		vrLoc = 84;
@@ -1604,7 +1604,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: 70";
 		rLen = 5;
-		rLoc = 8398;
+		rLoc = 8871;
 		rType = 0;
 		vrLen = 297;
 		vrLoc = 1488;
@@ -1614,7 +1614,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.h: 17";
 		rLen = 0;
-		rLoc = 375;
+		rLoc = 373;
 		rType = 0;
 		vrLen = 309;
 		vrLoc = 147;
@@ -1634,7 +1634,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: 70";
 		rLen = 5;
-		rLoc = 8398;
+		rLoc = 8871;
 		rType = 0;
 		vrLen = 345;
 		vrLoc = 1444;
@@ -1684,7 +1684,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: 70";
 		rLen = 0;
-		rLoc = 2667;
+		rLoc = 2642;
 		rType = 0;
 		vrLen = 303;
 		vrLoc = 1492;
@@ -1704,7 +1704,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: 74";
 		rLen = 0;
-		rLoc = 2664;
+		rLoc = 2639;
 		rType = 0;
 		vrLen = 457;
 		vrLoc = 1520;
@@ -1764,7 +1764,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: setZMachine:";
 		rLen = 0;
-		rLoc = 2257;
+		rLoc = 2232;
 		rType = 0;
 		vrLen = 457;
 		vrLoc = 1520;
@@ -1784,7 +1784,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: setZMachine:";
 		rLen = 0;
-		rLoc = 2308;
+		rLoc = 2283;
 		rType = 0;
 		vrLen = 457;
 		vrLoc = 1520;
@@ -1844,7 +1844,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: createLowerWindow";
 		rLen = 0;
-		rLoc = 2593;
+		rLoc = 2568;
 		rType = 0;
 		vrLen = 436;
 		vrLoc = 1612;
@@ -1864,7 +1864,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: initWithFrame:";
 		rLen = 0;
-		rLoc = 1565;
+		rLoc = 1542;
 		rType = 0;
 		vrLen = 515;
 		vrLoc = 1095;
@@ -1884,7 +1884,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: initWithFrame:";
 		rLen = 0;
-		rLoc = 1565;
+		rLoc = 1542;
 		rType = 0;
 		vrLen = 1066;
 		vrLoc = 679;
@@ -1924,7 +1924,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: initWithFrame:";
 		rLen = 0;
-		rLoc = 1451;
+		rLoc = 1428;
 		rType = 0;
 		vrLen = 831;
 		vrLoc = 679;
@@ -1964,7 +1964,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: setZMachine:";
 		rLen = 27;
-		rLoc = 2309;
+		rLoc = 2284;
 		rType = 0;
 		vrLen = 852;
 		vrLoc = 1095;
@@ -1984,7 +1984,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: initWithFrame:";
 		rLen = 0;
-		rLoc = 778;
+		rLoc = 753;
 		rType = 0;
 		vrLen = 821;
 		vrLoc = 427;
@@ -2818,7 +2818,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomZMachine.m: 17";
 		rLen = 0;
-		rLoc = 9548;
+		rLoc = 9549;
 		rType = 0;
 		vrLen = 246;
 		vrLoc = 0;
@@ -2918,7 +2918,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomZMachine.m: 76";
 		rLen = 0;
-		rLoc = 9548;
+		rLoc = 9549;
 		rType = 0;
 		vrLen = 668;
 		vrLoc = 708;
@@ -2938,7 +2938,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomZMachine.m: 65";
 		rLen = 0;
-		rLoc = 5816;
+		rLoc = 5817;
 		rType = 0;
 		vrLen = 678;
 		vrLoc = 708;
@@ -2958,7 +2958,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomZMachine.m: 65";
 		rLen = 0;
-		rLoc = 5816;
+		rLoc = 5817;
 		rType = 0;
 		vrLen = 680;
 		vrLoc = 706;
@@ -2978,7 +2978,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomZMachine.m: 66";
 		rLen = 0;
-		rLoc = 5816;
+		rLoc = 5817;
 		rType = 0;
 		vrLen = 699;
 		vrLoc = 706;
@@ -3008,7 +3008,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomZMachine.m: 67";
 		rLen = 0;
-		rLoc = 5816;
+		rLoc = 5817;
 		rType = 0;
 		vrLen = 721;
 		vrLoc = 706;
@@ -3038,7 +3038,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomZMachine.m: 67";
 		rLen = 0;
-		rLoc = 5816;
+		rLoc = 5817;
 		rType = 0;
 		vrLen = 751;
 		vrLoc = 706;
@@ -3068,7 +3068,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomZMachine.m: display_set_font";
 		rLen = 0;
-		rLoc = 5816;
+		rLoc = 5817;
 		rType = 0;
 		vrLen = 877;
 		vrLoc = 1324;
@@ -3136,7 +3136,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomZMachine.m: display_get_font_width";
 		rLen = 0;
-		rLoc = 6803;
+		rLoc = 6804;
 		rType = 0;
 		vrLen = 888;
 		vrLoc = 3249;
@@ -3166,7 +3166,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomZMachine.m: printf_error_done";
 		rLen = 0;
-		rLoc = 5816;
+		rLoc = 5817;
 		rType = 0;
 		vrLen = 948;
 		vrLoc = 3426;
@@ -3186,7 +3186,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomZMachine.m: 158";
 		rLen = 0;
-		rLoc = 9548;
+		rLoc = 9549;
 		rType = 0;
 		vrLen = 810;
 		vrLoc = 4375;
@@ -3456,7 +3456,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomZMachine.m: 158";
 		rLen = 0;
-		rLoc = 9548;
+		rLoc = 9549;
 		rType = 0;
 		vrLen = 1573;
 		vrLoc = 3612;
@@ -3642,6 +3642,9 @@
 		name = image_libpng.c;
 		path = /Users/ahunter/prog/zoom/src/image_libpng.c;
 		refType = 0;
+	};
+	4BDFA4B90535E64900A8E303 = {
+		activeExec = 0;
 	};
 	4BE447BC0511012500A8E303 = {
 		fRef = 4B1E3F8C050F7D5200A8E303;
@@ -4008,7 +4011,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomZMachine.m: 201";
 		rLen = 0;
-		rLoc = 5816;
+		rLoc = 5817;
 		rType = 0;
 		vrLen = 1276;
 		vrLoc = 3816;
@@ -4038,7 +4041,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomZMachine.m: display_get_font_descent";
 		rLen = 0;
-		rLoc = 5816;
+		rLoc = 5817;
 		rType = 0;
 		vrLen = 2146;
 		vrLoc = 4227;
@@ -4088,7 +4091,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomZMachine.m: display_get_font_descent";
 		rLen = 0;
-		rLoc = 5816;
+		rLoc = 5817;
 		rType = 0;
 		vrLen = 2118;
 		vrLoc = 4227;
