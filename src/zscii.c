@@ -311,16 +311,17 @@ int* zscii_to_unicode(ZByte* string, int* len)
 	      else
 		{
 #ifdef SPEC_11
+		  printf("%i\n", zchar);
 		  if (zchar > 767)
 		    {
 		      /* Unicode character, this is a bit of a PITA */
 		      int ulen;
-		      int z;
+		      int i;
 		      
 		      ulen = zchar - 767;
 		      x += 2;
 
-		      for (z=0; z<ulen; z++)
+		      for (i=0; i<ulen; i++)
 			{
 			  if ((y+1) > maxlen)
 			    {
@@ -332,7 +333,8 @@ int* zscii_to_unicode(ZByte* string, int* len)
 			  x += 2;
 			}
 		      
-		      goto onward; /* Blech */
+		      if (z == 2)
+			goto onward; /* Blech */
 		    }
 #else
 		  buf[y++] = zchar;

@@ -760,7 +760,10 @@ OPCODE "get_parent"   1OP:0x03        STORE VERSION 1,2,3
 
 OPCODE "get_prop_len" 1OP:0x04        STORE VERSION 1,2,3
 %{
-  store(stack, st, (machine.memory[uarg1-1]>>5)+1);
+  if (arg1 == 0)
+    store(stack, st, 0);
+  else
+    store(stack, st, (machine.memory[uarg1-1]>>5)+1);
 %}
 
 OPCODE "get_sibling"  1OP:0x01 BRANCH STORE VERSION 4,5,6,7,8
@@ -828,15 +831,20 @@ OPCODE "get_prop_len" 1OP:0x04        STORE VERSION 4,5,6,7,8
   ZByte* p;
   struct propinfo* inf;
 
-  p = machine.memory + uarg1;
-  if (p[-1]&0x80)
-    p -= 2;
+  if (arg1 == 0)
+    store(stack, st, 0);
   else
-    p -= 1;
+    {
+      p = machine.memory + uarg1;
+      if (p[-1]&0x80)
+        p -= 2;
+      else
+        p -= 1;
 
-  inf = get_object_propinfo_4(p);
+      inf = get_object_propinfo_4(p);
 
-  store(stack, st, inf->datasize);  
+      store(stack, st, inf->datasize);  
+    }
 %}
 
 OPCODE "inc"          1OP:0x05              VERSION all
