@@ -84,6 +84,24 @@ static NSImage* disabledImage;
 	}
 }
 
+- (void) mouseDragged: (NSEvent*) theEvent {
+	// If the mouse has moved outside, then unpush ourselves
+	// If the mouse has moved inside, then push ourselves
+	NSPoint where = [self convertPoint: [theEvent locationInWindow] fromView: nil];
+	
+	if (NSPointInRect(where, [self bounds])) {
+		if (unpushedImage) {
+			[self setImage: pushedImage];
+			inside = YES;
+		}
+	} else {
+		if (unpushedImage) {
+			[self setImage: unpushedImage];
+			inside = NO;
+		}
+	}
+}
+
 - (void) setEnabled: (BOOL) enabled {
 	if (!enabled) {
 		if (!unpushedImage) {
