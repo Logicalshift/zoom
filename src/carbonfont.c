@@ -742,7 +742,7 @@ static char* convert_text(xfont* font,
 }
 #endif
 
-#if 0
+#if 1
 /*
  * This requires some explaination...
  *
@@ -770,12 +770,12 @@ static CGGlyph* convert_glyphs(xfont* font,
   ATSUStyle    style[1];
 
   ByteCount    bufsize;
-
-  if (res == NULL)
+  
+  if (length <= 0)
     {
-      res = malloc(sizeof(ATSUGlyphInfoArray)+sizeof(ATSUGlyphInfo)*512);
+      *olen = 0;
+      return NULL;
     }
-  res->numGlyphs = 512;
 
   str = realloc(str, sizeof(UniChar)*length);
   for (x=0; x<length; x++)
@@ -786,15 +786,20 @@ static CGGlyph* convert_glyphs(xfont* font,
   ATSUCreateTextLayoutWithTextPtr(str, 0, length, length, 1, runlength, style,
 				  &lay);
   
-  bufsize = 512;
+  if (ATSUGetGlyphInfo(lay, 0, length, &bufsize, NULL) != noErr)
+    {
+      *olen = 0;
+      return NULL;
+    }
+  res = realloc(res, bufsize);
   ATSUGetGlyphInfo(lay, 0, length, &bufsize, res);
 
   ATSUDisposeTextLayout(lay);
   
-  *olen = bufsize;
-
-  out = realloc(out, sizeof(CGGlyph)*bufsize);
-  for (x=0; x<bufsize; x++)
+  *olen = res->numGlyphs;
+  
+  out = realloc(out, sizeof(CGGlyph)*res->numGlyphs);
+  for (x=0; x<res->numGlyphs; x++)
     {
       out[x] = res->glyphs[x].glyphID;
     }
@@ -871,41 +876,44 @@ XFONT_MEASURE xfont_get_text_width(xfont* xf,
   if (xf->type == FONT_FONT3)
     return length*xfont_x;
 
-  GetPort(&oldport);
-  SetPort(GetWindowPort(zoomWindow));
-
-  select_font(xf);
-  outbuf = convert_text(xf, string, length, &outlen);
-
 #ifdef USE_QUARTZ
   if (!enable_quartz)
     {
 #endif
+      GetPort(&oldport);
+      SetPort(GetWindowPort(zoomWindow));
+
+      select_font(xf);
+      outbuf = convert_text(xf, string, length, &outlen);
       res = TextWidth(outbuf, 0, outlen);
+
+      SetPort(oldport);
 #ifdef USE_QUARTZ
     }
   else
     {
       CGPoint end;
-      
+      CGGlyph* glyph;
+
       if (winlastfont != xf)
 	{
-	  CGContextSelectFont(carbon_quartz_context, xf->data.mac.psname, 
+	  /* CGContextSelectFont(carbon_quartz_context, xf->data.mac.psname, 
 			      xf->data.mac.size,
-			      kCGEncodingMacRoman);
+			      kCGEncodingMacRoman); */
+	  CGContextSetFont(carbon_quartz_context, xf->data.mac.cgfont);
+	  CGContextSetFontSize(carbon_quartz_context, xf->data.mac.size);
 	  winlastfont = xf;
 	}
+      glyph = convert_glyphs(xf, string, length, &outlen);
       CGContextSetTextPosition(carbon_quartz_context, 0, 0);
       CGContextSetTextDrawingMode(carbon_quartz_context, kCGTextInvisible);
-      CGContextShowText(carbon_quartz_context, outbuf, outlen);
+      CGContextShowGlyphs(carbon_quartz_context, glyph, outlen);
       
       end = CGContextGetTextPosition(carbon_quartz_context);
       
       res = end.x;
     }
 #endif
-
-  SetPort(oldport);
 
   return res;
 #endif
@@ -1071,6 +1079,7 @@ void xfont_plot_string(xfont* font,
   else
     {
       CGPoint pt;
+      CGGlyph* glyph;
       
       CGContextSetRGBFillColor(carbon_quartz_context, 
 			       (float)maccolour[fg_col].red/65536.0,
@@ -1078,9 +1087,9 @@ void xfont_plot_string(xfont* font,
 			       (float)maccolour[fg_col].blue/65536.0,
 			       1.0);
       
-      outbuf = convert_text(font, string, length, &outlen);
+      //outbuf = convert_text(font, string, length, &outlen);
       
-      //glyph = convert_glyphs(font, string, length, &outlen);
+      glyph = convert_glyphs(font, string, length, &outlen);
       
       /*
        * There is always CGContextSetFont, but while I'm able to create
@@ -1088,19 +1097,22 @@ void xfont_plot_string(xfont* font,
        */
       if (winlastfont != font)
 	{
+	  /*
 	  CGContextSelectFont(carbon_quartz_context, font->data.mac.psname, 
 			      font->data.mac.size,
 			      kCGEncodingMacRoman);
+	  */
+	  CGContextSetFont(carbon_quartz_context, font->data.mac.cgfont);
+	  CGContextSetFontSize(carbon_quartz_context, font->data.mac.size);
 	  winlastfont = font;
-      }
-      //CGContextSetFont(carbon_quartz_context, font->data.mac.cgfont);
+	}
       
       /* Blank out the background */
       CGContextSetTextDrawingMode(carbon_quartz_context, kCGTextInvisible);
       CGContextSetTextPosition(carbon_quartz_context, 0, 0);
-      CGContextShowText(carbon_quartz_context,
-			outbuf, outlen);
-      // CGContextShowGlyphs(carbon_quartz_context, glyph, outlen);
+      //CGContextShowText(carbon_quartz_context,
+      //		outbuf, outlen);
+      CGContextShowGlyphs(carbon_quartz_context, glyph, outlen);
       pt = CGContextGetTextPosition(carbon_quartz_context);
       
       RGBForeColor(&maccolour[bg_col]);
@@ -1115,8 +1127,12 @@ void xfont_plot_string(xfont* font,
       CGContextSetTextPosition(carbon_quartz_context,
 			       portRect.left + x, 
 			       (portRect.bottom-portRect.top)+y);
-      CGContextShowText(carbon_quartz_context,
-			outbuf, outlen);
+      //CGContextShowText(carbon_quartz_context,
+      //			outbuf, outlen);
+      CGContextShowGlyphsAtPoint(carbon_quartz_context, 
+				 portRect.left + x, 
+				 (portRect.bottom-portRect.top)+y,
+				 glyph, outlen);
     }
 # endif
 #endif
