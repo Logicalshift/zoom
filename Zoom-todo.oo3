@@ -15,10 +15,10 @@
   <settings/>
   <editor should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
-    <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="b2oX2vP-L4o"/>
-    <selected-columns ids=":941128d340f2709e21a6e303"/>
-    <selected-characters range="{92, 0}"/>
+    <hoisted-rows ids="gkaYwyn-BUm"/>
+    <selected-rows ids="jBDXx7-3tOn"/>
+    <selected-columns ids=":078928d440f2709e21a6e303"/>
+    <selected-characters range="{18, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -681,7 +681,7 @@
               <p/>
             </text>
           </values>
-          <note expanded="yes">
+          <note>
             <text>
               <p>
                 <run>
@@ -1668,7 +1668,7 @@
             </text>
           </values>
         </item>
-        <item id="jCsCwpJQjhv" state="checked">
+        <item id="jCsCwpJQjhv" expanded="yes" state="indeterminate">
           <values>
             <text>
               <p>
@@ -1702,6 +1702,34 @@
                   <p>
                     <run>
                       <lit>Image support</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="jBDXx7-3tOn">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>read_mouse support</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="aNH4YjrDe8w">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>set_mouse_win support</lit>
                     </run>
                   </p>
                 </text>
