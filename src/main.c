@@ -171,6 +171,62 @@ int zoom_main(int argc, char** argv)
 	  }
       }
 
+    if (machine.blorb == NULL)
+      {
+	char* file;
+
+	/*
+	 * Try to load a suitable blorb file...
+	 */
+	file = malloc(strlen(args.story_file)+6);
+	strcpy(file, args.story_file);
+
+	for (x=strlen(file)-1; x>=0 && file[x] != '.'; x--);
+	if (x < 0)
+	  x = strlen(file);
+	
+	file[x] = 0;
+	strcat(file, ".blb");
+
+	printf("Checking for '%s'\n", file);
+
+	if (get_file_size(file) > 64)
+	  {
+	    ZFile* bf;
+
+	    bf = open_file(file);
+
+	    if (bf != NULL && blorb_is_blorbfile(bf))
+	      {
+		BlorbFile* blb;
+
+		blb = blorb_loadfile(bf);
+
+		if (blb->game_id == NULL)
+		  zmachine_warning("Game appears to have resources, but there is no ID chunk: assuming that the resources are correct");
+
+		/* We only auto-load for files that actually match versions */
+		if (blb->game_id != NULL &&
+		    ((ZUWord)Word(ZH_release) != blb->game_id->release ||
+		     (ZUWord)Word(ZH_checksum) != blb->game_id->checksum ||
+		     memcmp(Address(ZH_serial), blb->game_id->serial, 6) != 0))
+		  {
+		    blorb_closefile(blb);
+		    close_file(bf);
+
+		    zmachine_warning("Game appears to have resources, but their ID does not match the game: these resources will not be loaded. Set the resources explicitly to override this behaviour");
+		  }
+		else
+		  {
+		    machine->blorb = blb;
+		    machine->blorb_file = bf;
+		  }
+	      }
+	  }
+
+	free(file);
+      }
+
     sprintf(title, rc_get_name(),
 	    name,
 	    Word(ZH_release),
