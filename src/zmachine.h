@@ -205,6 +205,7 @@ typedef struct ZMachine
   ZByte*   dynamic_memory;
 
   ZFile*   file;
+  char*    story_file;
 
   ZByte* undo    [UNDO_LEVEL];
   ZDWord undo_len[UNDO_LEVEL];

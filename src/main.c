@@ -133,6 +133,8 @@ int zoom_main(int argc, char** argv)
 
     len = strlen(args.story_file);
 
+    machine.story_file = args.story_file;
+
     slashpos = -1;
     name = malloc(len+1);
     for (x=0; x<len; x++)

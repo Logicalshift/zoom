@@ -52,6 +52,8 @@ void zmachine_load_story(char* filename, ZMachine* machine)
   ZDWord size;
   ZFrame* frame;
 
+  machine->story_file = filename;
+
 #if WINDOW_SYSTEM == 3
   if (filename == NULL)
     {

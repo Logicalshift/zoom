@@ -227,6 +227,27 @@ char* rc_get_savedir(void)
       if (rc_defgame->gamedir == NULL)
 	{
 #if WINDOW_SYSTEM != 2
+	  static char* dir = NULL;
+
+	  if (dir == NULL && machine.story_file != NULL)
+	    {
+	      int x;
+
+	      for (x=strlen(machine.story_file)-1;
+		   x>0 && machine.story_file[x] != '/'; 
+		   x--);
+
+	      if (x != 0)
+		{
+		  dir = malloc(x+2);
+		  strncpy(dir, machine.story_file, x+1);
+		  dir[x+1] = 0;
+		}
+	    }
+
+	  if (dir != NULL)
+	    return dir;
+
 	  return "./";
 #else
 	  return NULL;
