@@ -48,7 +48,10 @@ extern void v6_scroll_window(int window,
 
 extern int  v6_split_point  (int* text,
 			     int  text_len,
-			     int  width);
+			     int  width,
+			     int* width_out);
+extern int  v6_measure_text (int* text,
+			     int text_len);
 
 extern int  v6_set_style    (int);
 extern void v6_set_colours  (int fg, int bg);

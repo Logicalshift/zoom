@@ -114,7 +114,8 @@ static void prints_reformat_width(int len)
 	text[x] = mem[x+2];
       
       split = v6_split_point(text, len, 
-			     machine.memory_width[machine.memory_on-1]);
+			     machine.memory_width[machine.memory_on-1],
+			     NULL);
       free(text);
       
       if (split != len)
@@ -194,6 +195,26 @@ static void prints(const int* const s)
 	  mem[1] = len;
 
 	  prints_reformat_width(len);
+	}
+
+      if (machine.version == 6)
+	{
+	  int* text;
+	  ZUWord width;
+
+	  len = Word(machine.memory_pos[machine.memory_on-1]);
+	  mem = Address(machine.memory_pos[machine.memory_on-1]);
+
+	  text = malloc(sizeof(int)*len);
+	  for (x=0; x<len; x++)
+	    text[x] = mem[x+2];
+	  
+	  width = v6_measure_text(text, len);
+
+	  machine.memory[0x30] = width>>8;
+	  machine.memory[0x31] = width;
+
+	  free(text);
 	}
       
       return;

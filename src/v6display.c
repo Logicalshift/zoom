@@ -579,7 +579,8 @@ void v6_scroll_window(int window, int amount)
 
 int v6_split_point(int* text,
 		   int  text_len,
-		   int  width)
+		   int  width,
+		   int* width_out)
 {
   float cwidth;
   int breakpoint, text_pos;
@@ -607,9 +608,19 @@ int v6_split_point(int* text,
   cwidth = display_measure_text(text,
 				text_pos,
 				ACTWIN.style);
+  if (width_out != NULL)
+    *width_out = cwidth;
 
   if (cwidth >= width)
     return last_word;
 
   return text_len;
+}
+
+int v6_measure_text(int* text,
+		    int len)
+{
+  return display_measure_text(text,
+			      len,
+			      ACTWIN.style);
 }
