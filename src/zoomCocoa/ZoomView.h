@@ -253,4 +253,7 @@ extern NSString* ZoomStyleAttributeName;
 // Retrieve the next command
 - (NSString*) nextCommand;
 
+// Return YES if you want to turn off more prompts
+- (BOOL) disableMorePrompt;
+
 @end

@@ -325,5 +325,9 @@ static NSComparisonResult stringCompare(id a, id b, void* context) {
 	return [nextCommand autorelease];
 }
 
+- (BOOL) disableMorePrompt {
+	return YES;
+}
+
 @end
 

@@ -651,7 +651,14 @@ static void finalizeViews(void) {
 
 - (void) displayMoreIfNecessary {
     NSLayoutManager* mgr = [textView layoutManager];
-
+	
+	if (inputSource && [inputSource respondsToSelector: @selector(disableMorePrompt)]) {
+		if ([inputSource disableMorePrompt]) {
+			[self resetMorePrompt];
+			moreOn = NO;
+		}
+	}
+	
 	// Find the last glyph in the text view
     NSRange endGlyph = [textView selectionRangeForProposedRange:
         NSMakeRange([[textView textStorage] length]-1, 1)
