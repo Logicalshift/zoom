@@ -16,6 +16,8 @@
             ACTIONS = {
                 addButtonPressed = id; 
                 changeFilter = id; 
+                changeFilter1 = id; 
+                changeFilter2 = id; 
                 drawerButtonPressed = id; 
                 restoreAutosave = id; 
                 searchFieldChanged = id; 
