@@ -496,7 +496,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 				  isForGame: ident] &&
 		   number < maxNumber) {
 		number++;
-		gameDir = [rootDir stringByAppendingPathComponent: [NSString stringWithFormat: @"%@ %i", title, number]];
+		gameDir = [groupDir stringByAppendingPathComponent: [NSString stringWithFormat: @"%@ %i", title, number]];
 	}
 	
 	if (number >= maxNumber) {
