@@ -57,6 +57,8 @@ typedef struct
   char*      graphics;
 
   int xsize, ysize;
+
+  int antialias;
 } rc_game;
 
 extern void       rc_load           (void);
@@ -66,6 +68,7 @@ extern rc_font*   rc_get_fonts      (int* n_fonts);
 extern char*      rc_get_name       (void);
 extern char*      rc_get_game_name  (char* serial, int revision);
 extern int        rc_get_interpreter(void);
+extern int        rc_get_antialias  (void);
 extern int        rc_get_revision   (void);
 extern char*      rc_get_gamedir    (void);
 extern char*      rc_get_savedir    (void);

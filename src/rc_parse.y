@@ -17,7 +17,7 @@ extern hash rc_hash;
 extern void rc_error(char*);
 extern int  rc_lex(void);
 
-#define EMPTY_GAME(x) x.interpreter = -1; x.revision = -1; x.name = NULL; x.fonts = NULL; x.n_fonts = -1; x.colours = NULL; x.n_colours = -1; x.gamedir = x.savedir = x.sounds = x.graphics = NULL; x.xsize = x.ysize = -1;
+#define EMPTY_GAME(x) x.interpreter = -1; x.revision = -1; x.name = NULL; x.fonts = NULL; x.n_fonts = -1; x.colours = NULL; x.n_colours = -1; x.gamedir = x.savedir = x.sounds = x.graphics = NULL; x.xsize = x.ysize = -1; x.antialias = -1;
 
 static inline rc_game merge_games(const rc_game* a, const rc_game* b)
 {
@@ -27,6 +27,11 @@ static inline rc_game merge_games(const rc_game* a, const rc_game* b)
     r.interpreter = b->interpreter;
   else
     r.interpreter = a->interpreter;
+
+  if (a->antialias == -1)
+    r.antialias = b->antialias;
+  else
+    r.antialias = a->antialias;
 
   if (a->revision == -1)
     r.revision = b->revision;
@@ -136,6 +141,9 @@ static inline rc_game merge_games(const rc_game* a, const rc_game* b)
 %token SOUNDS
 %token GRAPHICS
 %token SIZE
+%token ANTIALIAS
+%token YES
+%token NO
 
 %token <str> GAMEID
 %token <num> NUMBER
@@ -151,6 +159,7 @@ static inline rc_game merge_games(const rc_game* a, const rc_game* b)
 %type <game>  RCOption
 %type <game>  RCOptionList
 %type <game>  RCBlock
+%type <num>   YesOrNo
 
 %%
 
@@ -241,10 +250,19 @@ RCOptionList:	  RCOption
 		    }
 		;
 
+YesOrNo:	  YES { $$ = 1; }
+		| NO  { $$ = 0; }
+		;
+
 RCOption:	  INTERPRETER NUMBER
 		    {
 		      EMPTY_GAME($$);
 		      $$.interpreter = $2;
+		    }
+                | ANTIALIAS YesOrNo
+		    {
+		      EMPTY_GAME($$);
+		      $$.antialias = $2;
 		    }
 		| REVISION CHARACTER
 		    {

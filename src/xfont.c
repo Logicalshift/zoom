@@ -125,8 +125,8 @@ void xfont_initialise(void)
 		  DefaultDepth(x_display, x_screen),
 		  DefaultColormap(x_display, x_screen));
   T1_AASetBitsPerPixel(DefaultDepth(x_display, x_screen));
+  T1_AASetLevel(T1_AA_LOW);
   T1_AASetSmartMode(T1_YES);
-  T1_AASetLevel(T1_AA_HIGH);
 #endif
 }
 
@@ -192,7 +192,28 @@ xfont* xfont_load_font(char* font)
 #ifdef HAVE_XFT
       f->type = XFONT_XFT;
       if (xft_drawable != NULL)
-	f->data.Xft = XftFontOpenXlfd(x_display, x_screen, font);
+	{
+	  XftPattern* pat, *match;
+	  XftResult   res;
+
+	  pat = XftXlfdParse(font, False, False);
+	  XftPatternAddBool(pat, XFT_ANTIALIAS,
+			    rc_get_antialias()?True:False);
+
+	  match = XftFontMatch(x_display, x_screen, pat, &res);
+	  if (match)
+	    {
+	      f->data.Xft = XftFontOpenPattern(x_display, match);
+	      XftPatternDestroy(match);
+	    }
+	  else
+	    {
+	      f->data.Xft = NULL;
+	    }
+	  XftPatternDestroy(pat);
+
+	  //f->data.Xft = XftFontOpenXlfd(x_display, x_screen, font);
+	}
       else
 	{
 	  f->data.Xft = NULL;
@@ -482,11 +503,22 @@ void xfont_plot_string(xfont* f,
 
 	XSetForeground(x_display, gc, x_colour[fore].pixel);
 	XSetBackground(x_display, gc, x_colour[back].pixel);
-	T1_AASetStringX(draw, gc, T1_OPAQUE, 
-			x, y + (f->data.t1.bounds.llx*f->data.t1.size)/1000, 
-			f->data.t1.id,
-			t1txt, len, 0, T1_KERNING,
-			f->data.t1.size, NULL);
+	if (rc_get_antialias())
+	  {
+	    T1_AASetStringX(draw, gc, T1_OPAQUE, 
+			    x, y + (f->data.t1.bounds.llx*f->data.t1.size)/1000, 
+			    f->data.t1.id,
+			    t1txt, len, 0, T1_KERNING,
+			    f->data.t1.size, NULL);
+	  }
+	else
+	  {
+	    T1_SetStringX(draw, gc, T1_OPAQUE, 
+			  x, y + (f->data.t1.bounds.llx*f->data.t1.size)/1000, 
+			  f->data.t1.id,
+			  t1txt, len, 0, T1_KERNING,
+			  f->data.t1.size, NULL);
+	  }
       }
       break;
 #endif

@@ -182,6 +182,13 @@ rc_colour* rc_get_colours(int* n_cols)
   return game->colours;  
 }
 
+int rc_get_antialias(void)
+{
+  if (game->antialias == -1)
+    return rc_defgame->antialias==-1?1:rc_defgame->antialias;
+  return game->antialias;
+}
+
 int rc_get_interpreter(void)
 {
   if (game->interpreter == -1)

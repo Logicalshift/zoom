@@ -125,6 +125,7 @@ XColor   x_colour[N_COLS] =
 #ifdef HAVE_XFT
 XftColor xft_colour[N_COLS];
 XftDraw* xft_drawable;
+XftDraw* xft_maindraw = NULL;
 #endif
 
 #define DEFAULT_FORE 0
@@ -372,11 +373,26 @@ static void draw_input_text(void)
 				      buf_offset);
 
       xfont_set_colours(fg+FIRST_ZCOLOUR, bg+FIRST_ZCOLOUR);
+#ifdef HAVE_XFT
+      { XftDraw* xft_lastdraw; /* Save the last drawable */
+      if (xft_drawable != NULL && xft_maindraw != NULL)
+	{
+	  xft_lastdraw = xft_drawable;
+	  xft_drawable = xft_maindraw;
+	}
+#endif
       xfont_plot_string(font[style_font[(CURSTYLE>>1)&15]],
 			x_mainwin, x_wingc,
 			input_x+BORDER_SIZE, input_y+BORDER_SIZE,
 			text_buf,
 			istrlen(text_buf));
+#ifdef HAVE_XFT
+      if (xft_drawable != NULL && xft_maindraw != NULL)
+	{
+	  xft_drawable = xft_lastdraw;
+	}
+      }
+#endif
     }
 
   if (on)
@@ -2047,6 +2063,17 @@ void display_initialise(void)
       xft_drawable = XftDrawCreate(x_display, x_drawable,
 				   DefaultVisual(x_display, x_screen), 
 				   DefaultColormap(x_display, x_screen));
+
+      if (x_drawable != x_mainwin)
+	{
+	  /* 
+	   * Create a drawable on the main window (used for drawing the input 
+	   * text)
+	   */
+	  xft_maindraw = XftDrawCreate(x_display, x_mainwin,
+				       DefaultVisual(x_display, x_screen), 
+				       DefaultColormap(x_display, x_screen));
+	}
     }
   else
     {

@@ -32,6 +32,10 @@ savedir				return SAVEDIR;
 sounds				return SOUNDS;
 graphics			return GRAPHICS;
 size				return SIZE;
+antialias                       return ANTIALIAS;
+
+yes				return YES;
+no				return NO;
 
 [0-9]{1,3}\.[0-9]{6}		{
 				  yylval.str = malloc(strlen(yytext)+1);
