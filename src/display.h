@@ -139,6 +139,9 @@ extern float display_get_font_ascent (int style);
 extern float display_get_font_descent(int style);
 extern void  display_wait_for_more   (void);
 
+extern int   display_get_pix_mouse_x (void);
+extern int   display_get_pix_mouse_y (void);
+
 extern void  display_set_input_pos   (int style, int x, int y, int width);
 
 #endif

@@ -51,6 +51,30 @@
 #include "windisplay.h"
 #endif
 
+#ifdef SUPPORT_VERSION_6
+#define StyleSet(x, y) switch (argblock.arg[2]) { case 0: x = (y)!=0; \
+   break; case 1: if ((y)!=0) x=1; break; case 2: if ((y)==0) x=0; break; \
+   case 3: x ^= (y)!=0; }
+
+static struct v6_wind
+{
+  int wrapping, scrolling, transcript, buffering;
+
+  int x, y;
+  int xsize, ysize;
+  int xcur, ycur;
+  int leftmar, rightmar;
+  ZUWord newline_routine;
+  ZWord countdown;
+  int style;
+  ZUWord colour;
+  int font_num;
+  ZUWord font_size;
+
+  ZWord line_count;
+} windows[8];
+#endif
+
 /***                           ----// 888 \\----                           ***/
 
 /* Utilty functions */
@@ -804,7 +828,12 @@ static void zcode_op_output_stream(ZStack* stack,
       machine.memory_width[machine.memory_on-1] = -1;
 
       if (args->n_args > 2)
-	machine.memory_width[machine.memory_on-1] = args->arg[2];
+	{
+	  machine.memory_width[machine.memory_on-1] = args->arg[2];
+	  
+	  if (machine.memory_width[machine.memory_on-1] == 0)
+	    machine.memory_width[machine.memory_on-1] = windows[v6_get_window()].xsize;
+	}
 
       mem = Address((ZUWord)machine.memory_pos[machine.memory_on-1]);
       mem[0] = 0;
@@ -922,17 +951,17 @@ static void zcode_op_readchar(ZDWord* pc,
 	{
 	  int x,y;
 
-	  x = display_get_mouse_x();
-	  y = display_get_mouse_y();
-
-	  if (!machine.graphical)
+	  if (machine.version != 6)
 	    {
-	      x /= machine.dinfo->font_width;
-	      y /= machine.dinfo->font_height;
-	      x += 1;
-	      y += 1;
+	      x = display_get_mouse_x();
+	      y = display_get_mouse_y();
 	    }
-
+	  else
+	    {
+	      x = display_get_pix_mouse_x();
+	      y = display_get_pix_mouse_y();
+	    }
+	  
 	  machine.heb[ZHEB_xmouse]   = x>>8;
 	  machine.heb[ZHEB_xmouse+1] = x;
 	  machine.heb[ZHEB_ymouse]   = y>>8;
@@ -1224,27 +1253,6 @@ static void zcode_op_sread_4(ZDWord* pc,
 /***                           ----// 888 \\----                           ***/
 /* Version 6 utilities */
 #ifdef SUPPORT_VERSION_6
-#define StyleSet(x, y) switch (argblock.arg[2]) { case 0: x = (y)!=0; \
-   break; case 1: if ((y)!=0) x=1; break; case 2: if ((y)==0) x=0; break; \
-   case 3: x ^= (y)!=0; }
-
-static struct v6_wind
-{
-  int wrapping, scrolling, transcript, buffering;
-
-  int x, y;
-  int xsize, ysize;
-  int xcur, ycur;
-  int leftmar, rightmar;
-  ZUWord newline_routine;
-  ZWord countdown;
-  int style;
-  ZUWord colour;
-  int font_num;
-  ZUWord font_size;
-
-  ZWord line_count;
-} windows[8];
 
 static int newline_function(const int* remaining, int rem_len);
 

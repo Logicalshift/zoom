@@ -2139,6 +2139,16 @@ int display_get_mouse_y(void)
   return click_y/xfont_y;
 }
 
+int display_get_pix_mouse_x(void)
+{
+  return click_x;
+}
+
+int display_get_pix_mouse_y(void)
+{
+  return click_y;
+}
+
 void display_set_more(int window, int more)
 {
 }

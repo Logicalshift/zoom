@@ -391,9 +391,23 @@ void v6_erase_line(int val)
       ACTWIN.line_height = display_get_font_height(ACTWIN.style);
     }
 
-  display_pixmap_cols(ACTWIN.back, 0);
-  display_plot_rect(ACTWIN.curx, ACTWIN.cury,
-		    ACTWIN.width-ACTWIN.curx, ACTWIN.line_height);
+  if (ACTWIN.style&1)
+    display_pixmap_cols(ACTWIN.fore, 0);
+  else
+    display_pixmap_cols(ACTWIN.back, 0);
+  if (val == 1)
+    display_plot_rect(ACTWIN.curx, ACTWIN.cury,
+		      ACTWIN.width-(ACTWIN.curx-ACTWIN.xpos), ACTWIN.line_height);
+  else
+    {
+      if (ACTWIN.curx + val > ACTWIN.xpos + ACTWIN.width - ACTWIN.rmargin)
+	{
+	  val = ACTWIN.width - ACTWIN.rmargin - ACTWIN.curx;
+	}
+
+      display_plot_rect(ACTWIN.curx, ACTWIN.cury,
+			val, ACTWIN.line_height);
+    }
 }
 
 void v6_set_colours(int fg, int bg)
