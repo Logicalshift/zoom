@@ -1,0 +1,221 @@
+Only in /Users/ahunter/Desktop/zoom-1.0.2alpha2-trans: .DS_Store
+Only in /Users/ahunter/Desktop/zoom-1.0.2alpha2-trans/ZoomCocoa.xcode: cpieper.pbxuser
+diff -rp zoom-1.0.2alpha2/src/zoomCocoa/Preferences.nib/classes.nib /Users/ahunter/Desktop/zoom-1.0.2alpha2-trans/src/zoomCocoa/Preferences.nib/classes.nib
+*** zoom-1.0.2alpha2/src/zoomCocoa/Preferences.nib/classes.nib	Mon Feb  2 16:39:33 2004
+--- /Users/ahunter/Desktop/zoom-1.0.2alpha2-trans/src/zoomCocoa/Preferences.nib/classes.nib	Sun Jun  6 06:59:58 2004
+***************
+*** 5,10 ****
+--- 5,11 ----
+              ACTIONS = {
+                  autosaveChanged = id; 
+                  changeOrganiseDir = id; 
++                 changeTransparency = id; 
+                  displayWarningsChanged = id; 
+                  fatalWarningsChanged = id; 
+                  interpreterChanged = id; 
+***************
+*** 30,35 ****
+--- 31,37 ----
+                  organiseDir = NSTextView; 
+                  revision = NSTextField; 
+                  speakGameText = NSButton; 
++                 transparencySlider = NSSlider; 
+              }; 
+              SUPERCLASS = NSWindowController; 
+          }
+diff -rp zoom-1.0.2alpha2/src/zoomCocoa/Preferences.nib/info.nib /Users/ahunter/Desktop/zoom-1.0.2alpha2-trans/src/zoomCocoa/Preferences.nib/info.nib
+*** zoom-1.0.2alpha2/src/zoomCocoa/Preferences.nib/info.nib	Mon Feb  2 16:39:33 2004
+--- /Users/ahunter/Desktop/zoom-1.0.2alpha2-trans/src/zoomCocoa/Preferences.nib/info.nib	Sun Jun  6 06:59:58 2004
+***************
+*** 3,19 ****
+  <plist version="1.0">
+  <dict>
+  	<key>IBDocumentLocation</key>
+! 	<string>156 709 356 240 0 0 1280 1002 </string>
+  	<key>IBEditorPositions</key>
+  	<dict>
+  		<key>15</key>
+! 		<string>459 551 410 234 0 0 1280 1002 </string>
+  		<key>28</key>
+! 		<string>471 483 386 404 0 0 1280 1002 </string>
+  		<key>36</key>
+! 		<string>490 530 347 309 0 0 1280 1002 </string>
+  		<key>9</key>
+! 		<string>449 571 430 193 0 0 1280 1002 </string>
+  	</dict>
+  	<key>IBFramework Version</key>
+  	<string>349.0</string>
+--- 3,19 ----
+  <plist version="1.0">
+  <dict>
+  	<key>IBDocumentLocation</key>
+! 	<string>156 410 440 377 0 0 1280 832 </string>
+  	<key>IBEditorPositions</key>
+  	<dict>
+  		<key>15</key>
+! 		<string>435 439 410 234 0 0 1280 832 </string>
+  		<key>28</key>
+! 		<string>149 291 386 404 0 0 1280 832 </string>
+  		<key>36</key>
+! 		<string>466 379 347 354 0 0 1280 832 </string>
+  		<key>9</key>
+! 		<string>425 459 430 193 0 0 1280 832 </string>
+  	</dict>
+  	<key>IBFramework Version</key>
+  	<string>349.0</string>
+***************
+*** 21,30 ****
+  	<integer>2</integer>
+  	<key>IBOpenObjects</key>
+  	<array>
+! 		<integer>15</integer>
+  		<integer>9</integer>
+  	</array>
+  	<key>IBSystem Version</key>
+! 	<string>7D24</string>
+  </dict>
+  </plist>
+--- 21,30 ----
+  	<integer>2</integer>
+  	<key>IBOpenObjects</key>
+  	<array>
+! 		<integer>36</integer>
+  		<integer>9</integer>
+  	</array>
+  	<key>IBSystem Version</key>
+! 	<string>7H63</string>
+  </dict>
+  </plist>
+Binary files zoom-1.0.2alpha2/src/zoomCocoa/Preferences.nib/keyedobjects.nib and /Users/ahunter/Desktop/zoom-1.0.2alpha2-trans/src/zoomCocoa/Preferences.nib/keyedobjects.nib differ
+Binary files zoom-1.0.2alpha2/src/zoomCocoa/Preferences.nib/objects.nib and /Users/ahunter/Desktop/zoom-1.0.2alpha2-trans/src/zoomCocoa/Preferences.nib/objects.nib differ
+Only in /Users/ahunter/Desktop/zoom-1.0.2alpha2-trans/src/zoomCocoa: Preferences~.nib
+diff -rp zoom-1.0.2alpha2/src/zoomCocoa/ZoomClientController.m /Users/ahunter/Desktop/zoom-1.0.2alpha2-trans/src/zoomCocoa/ZoomClientController.m
+*** zoom-1.0.2alpha2/src/zoomCocoa/ZoomClientController.m	Sat Apr 17 16:56:30 2004
+--- /Users/ahunter/Desktop/zoom-1.0.2alpha2-trans/src/zoomCocoa/ZoomClientController.m	Wed Jun  2 12:26:06 2004
+***************
+*** 49,55 ****
+  		[zoomView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+  	}
+  
+!     [zoomView setDelegate: self];
+      [zoomView runNewServer: nil];
+  }
+  
+--- 49,58 ----
+  		[zoomView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+  	}
+  
+! 	[[self window] setAlphaValue: 0.99];
+! //	[[self window] invalidateShadow];
+!     
+! 	[zoomView setDelegate: self];
+      [zoomView runNewServer: nil];
+  }
+  
+diff -rp zoom-1.0.2alpha2/src/zoomCocoa/ZoomPreferenceWindow.h /Users/ahunter/Desktop/zoom-1.0.2alpha2-trans/src/zoomCocoa/ZoomPreferenceWindow.h
+*** zoom-1.0.2alpha2/src/zoomCocoa/ZoomPreferenceWindow.h	Mon Feb  2 16:37:38 2004
+--- /Users/ahunter/Desktop/zoom-1.0.2alpha2-trans/src/zoomCocoa/ZoomPreferenceWindow.h	Wed Jun  2 11:12:59 2004
+***************
+*** 23,28 ****
+--- 23,29 ----
+  	IBOutlet NSButton* speakGameText;	
+  	IBOutlet NSButton* autosaveGames;
+  	IBOutlet NSButton* keepGamesOrganised;
++ 	IBOutlet NSSlider* transparencySlider;
+  	
+  	IBOutlet NSPopUpButton* interpreter;
+  	IBOutlet NSTextField* revision;
+***************
+*** 49,54 ****
+--- 50,56 ----
+  - (IBAction) speakGameTextChanged: (id) sender;
+  - (IBAction) keepOrganisedChanged: (id) sender;
+  - (IBAction) autosaveChanged: (id) sender;
++ - (IBAction) changeTransparency: (id)sender;
+  
+  - (IBAction) changeOrganiseDir: (id) sender;
+  - (IBAction) resetOrganiseDir: (id) sender;
+diff -rp zoom-1.0.2alpha2/src/zoomCocoa/ZoomPreferenceWindow.m /Users/ahunter/Desktop/zoom-1.0.2alpha2-trans/src/zoomCocoa/ZoomPreferenceWindow.m
+*** zoom-1.0.2alpha2/src/zoomCocoa/ZoomPreferenceWindow.m	Sat Mar 13 19:34:46 2004
+--- /Users/ahunter/Desktop/zoom-1.0.2alpha2-trans/src/zoomCocoa/ZoomPreferenceWindow.m	Sun Jun  6 06:51:52 2004
+*************** static NSDictionary*  itemDictionary = n
+*** 155,160 ****
+--- 155,166 ----
+  	[keepGamesOrganised setState: [prefs keepGamesOrganised]?NSOnState:NSOffState];
+  	[autosaveGames setState: [prefs autosaveGames]?NSOnState:NSOffState];
+  	
++ 	// a kind of chessy way to get the current alpha setting
++ 	float red, green, blue, alpha;
++ 	NSColor * color = [[prefs colours] objectAtIndex:0];
++ 	[color getRed:&red green:&green blue:&blue alpha:&alpha];
++ 	[transparencySlider setFloatValue:(alpha * 100.0)];
++ 	
+  	[interpreter selectItemAtIndex: [prefs interpreter]-1];
+  	[revision setStringValue: [NSString stringWithFormat: @"%c", [prefs revision]]];
+  	
+*************** static void appendStyle(NSMutableString*
+*** 314,327 ****
+  	[prefFonts release];
+  }
+  
+! - (void)changeColor:(id)sender {
+  	int selColour = [colours selectedRow];
+  	
+  	if (selColour < 0) {
+  		return;
+  	}
+  	
+! 	NSColor* colour = [[NSColorPanel sharedColorPanel] color];
+  	
+  	NSMutableArray* cols = [[prefs colours] mutableCopy];
+  	
+--- 320,336 ----
+  	[prefFonts release];
+  }
+  
+! - (void)changeColor:(id)sender {	
+! 
+  	int selColour = [colours selectedRow];
+  	
+  	if (selColour < 0) {
+  		return;
+  	}
+  	
+! 	NSColor* selected_colour = [[NSColorPanel sharedColorPanel] color];
+! 	
+! 	NSColor* colour = [[selected_colour colorUsingColorSpaceName: NSCalibratedRGBColorSpace] colorWithAlphaComponent:(1 - ([transparencySlider floatValue] / 100.0))];
+  	
+  	NSMutableArray* cols = [[prefs colours] mutableCopy];
+  	
+*************** static void appendStyle(NSMutableString*
+*** 334,339 ****
+--- 343,371 ----
+  	}
+  	
+  	[cols release];
++ }
++ 
++ - (void)changeTransparency:(id)sender {
++ 
++ 	NSMutableArray* cols = [[prefs colours] mutableCopy];
++ 	
++ 	int i;
++ 	for(  i = 0; i < [cols count]; i++ )
++ 	{
++ 		NSColor * color = [cols objectAtIndex: i];
++ 	
++ 		NSColor*  transparent_color = [[color colorUsingColorSpaceName: NSCalibratedRGBColorSpace] colorWithAlphaComponent:([transparencySlider floatValue] / 100.0)];
++ 		
++ 		[cols replaceObjectAtIndex: i
++ 						withObject: transparent_color];
++ 	}
++ 
++ 	[prefs setColours: cols];
++ 		
++ 	[colours reloadData];
++ 	
++ 	[cols release];
++ 
+  }
+  
+  // == Various actions ==
