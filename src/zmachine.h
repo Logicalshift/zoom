@@ -30,6 +30,7 @@
 #include "hash.h"
 #include "file.h"
 #include "display.h"
+#include "blorb.h"
 
 /*
  * You can #define the following definitions to alter how your version 
@@ -59,7 +60,7 @@
  * not. The v1.0 specification indicates that you shouldn't do this,
  * but games that do not support this mode do not have the 'pictures'
  * bit set, Beyond Zork being the only v5 game that I know of that has 
- * this bit set.
+ * this bit set. This doesn't actually do a lot any more.
  */
 
 #undef  DEBUG        /* Lots of debugging crap */
@@ -74,6 +75,7 @@
 		      * interpreter is conformant to the ZMachine
 		      * specification v1.0
 		      */
+#define SPEC_11      /* Define to implement spec 1.1 (draft 4) */
 #undef  GRAPHICAL    /*
 		      * Define to set the default behaviour to mimic
 		      * that of the Beyond Zork interpreter
@@ -261,6 +263,8 @@ typedef struct ZMachine
   int track_properties;
   int track_attributes;
 #endif
+
+  IffFile* blorb_tokens;
 } ZMachine;
 
 typedef struct ZDictionary

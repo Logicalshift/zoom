@@ -34,6 +34,7 @@
 #include "display.h"
 #include "rc.h"
 #include "stream.h"
+#include "blorb.h"
 
 #if WINDOW_SYSTEM == 2
 # include <windows.h>
@@ -83,7 +84,18 @@ void zmachine_load_story(char* filename, ZMachine* machine)
       if (machine->file == NULL)
 	zmachine_fatal("Unable to open story file");
     }
-  machine->memory = read_block(machine->file, 0, size);
+
+  if (blorb_is_blorbfile(machine->file))
+    {
+      printf("Blorb...\n");
+      machine->blorb_tokens = iff_decode_file(machine->file);
+      printf("%i chunks\n", machine->blorb_tokens->nchunks);
+      exit(0);
+    }
+  else
+    {
+      machine->memory = read_block(machine->file, 0, size);
+    }
   if (machine->memory == NULL)
     zmachine_fatal("Unable to read story file");
   /* close_file(machine->file); */
@@ -488,7 +500,11 @@ void zmachine_setup_header(void)
     {
 # endif
       machine.memory[0x32] = 1;
+# ifdef SPEC_11
+      machine.memory[0x33] = 1;
+# else
       machine.memory[0x33] = 0;
+# endif
 # ifdef SAFE
     }
   else

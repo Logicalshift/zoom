@@ -1661,6 +1661,16 @@ OPCODE "get_cursor"     VAR:0x10 ARGS:1               VERSION 4,5,7,8
 OPCODE "set_text_style" VAR:0x11 ARGS:1               VERSION 4,5,6,7,8
 %{
   stream_flush_buffer();
+#ifndef SPEC_11
+  if (argblock.arg[0] != 1 &&
+      argblock.arg[0] != 2 &&
+      argblock.arg[0] != 4 &&
+      argblock.arg[0] != 8 &&
+      argblock.arg[0] != 16)
+    {
+      zmachine_warning("Multiple styles not (officially) supported in version 1.0");
+    }
+#endif
   display_set_style(argblock.arg[0]);  
 %}
 
@@ -2432,6 +2442,22 @@ OPCODE "set_margins"   EXT:0x08 ARGS:3        VERSION 6
                           yp);
     }
   display_set_window(win);
+%}
+
+OPCODE "set_true_colour" EXT:0x0d VERSION 5,6,7,8
+%{
+#ifndef SPEC_11
+  zmachine_warning("set_true_colour has no effect before standard 1.1");
+#else
+#endif
+%}
+
+OPCODE "sound_data" EXT:0x0e VERSION 5,6,7,8
+%{
+#ifndef SPEC_11
+  zmachine_warning("sound_data has no effect before standard 1.1");
+#else
+#endif
 %}
 
 OPCODE "move_window"   EXT:0x10               VERSION 6
