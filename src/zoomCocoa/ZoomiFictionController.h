@@ -48,7 +48,8 @@
 - (IBAction) startNewGame: (id) sender;
 - (IBAction) restoreAutosave: (id) sender;
 - (IBAction) searchFieldChanged: (id) sender;
-- (IBAction) changeFilter: (id) sender;
+- (IBAction) changeFilter1: (id) sender;
+- (IBAction) changeFilter2: (id) sender;
 
 - (ZoomStory*) storyForID: (ZoomStoryID*) ident;
 - (void) configureFromMainTableSelection;

@@ -305,7 +305,7 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	[self reloadTableData]; [mainTableView reloadData];
 }
 
-- (IBAction) changeFilter: (id) sender {
+- (IBAction) changeFilter1: (id) sender {
 	NSString* filterName = [ZoomStory keyForTag: [sender tag]];
 	
 	NSString* filterTitle = [ZoomStory nameForKey: filterName];
@@ -314,15 +314,31 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 		return;
 	}
 	
-	// For the moment, we only change the filter of the first filter table
-	// Need to find a way of discovering which table the user brought the menu up
-	// for (preferably without using a duplicate menu)
 	NSTableColumn* filterColumn = [[filterTable1 tableColumns] objectAtIndex: 0];
 
 	[filterColumn setIdentifier: filterName];
 	[[filterColumn headerCell] setStringValue: filterTitle];
 	
 	[filterTable1 selectRow: 0 byExtendingSelection: NO];
+	[filterTable2 selectRow: 0 byExtendingSelection: NO];
+	
+	[self reloadTableData]; [mainTableView reloadData];
+}
+
+- (IBAction) changeFilter2: (id) sender {
+	NSString* filterName = [ZoomStory keyForTag: [sender tag]];
+	
+	NSString* filterTitle = [ZoomStory nameForKey: filterName];
+	
+	if (!filterName || !filterTitle) {
+		return;
+	}
+	
+	NSTableColumn* filterColumn = [[filterTable2 tableColumns] objectAtIndex: 0];
+	
+	[filterColumn setIdentifier: filterName];
+	[[filterColumn headerCell] setStringValue: filterTitle];
+	
 	[filterTable2 selectRow: 0 byExtendingSelection: NO];
 	
 	[self reloadTableData]; [mainTableView reloadData];
