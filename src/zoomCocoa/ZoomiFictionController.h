@@ -12,6 +12,7 @@
 #import "ZoomCollapsableView.h"
 #import "ZoomSavePreviewView.h"
 #import "ZoomCollapsingSplitView.h"
+#import "ZoomResourceDrop.h"
 
 @interface ZoomiFictionController : NSWindowController {
 	IBOutlet ZoomiFButton* addButton;
@@ -50,6 +51,9 @@
 	
 	// Save game previews
 	ZoomSavePreviewView* previewView;
+	
+	// Resource drop zone
+	ZoomResourceDrop* resourceDrop;
 	
 	// Data source information
 	NSMutableArray* filterSet1;

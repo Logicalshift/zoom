@@ -56,6 +56,7 @@ static NSString* sortGroup    = @"ZoomiFictionControllerSortGroup";
 	[previewView release];
 	[commentView release];
 	[teaserView release];
+	[resourceDrop release];
 	
 	[[NSNotificationCenter defaultCenter] removeObserver: self];
 	
@@ -228,6 +229,7 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	commentView = [[NSTextView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
 	teaserView = [[NSTextView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
 	previewView = [[ZoomSavePreviewView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
+	resourceDrop = [[ZoomResourceDrop alloc] initWithFrame: NSMakeRect(0, 0, 100, 100)];
 	[previewView setMenu: saveMenu];
 	
 	[teaserView setMaxSize: NSMakeSize(1e8, 1e8)];
@@ -255,6 +257,8 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 				   withTitle: @"Teaser"];
 	[collapseView addSubview: commentView
 				   withTitle: @"Comments"];
+	[collapseView addSubview: resourceDrop
+				   withTitle: @"Resources"];
 
 	[mainTableView registerForDraggedTypes:[NSArray arrayWithObjects:NSFilenamesPboardType, nil]];
 				   
