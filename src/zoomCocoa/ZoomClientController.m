@@ -6,6 +6,8 @@
 //  Copyright (c) 2003 Andrew Hunter. All rights reserved.
 //
 
+// Incorporates changes contributed by Collin Pieper
+
 #import "ZoomClientController.h"
 #import "ZoomPreferenceWindow.h"
 #import "ZoomGameInfoController.h"

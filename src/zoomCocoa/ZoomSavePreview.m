@@ -7,10 +7,7 @@
 //
 
 // Yeah, ZoomSavePreview and ZoomSavePreviewView are confusing. Bah. And humbug!
-// Maybe this would work better as a cell in an NSMatrix. But I suck at programming
-// cells, so I'm sticking with this for the moment.
-
-// (Does anyone but me read the source?)
+// Maybe this would work better as a cell in an NSMatrix.
 
 #import "ZoomSavePreview.h"
 #import "ZoomSavePreviewView.h"

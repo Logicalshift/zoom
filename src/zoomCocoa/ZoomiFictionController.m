@@ -6,6 +6,8 @@
 //  Copyright (c) 2004 Andrew Hunter. All rights reserved.
 //
 
+// Incorporates changes contributed by Collin Pieper
+
 #import "ZoomiFictionController.h"
 #import "ZoomStoryOrganiser.h"
 #import "ZoomStory.h"
@@ -23,6 +25,7 @@
 static ZoomiFictionController* sharedController = nil;
 
 static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
+static NSString* sortGroup    = @"ZoomiFictionControllerSortGroup";
 
 // = Setup/initialisation =
 
@@ -43,7 +46,7 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 		objectAtIndex: 0];
 	
 	[[NSUserDefaults standardUserDefaults] registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
-		docDir, addDirectory, nil]];
+		docDir, addDirectory, @"group", sortGroup, nil]];
 }
 
 - (void) dealloc {
@@ -196,7 +199,8 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	showDrawer = YES;
 	needsUpdating = YES;
 	
-	sortColumn = [@"title" retain];
+	if (sortColumn) [sortColumn release];
+	sortColumn = [[[NSUserDefaults standardUserDefaults] objectForKey: sortGroup] copy];
 	[mainTableView setHighlightedTableColumn:[mainTableView tableColumnWithIdentifier:sortColumn]];
 	
 	[mainTableView setAllowsColumnSelection: NO];
@@ -869,7 +873,10 @@ int tableSorter(id a, id b, void* context) {
 			[mainTableView setHighlightedTableColumn: tableColumn];
 			[sortColumn release];
 			sortColumn = [columnID copy];
-			
+
+			[[NSUserDefaults standardUserDefaults] setObject: sortColumn
+													  forKey: sortGroup];
+
 			//[self sortTableData];
 			[self reloadTableData];
 			[mainTableView reloadData];
@@ -1364,12 +1371,17 @@ int tableSorter(id a, id b, void* context) {
 	// (give the option of always doing this)
 	if ([[ZoomPreferences globalPreferences] keepGamesOrganised]) {
 
-#if 0
+#if 1
+		// == Collin
 		// this seems like a bit too much confirmation
 		
 		// this is more a degree of how the user will want iFiction to organize files than
 		// something that I think a user will want to decide dynamically on each story deletion
 		// moving to the trash still gives the user a chance to recover the story
+		
+		// == Andrew
+		// The other reason for doing this was to inform the user that it was still possible to
+		// recover the story
 		
 		[[NSRunLoop currentRunLoop] performSelector: @selector(showTrashConfirm:)
 											 target: self
