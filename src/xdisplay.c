@@ -989,6 +989,7 @@ static void draw_window()
 	  if (text_win[win].overlay)
 	    {
 	      int x,y;
+	      int fn, fg, bg;
 	      
 	      x=0; y=0;
 	      
@@ -1001,17 +1002,16 @@ static void draw_window()
 			  y*xfont_y < text_win[win].winly)
 			{
 			  int len;
-			  int fn, fg, bg;
 			  
 			  len = 1;
 			  fg = text_win[win].cline[y].fg[x];
 			  bg = text_win[win].cline[y].bg[x];
 			  fn = text_win[win].cline[y].font[x];
 			  
-			  while (text_win[win].cline[y].font[x+len] == fn &&
+			  while (x+len < size_x &&
+				 text_win[win].cline[y].font[x+len] == fn &&
 				 text_win[win].cline[y].fg[x+len]   == fg &&
 				 text_win[win].cline[y].bg[x+len]   == bg &&
-				 x+len < size_x &&
 				 (bg >= 0 ||
 				  text_win[win].cline[y].cell[x+len] != ' ' ||
 				  y*xfont_y<text_win[win].winly))
@@ -1039,6 +1039,19 @@ static void draw_window()
 			  
 			  x+=len-1;
 			}
+		    }
+
+		  /* May need to fill in to the end of the line */
+		  if (xfont_x*size_x < win_x &&
+		      y*xfont_y<text_win[win].winly)
+		    {
+		      XSetForeground(x_display, x_wingc,
+				     xdisplay_get_pixel_value(bg));
+		      XFillRectangle(x_display, x_drawable, x_wingc,
+				     xfont_x*size_x + BORDER_SIZE, 
+				     y*xfont_y + BORDER_SIZE,
+				     win_x - xfont_x*size_x, 
+				     xfont_y+0.5);
 		    }
 		}
 	    }
@@ -1385,9 +1398,9 @@ static void resize_window()
 	  for (y=max_y; y<size_y; y++)
 	    {
 	      CURWIN.cline[y].cell = malloc(sizeof(int)*max_x);
-	      CURWIN.cline[y].fg   = malloc(sizeof(char)*max_x);
+	      CURWIN.cline[y].fg   = malloc(sizeof(int)*max_x);
 	      CURWIN.cline[y].bg   = malloc(sizeof(int)*max_x);
-	      CURWIN.cline[y].font = malloc(sizeof(int)*max_x);
+	      CURWIN.cline[y].font = malloc(sizeof(char)*max_x);
 
 	      for (z=0; z<max_x; z++)
 		{
@@ -2022,7 +2035,9 @@ static int process_events(long int to, int* buf, int buflen)
 		  win_top    = BORDER_SIZE;
 		  
 		  /* Reformat window here */
+		  scroll_overlays = 0;
 		  resize_window();
+		  scroll_overlays = 1;
 		  move_caret();
 		}
 	      break;

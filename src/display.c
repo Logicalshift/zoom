@@ -79,7 +79,7 @@ void display_clear(void)
   text_win[0].back        = DEFAULT_BACK;
   text_win[0].style       = 0;
   text_win[0].xpos        = 0;
-  text_win[0].ypos        = win_y;
+  text_win[0].ypos        = 16384;
   text_win[0].winsx       = 0;
   text_win[0].winsy       = 0;
   text_win[0].winlx       = win_x;
@@ -538,6 +538,9 @@ void display_split       (int lines, int window)
   int y;
 
   NOTV6;
+
+  if (lines > max_y)
+    lines = max_y;
 
   for (y=text_win[window].winly/xfont_y; 
        y<(text_win[window].winsy/xfont_y)+lines;
