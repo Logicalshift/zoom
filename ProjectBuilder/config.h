@@ -26,7 +26,7 @@
 /* #undef HAVE_XRENDER */
 
 /* Computed gotos available? */
-/* #define HAVE_COMPUTED_GOTOS 1 */
+#define HAVE_COMPUTED_GOTOS 1
 
 
 /* Define if you have the <inttypes.h> header file. */
@@ -96,3 +96,6 @@
 /* Define as `__inline' if that's what the C compiler calls it, or to nothing
    if it is not supported. */
 /* #undef inline */
+
+/* Allow for remote debugging */
+#define REMOTE_BREAKPOINT 1
