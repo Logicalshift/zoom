@@ -161,6 +161,22 @@ static inline rc_game merge_games(const rc_game* a, const rc_game* b)
 %type <game>  RCBlock
 %type <num>   YesOrNo
 
+%{
+static int check_collision(char* ourid, char* name)
+{
+  rc_game* game;
+
+  game = hash_get(rc_hash, ourid, strlen(ourid));
+  if (game != NULL && strcmp(name, game->name) != 0)
+    {
+      zmachine_warning("Namespace collision: identifier '%s' (for game '%s') already used for game '%s'", ourid, name, game->name);
+      return 0;
+    }
+
+  return 1;
+}
+%}
+
 %%
 
 RCFile:		  RCDefn
@@ -205,10 +221,13 @@ RCDefn:		  DEFAULT STRING RCBlock
 		      next = $3;
 		      while (next != NULL)
 		        {
-		          hash_store(rc_hash,
-		                     next->string,
-				     strlen(next->string),
-				     game);
+			  if (check_collision(next->string, game->name))
+			    {
+			      hash_store(rc_hash,
+					 next->string,
+					 strlen(next->string),
+					 game);
+			    }
 			  next = next->next;
 	                }
 		    }
@@ -224,10 +243,13 @@ RCDefn:		  DEFAULT STRING RCBlock
 		      next = $3;
 		      while (next != NULL)
 		        {
-		          hash_store(rc_hash,
-		                     next->string,
-				     strlen(next->string),
-				     game);
+			  if (check_collision(next->string, game->name))
+			    {
+			      hash_store(rc_hash,
+					 next->string,
+					 strlen(next->string),
+					 game);
+			    }
 			  next = next->next;
 	                }
 		    }
