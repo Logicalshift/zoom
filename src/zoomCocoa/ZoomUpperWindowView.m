@@ -260,4 +260,18 @@
 	return inputLine != nil;
 }
 
+// = Updating the cursor =
+
+- (void) windowDidBecomeKey: (NSNotification*) not {
+	if (cursor) {
+		[cursor setActive: YES];
+	}
+}
+
+- (void) windowDidResignKey: (NSNotification*) not {
+	if (cursor) {
+		[cursor setActive: NO];
+	}
+}
+
 @end

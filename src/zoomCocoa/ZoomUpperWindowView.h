@@ -26,4 +26,7 @@
 
 - (void) activateInputLine;
 
+- (void) windowDidBecomeKey: (NSNotification*) not;
+- (void) windowDidResignKey: (NSNotification*) not;
+
 @end

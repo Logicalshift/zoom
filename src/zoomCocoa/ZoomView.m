@@ -938,6 +938,11 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		[inputLine keyDown: theEvent];
 		return YES;
 	}
+	
+	if (receiving && [focusedView isKindOfClass: [ZoomUpperWindow class]]) {
+		// Don't do anything more here: history, etc is handled by the class itself
+		return NO;
+	}
     
     if (receivingCharacters) {
         NSString* chars = [theEvent characters];
@@ -2347,12 +2352,14 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	if (pixmapCursor) {
 		[pixmapCursor setActive: YES];
 	}
+	[[textScroller upperWindowView] windowDidBecomeKey: not];
 }
 
 - (void) windowDidResignKey: (NSNotification*) not {
 	if (pixmapCursor) {
 		[pixmapCursor setActive: NO];
 	}
+	[[textScroller upperWindowView] windowDidResignKey: not];
 }
 
 - (void) blinkCursor: (ZoomCursor*) sender {
