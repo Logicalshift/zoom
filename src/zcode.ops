@@ -383,8 +383,9 @@ OPCODE "get_prop"      2OP:0x11 STORE  VERSION 1,2,3
   
   if (uarg1>255 || uarg1 == 0)
     zmachine_fatal("Object out of range");
+  uarg2 &= 0x1f;
   if (uarg2>31 || uarg2 == 0)
-    zmachine_fatal("Property %i out of range", uarg1);
+    zmachine_fatal("Property %i out of range", uarg2);
   
   p = get_object_prop_3(uarg1, uarg2);
 
@@ -452,6 +453,7 @@ OPCODE "get_prop_addr" 2OP:0x12 STORE  VERSION 1,2,3
 
   if (uarg1 == 0 || uarg1>255)
     zmachine_fatal("Object out of range");
+  uarg2 &= 0x1f;
   if (uarg2 > 31 || uarg2 == 0)
     {
       zmachine_warning("Attempt to get address of out of range property %i", uarg2);
@@ -1331,6 +1333,7 @@ OPCODE "put_prop"       VAR:0x03 ARGS:3               VERSION 1,2,3
   
   if (argblock.arg[0]>255 || argblock.arg[0] == 0)
     zmachine_fatal("Object out of range");
+  argblock.arg[1] &= 0x1f;
   if (argblock.arg[1]>31)
     zmachine_fatal("Property %i out of range", argblock.arg[1]);
   
