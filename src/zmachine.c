@@ -375,6 +375,9 @@ void zmachine_resize_display(ZDisplay* dis)
 {
   machine.dinfo = dis;
 
+  if (machine.memory == NULL)
+    return;
+  
   switch (machine.memory[0])
     {
     case 6:

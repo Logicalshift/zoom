@@ -105,8 +105,13 @@ int zoom_main(int argc, char** argv)
     name = malloc(len+1);
     for (x=0; x<len; x++)
       {
+#if WINDOW_SYSTEM != 2
 	if (args.story_file[x] == '/')
 	  slashpos = x;
+#else
+	if (args.story_file[x] == '\\')
+	  slashpos = x;
+#endif
       }
 
     for (x=slashpos+1;

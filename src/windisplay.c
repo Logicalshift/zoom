@@ -78,6 +78,7 @@ HBRUSH winbrush[14];
 HPEN   winpen  [14];
 HWND   mainwin, mainwinstat;
 HDC    mainwindc;
+HMENU  mainwinmenu;
 
 static xfont** font = NULL;
 
@@ -181,6 +182,7 @@ static int  caret_shown = 0;
 static int  caret_flashing = 0;
 static int  insert = 1;
 static HPEN caret_pen;
+static int  initialised = 0;
 
 static int  timed_out = 0;
 
@@ -233,37 +235,54 @@ static void size_window(void)
 void display_initialise(void)
 {
   int x;
+  rc_font* fonts;
+  rc_colour* colours;
 
-  text_win[0].text        = NULL;
-  text_win[0].lasttext    = NULL;
-  text_win[0].line        = NULL;
-  text_win[0].topline     = NULL;
-  text_win[0].lastline    = NULL;
-  text_win[0].cline       = NULL;
+  for (x=0; x<3; x++)
+    {
+      text_win[x].text        = NULL;
+      text_win[x].lasttext    = NULL;
+      text_win[x].line        = NULL;
+      text_win[x].topline     = NULL;
+      text_win[x].lastline    = NULL;
+      text_win[x].cline       = NULL;
+    }
+      
 
+  fonts = rc_get_fonts();
+  colours = rc_get_colours();
+  
   /* Allocate colours */
-  for (x=3; x<14; x++)
+  if (colours == NULL)
     {
-      winbrush[x] = CreateSolidBrush(wincolour[x]);
-      winpen[x]   = CreatePen(PS_SOLID, 1, wincolour[x]);
+      for (x=3; x<14; x++)
+	{
+	  winbrush[x] = CreateSolidBrush(wincolour[x]);
+	  winpen[x]   = CreatePen(PS_SOLID, 1, wincolour[x]);
+	}
     }
-
-  font = realloc(font, sizeof(xfont*)*9);
+  
   /* Allocate fonts */
-  for (x=0; x<9; x++)
+  if (fonts == NULL)
     {
-      font[x] = xfont_load_font(fontlist[x]);
+      font = realloc(font, sizeof(xfont*)*9);
+      for (x=0; x<9; x++)
+	{
+	  font[x] = xfont_load_font(fontlist[x]);
+	}
     }
-
+  
   max_x = size_x = DEFAULTX;
   max_y = size_y = DEFAULTY;
-  
+ 
   size_window();
+ 
+  display_clear();
+
+  initialised = 1;
   
   ShowWindow(mainwin, nShow);
   UpdateWindow(mainwin);
-
-  display_clear();
 }
 
 void display_reinitialise(void)
@@ -358,31 +377,39 @@ void display_clear(void)
 
       text_win[x].text        = NULL;
       text_win[x].line        = NULL;
-      if (text_win[x].cline == NULL)
-	{
-	  text_win[x].cline       = malloc(sizeof(struct cellline)*size_y);
-	  
-	  for (y=0; y<size_y; y++)
-	    {
-	      text_win[x].cline[y].cell = malloc(sizeof(int)*size_x);
-	      text_win[x].cline[y].fg   = malloc(sizeof(int)*size_x);
-	      text_win[x].cline[y].bg   = malloc(sizeof(int)*size_x);
-	      text_win[x].cline[y].font = malloc(sizeof(int)*size_x);
-	      
-	      for (z=0; z<size_x; z++)
-		{
-		  text_win[x].cline[y].cell[z] = ' ';
-		  text_win[x].cline[y].fg[z]   = DEFAULT_FORE+FIRST_ZCOLOUR;
-		  text_win[x].cline[y].bg[z]   = DEFAULT_BACK+FIRST_ZCOLOUR;
-		  text_win[x].cline[y].font[z] = style_font[4];
-		}
-	    }
 
-	  if (size_x < max_x)
-	    max_x = size_x;
-	  if (size_y < max_y)
-	    max_y = size_y;
+      if (text_win[x].cline != NULL)
+	{
+	  for (y=0; y<max_y; y++)
+	    {
+	      free(text_win[x].cline[y].cell);
+	      free(text_win[x].cline[y].fg);
+	      free(text_win[x].cline[y].bg);
+	      free(text_win[x].cline[y].font);
+	    }
+	  free(text_win[x].cline);
 	}
+      
+      text_win[x].cline       = malloc(sizeof(struct cellline)*size_y);
+	  
+      for (y=0; y<size_y; y++)
+	{
+	  text_win[x].cline[y].cell = malloc(sizeof(int)*size_x);
+	  text_win[x].cline[y].fg   = malloc(sizeof(int)*size_x);
+	  text_win[x].cline[y].bg   = malloc(sizeof(int)*size_x);
+	  text_win[x].cline[y].font = malloc(sizeof(int)*size_x);
+	  
+	  for (z=0; z<size_x; z++)
+	    {
+	      text_win[x].cline[y].cell[z] = ' ';
+	      text_win[x].cline[y].fg[z]   = DEFAULT_FORE+FIRST_ZCOLOUR;
+	      text_win[x].cline[y].bg[z]   = DEFAULT_BACK+FIRST_ZCOLOUR;
+	      text_win[x].cline[y].font[z] = style_font[4];
+	    }
+	}
+      
+      max_x = size_x;
+      max_y = size_y;
     }
 
   cur_win = 0;
@@ -1151,9 +1178,9 @@ int display_set_style(int style)
 
 void display_set_window(int window)
 {
-  text_win[window].fore = CURWIN.fore;
-  text_win[window].back = CURWIN.back;
-  // text_win[window].style = CURWIN.style;
+  text_win[window].fore  = CURWIN.fore;
+  text_win[window].back  = CURWIN.back;
+  text_win[window].style = CURWIN.style;
   cur_win = window;
 }
 
@@ -1822,6 +1849,29 @@ static void draw_input_text(HDC dc)
     show_caret();
 }
 
+static BOOL CALLBACK about_dlg(HWND hwnd,
+			       UINT message,
+			       WPARAM wparam,
+			       LPARAM lparam)
+{
+  switch (message)
+    {
+    case WM_INITDIALOG:
+      return TRUE;
+
+    case WM_COMMAND:
+      switch (LOWORD(wparam))
+	{
+	case IDC_OK:
+	  EndDialog(hwnd, 0);
+	  break;
+	}
+      break;
+    }
+
+  return FALSE;
+}
+
 static LRESULT CALLBACK display_winproc(HWND hwnd,
 					UINT message,
 					WPARAM wparam,
@@ -1896,7 +1946,8 @@ static LRESULT CALLBACK display_winproc(HWND hwnd,
 
     case WM_SIZE:
       SendMessage(mainwinstat, WM_SIZE, 0, 0);
-      resize_window();
+      if (initialised)
+	resize_window();
       {
 	RECT rct;
 #define n_parts 3
@@ -1934,6 +1985,20 @@ static LRESULT CALLBACK display_winproc(HWND hwnd,
 	  
 	default:
 	  zmachine_fatal("Unknown timer event type %i (Programmer is a spoon)", wparam);
+	}
+      break;
+
+    case WM_COMMAND:
+      switch (LOWORD(wparam))
+	{
+	case IDM_EXIT:
+	  PostQuitMessage(0);
+	  break;
+
+	case IDM_ABOUT:
+	  DialogBox(inst, MAKEINTRESOURCE(ID_ABOUT),
+		    mainwin, about_dlg);
+	  break;
 	}
       break;
 
@@ -2001,6 +2066,10 @@ int WINAPI WinMain(HINSTANCE hInst,
   InitCommonControls();
   
   /* Allocate the three 'standard' brushes */
+  wincolour[0] = GetSysColor(COLOR_3DFACE);
+  wincolour[1] = GetSysColor(COLOR_3DSHADOW);
+  wincolour[2] = GetSysColor(COLOR_3DHILIGHT);
+  
   winbrush[0] = CreateSolidBrush(wincolour[0]);
   winbrush[1] = CreateSolidBrush(wincolour[1]);
   winbrush[2] = CreateSolidBrush(wincolour[2]);
@@ -2018,7 +2087,7 @@ int WINAPI WinMain(HINSTANCE hInst,
   class.lpfnWndProc   = display_winproc;
   class.cbClsExtra    = class.cbWndExtra = 0;
   class.hInstance     = hInst;
-  class.hIcon         = LoadIcon(inst, MAKEINTRESOURCE(ID_ICON));
+  class.hIcon         = LoadIcon(inst, "logo");
   class.hCursor       = LoadCursor(NULL, IDC_ARROW);
   class.hbrBackground = NULL;
   class.lpszMenuName  = NULL;
@@ -2041,6 +2110,9 @@ int WINAPI WinMain(HINSTANCE hInst,
 			   NULL, NULL,
 			   inst, NULL);
   mainwindc = GetDC(mainwin);
+
+  mainwinmenu = LoadMenu(hInst, MAKEINTRESOURCE(ID_MENU));
+  SetMenu(mainwin, mainwinmenu);
 
   mainwinstat = CreateStatusWindow(WS_CHILD|WS_VISIBLE,
 				   "",
@@ -2079,6 +2151,7 @@ static int process_events(long int timeout,
       caret_flashing = 0;
     }
 
+  KillTimer(mainwin, 2);
   timed_out = 0;
   if (timeout > 0)
     SetTimer(mainwin, 2, timeout, 0);

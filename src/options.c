@@ -191,13 +191,13 @@ void get_options(int argc, char** argv, arguments* args)
   args->track_objs  = 0;
   args->track_attr  = 0;
   args->track_props = 0;
-
+  
   if (argc == 1)
     {
       args->story_file = NULL;
       args->save_file  = NULL;      
     }
-  if (argc == 2)
+  else if (argc == 2)
     {
       args->story_file = argv[1];
       args->save_file  = NULL;

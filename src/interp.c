@@ -460,7 +460,7 @@ static void draw_statusbar_123(ZStack* stack)
       display_printf("Score: %i  Moves: %i", score, moves);
     }
 
-  display_set_colour(0, 7); display_set_font(0);
+  display_set_colour(0, 7); display_set_style(0);
   display_set_window(0);
   stream_buffering(1);
 }
@@ -544,23 +544,50 @@ static void get_filename(char* name, int len, int save)
   fn.lpstrFile         = fname;
   fn.nMaxFile          = 256;
   fn.lpstrFileTitle    = NULL;
-  fn.lpstrInitialDir   = NULL;
+  fn.lpstrInitialDir   = rc_get_savedir();
   fn.lpstrTitle        = NULL;
   fn.nFileOffset       = 0;
   fn.nFileExtension    = 0;
-  fn.Flags             = 0;
+  fn.Flags             = OFN_HIDEREADONLY;
   fn.lpstrDefExt       = "qut";
 
   for (x=0; x<strlen(fname); x++)
     {
       if (fname[x] == '\\')
-	fn.nFileOffset = x+1;
+	{
+	  fn.nFileOffset = x+1;
+	  fn.lpstrInitialDir = NULL;
+	}
     }
 
   for (x=0; x<strlen(fname); x++)
     {
       if (fname[x] == '.')
 	fn.nFileExtension = x+1;
+    }
+
+  if (fn.nFileExtension != 0)
+    {
+      char* ext;
+
+      ext = fname + fn.nFileExtension;
+
+      if (strcmp(ext, "qut") == 0)
+	{
+	  fn.nFilterIndex = 1;
+	}
+      else if (strcmp(ext, "dat") == 0)
+	{
+	  fn.nFilterIndex = 2;
+	}
+      else if (strcmp(ext, "txt") == 0)
+	{
+	  fn.nFilterIndex = 3;
+	}
+      else
+	{
+	  fn.nFilterIndex = 4;
+	}
     }
   
   if (save)

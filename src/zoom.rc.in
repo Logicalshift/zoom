@@ -1,4 +1,45 @@
+#include "../config.h"
 #include "@srcdir@/zoomres.h"
 
-ID_ICON ICON "@srcdir@/zoom.ico"
+#include <windows.h>
+
+logo ICON "@srcdir@/zoom.ico"
 ID_SMICON ICON "@srcdir@/zoomsmall.ico"
+
+ID_MENU MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "E&xit", IDM_EXIT
+    END
+    POPUP "&Options"
+    BEGIN
+        MENUITEM "&Game...", IDM_GAME
+	POPUP "&Screen"
+	BEGIN
+	    MENUITEM "&Colours...", IDM_COLOURS
+	    MENUITEM "&Layout...", IDM_LAYOUT
+            MENUITEM "&Fonts", IDM_FONTS, GRAYED
+	END
+	MENUITEM "&Interpreter...", IDM_INTERPRETER
+	MENUITEM SEPARATOR
+	MENUITEM "&Save options", IDM_SAVEOPTS
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About...", IDM_ABOUT
+    END
+END
+
+ID_ABOUT DIALOG 0, 0, 200, 56
+    CAPTION "About Zoom"
+    STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | DS_CENTERMOUSE
+    FONT 8, "MS Sans Serif"
+BEGIN
+    ICON "logo", 0, 4, 4
+    LTEXT "Zoom " VERSION " - a fast Z-Machine", 0, 30, 4, 156, 8
+    LTEXT "Copyright (c) Andrew Hunter, 2000", 0, 30, 12, 156, 8
+    LTEXT "Zoom is distributed under the terms of the", 0, 30, 20, 156, 8
+    LTEXT "GNU General Public Licence", 0, 30, 28, 156, 8
+    DEFPUSHBUTTON "OK", IDC_OK, 80, 38, 40, 14
+END

@@ -21,6 +21,8 @@
  * Deal with the .zoomrc file
  */
 
+#include "../config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -43,7 +45,7 @@ static rc_game* defgame = NULL;
 # define GAMEDIR DATADIR "/games"
 #else
 # define ZOOMRC "zoomrc"
-# define GAMEDIR "games"
+# define GAMEDIR NULL
 #endif
 
 void rc_error(char* erm)
@@ -59,7 +61,8 @@ void rc_load(void)
 
   if (rc_hash == NULL)
     rc_hash = hash_create();
-  
+
+#if WINDOW_SYSTEM != 2
   home = getenv("HOME");
   if (home==NULL)
     {
@@ -80,6 +83,11 @@ void rc_load(void)
       if (yyin == NULL)
 	zmachine_fatal("Unable to open resource file '%s', or the systems default file at " ZOOMRC, filename);
     }
+#else
+  yyin = fopen("zoomrc", "r");
+  if (yyin == NULL)
+    zmachine_fatal("Unable to open resource file 'zoomrc'. Make sure that it is in the current directory");
+#endif
 
   _rc_line = 1;
   rc_parse();
@@ -204,7 +212,13 @@ char* rc_get_savedir(void)
   if (game->savedir == NULL)
     {
       if (defgame->gamedir == NULL)
-	return "./";
+	{
+#if WINDOW_SYSTEM != 2
+	  return "./";
+#else
+	  return NULL;
+#endif
+	}
       return defgame->savedir;
     }
   return game->savedir;

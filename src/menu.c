@@ -220,8 +220,45 @@ char* menu_get_story(void)
 
 #else
 
+#include <windows.h>
+#include <commdlg.h>
+#include "windisplay.h"
+
 char* menu_get_story(void)
 {
+  OPENFILENAME fn;
+  static char filter[] = "Z-Code files (*.z[34578])\0*.z3;*.z4;*.z5;*.z7;*.z8\0All files (*.*)\0*.*\0\0";
+  static char fname[256];
+
+  if (rc_get_gamedir() == NULL)
+    zmachine_fatal("No default game directory set");
+
+  strcpy(fname, "");
+  fn.lStructSize       = sizeof(fn);
+  fn.hwndOwner         = mainwin;
+  fn.hInstance         = NULL;
+  fn.lpstrFilter       = filter;
+  fn.lpstrCustomFilter = NULL;
+  fn.nFilterIndex      = 1;
+  fn.lpstrFile         = fname;
+  fn.nMaxFile          = 256;
+  fn.lpstrFileTitle    = NULL;
+  fn.lpstrInitialDir   = rc_get_gamedir();
+  fn.lpstrTitle        = NULL;
+  fn.nFileOffset       = 0;
+  fn.nFileExtension    = 0;
+  fn.Flags             = OFN_HIDEREADONLY|OFN_FILEMUSTEXIST;
+  fn.lpstrDefExt       = "qut";
+
+  if (GetOpenFileName(&fn))
+    {
+      return fname;
+    }
+  else
+    {
+      zmachine_fatal("Unable to open story file");
+    }
+  
   return NULL;
 }
 

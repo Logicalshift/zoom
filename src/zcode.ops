@@ -1993,7 +1993,7 @@ OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
 	strcpy(fname, "table.dat");
 
       stream_prints("\nPlease supply a filename for data save\n");
-      get_filename(save_fname, 255, 1);
+      get_filename(fname, 255, 1);
 
       if (!(file = open_file_write(fname)))
 	{
@@ -2046,7 +2046,7 @@ OPCODE "restore"       EXT:0x01 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
 	strcpy(fname, "table.dat");
 
       stream_prints("\nPlease supply a filename for data restore\n");
-      get_filename(save_fname, 255, 0);
+      get_filename(fname, 255, 0);
 
       sz = get_file_size(fname);
 

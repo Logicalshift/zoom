@@ -24,7 +24,22 @@
 #ifndef __ZOOMRES_H
 #define __ZOOMRES_H
 
-#define ID_ICON   100
-#define ID_SMICON 101
+#define ID_ICON    100
+#define ID_SMICON  101
+
+#define ID_MENU    200
+#define ID_ABOUT   400
+
+#define IDM_EXIT        300
+#define IDM_FONTS       301
+#define IDM_GAME        302
+#define IDM_SCREEN      303
+#define IDM_LAYOUT      304
+#define IDM_COLOURS     305
+#define IDM_INTERPRETER 306
+#define IDM_SAVEOPTS    307
+#define IDM_ABOUT       308
+
+#define IDC_OK          500
 
 #endif
