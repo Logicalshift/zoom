@@ -28,6 +28,8 @@
 		metadata->stories = NULL;
 		metadata->error   = NULL;
 		metadata->index   = NULL;
+		
+		dataLock = [[NSLock alloc] init];
 	}
 	
 	return self;
@@ -42,6 +44,7 @@
 	
 	if (self) {
 		metadata = IFMD_Parse([xmlData bytes], [xmlData length]);
+		dataLock = [[NSLock alloc] init];
 		
 #ifdef IFMD_ALLOW_TESTING
 		// Test, if available
@@ -63,20 +66,26 @@
 - (ZoomStory*) findStory: (ZoomStoryID*) ident {
 	IFMDStory* story;
 	
+	[dataLock lock];
+	
 	story = IFMD_Find(metadata, [ident ident]);
 	
 	if (story) {
 		ZoomStory* res = [[ZoomStory alloc] initWithStory: story];
 		
+		[dataLock unlock];
 		return [res autorelease];
 	} else {
+		[dataLock unlock];
 		return nil;
 	}
 }
 
 // = Storing information =
 - (void) storeStory: (ZoomStory*) story {
+	[dataLock lock];
 	IFMD_AddStory(metadata, [story story]);
+	[dataLock unlock];
 }
 
 // = Saving the file =
@@ -88,10 +97,12 @@ static int dataWrite(const char* bytes, int length, void* userData) {
 }
 
 - (NSData*) xmlData {
+	[dataLock lock];
 	NSMutableData* res = [[NSMutableData alloc] init];
 	
 	IFMD_Save(metadata, dataWrite, res);
 	
+	[dataLock unlock];
 	return [res autorelease];
 }
 

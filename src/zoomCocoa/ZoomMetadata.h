@@ -17,6 +17,8 @@
 
 @interface ZoomMetadata : NSObject {
 	struct IFMetadata* metadata;
+	
+	NSLock* dataLock;
 }
 
 // Initialisation
