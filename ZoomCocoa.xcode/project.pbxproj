@@ -117,6 +117,187 @@
 			settings = {
 			};
 		};
+		4B1884AF06975647004D8501 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = ZoomSkeinView.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B1884B006975647004D8501 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = ZoomSkeinView.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B1884B106975647004D8501 = {
+			fileRef = 4B1884AF06975647004D8501;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B1884B206975647004D8501 = {
+			fileRef = 4B1884B006975647004D8501;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B1884B306975649004D8501 = {
+			fileRef = 4B1884AF06975647004D8501;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B18850B069873F0004D8501 = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			path = Skein.nib;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B18850C069873F0004D8501 = {
+			fileRef = 4B18850B069873F0004D8501;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B18850D06987419004D8501 = {
+			fileRef = 4BACEA9605B4597500A9B6DC;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B18852906987AC6004D8501 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = ZoomSkeinController.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B18852A06987AC6004D8501 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = ZoomSkeinController.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B18852B06987AC6004D8501 = {
+			fileRef = 4B18852906987AC6004D8501;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B18852C06987AC6004D8501 = {
+			fileRef = 4B18852A06987AC6004D8501;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B1885B20698B867004D8501 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			name = "Skein-unplayed.png";
+			path = "Skein/Skein-unplayed.png";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B1885B30698B867004D8501 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			name = "Skein-selected.png";
+			path = "Skein/Skein-selected.png";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B1885B40698B867004D8501 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			name = "Skein-active.png";
+			path = "Skein/Skein-active.png";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B1885B50698B867004D8501 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			name = "Skein-unchanged.png";
+			path = "Skein/Skein-unchanged.png";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B1885B60698B867004D8501 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			name = "Skein-changed.png";
+			path = "Skein/Skein-changed.png";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B1885B70698B867004D8501 = {
+			fileRef = 4B1885B20698B867004D8501;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B1885B80698B867004D8501 = {
+			fileRef = 4B1885B30698B867004D8501;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B1885B90698B867004D8501 = {
+			fileRef = 4B1885B40698B867004D8501;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B1885BA0698B867004D8501 = {
+			fileRef = 4B1885B50698B867004D8501;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B1885BB0698B867004D8501 = {
+			fileRef = 4B1885B60698B867004D8501;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B1885E60698BA40004D8501 = {
+			fileRef = 4B1885B20698B867004D8501;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B1885E70698BA41004D8501 = {
+			fileRef = 4B1885B30698B867004D8501;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B1885E80698BA42004D8501 = {
+			fileRef = 4B1885B40698B867004D8501;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B1885E90698BA42004D8501 = {
+			fileRef = 4B1885B50698B867004D8501;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B1885EA0698BA43004D8501 = {
+			fileRef = 4B1885B60698B867004D8501;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		4B1C13F905C5A94300E5796D = {
 			isa = PBXFileReference;
 			lastKnownFileType = text.rtf;
@@ -2040,6 +2221,10 @@
 				4BA2BCEC06949E730082C022,
 				4BA2BCF20694A0830082C022,
 				4BA2BCF30694A0830082C022,
+				4B1884AF06975647004D8501,
+				4B1884B006975647004D8501,
+				4B18852906987AC6004D8501,
+				4B18852A06987AC6004D8501,
 			);
 			isa = PBXGroup;
 			name = Skeins;
@@ -2513,6 +2698,9 @@
 				4B3DA131068DAF9E00B7090F,
 				4BA2BCED06949E730082C022,
 				4BA2BCF40694A0830082C022,
+				4B1884B306975649004D8501,
+				4B18850D06987419004D8501,
+				4B18852B06987AC6004D8501,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2555,6 +2743,12 @@
 				4BBC1F6C062F41E300FE547F,
 				4BBC1F6D062F41E300FE547F,
 				4BBC1F6E062F41E300FE547F,
+				4B18850C069873F0004D8501,
+				4B1885E60698BA40004D8501,
+				4B1885E70698BA41004D8501,
+				4B1885E80698BA42004D8501,
+				4B1885E90698BA42004D8501,
+				4B1885EA0698BA43004D8501,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2579,6 +2773,7 @@
 				4BCB09650615D0D800CDFB98,
 				4BBC1F79062F43BB00FE547F,
 				4BB2CCD70632F01600542A81,
+				4B18852C06987AC6004D8501,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2802,6 +2997,11 @@
 		};
 		4BCF3F42050FB1D800A8E303 = {
 			children = (
+				4B1885B20698B867004D8501,
+				4B1885B30698B867004D8501,
+				4B1885B40698B867004D8501,
+				4B1885B50698B867004D8501,
+				4B1885B60698B867004D8501,
 				4B1C13FD05C5A94B00E5796D,
 				4BCF3F43050FB21C00A8E303,
 				4BCF3F44050FB21C00A8E303,
@@ -2837,6 +3037,7 @@
 				4B2EAF9905B056EC0021A5E6,
 				4BB515B405BC615F00D00C96,
 				4B1C14D205C69CAD00E5796D,
+				4B18850B069873F0004D8501,
 			);
 			isa = PBXGroup;
 			name = Resources;
@@ -3086,6 +3287,7 @@
 				4B3DA134068DAFA900B7090F,
 				4B42478B0695E25000A3A1C0,
 				4B42478C0695E25600A3A1C0,
+				4B1884B106975647004D8501,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3094,6 +3296,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				4B7CE53D05C9393E00D07A0C,
+				4B1885B70698B867004D8501,
+				4B1885B80698B867004D8501,
+				4B1885B90698B867004D8501,
+				4B1885BA0698B867004D8501,
+				4B1885BB0698B867004D8501,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3115,6 +3322,7 @@
 				4B3DA133068DAFA800B7090F,
 				4BA2BCEF06949E790082C022,
 				4BA2BCF60694A08D0082C022,
+				4B1884B206975647004D8501,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

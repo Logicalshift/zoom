@@ -27,6 +27,18 @@
 	return rootItem;
 }
 
+- (ZoomSkeinItem*) activeItem {
+	return activeItem;
+}
+
+// = Notifications =
+NSString* ZoomSkeinChangedNotification = @"ZoomSkeinChangedNotification";
+
+- (void) zoomSkeinChanged {
+	[[NSNotificationCenter defaultCenter] postNotificationName: ZoomSkeinChangedNotification
+														object: self];
+}
+
 // = Zoom output receiver =
 - (void) inputCommand: (NSString*) command {
 	// Create/set the item to the appropraite item in the skein
@@ -35,13 +47,16 @@
 	// Move the 'active' item
 	activeItem = newItem;
 	
-	// No output for this item yet
-	[activeItem setResult: nil];
+	// Some values for this item
+	[activeItem setPlayed: YES];
 	[activeItem increaseTemporaryScore];
 	
 	// Create a buffer for any new output
 	if (currentOutput) [currentOutput release];
 	currentOutput = [[NSMutableString alloc] init];
+	
+	// Notify anyone who's watching that we've updated
+	[self zoomSkeinChanged];
 }
 
 - (void) inputCharacter: (NSString*) character {

@@ -4,6 +4,7 @@
             ACTIONS = {
                 displayGameInfoWindow = id; 
                 displayNoteWindow = id; 
+                displaySkein = id; 
                 playInFullScreen = id; 
                 saveMetadata = id; 
                 showGamePreferences = id; 

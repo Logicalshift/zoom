@@ -13,6 +13,39 @@
 
 // = Initialisation =
 
+static NSString* convertCommand(NSString* command) {
+	if (command == nil) return nil;
+	
+	unichar* uniBuf = malloc(sizeof(unichar)*[command length]);
+	[command getCharacters: uniBuf];
+	
+	BOOL needsChange = NO;
+	int x;
+	int spaces = 0;
+	
+	for (x=0; x<[command length]; x++) {
+		if (uniBuf[x] < 32) {
+			needsChange = YES;
+			uniBuf[x] = ' ';
+		}
+		
+		if (uniBuf[x] == 32) {
+			spaces++;
+		} else {
+			spaces = 0;
+		}
+	}
+	
+	if (needsChange) {
+		command = [NSString stringWithCharacters: uniBuf
+										  length: [command length] - spaces];
+	}
+	
+	free(uniBuf);
+	
+	return command;
+}
+
 + (ZoomSkeinItem*) skeinItemWithCommand: (NSString*) com {
 	return [[[[self class] alloc] initWithCommand: com] autorelease];
 }
@@ -21,7 +54,7 @@
 	self = [super init];
 	
 	if (self) {
-		command = [com copy];
+		command = [convertCommand(com) copy];
 		result  = nil;
 		
 		parent = nil;
@@ -157,7 +190,7 @@
 - (void) setCommand: (NSString*) newCommand {
 	if (command) [command release];
 	command = nil;
-	if (newCommand) command = [newCommand copy];
+	if (newCommand) command = [convertCommand(newCommand) copy];
 }
 
 - (void) setResult: (NSString*) newResult {

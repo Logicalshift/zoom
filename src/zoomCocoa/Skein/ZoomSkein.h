@@ -10,6 +10,8 @@
 
 #import "ZoomSkeinItem.h"
 
+extern NSString* ZoomSkeinChangedNotification;
+
 @interface ZoomSkein : NSObject {
 	ZoomSkeinItem* rootItem;
 	
@@ -19,6 +21,7 @@
 
 // Retrieving the root skein item
 - (ZoomSkeinItem*) rootItem;
+- (ZoomSkeinItem*) activeItem;
 
 // Acting as a Zoom output receiver
 - (void) inputCommand:   (NSString*) command;
@@ -26,5 +29,8 @@
 - (void) outputText:     (NSString*) outputText;
 - (void) zoomWaitingForInput;
 - (void) zoomInterpreterRestart;
+
+// Notifying of changed
+- (void) zoomSkeinChanged;
 
 @end

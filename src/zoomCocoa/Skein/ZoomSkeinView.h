@@ -20,6 +20,7 @@
 	// The layout
 	NSMutableDictionary* tree;
 	NSMutableArray* levels;
+	float globalOffset, globalWidth;
 }
 
 // Setting/getting the source
@@ -28,5 +29,8 @@
 
 // Laying things out
 - (void) skeinNeedsLayout;
+
+// Affecting the display
+- (void) scrollToItem: (ZoomSkeinItem*) item;
 
 @end

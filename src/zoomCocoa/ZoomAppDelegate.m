@@ -8,6 +8,7 @@
 
 #import "ZoomAppDelegate.h"
 #import "ZoomGameInfoController.h"
+#import "ZoomSkeinController.h"
 
 #import "ZoomMetadata.h"
 #import "ZoomiFictionController.h"
@@ -90,9 +91,12 @@
 
 	// Blank out the game info window
 	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
-	
-	// Try to update the game info window using the first responder
-	[NSApp sendAction: @selector(updateGameInfo:)
+}
+
+- (IBAction) displaySkein: (id) sender {
+	[[ZoomSkeinController sharedSkeinController] showWindow: self];
+
+	[NSApp sendAction: @selector(updateSkein:)
 				   to: nil
 				 from: self];
 }

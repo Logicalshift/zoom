@@ -10,6 +10,7 @@
 #import "ZoomPreferenceWindow.h"
 #import "ZoomGameInfoController.h"
 #import "ZoomStoryOrganiser.h"
+#import "ZoomSkeinController.h"
 
 #import "ZoomAppDelegate.h"
 
@@ -192,6 +193,10 @@
 	
 	[self recordGameInfo: self];
 	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
+
+	if ([[ZoomSkeinController sharedSkeinController] skein] == [[self document] skein]) {
+		[[ZoomSkeinController sharedSkeinController] setSkein: nil];
+	}
 }
 
 - (BOOL) windowShouldClose: (id) sender {	
@@ -232,6 +237,7 @@
 
 - (void)windowDidBecomeMain:(NSNotification *)aNotification {
 	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: [[self document] storyInfo]];
+	[[ZoomSkeinController sharedSkeinController] setSkein: [[self document] skein]];
 }
 
 // = GameInfo updates =
