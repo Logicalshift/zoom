@@ -15,6 +15,7 @@
     IBOutlet ZoomView* zoomView;
 	BOOL isFullscreen;
 	BOOL finished;
+	BOOL closeConfirmed;
 	
 	NSRect oldWindowFrame;
 }

@@ -25,6 +25,7 @@
         [self setShouldCloseDocument: YES];
 		isFullscreen = NO;
 		finished = NO;
+		closeConfirmed = NO;
     }
 
     return self;
@@ -69,6 +70,8 @@
 }
 
 - (void) zMachineStarted: (id) sender {
+	[[self window] setDocumentEdited: YES];
+	
 	[zoomView setResources: [[self document] resources]];
     [[zoomView zMachine] loadStoryFile: [[self document] gameData]];
 	
@@ -90,6 +93,8 @@
 }
 
 - (void) zMachineFinished: (id) sender {
+	[[self window] setDocumentEdited: NO];
+
 	[[self window] setTitle: [NSString stringWithFormat: @"%@ (finished)", [[self window] title]]];
 	finished = YES;
 	
@@ -228,7 +233,41 @@
 	}
 }
 
-- (BOOL) windowShouldClose: (id) sender {	
+- (void) confirmFinish:(NSWindow *)sheet 
+			returnCode:(int)returnCode 
+		   contextInfo:(void *)contextInfo {
+	if (returnCode == NSAlertAlternateReturn) {
+		// Close the window
+		closeConfirmed = YES;
+		[[NSRunLoop currentRunLoop] performSelector: @selector(performClose:)
+											 target: [self window]
+										   argument: self
+											  order: 32
+											  modes: [NSArray arrayWithObject: NSDefaultRunLoopMode]];
+	}
+}
+
+- (BOOL) windowShouldClose: (id) sender {
+	// Get confirmation if required
+	if (!closeConfirmed && !finished) {
+		BOOL autosave = [[ZoomPreferences globalPreferences] autosaveGames];
+		NSString* msg = @"Spoon will be terminated.";
+		
+		if (autosave) {
+			msg = @"There is still a story playing in this window. Are you sure you wish to finish it? The current state of the game will be automatically saved.";
+		} else {
+			msg = @"There is still a story playing in this window. Are you sure you wish to finish it without saving? The current state of the game will be lost.";
+		}
+		
+		NSBeginAlertSheet(@"Finish the game?",
+						  @"Keep playing", @"Finish", nil,
+						  [self window], self,
+						  @selector(confirmFinish:returnCode:contextInfo:), nil,
+						  nil, msg);
+		
+		return NO;
+	}
+	
 	// Record any game information
 	[self recordGameInfo: self];
 	
