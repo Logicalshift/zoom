@@ -8,16 +8,26 @@
             SUPERCLASS = NSImageView; 
         }, 
         {
-            ACTIONS = {addButtonPressed = id; drawerButtonPressed = id; }; 
+            ACTIONS = {
+                addButtonPressed = id; 
+                drawerButtonPressed = id; 
+                restoreAutosave = id; 
+                startNewGame = id; 
+            }; 
             CLASS = ZoomiFictionController; 
             LANGUAGE = ObjC; 
             OUTLETS = {
                 addButton = ZoomiFButton; 
+                commentView = NSTextView; 
                 continueButton = ZoomiFButton; 
                 drawer = NSDrawer; 
                 drawerButton = ZoomiFButton; 
                 drawerView = NSView; 
+                filterTable1 = NSTableView; 
+                filterTable2 = NSTableView; 
+                mainTableView = NSTableView; 
                 newgameButton = ZoomiFButton; 
+                teaserView = NSTextView; 
             }; 
             SUPERCLASS = NSWindowController; 
         }
