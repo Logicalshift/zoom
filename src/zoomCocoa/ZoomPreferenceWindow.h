@@ -20,11 +20,14 @@
 	// The settings controls themselves
 	IBOutlet NSButton* displayWarnings;
 	IBOutlet NSButton* fatalWarnings;
-	IBOutlet NSButton* speakGameText;
+	IBOutlet NSButton* speakGameText;	
+	IBOutlet NSButton* autosaveGames;
+	IBOutlet NSButton* keepGamesOrganised;
 	
-	IBOutlet NSTextField* gameTitle;
 	IBOutlet NSPopUpButton* interpreter;
 	IBOutlet NSTextField* revision;
+	
+	IBOutlet NSTextView* organiseDir;
 	
 	IBOutlet NSTableView* fonts;
 	IBOutlet NSTableView* colours;
@@ -39,11 +42,15 @@
 - (void) setPreferences: (ZoomPreferences*) prefs;
 
 // Interface actions
-- (IBAction) titleChanged: (id) sender;
 - (IBAction) interpreterChanged: (id) sender;
 - (IBAction) revisionChanged: (id) sender;
 - (IBAction) displayWarningsChanged: (id) sender;
 - (IBAction) fatalWarningsChanged: (id) sender;
 - (IBAction) speakGameTextChanged: (id) sender;
+- (IBAction) keepOrganisedChanged: (id) sender;
+- (IBAction) autosaveChanged: (id) sender;
+
+- (IBAction) changeOrganiseDir: (id) sender;
+- (IBAction) resetOrganiseDir: (id) sender;
 
 @end

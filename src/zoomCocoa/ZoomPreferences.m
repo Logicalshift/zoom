@@ -18,6 +18,8 @@ NSString* ZoomPreferencesHaveChangedNotification = @"ZoomPreferencesHaveChangedN
 static NSString* displayWarnings = @"DisplayWarnings";
 static NSString* fatalWarnings   = @"FatalWarnings";
 static NSString* speakGameText   = @"SpeakGameText";
+static NSString* keepGamesOrganised = @"KeepGamesOrganised";
+static NSString* autosaveGames = @"autosaveGames";
 
 static NSString* gameTitle       = @"GameTitle";
 static NSString* interpreter     = @"Interpreter";
@@ -25,6 +27,8 @@ static NSString* revision        = @"Revision";
 
 static NSString* fonts           = @"Fonts";
 static NSString* colours		 = @"Colours";
+
+static NSString* organiserDirectory = @"organiserDirectory";
 
 // == Global preferences ==
 
@@ -251,6 +255,30 @@ static NSArray* DefaultColours(void) {
 	return [prefs objectForKey: colours];
 }
 
+- (NSString*) organiserDirectory {
+	NSString* res = [prefs objectForKey: organiserDirectory];
+	
+	if (res == nil) {
+		NSArray* docDir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+		
+		res = [[docDir objectAtIndex: 0] stringByAppendingPathComponent: @"Interactive Fiction"];
+	}
+	
+	return res;
+}
+
+- (BOOL) keepGamesOrganised {
+	return [[prefs objectForKey: keepGamesOrganised] boolValue];
+}
+
+- (BOOL) autosaveGames {
+	NSNumber* autosave = [prefs objectForKey: autosaveGames];
+	
+	if (!autosave) return YES;
+	
+	return [autosave boolValue];
+}
+
 // Setting preferences
 - (void) setDisplayWarnings: (BOOL) flag {
 	[prefs setObject: [NSNumber numberWithBool: flag]
@@ -297,6 +325,28 @@ static NSArray* DefaultColours(void) {
 - (void) setColours: (NSArray*) cols {
 	[prefs setObject: [NSArray arrayWithArray: cols]
 			  forKey: colours];
+	[self preferencesHaveChanged];
+}
+
+- (void) setOrganiserDirectory: (NSString*) directory {
+	if (directory != nil) {
+		[prefs setObject: directory
+				  forKey: organiserDirectory];
+	} else {
+		[prefs removeObjectForKey: organiserDirectory];
+	}
+	[self preferencesHaveChanged];
+}
+
+- (void) setKeepGamesOrganised: (BOOL) value {
+	[prefs setObject: [NSNumber numberWithBool: value]
+			  forKey: keepGamesOrganised];
+	[self preferencesHaveChanged];
+}
+
+- (void) setAutosaveGames: (BOOL) value {
+	[prefs setObject: [NSNumber numberWithBool: value]
+			  forKey: autosaveGames];
 	[self preferencesHaveChanged];
 }
 

@@ -152,10 +152,13 @@ static NSDictionary*  itemDictionary = nil;
 	[displayWarnings setState: [prefs displayWarnings]?NSOnState:NSOffState];
 	[fatalWarnings setState: [prefs fatalWarnings]?NSOnState:NSOffState];
 	[speakGameText setState: [prefs speakGameText]?NSOnState:NSOffState];
+	[keepGamesOrganised setState: [prefs keepGamesOrganised]?NSOnState:NSOffState];
+	[autosaveGames setState: [prefs autosaveGames]?NSOnState:NSOffState];
 	
-	[gameTitle setStringValue: [prefs gameTitle]];
 	[interpreter selectItemAtIndex: [prefs interpreter]-1];
 	[revision setStringValue: [NSString stringWithFormat: @"%c", [prefs revision]]];
+	
+	[organiseDir setString: [prefs organiserDirectory]];
 }
 
 // == Table data source ==
@@ -334,10 +337,6 @@ static void appendStyle(NSMutableString* styleName,
 }
 
 // == Various actions ==
-- (IBAction) titleChanged: (id) sender {
-	[prefs setGameTitle: [sender stringValue]];
-}
-
 - (IBAction) interpreterChanged: (id) sender {
 	[prefs setInterpreter: [interpreter indexOfSelectedItem]+1];
 }
@@ -356,6 +355,47 @@ static void appendStyle(NSMutableString* styleName,
 
 - (IBAction) speakGameTextChanged: (id) sender {
 	[prefs setSpeakGameText: [sender state]==NSOnState];
+}
+
+- (IBAction) autosaveChanged: (id) sender {
+	[prefs setAutosaveGames: [sender state]==NSOnState];
+}
+
+- (IBAction) keepOrganisedChanged: (id) sender {
+	[prefs setKeepGamesOrganised: [sender state]==NSOnState];
+}
+
+
+- (void) changeOrganiserDirTo: (NSOpenPanel *)sheet
+				   returnCode: (int)returnCode
+				  contextInfo: (void *)contextInfo {
+	if (returnCode != NSOKButton) return;
+	
+	[prefs setOrganiserDirectory: [sheet directory]];
+	[organiseDir setString: [prefs organiserDirectory]];
+}
+
+- (IBAction) changeOrganiseDir: (id) sender {
+	NSOpenPanel* dirChooser = [NSOpenPanel openPanel];
+	
+	[dirChooser setAllowsMultipleSelection: NO];
+	[dirChooser setCanChooseDirectories: YES];
+	[dirChooser setCanChooseFiles: NO];
+	
+	NSString* path = [prefs organiserDirectory];
+	
+	[dirChooser beginSheetForDirectory: path
+								  file: nil
+								 types: nil
+						modalForWindow: [self window]
+						 modalDelegate: self
+						didEndSelector: @selector(changeOrganiserDirTo:returnCode:contextInfo:)
+						   contextInfo: nil];
+}
+
+- (IBAction) resetOrganiseDir: (id) sender {
+	[prefs setOrganiserDirectory: nil];
+	[organiseDir setString: [prefs organiserDirectory]];
 }
 
 @end
