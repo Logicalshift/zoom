@@ -1793,6 +1793,18 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 		  }
 		break;
 
+	      case inProxyIcon:
+		{
+		  OSStatus status = TrackWindowProxyDrag(zoomWindow, 
+							 point);
+		  
+		  if (status == errUserWantsToDragWindow)
+		    return eventNotHandledErr;
+
+		  printf("Loopde?\n");
+		}
+		break;
+
 	      default:
 		return eventNotHandledErr;
 	      }
@@ -2223,8 +2235,15 @@ void display_exit(int code)
 
   exit(code);
 }
+static pascal OSErr drag_track(short message, 
+			       WindowPtr pWindow, 
+			       void *handlerRefCon, 
+			       DragReference theDragRef)
+{
+  return noErr;
+}
 
-static OSErr drag_receive(WindowRef win, void* data, DragRef drag)
+static pascal OSErr drag_receive(WindowRef win, void* data, DragRef drag)
 {
   UInt16 nitems;
   UInt16 nflavs;
@@ -2369,6 +2388,9 @@ void display_initialise(void)
   InstallReceiveHandler(NewDragReceiveHandlerUPP(drag_receive),
 			NULL,
 			NULL);
+  InstallTrackingHandler(NewDragTrackingHandlerUPP(drag_track),
+			 NULL,
+			 NULL);
 
   /* Yay, we can now show the window */
   ShowWindow(zoomWindow);
@@ -2443,6 +2465,8 @@ int display_readchar(long int timeout)
 void display_set_title(const char* title)
 {
   static char tit[256];
+  FSRef  fileref;
+  FSSpec filespec;
 
   /* 
    * Don't really need to say we're called 'Zoom'. That's what's the menu 
@@ -2454,15 +2478,10 @@ void display_set_title(const char* title)
 
   strcpy(carbon_title, title);
 
-  SetWindowProxyCreatorAndType(zoomWindow, SIGNATURE, 'ZCOD', 
-			       kOnSystemDisk);
-
-  if (machine.blorb_file == machine.file)
-    {
-    }
-  else
-    {
-    }
+  fileref = get_file_fsref(machine.file);
+  FSGetCatalogInfo(&fileref, kFSCatInfoNone, NULL,
+		   NULL, &filespec, NULL);
+  SetWindowProxyFSSpec(zoomWindow, &filespec);
 }
 
 void display_update(void)

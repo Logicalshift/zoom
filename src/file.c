@@ -359,6 +359,7 @@ ZDWord get_file_size(char* filename)
 
 struct ZFile
 {
+  FSRef  fileref;
   SInt16 forkref;
 };
 
@@ -456,6 +457,7 @@ ZFile* open_file_fsref(FSRef* ref)
     return NULL;
 
   file = malloc(sizeof(ZFile));
+  file->fileref = *ref;
   file->forkref = refnum;
 
   return file;
@@ -476,9 +478,15 @@ ZFile* open_file_write_fsref(FSRef* ref)
     return NULL;
 
   file = malloc(sizeof(ZFile));
+  file->fileref = *ref;
   file->forkref = refnum;
 
   return file;
+}
+
+FSRef get_file_fsref(ZFile* file)
+{
+  return file->fileref;
 }
 
 void   close_file(ZFile* file)

@@ -66,6 +66,7 @@ extern FSRef* carbon_get_zcode_file(void);
 extern ZFile* open_file_fsref(FSRef* ref);
 extern ZFile* open_file_write_fsref(FSRef* ref);
 extern ZDWord get_file_size_fsref(FSRef* file);
+extern FSRef  get_file_fsref(ZFile* file);
 
 extern Boolean display_force_input  (char* text);
 extern void    display_force_restore(FSRef* ref);
