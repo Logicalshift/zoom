@@ -295,6 +295,10 @@ int display_get_pix_mouse_y (void) {
 
 extern void  display_set_mouse_win   (int x, int y, int width, int height) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
 
+void display_flush(void) {
+	[mainMachine flushBuffers];
+}
+
 // = Images =
 
 void display_plot_image(BlorbImage* img, int x, int y) {

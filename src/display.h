@@ -160,4 +160,6 @@ extern int   display_get_pix_mouse_y (void);
 extern void  display_set_input_pos   (int style, int x, int y, int width);
 extern void  display_set_mouse_win   (int x, int y, int width, int height);
 
+extern void display_flush			 (void);
+
 #endif

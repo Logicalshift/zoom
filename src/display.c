@@ -698,3 +698,8 @@ void display_has_restarted(void)
 {
   /* Notification function, mainly used by ZoomCocoa. We do nothing here */
 }
+
+void display_flush(void)
+{
+  /* Do nothing at the moment: placeholder function */
+}

@@ -3276,6 +3276,22 @@ OPCODE "picture_table" EXT:0x1c               VERSION 6
   /* Does nothing */
 %}
 
+OPCODE "buffer_screen" EXT:0x1d STORE		  VERSION 6
+%{
+  /* Not really supported */
+  /* Zoom really has no choice with screen buffering, especially in the cocoa version */
+  if (arg1 == 0 || arg1 == 1) {
+	/* Exactly the same for zoom */
+  } else if (arg1 == -1) {
+	/* Implement me! */
+	display_flush();
+  } else {
+	zmachine_warning("buffer_screen opcode cannot take values other than 0, 1 or -1");
+  }
+  
+  store(stack, st, 0);
+%}
+
 ####                           ----// 888 \\----                           ####
 # Standard 1.1 opcodes
 

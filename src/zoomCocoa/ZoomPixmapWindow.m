@@ -175,6 +175,8 @@
 }
 
 - (NSColor*) colourAtPixel: (NSPoint) point {
+	NSLog(@"Retrieving colour at %g %g", point.x, point.y);
+	
 	[pixmap lockFocus];
 	
 	if (point.x <= 0) point.x = 1;
@@ -226,6 +228,8 @@
 		  operation: NSCompositeSourceOver
 		   fraction: 1.0];
 	[pixmap unlockFocus];
+	
+	[zView setNeedsDisplay: YES];
 }
 
 // = NSCoding =
