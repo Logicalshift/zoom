@@ -3202,6 +3202,8 @@
 			<array>
 				<string>zlb</string>
 			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>Blorb.icns</string>
 			<key>CFBundleTypeName</key>
 			<string>Z-Code blorb resource file</string>
 			<key>CFBundleTypeRole</key>

@@ -147,7 +147,7 @@ static int dataWrite(const char* bytes, int length, void* userData) {
 	
 	for (x=0; x<metadata->numberOfErrors; x++) {
 		if (metadata->error[x].severity == IFMDErrorFatal) {
-			NSString* errorName;
+			NSString* errorName = @"";
 			
 			switch (metadata->error[x].type) {
 				case IFMDErrorProgrammerIsASpoon:
