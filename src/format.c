@@ -201,7 +201,7 @@ void format_last_text(int more)
 {
   int x;
   struct text* text;
-  int word_start, word_len, total_len;
+  int word_start, word_len, total_len, text_start;
   XFONT_MEASURE xpos;
   xfont* fn;
   struct line* line;
@@ -234,6 +234,7 @@ void format_last_text(int more)
       word_len   = 0;
       total_len  = 0;
       xpos       = CURWIN.xpos;
+      text_start = xpos;
       line       = CURWIN.lastline;
 
       if (text->spoken == 0)
@@ -397,7 +398,14 @@ void format_last_text(int more)
       /* Actually format the text */
       for (x=0; x<text->nwords; x++)
 	{
-	  xpos += text->word[x].width;
+	  int s;
+
+	  s = line->start==text?line->offset:0;
+	  xpos = text_start + xfont_get_text_width(fn,
+						   text->text+s,
+						   text->word[x].start+
+						   text->word[x].len - s);
+	  /* xpos += text->word[x].width; */
 	  
 	  if (xpos > CURWIN.winlx)
 	    {
@@ -405,6 +413,7 @@ void format_last_text(int more)
 	      new_line(more, text->font);
 
 	      xpos = CURWIN.xpos + text->word[x].width;
+	      text_start = CURWIN.xpos;
 	      line = CURWIN.lastline;
 	    }
 

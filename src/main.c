@@ -43,6 +43,7 @@
 #include "stream.h"
 #include "menu.h"
 #include "random.h"
+#include "debug.h"
 
 #include "display.h"
 
@@ -161,7 +162,9 @@ int zoom_main(int argc, char** argv)
     sprintf(save_fname, "%s.qut", name);
     sprintf(script_fname, "%s.txt", name);
   }
-  
+ 
+  debug_set_breakpoint(GetWord(machine.header, ZH_initpc));
+ 
 #ifdef DEBUG
   {
     int x;

@@ -40,6 +40,7 @@
 #include "tokenise.h"
 #include "rc.h"
 #include "random.h"
+#include "debug.h"
 
 #if WINDOW_SYSTEM == 2
 #include <windows.h>
@@ -1572,7 +1573,9 @@ void zmachine_run(const int version,
        * & 8 - this would speed up manipulation of packed addresses
        * (though once again for a size penalty)
        */
-      
+
+    execute_instr:
+
 #include "interp_gen.h"
       
     version:
