@@ -76,6 +76,9 @@ enum ZSVbutton
 - (void) cancelEditing: (id) sender;
 - (void) finishEditing: (id) sender;
 
+- (void) editSoon: (ZoomSkeinItem*) item;
+- (void) iHateEditing;
+
 @end
 
 @implementation ZoomSkeinView
@@ -186,6 +189,7 @@ enum ZSVbutton
     if (self) {
 		skein = [[ZoomSkein alloc] init];
 		activeButton = ZSVnoButton;
+		selectedItem = nil;
     }
 	
     return self;
@@ -199,8 +203,10 @@ enum ZSVbutton
 	if (trackingRects) [trackingRects release];
 	if (itemForItem) [itemForItem release];
 
-	if (itemEditor != nil) [itemEditor release];
-	if (itemToEdit != nil) [itemToEdit release];
+	if (itemEditor) [itemEditor release];
+	if (itemToEdit) [itemToEdit release];
+	
+	if (selectedItem) [selectedItem release];
 	
 	[super dealloc];
 }
@@ -250,6 +256,11 @@ enum ZSVbutton
 	itemRect.origin.y = ypos + 1;
 	itemRect.size.width = width;
 	itemRect.size.height = [[NSFont systemFontOfSize: 10] defaultLineHeightForFont];
+	
+	// Move it down by a few pixels if this is a selected item
+	if ([item objectForKey: ZSitem] == selectedItem) {
+		itemRect.origin.y += 2;
+	}
 	
 	return itemRect;
 }
@@ -346,17 +357,14 @@ enum ZSVbutton
 			if ([skeinItem changed]) background = changed;
 			if (skeinItem == [skein activeItem]) background = active;
 			if ([skeinItem parent] == [skein activeItem]) background = changed;
+			if (skeinItem == selectedItem) background = selected;
 			
 			[ZoomSkeinView drawImage: background
-							 atPoint: NSMakePoint(xpos - bgWidth/2.0, ypos-8)
+							 atPoint: NSMakePoint(xpos - bgWidth/2.0, ypos-8 + (background==selected?2.0:0.0))
 						   withWidth: bgWidth];
-/*			[background drawAtPoint: NSMakePoint(xpos - 45, ypos - 8)
-						   fromRect: NSMakeRect(0,0,90,30)
-						  operation: NSCompositeSourceOver
-						   fraction: 1.0]; */
 
 			// Draw the item
-			[[skeinItem command] drawAtPoint: NSMakePoint(xpos - (size.width/2), ypos)
+			[[skeinItem command] drawAtPoint: NSMakePoint(xpos - (size.width/2), ypos + (background==selected?2.0:0.0))
 							  withAttributes: itemTextAttributes];
 			
 			// Draw links to the children
@@ -462,6 +470,7 @@ enum ZSVbutton
 											 selector: @selector(skeinDidChange:)
 												 name: ZoomSkeinChangedNotification
 											   object: skein];
+	[self setSelectedItem: nil];
 	[self skeinNeedsLayout];
 }
 
@@ -639,24 +648,7 @@ enum ZSVbutton
 	
 	if (skeinNeedsLayout) [self layoutSkein];
 	
-#if 0
-	// Find the item (slow method, but it'll work)
-	int x;
-	
-	NSDictionary* foundItem = nil;
-
-	for (x=0; x<[levels count]; x++) {
-		NSEnumerator* itemEnum = [[levels objectAtIndex: x] objectEnumerator];
-		NSDictionary* testItem;
-		
-		while (testItem = [itemEnum nextObject]) {
-			if ([testItem objectForKey: ZSitem] == item)
-				foundItem = testItem;
-		}
-	}
-#else
 	NSDictionary* foundItem = [self itemForItem: item];
-#endif
 	
 	if (foundItem) {
 		float xpos, ypos;
@@ -840,6 +832,8 @@ enum ZSVbutton
 	if (trackedItem) [self setNeedsDisplay: YES];
 	overItem = NO;
 	trackedItem = nil;
+	
+	[self iHateEditing];
 }
 
 - (void) mouseEntered: (NSEvent*) event {
@@ -913,6 +907,8 @@ enum ZSVbutton
 }
 
 - (void) mouseUp: (NSEvent*) event {
+	[self iHateEditing];
+	
 	if (dragScrolling) {
 		dragScrolling = NO;
 		[NSCursor pop];
@@ -952,7 +948,21 @@ enum ZSVbutton
 					break;
 					
 				case ZSVmainItem:
-					[self editItem: [trackedItem objectForKey: ZSitem]];
+					if ([event modifierFlags]&NSCommandKeyMask || [event clickCount] == 2) {
+						// Run the game
+					} else if ([event clickCount] == 1) {
+						// Select this item - queue up for editing if required
+						ZoomSkeinItem* skeinItem = [trackedItem objectForKey: ZSitem];
+						
+						if (selectedItem != skeinItem) {
+							// Change the selected item
+							[self setSelectedItem: skeinItem];
+						} else {
+							// Edit soon
+							[self editSoon: skeinItem];
+						}
+					}
+					//[self editItem: [trackedItem objectForKey: ZSitem]];
 					break;
 			}
 			
@@ -1140,9 +1150,14 @@ enum ZSVbutton
 }
 
 - (void) editItem: (ZoomSkeinItem*) skeinItem {
-	// Cancel any existing editing
-	// FIXME: store it? Probably a good idea
+	// Finish any existing editing
 	[self finishEditing: self];
+	
+	if ([skeinItem parent] == nil) {
+		// Can't edit the root item
+		NSBeep();
+		return;
+	}
 	
 	// Allows you to edit an item's command
 	NSDictionary* item = [self itemForItem: skeinItem];
@@ -1151,7 +1166,7 @@ enum ZSVbutton
 		NSLog(@"ZoomSkeinView: Item not found for editing");
 		return;
 	}
-	
+		
 	// Area of the text for this item
 	NSRect itemFrame = [self textAreaForItem: item];
 	
@@ -1185,6 +1200,31 @@ enum ZSVbutton
 	
 	[[self window] makeFirstResponder: itemEditor];
 	[[self window] makeKeyWindow];
+}
+
+- (void) editSoon: (ZoomSkeinItem*) item {
+	[self performSelector: @selector(editItem:)
+			   withObject: item
+			   afterDelay: 0.7];
+}
+
+- (void) iHateEditing {
+	[NSObject cancelPreviousPerformRequestsWithTarget: self];
+}
+
+// = Selecting items =
+
+- (void) setSelectedItem: (ZoomSkeinItem*) item {
+	if (item == selectedItem) return;
+	
+	[selectedItem release];
+	selectedItem = [item retain];
+	
+	[self setNeedsDisplay: YES];
+}
+
+- (ZoomSkeinItem*) selectedItem {
+	return selectedItem;
 }
 
 @end

@@ -36,6 +36,9 @@
 	NSPoint dragOrigin;
 	NSRect  dragInitialVisible;
 	
+	// Selected item
+	ZoomSkeinItem* selectedItem;
+	
 	// Clicking buttons
 	int activeButton;
 	int lastButton;
@@ -60,5 +63,7 @@
 - (ZoomSkeinItem*) itemAtPoint: (NSPoint) point;
 
 - (void) editItem: (ZoomSkeinItem*) skeinItem;
+- (void) setSelectedItem: (ZoomSkeinItem*) skeinItem;
+- (ZoomSkeinItem*) selectedItem;
 
 @end
