@@ -990,6 +990,8 @@ static void draw_window()
 	    {
 	      int x,y;
 	      int fn, fg, bg;
+
+	      bg = DEFAULT_BACK;
 	      
 	      x=0; y=0;
 	      

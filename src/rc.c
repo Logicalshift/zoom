@@ -224,7 +224,7 @@ char* rc_get_savedir(void)
 {
   if (game->savedir == NULL)
     {
-      if (rc_defgame->gamedir == NULL)
+      if (rc_defgame->savedir == NULL)
 	{
 #if WINDOW_SYSTEM != 2
 	  static char* dir = NULL;

@@ -63,6 +63,8 @@ struct v6window
   int force_fixed;
   int no_more;
 
+  int wrapping;
+
   int want_more;
 };
 
@@ -101,11 +103,19 @@ void v6_startup      (void)
 
 void v6_reset        (void)
 {
+  int x;
+
 #ifdef DEBUG
   printf_debug("V6: reset\n");
 #endif
 
   v6_reset_windows();
+
+  for (x=0; x<8; x++)
+    {
+      win[x].fore = DEFAULT_FORE;
+      win[x].back = DEFAULT_BACK;
+    }
 
   v6_set_window(0);
   v6_erase_window();
@@ -158,8 +168,6 @@ void v6_reset_windows(void)
       win[x].xpos        = win[x].ypos = 0;
       win[x].width       = machine.dinfo->width;
       win[x].height      = machine.dinfo->height;
-      win[x].fore        = DEFAULT_FORE;
-      win[x].back        = DEFAULT_BACK;
       win[x].style       = 0;
       win[x].line_height = display_get_font_height(0);
       win[x].force_fixed = 0;
@@ -167,6 +175,7 @@ void v6_reset_windows(void)
       win[x].no_scroll   = 0;
       win[x].no_more     = 0;
       win[x].want_more   = 0;
+      win[x].wrapping    = 1;
     }
 }
 
@@ -258,7 +267,7 @@ void v6_prints(const int* text)
 
   printf_debug("V6: Printing text to window %i (style %x, colours %i, %i): >%s<\n", active_win, 
 	       ACTWIN.style, ACTWIN.fore, ACTWIN.back, t);
-  #endif
+#endif
 
   for (len=0; text[len] != 0; len++);
 
@@ -279,7 +288,8 @@ void v6_prints(const int* text)
 	     text[text_pos] != 10 && text[text_pos] != 0)
 	{
 	  if (text[text_pos] == ' ' || 
-	      text[text_pos] == '-')
+	      text[text_pos] == '-' ||
+	      ACTWIN.wrapping == 0)
 	    {
 	      /* Possible break point */
 	      width  = display_measure_text(text + start_pos,
@@ -325,6 +335,10 @@ void v6_prints(const int* text)
 			 ACTWIN.style,
 			 (ACTWIN.curx+0.5), 
 			 0.5+ACTWIN.cury+ACTWIN.line_height-display_get_font_descent(ACTWIN.style));
+
+      /* Stop plotting if wrapping is off */
+      if (ACTWIN.wrapping == 0)
+	return;
 
       /* Newline, if necessary */
       if (text[text_pos] != 0)
@@ -585,6 +599,11 @@ void v6_set_scroll(int flag)
 void v6_set_more(int window, int flag)
 {
   win[window].no_more = !flag;
+}
+
+void v6_set_wrap(int window, int flag)
+{
+  win[window].wrapping = flag;
 }
 
 void v6_set_cursor(int x, int y)

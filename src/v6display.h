@@ -63,6 +63,7 @@ extern void v6_define_window(int window,
 			     int width, int height);
 extern void v6_set_scroll   (int flag);
 extern void v6_set_more     (int window, int flag);
+extern void v6_set_wrap     (int window, int flag);
 extern void v6_set_cursor   (int x, int y);
 
 extern int  v6_get_cursor_x (void);

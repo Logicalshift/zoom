@@ -1398,6 +1398,8 @@ void zcode_v6_initialise(void)
       windows[x].style = 0;
       v6_set_colours(machine.dinfo->fore, machine.dinfo->back);
       windows[x].colour = ((machine.dinfo->back+2)<<8)|(machine.dinfo->fore+2);
+      windows[x].fg_true = true_colour(machine.dinfo->fore);
+      windows[x].bg_true = true_colour(machine.dinfo->back);
     }
 
   windows[0].wrapping = 1;
@@ -1488,11 +1490,12 @@ static inline void zcode_setup_window(int window)
   v6_set_window(window);
   v6_define_window(window,
 		   windows[window].x, windows[window].y,
-		   (windows[window].wrapping!=0)?windows[window].leftmar:0, 
-		   (windows[window].wrapping!=0)?windows[window].rightmar:0,
+		   windows[window].leftmar, 
+		   windows[window].rightmar,
 		   windows[window].xsize, windows[window].ysize);
   v6_set_scroll(windows[window].scrolling);
   v6_set_more(window, windows[window].scrolling);
+  v6_set_wrap(window, windows[window].wrapping);
   if (windows[window].line_count == -999)
     v6_set_more(window, 0);
   stream_buffering(windows[window].buffering);
