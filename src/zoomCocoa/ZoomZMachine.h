@@ -64,4 +64,6 @@ extern int zoomImageCacheSize;
 
 - (void) breakpoint: (int) pc;
 
+- (void) connectionDied: (NSNotification*) notification;
+
 @end

@@ -557,7 +557,7 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	
 	[filterColumn setIdentifier: filterName];
 	[self setTitle: filterTitle
-		  forTable: filterTable1];
+		  forTable: filterTable2];
 	//[[filterColumn headerCell] setStringValue: filterTitle];
 	
 	[filterTable2 selectRow: 0 byExtendingSelection: NO];

@@ -90,6 +90,11 @@
     return @"Zoom 1.0.2 ZMachine object";
 }
 
+- (void) connectionDied: (NSNotification*) notification {
+	NSLog(@"Connection died!");
+	abort();
+}
+
 // = Setup =
 - (void) loadStoryFile: (NSData*) storyFile {
     // Create the machine file

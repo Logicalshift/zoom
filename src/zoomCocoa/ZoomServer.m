@@ -52,6 +52,11 @@ int main(int argc, char** argv) {
 		abort();
 	}
 	
+	[[NSNotificationCenter defaultCenter] addObserver: mainMachine
+											 selector: @selector(connectionDied:)
+												 name: NSConnectionDidDieNotification
+											   object: remoteConnection];
+	
 	NSLog(@"Server connected");
 
     // Main runloop
