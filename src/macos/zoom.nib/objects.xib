@@ -4,7 +4,7 @@
   <object name="rootObject" class="NSCustomObject" id="1">
     <string name="customClass">NSApplication</string>
   </object>
-  <array count="49" name="allObjects">
+  <array count="50" name="allObjects">
     <object class="IBCarbonMenuItem" id="199">
       <string name="title">About Zoom</string>
       <int name="keyEquivalentModifier">0</int>
@@ -466,8 +466,22 @@
     <reference idRef="307"/>
     <reference idRef="308"/>
     <reference idRef="309"/>
+    <object class="IBCarbonMenuItem" id="310">
+      <string name="title">Help</string>
+      <object name="submenu" class="IBCarbonMenu">
+        <string name="title">Help</string>
+        <int name="menuID">3</int>
+        <array count="1" name="items">
+          <object class="IBCarbonMenuItem">
+            <string name="title">Zoom Help</string>
+            <string name="keyEquivalent">?</string>
+            <ostype name="command">Help</ostype>
+          </object>
+        </array>
+      </object>
+    </object>
   </array>
-  <array count="49" name="allParents">
+  <array count="50" name="allParents">
     <reference idRef="208"/>
     <reference idRef="1"/>
     <reference idRef="211"/>
@@ -517,6 +531,7 @@
     <reference idRef="306"/>
     <reference idRef="306"/>
     <reference idRef="306"/>
+    <reference idRef="201"/>
   </array>
   <dictionary count="5" name="nameTable">
     <string>AboutBox</string>
@@ -530,5 +545,5 @@
     <string>Preferences</string>
     <reference idRef="234"/>
   </dictionary>
-  <unsigned_int name="nextObjectID">310</unsigned_int>
+  <unsigned_int name="nextObjectID">313</unsigned_int>
 </object>

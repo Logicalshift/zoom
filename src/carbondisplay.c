@@ -168,6 +168,58 @@ static void draw_input_text(void);
 
 /***                           ----// 888 \\----                           ***/
 
+/* Lifted from the carbon developer docs */
+OSStatus RegisterMyHelpBook(void)
+{
+  CFBundleRef myAppsBundle;
+  CFURLRef myBundleURL;
+  FSRef myBundleRef;
+  OSStatus err;
+  
+  /* set up a known state */
+  myAppsBundle = NULL;
+  myBundleURL = NULL;
+  
+  /* Get our application's main bundle from Core Foundation */
+  myAppsBundle = CFBundleGetMainBundle();
+  if (myAppsBundle == NULL) 
+    { 
+      err = fnfErr;
+      goto bail;
+    }
+  
+  /* retrieve the URL to our bundle */
+  myBundleURL = CFBundleCopyBundleURL(myAppsBundle);
+  if (myBundleURL == nil) 
+    { 
+      err = fnfErr;
+      goto bail;
+    }
+  
+  /* convert the URL to a FSRef */
+  if ( ! CFURLGetFSRef(myBundleURL, &myBundleRef))
+    {
+      err = fnfErr;
+      goto bail;
+    }
+  
+  /* register our application's help book */
+  err = AHRegisterHelpBook(&myBundleRef);
+  if (err != noErr) 
+    goto bail;
+  
+  /* done */
+  CFRelease(myBundleURL);
+  return noErr;
+  
+ bail:
+  if (myBundleURL != NULL) 
+    CFRelease(myBundleURL);
+  return err;
+}
+
+/***                           ----// 888 \\----                           ***/
+
 static inline int istrlen(const int* string)
 {
   int x = 0;
@@ -2067,6 +2119,12 @@ void display_initialise(void)
   rc_colour* colours;
   int n_cols;
   int x;
+
+  if (RegisterMyHelpBook() != noErr)
+    {
+      carbon_display_message("Unable to register help book",
+			     "Help might not be available");
+    }
 
   NewSpeechChannel(NULL, &speechchan);
 

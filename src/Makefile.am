@@ -59,10 +59,15 @@ if CARBON_VERSION
 	-mkdir Zoom.app/Contents/MacOS
 	-mkdir Zoom.app/Contents/Resources
 	-mkdir Zoom.app/Contents/Resources/English.lproj
+	-mkdir Zoom.app/Contents/Resources/Zoom\ Help
+	-mkdir Zoom.app/Contents/Resources/Zoom\ Help/main
 	cp zoom$(EXEEXT) Zoom.app/Contents/MacOS/Zoom
 	cp -Rf $(srcdir)/macos/zoom.nib Zoom.app/Contents/Resources/English.lproj
 	cp $(srcdir)/macos/zoom-app.icns $(srcdir)/macos/zoom-file.icns $(srcdir)/macos/zoom-game.icns $(srcdir)/macos/zoomrc Zoom.app/Contents/Resources
 	cp $(srcdir)/macos/Info.plist $(srcdir)/macos/PkgInfo Zoom.app/Contents
+	cp $(srcdir)/../manual/*.html $(srcdir)/../manual/*.png Zoom.app/Contents/Resources/Zoom\ Help/main
+	cp $(srcdir)/../manual/ztitle.html $(srcdir)/../manual/zicon.gif $(srcdir)/../manual/Zoom\ Help\ idx Zoom.app/Contents/Resources/Zoom\ Help
+	mv Zoom.app/Contents/Resources/Zoom\ Help/ztitle.html Zoom.app/Contents/Resources/Zoom\ Help/Zoom\ Help.htm
 endif
 endif
 
