@@ -1,3 +1,7 @@
+2000-12-07  Andrew Hunter    <andrew@logicalshift.co.uk>
+
+	* windows input now working, a few bugs fixed in windisplay.c
+	
 2000-12-06  Andrew Hunter    <andrew@logicalshift.co.uk>
 
 	* random number generator added (no longer relies on whatever your

@@ -112,6 +112,7 @@ struct line
 {
   struct text* start;
   int          n_chars;
+  int          offset;
   int          baseline;
   int          ascent;
   int          descent;
@@ -149,6 +150,7 @@ struct window
   struct text* lasttext;
   
   struct line* line;
+  struct line* topline;
   struct line* lastline;
 
   struct cellline* cline;
@@ -228,6 +230,7 @@ void display_initialise(void)
   text_win[0].text        = NULL;
   text_win[0].lasttext    = NULL;
   text_win[0].line        = NULL;
+  text_win[0].topline     = NULL;
   text_win[0].lastline    = NULL;
   text_win[0].cline       = NULL;
 
@@ -386,6 +389,7 @@ static void new_line(int more)
 
       CURWIN.line->start    = NULL;
       CURWIN.line->n_chars  = 0;
+      CURWIN.line->offset   = 0;
       CURWIN.line->baseline =
 	CURWIN.ypos + xfont_get_ascent(font[style_font[(CURSTYLE>>1)&15]]);
       CURWIN.line->ascent   = xfont_get_ascent(font[style_font[(CURSTYLE>>1)&15]]);
@@ -423,14 +427,30 @@ static void new_line(int more)
     {
       int toscroll;
       struct line* l;
+      int x, y;
 
       toscroll = (line->baseline+line->descent)-CURWIN.winly;
       l = CURWIN.line;
 
+      /* Scroll the lines upwards */
       while (l != NULL)
 	{
 	  l->baseline -= toscroll;
 	  l = l->next;
+	}
+
+      /* Scroll the overlays upwards */
+      for (y=CURWIN.winsy/xfont_y;
+	   y<(size_y-1);
+	   y++)
+	{
+	  for (x=0; x<max_x; x++)
+	    {
+	      text_win[2].cline[y].cell[x] = text_win[2].cline[y+1].cell[x];
+	      text_win[2].cline[y].font[x] = text_win[2].cline[y+1].font[x];
+	      text_win[2].cline[y].fg[x]   = text_win[2].cline[y+1].fg[x];
+	      text_win[2].cline[y].bg[x]   = text_win[2].cline[y+1].bg[x];
+	    }
 	}
 
       display_update();
@@ -488,7 +508,10 @@ static void format_last_text(int more)
 	    }
 
 	  if (line->start == NULL)
-	    line->start = text;
+	    {
+	      line->offset = word_start;
+	      line->start = text;
+	    }
 	  line->n_chars += word_len;
 
 	  word_start += word_len;
@@ -609,6 +632,9 @@ void display_prints(const int* str)
   else
     {
       struct text* text;
+
+      if (str[0] == 0)
+	return;
 
       text = malloc(sizeof(struct text));
 
@@ -1091,7 +1117,7 @@ void display_erase_window(void)
 	  free(line);
 	  line = nextline;
 	}
-      CURWIN.line = CURWIN.lastline = NULL;
+      CURWIN.line = CURWIN.topline = CURWIN.lastline = NULL;
       
       for (y=(CURWIN.winsy/xfont_y); y<size_y; y++)
 	{
@@ -1213,9 +1239,10 @@ static void draw_window(int win,
 
       struct text* lasttext;
       int lastchars, nchars, x, width, lasty;
-      int startchar;
 
-      line = text_win[win].line;
+      line = text_win[win].topline;
+      if (line == NULL)
+	line = text_win[win].line;
       lastchars = 0;
       lasttext = NULL;
 
@@ -1236,63 +1263,66 @@ static void draw_window(int win,
       while (line != NULL)
 	{
 	  width     = 0;
-	  nchars    = 0;
-	  startchar = 0;
 	  text      = line->start;
+	  nchars    = line->offset;
 
 	  if (text == NULL && line->n_chars > 0)
 	    zmachine_fatal("Programmer is a spoon");
 
-	  if (text == lasttext)
+	  if (line->baseline + line->descent < text_win[win].winsy)
 	    {
-	      startchar = lastchars;
-	      nchars = lastchars;
+	      text_win[win].topline = line->next;
+	      line = line->next;
+	      continue;
 	    }
-
-	  for (x=0; x<line->n_chars; x++)
+	  
+	  for (x=0; x<line->n_chars;)
 	    {
-	      nchars++;
-	      if (nchars == text->len || x == line->n_chars-1)
-		{
-		  int w;
-		  int sub = 0;
-		  
-		  if (text->text[nchars-1] == '\n')
-		    sub = 1;
+	      int w;
+	      int toprint;
 
-		  if (line->baseline+line->descent >
-		      text_win[win].winsy)
+	      toprint = line->n_chars-x;
+	      if (toprint > (text->len - nchars))
+		toprint = text->len - nchars;
+
+	      if (toprint > 0)
+		{
+		  if (text->text[toprint+nchars-1] == 10)
 		    {
-		      w = xfont_get_text_width(font[text->font],
-					       text->text + startchar,
-					       nchars - startchar - sub);
-		      
-		      rct.top    = line->baseline - line->ascent+4;
-		      rct.bottom = line->baseline + line->descent+4;
-		      rct.left   = width+4;
-		      rct.right  = width+w+4;
-		      /* if (rct.top < rct.bottom)
-			 FillRect(dc, &rct, winbrush[text->bg]); */
-		      
-		      xfont_set_colours(text->fg,
-					text->bg);
-		      xfont_plot_string(font[text->font],
-					dc,
-					width+4,
-					line->baseline-
-					xfont_get_ascent(font[text->font])+4,
-					text->text + startchar,
-					nchars - startchar - sub);
+		      toprint--;
+		      x++;
 		    }
-		      
-		  lastchars = nchars;
-		  lasttext = text;
+
+		  w = xfont_get_text_width(font[text->font],
+					   text->text + nchars,
+					   toprint);
 		  
+		  rct.top    = line->baseline - line->ascent+4;
+		  rct.bottom = line->baseline -
+		    xfont_get_ascent(font[text->font])+4;
+		  rct.left   = width+4;
+		  rct.right  = width+w+4;
+		  if (rct.top < rct.bottom)
+		    FillRect(dc, &rct, winbrush[text->bg]);
+		  
+		  xfont_set_colours(text->fg,
+				    text->bg);
+		  xfont_plot_string(font[text->font],
+				    dc,
+				    width+4,
+				    line->baseline-
+				    xfont_get_ascent(font[text->font])+4,
+				    text->text + nchars,
+				    toprint);
+
+		  x      += toprint;
+		  nchars += toprint;
+		  width  += w;
+		}
+	      else
+		{
 		  nchars = 0;
-		  text = text->next;
-		  startchar = 0;
-		  
-		  width += w;
+		  text   = text->next;
 		}
 	    }
 	  
@@ -1401,6 +1431,8 @@ static void resize_window()
     {
       struct line* line;
       struct line* next;
+
+      CURWIN.topline = NULL;
       
       CURWIN.ypos = CURWIN.line->baseline - CURWIN.line->ascent;
       CURWIN.xpos = 0;
