@@ -10,15 +10,6 @@
 
 #import "ZoomSkeinLayout.h"
 
-// The item dictionary
-static NSString* ZSitem           = @"ZSitem";
-static NSString* ZSwidth          = @"ZSwidth";
-static NSString* ZSfullwidth      = @"ZSfullwidth";
-static NSString* ZSposition       = @"ZSposition";
-static NSString* ZSchildren       = @"ZSchildren";
-static NSString* ZSsimpleChildren = @"ZSsimpleChildren";
-static NSString* ZSlevel          = @"ZSlevel";
-
 // Constants
 static const float itemWidth = 120.0; // Pixels
 static const float itemHeight = 96.0;
@@ -133,20 +124,6 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 		   fraction: 1.0];	
 }
 
-+ (NSMutableDictionary*) item: (ZoomSkeinItem*) item
-					withWidth: (float) width
-					fullWidth: (float) fullWidth
-						level: (int) level {
-	// Position is '0' by default
-	return [NSMutableDictionary dictionaryWithObjectsAndKeys: 
-		item, ZSitem, 
-		[NSNumber numberWithFloat: width], ZSwidth, 
-		[NSNumber numberWithFloat: fullWidth], ZSfullwidth,
-		[NSNumber numberWithFloat: 0.0], ZSposition,
-		[NSNumber numberWithInt: level], ZSlevel,
-		nil];
-}
-
 // = Initialisation =
 
 - (id) init {
@@ -205,7 +182,7 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 
 // = Performing layout =
 
-- (NSMutableDictionary*) layoutSkeinItem: (ZoomSkeinItem*) item
+- (ZoomSkeinLayoutItem*) layoutSkeinItem: (ZoomSkeinItem*) item
 							   withLevel: (int) level {
 	if (item == nil) return nil;
 	
@@ -214,10 +191,9 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 	float position = 0.0;
 	float lastPosition = 0.0;
 	float lastWidth = 0.0;
-	NSMutableDictionary* childItem;
+	ZoomSkeinLayoutItem* childItem;
 	
 	NSMutableArray* children = [NSMutableArray array];
-	NSMutableArray* simpleChildren = [NSMutableArray array];
 	
 	while (child = [childEnum nextObject]) {
 		// Layout the child item
@@ -228,15 +204,13 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 		position += lastWidth/2.0; // Add in halves: we're dealing with object centers
 		lastPosition = position;
 		
-		lastWidth = [[childItem objectForKey: ZSfullwidth] floatValue];
+		lastWidth = [childItem fullWidth];
 		position += lastWidth/2.0;
 		
-		[childItem setObject: [NSNumber numberWithFloat: position]
-					  forKey: ZSposition];
+		[childItem setPosition: position];
 		
 		// Add to the list of children for this item
 		[children addObject: childItem];
-		[simpleChildren addObject: child];
 	}
 	
 	// Update position to be the total width
@@ -250,8 +224,7 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 	
 	childEnum = [children objectEnumerator];
 	while (childItem = [childEnum nextObject]) {
-		[childItem setObject: [NSNumber numberWithFloat: [[childItem objectForKey: ZSposition] floatValue] - center]
-					  forKey: ZSposition];
+		[childItem setPosition: [childItem position] - center];
 	}
 	
 	// Adjust the width to fit the text, if required
@@ -263,15 +236,12 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 	if (position < (ourWidth + itemPadding)) position = ourWidth + itemPadding;
 	
 	// Return the result
-	NSMutableDictionary* result = [[self class] item: item
-										   withWidth: ourWidth
-										   fullWidth: position
-											   level: level];
+	ZoomSkeinLayoutItem* result = [[ZoomSkeinLayoutItem alloc] initWithItem: item
+																	  width: ourWidth
+																  fullWidth: position
+																	  level: level];
 	
-	[result setObject: children
-			   forKey: ZSchildren];
-	[result setObject: simpleChildren
-			   forKey: ZSsimpleChildren];
+	[result setChildren: children];
 	
 	// Index this item
 	[itemForItem setObject: result
@@ -283,31 +253,31 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 	}
 	
 	[[levels objectAtIndex: level] addObject: result];
+	[result release]; // Is retained in the levels array, so we don't autorelease (saves some time. Might cause bugs in the future though, so NOTE THIS)
 	
 	return result;
 }
 
-- (void) fixPositions: (NSMutableDictionary*) item
+- (void) fixPositions: (ZoomSkeinLayoutItem*) item
 		   withOffset: (float) offset {
 	// After running through layoutSkeinItem, all positions are relative to the 'parent' item
 	// This routine fixes this
 	
 	// Move this item by the offset (fixing it with an absolute position)
-	float oldPos = [[item objectForKey: ZSposition] floatValue];
+	float oldPos = [item position];
 	float newPos = oldPos + offset;
-	[item setObject: [NSNumber numberWithFloat: newPos]
-			 forKey: ZSposition];
+	[item setPosition: newPos];
 	
 	// Fix the children to have absolute positions
-	NSEnumerator* childEnum = [[item objectForKey: ZSchildren] objectEnumerator];
-	NSMutableDictionary* child;
+	NSEnumerator* childEnum = [[item children] objectEnumerator];
+	ZoomSkeinLayoutItem* child;
 	
 	while (child = [childEnum nextObject]) {
 		[self fixPositions: child
 				withOffset: newPos];
 	}
 	
-	float leftPos = newPos - ([[item objectForKey: ZSfullwidth] floatValue]/2.0);
+	float leftPos = newPos - ([item fullWidth]/2.0);
 	if ((-leftPos) > globalOffset)
 		globalOffset = -leftPos;
 	if (newPos > globalWidth)
@@ -353,10 +323,10 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 	
 	NSMutableArray* res = [NSMutableArray array];
 	NSEnumerator* levelEnum = [[levels objectAtIndex: level] objectEnumerator];
-	NSDictionary* item;
+	ZoomSkeinLayoutItem* item;
 	
 	while (item = [levelEnum nextObject])  {
-		[res addObject: [item objectForKey: ZSitem]];
+		[res addObject: [item item]];
 	}
 	
 	return res;
@@ -369,61 +339,33 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 
 // = Raw item data =
 
-- (NSDictionary*) dataForItem: (ZoomSkeinItem*) item {
+- (ZoomSkeinLayoutItem*) dataForItem: (ZoomSkeinItem*) item {
 	return [itemForItem objectForKey: [NSValue valueWithPointer: item]]; // Yeah, yeah. Items are distinguished by command, not location in the tree
 }
 
-- (ZoomSkeinItem*) itemForData: (NSDictionary*) data {
-	return [data objectForKey: ZSitem];
-}
-
 - (float) xposForItem: (ZoomSkeinItem*) item {
-	return [[[self dataForItem: item] objectForKey: ZSposition] floatValue] + globalOffset;
+	return [[self dataForItem: item] position] + globalOffset;
 }
 
 - (int) levelForItem: (ZoomSkeinItem*) item {
-	return [[[self dataForItem: item] objectForKey: ZSlevel] intValue];
+	return [[self dataForItem: item] level];
 }
 
 - (float) widthForItem: (ZoomSkeinItem*) item {
-	return [[[self dataForItem: item] objectForKey: ZSwidth] floatValue];
+	return [[self dataForItem: item] width];
 }
 
 - (float) fullWidthForItem: (ZoomSkeinItem*) item {
-	return [[[self dataForItem: item] objectForKey: ZSfullwidth] floatValue];
-}
-
-- (NSArray*) childrenForItem: (ZoomSkeinItem*) item {
-	return [[self dataForItem: item] objectForKey: ZSsimpleChildren];
-}
-
-- (float) xposForData: (NSDictionary*) item {
-	return [[item objectForKey: ZSposition] floatValue] + globalOffset;
-}
-
-- (int) levelForData: (NSDictionary*) item {
-	return [[item objectForKey: ZSlevel] intValue];
-}
-
-- (float) widthForData: (NSDictionary*) item {
-	return [[item objectForKey: ZSwidth] floatValue];
-}
-
-- (float) fullWidthForData: (NSDictionary*) item {
-	return [[item objectForKey: ZSfullwidth] floatValue];
-}
-
-- (NSArray*) childrenForData: (NSDictionary*) item {
-	return [item objectForKey: ZSchildren];
+	return [[self dataForItem: item] fullWidth];
 }
 
 // = Item positioning data =
 
-- (NSRect) activeAreaForData: (NSDictionary*) item {
+- (NSRect) activeAreaForData: (ZoomSkeinLayoutItem*) item {
 	NSRect itemRect;
-	float ypos = ((float)[[item objectForKey: ZSlevel] intValue]) * itemHeight + (itemHeight/2.0);
-	float position = [[item objectForKey: ZSposition] floatValue];
-	float width = [[item objectForKey: ZSwidth] floatValue];
+	float ypos = ((float)[item level]) * itemHeight + (itemHeight/2.0);
+	float position = [item position];
+	float width = [item width];
 	
 	// Basic rect
 	itemRect.origin.x = position + globalOffset - (width/2.0) - 20.0;
@@ -445,11 +387,11 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 	return itemRect;
 }
 
-- (NSRect) textAreaForData: (NSDictionary*) item {
+- (NSRect) textAreaForData: (ZoomSkeinLayoutItem*) item {
 	NSRect itemRect;
-	float ypos = ((float)[[item objectForKey: ZSlevel] intValue]) * itemHeight + (itemHeight/2.0);
-	float position = [[item objectForKey: ZSposition] floatValue];
-	float width = [[item objectForKey: ZSwidth] floatValue];
+	float ypos = ((float)[item level]) * itemHeight + (itemHeight/2.0);
+	float position = [item position];
+	float width = [item width];
 	
 	// Basic rect
 	itemRect.origin.x = position + globalOffset - (width/2.0);
@@ -458,7 +400,7 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 	itemRect.size.height = [[NSFont systemFontOfSize: 10] defaultLineHeightForFont];
 	
 	// Move it down by a few pixels if this is a selected item
-	if ([item objectForKey: ZSitem] == selectedItem) {
+	if ([item item] == selectedItem) {
 		itemRect.origin.y += 2;
 	}
 	
@@ -502,11 +444,11 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 	
 	// Recall that item positions are centered. Widths are calculated
 	NSEnumerator* levelEnum = [[levels objectAtIndex: level] objectEnumerator];
-	NSDictionary* item;
+	ZoomSkeinLayoutItem* item;
 	
 	while (item = [levelEnum nextObject]) {
-		float itemWidth = [[item objectForKey: ZSwidth] floatValue];
-		float itemPos = [[item objectForKey: ZSposition] floatValue] + globalOffset;
+		float itemWidth = [item width];
+		float itemPos = [item position] + globalOffset;
 		
 		// There's a +40 border either side of the item
 		itemWidth += 40.0;
@@ -521,7 +463,7 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 		
 		if (point.x > (itemPos - itemWidth) && point.x < (itemPos + itemWidth)) {
 			// This is the item
-			return [item objectForKey: ZSitem];
+			return [item item];
 		}
 	}
 	
@@ -533,7 +475,7 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 	if (tree) {
 		NSSize res;
 		
-		res.width = [[tree objectForKey: ZSfullwidth] floatValue];
+		res.width = [tree fullWidth];
 		res.height = ((float)[levels count]) * itemHeight;
 		
 		return res;
@@ -560,13 +502,13 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 		
 		// Iterate through the items on this level...
 		NSEnumerator* levelEnum = [[self dataForLevel: level] objectEnumerator];
-		NSDictionary* item;
+		ZoomSkeinLayoutItem* item;
 		
 		float ypos = ((float)level)*itemHeight + (itemHeight / 2.0);
 		
 		while (item = [levelEnum nextObject]) {
-			ZoomSkeinItem* skeinItem = [self itemForData: item];
-			float xpos = [self xposForData: item];
+			ZoomSkeinItem* skeinItem = [item item];
+			float xpos = [item position] + globalOffset;
 			NSSize size = [skeinItem commandSize];
 			
 			// Draw the background
@@ -589,7 +531,7 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 			
 			// Draw links to the children
 			[[NSColor blackColor] set];
-			NSEnumerator* childEnumerator = [[self childrenForData: item] objectEnumerator];
+			NSEnumerator* childEnumerator = [[item children] objectEnumerator];
 			
 			float startYPos = ypos + 10.0 + size.height;
 			float endYPos = ypos - 10.0 + itemHeight;
@@ -597,12 +539,12 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 			NSColor* tempChildLink = [NSColor blueColor];
 			NSColor* permChildLink = [NSColor blackColor];
 			
-			NSDictionary* child;
+			ZoomSkeinLayoutItem* child;
 			while (child = [childEnumerator nextObject]) {
-				float childXPos = [self xposForData: child];
-				BOOL annotated = [[self itemForData: child] annotation]!=nil;
+				float childXPos = [child position] + globalOffset;
+				BOOL annotated = [[child item] annotation]!=nil;
 				
-				if ([[self itemForData: child] temporary]) {
+				if ([[child item] temporary]) {
 					[tempChildLink set];
 				} else {
 					[permChildLink set];

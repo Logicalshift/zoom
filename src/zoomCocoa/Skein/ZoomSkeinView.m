@@ -7,6 +7,7 @@
 //
 
 #import "ZoomSkeinView.h"
+#import "ZoomSkeinLayout.h"
 
 #include <Carbon/Carbon.h>
 
@@ -273,6 +274,8 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 }
 
 - (void) setSkein: (ZoomSkein*) sk {
+	if (skein == sk) return;
+	
 	if (skein) {
 		[[NSNotificationCenter defaultCenter] removeObserver: self
 														name: ZoomSkeinChangedNotification
@@ -319,6 +322,8 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	// Only actually layout if we're marked as needing it
 	if (!skeinNeedsLayout) return;
 
+	NSLog(@"Laying out skein");
+	
 	skeinNeedsLayout = NO;
 	
 	// Re-layout this skein
@@ -329,11 +334,6 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	NSRect newBounds = [self frame];
 	
 	newBounds.size = [layout size];
-	/*
-	newBounds.size.width = [[tree objectForKey: ZSfullwidth] floatValue];
-	//newBounds.size.width = globalWidth + globalOffset + itemWidth/2.0;
-	newBounds.size.height = ((float)[levels count]) * itemHeight;
-	 */
 	
 	[self setFrameSize: newBounds.size];
 	
@@ -348,10 +348,11 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 
 - (void) scrollToItem: (ZoomSkeinItem*) item {
 	if (item == nil) return;
+	if ([self superview] == nil) return;
 	
 	if (skeinNeedsLayout) [self layoutSkein];
 	
-	NSDictionary* foundItem = [layout dataForItem: item];
+	ZoomSkeinLayoutItem* foundItem = [layout dataForItem: item];
 	
 	if (foundItem) {
 		float xpos, ypos;
@@ -824,11 +825,6 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 		}
 	}
 	
-	/*
-	[skein zoomSkeinChanged];
-	[self skeinNeedsLayout];
-	[self scrollToItem: skeinItem];
-	 */
 	[self setNeedsDisplay: YES];
 }
 
@@ -925,7 +921,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	}
 	
 	// Allows you to edit an item's command
-	NSDictionary* itemD = [layout dataForItem: skeinItem];
+	ZoomSkeinLayoutItem* itemD = [layout dataForItem: skeinItem];
 	
 	if (itemD == nil) {
 		NSLog(@"ZoomSkeinView: Item not found for editing");
@@ -1056,11 +1052,11 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 }
 
 - (void)viewDidMoveToWindow {
-	[self skeinNeedsLayout];
+	if ([self superview] != nil) [self skeinNeedsLayout];
 }
 
 - (void) viewDidMoveToSuperview {
-	[self skeinNeedsLayout];
+	if ([self superview] != nil) [self skeinNeedsLayout];
 }
 
 - (void) setFrame: (NSRect) frame {

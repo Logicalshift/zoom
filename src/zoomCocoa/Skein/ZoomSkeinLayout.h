@@ -9,6 +9,7 @@
 #import <Cocoa/Cocoa.h>
 
 #import "ZoomSkein.h"
+#import "ZoomSkeinLayoutItem.h"
 
 @interface ZoomSkeinLayout : NSObject {
 	ZoomSkeinItem* rootItem;
@@ -17,7 +18,7 @@
 	NSMutableDictionary* itemForItem;
 	
 	// The layout
-	NSMutableDictionary* tree;
+	ZoomSkeinLayoutItem* tree;
 	NSMutableArray* levels;
 	float globalOffset, globalWidth;
 	
@@ -47,29 +48,21 @@
 - (NSArray*) itemsOnLevel: (int) level;
 - (NSArray*) dataForLevel: (int) level;
 
-- (NSDictionary*) dataForItem: (ZoomSkeinItem*) item;
-- (ZoomSkeinItem*) itemForData: (NSDictionary*) data;
+- (ZoomSkeinLayoutItem*) dataForItem: (ZoomSkeinItem*) item;
 
 // General item data
 - (float)    xposForItem:      (ZoomSkeinItem*) item;
 - (int)      levelForItem:     (ZoomSkeinItem*) item;
 - (float)    widthForItem:     (ZoomSkeinItem*) item;
 - (float)    fullWidthForItem: (ZoomSkeinItem*) item;
-- (NSArray*) childrenForItem:  (ZoomSkeinItem*) item;
-
-- (float)    xposForData:      (NSDictionary*) item;
-- (int)      levelForData:     (NSDictionary*) item;
-- (float)    widthForData:     (NSDictionary*) item;
-- (float)    fullWidthForData: (NSDictionary*) item;
-- (NSArray*) childrenForData:  (NSDictionary*) item;
 
 // Item positioning data
 - (NSSize) size;
 
 - (NSRect) activeAreaForItem: (ZoomSkeinItem*) itemData;
 - (NSRect) textAreaForItem: (ZoomSkeinItem*) itemData;
-- (NSRect) activeAreaForData: (NSDictionary*) itemData;
-- (NSRect) textAreaForData: (NSDictionary*) itemData;
+- (NSRect) activeAreaForData: (ZoomSkeinLayoutItem*) itemData;
+- (NSRect) textAreaForData: (ZoomSkeinLayoutItem*) itemData;
 - (ZoomSkeinItem*) itemAtPoint: (NSPoint) point;
 
 // Drawing
