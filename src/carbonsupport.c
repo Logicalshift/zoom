@@ -358,17 +358,17 @@ static enum zcode_type type_fsref(FSRef* file)
 	  outname.unicode[outname.length-2] == 'u' &&
 	  outname.unicode[outname.length-1] == 't')
 	return TYPE_IFZS;
-       if (outname.unicode[outname.length-4] == '.' &&
+      if (outname.unicode[outname.length-4] == '.' &&
 	  outname.unicode[outname.length-3] == 'b' &&
 	  outname.unicode[outname.length-2] == 'l' &&
 	  outname.unicode[outname.length-1] == 'b')
 	return TYPE_IFRS;
-       if (outname.unicode[outname.length-4] == '.' &&
-	   outname.unicode[outname.length-3] == 'z' &&
-	   outname.unicode[outname.length-2] == 'l' &&
-	   outname.unicode[outname.length-1] == 'b')
-	 return TYPE_IFRS;
-    break;
+      if (outname.unicode[outname.length-4] == '.' &&
+	  outname.unicode[outname.length-3] == 'z' &&
+	  outname.unicode[outname.length-2] == 'l' &&
+	  outname.unicode[outname.length-1] == 'b')
+	return TYPE_IFRS;
+      break;
     }
 
   return TYPE_BORING;
