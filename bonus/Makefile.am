@@ -1,1 +1,1 @@
-extra_DIST = zmark.inf random.inf
+EXTRA_DIST = zmark.inf random.inf

@@ -2,7 +2,11 @@ bin_PROGRAMS = \
 	zoom
 pkgdata_DATA = zoomrc
 
-EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico
+EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
+	macos/Info.plist macos/PkgInfo macos/zoom-app.icns \
+	macos/zoom-file.icns macos/zoom-game.icns \
+	macos/zoom.nib/classes.nib macos/zoom.nib/info.nib \
+	macos/zoom.nib/objects.xib macos/macreadme.rtf macos/zoomrc
 
 zoom_SOURCES = \
 	main.c interp.c file.c options.c zmachine.c zscii.c xdisplay.c \

@@ -291,7 +291,5 @@ AC_OUTPUT([
   src/Makefile
   src/ztypes.h
   src/zoom.rc
-  blorb/Makefile
-  blorb/libblorb/Makefile
   builder/Makefile
   bonus/Makefile])
