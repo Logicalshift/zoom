@@ -1085,8 +1085,11 @@ enum ZSVbutton
 	ZoomSkeinItem* newItem = 
 		[skeinItem addChild: [ZoomSkeinItem skeinItemWithCommand: @""]];
 	
-	[skein zoomSkeinChanged];
+	// Lock it
+	[newItem setTemporary: NO];
 	
+	// Note the changes
+	[skein zoomSkeinChanged];	
 	[self skeinNeedsLayout];
 	
 	// Edit the item
