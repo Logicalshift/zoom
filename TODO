@@ -13,6 +13,7 @@ Hmm, this file was a bit out of date.
  * disable quicktime rendering
  * crash when moving a file and it's resources in OS X?
  * Remove font numbering
+ * '>>' '<<' bug? again?
 
  * Sound
  * Internationalisation support

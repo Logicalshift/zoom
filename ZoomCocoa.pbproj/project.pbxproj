@@ -1026,6 +1026,69 @@
 			settings = {
 			};
 		};
+		4B2D95C9053706CD00A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomScrollView.h;
+			refType = 4;
+		};
+		4B2D95CA053706CD00A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomScrollView.m;
+			refType = 4;
+		};
+		4B2D95CB053706CD00A8E303 = {
+			fileRef = 4B2D95C9053706CD00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Private,
+				);
+			};
+		};
+		4B2D95CC053706CD00A8E303 = {
+			fileRef = 4B2D95CA053706CD00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B2D95CD0537071400A8E303 = {
+			fileRef = 4B2D95C9053706CD00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B2D95CE05372EF900A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomUpperWindowView.h;
+			refType = 4;
+		};
+		4B2D95CF05372EF900A8E303 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = ZoomUpperWindowView.m;
+			refType = 4;
+		};
+		4B2D95D005372EF900A8E303 = {
+			fileRef = 4B2D95CE05372EF900A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B2D95D105372EF900A8E303 = {
+			fileRef = 4B2D95CF05372EF900A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B2D95D205372EFB00A8E303 = {
+			fileRef = 4B2D95CE05372EF900A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		4B4EF61C050FCEA600A8E303 = {
 			buildActionMask = 2147483647;
 			dstPath = "";
@@ -1185,6 +1248,8 @@
 				4BDFA4DA0535E6A700A8E303,
 				4BDFA4DB0535E6A800A8E303,
 				4BDFA4DC0535E6A900A8E303,
+				4B2D95CD0537071400A8E303,
+				4B2D95D205372EFB00A8E303,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1205,7 +1270,6 @@
 		4BCF3F39050FB1B400A8E303 = {
 			buildActionMask = 2147483647;
 			files = (
-				4BCF3F40050FB1B900A8E303,
 				4BCF3F4C050FB2C500A8E303,
 				4BDFA4E10535E81300A8E303,
 				4BDFA4E20535E85900A8E303,
@@ -1326,12 +1390,6 @@
 		};
 		4BCF3F3F050FB1B900A8E303 = {
 			fileRef = 4BCF3F27050F8BB200A8E303;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		4BCF3F40050FB1B900A8E303 = {
-			fileRef = 4BCF3F29050F8E0000A8E303;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -1566,6 +1624,9 @@
 				4BDFA4C40535E65900A8E303,
 				4BDFA4C60535E65A00A8E303,
 				4BDFA4C80535E65B00A8E303,
+				4BDFA4EA0535EAA500A8E303,
+				4B2D95CB053706CD00A8E303,
+				4B2D95D005372EF900A8E303,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1585,6 +1646,9 @@
 				4BDFA4C50535E65A00A8E303,
 				4BDFA4C70535E65B00A8E303,
 				4BDFA4C90535E65C00A8E303,
+				4BDFA4E90535EAA400A8E303,
+				4B2D95CC053706CD00A8E303,
+				4B2D95D105372EF900A8E303,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1609,7 +1673,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_VERSION = A;
-				OPTIMIZATION_CFLAGS = "";
 				OTHER_CFLAGS = "-seg1addr 0x2f000000";
 				OTHER_LDFLAGS = "-seg1addr 0x2f000000";
 				OTHER_LIBTOOL_FLAGS = "";
@@ -1839,10 +1902,29 @@
 				4BDFA4AD0535C42C00A8E303,
 				4BDFA4B00535E10200A8E303,
 				4BDFA4B10535E10200A8E303,
+				4B2D95C9053706CD00A8E303,
+				4B2D95CA053706CD00A8E303,
+				4B2D95CE05372EF900A8E303,
+				4B2D95CF05372EF900A8E303,
 			);
 			isa = PBXGroup;
 			name = ZoomView;
 			refType = 4;
+		};
+		4BDFA4E90535EAA400A8E303 = {
+			fileRef = 4BCF3F29050F8E0000A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BDFA4EA0535EAA500A8E303 = {
+			fileRef = 4BCF3F27050F8BB200A8E303;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
 		};
 		4BE447B80510DE5900A8E303 = {
 			fileEncoding = 4;

@@ -14,8 +14,14 @@
     ZoomView* theView;
 
     int startLine, endLine;
+
+    NSMutableArray* lines;
+    int xpos, ypos;
 }
 
 - (id) initWithZoomView: (ZoomView*) view;
+
+- (int) length;
+- (NSArray*) lines;
 
 @end

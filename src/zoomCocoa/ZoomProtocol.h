@@ -23,11 +23,12 @@
  * Protocol for an application to talk to/from Zoom
  */
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 
 @protocol ZMachine;
 @protocol ZDisplay;
 @protocol ZFile;
+@class ZStyle;
 
 // == Server-side objects ==
 @protocol ZVendor
@@ -86,7 +87,8 @@
 - (oneway void) setFocus;
 
 // Sending data to a window
-- (oneway void) writeString: (in bycopy NSAttributedString*) string;
+- (oneway void) writeString: (in bycopy NSString*) string
+                  withStyle: (in bycopy ZStyle*) style;
 @end
 
 @protocol ZUpperWindow<ZWindow>
@@ -124,6 +126,11 @@
 - (oneway void) shouldReceiveCharacters;
 - (oneway void) shouldReceiveText: (in int) maxLength;
 - (void)        stopReceiving;
+
+// 'Exclusive' mode - lock the UI so no updates occur while we're sending
+// large blocks of varied text
+- (oneway void) startExclusive;
+- (oneway void) stopExclusive;
 @end
 
 // Some useful standard classes
@@ -140,4 +147,43 @@
 }
 
 - (id) initWithData: (NSData*) data;
+@end
+
+// Style attributes
+extern NSString* ZStyleAttributeName;
+@interface ZStyle : NSObject<NSCopying,NSCoding> {
+    // Colour
+    int foregroundColour;
+    int backgroundColour;
+    NSColor* foregroundTrue;
+    NSColor* backgroundTrue;
+
+    // Style
+    BOOL isReversed;
+    BOOL isFixed;
+    BOOL isBold;
+    BOOL isUnderline;
+    BOOL isSymbolic;
+}
+
+- (void) setForegroundColour: (int) zColour;
+- (void) setBackgroundColour: (int) zColour;
+- (void) setForegroundTrue:   (NSColor*) colour;
+- (void) setBackgroundTrue:   (NSColor*) colour;
+- (void) setFixed:            (BOOL) fixed;
+- (void) setBold:             (BOOL) bold;
+- (void) setUnderline:        (BOOL) underline;
+- (void) setSymbolic:         (BOOL) symbolic;
+- (void) setReversed:         (BOOL) reversed;
+
+- (int)      foregroundColour;
+- (int)      backgroundColour;
+- (NSColor*) foregroundTrue;
+- (NSColor*) backgroundTrue;
+- (BOOL)     reversed;
+- (BOOL)     fixed;
+- (BOOL)     bold;
+- (BOOL)     underline;
+- (BOOL)     symbolic;
+
 @end

@@ -249,3 +249,195 @@
     return; // Do nothing
 }
 @end
+
+// = ZStyle =
+NSString* ZStyleAttributeName = @"ZStyleAttribute";
+
+@implementation ZStyle
+
+- (id) init {
+    self = [super init];
+    if (self) {
+        foregroundTrue = backgroundTrue = NULL;
+        foregroundColour = 0;
+        backgroundColour = 7;
+
+        isFixed = isBold = isUnderline = isSymbolic = NO;
+    }
+    return self;
+}
+
+- (void) dealloc {
+    if (foregroundTrue) [foregroundTrue release];
+    if (backgroundTrue) [backgroundTrue release];
+    [super dealloc];
+}
+
+- (void) setForegroundColour: (int) zColour {
+    foregroundColour = zColour;
+}
+
+- (void) setBackgroundColour: (int) zColour {
+    backgroundColour = zColour;
+}
+
+- (void) setForegroundTrue: (NSColor*) colour {
+    if (foregroundTrue) [foregroundTrue release];
+    if (colour)
+        foregroundTrue = [colour retain];
+    else
+        foregroundTrue = nil;
+}
+
+- (void) setBackgroundTrue: (NSColor*) colour {
+    if (backgroundTrue) [backgroundTrue release];
+    if (colour)
+        backgroundTrue = [colour retain];
+    else
+        backgroundTrue = nil;
+}
+
+- (void) setFixed: (BOOL) fixed {
+    isFixed = fixed;
+}
+
+- (void) setBold: (BOOL) bold {
+    isBold = bold;
+}
+
+- (void) setUnderline: (BOOL) underline {
+    isUnderline = underline;
+}
+
+- (void) setSymbolic: (BOOL) symbolic {
+    isSymbolic = symbolic;
+}
+
+- (void) setReversed: (BOOL) reversed {
+    isReversed = reversed;
+}
+
+- (int) foregroundColour {
+    return foregroundColour;
+}
+
+- (int) backgroundColour {
+    return backgroundColour;
+}
+
+- (NSColor*) foregroundTrue {
+    return foregroundTrue;
+}
+
+- (NSColor*) backgroundTrue {
+    return backgroundTrue;
+}
+
+- (BOOL) reversed {
+    return isReversed;
+}
+
+- (BOOL) fixed {
+    return isFixed;
+}
+
+- (BOOL) bold {
+    return isBold;
+}
+
+- (BOOL) underline {
+    return isUnderline;
+}
+
+- (BOOL) symbolic {
+    return isSymbolic;
+}
+
+- (id) copyWithZone: (NSZone*) zone {
+    ZStyle* style;
+    style = [[[self class] alloc] init];
+
+    [style setForegroundColour: foregroundColour];
+    [style setBackgroundColour: backgroundColour];
+    [style setForegroundTrue: foregroundTrue];
+    [style setBackgroundTrue: backgroundTrue];
+
+    [style setReversed:  isReversed];
+    [style setFixed:     isFixed];
+    [style setBold:      isBold];
+    [style setUnderline: isUnderline];
+    [style setSymbolic:  isSymbolic];
+
+    return style;
+}
+
+- (NSString*) description {
+    return [NSString stringWithFormat: @"Style - bold: %@, underline %@, fixed %@, symbolic %@",
+                        isBold?@"YES":@"NO",
+                        isUnderline?@"YES":@"NO",
+                        isFixed?@"YES":@"NO",
+                        isSymbolic?@"YES":@"NO"];
+}
+
+- (void) encodeWithCoder: (NSCoder*) coder {
+    [coder encodeValueOfObjCType: @encode(BOOL) at:& isBold];
+    [coder encodeValueOfObjCType: @encode(BOOL) at:& isUnderline];
+    [coder encodeValueOfObjCType: @encode(BOOL) at:& isFixed];
+    [coder encodeValueOfObjCType: @encode(BOOL) at:& isSymbolic];
+    [coder encodeValueOfObjCType: @encode(BOOL) at:& isReversed];
+
+    [coder encodeObject: foregroundTrue];
+    [coder encodeObject: backgroundTrue];
+    [coder encodeValueOfObjCType: @encode(int) at: &foregroundColour];
+    [coder encodeValueOfObjCType: @encode(int) at: &backgroundColour];
+}
+
+- (id) initWithCoder: (NSCoder*) coder {
+    self = [super init];
+    if (self) {
+        [coder decodeValueOfObjCType: @encode(BOOL) at:& isBold];
+        [coder decodeValueOfObjCType: @encode(BOOL) at:& isUnderline];
+        [coder decodeValueOfObjCType: @encode(BOOL) at:& isFixed];
+        [coder decodeValueOfObjCType: @encode(BOOL) at:& isSymbolic];
+        [coder decodeValueOfObjCType: @encode(BOOL) at:& isReversed];
+
+        foregroundTrue   = [[coder decodeObject] retain];
+        backgroundTrue   = [[coder decodeObject] retain];
+        
+        [coder decodeValueOfObjCType: @encode(int) at: &foregroundColour];
+        [coder decodeValueOfObjCType: @encode(int) at: &backgroundColour];
+    }
+    return self;
+}
+
+- (id)replacementObjectForPortCoder:(NSPortCoder *)encoder
+{
+    if ([encoder isBycopy]) return self;
+    return [super replacementObjectForPortCoder:encoder];
+}
+
+- (BOOL) isEqual: (id) object {
+    if (![(NSObject*)object isKindOfClass: [self class]]) {
+        return NO;
+    }
+
+    ZStyle* obj = object;
+
+    if ([obj bold]      == isBold &&
+        [obj underline] == isUnderline &&
+        [obj fixed]     == isFixed &&
+        [obj symbolic]  == isSymbolic &&
+        [obj reversed]  == isReversed &&
+        [obj foregroundColour] == foregroundColour &&
+        [obj backgroundColour] == backgroundColour &&
+        ((foregroundTrue == nil && [obj foregroundTrue] == nil) ||
+         ([[obj foregroundTrue] isEqual: foregroundTrue])) &&
+        ((backgroundTrue == nil && [obj backgroundTrue] == nil) ||
+         ([[obj backgroundTrue] isEqual: backgroundTrue]))) {
+        return YES;
+    }
+
+    return NO;
+}
+
+@end

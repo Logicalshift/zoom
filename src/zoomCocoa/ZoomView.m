@@ -10,18 +10,54 @@
 #import "ZoomLowerWindow.h"
 #import "ZoomUpperWindow.h"
 
+#import "ZoomScrollView.h"
+
 @implementation ZoomView
+
+static NSMutableArray* defaultFonts = nil;
+
++ (void) initialize {
+    NSString* defaultFont = @"Gill Sans";
+    NSString* fixedFont = @"Courier";
+    NSFontManager* mgr = [NSFontManager sharedFontManager];
+    NSLog(@"ZoomView initialise");
+
+    defaultFonts = [[NSMutableArray alloc] init];
+
+    int x;
+    for (x=0; x<16; x++) {
+        NSFont* thisFont = [NSFont fontWithName: defaultFont
+                                           size: 12];
+        NSFontTraitMask mask = 0;
+        if ((x&4)) thisFont = [NSFont fontWithName: fixedFont
+                                              size: 12];
+
+        if ((x&1)) mask|=NSBoldFontMask;
+        if ((x&2)) mask|=NSItalicFontMask;
+        if ((x&4)) mask|=NSFixedPitchFontMask;
+
+        if (mask != 0)
+            thisFont = [mgr convertFont: thisFont
+                            toHaveTrait: mask];
+
+        [defaultFonts addObject: thisFont];
+    }
+}
 
 - (id)initWithFrame:(NSRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        // Initialization code here.
+        upperWindows = [[NSMutableArray allocWithZone: [self zone]] init];
+        lowerWindows = [[NSMutableArray allocWithZone: [self zone]] init];
+        
         zMachine = nil;
 
         [self setAutoresizesSubviews: YES];
 
-        textScroller = [[NSScrollView allocWithZone: [self zone]] initWithFrame:
-            [self bounds]];
+        textScroller = [[ZoomScrollView allocWithZone: [self zone]] initWithFrame:
+            [self bounds]
+                                                                         zoomView:
+            self];
         [textScroller setAutoresizingMask: NSViewHeightSizable|NSViewWidthSizable];
 
         [textScroller setHasHorizontalScroller: NO];
@@ -56,6 +92,9 @@
 
         moreView = [[ZoomMoreView alloc] init];
         [moreView setAutoresizingMask: NSViewMinXMargin|NSViewMinYMargin];
+
+        // Styles, fonts, etc
+        fonts = [defaultFonts retain];
     }
     return self;
 }
@@ -68,6 +107,7 @@
     [textScroller release];
     [textView release];
     [moreView release];
+    [fonts release];
 
     [super dealloc];
 }
@@ -89,6 +129,8 @@
     ZoomLowerWindow* win = [[ZoomLowerWindow allocWithZone: [self zone]]
         initWithZoomView: self];
 
+    [lowerWindows addObject: win];
+
     NSLog(@"Creating lower window");
 
     return [win autorelease];
@@ -98,9 +140,28 @@
     ZoomUpperWindow* win = [[ZoomUpperWindow allocWithZone: [self zone]]
         initWithZoomView: self];
 
+    [upperWindows addObject: win];
+
     NSLog(@"Creating upper window");
 
     return [win autorelease];
+}
+
+- (void) startExclusive {
+    exclusiveMode = YES;
+
+    while (exclusiveMode) {
+        NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+
+        [[NSRunLoop currentRunLoop] acceptInputForMode: NSConnectionReplyMode
+                                            beforeDate: [NSDate distantFuture]];
+
+        [pool release];
+    }
+}
+
+- (void) stopExclusive {
+    exclusiveMode = NO;
 }
 
 // Set whether or not we recieve certain types of data
@@ -108,8 +169,9 @@
 }
 
 - (void) shouldReceiveText: (int) maxLength {
-    receiving = YES;
+    [self rearrangeUpperWindows];
 
+    // If the more prompt is off, then set up for editting
     if (!moreOn) {
         [textView setEditable: YES];
 
@@ -118,6 +180,7 @@
     }
 
     inputPos = [[textView textStorage] length];
+    receiving = YES;
 }
 
 - (void) stopReceiving {
@@ -126,6 +189,7 @@
 }
 
 // = Utility functions =
+
 - (void) scrollToEnd {
     NSLayoutManager* mgr = [textView layoutManager];
 
@@ -301,6 +365,92 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     if (moreOn) {
         [self page];
     }
+}
+
+// = Formatting, fonts, colours, etc =
+
+- (NSAttributedString*) formatZString: (NSString*) zString
+                            withStyle: (ZStyle*) style {
+    // Strings come from Zoom's server formatted with ZStyles rather than
+    // actual styles (so that the interface can choose it's own formatting).
+    // So we need this to translate those styles into 'real' ones.
+
+    NSMutableAttributedString* result;
+
+    // Font
+    NSFont* fontToUse = nil;
+    int fontnum;
+
+    fontnum =
+        ([style bold]?1:0)|
+        ([style underline]?2:0)|
+        ([style fixed]?4:0)|
+        ([style symbolic]?8:0);
+
+    fontToUse = [fonts objectAtIndex: fontnum];
+
+    // Colour
+    NSColor* foregroundColour = [NSColor blackColor];
+    NSColor* backgroundColour = [NSColor whiteColor];
+
+    // Generate the new attributes
+    NSDictionary* newAttr = [NSDictionary dictionaryWithObjectsAndKeys:
+        fontToUse, NSFontAttributeName,
+        foregroundColour, NSForegroundColorAttributeName,
+        backgroundColour, NSBackgroundColorAttributeName,
+        nil];
+
+    // Create + append the newly attributed string
+    result = [[NSMutableAttributedString alloc] initWithString: zString
+                                                    attributes: newAttr];
+
+    return [result autorelease];
+}
+
+- (NSFont*) fontWithStyle: (int) style {
+    if (style < 0 || style >= 16) {
+        return nil;
+    }
+
+    return [fonts objectAtIndex: style];
+}
+
+- (int) upperWindowSize {
+    int height;
+    NSEnumerator* upperEnum;
+
+    upperEnum = [upperWindows objectEnumerator];
+
+    ZoomUpperWindow* win;
+
+    height = 0;
+    while (win = [upperEnum nextObject]) {
+        int winHeight = [win length];
+        if (winHeight > 0) height += winHeight;
+    }
+
+    return height;
+}
+
+- (void) rearrangeUpperWindows {
+    int newSize = [self upperWindowSize];
+    if (newSize != lastUpperWindowSize) {
+        [textScroller tile];
+        lastUpperWindowSize = newSize;
+    }
+
+    if (upperWindowNeedsRedrawing) {
+        [textScroller updateUpperWindows];
+        upperWindowNeedsRedrawing = NO;
+    }
+}
+
+- (NSArray*) upperWindows {
+    return upperWindows;
+}
+
+- (void) upperWindowNeedsRedrawing {
+    upperWindowNeedsRedrawing = YES;
 }
 
 @end

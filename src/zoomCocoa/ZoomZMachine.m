@@ -37,6 +37,7 @@
         machineFile = NULL;
 
         inputBuffer = [[NSMutableString allocWithZone: [self zone]] init];
+        outputBuffer = [[NSMutableArray allocWithZone: [self zone]] init];
 
         windows[0] = windows[1] = windows[2] = nil;
 
@@ -68,6 +69,7 @@
 
     [display release];
     [inputBuffer release];
+    [outputBuffer release];
 
     mainMachine = nil;
 
@@ -166,6 +168,12 @@
         [windows[x] setProtocolForProxy: @protocol(ZVendor)];
     }
 
+    /*
+    NSLog(@"Wait...");
+    sleep(10);
+    NSLog(@"OK");
+     */
+
     // Setup the display, etc
     rc_set_game(zmachine_get_serial(), Word(ZH_release), Word(ZH_checksum));
     display_initialise();
@@ -244,24 +252,58 @@
     return inputBuffer;
 }
 
-// = Output buffering (mark II, over the stream stuff) =
-- (void) appendAttributedString: (NSAttributedString*) str
-                       toWindow: (int) window {
-    [windowBuffer[window] appendAttributedString: str];
-    if ([windowBuffer[window] length] > 4096) {
-        [self flushBufferForWindow: window];
+// = Buffering =
+
+- (void) bufferString: (NSString*) string
+            forWindow: (int) windowNumber
+            withStyle: (ZStyle*) style {
+    if ([string isEqualTo: @""]) return; // Nothing to do
+    
+    NSArray* lastTime = [outputBuffer lastObject];
+
+    if (lastTime) {
+        NSMutableString* lastString = [lastTime objectAtIndex: 0];
+        NSNumber* lastWindow = [lastTime objectAtIndex: 1];
+        ZStyle* lastStyle = [lastTime objectAtIndex: 2];
+
+        if ([lastWindow intValue] == windowNumber &&
+            [lastStyle isEqual: style]) {
+            [lastString appendString: string];
+            return;
+        }
     }
+
+    [outputBuffer addObject: [NSArray arrayWithObjects:
+        [NSMutableString stringWithString: string],
+        [NSNumber numberWithInt: windowNumber],
+        style,
+        nil]];
 }
 
-- (void) flushBufferForWindow: (int) window {
-    [windows[window] writeString: windowBuffer[window]];
-    [windowBuffer[window] release];
-    windowBuffer[window] = [[NSMutableAttributedString alloc] init];
-}
+- (void) flushBuffers {
+    NSEnumerator* bufEnum;
 
-- (void) clearBufferForWindow: (int) window {
-    [windowBuffer[window] release];
-    windowBuffer[window] = [[NSMutableAttributedString alloc] init];
+    if ([outputBuffer count] < 1) return;
+
+    [display startExclusive];
+    
+    bufEnum = [outputBuffer objectEnumerator];
+
+    NSArray* bufEntry;
+    while (bufEntry = [bufEnum nextObject]) {
+        NSMutableString* lastString = [bufEntry objectAtIndex: 0];
+        NSNumber* lastWindow = [bufEntry objectAtIndex: 1];
+        ZStyle* lastStyle = [bufEntry objectAtIndex: 2];
+
+        [[self windowNumber: [lastWindow intValue]]
+            writeString: lastString
+              withStyle: lastStyle];
+    }
+
+    [outputBuffer release];
+    outputBuffer = [[NSMutableArray allocWithZone: [self zone]] init];
+
+    [display stopExclusive];
 }
 
 @end

@@ -17,6 +17,7 @@
 NSAutoreleasePool* displayPool = nil;
 
 static int currentWindow = 0;
+static ZStyle* currentStyle = nil;
 
 // = Display =
 
@@ -81,20 +82,21 @@ ZDisplay* display_get_info(void) {
 }
 
 void display_initialise(void) {
-    // Do nothing for the moment
+    if (currentStyle) [currentStyle release];
+    currentStyle = [[ZStyle alloc] init];
 }
 
 void display_reinitialise(void) {
-    // Do nothing for the moment
+    if (currentStyle) [currentStyle release];
+    currentStyle = [[ZStyle alloc] init];
 }
 
 void display_finalise(void) {
-    NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
+    if (currentStyle) [currentStyle release];
+    currentStyle = nil;
 }
 
 void display_exit(int code) {
-    NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
-
     exit(code);
 }
 
@@ -103,6 +105,8 @@ void display_clear(void) {
     NSObject<ZWindow>* win;
 
     currentWindow = 0;
+
+    [mainMachine flushBuffers];
 
     win = [mainMachine windowNumber: 1];
     [win clear];
@@ -116,26 +120,19 @@ void display_clear(void) {
     
     win = [mainMachine windowNumber: 0];
     [win clear];
-
-    int x;
-    for (x=0; x<3; x++) [mainMachine clearBufferForWindow: x];
 }
 
 void display_erase_window(void) {
-    [mainMachine clearBufferForWindow: currentWindow];
+    [mainMachine flushBuffers];
     [[mainMachine windowNumber: currentWindow] clear];
 }
 
 void display_erase_line(int val) {
+    [mainMachine flushBuffers];
     NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
 }
 
 // Display functions
-static inline NSAttributedString* makeAttributed(NSString* str) {
-    NSAttributedString* as = [[NSAttributedString alloc] initWithString: str];
-    return [as autorelease];
-}
-
 void display_prints(const int* buf) {
     // Convert buf to an NSString
     int length;
@@ -146,18 +143,28 @@ void display_prints(const int* buf) {
         bufU[length] = buf[length];
     }
 
+    if (length == 0) return;
+
     NSString* str = [NSString stringWithCharacters: bufU
                                             length: length];
 
     // Send to the window
-    [mainMachine appendAttributedString: makeAttributed(str)
-                              toWindow: currentWindow];
+    [mainMachine bufferString: str
+                    forWindow: currentWindow
+                    withStyle: currentStyle];
+    /*
+    [[mainMachine windowNumber: currentWindow] writeString: str
+                                                 withStyle: currentStyle];
+     */
 }
 
 void display_prints_c(const char* buf) {
     NSString* str = [NSString stringWithCString: buf];
-    [mainMachine appendAttributedString: makeAttributed(str)
-                              toWindow: currentWindow];
+    [mainMachine bufferString: str
+                    forWindow: currentWindow
+                    withStyle: currentStyle];
+    //[[mainMachine windowNumber: currentWindow] writeString: str
+    //                                             withStyle: currentStyle];
 }
 
 void display_printc(int chr) {
@@ -167,8 +174,11 @@ void display_printc(int chr) {
 
     NSString* str = [NSString stringWithCharacters: bufU
                                             length: 1];
-    [mainMachine appendAttributedString: makeAttributed(str)
-                              toWindow: currentWindow];
+    [mainMachine bufferString: str
+                    forWindow: currentWindow
+                    withStyle: currentStyle];
+    //[[mainMachine windowNumber: currentWindow] writeString: str
+    //                                             withStyle: currentStyle];
 }
 
 void display_printf(const char* format, ...) {
@@ -186,11 +196,9 @@ void display_printf(const char* format, ...) {
 
 // Input
 int display_readline(int* buf, int len, long int timeout) {
+    [mainMachine flushBuffers];
+    
     NSObject<ZDisplay>* display = [mainMachine display];
-
-    // Flush window buffers
-    int x;
-    for (x=0; x<3; x++) [mainMachine flushBufferForWindow: x];
 
     // Cycle the autorelease pool
     [displayPool release];
@@ -246,10 +254,8 @@ int display_readline(int* buf, int len, long int timeout) {
 }
 
 int  display_readchar(long int timeout) {
-    // Flush window buffers
-    int x;
-    for (x=0; x<3; x++) [mainMachine flushBufferForWindow: x];
-
+    [mainMachine flushBuffers];
+    
     NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
 }
 
@@ -263,11 +269,55 @@ void display_desanitise(void) {
 
 void display_is_v6(void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
 
-int  display_set_font    (int font) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-int  display_set_style   (int style) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
+int  display_set_font(int font) {
+    NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
+}
+
+int display_set_style(int style) {
+    // Copy the old style
+    ZStyle* newStyle = [currentStyle copy];
+
+    int oldStyle =
+        ([newStyle reversed]?1:0)|
+        ([newStyle bold]?2:0)|
+        ([newStyle underline]?4:0)|
+        ([newStyle fixed]?8:0)|
+        ([newStyle symbolic]?16:0);
+    
+    // Not using this any more
+    if (currentStyle) [currentStyle release];
+
+    BOOL flag = (style<0)?NO:YES;
+    if (style < 0) style = -style;
+     
+    // Set the flags
+    if (style == 0) {
+        [newStyle setBold: NO];
+        [newStyle setUnderline: NO];
+        [newStyle setFixed: NO];
+        [newStyle setSymbolic: NO];
+
+        currentStyle = newStyle;
+        return oldStyle;
+    }
+
+    if (style&1)  [newStyle setReversed: flag];
+    if (style&2)  [newStyle setBold: flag];
+    if (style&4)  [newStyle setUnderline: flag];
+    if (style&8)  [newStyle setFixed: flag];
+    if (style&16) [newStyle setSymbolic: flag];
+
+    // Set as the current style
+    currentStyle = newStyle;
+
+    return oldStyle;
+}
+
 void display_set_colour  (int fore, int back) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
 
 void display_split(int lines, int window) {
+    [mainMachine flushBuffers];
+
     NSObject<ZUpperWindow>* win = [mainMachine windowNumber: window];
 
     if ([win conformsToProtocol: @protocol(ZUpperWindow)]) {
@@ -278,6 +328,8 @@ void display_split(int lines, int window) {
 }
 
 void display_join(int win1, int win2) {
+    [mainMachine flushBuffers];
+    
     NSObject<ZUpperWindow>* win = [mainMachine windowNumber: win2];
 
     if ([win conformsToProtocol: @protocol(ZUpperWindow)]) {
@@ -289,16 +341,21 @@ void display_join(int win1, int win2) {
 
 void display_set_window(int window) {
     currentWindow = window;
-    NSLog(@"Switching to window %i", currentWindow);
-
-    [[mainMachine windowNumber: window] setFocus];
+    //[[mainMachine windowNumber: window] setFocus];
 }
 
 int  display_get_window(void) {
     return currentWindow;
 }
 
-void display_set_cursor  (int x, int y) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
+void display_set_cursor(int x, int y) {
+    if (currentWindow > 0) {
+        [mainMachine flushBuffers];
+        NSObject<ZUpperWindow>* win = [mainMachine windowNumber: currentWindow];
+        [win setCursorPositionX: x Y: y];
+    }
+}
+
 int  display_get_cur_x   (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
 int  display_get_cur_y   (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
 void display_force_fixed (int window, int val) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }

@@ -15,14 +15,14 @@
     self = [super init];
 
     if (self) {
-        zoomView = [zV retain];
+        zoomView = zV; // In Soviet Russia, zoomView retains us. 
     }
 
     return self;
 }
 
 - (void) dealloc {
-    [zoomView release];
+    // [zoomView release];
     [super dealloc];
 }
 
@@ -35,12 +35,18 @@
 
 // Sets the input focus to this window
 - (void) setFocus {
-    NSLog(@"Lower window focus");
 }
 
 // Sending data to a window
-- (void) writeString: (NSAttributedString*) string {
-    [[[zoomView textView] textStorage] appendAttributedString: string];
+- (void) writeString: (NSString*) string
+           withStyle: (ZStyle*) style {
+    [[[zoomView textView] textStorage] appendAttributedString:
+        [zoomView formatZString: string
+                      withStyle: style]];
+    //[[zoomView buffer] appendAttributedString:
+    //    [zoomView formatZString: string
+    //                  withStyle: style]];
+    
     [zoomView scrollToEnd];
     [zoomView displayMoreIfNecessary];
 }
