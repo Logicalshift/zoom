@@ -26,6 +26,7 @@
 /* Computed gotos available? */
 #undef HAVE_COMPUTED_GOTOS
 
+
 /* Define if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 

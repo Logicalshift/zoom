@@ -24,3 +24,4 @@
 
 /* Computed gotos available? */
 #undef HAVE_COMPUTED_GOTOS
+
