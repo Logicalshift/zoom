@@ -321,8 +321,6 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 - (void) layoutSkein {
 	// Only actually layout if we're marked as needing it
 	if (!skeinNeedsLayout) return;
-
-	NSLog(@"Laying out skein");
 	
 	skeinNeedsLayout = NO;
 	
