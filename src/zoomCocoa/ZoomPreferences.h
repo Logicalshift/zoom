@@ -13,6 +13,7 @@ extern NSString* ZoomPreferencesHaveChangedNotification;
 
 @interface ZoomPreferences : NSObject<NSCoding> {
 	NSMutableDictionary* prefs;
+	NSLock* prefLock;
 }
 
 // init is the designated initialiser for this class

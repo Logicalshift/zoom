@@ -33,6 +33,7 @@ static NSString* organiserDirectory = @"organiserDirectory";
 // == Global preferences ==
 
 static ZoomPreferences* globalPreferences = nil;
+static NSLock*          globalLock = nil;
 
 + (void)initialize {
     NSUserDefaults *defaults  = [NSUserDefaults standardUserDefaults];
@@ -41,9 +42,13 @@ static ZoomPreferences* globalPreferences = nil;
 															forKey: @"ZoomGlobalPreferences"];
 	
     [defaults registerDefaults: appDefaults];
+	
+	globalLock = [[NSLock alloc] init];
 }
 
 + (ZoomPreferences*) globalPreferences {
+	[globalLock lock];
+	
 	if (globalPreferences == nil) {
 		NSDictionary* globalDict = [[NSUserDefaults standardUserDefaults] objectForKey: @"ZoomGlobalPreferences"];
 		
@@ -60,6 +65,8 @@ static ZoomPreferences* globalPreferences = nil;
 		}
 	}
 	
+	[globalLock unlock];
+	
 	return globalPreferences;
 }
 
@@ -69,6 +76,7 @@ static ZoomPreferences* globalPreferences = nil;
 	self = [super init];
 	
 	if (self) {
+		prefLock = [[NSLock alloc] init];
 		prefs = [[NSMutableDictionary allocWithZone: [self zone]] init];		
 	}
 	
@@ -159,6 +167,7 @@ static NSArray* DefaultColours(void) {
 	self = [super init];
 	
 	if (self) {
+		prefLock = [[NSLock alloc] init];
 		prefs = [dict mutableCopy];
 		
 		// Fonts and colours will be archived if they exist
@@ -218,44 +227,78 @@ static NSArray* DefaultColours(void) {
 
 - (void) dealloc {
 	[prefs release];
+	[prefLock release];
 	
 	[super dealloc];
 }
 
 // Getting preferences
 - (BOOL) displayWarnings {
-	return [[prefs objectForKey: displayWarnings] boolValue];
+	[prefLock lock];
+	BOOL result = [[prefs objectForKey: displayWarnings] boolValue];
+	[prefLock unlock];
+	
+	return result;
 }
 
 - (BOOL) fatalWarnings {
-	return [[prefs objectForKey: fatalWarnings] boolValue];
+	[prefLock lock];
+	BOOL result = [[prefs objectForKey: fatalWarnings] boolValue];
+	[prefLock unlock];
+	
+	return result;
 }
 
 - (BOOL) speakGameText {
-	return [[prefs objectForKey: speakGameText] boolValue];
+	[prefLock lock];
+	BOOL result =  [[prefs objectForKey: speakGameText] boolValue];
+	[prefLock unlock];
+	
+	return result;
 }
 
 - (NSString*) gameTitle {
-	return [prefs objectForKey: gameTitle];
+	[prefLock lock];
+	NSString* result =  [prefs objectForKey: gameTitle];
+	[prefLock unlock];
+	
+	return result;
 }
 
 - (int) interpreter {
-	return [[prefs objectForKey: interpreter] intValue];
+	[prefLock lock];
+	BOOL result = [[prefs objectForKey: interpreter] intValue];
+	[prefLock unlock];
+	
+	return result;
 }
 
 - (unsigned char) revision {
-	return [[prefs objectForKey: revision] intValue];
+	[prefLock lock];
+	unsigned char result = [[prefs objectForKey: revision] intValue];
+	[prefLock unlock];
+	
+	return result;
 }
 
 - (NSArray*) fonts {
-	return [prefs objectForKey: fonts];
+	[prefLock lock];
+	NSArray* result = [prefs objectForKey: fonts];
+	[prefLock unlock];
+	
+	return result;
 }
 
 - (NSArray*) colours {
-	return [prefs objectForKey: colours];
+	[prefLock lock];
+	NSArray* result = [prefs objectForKey: colours];
+	[prefLock unlock];
+	
+	return result;
 }
 
 - (NSString*) organiserDirectory {
+	[prefLock lock];
 	NSString* res = [prefs objectForKey: organiserDirectory];
 	
 	if (res == nil) {
@@ -263,20 +306,28 @@ static NSArray* DefaultColours(void) {
 		
 		res = [[docDir objectAtIndex: 0] stringByAppendingPathComponent: @"Interactive Fiction"];
 	}
+	[prefLock unlock];
 	
 	return res;
 }
 
 - (BOOL) keepGamesOrganised {
-	return [[prefs objectForKey: keepGamesOrganised] boolValue];
+	[prefLock lock];
+	BOOL result = [[prefs objectForKey: keepGamesOrganised] boolValue];
+	[prefLock unlock];
+	
+	return result;
 }
 
 - (BOOL) autosaveGames {
+	[prefLock lock];
 	NSNumber* autosave = [prefs objectForKey: autosaveGames];
 	
-	if (!autosave) return YES;
+	BOOL result = YES;
+	if (autosave) result = [autosave boolValue];
+	[prefLock unlock];
 	
-	return [autosave boolValue];
+	return result;
 }
 
 // Setting preferences
