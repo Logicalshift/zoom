@@ -9,6 +9,7 @@
 #import "ZoomClient.h"
 #import "ZoomProtocol.h"
 #import "ZoomClientController.h"
+#import "ZoomStoryOrganiser.h"
 
 #import "ZoomAppDelegate.h"
 
@@ -61,21 +62,24 @@
 	
 	if (story == nil) {
 		story = [[ZoomStory alloc] init];
-		[story addID: storyId];
 	} else {
 		[story retain];
 	}
-	
+
+	[story addID: storyId];
+
 	[[[NSApp delegate] userMetadata] storeStory: [[story copy] autorelease]];
 	[story release];
 	
 	story = [[[NSApp delegate] userMetadata] findStory: storyId];
 	if (story == nil) {
-		NSLog(@"Story not found!");
 		story = [[ZoomStory alloc] init];
 	} else {
 		[story retain];
 	}
+	
+	[[ZoomStoryOrganiser sharedStoryOrganiser] addStory: [self fileName]
+											  withIdent: storyId];
     
     return YES;
 }

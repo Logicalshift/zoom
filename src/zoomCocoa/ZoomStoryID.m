@@ -66,4 +66,151 @@
 	return ident;
 }
 
+// = NSCopying =
+- (id) copyWithZone: (NSZone*) zone {
+	ZoomStoryID* newID = [[ZoomStoryID allocWithZone: zone] init];
+	
+	newID->ident = IFID_Alloc();
+	IFIdent_Copy(newID->ident, ident);
+	newID->needsFreeing = YES;
+	
+	return newID;
+}
+
+// = NSCoding =
+- (void)encodeWithCoder:(NSCoder *)encoder {
+	// Version might change later on
+	int version = 1;
+	
+	[encoder encodeValueOfObjCType: @encode(int) at: &version];
+	
+	// General stuff (data format, MD5, etc)
+	[encoder encodeValueOfObjCType: @encode(enum IFMDFormat) 
+								at: &ident->dataFormat];
+	[encoder encodeValueOfObjCType: @encode(IFMDByte)
+								at: &ident->usesMd5];
+	if (ident->usesMd5) {
+		[encoder encodeArrayOfObjCType: @encode(IFMDByte)
+								 count: 16
+									at: ident->md5Sum];
+	}
+	
+	switch (ident->dataFormat) {
+		case IFFormat_ZCode:
+			[encoder encodeArrayOfObjCType: @encode(IFMDByte)
+									 count: 6
+										at: ident->data.zcode.serial];
+			[encoder encodeValueOfObjCType: @encode(int)
+										at: &ident->data.zcode.release];
+			[encoder encodeValueOfObjCType: @encode(int)
+										at: &ident->data.zcode.checksum];
+			break;
+		
+		default:
+			/* No other formats are supported yet */
+			break;
+	}
+}
+
+- (id)initWithCoder:(NSCoder *)decoder {
+	self = [super init];
+	
+	if (self) {
+		ident = IFID_Alloc();
+		needsFreeing = YES;
+		
+		// As above, but backwards
+		int version;
+		
+		[decoder decodeValueOfObjCType: @encode(int) at: &version];
+		
+		if (version != 1) {
+			// Only v1 decodes supported ATM
+			[self release];
+			
+			NSLog(@"Tried to load a version %i ZoomStoryID (this version of Zoom supports only version 1)", version);
+			
+			return nil;
+		}
+		
+		// General stuff (data format, MD5, etc)
+		[decoder decodeValueOfObjCType: @encode(enum IFMDFormat) 
+									at: &ident->dataFormat];
+		ident->format = ident->dataFormat;
+		[decoder decodeValueOfObjCType: @encode(IFMDByte)
+									at: &ident->usesMd5];
+		if (ident->usesMd5) {
+			[decoder decodeArrayOfObjCType: @encode(IFMDByte)
+									 count: 16
+										at: ident->md5Sum];
+		}
+		
+		switch (ident->dataFormat) {
+			case IFFormat_ZCode:
+				[decoder decodeArrayOfObjCType: @encode(IFMDByte)
+										 count: 6
+											at: ident->data.zcode.serial];
+				[decoder decodeValueOfObjCType: @encode(int)
+											at: &ident->data.zcode.release];
+				[decoder decodeValueOfObjCType: @encode(int)
+											at: &ident->data.zcode.checksum];
+				break;
+				
+			default:
+				/* No other formats are supported yet */
+				break;
+		}		
+	}
+	
+	return self;
+}
+
+// = Hashing/comparing =
+- (unsigned) hash {
+	return [[self description] hash];
+}
+
+- (BOOL) isEqual: (id)anObject {
+	if ([anObject isKindOfClass: [ZoomStoryID class]]) {
+		ZoomStoryID* compareWith = anObject;
+		
+		if (IFID_Compare(ident, [compareWith ident]) == 0) {
+			return YES;
+		} else {
+			return NO;
+		}
+	} else {
+		return NO;
+	}
+}
+
+- (NSString*) description {
+	switch (ident->dataFormat) {
+		case IFFormat_ZCode:
+			return [NSString stringWithFormat: @"ZoomStoryID (ZCode): %i.%.6s.%04x",
+				ident->data.zcode.release,
+				ident->data.zcode.serial,
+				ident->data.zcode.checksum];
+			break;
+			
+		default:
+			if (ident->usesMd5) {
+				int x;
+				
+				NSMutableString* s = [NSMutableString string];
+				NSAutoreleasePool* p = [[NSAutoreleasePool alloc] init];
+				
+				for (x=0; x<16; x++) {
+					[s appendString: [NSString stringWithFormat: @"%02x", ident->md5Sum[x]]];
+				}
+
+				[p release];
+
+				return [NSString stringWithFormat: @"ZoomStoryID (MD5): %@", s];
+			} else {
+				return [NSString stringWithFormat: @"ZoomStoryID (nonspecific)"];
+			}
+	}
+}
+
 @end

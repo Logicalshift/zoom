@@ -50,10 +50,27 @@
 }
 
 - (void) addID: (ZoomStoryID*) newID {
-	story->numberOfIdents++;
-	story->idents = realloc(story->idents, sizeof(IFMDIdent)*story->numberOfIdents);
-	story->idents[story->numberOfIdents-1] = IFID_Alloc();
-	IFIdent_Copy(story->idents[story->numberOfIdents-1], [newID ident]);
+	int ident;
+	int foundID = -1;
+	
+	for (ident = 0; ident<story->numberOfIdents; ident++) {
+		if (IFID_Compare(story->idents[ident], [newID ident]) == 0) {
+			foundID = ident; break;
+		}
+	}
+	
+	if (foundID >= 0) {
+		if (story->idents[foundID]->dataFormat == IFFormat_ZCode) {
+			if (story->idents[foundID]->data.zcode.checksum == 0x10000) {
+				story->idents[foundID]->data.zcode.checksum = [newID ident]->data.zcode.checksum;
+			}
+		}
+	} else {
+		story->numberOfIdents++;
+		story->idents = realloc(story->idents, sizeof(IFMDIdent)*story->numberOfIdents);
+		story->idents[story->numberOfIdents-1] = IFID_Alloc();
+		IFIdent_Copy(story->idents[story->numberOfIdents-1], [newID ident]);
+	}
 }
 
 - (NSString*) title {
