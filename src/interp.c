@@ -1004,14 +1004,15 @@ void zcode_v6_initialise(void)
       windows[x].buffering  = 1;
       windows[x].transcript = 0;
       windows[x].x = windows[x].y = 0;
-      windows[x].xsize = windows[x].ysize = 100;
+      windows[x].xsize = machine.dinfo->width; 
+      windows[x].ysize = machine.dinfo->height;
     }
 
   windows[0].wrapping = 1;
 
   display_set_newline_function(newline_function);
 
-  pix_open_file("/home/ahunter/infocom/zorkzero/ZORK0/ZORK0.EG1");
+  pix_open_file("/mnt/cdrw/pc/arthur/arthur.eg1");
 }
 
 static char* pending_text = NULL;

@@ -1683,6 +1683,9 @@ void display_window_define(int window,
   text_win[window].winlx   = x + width;
   text_win[window].winly   = y + height;
 
+  if (text_win[window].winly > win_y)
+    text_win[window].winly = win_y;
+
   /* if (text_win[window].xpos < x || text_win[window].xpos > x+width ||
       text_win[window].ypos < y || text_win[window].ypos > y+height)
     {

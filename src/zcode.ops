@@ -1097,7 +1097,7 @@ OPCODE "restore"     0OP:0x06 STORE CANJUMP VERSION 4
     }  
 %}
 
-OPCODE "restart"     0OP:0x07 CANJUMP VERSION all
+OPCODE "restart"     0OP:0x07 CANJUMP VERSION 3,4,5,7,8
 %{
   /* Unwind stack */
   while (stack->current_frame->last_frame != NULL)
@@ -1112,6 +1112,12 @@ OPCODE "restart"     0OP:0x07 CANJUMP VERSION all
 
       free(oldframe);
     }
+
+  display_join(0, 2);
+  display_set_window(0);
+  display_erase_window();
+  if (Byte(0) > 4)
+    display_set_cursor(0,0);
   
   read_block2(machine.memory, machine.file, 0, machine.dynamic_ceiling);
   pc = Word(ZH_initpc);
@@ -1325,7 +1331,10 @@ OPCODE "put_prop"       VAR:0x03 ARGS:3               VERSION 4,5,6,7,8
   struct prop* p;
   
   if (argblock.arg[0] == 0)
-    zmachine_fatal("Object 0 has no properties");
+    {
+      zmachine_warning("Object 0 has no properties");
+      goto loop;
+    }
   if (argblock.arg[1]>63)
     zmachine_fatal("Property %i out of range", argblock.arg[1]);
   
@@ -2025,6 +2034,8 @@ OPCODE "set_font"      EXT:0x04 ARGS:1 STORE  VERSION 5,6,7,8
     default:
       zmachine_warning("Font %i not supported", argblock.arg[0]);
     }
+
+  store(stack, st, 1);
 %}
 
 OPCODE "save_undo"     EXT:0x09 ARGS:0 STORE CANJUMP VERSION 5,6,7,8
@@ -2111,6 +2122,47 @@ OPCODE "print_timer"   EXT:0x83      	      VERSION 4,5,6,7,8
 ####                           ----// 888 \\----                           ####
 # Version 6 opcodes
 
+OPCODE "restart"     0OP:0x07 CANJUMP VERSION 6
+%{
+  int x;
+
+  /* Unwind stack */
+  while (stack->current_frame->last_frame != NULL)
+    {
+      ZFrame* oldframe;
+
+      oldframe = stack->current_frame;
+      stack->current_frame = oldframe->last_frame;
+
+      stack->stack_size += oldframe->frame_size;
+      stack->stack_top  -= oldframe->frame_size;
+
+      free(oldframe);
+    }
+  
+  read_block2(machine.memory, machine.file, 0, machine.dynamic_ceiling);
+
+  display_reset_windows();
+
+  for (x=0; x<8; x++)
+    {
+      windows[x].wrapping   = 0;
+      windows[x].scrolling  = 1;
+      windows[x].buffering  = 1;
+      windows[x].transcript = 0;
+      windows[x].x = windows[x].y = 0;
+      windows[x].xsize = machine.dinfo->width; 
+      windows[x].ysize = machine.dinfo->height;
+    }
+
+  call_routine(&pc, stack,
+	       (4*GetWord(machine.header, ZH_initpc)) +
+	       machine.routine_offset);
+  zcode_v6_initialise();
+
+  restart_machine();  
+%}
+
 OPCODE "set_colour"    2OP:0x1b REALLYVAR     VERSION 6
 %{
   int win, working;
@@ -2174,6 +2226,17 @@ OPCODE "erase_window"   VAR:0x0d ARGS:1               VERSION 6
       old_win = 0;
       ewin = 0;
       display_reset_windows();
+
+      for (x=0; x<8; x++)
+        {
+          windows[x].wrapping   = 0;
+          windows[x].scrolling  = 1;
+          windows[x].buffering  = 1;
+          windows[x].transcript = 0;
+          windows[x].x = windows[x].y = 0;
+          windows[x].xsize = machine.dinfo->width; 
+	  windows[x].ysize = machine.dinfo->height;
+       }
     }
 
   if (ewin < 0)

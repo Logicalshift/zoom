@@ -200,33 +200,31 @@ void zmachine_warning(char* format, ...)
 
 void zmachine_setup_header(void)
 {
-  ZDisplay* dis;
-
-  dis = display_get_info();
+  machine.dinfo = display_get_info();
   
   switch (machine.memory[0])
     {
     case 6:
-      Flag(1, 0, dis->colours);
-      machine.memory[ZH_width] = dis->width>>8;
-      machine.memory[ZH_width+1] = dis->width;
-      machine.memory[ZH_height] = dis->height>>8;
-      machine.memory[ZH_height+1] = dis->height;
+      Flag(1, 0, machine.dinfo->colours);
+      machine.memory[ZH_width] = machine.dinfo->width>>8;
+      machine.memory[ZH_width+1] = machine.dinfo->width;
+      machine.memory[ZH_height] = machine.dinfo->height>>8;
+      machine.memory[ZH_height+1] = machine.dinfo->height;
       /* Note that these are backwards in v6 :-) */
-      machine.memory[ZH_fontwidth] = dis->font_height;
-      machine.memory[ZH_fontheight] = dis->font_width;
+      machine.memory[ZH_fontwidth] = machine.dinfo->font_height;
+      machine.memory[ZH_fontheight] = machine.dinfo->font_width;
 
-      Flag(1, 2, dis->boldface);
-      Flag(1, 3, dis->italic);
-      Flag(1, 4, dis->fixed_space);
-      Flag(1, 4, dis->timed_input);
+      Flag(1, 2, machine.dinfo->boldface);
+      Flag(1, 3, machine.dinfo->italic);
+      Flag(1, 4, machine.dinfo->fixed_space);
+      Flag(1, 4, machine.dinfo->timed_input);
       Flag(1, 5, 0);
-      Flag(1, 5, dis->pictures);
+      Flag(1, 5, machine.dinfo->pictures);
 
       machine.memory[ZH_intnumber] = 1;
       machine.memory[ZH_intvers] = 1;
-      machine.memory[ZH_lines] = dis->lines;
-      machine.memory[ZH_columns] = dis->columns;
+      machine.memory[ZH_lines] = machine.dinfo->lines;
+      machine.memory[ZH_columns] = machine.dinfo->columns;
 
       machine.memory[ZH_intnumber] = rc_get_interpreter();
       machine.memory[ZH_intvers] = rc_get_revision();
@@ -235,32 +233,32 @@ void zmachine_setup_header(void)
     case 8:
     case 7:
     case 5:
-      Flag(1, 0, dis->colours);
-      machine.memory[ZH_deffore] = dis->fore;
-      machine.memory[ZH_defback] = dis->back;
-      machine.memory[ZH_width] = dis->columns>>8;
-      machine.memory[ZH_width+1] = dis->columns;
-      machine.memory[ZH_height] = dis->lines>>8;
-      machine.memory[ZH_height+1] = dis->lines;
+      Flag(1, 0, machine.dinfo->colours);
+      machine.memory[ZH_deffore] = machine.dinfo->fore;
+      machine.memory[ZH_defback] = machine.dinfo->back;
+      machine.memory[ZH_width] = machine.dinfo->columns>>8;
+      machine.memory[ZH_width+1] = machine.dinfo->columns;
+      machine.memory[ZH_height] = machine.dinfo->lines>>8;
+      machine.memory[ZH_height+1] = machine.dinfo->lines;
       machine.memory[ZH_fontwidth] = 1;
       machine.memory[ZH_fontheight] = 1;
     case 4:
-      Flag(1, 2, dis->boldface);
-      Flag(1, 3, dis->italic);
-      Flag(1, 4, dis->fixed_space);
-      Flag(1, 4, dis->timed_input);
+      Flag(1, 2, machine.dinfo->boldface);
+      Flag(1, 3, machine.dinfo->italic);
+      Flag(1, 4, machine.dinfo->fixed_space);
+      Flag(1, 4, machine.dinfo->timed_input);
 
-      machine.memory[ZH_lines] = dis->lines;
-      machine.memory[ZH_columns] = dis->columns;
+      machine.memory[ZH_lines] = machine.dinfo->lines;
+      machine.memory[ZH_columns] = machine.dinfo->columns;
 
       machine.memory[ZH_intnumber] = rc_get_interpreter();
       machine.memory[ZH_intvers] = rc_get_revision();
       break;
 
     case 3:
-      Flag(1, 4, !dis->status_line);
-      Flag(1, 5, dis->can_split);
-      Flag(1, 6, dis->variable_font);
+      Flag(1, 4, !machine.dinfo->status_line);
+      Flag(1, 5, machine.dinfo->can_split);
+      Flag(1, 6, machine.dinfo->variable_font);
       break;
     }
 }

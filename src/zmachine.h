@@ -29,6 +29,7 @@
 #include "ztypes.h"
 #include "hash.h"
 #include "file.h"
+#include "display.h"
 
 /*
  * You can #define the following definitions to alter how your version 
@@ -63,9 +64,9 @@
  * Versions to support (note that support for version 5 includes
  * support for versions 7 and 8 as well
  */
-#define SUPPORT_VERSION_3
-#define SUPPORT_VERSION_4
-#define SUPPORT_VERSION_5
+#undef  SUPPORT_VERSION_3
+#undef  SUPPORT_VERSION_4
+#undef  SUPPORT_VERSION_5
 #define SUPPORT_VERSION_6
 
 /* File format */
@@ -197,6 +198,7 @@ typedef struct ZMachine
   ZDWord string_offset;
 
   int display_active;
+  ZDisplay* dinfo;
 
   /* Output streams */
   int    screen_on;
