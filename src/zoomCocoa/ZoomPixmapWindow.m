@@ -33,7 +33,8 @@
 	[super dealloc];
 }
 
-// Getting the pixmap
+// = Getting the pixmap =
+
 - (NSSize) size {
 	return [pixmap size];
 }
@@ -42,7 +43,7 @@
 	return pixmap;
 }
 
-// Standard window commands
+// = Standard window commands =
 
 - (void) clearWithStyle: (ZStyle*) style {
 	[pixmap lockFocus];
@@ -139,7 +140,8 @@
 	[pixmap unlockFocus];
 }
 
-// Measuring
+// = Measuring =
+
 - (void) getInfoForStyle: (in ZStyle*) style
 				   width: (out float*) width
 				  height: (out float*) height
@@ -185,7 +187,8 @@
 	return [[res copy] autorelease];
 }
 
-// Input
+// = Input =
+
 - (void) setInputPosition: (NSPoint) point
 				withStyle: (in bycopy ZStyle*) style {
 	inputPos = point;
@@ -223,6 +226,30 @@
 		  operation: NSCompositeSourceOver
 		   fraction: 1.0];
 	[pixmap unlockFocus];
+}
+
+// = NSCoding =
+- (void) encodeWithCoder: (NSCoder*) encoder {
+	[encoder encodeObject: pixmap];
+	
+	[encoder encodePoint: inputPos];
+	[encoder encodeObject: inputStyle];
+}
+
+- (id)initWithCoder:(NSCoder *)decoder {
+	self = [super init];
+	
+    if (self) {
+		pixmap = [[decoder decodeObject] retain];
+		inputPos = [decoder decodePoint];
+		inputStyle = [[decoder decodeObject] retain];
+    }
+	
+    return self;
+}
+
+- (void) setZoomView: (ZoomView*) view {
+	zView = view;
 }
 
 @end

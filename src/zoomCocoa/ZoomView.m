@@ -1686,6 +1686,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 			
 			if (f) {
 				int windowNumber = 0;
+				ZoomUpperWindow* previewWin;
 				
 				[f setAttributes: [NSDictionary dictionaryWithObjectsAndKeys: 
 					[NSNumber numberWithLong: creatorCode], NSFileHFSCreatorCode,
@@ -1693,13 +1694,19 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 					[NSNumber numberWithBool: [panel isExtensionHidden]], NSFileExtensionHidden,
 					nil]];
 				
-				if ([(ZoomUpperWindow*)[upperWindows objectAtIndex: 0] length] > 0) {
+				if ([upperWindows count] <= 0 || [(ZoomUpperWindow*)[upperWindows objectAtIndex: 0] length] > 0) {
 					windowNumber = 0;
 				} else {
 					windowNumber = 1;
 				}
 				
-				[f addData: [NSArchiver archivedDataWithRootObject: [upperWindows objectAtIndex: windowNumber]]
+				if ([upperWindows count] <= 0) {
+					previewWin = nil;
+				} else {
+					previewWin = [upperWindows objectAtIndex: windowNumber];
+				}
+				
+				[f addData: [NSArchiver archivedDataWithRootObject: previewWin]
 			   forFilename: @"ZoomPreview.dat"];
 				[f addData: [NSArchiver archivedDataWithRootObject: self]
 			   forFilename: @"ZoomStatus.dat"];
@@ -1944,7 +1951,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 - (BOOL) createAutosaveDataWithCoder: (NSCoder*) encoder {
 	if (lastAutosave == nil) return NO;
 	
-	int autosaveVersion = 100;
+	int autosaveVersion = 101;
 	
 	[encoder encodeValueOfObjCType: @encode(int) 
 								at: &autosaveVersion];
@@ -1970,7 +1977,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	[decoder decodeValueOfObjCType: @encode(int)
 								at: &autosaveVersion];
 	
-	if (autosaveVersion == 100) {
+	if (autosaveVersion == 100 || autosaveVersion == 101) {
 		if (lastAutosave) [lastAutosave release];
 		if (upperWindows) [upperWindows release];
 		if (lowerWindows) [lowerWindows release];
@@ -1985,6 +1992,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		[[textView textStorage] setAttributedString: storage];
 		
 		commandHistory = [[decoder decodeObject] retain];
+		if (autosaveVersion == 101) pixmapWindow = [[decoder decodeObject] retain];
 		
 		// Final setup
 		upperWindowsToRestore = [upperWindows count];
@@ -1993,6 +2001,10 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 									  withObject: self];
 		[lowerWindows makeObjectsPerformSelector: @selector(setZoomView:)
 									  withObject: self];
+		
+		if (pixmapWindow) {
+			[pixmapWindow setZoomView: self];
+		}
 		
 		// Load the state into the z-machine
 		if (zMachine) {
@@ -2021,6 +2033,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	// The rest of the view state
 	[encoder encodeObject: [textView textStorage]];
 	[encoder encodeObject: commandHistory];
+	[encoder encodeObject: pixmapWindow];
 	
 	// All we need, I think
 }

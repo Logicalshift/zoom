@@ -11,8 +11,8 @@
 #import "ZoomView.h"
 
 @interface ZoomPixmapWindow : NSObject<ZPixmapWindow, NSCoding> {
-	NSImage* pixmap;
 	ZoomView* zView;
+	NSImage* pixmap;
 	
 	NSPoint inputPos;
 	ZStyle* inputStyle;
@@ -20,6 +20,7 @@
 
 // Initialisation
 - (id) initWithZoomView: (ZoomView*) view;
+- (void) setZoomView: (ZoomView*) view;
 
 // Getting the pixmap
 - (NSSize) size;
