@@ -30,6 +30,8 @@ extern int zoomImageCacheSize;
     // Some pieces of state information
     NSMutableString* inputBuffer;
     ZBuffer*         outputBuffer;
+	
+	int terminatingCharacter;
     
     BOOL             filePromptFinished;
     NSObject<ZFile>* lastFile;
@@ -44,6 +46,7 @@ extern int zoomImageCacheSize;
 - (NSObject<ZDisplay>*) display;
 - (NSObject<ZWindow>*)  windowNumber: (int) num;
 - (NSMutableString*)    inputBuffer;
+- (int)					terminatingCharacter;
 
 - (void)                filePromptStarted;
 - (BOOL)                filePromptFinished;

@@ -76,6 +76,9 @@ extern NSString* ZoomStyleAttributeName;
 	NSMutableArray* commandHistory;
 	int				historyPos;
 	
+	// Terminating characters
+	NSSet* terminatingChars;
+	
 	// View with input focus
 	NSObject<ZWindow>* focusedView;
 	
@@ -201,6 +204,10 @@ extern NSString* ZoomStyleAttributeName;
 // Resources
 - (void)		   setResources: (ZoomBlorbFile*) resources;
 - (ZoomBlorbFile*) resources;
+
+// Terminating characters
+- (void) setTerminatingCharacters: (NSSet*) chars;
+- (NSSet*) terminatingCharacters;
 
 @end
 

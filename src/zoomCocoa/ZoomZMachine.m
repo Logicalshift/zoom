@@ -37,6 +37,7 @@
         inputBuffer = [[NSMutableString allocWithZone: [self zone]] init];
         outputBuffer = [[ZBuffer allocWithZone: [self zone]] init];
         lastFile = nil;
+		terminatingCharacter = 0;
 
         windows[0] = windows[1] = windows[2] = nil;
 
@@ -430,8 +431,13 @@ void cocoa_debug_handler(ZDWord pc) {
     [inputBuffer appendString: text];
 }
 
-//- (void) inputChar: (int) character {
-//}
+- (void) inputTerminatedWithCharacter: (unsigned int) termChar {
+	terminatingCharacter = termChar;
+}
+
+- (int)	terminatingCharacter {
+	return terminatingCharacter;
+}
 
 // = Receiving files =
 - (void) filePromptCancelled {

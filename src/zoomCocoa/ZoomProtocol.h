@@ -56,6 +56,7 @@ typedef enum {
 
 // Recieving text/characters
 - (oneway void) inputText: (in bycopy NSString*) text;
+- (oneway void) inputTerminatedWithCharacter: (unsigned int) termChar;
 - (oneway void) inputMouseAtPositionX: (int) x
                                     Y: (int) y;
 
@@ -219,7 +220,7 @@ typedef enum {
 - (void)		shouldReceiveText: (in int) maxLength;
 - (void)        stopReceiving;
 
-- (oneway void) setTerminatingCharacters: (in bycopy NSArray*) characters;
+- (oneway void) setTerminatingCharacters: (in bycopy NSSet*) characters;
 
 // 'Exclusive' mode - lock the UI so no updates occur while we're sending
 // large blocks of varied text

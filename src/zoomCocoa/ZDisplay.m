@@ -34,7 +34,66 @@ BOOL zPixmapDisplay = NO;
 
 // = Display =
 
-// Debugging functions
+static int cocoa_to_zscii(int theChar) {
+	// Convert the character to ZSCII
+	unichar badChar = '?';
+	unichar key = 0;
+	
+	// Deal with special keys (ie, convert to ZSCII)
+	switch (theChar) {
+		// Arrow keys
+		case NSUpArrowFunctionKey: key = 129; break;
+		case NSDownArrowFunctionKey: key = 130; break;
+		case NSLeftArrowFunctionKey: key = 131; break;
+		case NSRightArrowFunctionKey: key = 132; break;
+			
+			// Delete/return
+		case 10: key = 13; break;
+		case NSDeleteFunctionKey: key = 8; break;
+			
+			// Function keys
+		case NSF1FunctionKey: key = 133; break;
+		case NSF2FunctionKey: key = 134; break;
+		case NSF3FunctionKey: key = 135; break;
+		case NSF4FunctionKey: key = 136; break;
+		case NSF5FunctionKey: key = 137; break;
+		case NSF6FunctionKey: key = 138; break;
+		case NSF7FunctionKey: key = 139; break;
+		case NSF8FunctionKey: key = 140; break;
+		case NSF9FunctionKey: key = 141; break;
+		case NSF10FunctionKey: key = 142; break;
+		case NSF11FunctionKey: key = 143; break;
+		case NSF12FunctionKey: key = 144; break;
+			
+			// Numeric keypad
+		case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
+		case '8': case '9':
+			/*
+			 if ([event modifierFlags]&NSNumericPadKeyMask) {
+				 // Report this as a numeric keypad event
+				 key = 145 + (chr-'0');
+			 }
+			 */
+			break;
+			
+		default:
+			// Unicode/other characters
+			if (theChar >= 127) {
+				// The character must be in the equivalence table...
+				key = zscii_get_char(theChar);
+				
+				if (key <= 0) key = badChar;
+			}
+			break;
+	}
+	
+	if (key > 0) theChar = key;
+	
+	return theChar;
+}
+
+// = Debugging functions =
+
 void printf_debug(char* format, ...) {
     va_list  ap;
     char     string[8192];
@@ -94,22 +153,6 @@ ZDisplay* display_get_info(void) {
     dis.pictures      = 1;
     dis.fore          = 0; // Implement me: make configurable
     dis.back          = 7; // Implement me: make configurable
-
-    /*
-    col               = maccolour[FIRST_ZCOLOUR+DEFAULT_FORE];
-    dis.fore_true     = (col.red>>11)|((col.green>>11)<<5)|((col.blue>>11)<<10);
-    col               = maccolour[FIRST_ZCOLOUR+DEFAULT_BACK];
-    dis.back_true     = (col.red>>11)|((col.green>>11)<<5)|((col.blue>>11)<<10);
-
-     if (pixmap != NULL)
-     {
-         dis.width = pix_w;
-         dis.height = pix_h;
-
-         dis.font_width = xfont_get_width(font[style_font[4]])+0.5;
-         dis.font_height = xfont_get_height(font[style_font[4]])+0.5;
-    }
-    */
 	
 	NOTE(@"display_get_info");
 	
@@ -191,8 +234,6 @@ void display_erase_window(void) {
 	
     [[mainMachine buffer] clearWindow: [mainMachine windowNumber: zDisplayCurrentWindow]
                             withStyle: zDisplayCurrentStyle];
-    //[mainMachine flushBuffers];
-    //[[mainMachine windowNumber: zDisplayCurrentWindow] clearWithStyle: zDisplayCurrentStyle];
 }
 
 void display_erase_line(int val) {
@@ -202,7 +243,8 @@ void display_erase_line(int val) {
                                   withStyle: zDisplayCurrentStyle];
 }
 
-// Display functions
+// = Display functions =
+
 void display_prints(const int* buf) {
 	if (is_v6)
     {
@@ -236,10 +278,6 @@ void display_prints(const int* buf) {
     [[mainMachine buffer] writeString: str
                             withStyle: zDisplayCurrentStyle
                              toWindow: [mainMachine windowNumber: zDisplayCurrentWindow]];
-    /*
-    [[mainMachine windowNumber: zDisplayCurrentWindow] writeString: str
-                                                 withStyle: zDisplayCurrentStyle];
-     */
 }
 
 void display_prints_c(const char* buf) {
@@ -292,16 +330,36 @@ void display_printf(const char* format, ...) {
     display_prints_c(string);
 }
 
-// Input
+// = Input =
+
 int display_readline(int* buf, int len, long int timeout) {
 	NOTE(@"display_readline");
     [mainMachine flushBuffers];
     
     NSObject<ZDisplay>* display = [mainMachine display];
+	
+	// Prefix
+	NSString* prefix = [@"" retain];
+	
+	if (buf[0] != nil) {
+		unichar* prefixBuf = malloc(sizeof(unichar)*len);
+		int x;
+		
+		for (x=0; x<len && buf[x] != 0; x++) {
+			prefixBuf[x] = buf[x];
+		}
+		
+		[prefix release];
+		prefix = [[NSString stringWithCharacters: prefixBuf
+										  length: x] retain];
+	}
 
     // Cycle the autorelease pool
     [displayPool release];
     displayPool = [[NSAutoreleasePool alloc] init];
+	
+	// Reset the terminating character
+	[mainMachine inputTerminatedWithCharacter: 0];
 
     // Request input
     [[mainMachine inputBuffer] setString: @""];
@@ -321,6 +379,7 @@ int display_readline(int* buf, int len, long int timeout) {
     
     // Wait for input
     while (mainMachine != nil &&
+		   [mainMachine terminatingCharacter] == 0 &&
            [[mainMachine inputBuffer] length] == 0 &&
            [when compare: [NSDate date]] == NSOrderedDescending) {
         // Cycle the autorelease pool
@@ -339,9 +398,13 @@ int display_readline(int* buf, int len, long int timeout) {
     
     // Finish up
     [display stopReceiving];
-
+	
     // Copy the data
     NSMutableString* inputBuffer = [mainMachine inputBuffer];
+	
+	// Add the prefix, if any
+	[inputBuffer insertString: prefix 
+					  atIndex: 0];
 
 #ifdef DEBUG
 	NSLog(@"ZDisplay: display_readline = %@", inputBuffer);
@@ -352,6 +415,8 @@ int display_readline(int* buf, int len, long int timeout) {
         realLen = len-1;
     }
 
+	// Remove any newlines at the end
+	// If there's a newline at the end, then we didn't get a terminating character or timeout
     int chr;
     int termChar = 0;
 
@@ -370,6 +435,13 @@ int display_readline(int* buf, int len, long int timeout) {
 
     buf[realLen] = 0;
 	
+	// Set the terminating character if required
+	if (termChar != 10) {
+		termChar = [mainMachine terminatingCharacter];
+		
+		if (termChar != 0) termChar = cocoa_to_zscii(termChar);
+	}
+	
 	// For version 6: write the string we received
 	if (zPixmapDisplay) {
 		static int newline[] = { '\n', 0 };
@@ -379,6 +451,7 @@ int display_readline(int* buf, int len, long int timeout) {
 	}
 	
     [inputBuffer deleteCharactersInRange: NSMakeRange(0, realLen)];
+	[prefix release];
 
     return termChar;
 }
@@ -434,61 +507,7 @@ int display_readchar(long int timeout) {
         theChar = 0; // Timeout occured
     } else {
         NSMutableString* inputBuffer = [mainMachine inputBuffer];
-        theChar = [inputBuffer characterAtIndex: 0];
-		
-		// Convert the character to ZSCII
-		unichar badChar = '?';
-		unichar key = 0;
-		
-        // Deal with special keys (ie, convert to ZSCII)
-        switch (theChar) {
-			// Arrow keys
-            case NSUpArrowFunctionKey: key = 129; break;
-            case NSDownArrowFunctionKey: key = 130; break;
-            case NSLeftArrowFunctionKey: key = 131; break;
-            case NSRightArrowFunctionKey: key = 132; break;
-
-			// Delete/return
-            case 10: key = 13; break;
-            case NSDeleteFunctionKey: key = 8; break;
-			
-			// Function keys
-            case NSF1FunctionKey: key = 133; break;
-            case NSF2FunctionKey: key = 134; break;
-            case NSF3FunctionKey: key = 135; break;
-            case NSF4FunctionKey: key = 136; break;
-            case NSF5FunctionKey: key = 137; break;
-            case NSF6FunctionKey: key = 138; break;
-            case NSF7FunctionKey: key = 139; break;
-            case NSF8FunctionKey: key = 140; break;
-            case NSF9FunctionKey: key = 141; break;
-            case NSF10FunctionKey: key = 142; break;
-            case NSF11FunctionKey: key = 143; break;
-            case NSF12FunctionKey: key = 144; break;
-				
-			// Numeric keypad
-			case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
-			case '8': case '9':
-				/*
-				if ([event modifierFlags]&NSNumericPadKeyMask) {
-					// Report this as a numeric keypad event
-					key = 145 + (chr-'0');
-				}
-				 */
-				break;
-				
-			default:
-				// Unicode/other characters
-				if (theChar >= 127) {
-					// The character must be in the equivalence table...
-					key = zscii_get_char(theChar);
-					
-					if (key <= 0) key = badChar;
-				}
-				break;
-        }
-		
-		if (key > 0) theChar = key;
+        theChar = cocoa_to_zscii([inputBuffer characterAtIndex: 0]);
     }
 
 #ifdef DEBUG
@@ -499,6 +518,7 @@ int display_readchar(long int timeout) {
 }
 
 // = Used by the debugger =
+
 void display_sanitise  (void) {
 	NOTE(@"display_santise");
     NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
@@ -616,7 +636,6 @@ void display_split(int lines, int window) {
 	NSLog(@"ZDisplay: display_split(%i, %i)", lines, window);
 #endif
 
-    // IMPLEMENT ME: window 2
     [[mainMachine buffer] setWindow: [mainMachine windowNumber: window]
                           startLine: 0
                             endLine: lines];
@@ -627,15 +646,9 @@ void display_join(int win1, int win2) {
 	NSLog(@"ZDisplay: display_join(%i, %i)", win1, win2);
 #endif
 	
-    // IMPLEMENT ME: window 2
     [[mainMachine buffer] setWindow: [mainMachine windowNumber: win2]
                           startLine: 0
                             endLine: 0];
-
-    /*
-    [mainMachine flushBuffers];
-    [[mainMachine windowNumber: win2] clearWithStyle: zDisplayCurrentStyle];
-     */
 }
 
 void display_set_window(int window) {
@@ -699,7 +712,72 @@ void display_force_fixed (int window, int val) {
 
 void display_terminating (unsigned char* table) {
 	NOTE(@"display_terminating");
-    NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
+	
+	if (table == NULL) {
+		[[mainMachine display] setTerminatingCharacters: nil];
+		return;
+	}
+	
+	// Create a set of characters
+	NSMutableSet* term = [NSMutableSet set];
+	
+	int x, y;
+	for (x=0; table[x] != 0; x++) {
+		switch (table[x]) {
+			// Arrow keys
+			case 129: [term addObject: [NSNumber numberWithInt: NSUpArrowFunctionKey]]; break;
+			case 130: [term addObject: [NSNumber numberWithInt: NSDownArrowFunctionKey]]; break;
+			case 131: [term addObject: [NSNumber numberWithInt: NSLeftArrowFunctionKey]]; break;
+			case 132: [term addObject: [NSNumber numberWithInt: NSRightArrowFunctionKey]]; break;
+				
+			// Function keys
+			case 133: [term addObject: [NSNumber numberWithInt: NSF1FunctionKey]]; break;
+			case 134: [term addObject: [NSNumber numberWithInt: NSF2FunctionKey]]; break;
+			case 135: [term addObject: [NSNumber numberWithInt: NSF3FunctionKey]]; break;
+			case 136: [term addObject: [NSNumber numberWithInt: NSF4FunctionKey]]; break;
+			case 137: [term addObject: [NSNumber numberWithInt: NSF5FunctionKey]]; break;
+			case 138: [term addObject: [NSNumber numberWithInt: NSF6FunctionKey]]; break;
+			case 139: [term addObject: [NSNumber numberWithInt: NSF7FunctionKey]]; break;
+			case 140: [term addObject: [NSNumber numberWithInt: NSF8FunctionKey]]; break;
+			case 141: [term addObject: [NSNumber numberWithInt: NSF9FunctionKey]]; break;
+			case 142: [term addObject: [NSNumber numberWithInt: NSF10FunctionKey]]; break;
+			case 143: [term addObject: [NSNumber numberWithInt: NSF11FunctionKey]]; break;
+			case 144: [term addObject: [NSNumber numberWithInt: NSF12FunctionKey]]; break;
+				
+			// Keypad not currently supported
+				
+			// Various click characters
+			case 252: case 253: case 254:
+				// Pass these as-is: these must be treated specially by the interpreter
+				[term addObject: [NSNumber numberWithInt: table[x]]];
+				break;
+			
+			case 255:
+				// Same as 129-154 and 252-254
+			{
+				// Deal with this by passing an alternative table
+				unsigned char newTable[30];
+				int p = 0;
+				
+				for (y=129; y<=154; y++) newTable[p++] = y;
+				for (y=252; y<=254; y++) newTable[p++] = y;
+				newTable[p++] = 0;
+				
+				display_terminating(newTable);
+				return;
+			}
+			
+			default:
+				if ((table[x] >= 129 && table[x] <= 154) || (table[x] >= 252 /* && table[x] <= 255 - always true*/)) {
+					//NSLog(@"Oops, character '%i' is a valid terminating character, but isn't supported", (int)table[x]);
+				} else {
+					NSLog(@"Character '%i' is not a valid terminating character", (int)table[x]);
+				}
+		}
+	}
+	
+	// Pass the table to the interpreter
+	[[mainMachine display] setTerminatingCharacters: term];
 }
 
 int  display_get_mouse_x(void) {
@@ -730,6 +808,7 @@ void display_beep(void) {
 }
 
 // = Getting files =
+
 static ZFileType convert_file_type(ZFile_type typein) {
     switch (typein) {
         case ZFile_save:

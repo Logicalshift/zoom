@@ -159,6 +159,9 @@ static void finalizeViews(void) {
 		
 		// Resources
 		resources = nil;
+		
+		// Terminating characters
+		terminatingChars = nil;
     }
 	
     return self;
@@ -215,6 +218,8 @@ static void finalizeViews(void) {
 	if (inputSource) [inputSource release];
 	
 	if (resources) [resources release];
+	
+	if (terminatingChars) [terminatingChars release];
 
     [super dealloc];
 }
@@ -778,6 +783,41 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         [self page];
         return YES;
     }
+	
+	if (receiving && terminatingChars != nil) {
+		// Deal with terminating characters
+		NSString* chars = [theEvent characters];
+		unichar chr = [chars characterAtIndex: 0];
+		NSNumber* recv = [NSNumber numberWithInt: chr];
+		
+		BOOL canTerminate = YES;
+		if (chr == 252 || chr == 253 || chr == 254) {
+			// Mouse characters
+			canTerminate = NO;
+		}
+		
+		if (chr == NSUpArrowFunctionKey   ||
+			chr == NSDownArrowFunctionKey ||
+			chr == NSLeftArrowFunctionKey ||
+			chr == NSRightArrowFunctionKey) {
+			canTerminate = ([theEvent modifierFlags]&NSAlternateKeyMask)==1 && ([theEvent modifierFlags]&NSCommandKeyMask)==0;
+		}
+		
+		if (canTerminate && [terminatingChars containsObject: recv]) {
+			// Set the terminating character
+			[zMachine inputTerminatedWithCharacter: [recv intValue]];
+			
+			// Send the input text
+			NSString* str = [textView string];
+			NSString* inputText = [str substringWithRange: NSMakeRange(inputPos,
+																	   [str length]-inputPos)];
+			inputPos = [str length];
+			
+			[zMachine inputText: inputText];
+						
+			return YES;
+		}
+	}
 	
 	if (inputLine) {
 		[inputLine keyDown: theEvent];
@@ -2255,6 +2295,18 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	} else {
 		return NSMakeSize(0,0);
 	}
+}
+
+// = Terminating characters =
+
+- (void) setTerminatingCharacters: (NSSet*) termChars {
+	if (terminatingChars) [terminatingChars release];
+	
+	terminatingChars = [termChars copy];
+}
+
+- (NSSet*) terminatingCharacters {
+	return terminatingChars;
 }
 
 @end
