@@ -39,6 +39,8 @@ extern int zoomImageCacheSize;
 	
 	BOOL wasRestored;
 	
+	int mousePosX, mousePosY;
+	
 	// Debugging state
 	BOOL waitingForBreakpoint;
 }
@@ -47,6 +49,9 @@ extern int zoomImageCacheSize;
 - (NSObject<ZWindow>*)  windowNumber: (int) num;
 - (NSMutableString*)    inputBuffer;
 - (int)					terminatingCharacter;
+
+- (int) mousePosX;
+- (int) mousePosY;
 
 - (void)                filePromptStarted;
 - (BOOL)                filePromptFinished;

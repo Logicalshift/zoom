@@ -157,4 +157,11 @@
 	
 }
 
+- (void) mouseUp: (NSEvent*) evt {
+	[zoomView clickAtPointInWindow: [evt locationInWindow]
+						 withCount: [evt clickCount]];
+	
+	[super mouseUp: evt];
+}
+
 @end

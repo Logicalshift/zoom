@@ -24,6 +24,8 @@
     [super dealloc];
 }
 
+// Key event handling
+
 - (void) keyDown: (NSEvent*) event {
     NSView* superview = [self superview];
 
@@ -37,6 +39,27 @@
     }
 }
 
+// = Mouse event handling =
+
+- (void) mouseDown: (NSEvent*) evt {
+	if (!dragged) {
+		NSView* superview = [self superview];
+		
+		while (![superview isKindOfClass: [ZoomView class]]) {
+			superview = [superview superview];
+			if (superview == nil) break;
+		}
+		
+		[(ZoomView*)superview clickAtPointInWindow: [evt locationInWindow]
+										 withCount: [evt clickCount]];
+	}
+	
+	[super mouseDown: evt];
+}
+
+// = Drawing =
+
+// (Draw the overlays)
 - (void) drawRect: (NSRect) r {
     [super drawRect: r];
 
@@ -114,6 +137,11 @@
         }
     }
 }
+
+// = Pasting overlays =
+
+// Things that are drawn in the upper window, but outside the point at which it has been split are
+// overlaid into the text view.
 
 - (void) clearPastedLines {
     [pastedLines removeAllObjects];

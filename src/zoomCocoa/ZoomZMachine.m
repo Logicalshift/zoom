@@ -435,8 +435,22 @@ void cocoa_debug_handler(ZDWord pc) {
 	terminatingCharacter = termChar;
 }
 
+- (void) inputMouseAtPositionX: (int) posX
+							 Y: (int) posY {
+	mousePosX = posX;
+	mousePosY = posY;
+}
+
 - (int)	terminatingCharacter {
 	return terminatingCharacter;
+}
+
+- (int) mousePosX {
+	return mousePosX;
+}
+
+- (int) mousePosY {
+	return mousePosY;
 }
 
 // = Receiving files =

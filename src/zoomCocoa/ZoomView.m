@@ -895,6 +895,57 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	[self handleKeyDown: event];
 }
 
+- (void) mouseUp: (NSEvent*) event {
+	[self clickAtPointInWindow: [event locationInWindow]
+					 withCount: [event clickCount]];
+	
+	[super mouseUp: event];
+}
+
+- (void) clickAtPointInWindow: (NSPoint) windowPos
+					withCount: (int) count {
+	// Note that clicking can only be accurate in the 'upper' window
+	// We'll have problems if the lower window is scrolled, too.
+	NSPoint pointInView = [self convertPoint: windowPos
+									fromView: nil];
+	
+	if (pixmapWindow != nil) {
+		// Point is in X,Y coordinates
+		[zMachine inputMouseAtPositionX: pointInView.x
+									  Y: pointInView.y];
+	} else {
+		// Point is in character coordinates
+		NSDictionary* fixedAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+            [self fontWithStyle:ZFixedStyle], NSFontAttributeName, nil];
+        NSSize fixedSize = [@"M" sizeWithAttributes: fixedAttributes];
+		
+		int charX = floorf(pointInView.x / fixedSize.width);
+		int charY = floorf(pointInView.y / fixedSize.height);
+		
+		// Report the position to the remote server
+		[zMachine inputMouseAtPositionX: charX+1
+									  Y: charY+1];
+	}
+	
+	// Send the appropriate 'mouse down' character to the remote system
+	// We use NSF34/NSF35 as 'pretend' mouse down characters
+	unichar clickChar = NSF34FunctionKey;
+	
+	if (count == 2) clickChar = NSF35FunctionKey;
+	
+	NSEvent* fakeKeyDownEvent = [NSEvent keyEventWithType: NSKeyDown
+												 location: NSMakePoint(0,0)
+											modifierFlags: 0
+												timestamp: 0
+											 windowNumber: [[self window] windowNumber]
+												  context: nil
+											   characters: [NSString stringWithCharacters: &clickChar length: 1]
+							  charactersIgnoringModifiers: [NSString stringWithCharacters: &clickChar length: 1]
+												isARepeat: NO
+												  keyCode: 0];
+	[self handleKeyDown: fakeKeyDownEvent];
+}
+
 // = Formatting, fonts, colours, etc =
 
 - (NSDictionary*) attributesForStyle: (ZStyle*) style {

@@ -167,7 +167,9 @@ extern NSString* ZoomStyleAttributeName;
 - (void) upperWindowNeedsRedrawing;
 
 // Event handling
-- (BOOL) handleKeyDown:(NSEvent*) theEvent;
+- (BOOL) handleKeyDown: (NSEvent*) theEvent;
+- (void) clickAtPointInWindow: (NSPoint) windowPos
+					withCount: (int) count;
 
 // Setting/updating preferences
 - (void) setPreferences: (ZoomPreferences*) prefs;

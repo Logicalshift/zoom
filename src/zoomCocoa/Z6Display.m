@@ -271,10 +271,21 @@ void display_set_input_pos(int style, int x, int y, int width) {
 
 extern void  display_wait_for_more   (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
 
+// = Mouse =
+
 extern void  display_read_mouse      (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-extern int   display_get_pix_mouse_b (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-extern int   display_get_pix_mouse_x (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-extern int   display_get_pix_mouse_y (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
+
+int display_get_pix_mouse_b (void) { 
+	return 1;
+}
+
+int display_get_pix_mouse_x (void) { 
+	return [mainMachine mousePosX];
+}
+
+int display_get_pix_mouse_y (void) { 
+	return [mainMachine mousePosY];
+}
 
 extern void  display_set_mouse_win   (int x, int y, int width, int height) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
 

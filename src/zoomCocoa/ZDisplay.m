@@ -65,6 +65,11 @@ static int cocoa_to_zscii(int theChar) {
 		case NSF11FunctionKey: key = 143; break;
 		case NSF12FunctionKey: key = 144; break;
 			
+			// Mouse buttons (we use fake function keys for this)
+		case NSF33FunctionKey: key = 252; break;
+		case NSF34FunctionKey: key = 254; break;
+		case NSF35FunctionKey: key = 253; break;
+			
 			// Numeric keypad
 		case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
 		case '8': case '9':
@@ -747,10 +752,9 @@ void display_terminating (unsigned char* table) {
 			// Keypad not currently supported
 				
 			// Various click characters
-			case 252: case 253: case 254:
-				// Pass these as-is: these must be treated specially by the interpreter
-				[term addObject: [NSNumber numberWithInt: table[x]]];
-				break;
+			case 252: [term addObject: [NSNumber numberWithInt: NSF33FunctionKey]]; break; // Menu click
+			case 253: [term addObject: [NSNumber numberWithInt: NSF35FunctionKey]]; break; // Double click
+			case 254: [term addObject: [NSNumber numberWithInt: NSF34FunctionKey]]; break; // Single click
 			
 			case 255:
 				// Same as 129-154 and 252-254
@@ -780,16 +784,12 @@ void display_terminating (unsigned char* table) {
 	[[mainMachine display] setTerminatingCharacters: term];
 }
 
-int  display_get_mouse_x(void) {
-	NOTE(@"display_get_mouse_x");
-    NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
-    return 0;
+int display_get_mouse_x(void) {
+	return [mainMachine mousePosX];
 }
 
 int display_get_mouse_y(void) {
-	NOTE(@"display_get_mouse_y");
-    NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
-    return 0;
+	return [mainMachine mousePosY];
 }
 
 void display_set_title(const char* title) {
