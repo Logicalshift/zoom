@@ -205,7 +205,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	if (trackedItem != nil) {
 		float xpos = [layout xposForItem: trackedItem];
 		float ypos = ((float)[layout levelForItem: trackedItem])*itemHeight + (itemHeight / 2.0);
-		float bgWidth = [layout widthForItem: trackedItem];
+		float bgWidth =	[[trackedItem command] sizeWithAttributes: itemTextAttributes].width;
 		
 		// Layout is:
 		//    A T        x +
@@ -929,7 +929,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	NSRect itemFrame = [layout textAreaForItem: skeinItem];
 	
 	// (Or the annotation)
-	if (annotation) itemFrame.origin.y -= 15;
+	if (annotation) itemFrame.origin.y -= 20;
 	
 	// Make sure the item is the right size
 	float minItemWidth = itemWidth - 32.0;
