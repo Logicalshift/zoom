@@ -175,7 +175,7 @@ int zoom_main(int argc, char** argv)
 	    name,
 	    Word(ZH_release),
 	    Address(ZH_serial),
-	    Word(ZH_checksum));
+	    (unsigned)Word(ZH_checksum));
     display_set_title(title);
 
     sprintf(save_fname, "%s.qut", name);

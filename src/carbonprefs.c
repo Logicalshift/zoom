@@ -1124,7 +1124,8 @@ void carbon_prefs_set_resources(char* path)
   machine.blorb_file = rfile; 
 
   /* Store this in the resources... */
-  sprintf(str, "%i.%.6s.%04x", Word(ZH_release), Address(ZH_serial), Word(ZH_checksum));
+  sprintf(str, "%i.%.6s.%04x", Word(ZH_release), Address(ZH_serial), 
+	  (unsigned)Word(ZH_checksum));
   game = hash_get(rc_hash, str, strlen(str));
 
   if (game == NULL)
@@ -1232,7 +1233,8 @@ static void pref_setup(void)
 		  kControlCheckBoxCheckedValue:kControlCheckBoxUncheckedValue);
 
   /* Try to get the game hash entry */
-  sprintf(str, "%i.%.6s.%04x", Word(ZH_release), Address(ZH_serial), Word(ZH_checksum));
+  sprintf(str, "%i.%.6s.%04x", Word(ZH_release), Address(ZH_serial), 
+	  (unsigned)Word(ZH_checksum));
   game = hash_get(rc_hash, str, strlen(str));
 
   if (game == NULL)
