@@ -48,6 +48,9 @@ static void finalizeViews(void) {
         allocatedViews = realloc(allocatedViews, sizeof(ZoomView*) * (nAllocatedViews+1));
         allocatedViews[nAllocatedViews] = self;
         nAllocatedViews++;
+		
+		// Output receivers
+		outputReceivers = nil;
 
         // No upper/lower windows
         upperWindows = [[NSMutableArray allocWithZone: [self zone]] init];
@@ -198,6 +201,7 @@ static void finalizeViews(void) {
     [upperWindowBuffer release];
 	[viewPrefs release];
 	[commandHistory release];
+	[outputReceivers release];
 	if (lastAutosave) [lastAutosave release];
 	
 	if (inputLine) [inputLine release];
@@ -378,6 +382,7 @@ static void finalizeViews(void) {
     }
     
     receivingCharacters = YES;
+	[self orWaitingForInput];
 }
 
 - (void) shouldReceiveText: (int) maxLength {
@@ -441,6 +446,7 @@ static void finalizeViews(void) {
 	}
 	
     receiving = YES;
+	[self orWaitingForInput];
 }
 
 - (void) stopReceiving {
@@ -680,6 +686,8 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 			[commandHistory addObject: [str substringWithRange: NSMakeRange(inputPos,
 																			newlinePos-inputPos)]];
             [zMachine inputText: inputText];
+			[self orInputCommand: inputText];
+
             inputPos = newlinePos + 1;
         }
     } while (newlinePos >= 0);
@@ -736,6 +744,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         }
         
         [zMachine inputText: chars];
+		[self orInputCharacter: chars];
         
         return YES;
     }
@@ -1968,6 +1977,89 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 
 - (void) inputLineHasChanged: (ZoomInputLine*) sender {
 	[self setNeedsDisplayInRect: [inputLine rectForPoint: inputLinePos]];
+}
+
+// = Output receivers =
+
+- (void) addOutputReceiver: (id) receiver {
+	if (!outputReceivers) {
+		outputReceivers = [[NSMutableArray alloc] init];
+	}
+	
+	if ([outputReceivers indexOfObjectIdenticalTo: receiver] == NSNotFound) {
+		[outputReceivers addObject: receiver];
+	}
+}
+
+- (void) removeOutputReceiver: (id) receiver {
+	if (!outputReceivers) return;
+	[outputReceivers removeObjectIdenticalTo: receiver];
+	
+	if ([outputReceivers count] <= 0) {
+		[outputReceivers release];
+		outputReceivers = nil;
+	}
+}
+
+// These functions are really for internal use only: they actually call the output receivers as appropriate
+- (void) orInputCommand: (NSString*) command {
+	if (!outputReceivers) return;
+	NSEnumerator* orEnum = [outputReceivers objectEnumerator];
+	NSObject* or;
+	
+	while (or = [orEnum nextObject]) {
+		if ([or respondsToSelector: @selector(inputCommand:)]) {
+			[or inputCommand: command];
+		}
+	}
+}
+
+- (void) orInputCharacter: (NSString*) character {
+	if (!outputReceivers) return;
+	NSEnumerator* orEnum = [outputReceivers objectEnumerator];
+	NSObject* or;
+	
+	while (or = [orEnum nextObject]) {
+		if ([or respondsToSelector: @selector(inputCharacter:)]) {
+			[or inputCharacter: character];
+		}
+	}
+}
+
+- (void) orOutputText:   (NSString*) outputText {
+	if (!outputReceivers) return;
+	NSEnumerator* orEnum = [outputReceivers objectEnumerator];
+	NSObject* or;
+	
+	while (or = [orEnum nextObject]) {
+		if ([or respondsToSelector: @selector(outputText:)]) {
+			[or outputText: outputText];
+		}
+	}
+}
+
+- (void) orWaitingForInput {
+	if (!outputReceivers) return;
+	NSEnumerator* orEnum = [outputReceivers objectEnumerator];
+	NSObject* or;
+	
+	while (or = [orEnum nextObject]) {
+		if ([or respondsToSelector: @selector(zoomWaitingForInput)]) {
+			[or zoomWaitingForInput];
+		}
+	}
+}
+
+- (void) orInterpreterRestart {
+	if (!outputReceivers) return;
+	NSEnumerator* orEnum = [outputReceivers objectEnumerator];
+	NSObject* or;
+	
+	while (or = [orEnum nextObject]) {
+		if ([or respondsToSelector: @selector(zoomInterpreterRestart)]) {
+			[or zoomInterpreterRestart];
+		}
+	}
 }
 
 @end

@@ -89,6 +89,9 @@ extern NSString* ZoomStyleAttributeName;
 	// Autosave
 	NSData* lastAutosave;
 	int		upperWindowsToRestore;
+	
+	// Output receivers
+	NSMutableArray* outputRecievers;
 }
 
 // The delegate
@@ -174,6 +177,16 @@ extern NSString* ZoomStyleAttributeName;
 - (void) setInputLinePos: (NSPoint) pos;
 - (void) setInputLine: (ZoomInputLine*) input;
 
+// Output receivers
+- (void) addOutputReceiver: (id) receiver;
+- (void) removeOutputReceiver: (id) receiver;
+
+- (void) orInputCommand: (NSString*) command;
+- (void) orInputCharacter: (NSString*) character;
+- (void) orOutputText:   (NSString*) outputText;
+- (void) orWaitingForInput;
+- (void) orInterpreterRestart;
+
 @end
 
 // ZoomView delegate methods
@@ -188,5 +201,25 @@ extern NSString* ZoomStyleAttributeName;
 - (void) hitBreakpoint: (int) pc;
 
 - (void) zoomViewIsNotResizable;
+
+@end
+
+// ZoomView input/output receivers
+@interface NSObject(ZoomViewOutputReceiver)
+
+// Direct output
+- (void) inputCommand:   (NSString*) command;
+- (void) inputCharacter: (NSString*) character;
+- (void) outputText:     (NSString*) outputText;
+
+// Status notifications
+- (void) zoomWaitingForInput;
+- (void) zoomInterpreterRestart;
+
+@end
+
+@interface NSObject(ZoomViewInputSource)
+
+// IMPLEMENT ME
 
 @end
