@@ -255,8 +255,8 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 	}
 	
 	// Adjust the width to fit the text, if required
-	float ourWidth = [[item command] sizeWithAttributes: itemTextAttributes].width;
-	float labelWidth = [item annotation]?[[item annotation] sizeWithAttributes: labelTextAttributes].width:0;
+	float ourWidth = [item commandSize].width;
+	float labelWidth = [item annotationSize].width;
 	
 	if (labelWidth > ourWidth) ourWidth = labelWidth;
 	
@@ -567,7 +567,7 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 		while (item = [levelEnum nextObject]) {
 			ZoomSkeinItem* skeinItem = [self itemForData: item];
 			float xpos = [self xposForData: item];
-			NSSize size = [[skeinItem command] sizeWithAttributes: itemTextAttributes];
+			NSSize size = [skeinItem commandSize];
 			
 			// Draw the background
 			NSImage* background = unchanged;
@@ -585,8 +585,7 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 						  withWidth: bgWidth];
 			
 			// Draw the item
-			[[skeinItem command] drawAtPoint: NSMakePoint(xpos - (size.width/2), ypos + (background==selected?2.0:0.0))
-							  withAttributes: itemTextAttributes];
+			[skeinItem drawCommandAtPosition: NSMakePoint(xpos - (size.width/2), ypos + (background==selected?2.0:0.0))];
 			
 			// Draw links to the children
 			[[NSColor blackColor] set];
@@ -616,14 +615,13 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 			// Draw the annotation, if present
 			if ([[skeinItem annotation] length] > 0) {
 				float itemWidth = [self widthForItem: skeinItem];
-				float labelWidth = [[skeinItem annotation] sizeWithAttributes: labelTextAttributes].width;
+				float labelWidth = [skeinItem annotationSize].width;
 				
 				[[self class] drawImage: annotation
 								atPoint: NSMakePoint(xpos - itemWidth/2.0, ypos-30)
 							  withWidth: itemWidth];
 				
-				[[skeinItem annotation] drawAtPoint: NSMakePoint(xpos - (labelWidth/2), ypos - 23)
-									 withAttributes: labelTextAttributes];
+				[skeinItem drawAnnotationAtPosition: NSMakePoint(xpos - (labelWidth/2), ypos - 23)];
 			}
 		}
 	}
@@ -650,8 +648,7 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 	[background setFlipped: YES];
 	
 	// Draw the item
-	[[skeinItem command] drawAtPoint: NSMakePoint(point.x+20, point.y+8 + (background==selected?2.0:0.0))
-					  withAttributes: itemTextAttributes];
+	[skeinItem drawCommandAtPosition: NSMakePoint(point.x+20, point.y+8 + (background==selected?2.0:0.0))];
 }
 
 - (NSImage*) imageForItem: (ZoomSkeinItem*) item {

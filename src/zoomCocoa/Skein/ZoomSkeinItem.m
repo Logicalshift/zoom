@@ -6,6 +6,8 @@
 //  Copyright (c) 2004 Andrew Hunter. All rights reserved.
 //
 
+#import <Cocoa/Cocoa.h>
+
 #import "ZoomSkeinItem.h"
 
 
@@ -66,6 +68,8 @@ static NSString* convertCommand(NSString* command) {
 		changed   = NO;
 		
 		annotation = nil;
+		
+		annotationSizeDidChange = commandSizeDidChange = YES;
 	}
 	
 	return self;
@@ -220,6 +224,7 @@ static NSString* convertCommand(NSString* command) {
 - (void) setCommand: (NSString*) newCommand {
 	if (command) [command release];
 	command = nil;
+	if (![newCommand isEqualToString: command]) commandSizeDidChange = YES;
 	if (newCommand) command = [convertCommand(newCommand) copy];
 }
 
@@ -306,6 +311,7 @@ static int currentScore = 1;
 
 - (void) setAnnotation: (NSString*) newAnnotation {
 	if (annotation) [annotation release];
+	if (![newAnnotation isEqualToString: annotation]) annotationSizeDidChange = YES;
 	annotation = nil;
 	if (newAnnotation) annotation = [newAnnotation copy];
 }
@@ -379,6 +385,62 @@ static int currentScore = 1;
 	}
 	
 	return self;
+}
+
+// = Drawing/sizing =
+
+//
+// These routines are implemented here for performance reasons
+// sizeWithAttributes is *slow* under OS X, and calling it unnecessarily severely impacts the performance of
+// Zoom
+//
+
+static NSDictionary* itemTextAttributes = nil;
+static NSDictionary* labelTextAttributes = nil;
+
+- (NSSize) commandSize {
+	if (!itemTextAttributes) {
+		itemTextAttributes = [[NSDictionary dictionaryWithObjectsAndKeys:
+			[NSFont systemFontOfSize: 10], NSFontAttributeName,
+			[NSColor blackColor], NSForegroundColorAttributeName,
+			nil] retain];
+	}
+	
+	if (commandSizeDidChange) {
+		commandSize = [command sizeWithAttributes: itemTextAttributes];
+	}
+	
+	commandSizeDidChange = NO;
+	return commandSize;
+}
+
+- (void) drawCommandAtPosition: (NSPoint) position {
+	[command drawAtPoint: position
+		  withAttributes: itemTextAttributes];
+}
+
+- (NSSize) annotationSize {
+	if (!labelTextAttributes) {
+		labelTextAttributes = [[NSDictionary dictionaryWithObjectsAndKeys:
+			[NSFont systemFontOfSize: 13], NSFontAttributeName,
+			[NSColor blackColor], NSForegroundColorAttributeName,
+			//labelShadow, ZoomNSShadowAttributeName,
+			nil] retain];
+	}
+	
+	if (annotationSizeDidChange) {
+		annotationSize = annotation?[annotation sizeWithAttributes: itemTextAttributes]:NSMakeSize(0,0);
+	}
+	
+	annotationSizeDidChange = NO;
+	return annotationSize;
+}
+
+- (void) drawAnnotationAtPosition: (NSPoint) position {
+	if (annotation) {
+		[annotation drawAtPoint: position
+				 withAttributes: labelTextAttributes];
+	}
 }
 
 @end

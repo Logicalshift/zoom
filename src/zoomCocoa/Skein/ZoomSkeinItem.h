@@ -22,6 +22,13 @@
 	BOOL played, changed;
 	
 	NSString* annotation;
+	
+	// Cached layout items (text measuring is slow)
+	BOOL   commandSizeDidChange;
+	NSSize commandSize;
+	
+	BOOL   annotationSizeDidChange;
+	NSSize annotationSize;
 }
 
 // Initialisation
@@ -70,5 +77,11 @@
 // Each 'annotation' colours a new area of the skein.
 - (NSString*) annotation;
 - (void)      setAnnotation: (NSString*) newAnnotation;
+
+// Drawing/sizing
+- (NSSize) commandSize;
+- (void) drawCommandAtPosition: (NSPoint) position;
+- (NSSize) annotationSize;
+- (void) drawAnnotationAtPosition: (NSPoint) position;
 
 @end
