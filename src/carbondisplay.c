@@ -263,6 +263,7 @@ extern int zoom_main(int, char**);
 
 int main(int argc, char** argv)
 {
+  RunApplicationEventLoop();
 }
 
 #endif
