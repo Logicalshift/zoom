@@ -108,16 +108,43 @@ static void prints(const int* const s)
       len = Word(machine.memory_pos[machine.memory_on-1]);
       mem = Address(machine.memory_pos[machine.memory_on-1]);
       
-      for (x=0; s[x] != 0; x++)
+      if (machine.memory_width[machine.memory_on-1] == -1)
 	{
-	  if (s[x] == 10)
-	    mem[(len++)+2] = 13;
-	  else
-	    mem[(len++)+2] = s[x];
-	}
+	  for (x=0; s[x] != 0; x++)
+	    {
+	      if (s[x] == 10)
+		mem[(len++)+2] = 13;
+	      else
+		mem[(len++)+2] = s[x];
+	    }
 
-      mem[0] = len>>8;
-      mem[1] = len;
+	  mem[0] = len>>8;
+	  mem[1] = len;
+	}
+      else
+	{
+	  for (x=0; s[x] !=0; x++)
+	    {
+	      if (s[x] == 10 || s[x] == 13)
+		{
+		  /* Create a newline */
+		  mem[0] = len>>8;
+		  mem[1] = len;
+
+		  mem[(len++)+2] = 0;
+		  mem[(len++)+2] = 0;
+
+		  machine.memory_pos[machine.memory_on-1] += len;
+		  mem += len;
+		  len = 0;
+		}
+	      else
+		mem[(len++)+2] = s[x];
+	    }
+
+	  mem[0] = len>>8;
+	  mem[1] = len;
+	}
       
       return;
     }

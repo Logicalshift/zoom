@@ -801,6 +801,10 @@ static void zcode_op_output_stream(ZStack* stack,
       if (machine.memory_on > 16)
 	zmachine_fatal("Maximum recurse level for memory redirect is 16");
       machine.memory_pos[machine.memory_on-1] = args->arg[1];
+      machine.memory_width[machine.memory_on-1] = -1;
+
+      if (args->n_args > 2)
+	machine.memory_width[machine.memory_on-1] = args->arg[2];
 
       mem = Address((ZUWord)machine.memory_pos[machine.memory_on-1]);
       mem[0] = 0;
@@ -813,6 +817,19 @@ static void zcode_op_output_stream(ZStack* stack,
 	  machine.memory_on = 0;
 	  zmachine_warning("Tried to stop writing to memory when no memory redirect was in effect");
 	}
+
+      if (machine.memory_width[machine.memory_on] != -1)
+	{
+	  ZByte* lastpos;
+	  int len;
+
+	  /* Mark the last line */
+	  lastpos = Address(machine.memory_pos[machine.memory_on]);
+	  len = (lastpos[0]<<8)|(lastpos[1]);
+	  lastpos[len+2] = 0;
+	  lastpos[len+3] = 0;
+	}
+
       break;
 
     case 4:
@@ -1243,7 +1260,7 @@ void zcode_v6_initialise(void)
       windows[x].scrolling  = 1;
       windows[x].buffering  = 1;
       windows[x].transcript = 0;
-      windows[x].x = windows[x].y = 0;
+      windows[x].x = windows[x].y = 1;
       windows[x].xsize = machine.dinfo->width; 
       windows[x].ysize = machine.dinfo->height;
 

@@ -251,7 +251,8 @@ typedef struct ZMachine
   FILE*  transcript_file;
 
   int    memory_on;
-  ZUWord memory_pos[16];
+  ZUWord memory_pos  [16];
+  int    memory_width[16];
   
   int    buffering;
 

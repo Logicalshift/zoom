@@ -2485,7 +2485,7 @@ OPCODE "erase_window"   VAR:0x0d ARGS:1               VERSION 6
           windows[x].scrolling  = 1;
           windows[x].buffering  = 1;
           windows[x].transcript = 0;
-          windows[x].x = windows[x].y = 0;
+          windows[x].x = windows[x].y = 1;
           windows[x].xsize = machine.dinfo->width; 
 	  windows[x].ysize = machine.dinfo->height;
 
@@ -2554,6 +2554,8 @@ OPCODE "get_cursor"    VAR:0x10 ARGS:1        VERSION 6
 OPCODE "output_stream" VAR:0x13 ARGS:3        VERSION 6
 %{
   stream_flush_buffer();
+  if (argblock.n_args > 2)
+    printf("Output_stream with width not yet supported\n");
   zcode_op_output_stream(stack, &argblock);
 %}
 
@@ -2756,16 +2758,22 @@ OPCODE "window_size"   EXT:0x11               VERSION 6
 
 OPCODE "window_style"  EXT:0x12               VERSION 6
 %{
+  int win, owin;
+
+  win = argblock.arg[0];
+  if (win == -3)
+    win = v6_get_window();
+
   stream_flush_buffer();
 
-  printf("Window_style bugged: args %i, %i %i\n", argblock.arg[0], argblock.arg[1], argblock.arg[2]);
+  StyleSet(windows[win].wrapping,   argblock.arg[1]&1);
+  StyleSet(windows[win].scrolling,  argblock.arg[1]&2);
+  StyleSet(windows[win].transcript, argblock.arg[1]&4);
+  StyleSet(windows[win].buffering,  argblock.arg[1]&8);
 
-#if 0
-  StyleSet(windows[argblock.arg[0]].wrapping,   argblock.arg[1]&1);
-  StyleSet(windows[argblock.arg[0]].scrolling,  argblock.arg[1]&2);
-  StyleSet(windows[argblock.arg[0]].transcript, argblock.arg[1]&4);
-  StyleSet(windows[argblock.arg[0]].buffering,  argblock.arg[1]&8);
-#endif
+  owin = v6_get_window();
+  zcode_setup_window(win);
+  v6_set_window(owin);
 %}
 
 OPCODE "get_wind_prop" EXT:0x13        STORE  VERSION 6
@@ -2961,7 +2969,30 @@ OPCODE "put_wind_prop" EXT:0x19               VERSION 6
 
 OPCODE "print_form"    EXT:0x1a               VERSION 6
 %{
-  printf_debug("print_form not implemented\n");
+  ZByte* table;
+  int len;
+  int first;
+
+  table = Address((ZUWord) argblock.arg[0]);
+  first = 1;
+
+  do
+    {
+      int x;
+      
+      len = (table[0]<<8)|(table[1]);
+      if (!first)
+	stream_printf("\n");
+      first = 0;
+
+      for (x=0; x<len; x++)
+	{
+	  stream_printf("%c", table[x+2]);
+	}
+
+      table += len+2;
+    }
+  while (len != 0);
 %}
 
 OPCODE "make_menu"     EXT:0x1b        BRANCH VERSION 6
