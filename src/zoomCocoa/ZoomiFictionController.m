@@ -245,15 +245,40 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	}
 }
 
-- (IBAction) startNewGame: (id) sender {
-	NSString* filename = [self selectedFilename];
-	
-	// FIXME: multiple selections?
-	if (filename) {
-		[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfFile: filename
-																				display: YES];
+- (void) autosaveAlertFinished: (NSWindow *)alert 
+					returnCode: (int)returnCode 
+				   contextInfo: (void *)contextInfo {
+	if (returnCode == NSAlertAlternateReturn) {
+		NSString* filename = [self selectedFilename];
 		
-		[self configureFromMainTableSelection];
+		// FIXME: multiple selections?
+		if (filename) {
+			[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfFile: filename
+																					display: YES];
+			
+			[self configureFromMainTableSelection];
+		}
+	}
+}
+
+- (IBAction) startNewGame: (id) sender {
+	ZoomStoryID* ident = [self selectedStoryID];
+	
+	// If an autosave file exists, query the user
+	NSString* autosaveDir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: ident];
+	NSString* autosaveFile = [autosaveDir stringByAppendingPathComponent: @"autosave.zoomauto"];
+	
+	if ([[NSFileManager defaultManager] fileExistsAtPath: autosaveFile]) {
+		// Autosave file exists - show alert sheet
+		NSBeginAlertSheet(@"An autosave file exists for this game", @"Don't start new game", @"Start new game",
+						  nil, [self window], self, @selector(autosaveAlertFinished:returnCode:contextInfo:),
+						  nil,nil,
+						  @"This game has an autosave file associated with it. Starting a new game will cause this file to be overwritten.");
+	} else {
+		// Fake alert sheet OK
+		[self autosaveAlertFinished: nil
+						 returnCode: NSAlertAlternateReturn
+						contextInfo: nil];
 	}
 }
 

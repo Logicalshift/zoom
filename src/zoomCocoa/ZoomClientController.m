@@ -70,7 +70,6 @@
 	   didEndSelector: nil
 		  contextInfo: nil];
     [NSApp runModalForWindow: [gamePrefs window]];
-    // Sheet is up here.
     [NSApp endSheet: [gamePrefs window]];
 	
 	[[gamePrefs window] orderOut: self];
@@ -124,12 +123,17 @@
 	
 	[theCoder release];
 	
+	NSString* autosaveDir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: [[self document] storyId]];
+	NSString* autosaveFile = [autosaveDir stringByAppendingPathComponent: @"autosave.zoomauto"];
+	
 	if (autosave) {
 		// Produce an autosave file
-		NSString* autosaveDir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: [[self document] storyId]];
-		NSString* autosaveFile = [autosaveDir stringByAppendingPathComponent: @"autosave.zoomauto"];
-		
 		[autosaveData writeToFile: autosaveFile atomically: YES];
+	} else {
+		if ([[NSFileManager defaultManager] fileExistsAtPath: autosaveFile]) {
+			[[NSFileManager defaultManager] removeFileAtPath: autosaveFile
+													 handler: nil];
+		}
 	}
 	
 	[autosaveData release];

@@ -541,9 +541,10 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 
         if (newlinePos >= 0) {
 			NSString* inputText = [str substringWithRange: NSMakeRange(inputPos,
-																	   newlinePos-inputPos)];
+																	   newlinePos-inputPos+1)];
 			
-			[commandHistory addObject: [[inputText copy] autorelease]];
+			[commandHistory addObject: [str substringWithRange: NSMakeRange(inputPos,
+																			newlinePos-inputPos)]];
             [zMachine inputText: inputText];
             inputPos = newlinePos + 1;
         }
