@@ -52,7 +52,8 @@
 - (void) addID: (ZoomStoryID*) newID {
 	story->numberOfIdents++;
 	story->idents = realloc(story->idents, sizeof(IFMDIdent)*story->numberOfIdents);
-	story->idents[story->numberOfIdents-1] = *[newID ident];
+	story->idents[story->numberOfIdents-1] = IFID_Alloc();
+	IFIdent_Copy(story->idents[story->numberOfIdents-1], [newID ident]);
 }
 
 - (NSString*) title {

@@ -124,7 +124,7 @@ struct IFMDStory {
 	int         error;
 	
 	int			numberOfIdents;
-	IFMDIdent*  idents;
+	IFMDIdent** idents;
 	
 	IFMDData     data;
 };

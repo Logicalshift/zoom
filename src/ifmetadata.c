@@ -28,14 +28,6 @@
  * compiled for, which is pretty much anything.
  */
 
-/*
- * FIXME: IFMD_AddStory() may cause a crash if:
- *   You're adding a new entry for an existing story
- *   The existing story has more than one ident
- *
- *   This is not a problem with Zoom's current implementation, as this situation never occurs.
- */
-
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -422,7 +414,7 @@ IFMetadata* IFMD_Parse(const IFMDByte* data, size_t length) {
 			for (ident = 0; ident < res->stories[story]->numberOfIdents; ident++) {
 				IFMDIndexEntry newEntry;
 				
-				newEntry.ident = res->stories[story]->idents + ident;
+				newEntry.ident = res->stories[story]->idents[ident];
 				newEntry.story = res->stories[story];
 				
 				res->numberOfIndexEntries++;
@@ -584,21 +576,21 @@ static XMLCALL void startElement(void *userData,
 		/* Metadata or <identification> tags */
 		if (XCstrcmp(current, "identification") == 0 || XCstrcmp(current, "id") == 0) {
 			/* Story ID data */
-			IFMDIdent newID;
+			IFMDIdent* newID = IFID_Alloc();
 			int x;
 			
 			if (state->story == NULL) return;
 			
-			newID.format = IFFormat_Unknown;
-			newID.dataFormat = IFFormat_Unknown;
-			newID.usesMd5 = 0;
-			for (x=0; x<16; x++) newID.md5Sum[x] = 0;
+			newID->format = IFFormat_Unknown;
+			newID->dataFormat = IFFormat_Unknown;
+			newID->usesMd5 = 0;
+			for (x=0; x<16; x++) newID->md5Sum[x] = 0;
 			
 			state->story->numberOfIdents++;
-			state->story->idents = realloc(state->story->idents, sizeof(IFMDIdent)*state->story->numberOfIdents);
+			state->story->idents = realloc(state->story->idents, sizeof(IFMDIdent*)*state->story->numberOfIdents);
 			state->story->idents[state->story->numberOfIdents-1] = newID;
 			
-			state->ident = state->story->idents + (state->story->numberOfIdents-1);
+			state->ident = state->story->idents[state->story->numberOfIdents-1];
 		} else if (XCstrcmp(current, "title") == 0) {
 		} else if (XCstrcmp(current, "headline") == 0) {
 		} else if (XCstrcmp(current, "author") == 0) {
@@ -990,7 +982,8 @@ void IFStory_Free(IFMDStory* oldStory) {
 	int x;
 	
 	for (x=0; x<oldStory->numberOfIdents; x++) {
-		IFID_Free(oldStory->idents + x);
+		IFID_Free(oldStory->idents[x]);
+		free(oldStory->idents[x]);
 	}
 	
 	if (oldStory->data.title)    free(oldStory->data.title);
@@ -1191,10 +1184,11 @@ void IFStory_Copy(IFMDStory* dst, const IFMDStory* src) {
 	if (src->numberOfIdents > 0) {
 		int x;
 		
-		dst->idents = malloc(sizeof(IFMDIdent)*src->numberOfIdents);
+		dst->idents = malloc(sizeof(IFMDIdent*)*src->numberOfIdents);
 		
 		for (x=0; x<src->numberOfIdents; x++) {
-			IFIdent_Copy(dst->idents + x, src->idents + x);
+			dst->idents[x] = IFID_Alloc();
+			IFIdent_Copy(dst->idents[x], src->idents[x]);
 		}
 	} else {
 		dst->idents = NULL;
@@ -1216,7 +1210,7 @@ void IFStory_Copy(IFMDStory* dst, const IFMDStory* src) {
 
 /* = Modification functions = */
 void IFMD_AddStory(IFMetadata* data, IFMDStory* storyToAdd) {
-	int x, y;
+	int x;
 	IFMDStory* newEntry;
 	
 	/* Try to find the old story if it exists */
@@ -1233,7 +1227,7 @@ void IFMD_AddStory(IFMetadata* data, IFMDStory* storyToAdd) {
 	/* Add story to the index, remove any idents that appear twice */
 	for (x=0; x<storyToAdd->numberOfIdents; x++) {
 		int top, bottom, res, cmp;
-		IFMDIdent* id = storyToAdd->idents + x;
+		IFMDIdent* id = storyToAdd->idents[x];
 		
 		bottom = 0;
 		top = data->numberOfIndexEntries-1;
@@ -1265,14 +1259,17 @@ void IFMD_AddStory(IFMetadata* data, IFMDStory* storyToAdd) {
 				storyId = -1;
 				
 				for (y=0; y<thisStory->numberOfIdents; y++) {
-					if (IFID_Compare(thisStory->idents + y, id) == 0) { storyId = y; break; }
+					if (IFID_Compare(thisStory->idents[y], id) == 0) { storyId = y; break; }
 				}
 				
 				if (storyId >= 0) {
+					IFID_Free(thisStory->idents[y]);
+					free(thisStory->idents[y]);
+					
 					thisStory->numberOfIdents--;
 					memmove(thisStory->idents+storyId,
 							thisStory->idents+storyId+1,
-							sizeof(IFMDIdent)*(thisStory->numberOfIdents-storyId));
+							sizeof(IFMDIdent*)*(thisStory->numberOfIdents-storyId));
 					
 					if (thisStory->numberOfIdents == 0) {
 						/* Used to do this: */
@@ -1334,7 +1331,7 @@ void IFMD_AddStory(IFMetadata* data, IFMDStory* storyToAdd) {
 		memmove(data->index+res + 1, data->index+res, sizeof(IFMDIndexEntry)*(data->numberOfIndexEntries-res-1));
 		
 		data->index[res].story = newEntry;
-		data->index[res].ident = newEntry->idents + x;
+		data->index[res].ident = newEntry->idents[x];
 	}
 	
 	return;
@@ -1430,7 +1427,7 @@ int IFMD_Save(IFMetadata* data,
 		
 		/* Write the idents */
 		for (ident=0; ident<thisStory->numberOfIdents; ident++) {
-			IFMDIdent* thisIdent = thisStory->idents + ident;
+			IFMDIdent* thisIdent = thisStory->idents[ident];
 			
 			ws("  <id>\n");
 
