@@ -124,6 +124,9 @@ void zmachine_load_story(char* filename, ZMachine* machine)
 #ifdef GLOBAL_PC
   machine->zpc = -1;
 #endif
+
+  if (machine->memory[0] < 3)
+    zmachine_fatal("Zoom does not support version 1 or 2 games. You can obtain patches for all known version 1/2 games from http://www.ifarchive.org that will turn them into version 3 or better games");
   
   machine->stack.stack_size    = 2048;
   machine->stack.stack_total   = 2048;

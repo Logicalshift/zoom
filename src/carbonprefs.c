@@ -548,6 +548,8 @@ static void pref_store(void)
 
     CFPreferencesAppSynchronize(kCFPreferencesCurrentApplication);
   }
+
+  display_update();
 }
 
 /* Deal with events to the window */
