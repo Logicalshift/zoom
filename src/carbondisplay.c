@@ -1800,8 +1800,6 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 		  
 		  if (status == errUserWantsToDragWindow)
 		    return eventNotHandledErr;
-
-		  printf("Loopde?\n");
 		}
 		break;
 
@@ -2775,7 +2773,7 @@ int main(int argc, char** argv)
 		  &rct,
 		  &zoomWindow);
 
-  SetWindowModified(zoomWindow, true);
+  // SetWindowModified(zoomWindow, true);
 
   /* Create the scrollback scrollbar */
   rct.top    = 0;

@@ -384,6 +384,8 @@ int zoom_main(int argc, char** argv)
   display_prints_c("[ Press any key to exit ]");
   display_set_colour(7, 0);
   display_readchar(0);
+
+  display_exit(0);
   
   return 0;
 }
