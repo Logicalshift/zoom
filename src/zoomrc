@@ -4,6 +4,11 @@
 
 # Standard settings - applies to all interpreters
 # (Note, font 4 must always be fixed-pitch)
+
+# !! IMPORTANT !! (Well, sort of)
+# The default zoomrc file now sets anti-aliasing to off by default,
+# because many people have reported problems with Xft's selection
+# of fonts. Blech. Reset to 'on' to get anti-aliasing back.
 default "%s (%i.%.6s.%04x)"
 {
   interpreter 3
@@ -20,7 +25,7 @@ default "%s (%i.%.6s.%04x)"
   font 9 "font3"                                      symbolic
   
   size 80,30
-  antialias yes
+  antialias no
 
   colours (0,0,0), (255,0,0), (0,255,0), (255,255,0), (0,0,255), (255,0,255),
           (0,255,255), (255,255,204),
