@@ -29,6 +29,7 @@ AC_DEFUN(UTIL_DISPLAY_CODE,
       fi
 
       UTIL_DISPLAY_TEMP=`$UTIL_PROG_TPUT $2`
+      UTIL_DISPLAY_RESET=`$UTIL_PROG_TPUT sgr0`
       if test "x$UTIL_DISPLAY_TEMP" = "x"; then
         $1=$4
         if test "x$3" != 'x'; then
@@ -37,7 +38,7 @@ AC_DEFUN(UTIL_DISPLAY_CODE,
       else
         $1=$UTIL_DISPLAY_TEMP
         if test "x$3" != 'x'; then
-          AC_MSG_RESULT([${UTIL_DISPLAY_TEMP}ok`$UTIL_PROG_TPUT sgr0`])
+          AC_MSG_RESULT(${UTIL_DISPLAY_TEMP}ok${UTIL_DISPLAY_RESET})
         fi
       fi
     fi
