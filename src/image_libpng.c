@@ -25,9 +25,17 @@
 
 #ifdef HAVE_LIBPNG
 
-#define QUALITY_HIGH
+#define QUALITY_HIGH           /* Undefine to use a 3x3 filter */
+#undef  QUALITY_REALLYLOW      /* Define (and undefine the above) to use no filter at all */
+
+#if defined(QUALITY_HIGH) && defined(QUALITY_REALLYLOW)
+# error You cannot define both QUALITY_HIGH and QUALITY_REALLYLOW
+#endif
+
 #ifdef QUALITY_HIGH
 # define MATRIX_SIZE 5
+#elif defined(QUALITY_REALLYLOW)
+# define MATRIX_SIZE 1
 #else
 # define MATRIX_SIZE 3
 #endif
@@ -166,9 +174,8 @@ static image_data* iload(image_data* resin,
   if (res->colour == PNG_COLOR_TYPE_GRAY ||
       res->colour == PNG_COLOR_TYPE_GRAY_ALPHA)
     png_set_gray_to_rgb(png);
-  if (res->colour != PNG_COLOR_TYPE_PALETTE &&
-      palimg != NULL &&
-      palimg->pal != NULL)
+  if (res->colour != PNG_COLOR_TYPE_PALETTE ||
+      palimg == NULL)
     {
       if (res->depth <= 8)
 	png_set_expand(png);
@@ -211,6 +218,8 @@ static image_data* iload(image_data* resin,
 	  
 	  png_colorp plte;
 
+	  int is_trans[256];
+
 	  out = realimg = malloc(res->width*res->height*4);
 	  plte = res->pal;
 	  if (palimg != NULL && palimg->pal != NULL)
@@ -218,6 +227,11 @@ static image_data* iload(image_data* resin,
 
 	  ntrans = 0;
 	  png_get_tRNS(png, png_info, &trans, &ntrans, NULL);
+
+	  for (x=0; x<(1<<res->depth); x++)
+	    is_trans[x] = 0;
+	  for (x=0; x<ntrans; x++)
+	    is_trans[trans[x]] = 1;
 
 	  shift = 8 - res->depth;
 	  mask = (1<<res->depth)-1;
@@ -229,7 +243,7 @@ static image_data* iload(image_data* resin,
 	      bit = 8;
 	      for (x=0; x<res->width; x++)
 		{
-		  int pix, z;
+		  int pix;
 
 		  pix = (*p)&mask;
 		  pix >>= shift;
@@ -239,14 +253,10 @@ static image_data* iload(image_data* resin,
 		  *(out++) = plte[pix].green;
 		  *(out++) = plte[pix].blue;
 
-		  for (z=0; z<ntrans; z++)
-		    if (trans[z] == pix)
-		      {
-			*(out++) = 0;
-			goto trans;
-		      }
-		  *(out++) = 255;
-		trans:
+		  if (is_trans[pix])
+		    *(out++) = 0;
+		  else
+		    *(out++) = 255;
 
 		  bit -= res->depth;
 		  if (bit == 0)
@@ -259,7 +269,6 @@ static image_data* iload(image_data* resin,
 
 	  free(res->image);
 	  res->image = realimg;
-
 
 	  for (x=0; x<res->height; x++)
 	    {
@@ -469,6 +478,7 @@ void image_resample(image_data* data, int n, int d)
 	    {
 	      int rs, gs, bs, as;
 
+#ifndef QUALITY_REALLYLOW
 	      /* Do the sampling */
 	      rs = gs = bs = as = 0;
 
@@ -498,10 +508,24 @@ void image_resample(image_data* data, int n, int d)
 		}
 
 	      /* Scale the sample */
-#ifdef QUALITY_HIGH
+# ifdef QUALITY_HIGH
 	      rs /= 100; gs /= 100; bs /= 100; as /= 100;
-#else
+# else
 	      rs >>= 4; gs >>= 4; bs >>= 4; as >>= 4;
+# endif
+#else
+	      rs = xp[0][0];
+	      gs = xp[0][1];
+	      bs = xp[0][2];
+	      as = xp[0][3];
+
+	      if (dfx <= 0)
+		dfx += Ex;
+	      else
+		{
+		  xp[0] += 4;
+		  dfx += NEx;
+		}
 #endif
 
 	      /* store the sample */
@@ -612,6 +636,7 @@ void image_resample(image_data* data, int n, int d)
 	    {
 	      int rs, gs, bs, as;
 
+#ifndef QUALITY_REALLYLOW
 	      /* Do the sampling */
 	      rs = gs = bs = as = 0;
 
@@ -644,10 +669,28 @@ void image_resample(image_data* data, int n, int d)
 		}
 
 	      /* Scale the sample */
-#ifdef QUALITY_HIGH
+# ifdef QUALITY_HIGH
 	      rs /= 100; gs /= 100; bs /= 100; as /= 100;
-#else
+# else
 	      rs >>= 4; gs >>= 4; bs >>= 4; as >>= 4;
+# endif
+#else
+	      rs = xp[0][0];
+	      gs = xp[0][1];
+	      bs = xp[0][2];
+	      as = xp[0][3];	      
+
+	      i = 0;
+	      while (dfx > 0)
+		{
+		  dfx += NE;
+		  subx++;
+		  if (subx >= MATRIX_SIZE) { subx = 0; i+=4; }
+		}
+	      subx++;
+	      if (subx >= MATRIX_SIZE) { subx = 0; i+=4; }
+	      
+	      xp[0] += i;
 #endif
 
 	      /* store the sample */
