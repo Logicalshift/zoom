@@ -1283,6 +1283,10 @@ static pascal OSStatus font_data_cb(ControlRef browser,
 
   switch (property)
     {
+    case kDataBrowserItemIsSelectableProperty:
+      SetDataBrowserItemDataBooleanValue(itemref, true);
+      break;
+
     case 'Styl':
       str[0] = '\0';
 
@@ -2028,6 +2032,13 @@ void carbon_show_prefs(void)
       cid.id        = CARBON_FONTLISTID;
       GetControlByID(carbon_prefdlog, &cid, &cntl);
       
+      SetDataBrowserTableViewRowHeight(cntl, 20);
+      SetDataBrowserSelectionFlags(cntl, kDataBrowserSelectOnlyOne);
+      SetDataBrowserListViewUsePlainBackground(cntl, false);
+  
+      SetDataBrowserSortProperty(cntl, 'Styl');
+      SetDataBrowserSortOrder(cntl, kDataBrowserOrderIncreasing);
+
       dbcb.version = kDataBrowserLatestCallbacks;
       InitDataBrowserCallbacks(&dbcb);
 
@@ -2035,9 +2046,6 @@ void carbon_show_prefs(void)
       dbcb.u.v1.itemCompareCallback = NewDataBrowserItemCompareUPP(font_compare_cb);
       
       SetDataBrowserCallbacks(cntl, &dbcb);
-  
-      SetDataBrowserSortProperty(cntl, 'Styl');
-      SetDataBrowserSortOrder(cntl, kDataBrowserOrderIncreasing);
 
       dbcustom.version = kDataBrowserLatestCustomCallbacks;
       InitDataBrowserCustomCallbacks(&dbcustom);
