@@ -92,34 +92,6 @@ static int Xstrncpy(XML_Char* a, const XML_Char* b, int len) {
 	return x;
 }
 
-#if 0
-static int XCstrncpy(XML_Char* a, const unsigned char* b, int len) {
-	int x;
-	
-	for (x=0; b[x] != 0 && x < (len-1); x++) {
-		a[x] = b[x];
-	}
-	
-	a[x] = 0;
-	
-	return x;
-}
-
-static int Xstrcmp(const XML_Char* a, const XML_Char* b) {
-	int x;
-	
-	for (x=0; a[x] != 0 && b[x] != 0; x++) {
-		if (a[x] < b[x]) return -1;
-		if (a[x] > b[x]) return 1;
-	}
-	
-	if (a[x] < b[x]) return -1;
-	if (a[x] > b[x]) return 1;
-	
-	return 0;
-}
-#endif
-
 static int XCstrcmp(const XML_Char* a, const unsigned char* b) {
 	int x;
 	

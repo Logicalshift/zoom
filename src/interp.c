@@ -493,24 +493,6 @@ static void tracking_print(char* format, ...)
 }
 #endif
 
-#if 0
-static void zcode_op_print_obj_123(ZStack* stack, ZWord arg)
-{
-  ZByte* obj;
-  ZByte* prop;
-  int len;
-
-  obj = Obj3(arg);
-  prop = machine.memory + ((obj[7]<<8)|obj[8]) + 1;
-
-#ifdef DEBUG
-  /* printf_debug(">%s<\n", zscii_to_ascii(prop, &len)); */
-#endif
-
-  stream_prints(zscii_to_unicode(prop, &len));
-}
-#endif
-
 #ifdef SUPPORT_VERSION_3
 static void draw_statusbar_123(ZStack* stack)
 {

@@ -39,12 +39,6 @@ typedef enum {
 } ZFileType;
 
 // == Server-side objects ==
-#if 0
-@protocol ZVendor
-- (out byref NSObject<ZMachine>*) createNewZMachine;
-@end
-#endif
-
 @protocol ZMachine
 
 // Setup

@@ -1002,13 +1002,6 @@ int tableSorter(id a, id b, void* context) {
 	}
 		
 	[collapseView finishRearranging];
-#if 0	
-	if ([comment length] == 0 && [teaser length] == 0) {
-//		[drawer close];
-	} else if (showDrawer && [[self window] isMainWindow]) {
-		[drawer open];
-	}
-#endif
 }
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification {
