@@ -216,6 +216,15 @@ cp &quot;~/Desktop/GAME&quot; &quot;~/Desktop/GAME.z5&quot;
   </h3>
 
   <p>
+    Note that the default setting for anti-aliasing has changed with
+    the release version of 1.0.1. Because of the potential for
+    problems, the default setting has been changed to 'no'. You won't
+    notice this if you've created your own .zoomrc file. You can
+    change the default setting by editting
+    /usr/local/share/zoom/zoomrc (look for the line 'antialias no').
+  </p>
+
+  <p>
     The font situation under X-Windows is slightly confused. The
     standard X font system (which Zoom prefers to use as a last
     resort) does not support anti-aliasing or Unicode. Xft is the
