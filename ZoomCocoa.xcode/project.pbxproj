@@ -1615,6 +1615,32 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
+		4B61963005C1AD170019AFF7 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			path = "information-in.png";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B61963105C1AD170019AFF7 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			path = "information-out.png";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B61963205C1AD170019AFF7 = {
+			fileRef = 4B61963005C1AD170019AFF7;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B61963305C1AD170019AFF7 = {
+			fileRef = 4B61963105C1AD170019AFF7;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		4B7D1DAD0534999E00A8E303 = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -2067,6 +2093,8 @@
 				4B0DC64305C0A0EB000B96A3,
 				4B0DC66905C0A425000B96A3,
 				4B0DC67C05C0A61D000B96A3,
+				4B61963205C1AD170019AFF7,
+				4B61963305C1AD170019AFF7,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2299,6 +2327,8 @@
 				4B0DC63E05C0A0EB000B96A3,
 				4B0DC67B05C0A61D000B96A3,
 				4B0DC66805C0A425000B96A3,
+				4B61963005C1AD170019AFF7,
+				4B61963105C1AD170019AFF7,
 				4BCF3F51050FB42600A8E303,
 				4BCF3F57050FB49F00A8E303,
 				4B418E140594FCDB009C44DE,
