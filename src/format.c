@@ -100,6 +100,13 @@ static void new_line(int more,
 {
   struct line* line;
 
+  /*
+   * If (while MORE is being displayed) the window is resized, everything
+   * will be reformatted, and the current state of play will be invalid.
+   * So, we set/unset this variable on entry and exit to detect
+   * recursive entries into this function. A similar mechanism is used in
+   * format_last_line()
+   */
   static int reformatting;
 
   reformatting = 0;
