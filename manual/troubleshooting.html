@@ -76,15 +76,6 @@ Zoom Manual - Troubleshooting
   </p>
 
   <p>
-    Zoom is a truecolour and not a paletted interpreter. Therefore, it
-    renders images using the exact colours given in the image
-    files. Unfortunately, Infocom relied on palette effects for its
-    games, and the Blorb files seem to be a fairly literal translation
-    of the Infocom images. This means that some images might render in
-    the wrong colours for Infocom games.
-  </p>
-  
-  <p>
     Zoom does not support JPEG images: there are currently patent
     issues with this format.
   </p>
@@ -171,6 +162,14 @@ cp &quot;~/Desktop/GAME&quot; &quot;~/Desktop/GAME.z5&quot;
     When you compile Zoom, make sure that libpng is available, or
     image support will be disabled.
   </p>
+  
+  <p>
+    If you find image rendering is slow, make sure that optimisation
+    was turned on when you compiled Zoom. <code>./configure
+    CFLAGS=-O9</code> will always do the trick. If you find images are
+    still too slow, you may find that undefining QUALITY_HIGH at the
+    start of image_libpng.c has some effect on the speed.
+  </p>
 
   <h3><a name="xwinfont">
     Fonts
@@ -249,6 +248,7 @@ dir &quot;/usr/X11R6/lib/X11/fonts/Type1&quot;
       out <code>#define HAVE_XFT</code> in config.h and recompile to
       disable Xft in this revision).
     <li>Display drivers not reporting that they support pictures
+    <li>X-Windows version blinks cursor even when it doesn't have focus
   </ul>
 
   <hr>
