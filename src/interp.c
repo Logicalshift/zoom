@@ -41,6 +41,7 @@
 #include "rc.h"
 #include "random.h"
 #include "debug.h"
+#include "v6display.h"
 
 #if WINDOW_SYSTEM == 2
 #include <windows.h>
@@ -1202,8 +1203,6 @@ static void zcode_op_sread_4(ZDWord* pc,
 /***                           ----// 888 \\----                           ***/
 /* Version 6 utilities */
 #ifdef SUPPORT_VERSION_6
-#include "pix.h"
-
 #define StyleSet(x, y) switch (argblock.arg[2]) { case 0: x = (y)!=0; \
    break; case 1: if ((y)!=0) x=1; break; case 2: if ((y)==0) x=0; break; \
    case 3: x ^= (y)!=0; }
@@ -1226,7 +1225,7 @@ static struct v6_wind
   ZWord line_count;
 } windows[8];
 
-static int newline_function(const char* remaining, int rem_len);
+static int newline_function(const int* remaining, int rem_len);
 
 void zcode_v6_initialise(void)
 {
@@ -1245,12 +1244,11 @@ void zcode_v6_initialise(void)
 
   windows[0].wrapping = 1;
 
-  display_set_newline_function(newline_function);
-
-  pix_open_file(rc_get_graphics());
+  v6_startup();
+  v6_set_newline_function(newline_function);
 }
 
-static char* pending_text = NULL;
+static int*  pending_text = NULL;
 static int   pending_len;
 
 static void newline_return(ZDWord*    pc,
@@ -1261,24 +1259,24 @@ static void newline_return(ZDWord*    pc,
   printf_debug("-- Newline return\n");
   if (pending_text != NULL)
     {
-      char* oldtext;
+      int* oldtext;
 
       oldtext = pending_text; pending_text = NULL;
-      display_prints(oldtext);
+      v6_prints(oldtext);
       free(oldtext);
     }
 
-  display_set_newline_function(newline_function);
+  v6_set_newline_function(newline_function);
 }
 
-static int newline_function(const char* remaining,
+static int newline_function(const int* remaining,
 			    int   rem_len)
 {
   int win;
 
-  win = display_get_window();
+  win = v6_get_window();
 
-  display_set_newline_function(NULL);
+  v6_set_newline_function(NULL);
 
   if (windows[win].countdown > 0)
     {
@@ -1298,7 +1296,7 @@ static int newline_function(const char* remaining,
 
 	  printf_debug("Calling newline_return\n");
 
-	  newframe = call_routine(&machine.pc, &machine.stack,
+	  newframe = call_routine(&machine.zpc, &machine.stack,
 				  UnpackR(windows[win].newline_routine));
 	  newframe->storevar = 255;
 	  newframe->discard  = 1;
@@ -1309,7 +1307,7 @@ static int newline_function(const char* remaining,
 
       if (windows[win].line_count > -999)
 	{
-	  display_set_newline_function(newline_function);
+	  v6_set_newline_function(newline_function);
 	  windows[win].line_count--;
 	  if (windows[win].line_count == 0)
 	    return 1;
@@ -1317,18 +1315,18 @@ static int newline_function(const char* remaining,
 	}
       else if (windows[win].line_count == -999)
 	{
-	  display_set_newline_function(newline_function);
+	  v6_set_newline_function(newline_function);
 	  return 0;
 	}
     }
-  display_set_newline_function(newline_function);
+  v6_set_newline_function(newline_function);
   return -1;
 }
 
 static inline void zcode_setup_window(int window)
 {
   v6_set_window(window);
-  v6_window_define(window,
+  v6_define_window(window,
 		   windows[window].x, windows[window].y,
 		   windows[window].leftmar, windows[window].rightmar,
 		   windows[window].xsize, windows[window].ysize);
@@ -1374,7 +1372,7 @@ static inline int v6_window(int win)
   if (win > 7)
     zmachine_fatal("No such window: %i", win);
   if (win == -3)
-    win = display_get_window();
+    win = v6_get_window();
   if (win < -2)
     zmachine_fatal("Bad value for window: %i", win);
   

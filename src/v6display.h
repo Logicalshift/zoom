@@ -35,6 +35,7 @@ extern void v6_reset        (void);
 extern void v6_reset_windows(void);
 
 extern void v6_prints       (const int* text);
+extern void v6_prints_c     (const char* text);
 
 extern void v6_erase_window (void);
 extern void v6_erase_line   (int);
@@ -50,8 +51,8 @@ extern void v6_set_scroll   (int flag);
 extern void v6_set_more     (int window, int flag);
 extern void v6_set_cursor   (int x, int y);
 
-extern void v6_get_cursor_x (void);
-extern void v6_get_cursor_y (void);
+extern int  v6_get_cursor_x (void);
+extern int  v6_get_cursor_y (void);
 
 extern void v6_set_newline_function(int (*func)(const int * remaining,
 						int rem_len));

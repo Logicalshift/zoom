@@ -138,6 +138,7 @@ extern float display_get_font_descent(int style);
 extern void  display_wait_for_more   (void);
 
 /* Version 6 display */
+#if 0 /* Not used any more */
 extern void display_set_window (int window);
 
 extern void display_window_define       (int window,
@@ -148,5 +149,6 @@ extern void display_window_scroll       (int window, int pixels);
 extern void display_set_newline_function(int (*func)(const int * remaining,
 						     int rem_len));
 extern void display_reset_windows       (void);
+#endif
 
 #endif

@@ -2405,8 +2405,8 @@ OPCODE "picture_data"  EXT:0x06 BRANCH        VERSION 6
 
   d = Address((ZUWord)argblock.arg[1]);
 
-  width = pix_width((ZUWord)argblock.arg[0]);
-  height = pix_height((ZUWord)argblock.arg[0]);
+  //width = pix_width((ZUWord)argblock.arg[0]);
+  //height = pix_height((ZUWord)argblock.arg[0]);
 
   d[0] = height>>8;
   d[1] = height;
@@ -2455,8 +2455,8 @@ OPCODE "move_window"   EXT:0x10               VERSION 6
   xmove = argblock.arg[2]-windows[argblock.arg[0]].x;
   ymove = argblock.arg[1]-windows[argblock.arg[0]].y;
 
-  v6_set_cursor(display_get_cursor_x()+xmove,
-                display_get_cursor_y()+ymove);
+  v6_set_cursor(v6_get_cursor_x()+xmove,
+                v6_get_cursor_y()+ymove);
 
   windows[argblock.arg[0]].x = argblock.arg[2];
   windows[argblock.arg[0]].y = argblock.arg[1];
@@ -2542,8 +2542,8 @@ OPCODE "get_wind_prop" EXT:0x13        STORE  VERSION 6
       store(stack, st, windows[argblock.arg[0]].font_num);
       break;
     case 13:
-      store(stack, st, (display_get_font_height()<<8)|
-                        display_get_font_width());
+      store(stack, st, ((int)display_get_font_height(windows[argblock.arg[0]].style)<<8)|
+                        (int)display_get_font_width(windows[argblock.arg[0]].style));
       break;
     case 14:
       store(stack, st,
@@ -2622,11 +2622,11 @@ OPCODE "put_wind_prop" EXT:0x19               VERSION 6
       break;
     case 4:
       zmachine_warning("Bad put_wind_prop: should use set_cursor instead");
-      v6_set_cursor(display_get_cursor_x(), argblock.arg[2]);
+      v6_set_cursor(v6_get_cursor_x(), argblock.arg[2]);
       break;
     case 5:
       zmachine_warning("Bad put_wind_prop: should use set_cursor instead");
-      v6_set_gcursor(argblock.arg[2], display_get_cursor_y());
+      v6_set_cursor(argblock.arg[2], v6_get_cursor_y());
       break;
     case 6:
       windows[argblock.arg[0]].leftmar = argblock.arg[2];

@@ -80,6 +80,10 @@
 		      * Define to set the default behaviour to mimic
 		      * that of the Beyond Zork interpreter
 		      */
+#define V6ASSERT     /* 
+		      * Performs sanity checks to ensure that non-v6
+		      * display functions are not called from a v6 game
+		      */
 
 /*
  * Versions to support (note that support for version 5 includes
@@ -88,7 +92,7 @@
 #define SUPPORT_VERSION_3
 #define SUPPORT_VERSION_4
 #define SUPPORT_VERSION_5
-#undef  SUPPORT_VERSION_6
+#define SUPPORT_VERSION_6
 
 /* File format */
 
