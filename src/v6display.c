@@ -144,9 +144,76 @@ void v6_reset_windows(void)
     }
 }
 
+static void scroll_to_height(int height)
+{
+  int oldheight, bg;
+
+  bg = ACTWIN.back;
+    
+  oldheight = ACTWIN.line_height;
+  if (height > oldheight)
+    {
+      ACTWIN.line_height = height;
+    }
+  
+  /* Scroll the line to fit in a bigger font, if necessary */
+  if ((ACTWIN.cury+ACTWIN.line_height) > (ACTWIN.ypos+ACTWIN.height) &&
+      !ACTWIN.no_scroll)
+    {
+      int scrollby;
+      
+      scrollby = (ACTWIN.cury+ACTWIN.line_height)-(ACTWIN.ypos+ACTWIN.height);
+#ifdef DEBUG
+      printf_debug("V6: Scrolling by %i\n", scrollby);
+#endif
+      
+      display_scroll_region(ACTWIN.xpos, ACTWIN.ypos+scrollby,
+			    ACTWIN.width, ACTWIN.height,
+			    0, -scrollby);
+      if (bg >= 0)
+	{
+	  display_pixmap_cols(bg, 0);
+	  display_plot_rect(ACTWIN.xpos,
+			    ACTWIN.ypos+ACTWIN.height-scrollby,
+			    ACTWIN.width,
+			    scrollby);
+	}
+      
+      ACTWIN.cury -= scrollby;
+      
+#ifdef DEBUG
+      printf_debug("V6: Text amount is now %g (more paging %s)\n", 
+		   ACTWIN.text_amount, ACTWIN.no_more?"OFF":"ON");
+#endif
+    }
+  
+  /* 
+   * Need to scroll any existing text on this line down, so
+   * baselines match
+   */
+  if (height > oldheight && !ACTWIN.no_scroll)
+    {
+      int scrollby;
+      
+      scrollby = height-oldheight;
+      
+      display_scroll_region(ACTWIN.xpos,  ACTWIN.cury,
+			    ACTWIN.width, oldheight,
+			    ACTWIN.xpos,  scrollby);
+      
+      if (bg >= 0)
+	{
+	  display_pixmap_cols(bg, 0);
+	  display_plot_rect(ACTWIN.xpos+ACTWIN.lmargin, ACTWIN.cury,
+			    ACTWIN.width-ACTWIN.lmargin-ACTWIN.rmargin,
+			    scrollby);
+	}
+    }
+}
+
 void v6_prints(const int* text)
 {
-  int height, oldheight;
+  int height;
   int start_pos, text_pos, last_word, this_word;
   float width;
 
@@ -219,66 +286,8 @@ void v6_prints(const int* text)
 	height = display_get_font_height(ACTWIN.style);
       else
 	height = ACTWIN.line_height;
-      
-      oldheight = ACTWIN.line_height;
-      if (height > oldheight)
-	{
-	  ACTWIN.line_height = height;
-	}
-      
-      /* Scroll the line to fit in a bigger font, if necessary */
-      if ((ACTWIN.cury+ACTWIN.line_height) > (ACTWIN.ypos+ACTWIN.height) &&
-	  !ACTWIN.no_scroll)
-	{
-	  int scrollby;
 
-	  scrollby = (ACTWIN.cury+ACTWIN.line_height)-(ACTWIN.ypos+ACTWIN.height);
-#ifdef DEBUG
-	  printf_debug("V6: Scrolling by %i\n", scrollby);
-#endif
-
-	  display_scroll_region(ACTWIN.xpos, ACTWIN.ypos+scrollby,
-				ACTWIN.width, ACTWIN.height,
-				0, -scrollby);
-	  if (bg >= 0)
-	    {
-	      display_pixmap_cols(bg, 0);
-	      display_plot_rect(ACTWIN.xpos,
-				ACTWIN.ypos+ACTWIN.height-scrollby,
-				ACTWIN.width,
-				scrollby);
-	    }
-
-	  ACTWIN.cury -= scrollby;
-
-#ifdef DEBUG
-	  printf_debug("V6: Text amount is now %g (more paging %s)\n", 
-		       ACTWIN.text_amount, ACTWIN.no_more?"OFF":"ON");
-#endif
-	}
-
-      /* 
-       * Need to scroll any existing text on this line down, so
-       * baselines match
-       */
-      if (height > oldheight && !ACTWIN.no_scroll)
-	{
-	  int scrollby;
-
-	  scrollby = height-oldheight;
-
-	  display_scroll_region(ACTWIN.xpos,  ACTWIN.cury,
-				ACTWIN.width, oldheight,
-				ACTWIN.xpos,  scrollby);
-	  
-	  if (bg >= 0)
-	    {
-	      display_pixmap_cols(bg, 0);
-	      display_plot_rect(ACTWIN.xpos+ACTWIN.lmargin, ACTWIN.cury,
-				ACTWIN.width-ACTWIN.lmargin-ACTWIN.rmargin,
-				scrollby);
-	    }
-	}
+      scroll_to_height(height);
 
       /* Plot the text */
       display_pixmap_cols(fg, bg);
@@ -371,7 +380,12 @@ void v6_erase_window(void)
 
 void v6_erase_line(int val)
 {
-  printf("erase_line\n");
+  if (ACTWIN.line_height == 0)
+    scroll_to_height(display_get_font_height(ACTWIN.style));
+
+  display_pixmap_cols(ACTWIN.back, 0);
+  display_plot_rect(ACTWIN.curx, ACTWIN.cury,
+		    ACTWIN.width-ACTWIN.curx, ACTWIN.line_height);
 }
 
 void v6_set_colours(int fg, int bg)
