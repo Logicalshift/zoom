@@ -641,7 +641,7 @@ void display_set_window  (int window)
 
   text_win[window].fore  = CURWIN.fore;
   text_win[window].back  = CURWIN.back;
-  text_win[window].style = CURWIN.style;
+  /* text_win[window].style = CURWIN.style; */
   cur_win = window;
 }
 
