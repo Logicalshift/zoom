@@ -105,8 +105,8 @@ static void plot_font_3(Drawable draw, GC gc, int chr, int xpos, int ypos)
       poly[x].x = font_3.chr[chr].coords[x<<1];
       poly[x].y = font_3.chr[chr].coords[(x<<1)+1];
 
-      poly[x].x *= xfont_x; poly[x].x /= 8; poly[x].x += xpos;
-      poly[x].y *= xfont_y; poly[x].y /= 8; poly[x].y += ypos;
+      poly[x].x *= (int)(xfont_x); poly[x].x /= 8; poly[x].x += xpos;
+      poly[x].y *= (int)(xfont_y); poly[x].y /= 8; poly[x].y += ypos;
     }
 
   XFillPolygon(x_display,
@@ -302,7 +302,7 @@ XFONT_MEASURE xfont_get_width(xfont* f)
     case XFONT_X:
       return f->data.X->max_bounds.width;
     case XFONT_FONT3:
-      return xfont_x;
+      return (int) xfont_x;
     }
 
   zmachine_fatal("Programmer is a spoon");
@@ -324,7 +324,7 @@ XFONT_MEASURE xfont_get_height(xfont* f)
     case XFONT_X:
       return f->data.X->ascent + f->data.X->descent;
     case XFONT_FONT3:
-      return xfont_y;
+      return (int)(xfont_y);
     }
 
   zmachine_fatal("Programmer is a spoon");
@@ -353,7 +353,7 @@ XFONT_MEASURE xfont_get_ascent(xfont* f)
     case XFONT_X:
       return f->data.X->ascent;
     case XFONT_FONT3:
-      return xfont_y;
+      return (int)(xfont_y);
     }
 
   zmachine_fatal("Programmer is a spoon");
@@ -455,7 +455,7 @@ XFONT_MEASURE xfont_get_text_width(xfont* f, const int* text, int len)
 
       return XTextWidth16(f->data.X, xtxt, len);
     case XFONT_FONT3:
-      return len*xfont_x;
+      return len*((int)xfont_x);
     }
 
   zmachine_fatal("Programmer is a spoon");
@@ -554,8 +554,8 @@ void xfont_plot_string(xfont* f,
 
 	for (pos=0; pos<len; pos++)
 	  {
-	    plot_font_3(draw, gc, text[pos], x, y-xfont_y);
-	    x+=xfont_x;
+	    plot_font_3(draw, gc, text[pos], x, y-(int)(xfont_y));
+	    x+=(int)xfont_x;
 	  }
       }
       break;

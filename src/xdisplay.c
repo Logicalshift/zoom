@@ -1129,7 +1129,7 @@ static void draw_window()
 		    {
 		      XFillRectangle(x_display, x_drawable, x_wingc,
 				     BORDER_SIZE, text_win[win].winsy+BORDER_SIZE,
-				     win_x, line->baseline-line->ascent-scrollpos);
+				     win_x, line->baseline-line->ascent-scrollpos+0.5);
 		    }
 		}
 	      else
