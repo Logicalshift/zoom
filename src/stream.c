@@ -220,6 +220,7 @@ static void prints(const int* const s)
 void stream_prints(const unsigned int* s)
 {
   int len, x;
+  int flush;
 
 #ifdef DEBUG
   printf_debug("Stream: received string >");
@@ -248,23 +249,15 @@ void stream_prints(const unsigned int* s)
       buffer = realloc(buffer, sizeof(int)*buflen);
     }
 
+  flush = 0;
   for (x=0; x<len; x++)
     {
-      /*
       if (s[x] == 10)
-	{
-	  line++;
-	  stream_flush_buffer();
-	  if (line > 20)
-	    {
-	      line = 0;
-	      if (machine.script_on)
-		display_update();
-	    }
-	}
-      */
+	flush = 1;
       buffer[bufpos++] = s[x];
     }
+  if (flush)
+    stream_flush_buffer();
 }
 
 void stream_printc(int c)
