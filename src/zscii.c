@@ -27,7 +27,6 @@
 #include "zscii.h"
 
 static int *buf  = NULL;
-static int *buf2 = NULL;
 static int maxlen = 0;
 
 static unsigned int alpha_a[32] =
@@ -90,6 +89,26 @@ int  zscii_unicode_table[256] =
 
 int* zscii_unicode = zscii_unicode_table;
 
+#ifdef DEBUG
+char* zscii_to_ascii(ZByte* string, int* len)
+{
+  static char* cbuf = NULL;
+  int x;
+
+  zscii_to_unicode(string, len);
+
+  for (x=0; buf[x] != 0; x++)
+    {
+      cbuf = realloc(cbuf, (x+2));
+      cbuf[x] = zscii_get_char(buf[x]);
+    }
+
+  cbuf[x] = 0;
+
+  return cbuf;
+}
+#endif
+
 /*
  * Convert a ZSCII string (packed) to Unicode (unpacked)
  */
@@ -98,208 +117,220 @@ int* zscii_to_unicode(ZByte* string, int* len)
   int abet = 0;
   int x = 0;
   int y = 0;
-  int pos = 0;
-  int zlen;
+  int zlen, z;
   ZWord zchar = 0;
+  int fin = 0;
 
-  zlen = zstrlen(string);
-  if (zlen > maxlen)
+  zlen = 0;
+
+  if (maxlen <= 0)
     {
-      maxlen = zlen;
-      buf = realloc(buf, sizeof(int)*(zlen+1));
-      buf2 = realloc(buf2, sizeof(int)*(zlen+1));
+      maxlen += 512;
+      buf = realloc(buf, sizeof(int)*maxlen);
     }
-  
-  /* Get out the Z-Characters */
-  while ((string[x]&0x80) == 0)
+
+  while (!fin)
     {
-      buf2[pos++] = (string[x]&0x7c)>>2;
-      buf2[pos++] = ((string[x]&0x03)<<3)|((string[x+1]&0xe0)>>5);
-      buf2[pos++] = string[++x]&0x1f;
+      ZUWord word;
 
-      x++;
+      fin = (string[x]&0x80) != 0;
 
-#ifdef SPEC_11
-      if (buf2[pos-3] > 767 ||
-	  buf2[pos-2] > 767 ||
-	  buf2[pos-1] > 767)
+      word = ((unsigned)string[x]<<8)|(unsigned)string[x+1];
+      
+      for (z=0; z<3; z++)
 	{
-	  int ulen, y;
+	  int c;
 
-	  if (buf2[pos-3] > 767)
-	    ulen = buf2[pos-3] - 767;
-	  else if (buf2[pos-2] > 767)
-	    ulen = buf2[pos-2] - 767;
-	  else
-	    ulen = buf2[pos-1] - 767;
+	  c = (word&0x7c00)>>10;
+	  
+	  if ((y+2) > maxlen)
+	    {
+	      maxlen += 1024;
+	      buf = realloc(buf, sizeof(int)*maxlen);
+	    }
 
-	  for (y = 0; y<ulen; y++)
+	  switch (abet)
 	    {
-	      buf2[pos++] = ~((string[x]<<8)|string[x+1]);
-	      x+=2;
-	    }
-	}
-#endif
-    }
-  buf2[pos++] = (string[x]&0x7c)>>2;
-  buf2[pos++] = ((string[x]&0x03)<<3)|((string[x+1]&0xe0)>>5);
-  buf2[pos++] = string[x+1]&0x1f;
-  *len = x+2;
-
-  y = 0;
-  for (x=0; x<pos; x++)
-    {
-      switch (abet)
-	{
-	  /* Standard alphabets */
-	case 2:
-	  if (buf2[x] == 6)
-	    {
-	      /* Next 2 chars make up a Z-Character */
-	      abet=4;
-	      break;
-	    }
-	case 1:
-	case 0:
-	  if (buf2[x] >= 6)
-	    {
-	      buf[y++] = convert[abet][buf2[x]];
-	      abet=0;
-	    }
-	  else
-	    {
-	      switch (buf2[x])
+	      /* Standard alphabets */
+	    case 2:
+	      if (c == 6)
 		{
-		case 0: /* Space */
-		  buf[y++] = ' ';
-		  break;
-		  
-		case 1: /* Next char is an abbreviation */
-		case 2:
-		case 3:
-		  zchar=(buf2[x]-1)<<5;
-		  abet=3;
-		  break;
-		  
-		case 4: /* Shift to alphabet 1 */
-		  abet=1;
-		  break;
-		case 5: /* Shift to alphabet 2 */
-		  abet=2;
-		  break;
-		default:
-		  /* Ignore */
+		  /* Next 2 chars make up a Z-Character */
+		  abet=4;
 		  break;
 		}
-	    }
-	  break;
-
-	case 3: /* Abbreviation */
-	  {
-	    int z;
-	    int* abbrev;
-	    int addr;
-	    ZByte* table;
-
-	    zchar |= buf2[x];
-	    
-	    /* 
-	     * Annoyingly, some games seem to rewrite the abbreviation
-	     * table at runtime. This may cause weird things to happen
-	     * if a game is sick enough to use abbreviations in
-	     * abbreviations, too.
-	     */
-	    table = machine.memory + GetWord(machine.header, ZH_abbrevs);
-	    addr = ((table[zchar*2]<<9)|(table[zchar*2+1]<<1));
-
-	    if (machine.abbrev_addr[zchar] != addr)
+	    case 1:
+	    case 0:
+	      if (c >= 6)
+		{
+		  buf[y++] = convert[abet][c];
+		  abet=0;
+		}
+	      else
+		{
+		  switch (c)
+		    {
+		    case 0: /* Space */
+		      buf[y++] = ' ';
+		      break;
+		      
+		    case 1: /* Next char is an abbreviation */
+		    case 2:
+		    case 3:
+		      zchar=(c-1)<<5;
+		      abet=3;
+		      break;
+		      
+		    case 4: /* Shift to alphabet 1 */
+		      abet=1;
+		      break;
+		    case 5: /* Shift to alphabet 2 */
+		      abet=2;
+		      break;
+		    default:
+		      /* Ignore */
+		      break;
+		    }
+		}
+	      break;
+	      
+	    case 3: /* Abbreviation */
 	      {
+		int z;
+		int* abbrev;
+		int addr;
+		ZByte* table;
+
+		zchar |= c;
+		
 		/* 
-		 * Hack, this function was never designed to be called
-		 * recursively
+		 * Annoyingly, some games seem to rewrite the abbreviation
+		 * table at runtime. This may cause weird things to happen
+		 * if a game is sick enough to use abbreviations in
+		 * abbreviations, too.
 		 */
-		int* oldbuf, *oldbuf2;
-		int oldmaxlen;
-		int ablen;
-
-		oldbuf = buf; oldbuf2 = buf2;
-		oldmaxlen = maxlen;
-		maxlen = 0;
-		buf = buf2 = NULL;
+		table = machine.memory + GetWord(machine.header, ZH_abbrevs);
+		addr = ((table[zchar*2]<<9)|(table[zchar*2+1]<<1));
 		
-		abbrev = zscii_to_unicode(machine.memory +
-					  addr,
-					  &ablen);
-		
-		for (z=0; abbrev[z]!=0; z++)
-		  zlen++;
-
-		if (zlen > maxlen)
+		if (machine.abbrev_addr[zchar] != addr)
 		  {
-		    maxlen = zlen;
-		    buf = realloc(buf, sizeof(int)*(zlen+1));
-		    buf2 = realloc(buf2, sizeof(int)*(zlen+1));
+		    /* 
+		     * Hack, this function was never designed to be called
+		     * recursively
+		     */
+		    int* oldbuf;
+		    int oldmaxlen;
+		    int ablen;
+		    
+		    oldbuf = buf;
+		    oldmaxlen = maxlen;
+		    maxlen = 0;
+		    buf = NULL;
+		    
+		    zlen = y;
+		    abbrev = zscii_to_unicode(machine.memory +
+					      addr,
+					      &ablen);
+		    
+		    for (z=0; abbrev[z]!=0; z++)
+		      zlen++;
+		    
+		    while ((zlen+2) > maxlen)
+		      {
+			maxlen += 1024;
+			buf = realloc(buf, sizeof(int)*(maxlen));
+		      }
+		    
+		    buf = oldbuf;
+		    maxlen = oldmaxlen;
+		    
+		    for (z=0; abbrev[z] != 0; z++)
+		      {
+			buf[y++] = abbrev[z];
+		      }
+		    
+		    free(abbrev);
 		  }
-
-		free(buf2);
-		buf = oldbuf;
-		buf2 = oldbuf2;
-		maxlen = oldmaxlen;
-		
-		for (z=0; abbrev[z] != 0; z++)
+		else
 		  {
-		    buf[y++] = abbrev[z];
+		    abbrev = machine.abbrev[zchar];
+		    
+		    for (z=0; abbrev[z]!=0; z++)
+		      zlen++;
+		    
+		    while ((zlen+2) > maxlen)
+		      {
+			maxlen+=1024;
+			buf = realloc(buf, sizeof(int)*(maxlen));
+		      }
+		    
+		    for (z=0; abbrev[z] != 0; z++)
+		      {
+			buf[y++] = abbrev[z];
+		      }
 		  }
-		
-		free(abbrev);
 	      }
-	    else
-	      {
-		abbrev = machine.abbrev[zchar];
-		
-		for (z=0; abbrev[z]!=0; z++)
-		  zlen++;
-
-		if (zlen > maxlen)
-		  {
-		    maxlen = zlen;
-		    buf = realloc(buf, sizeof(int)*(zlen+1));
-		    buf2 = realloc(buf2, sizeof(int)*(zlen+1));
-		  }
-
-		for (z=0; abbrev[z] != 0; z++)
-		  {
-		    buf[y++] = abbrev[z];
-		  }
-	      }
-	  }
 	    
-	  abet = 0;
-	  break;
-
-	case 4: /* First byte of a Z-Char */
-	  zchar = buf2[x]<<5;
-	  abet = 5;
-	  break;
-
-	case 5: /* Second byte of a Z-Char */
-	  zchar |= buf2[x];
+	      abet = 0;
+	      break;
 	  
-	  if (zchar < 256)
-	    switch(zchar)
-	      {
-	      default:
-		buf[y++] = zscii_unicode[zchar];
-	      }
-	  else
-	    buf[y++] = zchar;
-	  abet = 0;
-	  break;
+	    case 4: /* First byte of a Z-Char */
+	      zchar = c<<5;
+	      abet = 5;
+	      break;
+	      
+	    case 5: /* Second byte of a Z-Char */
+	      zchar |= c;
+	      abet = 0;
+	      
+	      if (zchar < 256)
+		switch(zchar)
+		  {
+		  default:
+		    buf[y++] = zscii_unicode[zchar];
+		  }
+	      else
+		{
+#ifdef SPEC_11
+		  if (zchar > 767)
+		    {
+		      /* Unicode character, this is a bit of a PITA */
+		      int ulen;
+		      int z;
+		      
+		      ulen = zchar - 767;
+		      x += 2;
+
+		      for (z=0; z<ulen; z++)
+			{
+			  if ((y+1) > maxlen)
+			    {
+			      maxlen += 1024;
+			      buf = realloc(buf, sizeof(int)*maxlen);
+			    }
+
+			  buf[y++] = ~(((unsigned)string[x]<<8)|(unsigned)string[x+1]);
+			  x += 2;
+			}
+		      
+		      goto onward; /* Blech */
+		    }
+#endif
+		}
+	      break;
+	    }
+
+	  word <<= 5;
 	}
+
+      x += 2;
+    onward: 
+      ; /* Stupid ANSI standard, or is this an ISO thing? */
     }
-  
+
+  *len = x;
   buf[y] = 0;
-  
+
   return buf;
 }
 
@@ -412,55 +443,53 @@ int zstrlen(ZByte* string)
 {
   int x = 0;
 
-#ifndef SPEC_11
-  while ((string[x]&0x80) == 0)
-    x+=2;
+  /*
+   * ObRant: The new Unicode encoding is poorly thought out...
+   * it *MASSIVELY* complicates string decoding, because suddenly
+   * the top bit of a packed word doesn't always indicate the end
+   * of a string. Well, massively is relative, o'course. Practically
+   * any increase is massive over two lines of code :-/. HUGE PITA.
+   * Slow as shit, too.
+   */
 
-  return x*3+3;
-#else
-  /* YAPITA */
-  int len = 0;
+#ifdef ZSPEC_11
+  int pos = 0;
+  int buf[3] = { 0,0,0 };
 
   while ((string[x]&0x80) == 0)
     {
-      int c1, c2, c3;
+      /* ARRRGH! */
+      ZUWord word;
+      int y, a, b;
 
-      c1 = (string[x]&0x7c)>>2;
-      c2 = ((string[x]&0x03)<<3)|((string[x+1]&0xe0)>>5);
-      c3 = string[++x]&0x1f;
+      word = (string[x]<<8)|string[x];
 
-      x++;
-
-      if (c1 > 767 ||
-	  c2 > 767 ||
-	  c3 > 767)
+      a = 1; b = 2;
+      for (y=0; y<3; y++)
 	{
-	  int ulen;
+	  a++; if (a == 3) a = 0;
+	  b++; if (b == 3) b = 0;
 
-	  if (c1 > 767)
-	    {
-	      ulen = c1 - 767;
-	    }
-	  else if (c2 > 767)
-	    {
-	      len++;
-	      ulen = c2 - 767;
-	    }
-	  else
-	    {
-	      len+=2;
-	      ulen = c3 - 767;
-	    }
+	  buf[y] = (word&0x1f);
+	  word >>= 5;
 
-	  len += ulen;
-	  x += ulen*2;
+	  if (buf[z] == 6)
+	    {
+	      int ulen;
+
+	      ulen = (buf[a]<<5)|buf[b];
+	    }
 	}
-      else
-	len += 3;
-    }
 
-  return len+3;
+      x += 2;
+    }
+#else
+  /* Sniff. Easy to debug. Easy to write. */
+  while ((string[x]&0x80) == 0)
+    x+=2;
 #endif
+
+  return x*3+3;
 }
 
 /*

@@ -26,7 +26,10 @@
 
 #include "ztypes.h"
 
-//extern char* zscii_to_ascii        (ZByte* string, int* len);
+#ifdef DEBUG
+extern char* zscii_to_ascii        (ZByte* string, int* len);
+#endif
+
 extern int*  zscii_to_unicode      (ZByte* string, int* len);
 extern int   zstrlen               (ZByte* string);
 extern void  pack_zscii            (int*   string,
