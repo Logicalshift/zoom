@@ -1,9 +1,15 @@
 Hmm, this file was a bit out of date.
 
- X Header extension word for Spec 1.1
- X @sound_data, such as it can be
- X @save/@restore prompt thing
- X Blinking cursor
- X Investigate 'files nested too deeply' error
- X Implement 'APal' chunk...
- * CREDITS file :-)
+ X click on colour sample problem
+ X Resizing of carbon prefs dialog
+ X font redraw problem under Carbon
+ * problem with resize when 'MORE' is displayed.
+ * startup message
+ X insta-changes for preferences
+ * Colour preference thing
+ * warning for non-fixed font set as fixed font
+ * 'restore defaults' button
+ * segfault on window resize occasionally
+ X save window size under Carbon
+ * reset pixmap display on restart under v6
+ * drag and drop support for file loading
