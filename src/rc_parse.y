@@ -228,6 +228,10 @@ RCBlock:	  '{' RCOptionList '}'
 		    {
 		      $$ = $2;
 		    }
+                | '{' '}'
+                    {
+		      EMPTY_GAME($$);
+                    }
 		;
 
 RCOptionList:	  RCOption

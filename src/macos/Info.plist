@@ -53,8 +53,10 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleSignature</key>
-	<string>????</string>
+	<string>YZZY</string>
 	<key>CFBundleVersion</key>
 	<string>0.99.9dev10</string>
+	<key>CFBundleShortVersionString</key>
+	<string>Zoom 0.99.9dev10, compiled for Mac OS X</string>
 </dict>
 </plist>

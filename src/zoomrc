@@ -76,3 +76,221 @@ game "Sherlock" 21.871214, 26.880127
 game "Wishbringer (Solid Gold edition)" 23.880706
 game "Zork I (Solid Gold edition)" 52.871125
 
+# -- Version 6 --
+
+game "Zork Zero (IBM version)" 393.890714
+game "Zork Zero (Apple II version)" 383.890602
+game "Zork Zero (Amiga version)" 366.890323
+game "Zork Zero (Mac version)" 296.881019
+
+game "Arthur (Amiga/Mac version)" 54.890606
+game "Arthur (Apple II version)" 63.890622
+game "Arthur (IBM version)" 89.890714
+
+game "Journey (Mac version)" 26.890316
+game "Journey (Amiga version)" 30.890322
+game "Journey (Apple II version)" 77.890616
+game "Journey (IBM versions)" 83.890706
+
+game "Shogun (Mac version)" 292.890314
+game "Shogun (Amiga version)" 295.890321
+game "Shogun (Apple II version)" 311.890510
+game "Shogun (IBM version)" 322.890706
+
+# -- Modern era games --
+# (I don't necessarily know the entire history of these games, so some
+# may not be listed...)
+
+# Generally I take the serial # from the IF-archive, but that's not always
+# the # that's listed in the game. You'll be able to work out (some of)
+# the games I haven't played this way...
+
+game "9:05" 1.000210
+game "Adventure (AKA Colossal Cave), Inform port" 5.961209
+game "Scott Adams' Adentureland" 1.961111
+game "Aisle, an instant in the life of a man" 1.990528
+game "All Roads" 1.011119
+game "Journey to Alpha Centauri (in real time)" 3.981017
+game "Danger! Adventurer At Work!" 1.000705
+game "Augmented Fourth" 1.000401
+game "Balances" 5.961216
+game "Biscuit" 1.010310
+game "The Cove" 3.000525
+game "Crobe" 1.990823
+game "Countdown to Doom" 1.000920
+game "Delusions" 4.971121
+game "Enemies" 4.990115
+game "Failsafe" 1.001218
+game "Fine-Tuned, An Auto-mated Romance" 3.011231
+# game "The Encyclopedia Frobozzica (Abridged Edition)" 
+game "Fyleet" 1.990823
+game "Galatea" 2.000825
+game "Gerbil Riot" 2.000513
+game "Gumshoe" 1.960331
+game "Heroine's Mantle" 3.001211
+game "I-0: Jailbait on Interstate Zero" 4.970307
+game "Informatory" 2.981211
+game "Jigsaw" 3.951129
+game "Local Asynchronous Satellite Hookup" 11.000806
+game "Last Days of Doom" 1.000801
+game "Masquerade" 4.010122
+game "Mercy" 2.980217
+game "The Mulldon Legacy" 6.000724
+game "The Mulldoon Murders" 3.020214
+game "My Angel" 2.001218
+game "Olvido Mortal" 3.001230
+game "Pick up the Phone Booth and Aisle" 2.010618
+game "Not Made With Hands" 1.000208
+game "Offensive Probing" 1.990919
+game "Ralph" 7.980224
+game "The Hunt For Relief" 1.000820
+game "Return to Doom" 1.000831
+game "SameGame, another episode in the Z-Machine abuse saga" 1.980731
+game "Sangraal" 1.990823
+game "Inform School" 1.991217
+game "Slacker X" 1.971009
+game "So Far" 6.961218
+game "Spider And Web" 4.980226
+game "Downtown Tokyo Present Day" 2.000615
+game "Vacation Gone Awry" 2.020130
+game "Zokoban" 1.990810
+game "Abenteuer" 5.980419
+game "The Acorn Court" 3.970904
+game "Ad Verbum" 4.010803
+game "Anchorhead" 5.990206
+game "Annoyotron" 1.990127
+game "A Tight Spot" 1.000001
+game "A Week In The Life" 3.980215
+game "The Awakening" 1.980726
+game "Pick up the Phone Booth and Die, Part 2" 2.961017
+game "Not Just an Ordinary Ballerina" 1.991128
+game "Baltimore:24" 2.970706
+game "A Bear's Night Out" 5.990224
+game "Bedlam" 1.970711
+game "Blow Job Drifter" 5.981103
+game "Tales From the College Presents a Breath of Fresh Blair" 2.971119
+game "Pick up the Phone Booth and Die" 619.960409
+game "Break-In" 9.000926
+game "BSE" 3.970110
+game "The Night of the Vampire Bunnies" 4.971205
+game "Burglar!" 3.010925
+game "Busted!" 4.941223
+game "Candy, an Attempt at Reliving Childhood" 1.970621
+game "ASCII Cars!!" 1.980923, 1.981010
+game "Silicon Castles" 112.011119
+game "Cheater, an Annoying Adventure" 1.960920
+game "Chico and I Ran" 1.000413
+game "Chicks Dig Jerks" 2.991124
+game "Wearing the Claw" 3.970327
+game "Coke Is It!" 1.990331
+game "Curses, an Interactive Diversion" 16.951024
+game "Dangerous Curves" 9.010613
+game "Vicious Cycles" 3.020222
+game "Deephome, a Telleen Adventure, The Return: Part 1" 1.991210
+game "Deja Vu" 1.930921
+game "Detective" 1.000715
+game "The Djinni Chronicles 'Undercurrents of Manipulation'" 2.001117
+game "It's a Dog's Life" 1.981015
+game "The Zuni Doll" 1.971031
+game "Dr. Dumont's Wild P.A.R.T.I." 1.990223
+game "Earth And Sky: Episode 1" 2.011204
+game "The Edifice" 2.980206
+game "Film at Eleven" 2.001231
+game "Apartment 209" 1.970806
+game "A Fable" 3.000715
+game "The Farmer's Daughter" 1.020101
+game "Of Forms Unknown " 3.970206
+game "Free Fall" 2.951111
+game "Fractured Metamorphoses" 1.010306
+game "Frozen: A Night at the Lab" 1.960620
+game "Looking for Godot" 1.960599
+game "The Gostak" 2.020305
+game "Guard Duty" 1.991231
+game "Guess the Verb!" 4.001210
+game "Heist: the Crime of the Century" 4.971125
+game "Welcome to Hell" 1.980816
+game "Heroes" 2.011130
+game "Hunter, in Darkness" 4.991119
+game "Intruder" 59.990210
+game "The Jewel of Knowledge" 2.990710
+game "Return to Karn" 2.961207
+game "Killing the Doctor" 1.010221
+game "The X-Child" 3.062776
+game "Kook U" 1.971119
+game "Silence of the Lambs" 2.971010
+game "Large Machine" 1.010905
+game "All Quiet on the Library Front" 2.951204
+game "Life or Death" 1.980702
+game "Limp" 1.980517
+game "Lists and Lists" 3.960823
+game "Mother Loose" 2.981128
+game "The Lost Spellmaker" 3.980116
+game "The Magic Toyshop" 1.951018
+game "Revenger" 2.000403
+game "Metamorphoses" 4.020222
+game "Quest for the Magic Healing Plant" 2.960613
+game "Midpoints" 1.010330
+game "Sins Against Mimesis" 3.980110
+game "The Mind Electric" 3.941008
+game "Christminster" 4.961117
+game "Detective" 101.960831, 7.000715
+game "A Fable" 5.000715
+game "Muse: An Autumn Romance" 2.990922
+game "A New Day" 3.560827
+game "Night at the Computer Center" 1.961118
+game "Not Just a Game" 2.000319
+game "Nine Points" 12.961127
+game "Only After Dark" 2.000913
+game "Ocaso Mortal I: The Bug" 3.011225
+game "Odieus's Quest for the magic Flingshot" 1.941021
+game "Total Paddling Mania" 1.314159
+game "Paranoia" 1.981208
+game "Pentari" 4.980811
+game "Perilous Magic" 10.990821
+game "Phlegm" 3.970804
+game "Photopia" 1.981224
+game "Piece of Mind" 3.970816
+game "The Ice Princess" 8.960901
+game "Punk Points" 2.010108
+game "Pytho's Mask" 3.020223
+game "Rameses" 2.001128
+game "RANS, an interworld progress" 3.000918
+game "Reverberations" 1.990110
+game "Ribbons" 2.010702
+game "Robots" 6.980115
+game "zRogue" 2.980706
+game "Samhain: Pick up the Pumpkin and KILL" 1.001021
+game "Schooldays" 3.092800
+game "Shade" 3.001127
+game "The Meteor, the Stone and a Long Glass of Sherbet" 2.961216
+game "Softporn Adventure" 0.971018
+game "Space Station" 2.990301
+game "SpiritWrak" 3.960606
+game "Star Rider" 4.011124
+game "Stiffy Makane" 69.690609
+game "The Space Under the Window" 2.970402
+game "Sycamora Tree" 2.980107
+game "Time: All Things Come to an End" 7.970521
+game "Theatre" 2.951203
+game "The Great, A Voyage to the Inner Self" 1.010902
+game "Time Killer #1: Claustrophobia" 1.950925
+game "Zork: A Troll's Eye View" 3.980518
+game "Tryst of Fate" 205.970629
+game "Tube Trouble" 0.950901
+game "The Underoos that ate New York!" 1.970329
+game "Vindaloo" 1.960613
+game "Lack of Vision" 1.980412
+game "The Visitor, a Chat" 1.000321
+game "The WadeWars Book III" 105.011222
+game "The Weapon" 1.010706
+game "A Change in the Weather" 6.960613
+game "The Wedding" 4.970602
+game "Wichtel" 1.001223
+game "Winchester's Nightmare" 5.020131
+game "The Windhall Chronicles, Volume One: The Path to Fortune" 5.960828
+game "Spodgeville Murphy and The Jewelled Eye of Wossname" 10.000225
+game "Hunt the Wumpus" 1.991216
+game "Yes, Another Game with a Dragon!" 2.001121
+game "ZDungeon, a port of Dungeon" 12.990623
+game "Escape from the Starship Zenon" 2.100122
+game "Zugzwang: The Interactive Life of a Chess Piece" 2.990710
