@@ -635,9 +635,9 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 	
 	if (![skeinItem played]) background = unplayed;
 	if ([skeinItem changed]) background = changed;
-	if (skeinItem == activeItem) background = active;
+	// if (skeinItem == activeItem) background = active;
 	if ([skeinItem parent] == activeItem) background = active;
-	if (skeinItem == [self selectedItem]) background = selected;
+	// if (skeinItem == [self selectedItem]) background = selected;
 	
 	// Temporarily unflip the background image before drawing
 	// (Doing this means this call will not work in flipped views. Well, it will, but it will look dreadful)
