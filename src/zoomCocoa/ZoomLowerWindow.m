@@ -30,8 +30,6 @@
 
 // Clears the window
 - (void) clearWithStyle: (ZStyle*) style {
-	// BUG! Somewhere...
-	
     // Clear the lower part of all the upper windows
     NSEnumerator* upperEnum = [[zoomView upperWindows] objectEnumerator];
     ZoomUpperWindow* win;
@@ -44,6 +42,7 @@
     [[zoomView textView] clearPastedLines]; 
     [zoomView scrollToEnd];
     [zoomView resetMorePrompt];
+	[zoomView padToLowerWindow];
 	
 	[backgroundStyle release];
 	backgroundStyle = [style copy];
