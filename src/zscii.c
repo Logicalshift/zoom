@@ -118,6 +118,28 @@ int* zscii_to_unicode(ZByte* string, int* len)
       buf2[pos++] = string[++x]&0x1f;
 
       x++;
+
+#ifdef SPEC_11
+      if (buf2[pos-3] > 767 ||
+	  buf2[pos-2] > 767 ||
+	  buf2[pos-1] > 767)
+	{
+	  int ulen, y;
+
+	  if (buf2[pos-3] > 767)
+	    ulen = buf2[pos-3] - 767;
+	  else if (buf2[pos-2] > 767)
+	    ulen = buf2[pos-2] - 767;
+	  else
+	    ulen = buf2[pos-1] - 767;
+
+	  for (y = 0; y<ulen; y++)
+	    {
+	      buf2[pos++] = ~((string[x]<<8)|string[x+1]);
+	      x+=2;
+	    }
+	}
+#endif
     }
   buf2[pos++] = (string[x]&0x7c)>>2;
   buf2[pos++] = ((string[x]&0x03)<<3)|((string[x+1]&0xe0)>>5);
@@ -209,6 +231,16 @@ int* zscii_to_unicode(ZByte* string, int* len)
 					  addr,
 					  &ablen);
 		
+		for (z=0; abbrev[z]!=0; z++)
+		  zlen++;
+
+		if (zlen > maxlen)
+		  {
+		    maxlen = zlen;
+		    buf = realloc(buf, sizeof(int)*(zlen+1));
+		    buf2 = realloc(buf2, sizeof(int)*(zlen+1));
+		  }
+
 		free(buf2);
 		buf = oldbuf;
 		buf2 = oldbuf2;
@@ -224,6 +256,17 @@ int* zscii_to_unicode(ZByte* string, int* len)
 	    else
 	      {
 		abbrev = machine.abbrev[zchar];
+		
+		for (z=0; abbrev[z]!=0; z++)
+		  zlen++;
+
+		if (zlen > maxlen)
+		  {
+		    maxlen = zlen;
+		    buf = realloc(buf, sizeof(int)*(zlen+1));
+		    buf2 = realloc(buf2, sizeof(int)*(zlen+1));
+		  }
+
 		for (z=0; abbrev[z] != 0; z++)
 		  {
 		    buf[y++] = abbrev[z];
@@ -241,12 +284,15 @@ int* zscii_to_unicode(ZByte* string, int* len)
 
 	case 5: /* Second byte of a Z-Char */
 	  zchar |= buf2[x];
-
-	  switch(zchar)
-	    {
-	    default:
-	      buf[y++] = zscii_unicode[zchar];
-	    }
+	  
+	  if (zchar < 256)
+	    switch(zchar)
+	      {
+	      default:
+		buf[y++] = zscii_unicode[zchar];
+	      }
+	  else
+	    buf[y++] = zchar;
 	  abet = 0;
 	  break;
 	}
@@ -360,16 +406,61 @@ void pack_zscii(int* string, int strlen, ZByte* packed, int packlen)
 }
 
 /*
- * Works out the length (in bytes) of a packed Z-string
+ * Works out the length (in characters) of a packed Z-string
  */
 int zstrlen(ZByte* string)
 {
   int x = 0;
 
+#ifndef SPEC_11
   while ((string[x]&0x80) == 0)
     x+=2;
 
   return x*3+3;
+#else
+  /* YAPITA */
+  int len = 0;
+
+  while ((string[x]&0x80) == 0)
+    {
+      int c1, c2, c3;
+
+      c1 = (string[x]&0x7c)>>2;
+      c2 = ((string[x]&0x03)<<3)|((string[x+1]&0xe0)>>5);
+      c3 = string[++x]&0x1f;
+
+      x++;
+
+      if (c1 > 767 ||
+	  c2 > 767 ||
+	  c3 > 767)
+	{
+	  int ulen;
+
+	  if (c1 > 767)
+	    {
+	      ulen = c1 - 767;
+	    }
+	  else if (c2 > 767)
+	    {
+	      len++;
+	      ulen = c2 - 767;
+	    }
+	  else
+	    {
+	      len+=2;
+	      ulen = c3 - 767;
+	    }
+
+	  len += ulen;
+	  x += ulen*2;
+	}
+      else
+	len += 3;
+    }
+
+  return len+3;
+#endif
 }
 
 /*
