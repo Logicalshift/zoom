@@ -19,8 +19,6 @@
 
 /*
  * Implementation of a metadata parser for the IF Metadata format (version 0.9)
- * Supports the UNICODE version of expat, if you can compile it.
- * (#define XML_UNICODE when compiling to enable, doesn't require wchat_t)
  *
  * Implementation with expat increases complexity a lot over an implementation
  * using (say) a DOM library, but these are usually less portable and implemented
