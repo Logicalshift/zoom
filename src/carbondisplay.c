@@ -195,6 +195,8 @@ RGBColor* carbon_get_colour(int colour)
     {
       static RGBColor col;
 
+      colour -= 16;
+
       /* Really, we should scale and not just shift... This doesn't give us 
        * good whites...
        */
@@ -2774,9 +2776,11 @@ void display_pixmap_cols(int fg, int bg)
 int display_get_pix_colour(int x, int y)
 {
   RGBColor col;
-  
+ 
   CGrafPtr oldport;
   GDHandle olddev;
+
+  int res;
 
   if (!LockPixels(GetGWorldPixMap(pixmap)))
     zmachine_fatal("Unable to lock pixmap");
@@ -2787,7 +2791,9 @@ int display_get_pix_colour(int x, int y)
 
   SetGWorld(oldport, olddev);
 
-  return ((col.red>>11)|((col.green>>11)<<5)|((col.blue>>11)<<10))+16;
+  res = (col.red>>11)|((col.green>>11)<<5)|((col.blue>>11)<<10);
+
+  return res + 16;
 }
 
 void display_plot_gtext(const int* text, int len,
