@@ -1236,8 +1236,8 @@ void display_update(void)
   RECT rct;
 
   rct.top = rct.left = 4;
-  rct.right  = win_x;
-  rct.bottom = win_y;
+  rct.right  = win_x+4;
+  rct.bottom = win_y+4;
   InvalidateRect(mainwin, &rct, 0);
 }
 
@@ -1480,7 +1480,7 @@ void display_erase_line(int val)
       rct.top = CURWIN.ypos*xfont_y;
       rct.left = 0;
       rct.right = total_x;
-      rct.bottom = CURWIN.ypos*xfont_y+xfont_y;
+      rct.bottom = CURWIN.ypos*xfont_y+xfont_y+4;
       InvalidateRect(mainwin, &rct, 0);
     }
 }
@@ -1832,7 +1832,7 @@ static void draw_caret(HDC dc)
 	{
 	  int w;
 
-	  w = xfont_get_text_width(font[CURSTYLE],
+	  w = xfont_get_text_width(font[style_font[CURSTYLE]],
 				   text_buf + buf_offset,
 				   1);
 	  if (text_buf[buf_offset] == 0)
@@ -2120,6 +2120,16 @@ static void draw_input_text(HDC dc)
 {
   int w;
   int on;
+  int fg, bg;
+
+  fg = CURWIN.fore;
+  bg = CURWIN.back;
+
+  if (CURWIN.style&1)
+    {
+      fg = CURWIN.back;
+      bg = CURWIN.fore;
+    }
 
   on = caret_on;
   hide_caret();
@@ -2149,11 +2159,11 @@ static void draw_input_text(HDC dc)
     {
       RECT rct;
 
-      w = xfont_get_text_width(font[CURSTYLE],
+      w = xfont_get_text_width(font[style_font[CURSTYLE]],
 			       text_buf,
 			       istrlen(text_buf));
       
-      caret_x += xfont_get_text_width(font[CURSTYLE],
+      caret_x += xfont_get_text_width(font[style_font[CURSTYLE]],
 				      text_buf,
 				      buf_offset);
 
@@ -2161,13 +2171,13 @@ static void draw_input_text(HDC dc)
       rct.right = win_x+4;
       rct.top   = input_y+4;
       rct.bottom = input_y+4+
-	xfont_get_height(font[CURSTYLE]);
+	xfont_get_height(font[style_font[CURSTYLE]]);
       FillRect(mainwindc,
 	       &rct,
-	       winbrush[CURWIN.winback]);      
+	       winbrush[bg]);
       
-      xfont_set_colours(CURWIN.fore, CURWIN.back);
-      xfont_plot_string(font[CURSTYLE],
+      xfont_set_colours(fg, bg);
+      xfont_plot_string(font[style_font[CURSTYLE]],
 			mainwindc,
 			input_x+4, input_y+4,
 			text_buf,
@@ -2281,7 +2291,7 @@ static LRESULT CALLBACK display_winproc(HWND hwnd,
 	if (text_buf != NULL)
 	  {
 	    xfont_set_colours(CURWIN.fore, CURWIN.back);
-	    xfont_plot_string(font[CURSTYLE],
+	    xfont_plot_string(font[style_font[CURSTYLE]],
 			      paint.hdc,
 			      input_x+4, input_y+4,
 			      text_buf,

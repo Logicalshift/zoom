@@ -1042,6 +1042,15 @@ static void draw_input_text(int* buf, int inputpos)
   int width;
   int len;
 
+  if (reverse)
+    {
+      int tmp;
+
+      tmp = CURWIN.fore;
+      CURWIN.fore = CURWIN.back;
+      CURWIN.back = tmp;
+    }
+
   len = istrlen(buf);
 
   /* Hide the caret */
@@ -1151,6 +1160,15 @@ static void draw_input_text(int* buf, int inputpos)
 		caret_y+((win_height-win_y)>>1),
 		caret_x+((win_width-win_x)>>1),
 		caret_y+((win_height-win_y)>>1)+caret_h);
+    }
+
+  if (reverse)
+    {
+      int tmp;
+
+      tmp = CURWIN.fore;
+      CURWIN.fore = CURWIN.back;
+      CURWIN.back = tmp;
     }
 }
 
