@@ -17,7 +17,7 @@ extern hash rc_hash;
 extern void rc_error(char*);
 extern int  rc_lex(void);
 
-#define EMPTY_GAME(x) x.interpreter = -1; x.revision = -1; x.name = NULL; x.fonts = NULL; x.n_fonts = -1; x.colours = NULL; x.n_colours = -1; x.gamedir = NULL; x.savedir = NULL;
+#define EMPTY_GAME(x) x.interpreter = -1; x.revision = -1; x.name = NULL; x.fonts = NULL; x.n_fonts = -1; x.colours = NULL; x.n_colours = -1; x.gamedir = x.savedir = x.sounds = x.graphics = NULL; x.xsize = x.ysize = -1;
 
 static inline rc_game merge_games(const rc_game* a, const rc_game* b)
 {
@@ -87,6 +87,24 @@ static inline rc_game merge_games(const rc_game* a, const rc_game* b)
   else
     r.savedir = a->savedir;
 
+  if (a->sounds == NULL)
+    r.sounds = b->sounds;
+  else
+    r.sounds = a->sounds;
+  if (a->graphics == NULL)
+    r.graphics = b->graphics;
+  else
+    r.graphics = a->graphics;
+
+  if (a->xsize == -1)
+    r.xsize = b->xsize;
+  else
+    r.xsize = a->xsize;
+  if (a->ysize == -1)
+    r.ysize = b->ysize;
+  else
+    r.ysize = a->ysize;
+  
   return r;
 }
 %}
@@ -114,7 +132,9 @@ static inline rc_game merge_games(const rc_game* a, const rc_game* b)
 %token FIXED
 %token GAMEDIR
 %token SAVEDIR
-%token SOUNDZIP
+%token SOUNDS
+%token GRAPHICS
+%token SIZE
 
 %token <str> GAMEID
 %token <num> NUMBER
@@ -249,6 +269,22 @@ RCOption:	  INTERPRETER NUMBER
 		    {
 		      EMPTY_GAME($$);
 		      $$.savedir = $2;
+		    }
+		| SOUNDS STRING
+		    {
+		      EMPTY_GAME($$);
+		      $$.sounds = $2;
+		    }
+		| GRAPHICS STRING
+		    {
+		      EMPTY_GAME($$);
+		      $$.graphics = $2;
+		    }
+		| SIZE NUMBER ',' NUMBER
+		    {
+		      EMPTY_GAME($$);
+		      $$.xsize = $2;
+		      $$.ysize = $4;
 		    }
 		;
 

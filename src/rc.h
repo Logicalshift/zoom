@@ -51,6 +51,10 @@ typedef struct
   int        n_colours;
   char*      gamedir;
   char*      savedir;
+  char*      sounds;
+  char*      graphics;
+
+  int xsize, ysize;
 } rc_game;
 
 extern void       rc_load           (void);

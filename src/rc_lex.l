@@ -26,6 +26,9 @@ fixed				return FIXED;
 
 gamedir                         return GAMEDIR;
 savedir				return SAVEDIR;
+sounds				return SOUNDS;
+graphics			return GRAPHICS;
+size				return SIZE;
 
 [0-9]{1,3}\.[0-9]{6}		{
 				  yylval.str = malloc(strlen(yytext)+1);

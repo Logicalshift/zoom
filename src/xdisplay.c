@@ -166,6 +166,9 @@ static void display_more(void);
 
 /***                           ----// 888 \\----                           ***/
 
+/*
+ * Function to plot a font 3 definition
+ */
 static void plot_font_3(int chr, int xpos, int ypos)
 {
   static XPoint poly[32];
@@ -358,6 +361,12 @@ void display_initialise(void)
   display_clear();
 }
 
+/*
+ * When we display the menu, we use the default fonts and colours. The 
+ * game might want different fonts & colours, so this frees the ones
+ * we have loaded and reloads with the new ones (this also resizes the 
+ * game window if necessary)
+ */
 void display_reinitialise(void)
 {
   rc_font*    fonts;
@@ -478,6 +487,9 @@ void display_finalise(void)
   XCloseDisplay(x_display);
 }
 
+/*
+ * Sets the title of the window to the given string
+ */
 void display_set_title(const char* title)
 {
   XTextProperty tprop;
@@ -494,7 +506,7 @@ void display_set_title(const char* title)
 }
 
 /*
- * Blanks the (entire) display
+ * Blanks the (entire) display and resets window positions
  */
 void display_clear(void)
 {
@@ -519,7 +531,7 @@ void display_clear(void)
 }
 
 /*
- * Does a quick newline
+ * Does a quick newline (also handles [MORE] display)
  */
 static void new_line(int more)
 {
@@ -1402,6 +1414,9 @@ int process_events(long int to, char* buf, int buflen)
     }
 }
 
+/*
+ * Goes beep
+ */
 void display_beep(void)
 {
   XBell(x_display, 70);
@@ -1409,6 +1424,9 @@ void display_beep(void)
 
 /***                           ----// 888 \\----                           ***/
 
+/*
+ * Sets the colours that all future text will be plotted in.
+ */
 void display_set_colour(int fore, int back)
 {
   if (fore == -1)
@@ -1424,6 +1442,10 @@ void display_set_colour(int fore, int back)
   CURWIN.back = back;
 }
 
+/*
+ * Sets the font we will plot in in future (this uses Z-Machine font
+ * numbers rather than internal ones)
+ */
 int display_set_font(int font)
 {
   int old_font;
@@ -1439,11 +1461,18 @@ int display_set_font(int font)
   return old_font;
 }
 
+/*
+ * Sets whether or not the current window should scroll or not
+ */
 void display_set_scroll(int scroll)
 {
   CURWIN.no_scroll = !scroll;
 }
 
+/*
+ * Sets the style to use (the style is a bitfield, bit 0 is reverse,
+ * bit 1 is bold, bit 2 is italic and bit 3 is fixed-pitch)
+ */
 int display_set_style(int style)
 {
   int old_style;
@@ -1470,6 +1499,11 @@ int display_set_style(int style)
   return old_style;
 }
 
+/*
+ * Fills in a ZDisplay block to tell the interpreter about our display
+ * (this should be a static block, as this gets called more than once
+ * for v6 games)
+ */
 ZDisplay* display_get_info(void)
 {
   static ZDisplay info;
@@ -1497,6 +1531,11 @@ ZDisplay* display_get_info(void)
   return &info;
 }
 
+/*
+ * Splits a window in two at the given offset (lines is from the top
+ * of the window). The window number specifies the number of the
+ * future upper window.
+ */
 void display_split(int lines, int window)
 {
   text_win[window].winsx       = CURWIN.winsx;
@@ -1521,6 +1560,9 @@ void display_split(int lines, int window)
     CURWIN.ypos = CURWIN.winsy;
 }
 
+/*
+ * Joins two windows that were previously split
+ */
 void display_join(int window1, int window2)
 {
   if (text_win[window1].winsy != text_win[window2].winly)
@@ -1529,6 +1571,9 @@ void display_join(int window1, int window2)
   text_win[window2].winly = text_win[window2].winsy;
 }
 
+/*
+ * Sets the current window
+ */
 void display_set_window(int window)
 {
   if (window < 0)
@@ -1538,11 +1583,17 @@ void display_set_window(int window)
   cur_win = window;
 }
 
+/*
+ * Gets the current window number
+ */
 int display_get_window(void)
 {
   return cur_win;
 }
 
+/*
+ * Clears the current window
+ */
 void display_erase_window(void)
 {
   int height;
@@ -1564,6 +1615,9 @@ void display_erase_window(void)
   do_redraw =  1;
 }
 
+/*
+ * Erases the current line in the current window
+ */
 void display_erase_line(int val)
 {
   XSetForeground(x_display, x_pixgc, x_colour[FIRST_ZCOLOUR+CURWIN.back].pixel);
@@ -1585,6 +1639,10 @@ void display_erase_line(int val)
     }
 }
 
+/*
+ * Sets the cursor position in the current window. x and y are
+ * character coordinates
+ */
 void display_set_cursor(int x, int y)
 {
   CURWIN.xpos = CURWIN.winsx+x*font_x;
@@ -1617,6 +1675,9 @@ void display_set_cursor(int x, int y)
 #endif
 }
 
+/*
+ * Sets the graphics cursor position in the current window
+ */
 void display_set_gcursor(int x, int y)
 {
   CURWIN.xpos = x;
@@ -1639,31 +1700,50 @@ void display_set_gcursor(int x, int y)
 #endif
 }
 
+/*
+ * Gets the graphics cursor X position
+ */
 int display_get_gcur_x(void)
 {
   return CURWIN.xpos;
 }
 
+/*
+ * Gets the graphics cursor Y position
+ */
 int display_get_gcur_y(void)
 {
   return CURWIN.ypos;
 }
 
+/*
+ * Gets the text cursor X position
+ */
 int display_get_cur_x(void)
 {
   return (CURWIN.xpos-CURWIN.winsx)/font_x;
 }
 
+/*
+ * Gets the text cursor Y position
+ */
 int display_get_cur_y(void)
 {
   return (CURWIN.ypos-CURWIN.winsy)/font_y;
 }
 
+/*
+ * Sets whether or not a window should display 'More' or not
+ */
 void display_set_more(int window, int more)
 {
   text_win[window].no_more = !more;
 }
 
+/*
+ * Force a window to use a fixed pitch font regardless of style or
+ * font settings
+ */
 extern void display_force_fixed (int window, int val)
 {
   text_win[window].force_fixed = val;
@@ -1671,6 +1751,9 @@ extern void display_force_fixed (int window, int val)
 
 /***                           ----// 888 \\----                           ***/
 
+/*
+ * Defines a window for v6
+ */
 void display_window_define(int window,
 			   int x, int y,
 			   int lmargin, int rmargin,
@@ -1694,22 +1777,38 @@ void display_window_define(int window,
       } */
 }
 
+/*
+ * Sets the function that should be called just before a newline is
+ * printed (this function can return -1 for proceed as normal, 0 for
+ * do not display [MORE], 1 for display [MORE] now, or 2 for abort
+ * display (the function must set things up so that the remainder of
+ * the line is displayed at some point)
+ */
 void display_set_newline_function(int (*func)(const char* remaining,
 					      int rem_len))
 {
   newline_func = func;
 }
 
+/*
+ * Gets the font height in pixels
+ */
 int display_get_font_height(void)
 {
   return x_fonti[font_num]->ascent + x_fonti[font_num]->descent;
 }
 
+/*
+ * Gets the width of a character '0' in the current font
+ */
 int display_get_font_width(void)
 {
   return XTextWidth(x_fonti[font_num], "0", 1);
 }
 
+/*
+ * Resets window positions to the defaults
+ */
 void display_reset_windows(void)
 {
   cur_win = 0;
