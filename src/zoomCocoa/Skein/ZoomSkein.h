@@ -34,4 +34,10 @@ extern NSString* ZoomSkeinChangedNotification;
 // Notifying of changed
 - (void) zoomSkeinChanged;
 
+// Creating a Zoom input receiver
++ (id) inputSourceFromSkeinItem: (ZoomSkeinItem*) item1
+						 toItem: (ZoomSkeinItem*) item2;
+- (id) inputSourceFromSkeinItem: (ZoomSkeinItem*) item1
+						 toItem: (ZoomSkeinItem*) item2;
+
 @end

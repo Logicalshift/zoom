@@ -8,6 +8,7 @@
 
 #import "ZoomSkeinController.h"
 
+#import "ZoomClientController.h"
 
 @implementation ZoomSkeinController
 
@@ -32,6 +33,7 @@
 
 - (void) awakeFromNib {
 	[(NSPanel*)[self window] setBecomesKeyOnlyIfNeeded: YES];
+	[skeinView setDelegate: self];
 }
 
 - (void) setSkein: (ZoomSkein*) skein {
@@ -44,6 +46,28 @@
 
 - (ZoomSkein*) skein {
 	return [skeinView skein];
+}
+
+- (void) restartGame {
+	ZoomClientController* activeController = [[NSApp mainWindow] windowController];
+	
+	if ([activeController isKindOfClass: [ZoomClientController class]]) {
+		// Will force a restart
+		[[activeController zoomView] runNewServer: nil];
+	}
+}
+
+- (void) playToPoint: (ZoomSkeinItem*) point
+		   fromPoint: (ZoomSkeinItem*) fromPoint{
+	ZoomClientController* activeController = [[NSApp mainWindow] windowController];
+	
+	if ([activeController isKindOfClass: [ZoomClientController class]]) {
+		id inputSource = [ZoomSkein inputSourceFromSkeinItem: fromPoint
+													  toItem: point];
+		
+		
+		[[activeController zoomView] setInputSource: inputSource];
+	}
 }
 
 @end

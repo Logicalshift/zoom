@@ -92,6 +92,9 @@ extern NSString* ZoomStyleAttributeName;
 	
 	// Output receivers
 	NSMutableArray* outputReceivers;
+	
+	// Input source
+	NSObject* inputSource;
 }
 
 // The delegate
@@ -187,6 +190,10 @@ extern NSString* ZoomStyleAttributeName;
 - (void) orWaitingForInput;
 - (void) orInterpreterRestart;
 
+// Input sources (nil = default, window input source)
+- (void) setInputSource: (id) source;
+- (void) removeInputSource: (id) source;
+
 @end
 
 // ZoomView delegate methods
@@ -220,6 +227,7 @@ extern NSString* ZoomStyleAttributeName;
 
 @interface NSObject(ZoomViewInputSource)
 
-// IMPLEMENT ME
+// Retrieve the next command
+- (NSString*) nextCommand;
 
 @end

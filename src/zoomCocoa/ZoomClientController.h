@@ -24,4 +24,6 @@
 
 - (IBAction) playInFullScreen: (id) sender;
 
+- (ZoomView*) zoomView;
+
 @end

@@ -8,6 +8,14 @@
 
 #import "ZoomSkein.h"
 
+@interface ZoomSkeinInputSource : NSObject {
+	NSMutableArray* commandStack;
+}
+
+- (void) setCommandStack: (NSMutableArray*) stack;
+- (NSString*) nextCommand;
+
+@end
 
 @implementation ZoomSkein
 
@@ -108,4 +116,70 @@ NSString* ZoomSkeinChangedNotification = @"ZoomSkeinChangedNotification";
 	[self zoomSkeinChanged];
 }
 
+// = Creating a Zoom input receiver =
+
++ (id) inputSourceFromSkeinItem: (ZoomSkeinItem*) item1
+						 toItem: (ZoomSkeinItem*) item2 {
+	// item1 must be a parent of item2, and neither can be nil
+	
+	// item1 is not executed
+	if (item1 == nil || item2 == nil) return nil;
+	
+	NSMutableArray* commandsToExecute = [NSMutableArray array];
+	ZoomSkeinItem* parent = item2;
+	
+	while (parent != item1) {
+		[commandsToExecute addObject: [parent command]];
+		
+		parent = [parent parent];
+		if (parent == nil) return nil;
+	}
+	
+	// commandsToExecute contains the list of commands we need to execute
+	ZoomSkeinInputSource* source = [[ZoomSkeinInputSource alloc] init];
+	
+	[source setCommandStack: commandsToExecute];
+	return [source autorelease];
+}
+
+- (id) inputSourceFromSkeinItem: (ZoomSkeinItem*) item1
+						 toItem: (ZoomSkeinItem*) item2 {
+	return [[self class] inputSourceFromSkeinItem: item1
+										   toItem: item2];
+}
+
 @end
+
+// Our input source object
+@implementation ZoomSkeinInputSource
+
+- (id) init {
+	self = [super init];
+	
+	if (self) {
+		commandStack = nil;
+	}
+	
+	return self;
+}
+
+- (void) dealloc {
+	[commandStack release];
+	[super dealloc];
+}
+
+- (void) setCommandStack: (NSMutableArray*) stack {
+	[commandStack release];
+	commandStack = [stack retain];
+}
+
+- (NSString*) nextCommand {
+	if ([commandStack count] <= 0) return nil;
+	
+	NSString* nextCommand = [[commandStack lastObject] retain];
+	[commandStack removeLastObject];
+	return [nextCommand autorelease];
+}
+
+@end
+

@@ -51,6 +51,9 @@ static void finalizeViews(void) {
 		
 		// Output receivers
 		outputReceivers = nil;
+		
+		// Input source
+		inputSource = nil;
 
         // No upper/lower windows
         upperWindows = [[NSMutableArray allocWithZone: [self zone]] init];
@@ -205,6 +208,8 @@ static void finalizeViews(void) {
 	if (lastAutosave) [lastAutosave release];
 	
 	if (inputLine) [inputLine release];
+	
+	if (inputSource) [inputSource release];
 
     [super dealloc];
 }
@@ -383,6 +388,25 @@ static void finalizeViews(void) {
     
     receivingCharacters = YES;
 	[self orWaitingForInput];
+	
+	// Deal with the input source
+	if (inputSource != nil && [inputSource respondsToSelector: @selector(nextCommand)]) {
+		NSString* nextInput = [inputSource nextCommand];
+		
+		if (nextInput == nil) {
+			// End of input
+			[inputSource release];
+			inputSource = nil;
+		} else {			
+			if ([nextInput length] == 0) nextInput = @"\n";
+			
+			// We've got some input: perform it
+			[self stopReceiving];
+			
+			[zMachine inputText: nextInput];
+			[self orInputCharacter: nextInput];
+		}
+	}	
 }
 
 - (void) shouldReceiveText: (int) maxLength {
@@ -447,6 +471,37 @@ static void finalizeViews(void) {
 	
     receiving = YES;
 	[self orWaitingForInput];
+	
+	// Dealing with the input source
+	if (inputSource != nil && [inputSource respondsToSelector: @selector(nextCommand)]) {
+		NSString* nextInput = [inputSource nextCommand];
+		
+		if (nextInput == nil) {
+			// End of input
+			[inputSource release];
+			inputSource = nil;
+		} else {
+			nextInput = [nextInput stringByAppendingString: @"\n"];
+			
+			// We've got some input: write it, perform it
+			[self stopReceiving];
+			
+			// FIXME: maybe do this in the current style? (At least this way, it's obvious what's come from where)
+			ZStyle* inputStyle = [[[ZStyle alloc] init] autorelease];
+			[inputStyle setUnderline: YES];
+			[inputStyle setBold: YES];
+			[inputStyle setBackgroundColour: 7];
+			[inputStyle setForegroundColour: 4];
+			
+			[focusedView writeString: nextInput
+						   withStyle: inputStyle];
+			
+			[commandHistory addObject: nextInput];
+			
+			[zMachine inputText: nextInput];
+			[self orInputCommand: nextInput];
+		}
+	}
 }
 
 - (void) stopReceiving {
@@ -2099,6 +2154,67 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 
 - (void) zMachineHasRestarted {
 	[self orInterpreterRestart];
+}
+
+// = Input sources =
+
+- (void) setInputSource: (id) source {
+	if (inputSource) [inputSource release];
+	inputSource = [source retain];
+	
+	if (receivingCharacters && [inputSource respondsToSelector: @selector(nextCommand)]) {
+		// Get the next command
+		NSString* nextInput = [inputSource nextCommand];
+		
+		if (nextInput == nil) {
+			// End of input
+			[inputSource release];
+			inputSource = nil;
+		} else {			
+			if ([nextInput length] == 0) nextInput = @"\n";
+			
+			// We've got some input: perform it
+			[self stopReceiving];
+			
+			[zMachine inputText: nextInput];
+			[self orInputCharacter: nextInput];
+		}
+	} else if (receiving && [inputSource respondsToSelector: @selector(nextCommand)]) {
+		NSString* nextInput = [inputSource nextCommand];
+		
+		if (nextInput == nil) {
+			// End of input
+			[inputSource release];
+			inputSource = nil;
+		} else {
+			nextInput = [nextInput stringByAppendingString: @"\n"];
+			
+			// We've got some input: write it, perform it
+			[self stopReceiving];
+			
+			// FIXME: maybe do this in the current style? (At least this way, it's obvious what's come from where)
+			ZStyle* inputStyle = [[[ZStyle alloc] init] autorelease];
+			[inputStyle setUnderline: YES];
+			[inputStyle setBold: YES];
+			[inputStyle setBackgroundColour: 7];
+			[inputStyle setForegroundColour: 4];
+			
+			[focusedView writeString: nextInput
+						   withStyle: inputStyle];
+			
+			[commandHistory addObject: nextInput];
+			
+			[zMachine inputText: nextInput];
+			[self orInputCommand: nextInput];
+		}
+	}
+}
+
+- (void) removeInputSource: (id) source {
+	if (source == inputSource) {
+		[inputSource release];
+		inputSource = nil;
+	}
 }
 
 @end

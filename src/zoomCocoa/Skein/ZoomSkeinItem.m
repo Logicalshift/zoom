@@ -194,6 +194,12 @@ static NSString* convertCommand(NSString* command) {
 }
 
 - (void) setResult: (NSString*) newResult {
+	if (![result isEqualTo: newResult]) {
+		[self setChanged: YES];
+	} else {
+		[self setChanged: NO];
+	}
+	
 	if (result) [result release];
 	result = nil;
 	if (newResult) result = [newResult copy];

@@ -365,4 +365,8 @@
 	return [story title];
 }
 
+- (ZoomView*) zoomView {
+	return zoomView;
+}
+
 @end

@@ -1238,9 +1238,34 @@ enum ZSVbutton
 // = Playing the game =
 
 - (void) playToPoint: (ZoomSkeinItem*) item {
-	// If the activeItem is a parent of item, then play directly to the item
-	// otherwise restart the game
+	if (![delegate respondsToSelector: @selector(restartGame)] ||
+		![delegate respondsToSelector: @selector(playToPoint:fromPoint:)]) {
+		// Can't play to this point: delegate does not support it
+		return;
+	}
 	
+	// Deselect the curently selected item
+	[self setSelectedItem: nil];
+	
+	// Work out if we can play from the active item or not
+	ZoomSkeinItem* activeItem = [skein activeItem];
+	ZoomSkeinItem* parent = [item parent];
+	
+	while (parent != nil) {
+		if (parent == activeItem) break;
+		parent = [parent parent];
+	}
+	
+	if (parent == nil) {
+		// We need to play from the start
+		[delegate restartGame];
+		[delegate playToPoint: item
+					fromPoint: [skein rootItem]];
+	} else {
+		// Play from the active item
+		[delegate playToPoint: item
+					fromPoint: activeItem];
+	}
 }
 
 // = Delegate =
