@@ -1277,6 +1277,44 @@
 			settings = {
 			};
 		};
+		4B2EAFAD05B08D1E0021A5E6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = ZoomGameInfoController.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B2EAFAE05B08D1E0021A5E6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = ZoomGameInfoController.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B2EAFAF05B08D1E0021A5E6 = {
+			fileRef = 4B2EAFAD05B08D1E0021A5E6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B2EAFB005B08D1E0021A5E6 = {
+			fileRef = 4B2EAFAE05B08D1E0021A5E6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B2EAFB105B08D2F0021A5E6 = {
+			children = (
+				4B2EAFAD05B08D1E0021A5E6,
+				4B2EAFAE05B08D1E0021A5E6,
+			);
+			isa = PBXGroup;
+			name = Metadata;
+			refType = 4;
+			sourceTree = "<group>";
+		};
 		4B3C675B05566FE200764D1A = {
 			containerPortal = 4B1E3F4B050F7AD000A8E303;
 			isa = PBXContainerItemProxy;
@@ -1633,6 +1671,7 @@
 				4B23C650053C9C8C00A8E303,
 				4B418DC50594FB97009C44DE,
 				4B418EDF05961E4B009C44DE,
+				4B2EAFAF05B08D1E0021A5E6,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1664,6 +1703,7 @@
 				4BDFA4E20535E85900A8E303,
 				4B23C651053C9C8C00A8E303,
 				4B418DC60594FB97009C44DE,
+				4B2EAFB005B08D1E0021A5E6,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1845,6 +1885,7 @@
 				4B23C64F053C9C8C00A8E303,
 				4B418DC30594FB97009C44DE,
 				4B418DC40594FB97009C44DE,
+				4B2EAFB105B08D2F0021A5E6,
 				4BDFA4E80535E9DE00A8E303,
 			);
 			isa = PBXGroup;

@@ -7,9 +7,11 @@
                 infoGenreChanged = id; 
                 infoGroupChanged = id; 
                 infoHeadlineChanged = id; 
+                infoMyRatingChanged = id; 
                 infoNameChanged = id; 
                 infoTeaserChanged = id; 
                 infoYearChanged = id; 
+                infoZarfRatingChanged = id; 
             }; 
             CLASS = FirstResponder; 
             LANGUAGE = ObjC; 
@@ -19,6 +21,21 @@
             ACTIONS = {selectGenre = id; showGenreMenu = id; }; 
             CLASS = ZoomGameInfoController; 
             LANGUAGE = ObjC; 
+            OUTLETS = {
+                author = NSTextField; 
+                comments = NSTextView; 
+                gameName = NSTextField; 
+                genre = NSTextField; 
+                genreMenu = NSMenu; 
+                group = NSTextField; 
+                headline = NSTextField; 
+                rating = NSSlider; 
+                ratingOn = NSButton; 
+                tabs = NSTabView; 
+                teaser = NSTextView; 
+                year = NSTextField; 
+                zarfRating = NSPopUpButton; 
+            }; 
             SUPERCLASS = NSWindowController; 
         }
     ); 

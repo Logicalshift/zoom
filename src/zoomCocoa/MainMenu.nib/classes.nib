@@ -1,7 +1,12 @@
 {
     IBClasses = (
         {
-            ACTIONS = {showGamePreferences = id; showPreferences = id; }; 
+            ACTIONS = {
+                displayGameInfoWindow = id; 
+                displayNoteWindow = id; 
+                showGamePreferences = id; 
+                showPreferences = id; 
+            }; 
             CLASS = FirstResponder; 
             LANGUAGE = ObjC; 
             SUPERCLASS = NSObject; 

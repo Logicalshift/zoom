@@ -7,6 +7,7 @@
 //
 
 #import "ZoomAppDelegate.h"
+#import "ZoomGameInfoController.h"
 
 
 @implementation ZoomAppDelegate
@@ -29,6 +30,21 @@
 	[[preferencePanel window] center];
 	[preferencePanel setPreferences: [ZoomPreferences globalPreferences]];
 	[[preferencePanel window] makeKeyAndOrderFront: self];
+}
+
+- (IBAction) displayGameInfoWindow: (id) sender {
+	[[ZoomGameInfoController sharedGameInfoController] showWindow: self];
+
+	// Blank out the game info window
+	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
+	
+	// Try to update the game info window using the first responder
+	[NSApp sendAction: @selector(updateGameInfo:)
+				   to: nil
+				 from: self];
+}
+
+- (IBAction) displayNoteWindow: (id) sender {
 }
 
 @end

@@ -1207,6 +1207,17 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     if (zoomTask) [zoomTask terminate];
 }
 
+// = Warnings/errors =
+- (void) displayWarning: (NSString*) warning {
+	// FIXME
+	//NSBeginAlertSheet(@"Warning", @"OK", nil, nil, [self window], nil, nil, nil, NULL, @"%@", warning);
+	NSLog(@"Warning: %@", warning);
+}
+
+- (void) displayFatalError: (NSString*) error {
+	NSBeginCriticalAlertSheet(@"Fatal error", @"Stop", nil, nil, [self window], nil, nil, nil, NULL, @"%@", error);
+}
+
 // = Setting/updating preferences =
 - (void) setPreferences: (ZoomPreferences*) prefs {
 	[[NSNotificationCenter defaultCenter] removeObserver: self

@@ -8,6 +8,7 @@
 
 #import "ZoomClientController.h"
 #import "ZoomPreferenceWindow.h"
+#import "ZoomGameInfoController.h"
 
 
 @implementation ZoomClientController
@@ -54,6 +55,22 @@
 	
 	[[gamePrefs window] orderOut: self];
 	[gamePrefs release];
+}
+
+- (IBAction) updateGameInfo: (id) sender {
+	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: self];
+}
+
+- (void)windowDidResignMain:(NSNotification *)aNotification {
+	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
+}
+
+- (void)windowWillClose:(NSNotification *)aNotification {
+	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
+}
+
+- (void)windowDidBecomeMain:(NSNotification *)aNotification {
+	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: self];
 }
 
 @end
