@@ -1307,6 +1307,9 @@ enum ZSVbutton
 		return;
 	}
 	
+	// Make sure it won't disappear...
+	[item increaseTemporaryScore];
+	
 	// Deselect the curently selected item
 	[self setSelectedItem: nil];
 	

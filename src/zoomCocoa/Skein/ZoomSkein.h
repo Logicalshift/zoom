@@ -38,6 +38,9 @@ extern NSString* ZoomSkeinChangedNotification;
 // Notifying of changed
 - (void) zoomSkeinChanged;
 
+// Removing temporary items
+- (void) removeTemporaryItems: (int) maxTemps;
+
 // Creating a Zoom input receiver
 + (id) inputSourceFromSkeinItem: (ZoomSkeinItem*) item1
 						 toItem: (ZoomSkeinItem*) item2;

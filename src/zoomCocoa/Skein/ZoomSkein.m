@@ -6,6 +6,8 @@
 //  Copyright (c) 2004 Andrew Hunter. All rights reserved.
 //
 
+#define maxTempItems 30
+
 #import "ZoomSkein.h"
 
 @interface ZoomSkeinInputSource : NSObject {
@@ -118,6 +120,8 @@ NSString* ZoomSkeinChangedNotification = @"ZoomSkeinChangedNotification";
 	activeItem = [rootItem retain];
 	
 	[self zoomSkeinChanged];
+	
+	[self removeTemporaryItems: maxTempItems];
 }
 
 // = Creating a Zoom input receiver =
@@ -150,6 +154,69 @@ NSString* ZoomSkeinChangedNotification = @"ZoomSkeinChangedNotification";
 						 toItem: (ZoomSkeinItem*) item2 {
 	return [[self class] inputSourceFromSkeinItem: item1
 										   toItem: item2];
+}
+
+// = Removing temporary items =
+
+- (void) removeTemporaryItems: (int) maxTemps {
+	//
+	// Maybe a bit confusing: the temporary counter is updated in various ways, but
+	// more recent items are always given a higher number. 'maxTemps' is really
+	// an indication in the maximum breadth of the tree.
+	//
+	
+	NSMutableSet* itemsInUse = [NSMutableSet set];
+	
+	// (I have no faith in Apple's ulimits)
+	NSMutableArray* itemStack = [NSMutableArray array];
+	
+	[itemStack addObject: rootItem];
+	
+	while ([itemStack count] > 0) {
+		// Pop the latest item from the stack
+		ZoomSkeinItem* item = [itemStack lastObject];
+		[itemStack removeLastObject];
+		
+		// Add this item to the list of items in use
+		if ([item temporary]) {
+			[itemsInUse addObject: [NSNumber numberWithInt: [item temporaryScore]]];
+		}
+		
+		// Push this item's children onto the stack
+		NSEnumerator* childEnum = [[item children] objectEnumerator];
+		ZoomSkeinItem* child;
+		while (child = [childEnum nextObject]) {
+			[itemStack addObject: child];
+		}
+	}
+	
+	// Keep only the highest maxTemps scores (and those that are not marked as temporary, of course)
+	NSArray* itemList = [[itemsInUse allObjects] sortedArrayUsingSelector: @selector(compare:)];
+	if ([itemList count] <= maxTemps) return;
+	
+	itemList = [itemList subarrayWithRange: NSMakeRange(0, [itemList count] - maxTemps)];
+	
+	NSSet* itemsToRemove = [NSSet setWithArray: itemList];
+	
+	[itemStack addObject: rootItem];
+	
+	while ([itemStack count] > 0) {
+		// Pop the latest item from the stack
+		ZoomSkeinItem* item = [[itemStack lastObject] retain];
+		[itemStack removeLastObject];
+
+		// Remove this item if necessary
+		if ([item temporary] && [itemsToRemove containsObject: [NSNumber numberWithInt: [item temporaryScore]]]) {
+			[item removeFromParent];
+		} else {
+			// Push this item's children onto the stack
+			NSEnumerator* childEnum = [[item children] objectEnumerator];
+			ZoomSkeinItem* child;
+			while (child = [childEnum nextObject]) {
+				[itemStack addObject: child];
+			}
+		}
+	}
 }
 
 @end
