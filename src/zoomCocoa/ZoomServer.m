@@ -61,6 +61,10 @@ int main(int argc, char** argv) {
 #ifdef DEBUG
     NSLog(@"Zoom server %@ starting", serverName);
 #endif
+
+    // Stdout messages designed to be caught by the client
+    fprintf(stdout, "ZoomServer: Startup beginning\n");
+    fflush(stdout);
     
     mainConnection = [NSConnection defaultConnection];
     [mainConnection setRootObject: mainServer];
@@ -69,6 +73,11 @@ int main(int argc, char** argv) {
         [mainPool release];
         return 0;
     }
+
+    // Indicates that the client should be able to connect
+    NSLog(@"Server ready");
+    fprintf(stdout,"ZoomServer: Ready\n");
+    fflush(stdout);
 
     // Main runloop
     while (mainConnection != nil || mainMachine != nil) {

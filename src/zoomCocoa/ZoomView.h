@@ -47,10 +47,26 @@
     BOOL upperWindowNeedsRedrawing;
 
     BOOL exclusiveMode;
+
+    // The task, if we're running it
+    NSTask* zoomTask;
+    NSPipe* zoomTaskStdout;
+    NSMutableString* zoomTaskData;
+
+    // The delegate
+    NSObject* delegate;
 }
 
-- (void) setZMachine: (NSObject<ZMachine>*) machine;
+// The delegate
+- (void) setDelegate: (id) delegate;
+- (id)   delegate;
 
+// Specifying what to run
+- (void) setZMachine: (NSObject<ZMachine>*) machine;
+- (void) runNewServer: (NSString*) serverName;
+- (NSObject<ZMachine>*) zMachine;
+
+// Scrolling, more prompt
 - (void) scrollToEnd;
 - (void) resetMorePrompt;
 - (void) updateMorePrompt;
@@ -59,15 +75,18 @@
 - (void) displayMoreIfNecessary;
 - (void) page;
 
+// Formatting a string
 - (NSAttributedString*) formatZString: (NSString*) zString
                             withStyle: (ZStyle*) style;
 
 - (ZoomTextView*) textView;
 
+// Fonts, colours, etc
 - (NSFont*) fontWithStyle: (int) style;
 - (NSColor*) foregroundColourForStyle: (ZStyle*) style;
 - (NSColor*) backgroundColourForStyle: (ZStyle*) style;
 
+// The upper window
 - (int)  upperWindowSize;
 - (void) setUpperBuffer: (double) bufHeight;
 - (double) upperBufferHeight;
@@ -76,6 +95,17 @@
 - (void) padToLowerWindow;
 
 - (void) upperWindowNeedsRedrawing;
+
+// Event handling
 - (BOOL) handleKeyDown:(NSEvent*) theEvent;
+
+@end
+
+// ZoomView delegate methods
+@interface NSObject(ZoomViewDelegate)
+
+- (void) zMachineStarted: (id) sender;
+- (void) zMachineFinished: (id) sender;
+
 
 @end

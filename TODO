@@ -25,7 +25,8 @@ GENERAL:
  * line editing (up/down arrows)
  * Fullscreen mode
  * Ability to reformat display
- * crash when running spacest2.z5?
+ * crash when running spacest2.z5? (FIXED, I think)
+ * various crashes to do with releasing autorelease pools (particularily associated with baluthar from '03)
 
 FUTURE:
  * Sound

@@ -67,6 +67,8 @@ static NSArray* defaultColours = nil;
         lowerWindows = [[NSMutableArray allocWithZone: [self zone]] init];
         
         zMachine = nil;
+        zoomTask = nil;
+        delegate = nil;
 
         [self setAutoresizesSubviews: YES];
 
@@ -128,9 +130,26 @@ static NSArray* defaultColours = nil;
 }
 
 - (void) dealloc {
+    NSLog(@"ZoomView dealloc");
+    
     if (zMachine) {
         [zMachine release];
     }
+
+    if (zoomTask) {
+        [zoomTask terminate];
+        [zoomTask release];
+    }
+
+    if (zoomTaskStdout) {
+        [zoomTaskStdout release];
+    }
+
+    if (zoomTaskData) {
+        [zoomTaskData release];
+    }
+
+    [[NSNotificationCenter defaultCenter] removeObserver: self];
 
     [textScroller release];
     [textView release];
@@ -152,6 +171,10 @@ static NSArray* defaultColours = nil;
     NSLog(@"Kick start!");
     zMachine = [machine retain];
     [zMachine startRunningInDisplay: self];
+}
+
+- (NSObject<ZMachine>*) zMachine {
+    return zMachine;
 }
 
 // = ZDisplay functions =
@@ -697,6 +720,172 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 
         // I suppose there's an outside chance of an infinite loop here
     } while (theContainer == upperWindowBuffer);
+}
+
+- (void) runNewServer: (NSString*) serverName {
+    if (zMachine != nil) {
+        [zMachine release];
+        zMachine = nil;
+        
+        // FIXME: reset the display
+    }
+    
+    if (zoomTask != nil) {
+        [zoomTask terminate];
+        [zoomTask release];
+        zoomTask = nil;
+    }
+
+    if (zoomTaskStdout != nil) {
+        [zoomTaskStdout release];
+        zoomTaskStdout = nil;
+    }
+
+    if (zoomTaskData != nil) {
+        [zoomTaskData release];
+        zoomTaskData = nil;
+    }
+
+    zoomTask = [[NSTask allocWithZone: [self zone]] init];
+    zoomTaskData = [[NSMutableString allocWithZone: [self zone]] init];
+
+    if (serverName == nil) {
+        serverName = [[NSBundle mainBundle] pathForResource: @"ZoomServer"
+                                                     ofType: nil];
+    }
+
+    // Prepare for launch
+    [zoomTask setLaunchPath: serverName];
+    
+    zoomTaskStdout = [[NSPipe allocWithZone: [self zone]] init];
+    [[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(_zoomTaskNotification:)
+                                                 name: NSFileHandleDataAvailableNotification
+                                               object: [zoomTaskStdout fileHandleForReading]];
+    [[zoomTaskStdout fileHandleForReading] waitForDataInBackgroundAndNotify];
+
+    [zoomTask setStandardOutput: zoomTaskStdout];
+    [[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(_zoomTaskFinished:)
+                                                 name: NSTaskDidTerminateNotification
+                                               object: zoomTask];
+    
+    // Light the blue touch paper
+    [zoomTask launch];
+
+    // ***FOOOM***
+}
+
+- (void) _zoomTaskFinished: (NSNotification*) not {
+    // The task has finished
+    if (zMachine) {
+        [zMachine release];
+    }
+
+    // Notify the user (display a message)
+    ZStyle* notifyStyle = [[ZStyle allocWithZone: [self zone]] init];
+    ZStyle* standardStyle = [[ZStyle allocWithZone: [self zone]] init];
+    [notifyStyle setForegroundColour: 7];
+    [notifyStyle setBackgroundColour: 1];
+
+    NSString* finishString = @"[ The game has finished ]";
+    if ([zoomTask terminationStatus] != 0) {
+        finishString = @"[ The Zoom interpreter has quit unexpectedly ]";
+    }
+
+    NSAttributedString* newline = [self formatZString: @"\n"
+                                            withStyle: [standardStyle autorelease]];
+    NSAttributedString* string = [self formatZString: finishString
+                                           withStyle: [notifyStyle autorelease]];
+
+    [[textView textStorage] appendAttributedString: newline];
+    [[textView textStorage] appendAttributedString: string];
+    [[textView textStorage] appendAttributedString: newline];
+
+    // Update the windows
+    [self rearrangeUpperWindows];
+
+    int currentSize = [self upperWindowSize];
+    if (currentSize != lastTileSize) {
+        [textScroller tile];
+        [self updateMorePrompt];
+        lastTileSize = currentSize;
+    }
+
+    // Paste stuff
+    NSEnumerator* upperEnum = [upperWindows objectEnumerator];
+    ZoomUpperWindow* win;
+    while (win = [upperEnum nextObject]) {
+        [textView pasteUpperWindowLinesFrom: win];
+    }
+    
+    // Notify the delegate
+    if (delegate && [delegate respondsToSelector: @selector(zMachineFinished:)]) {
+        [delegate zMachineFinished: self];
+    }
+    
+    // Free things up
+    [zoomTask release];
+    [zoomTaskStdout release];
+    [zoomTaskData release];
+
+    zoomTask = nil;
+    zoomTaskStdout = nil;
+    zoomTaskData = nil;
+}
+
+- (void) _zoomTaskNotification: (NSNotification*) not {
+    // Data is waiting on stdout: receive it
+    NSData* inData = [[zoomTaskStdout fileHandleForReading] availableData];
+
+    if ([inData length]) {
+        [zoomTaskData appendString: [NSString stringWithCString: [inData bytes]
+                                                         length: [inData length]]];
+        
+        if (zMachine == nil) {
+            // Task data could be indicating that we should start up the ZMachine
+            if ([zoomTaskData rangeOfString: @"ZoomServer: Ready"].location != NSNotFound) {
+                NSLog(@"Got startup signal");
+                NSObject<ZVendor>* theVendor = nil;
+                NSString* connectionName = [NSString stringWithFormat: @"ZoomVendor-%i",
+                    [zoomTask processIdentifier]];
+
+                theVendor =
+                    [[NSConnection rootProxyForConnectionWithRegisteredName: connectionName
+                                                                      host: nil] retain];
+
+                if (theVendor) {
+                    zMachine = [[theVendor createNewZMachine] retain];
+                    [theVendor release];
+                }
+
+                if (!zMachine) {
+                    NSLog(@"Failed to create Z-Machine");
+
+                    [zoomTask terminate];
+                } else {
+                    if (delegate && [delegate respondsToSelector: @selector(zMachineStarted:)]) {
+                        [delegate zMachineStarted: self];
+                    }
+                    
+                    [zMachine startRunningInDisplay: self];
+                }
+            }
+        }
+    } else {
+    }
+
+    [[zoomTaskStdout fileHandleForReading] waitForDataInBackgroundAndNotify];
+}
+
+// = The delegate =
+- (void) setDelegate: (id) dg {
+    // (Not retained)
+    delegate = dg;
+}
+
+- (id) delegate {
+    return delegate;
 }
 
 @end

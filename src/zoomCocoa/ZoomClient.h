@@ -10,10 +10,9 @@
 #import "ZoomProtocol.h"
 
 @interface ZoomClient : NSDocument {
-    NSObject<ZMachine>* zMachine;
-    NSTask*             zoomServerTask;
+    NSData* gameData;
 }
 
-- (NSObject<ZMachine>*) zMachine;
+- (NSData*) gameData;
 
 @end

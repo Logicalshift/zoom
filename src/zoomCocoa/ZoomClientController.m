@@ -15,14 +15,33 @@
     self = [super initWithWindowNibName: @"ZoomClient"];
 
     if (self) {
+        [self setShouldCloseDocument: YES];
     }
 
     return self;
 }
 
-- (void) windowDidLoad {
-    NSLog(@"Setting ZMachine...");
-    [zoomView setZMachine: [[self document] zMachine]];
+- (void) dealloc {
+    NSLog(@"ZoomClientController dealloc");
+    
+    [super dealloc];
 }
 
+- (void) windowDidLoad {
+    [zoomView runNewServer: nil];
+    [zoomView setDelegate: self];
+    //NSLog(@"Setting ZMachine...");
+    //[zoomView setZMachine: [[self document] zMachine]];
+}
+
+- (void) zMachineStarted: (id) sender {
+    [[zoomView zMachine] loadStoryFile: [[self document] gameData]];
+}
+
+/*
+- (void)windowWillClose:(NSNotification *)aNotification {
+    NSLog(@"Close window");
+    [self close];
+}
+*/
 @end
