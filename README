@@ -196,6 +196,28 @@ Zoom and Windows
   (Note that the special font name 'font3' still specifies the built-in
   version of font 3)
 
+Zoom and Mac OS X
+=================
+
+  This version of Zoom also features a port to Mac OS X. It should
+  compile 'out of the box' if you have the Apple development kit. This
+  port is somewhat more mature than the Windows one, but may still
+  have a few oddities. interp.c will take an age to compile on any
+  machine with less than 128Mb of memory (256Mb is recommended if
+  you want to compile Zoom)
+
+  By default, Zoom uses the ATSUI font rendering interface - while
+  this provides good support for Unicode, the rendering quality is,
+  frankly, crap. There is a Quartz renderer available, which looks
+  gorgeous, but is incredibly slow (and leaks memory all over the
+  place, most days). To enable this, edit carbondisplay.h, #undef
+  USE_ATS and then #define USE_QUARTZ. (You can also #undef both
+  if you want to use the standard Quickdraw rendering interface)
+
+  (If anyone knows how to get CGContextSetFont to do something useful,
+  or a better way of measuring a string of text under Quartz, I'd be
+  interested to hear from you...)
+
 Extensions and oddities
 =======================
 
