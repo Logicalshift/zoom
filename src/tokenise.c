@@ -30,8 +30,6 @@
 #include "hash.h"
 #include "zscii.h"
 
-/* #define DEBUG */
-
 struct dict_entry
 {
   ZUWord address;

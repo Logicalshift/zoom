@@ -145,12 +145,15 @@ void zmachine_load_story(char* filename, ZMachine* machine)
   frame->nlocals      = 0;
   frame->v4read       = NULL;
   frame->v5read       = NULL;
-  
+
   machine->header = machine->memory;
 
   if (machine->header[0] > 8)
     zmachine_fatal("Not a ZCode file");
-  
+    
+  if (machine->memory[0] >= 5)
+    zscii_install_alphabet();
+
   machine->dynamic_ceiling     = (ZUWord)GetWord(machine->header, ZH_static);
   machine->buffering           = 1;
 
@@ -438,6 +441,8 @@ void zmachine_setup_header(void)
   switch (machine.memory[0])
     {
     case 6:
+      zscii_install_alphabet();
+
       Flag(1, 0, machine.dinfo->colours);
       machine.memory[ZH_width] = machine.dinfo->width>>8;
       machine.memory[ZH_width+1] = machine.dinfo->width;
@@ -469,6 +474,27 @@ void zmachine_setup_header(void)
       if (machine.heblen >= 10)
 	{
 	  FlagE(ZHEB_flags3+1, 2, 1);
+	}
+
+      if (machine.heblen >= 4)
+	{
+	  FlagE(ZHEB_flags3+1, 0, 0);
+	  FlagE(ZHEB_flags3+1, 1, 0);
+
+	  machine.heb[ZHEB_flags3] = 0;
+	  machine.heb[ZHEB_flags3] &= ~ 0x7;
+	}
+
+      if (machine.heblen >= 5)
+	{
+	  machine.heb[ZHEB_truefore] = machine.dinfo->fore_true>>8;
+	  machine.heb[ZHEB_truefore] = machine.dinfo->fore_true;
+	}
+
+      if (machine.heblen >= 6)
+	{
+	  machine.heb[ZHEB_trueback] = machine.dinfo->back_true>>8;
+	  machine.heb[ZHEB_trueback] = machine.dinfo->back_true;
 	}
 #endif
       break;

@@ -26,6 +26,8 @@
 #include "zmachine.h"
 #include "zscii.h"
 
+#define DEBUG
+
 static int *buf  = NULL;
 static int maxlen = 0;
 
@@ -142,7 +144,7 @@ int* zscii_to_unicode(ZByte* string, int* len)
 	  int c;
 
 	  c = (word&0x7c00)>>10;
-	  
+
 	  if ((y+8) > maxlen)
 	    {
 	      maxlen += 1024;
@@ -552,13 +554,15 @@ void zscii_install_alphabet(void)
 	      for (x=0; x<26; x++)
 		{
 		  conv[y][x+6]      = *(alpha++);
-		  if (y != 2 || x>2)
-		    zsc[conv[y][x+6]] = (x+6)|(y<<6);
+		  zsc[conv[y][x+6]] = (x+6)|((y+1)<<6);
 		}
 	    }
 
 	  conv[2][7] = 10;
 	  conv[2][6] = 32;
+
+	  zsc[10] = 7|(2<<6);
+	  zsc[32] = 6|(2<<6);
 	  
 	  convert = conv;
 	  zscii = zsc;
