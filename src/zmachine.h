@@ -85,6 +85,7 @@
 		      * Performs sanity checks to ensure that non-v6
 		      * display functions are not called from a v6 game
 		      */
+#undef  CUTE_STARTUP /* 'Adventure-style' warranty message */
 
 /*
  * Versions to support (note that support for version 5 includes

@@ -252,10 +252,12 @@ int zoom_main(int argc, char** argv)
 #endif
   
   display_set_style(2);
+#ifdef CUTE_STARTUP
   display_prints_c("\n\nMaze\n");
   display_set_style(0);
   display_prints_c("You are in a maze of twisty little software licences, all different.\nA warranty lurks in a corner.\n\n>read warranty\n");
   display_prints_c("WELCOME, adventurer, to ");
+#endif
   display_set_style(6);
   display_prints_c("Zoom " VERSION);
   display_set_style(-4);

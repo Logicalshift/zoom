@@ -11,8 +11,8 @@ Hmm, this file was a bit out of date.
  X 'MORE' not displayed in Shogun
  X sigh, creating files under Carbon still broken (set file type)
  X segfault on window resize occasionally
- * problem with resize when 'MORE' is displayed.
- * startup message
+ X problem with resize when 'MORE' is displayed.
+ X startup message
  * Colour preference thing
  * warning for non-fixed font set as fixed font
  * reset pixmap display on restart under v6
