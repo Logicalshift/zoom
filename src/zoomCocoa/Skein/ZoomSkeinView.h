@@ -10,19 +10,15 @@
 
 #import "ZoomSkein.h"
 #import "ZoomSkeinItem.h"
+#import "ZoomSkeinLayout.h"
 
 @interface ZoomSkeinView : NSView {
 	ZoomSkein* skein;
 	
 	BOOL skeinNeedsLayout;
 	
-	// Details about items
-	NSMutableDictionary* itemForItem;
-	
-	// The layout
-	NSMutableDictionary* tree;
-	NSMutableArray* levels;
-	float globalOffset, globalWidth;
+	// Layout
+	ZoomSkeinLayout* layout;
 	
 	// Cursor flags
 	BOOL overWindow;
@@ -36,9 +32,6 @@
 	BOOL    dragScrolling;
 	NSPoint dragOrigin;
 	NSRect  dragInitialVisible;
-	
-	// Selected item
-	ZoomSkeinItem* selectedItem;
 	
 	// Clicking buttons
 	int activeButton;
@@ -68,7 +61,6 @@
 
 // Affecting the display
 - (void) scrollToItem: (ZoomSkeinItem*) item;
-- (ZoomSkeinItem*) itemAtPoint: (NSPoint) point;
 
 - (void) editItem: (ZoomSkeinItem*) skeinItem;
 - (void) setSelectedItem: (ZoomSkeinItem*) skeinItem;

@@ -11,18 +11,9 @@
 // Constants
 static const float itemWidth = 120.0; // Pixels
 static const float itemHeight = 96.0;
-static const float itemPadding = 56.0;
 
 // Drawing info
 static NSDictionary* itemTextAttributes;
-
-// Entries in the item dictionary
-static NSString* ZSitem = @"ZSitem";
-static NSString* ZSwidth = @"ZSwidth";
-static NSString* ZSfullwidth = @"ZSfullwidth";
-static NSString* ZSposition = @"ZSposition";
-static NSString* ZSchildren = @"ZSchildren";
-static NSString* ZSlevel    = @"ZSlevel";
 
 // Images
 static NSImage* unplayed, *selected, *active, *unchanged, *changed;
@@ -43,11 +34,6 @@ enum ZSVbutton
 
 // Our sooper sekrit interface
 @interface ZoomSkeinView(ZoomSkeinViewPrivate)
-
-// Item information
-- (NSDictionary*) itemForItem: (ZoomSkeinItem*) item;
-- (NSRect) activeAreaForItem: (NSDictionary*) item;
-- (NSRect) textAreaForItem: (NSDictionary*) item;
 
 // Layout
 - (void) layoutSkein;
@@ -171,27 +157,15 @@ enum ZSVbutton
 		nil] retain];
 }
 
-+ (NSMutableDictionary*) item: (ZoomSkeinItem*) item
-					withWidth: (float) width
-					fullWidth: (float) fullWidth
-						level: (int) level {
-	// Position is '0' by default
-	return [NSMutableDictionary dictionaryWithObjectsAndKeys: 
-		item, ZSitem, 
-		[NSNumber numberWithFloat: width], ZSwidth, 
-		[NSNumber numberWithFloat: fullWidth], ZSfullwidth,
-		[NSNumber numberWithFloat: 0.0], ZSposition,
-		[NSNumber numberWithInt: level], ZSlevel,
-		nil];
-}
-
 - (id)initWithFrame:(NSRect)frame {
     self = [super initWithFrame:frame];
 	
     if (self) {
 		skein = [[ZoomSkein alloc] init];
 		activeButton = ZSVnoButton;
-		selectedItem = nil;
+		
+		layout = [[ZoomSkeinLayout alloc] init];
+		[layout setRootItem: [skein rootItem]];
     }
 	
     return self;
@@ -200,74 +174,18 @@ enum ZSVbutton
 - (void) dealloc {
 	[skein release];
 	
-	if (tree) [tree release];
-	if (levels) [levels release];
 	if (trackingRects) [trackingRects release];
-	if (itemForItem) [itemForItem release];
 
 	if (itemEditor) [itemEditor release];
 	if (itemToEdit) [itemToEdit release];
 	
-	if (selectedItem)  [selectedItem release];
 	if (trackedItem)   [trackedItem release];
 	if (clickedItem)   [clickedItem release];
 	if (trackingItems) [trackingItems release];
-	
+
+	[layout release];
+
 	[super dealloc];
-}
-
-// = Information about items =
-
-- (NSDictionary*) itemForItem: (ZoomSkeinItem*) item {
-	if (skeinNeedsLayout) [self layoutSkein];
-	
-	return [itemForItem objectForKey: [NSValue valueWithPointer: item]]; // Yeah, yeah. Items are distinguished by command, not location in the tree
-}
-
-- (NSRect) activeAreaForItem: (NSDictionary*) item {
-	NSRect itemRect;
-	float ypos = ((float)[[item objectForKey: ZSlevel] intValue]) * itemHeight + (itemHeight/2.0);
-	float position = [[item objectForKey: ZSposition] floatValue];
-	float width = [[item objectForKey: ZSwidth] floatValue];
-	
-	// Basic rect
-	itemRect.origin.x = position + globalOffset - (width/2.0) - 20.0;
-	itemRect.origin.y = ypos - 8;
-	itemRect.size.width = width + 40.0;
-	itemRect.size.height = 30.0;
-	
-	// ... adjusted for the buttons
-	if (itemRect.size.width < (32.0 + 40.0)) {
-		itemRect.origin.x = position + globalOffset - (32.0+40.0)/2.0;
-		itemRect.size.width = 32.0 + 40.0;
-	}
-	itemRect.origin.y = ypos - 18;
-	itemRect.size.height = 52.0;
-	
-	// 'overflow' border
-	itemRect = NSInsetRect(itemRect, -4.0, -4.0);	
-	
-	return itemRect;
-}
-
-- (NSRect) textAreaForItem: (NSDictionary*) item {
-	NSRect itemRect;
-	float ypos = ((float)[[item objectForKey: ZSlevel] intValue]) * itemHeight + (itemHeight/2.0);
-	float position = [[item objectForKey: ZSposition] floatValue];
-	float width = [[item objectForKey: ZSwidth] floatValue];
-	
-	// Basic rect
-	itemRect.origin.x = position + globalOffset - (width/2.0);
-	itemRect.origin.y = ypos + 1;
-	itemRect.size.width = width;
-	itemRect.size.height = [[NSFont systemFontOfSize: 10] defaultLineHeightForFont];
-	
-	// Move it down by a few pixels if this is a selected item
-	if ([item objectForKey: ZSitem] == selectedItem) {
-		itemRect.origin.y += 2;
-	}
-	
-	return itemRect;
 }
 
 // = Drawing =
@@ -317,8 +235,6 @@ enum ZSVbutton
 }
 
 - (void)drawRect:(NSRect)rect {
-	if (tree == nil) return;
-	
 	if (skeinNeedsLayout) [self layoutSkein];
 	
 	// (Sigh, will fail to keep track of these properly otherwise)
@@ -340,17 +256,17 @@ enum ZSVbutton
 		
 	for (level = startLevel; level < endLevel; level++) {
 		if (level < 0) continue;
-		if (level >= [levels count]) break;
+		if (level >= [layout levels]) break;
 		
 		// Iterate through the items on this level...
-		NSEnumerator* levelEnum = [[levels objectAtIndex: level] objectEnumerator];
+		NSEnumerator* levelEnum = [[layout dataForLevel: level] objectEnumerator];
 		NSDictionary* item;
 		
 		float ypos = ((float)level)*itemHeight + (itemHeight / 2.0);
 		
 		while (item = [levelEnum nextObject]) {
-			ZoomSkeinItem* skeinItem = [item objectForKey: ZSitem];
-			float xpos = [[item objectForKey: ZSposition] floatValue] + globalOffset;
+			ZoomSkeinItem* skeinItem = [layout itemForData: item];
+			float xpos = [layout xposForData: item];
 			NSSize size = [[skeinItem command] sizeWithAttributes: itemTextAttributes];
 			
 			// Draw the background
@@ -362,7 +278,7 @@ enum ZSVbutton
 			if ([skeinItem changed]) background = changed;
 			if (skeinItem == [skein activeItem]) background = active;
 			if ([skeinItem parent] == [skein activeItem]) background = active;
-			if (skeinItem == selectedItem) background = selected;
+			if (skeinItem == [layout selectedItem]) background = selected;
 			
 			[ZoomSkeinView drawImage: background
 							 atPoint: NSMakePoint(xpos - bgWidth/2.0, ypos-8 + (background==selected?2.0:0.0))
@@ -374,7 +290,7 @@ enum ZSVbutton
 			
 			// Draw links to the children
 			[[NSColor blackColor] set];
-			NSEnumerator* childEnumerator = [[item objectForKey: ZSchildren] objectEnumerator];
+			NSEnumerator* childEnumerator = [[layout childrenForData: item] objectEnumerator];
 			
 			float startYPos = ypos + 10.0 + size.height;
 			float endYPos = ypos - 10.0 + itemHeight;
@@ -384,9 +300,9 @@ enum ZSVbutton
 			
 			NSDictionary* child;
 			while (child = [childEnumerator nextObject]) {
-				float childXPos = [[child objectForKey: ZSposition] floatValue] + globalOffset;
+				float childXPos = [layout xposForData: child];
 				
-				if ([[child objectForKey: ZSitem] temporary]) {
+				if ([[layout itemForData: child] temporary]) {
 					[tempChildLink set];
 				} else {
 					[permChildLink set];
@@ -410,7 +326,7 @@ enum ZSVbutton
 				float left = xpos - w/2.0;
 				float right = xpos + w/2.0;
 				
-				ZoomSkeinItem* itemParent = [[item objectForKey: ZSitem] parent];
+				ZoomSkeinItem* itemParent = [[layout itemForData: item] parent];
 
 				// Correct for shadow
 				right -= 20.0;
@@ -440,7 +356,7 @@ enum ZSVbutton
 				
 				if (itemParent != nil) {
 					// Can't unlock the 'start' item
-					NSImage* lock = [[item objectForKey: ZSitem] temporary]?unlocked:locked;
+					NSImage* lock = [[layout itemForData: item] temporary]?unlocked:locked;
 					
 					[[self class] drawButton: lock
 									 atPoint: NSMakePoint(right, ypos + 18)
@@ -470,6 +386,7 @@ enum ZSVbutton
 	}
 	
 	skein = [sk retain];
+	[layout setRootItem: [sk rootItem]];
 	
 	[[NSNotificationCenter defaultCenter] addObserver: self
 											 selector: @selector(skeinDidChange:)
@@ -503,147 +420,27 @@ enum ZSVbutton
 	}
 }
 
-- (NSMutableDictionary*) layoutSkeinItem: (ZoomSkeinItem*) item
-							   withLevel: (int) level {
-	if (item == nil) return nil;
-	
-	NSEnumerator* childEnum = [[item children] objectEnumerator];
-	ZoomSkeinItem* child;
-	float position = 0.0;
-	float lastPosition = 0.0;
-	float lastWidth = 0.0;
-	NSMutableDictionary* childItem;
-	
-	NSMutableArray* children = [NSMutableArray array];
-		
-	while (child = [childEnum nextObject]) {
-		// Layout the child item
-		childItem = [self layoutSkeinItem: child
-								withLevel: level+1];
-		
-		// Position it (first iteration: we center later)
-		position += lastWidth/2.0; // Add in halves: we're dealing with object centers
-		lastPosition = position;
-		
-		lastWidth = [[childItem objectForKey: ZSfullwidth] floatValue];
-		position += lastWidth/2.0;
-		
-		[childItem setObject: [NSNumber numberWithFloat: position]
-					  forKey: ZSposition];
-		
-		// Add to the list of children for this item
-		[children addObject: childItem];
-	}
-	
-	// Update position to be the total width
-	position += lastWidth/2.0;
-
-	// Should only happen if there are no children
-	if (position == 0.0) position = itemWidth;
-	
-	// Center the children	
-	float center = position / 2.0;
-
-	childEnum = [children objectEnumerator];
-	while (childItem = [childEnum nextObject]) {
-		[childItem setObject: [NSNumber numberWithFloat: [[childItem objectForKey: ZSposition] floatValue] - center]
-					  forKey: ZSposition];
-	}
-	
-	// Adjust the width to fit the text, if required
-	float ourWidth = [[item command] sizeWithAttributes: itemTextAttributes].width;
-	if (position < (ourWidth + itemPadding)) position = ourWidth + itemPadding;
-	
-	// Return the result
-	NSMutableDictionary* result = [ZoomSkeinView item: item
-											withWidth: ourWidth
-											fullWidth: position
-												level: level];
-	
-	[result setObject: children
-			   forKey: ZSchildren];
-	
-	// Index this item
-	[itemForItem setObject: result
-					forKey: [NSValue valueWithPointer: item]];
-		
-	// Add to the 'levels' array, which contains which items to draw at which levels
-	while (level >= [levels count]) {
-		[levels addObject: [NSMutableArray array]];
-	}
-	
-	[[levels objectAtIndex: level] addObject: result];
-	
-	return result;
-}
-
-- (void) fixPositions: (NSMutableDictionary*) item
-		   withOffset: (float) offset {
-	// After running through layoutSkeinItem, all positions are relative to the 'parent' item
-	// This routine fixes this
-	
-	// Move this item by the offset (fixing it with an absolute position)
-	float oldPos = [[item objectForKey: ZSposition] floatValue];
-	float newPos = oldPos + offset;
-	[item setObject: [NSNumber numberWithFloat: newPos]
-			 forKey: ZSposition];
-	
-	// Fix the children to have absolute positions
-	NSEnumerator* childEnum = [[item objectForKey: ZSchildren] objectEnumerator];
-	NSMutableDictionary* child;
-	
-	while (child = [childEnum nextObject]) {
-		[self fixPositions: child
-				withOffset: newPos];
-	}
-	
-	float leftPos = newPos - ([[item objectForKey: ZSfullwidth] floatValue]/2.0);
-	if ((-leftPos) > globalOffset)
-		globalOffset = -leftPos;
-	if (newPos > globalWidth)
-		globalWidth = newPos;
-}
-
 - (void) layoutSkein {
 	// Only actually layout if we're marked as needing it
 	if (!skeinNeedsLayout) return;
 
 	skeinNeedsLayout = NO;
 	
-	if (skein == nil) return;
+	// Re-layout this skein
+	[layout setRootItem: [skein rootItem]];
+	[layout layoutSkein];
 	
-	if (itemForItem) [itemForItem release];
-	itemForItem = [[NSMutableDictionary alloc] init];
+	// Resize this view
+	NSRect newBounds = [self frame];
 	
-	// Perform initial layout of the items
-	if (tree) {
-		[tree release];
-		tree = nil;
-	}
-	if (levels) {
-		[levels release];
-		levels = nil;
-	}
-	levels = [[NSMutableArray alloc] init];
+	newBounds.size = [layout size];
+	/*
+	newBounds.size.width = [[tree objectForKey: ZSfullwidth] floatValue];
+	//newBounds.size.width = globalWidth + globalOffset + itemWidth/2.0;
+	newBounds.size.height = ((float)[levels count]) * itemHeight;
+	 */
 	
-	tree = [[self layoutSkeinItem: [skein rootItem]
-						withLevel: 0] retain];
-	
-	if (tree != nil) {
-		// Transform the 'relative' positions of all items into 'absolute' positions
-		globalOffset = 0; globalWidth = 0;
-		[self fixPositions: tree
-				withOffset: 0];
-	
-		// Resize this view
-		NSRect newBounds = [self frame];
-	
-		newBounds.size.width = [[tree objectForKey: ZSfullwidth] floatValue];
-		//newBounds.size.width = globalWidth + globalOffset + itemWidth/2.0;
-		newBounds.size.height = ((float)[levels count]) * itemHeight;
-	
-		[self setFrameSize: newBounds.size];
-	}
+	[self setFrameSize: newBounds.size];
 	
 	// View needs redisplaying
 	[self setNeedsDisplay: YES];
@@ -659,13 +456,13 @@ enum ZSVbutton
 	
 	if (skeinNeedsLayout) [self layoutSkein];
 	
-	NSDictionary* foundItem = [self itemForItem: item];
+	NSDictionary* foundItem = [layout dataForItem: item];
 	
 	if (foundItem) {
 		float xpos, ypos;
 		
-		xpos = [[foundItem objectForKey: ZSposition] floatValue] + globalOffset;
-		ypos = [[foundItem objectForKey: ZSlevel] intValue]*itemHeight + (itemHeight / 2);
+		xpos = [layout xposForItem: item];
+		ypos = [layout levelForItem: item]*itemHeight + (itemHeight / 2);
 		
 		NSRect visRect = [self visibleRect];
 		
@@ -676,56 +473,6 @@ enum ZSVbutton
 	} else {
 		NSLog(@"ZoomSkeinView: Attempt to scroll to nonexistant item");
 	}
-}
-
-- (ZoomSkeinItem*) itemAtPoint: (NSPoint) point {
-	// Searches for the item that is under the given point
-	
-	// Recall that items are drawn at:
-	//		float ypos = ((float)level)*itemHeight + (itemHeight / 2.0);
-	//      The 'lozenge' extends -8 upwards, and has a height of 30 pixels
-	//		There needs to be some space for icon controls, but we'll leave them out for the moment
-	//		Levels start at 0
-	
-	// Check for level
-	int level = floorf(point.y/itemHeight);
-	
-	if (level < 0 || level >= [levels count]) return nil;
-	
-	// Position in level
-	float levelPos = ((float)level)*itemHeight + (itemHeight / 2.0);
-	float levelOffset = point.y - levelPos;
-	
-	// Must correspond to the lozenge
-	//if (levelOffset < -8) return nil;
-	//if (levelOffset >= 22) return nil;
-	if (levelOffset < -18) return nil;
-	if (levelOffset >= 34) return nil;
-	
-	// Find which item is selected (if any)
-	
-	// Recall that item positions are centered. Widths are calculated
-	NSEnumerator* levelEnum = [[levels objectAtIndex: level] objectEnumerator];
-	NSDictionary* item;
-	
-	while (item = [levelEnum nextObject]) {
-		float itemWidth = [[item objectForKey: ZSwidth] floatValue];
-		float itemPos = [[item objectForKey: ZSposition] floatValue] + globalOffset;
-		
-		// There's a +40 border either side of the item
-		itemWidth += 40.0;
-		
-		// Item is centered
-		itemWidth /= 2.0;
-		
-		if (point.x > (itemPos - itemWidth) && point.x < (itemPos + itemWidth)) {
-			// This is the item
-			return [item objectForKey: ZSitem];
-		}
-	}
-	
-	// Nothing found
-	return nil;
 }
 
 // = Skein mouse sensitivity =
@@ -774,7 +521,7 @@ enum ZSVbutton
 	int level;
 	
 	if (startLevel < 0) startLevel = 0;
-	if (endLevel >= [levels count]) endLevel = [levels count]-1;
+	if (endLevel >= [layout levels]) endLevel = [layout levels]-1;
 	
 	// assumeInside: NO doesn't work if the pointer is already inside (acts exactly the same as assumeInside: YES 
 	// in this case). Therefore we need to check manually, which is very annoying.
@@ -791,11 +538,11 @@ enum ZSVbutton
 	[trackingRects addObject: [NSNumber numberWithInt: tag]];
 	
 	for (level = startLevel; level<=endLevel; level++) {
-		NSEnumerator* itemEnum = [[levels objectAtIndex: level] objectEnumerator];
+		NSEnumerator* itemEnum = [[layout dataForLevel: level] objectEnumerator];
 		NSDictionary* item;
 		
 		while (item = [itemEnum nextObject]) {
-			NSRect itemRect = [self activeAreaForItem: item];
+			NSRect itemRect = [layout activeAreaForItem: item];
 			
 			// Same reasoning as before
 			[trackingItems addObject: item];
@@ -906,8 +653,8 @@ enum ZSVbutton
 	NSPoint pointInView = [event locationInWindow];
 	pointInView = [self convertPoint: pointInView fromView: nil];
 	
-	ZoomSkeinItem* realItem = [self itemAtPoint: pointInView];
-	NSDictionary* realItemD = [self itemForItem: realItem];
+	ZoomSkeinItem* realItem = [layout itemAtPoint: pointInView];
+	NSDictionary* realItemD = [layout dataForItem: realItem];
 	
 	if (realItemD != trackedItem) {
 		if (!overWindow) [self mouseEnteredView];
@@ -960,7 +707,7 @@ enum ZSVbutton
 		// down.
 		
 		// Create an image of this item
-		NSRect itemRect = [self activeAreaForItem: clickedItem];
+		NSRect itemRect = [layout activeAreaForItem: clickedItem];
 		NSImage* itemImage;
 		
 	}
@@ -1015,19 +762,19 @@ enum ZSVbutton
 				case ZSVmainItem:
 					if ([event modifierFlags]&NSAlternateKeyMask && [event clickCount] == 1) {
 						// Clicking with the option key edits immediately
-						ZoomSkeinItem* skeinItem = [trackedItem objectForKey: ZSitem];
+						ZoomSkeinItem* skeinItem = [layout itemForData: trackedItem];
 
 						[self editItem: skeinItem];
 					} else if ([event modifierFlags]&NSCommandKeyMask || [event clickCount] == 2) {
 						// Run the game to this point (double- or command- click)
-						ZoomSkeinItem* skeinItem = [trackedItem objectForKey: ZSitem];
+						ZoomSkeinItem* skeinItem = [layout itemForData: trackedItem];
 
 						[self playToPoint: skeinItem];
 					} else if ([event clickCount] == 1) {
 						// Select this item - queue up for editing if required
-						ZoomSkeinItem* skeinItem = [trackedItem objectForKey: ZSitem];
+						ZoomSkeinItem* skeinItem = [layout itemForData: trackedItem];
 						
-						if (selectedItem != skeinItem) {
+						if ([layout selectedItem] != skeinItem) {
 							// Change the selected item
 							[self setSelectedItem: skeinItem];
 						} else {
@@ -1052,12 +799,12 @@ enum ZSVbutton
 - (enum ZSVbutton) buttonUnderPoint: (NSPoint) point
 							 inItem: (NSDictionary*) item {
 	// Calculate info about the location of this item
-	float xpos = [[item objectForKey: ZSposition] floatValue] + globalOffset;
-	float ypos = ((float)[[item objectForKey: ZSlevel] intValue]) * itemHeight + (itemHeight/2.0);
+	float xpos = [layout xposForData: item];
+	float ypos = ((float)[layout levelForData: item]) * itemHeight + (itemHeight/2.0);
 
 	NSDictionary* fontAttrs = itemTextAttributes;
 	
-	NSSize size = [[[item objectForKey: ZSitem] command] sizeWithAttributes: fontAttrs];
+	NSSize size = [[[layout itemForData: item] command] sizeWithAttributes: fontAttrs];
 
 	float w = size.width; //[[item objectForKey: ZSwidth] floatValue];
 	if (w < 32.0) w = 32.0;
@@ -1096,7 +843,7 @@ enum ZSVbutton
 
 - (void) addButtonClicked: (NSEvent*) event
 				 withItem: (NSDictionary*) item {
-	ZoomSkeinItem* skeinItem = [item objectForKey: ZSitem];
+	ZoomSkeinItem* skeinItem = [layout itemForData: item];
 	
 	// Add a new, blank item
 	ZoomSkeinItem* newItem = 
@@ -1116,7 +863,7 @@ enum ZSVbutton
 
 - (void) deleteButtonClicked: (NSEvent*) event
 					withItem: (NSDictionary*) item {
-	ZoomSkeinItem* skeinItem = [item objectForKey: ZSitem];
+	ZoomSkeinItem* skeinItem = [layout itemForData: item];
 	ZoomSkeinItem* itemParent = [skeinItem parent];
 	
 	if ([skeinItem parent] == nil) return;
@@ -1144,7 +891,7 @@ enum ZSVbutton
 
 - (void) lockButtonClicked: (NSEvent*) event
 				  withItem: (NSDictionary*) item {
-	ZoomSkeinItem* skeinItem = [item objectForKey: ZSitem];
+	ZoomSkeinItem* skeinItem = [layout itemForData: item];
 
 	if ([skeinItem parent] == nil) return;
 
@@ -1248,7 +995,7 @@ enum ZSVbutton
 	}
 	
 	// Allows you to edit an item's command
-	NSDictionary* item = [self itemForItem: skeinItem];
+	NSDictionary* item = [layout dataForItem: skeinItem];
 	
 	if (item == nil) {
 		NSLog(@"ZoomSkeinView: Item not found for editing");
@@ -1256,7 +1003,7 @@ enum ZSVbutton
 	}
 		
 	// Area of the text for this item
-	NSRect itemFrame = [self textAreaForItem: item];
+	NSRect itemFrame = [layout textAreaForItem: item];
 	
 	// Make sure the item is the right size
 	float minItemWidth = itemWidth - 32.0;
@@ -1303,16 +1050,15 @@ enum ZSVbutton
 // = Selecting items =
 
 - (void) setSelectedItem: (ZoomSkeinItem*) item {
-	if (item == selectedItem) return;
+	if (item == [layout selectedItem]) return;
 	
-	[selectedItem release];
-	selectedItem = [item retain];
+	[layout setSelectedItem: item];
 	
 	[self setNeedsDisplay: YES];
 }
 
 - (ZoomSkeinItem*) selectedItem {
-	return selectedItem;
+	return [layout selectedItem];
 }
 
 // = Playing the game =
