@@ -65,6 +65,7 @@ static struct
 
 static ZByte* stacks = NULL;
 static char*  detail = NULL;
+static ZWord* stackpos = NULL;
 
 static int format_stacks(ZStack* stack, ZFrame* frame)
 {
@@ -79,7 +80,7 @@ static int format_stacks(ZStack* stack, ZFrame* frame)
 
   pos = size;
   size += 8+frame->nlocals*2+frame->frame_size*2;
-  stacks = realloc(stacks, sizeof(ZByte)*size);
+  stacks = realloc(stacks, sizeof(ZByte)*((size>>8)+1)*256);
 
   stacks[pos]   = frame->ret>>16;
   stacks[pos+1] = frame->ret>>8;
@@ -100,11 +101,11 @@ static int format_stacks(ZStack* stack, ZFrame* frame)
       stacks[pos+2*x+1] = frame->local[x+1];
     }
 
-  pos += 2*frame->nlocals;
+  pos = pos + 2*(frame->nlocals);
   for (x=frame->frame_size; x>0; x--)
     {
-      stacks[pos++] = stack->stack[-x]>>8;
-      stacks[pos++] = stack->stack[-x];
+      stacks[pos++] = (*stackpos)>>8;
+      stacks[pos++] = *(stackpos++);
     }
 
   if (pos>size)
@@ -149,14 +150,14 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
   static inline void wblock(ZByte* x, int len)
     {
       flen += len;
-      data = realloc(data, flen);
+      data = realloc(data, flen+16);
       memcpy(data + flen - len, x, len);
     }
   
   static inline void wdword(ZDWord w)
     {
       flen +=4;
-      data = realloc(data, flen);
+      data = realloc(data, flen+16);
       data[flen-4] = w>>24;
       data[flen-3] = w>>16;
       data[flen-2] = w>>8;
@@ -166,7 +167,7 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
   static inline void wword(ZUWord w)
     {
       flen += 2;
-      data = realloc(data, flen);
+      data = realloc(data, flen+16);
       data[flen-2] = w>>8;
       data[flen-1] = w;
     }
@@ -174,7 +175,7 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
   static inline void wbyte(ZUWord w)
     {
       flen += 1;
-      data = realloc(data, flen);
+      data = realloc(data, flen+16);
       data[flen-1] = w;
     }
 
@@ -286,6 +287,7 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
     }
 
   /* Stack frames */
+  stackpos = stack->stack;
   size = format_stacks(stack, stack->current_frame);
   wblock(blocks[Stks].text, 4);
   wdword(size);

@@ -62,7 +62,11 @@ void rc_load(void)
 
   yyin = fopen(filename, "r");
   if (yyin==NULL)
-    zmachine_fatal("Unable to open resource file '%s'", filename);
+    {
+      yyin = fopen(DATADIR "/zoomrc", "r");
+      if (yyin == NULL)
+	zmachine_fatal("Unable to open resource file '%s', or the systems default file at " DATADIR "/zoomrc", filename);
+    }
 
   _rc_line = 1;
   rc_parse();
@@ -82,6 +86,18 @@ void rc_set_game(char* serial, int revision)
   defgame = hash_get(rc_hash, "default", 7);
   if (defgame == NULL)
     zmachine_fatal("No default entry in .zoomrc");
+}
+
+char* rc_get_game_name(char* serial, int revision)
+{
+  char hash[20];
+  rc_game* game;
+
+  sprintf(hash, "%i.%.6s", revision, serial);
+  game = hash_get(rc_hash, hash, strlen(hash));
+  if (game == NULL)
+    return NULL;
+  return game->name;
 }
 
 char* rc_get_name(void)
@@ -159,4 +175,13 @@ int rc_get_revision(void)
   return game->revision;
 }
 
-
+char* rc_get_gamedir(void)
+{
+  if (game->gamedir == NULL)
+    {
+      if (defgame->gamedir == NULL)
+	return DATADIR "/games";
+      return defgame->gamedir;
+    }
+  return game->gamedir;
+}

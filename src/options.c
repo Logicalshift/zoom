@@ -34,7 +34,7 @@
 const char* argp_program_version     = "Zoom " VERSION;
 const char* argp_program_bug_address = "bugs@logicalshift.co.uk";
 static char doc[]      = "Zoom - A Z-Machine";
-static char args_doc[] = "story-file [save-file]";
+static char args_doc[] = "[story-file] [save-file]";
 
 static struct argp_option options[] = {
   { "warnings", 'w', 0, 0, "Display interpreter warnings" },
@@ -77,8 +77,6 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
       break;
 
     case ARGP_KEY_END:
-      if (state->arg_num < 1)
-	argp_usage(state);
       break;
       
     default:
@@ -155,6 +153,11 @@ void get_options(int argc, char** argv, arguments* args)
 
 void get_options(int argc, char** argv, arguments* args)
 {
+  if (argc == 1)
+    {
+      args->story_file = NULL;
+      args->save_file  = NULL;      
+    }
   if (argc == 2)
     {
       args->story_file = argv[1];

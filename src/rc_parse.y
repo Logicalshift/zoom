@@ -17,7 +17,7 @@ extern hash rc_hash;
 extern void rc_error(char*);
 extern int  rc_lex(void);
 
-#define EMPTY_GAME(x) x.interpreter = -1; x.revision = -1; x.name = NULL; x.fonts = NULL; x.n_fonts = -1; x.colours = NULL; x.n_colours = -1;
+#define EMPTY_GAME(x) x.interpreter = -1; x.revision = -1; x.name = NULL; x.fonts = NULL; x.n_fonts = -1; x.colours = NULL; x.n_colours = -1; x.gamedir = NULL;
 
 static inline rc_game merge_games(const rc_game* a, const rc_game* b)
 {
@@ -77,6 +77,11 @@ static inline rc_game merge_games(const rc_game* a, const rc_game* b)
   else
     rc_error("Can only have one set of colours per block");
 
+  if (a->gamedir == NULL)
+    r.gamedir = b->gamedir;
+  else
+    r.gamedir = a->gamedir;
+
   return r;
 }
 %}
@@ -102,6 +107,9 @@ static inline rc_game merge_games(const rc_game* a, const rc_game* b)
 %token BOLD
 %token ITALIC
 %token FIXED
+%token GAMEDIR
+%token SAVEDIR
+%token SOUNDZIP
 
 %token <str> GAMEID
 %token <num> NUMBER
@@ -226,6 +234,11 @@ RCOption:	  INTERPRETER NUMBER
 		| COLOURS ColourList
 		    {
 		      $$ = $2;
+		    }
+                | GAMEDIR STRING
+		    {
+		      EMPTY_GAME($$);
+		      $$.gamedir = $2;
 		    }
 		;
 

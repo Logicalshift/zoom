@@ -201,6 +201,7 @@ typedef struct ZMachine
   /* Output streams */
   int    screen_on;
   int    transcript_on;
+  int    transcript_commands;
   FILE*  transcript_file;
 
   int    memory_on;

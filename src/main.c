@@ -32,6 +32,7 @@
 #include "interp.h"
 #include "rc.h"
 #include "stream.h"
+#include "menu.h"
 
 #include "display.h"
 
@@ -56,12 +57,24 @@ int main(int argc, char** argv)
   machine.track_attributes = args.track_attr;
   machine.track_properties = args.track_props;
 #endif
-    
-  zmachine_load_story(args.story_file, &machine);
-  rc_load();
-  rc_set_game(Address(ZH_serial), Word(ZH_release));
 
-  display_initialise();
+  rc_load();
+  
+  if (args.story_file == NULL)
+    {
+      rc_set_game("xxxxxx", 65535);
+      display_initialise();
+      args.story_file = menu_get_story();
+      zmachine_load_story(args.story_file, &machine);
+      rc_set_game(Address(ZH_serial), Word(ZH_release));
+      display_reinitialise();
+    }
+  else
+    {
+      zmachine_load_story(args.story_file, &machine);
+      rc_set_game(Address(ZH_serial), Word(ZH_release));
+      display_initialise();
+    }
 
   {
     char  title[256];
@@ -70,7 +83,7 @@ int main(int argc, char** argv)
 
     len = strlen(args.story_file);
 
-    slashpos = 0;
+    slashpos = -1;
     name = malloc(len+1);
     for (x=0; x<len; x++)
       {
@@ -151,32 +164,32 @@ int main(int argc, char** argv)
 
       display_set_colour(0, 7); display_set_font(0);
       display_set_window(0);
-      zmachine_run(3);
+      zmachine_run(3, args.save_file);
       break;
 #endif
 #ifdef SUPPORT_VERSION_4
     case 4:
-      zmachine_run(4);
+      zmachine_run(4, args.save_file);
       break;
 #endif
 #ifdef SUPPORT_VERSION_5
     case 5:
       display_set_cursor(0,0);
-      zmachine_run(5);
+      zmachine_run(5, args.save_file);
       break;
     case 7:
       display_set_cursor(0,0);
-      zmachine_run(7);
+      zmachine_run(7, args.save_file);
       break;
     case 8:
       display_set_cursor(0,0);
-      zmachine_run(8);
+      zmachine_run(8, args.save_file);
       break;
 #endif
 #ifdef SUPPORT_VERSION_6
     case 6:
       display_set_cursor(1,1);
-      zmachine_run(6);
+      zmachine_run(6, args.save_file);
       break;
 #endif
 

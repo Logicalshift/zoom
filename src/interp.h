@@ -26,6 +26,7 @@
 
 #include "ztypes.h"
 
-extern void zmachine_run(const int version);
+extern void zmachine_run(const int version,
+			 char* savefile);
      
 #endif

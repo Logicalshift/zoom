@@ -127,6 +127,8 @@ void zmachine_fatal(char* format, ...)
     {
       machine.display_active = 0;
 
+      display_set_font(0);
+
       display_set_style(0);
       display_set_style(2);
       display_set_colour(7, 0);

@@ -107,11 +107,23 @@ void stream_prints(const char* s)
 
 void stream_input(const char* s)
 {
-  if (machine.transcript_on == 1)
+  if (machine.transcript_on == 1 ||
+      machine.transcript_commands == 1)
     {
       fputs(s, machine.transcript_file);
       fputc('\n', machine.transcript_file);
     }
+}
+
+int stream_readline(char* buf, int len, long int timeout)
+{
+  int r;
+  
+  r = display_readline(buf, len, timeout);
+  if (r)
+    stream_input(buf);
+
+  return r;
 }
 
 void stream_flush_buffer(void)

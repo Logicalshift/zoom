@@ -74,13 +74,14 @@ ZWORD_TYPE = @ZWORD_TYPE@
 
 bin_PROGRAMS =  	zoom
 
+pkgdata_DATA = zoomrc
 
 EXTRA_DIST = zcode.ops
 
-zoom_SOURCES =  	main.c interp.c file.c options.c zmachine.c zscii.c xdisplay.c 	hash.c tokenise.c stream.c font3.c state.c pix.c rc.c rc_parse.y 	rc_lex.l 		file.h zmachine.h options.h interp.h zscii.h display.h hash.h 	tokenise.h stream.h font3.h state.h pix.h rc.h rcp.h rc_parse.h
+zoom_SOURCES =  	main.c interp.c file.c options.c zmachine.c zscii.c xdisplay.c 	hash.c tokenise.c stream.c font3.c state.c pix.c rc.c rc_parse.y 	rc_lex.l menu.c 		file.h zmachine.h options.h interp.h zscii.h display.h hash.h 	tokenise.h stream.h font3.h state.h pix.h rc.h rcp.h rc_parse.h 	menu.h
 
 
-CFLAGS = @CFLAGS@ @X_CFLAGS@
+CFLAGS = @CFLAGS@ @X_CFLAGS@ -DDATADIR="\"${pkgdatadir}\""
 LIBS = @LIBS@ @X_PRE_LIBS@ @X_LIBS@ -lX11 @X_EXTRA_LIBS@ @LEXLIB@
 YFLAGS = -d
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -98,7 +99,7 @@ X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 zoom_OBJECTS =  main.o interp.o file.o options.o zmachine.o zscii.o \
 xdisplay.o hash.o tokenise.o stream.o font3.o state.o pix.o rc.o \
-rc_parse.o rc_lex.o
+rc_parse.o rc_lex.o menu.o
 zoom_LDADD = $(LDADD)
 zoom_DEPENDENCIES = 
 zoom_LDFLAGS = 
@@ -107,6 +108,8 @@ LEXLIB = @LEXLIB@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+DATA =  $(pkgdata_DATA)
+
 DIST_COMMON =  Makefile.am Makefile.in rc_lex.c rc_parse.c ztypes.h.in
 
 
@@ -115,9 +118,9 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 TAR = tar
 GZIP_ENV = --best
 DEP_FILES =  .deps/file.P .deps/font3.P .deps/hash.P .deps/interp.P \
-.deps/main.P .deps/options.P .deps/pix.P .deps/rc.P .deps/rc_lex.P \
-.deps/rc_parse.P .deps/state.P .deps/stream.P .deps/tokenise.P \
-.deps/xdisplay.P .deps/zmachine.P .deps/zscii.P
+.deps/main.P .deps/menu.P .deps/options.P .deps/pix.P .deps/rc.P \
+.deps/rc_lex.P .deps/rc_parse.P .deps/state.P .deps/stream.P \
+.deps/tokenise.P .deps/xdisplay.P .deps/zmachine.P .deps/zscii.P
 SOURCES = $(zoom_SOURCES)
 OBJECTS = $(zoom_OBJECTS)
 
@@ -187,6 +190,25 @@ zoom: $(zoom_OBJECTS) $(zoom_DEPENDENCIES)
 	else :; fi
 rc_parse.h: rc_parse.c
 
+
+install-pkgdataDATA: $(pkgdata_DATA)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)
+	@list='$(pkgdata_DATA)'; for p in $$list; do \
+	  if test -f $(srcdir)/$$p; then \
+	    echo " $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(pkgdatadir)/$$p"; \
+	    $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(pkgdatadir)/$$p; \
+	  else if test -f $$p; then \
+	    echo " $(INSTALL_DATA) $$p $(DESTDIR)$(pkgdatadir)/$$p"; \
+	    $(INSTALL_DATA) $$p $(DESTDIR)$(pkgdatadir)/$$p; \
+	  fi; fi; \
+	done
+
+uninstall-pkgdataDATA:
+	@$(NORMAL_UNINSTALL)
+	list='$(pkgdata_DATA)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(pkgdatadir)/$$p; \
+	done
 
 tags: TAGS
 
@@ -280,20 +302,20 @@ installcheck: installcheck-am
 install-exec-am: install-binPROGRAMS
 install-exec: install-exec-am
 
-install-data-am:
+install-data-am: install-pkgdataDATA
 install-data: install-data-am
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 install: install-am
-uninstall-am: uninstall-binPROGRAMS
+uninstall-am: uninstall-binPROGRAMS uninstall-pkgdataDATA
 uninstall: uninstall-am
-all-am: Makefile $(PROGRAMS)
+all-am: Makefile $(PROGRAMS) $(DATA)
 all-redirect: all-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
 installdirs:
-	$(mkinstalldirs)  $(DESTDIR)$(bindir)
+	$(mkinstalldirs)  $(DESTDIR)$(bindir) $(DESTDIR)$(pkgdatadir)
 
 
 mostlyclean-generic:
@@ -333,17 +355,18 @@ maintainer-clean: maintainer-clean-am
 .PHONY: mostlyclean-binPROGRAMS distclean-binPROGRAMS clean-binPROGRAMS \
 maintainer-clean-binPROGRAMS uninstall-binPROGRAMS install-binPROGRAMS \
 mostlyclean-compile distclean-compile clean-compile \
-maintainer-clean-compile tags mostlyclean-tags distclean-tags \
-clean-tags maintainer-clean-tags distdir mostlyclean-depend \
-distclean-depend clean-depend maintainer-clean-depend info-am info \
-dvi-am dvi check check-am installcheck-am installcheck install-exec-am \
-install-exec install-data-am install-data install-am install \
-uninstall-am uninstall all-redirect all-am all installdirs \
-mostlyclean-generic distclean-generic clean-generic \
-maintainer-clean-generic clean mostlyclean distclean maintainer-clean
+maintainer-clean-compile uninstall-pkgdataDATA install-pkgdataDATA tags \
+mostlyclean-tags distclean-tags clean-tags maintainer-clean-tags \
+distdir mostlyclean-depend distclean-depend clean-depend \
+maintainer-clean-depend info-am info dvi-am dvi check check-am \
+installcheck-am installcheck install-exec-am install-exec \
+install-data-am install-data install-am install uninstall-am uninstall \
+all-redirect all-am all installdirs mostlyclean-generic \
+distclean-generic clean-generic maintainer-clean-generic clean \
+mostlyclean distclean maintainer-clean
 
 
-interp.c: interp_gen.h interp_z3.h interp_z4.h interp_z5.h interp_z6.h varop.h
+$(srcdir)/interp.c: interp_gen.h interp_z3.h interp_z4.h interp_z5.h interp_z6.h varop.h
 
 varop.h: $(top_srcdir)/builder/varopdecode.pl
 	 @PERL@ $(top_srcdir)/builder/varopdecode.pl 4 varop >varop.h

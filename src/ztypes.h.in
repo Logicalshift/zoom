@@ -19,6 +19,7 @@
 
 /*
  * Data types that are used to help describe the Z-Machine
+ * @configure_input@
  */
 
 #ifndef __ZTYPES_H

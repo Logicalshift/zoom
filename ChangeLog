@@ -1,5 +1,17 @@
 2000-11-09  Andrew Hunter    <andrew@logicalshift.co.uk>
 
+        * bug fixed in xdisplay.c that caused the cursor to slowly
+	creep across the screen in Border Zone
+
+	* The Lurking Horror accesses out-of-range property 32 sometimes.
+	Changed this condition to a warning instead of a fatal error
+	
+	* menu added, to appear when the user specifies no game on the
+	commandline
+
+	* bug fixed in state.c - it wasn't storing the stack correctly
+	(or, indeed, at all)	
+
 	* V6 support improved... ZorkZero looks slightly better
 
 2000-11-08  Andrew Hunter    <andrew@logicalshift.co.uk>
@@ -10,9 +22,9 @@
 	subroutines. This is a manual inlining of the functions - we get the
 	speed increases encountered before, but without the compiler
 	problems, or the size increase. Standard speed of the interpreter
-	is just over twice the speed of frotz. The new format of the
-	zcode.ops file removed the need for op.c altogether.
-	
+	is just over twice the speed of frotz (2.32). The new format of
+	the zcode.ops file removed the need for op.c altogether.
+
 2000-11-07  Andrew Hunter    <andrew@logicalshift.co.uk>
 
 	* version changed to 0.9.99dev4

@@ -172,3 +172,26 @@ Why it goes fast
    That's actually about it. Zoom is probably actually slower than
    frotz in a few areas, I'll get round to writing a few benchmarks to 
    check them out and see what can be improved.
+
+Z-Machine extensions
+====================
+
+   Zoom provides a selection of extensions to the Z-Machine:
+
+start_timer (EXT:128) (no arguments, neither branch nor store)
+    This makes a note of the time this instruction is used. Normally this
+    will be the CPU clock time returned by clock().
+
+stop_timer (EXT:129)
+    This makes a note of the time this instruction is used, storing it
+    seperately from the time marked by start_timer.
+
+read_timer (EXT:130) (store)
+    This stores the difference between the start time and end time, as
+    defined by using the instruction above, in the variable. This time is
+    in centiseconds.
+
+print_timer (EXT:131)
+    This displays the difference between the start time and end time as a
+    decimal number of seconds, to centisecond precision.
+

@@ -358,6 +358,116 @@ void display_initialise(void)
   display_clear();
 }
 
+void display_reinitialise(void)
+{
+  rc_font*    fonts;
+  rc_colour*  cols;
+  int         num,x,y;
+  XSizeHints* hints;
+
+  /* Deallocate resources */
+  for (x=0; x<n_fonts; x++)
+    {
+      XFreeFont(x_display, x_fonti[x]);
+    }
+  for (x=0; x<N_COLS; x++)
+    {
+      XFreeColors(x_display, DefaultColormap(x_display, x_screen),
+		  &x_colour[x].pixel, 1, 0);
+    }
+
+  /* Reallocate fonts */
+  fonts = rc_get_fonts(&num);
+  n_fonts = 0;
+
+  for (x=0; x<num; x++)
+    {
+      if (fonts[x].num <= 0)
+	zmachine_fatal("Font numbers must be positive integers");
+      if (fonts[x].num > n_fonts)
+	{
+	  n_fonts = fonts[x].num;
+	  x_font = realloc(x_font, sizeof(Font)*n_fonts);
+	  x_fonti = realloc(x_fonti, sizeof(XFontStruct*)*n_fonts);
+	}
+
+      x_fonti[fonts[x].num-1] = XLoadQueryFont(x_display, fonts[x].name);
+      if (x_fonti[fonts[x].num-1] == NULL)
+	{
+	  x_fonti[fonts[x].num-1] = XLoadQueryFont(x_display, "8x13");
+	  if (x_fonti[fonts[x].num-1] == NULL)
+	    zmachine_fatal("Unable to load font %s (number %i)",
+			   fonts[x].name, fonts[x].num);
+	  else
+	    zmachine_warning("Unable to load font %s (number %i)",
+			     fonts[x].name, fonts[x].num);
+	}
+      x_font[fonts[x].num-1] = x_fonti[fonts[x].num-1]->fid;
+
+      for (y=0; y<fonts[x].n_attr; y++)
+	{
+	  style_font[fonts[x].attributes[y]] = fonts[x].num-1;
+	}
+    }
+    
+  font_x = x_fonti[3]->max_bounds.width;
+  font_y = x_fonti[3]->ascent + x_fonti[3]->descent;
+
+  /* Reallocate colours */
+  cols = rc_get_colours(&num);
+  if (num > 11)
+    {
+      num = 11;
+      zmachine_warning("Maximum of 11 colours");
+    }
+
+  for (x=0; x<num; x++)
+    {
+      x_colour[x+FIRST_ZCOLOUR].red   = cols[x].r<<8;
+      x_colour[x+FIRST_ZCOLOUR].green = cols[x].g<<8;
+      x_colour[x+FIRST_ZCOLOUR].blue  = cols[x].b<<8;
+    }
+  for (x=0; x<N_COLS; x++)
+    {
+      if (!XAllocColor(x_display,
+		       DefaultColormap(x_display, x_screen),
+		       &x_colour[x]))
+	{
+	  fprintf(stderr, "Warning: couldn't allocate colour #%i\n", x);
+	  x_colour[x].pixel = BlackPixel(x_display, x_screen);
+	}
+    }
+  
+  win_x=(font_x*DISPLAY_X);
+  win_y=(font_y*DISPLAY_Y);
+  
+  /* Recreate pixmap */
+  XFreePixmap(x_display, x_pix);
+  x_pix = XCreatePixmap(x_display,
+			x_mainwin,
+			font_x*DISPLAY_X,
+			font_y*DISPLAY_Y,
+			DefaultDepth(x_display, x_screen));
+
+  x_pixgc   = XCreateGC(x_display, x_pix, 0, NULL);
+
+  /* Resize main window */
+  hints = XAllocSizeHints();
+  hints->min_width  = win_x+16;
+  hints->min_height = win_y+16;
+  hints->width      = win_x+16;
+  hints->height     = win_y+16;
+  hints->flags      = PSize|PMinSize;  
+  XSetWMNormalHints(x_display, x_mainwin, hints);
+  XFree(hints);
+  
+  XResizeWindow(x_display, x_mainwin,
+		win_width=(win_x+16),
+		win_height=(win_y+16));
+
+  display_clear();
+}
+
 /*
  * Shuts down
  */
@@ -965,14 +1075,14 @@ int process_events(long int to, char* buf, int buflen)
 
   caret = 0;
 
-  caret_x = CURWIN.xpos+1;
+  caret_x = CURWIN.xpos;
   caret_y = CURWIN.ypos;
   caret_h = CURWIN.line_height;
 
   XSetForeground(x_display, x_caretgc,
 		 x_colour[FIRST_ZCOLOUR+1].pixel^x_colour[FIRST_ZCOLOUR+CURWIN.back].pixel);
 
-  /* display_prints(" "); */
+  display_prints(" ");
   CURWIN.xpos = caret_x;
   do_redraw = 1;
       

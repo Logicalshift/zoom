@@ -33,9 +33,10 @@
 /***                           ----// 888 \\----                           ***/
 
 /* Misc functions */
-extern void display_initialise(void); /* Called on startup */
-extern void display_finalise  (void); /* Called on shutdown */
-extern void display_poll      (void); /* Called frequently to keep the display 'alive' */
+extern void display_initialise  (void); /* Called on startup */
+extern void display_reinitialise(void); /* Called on startup */
+extern void display_finalise    (void); /* Called on shutdown */
+extern void display_poll        (void); /* Called frequently to keep the display 'alive' */
 
 /***                           ----// 888 \\----                           ***/
 

@@ -378,8 +378,8 @@ OPCODE "get_prop"      2OP:0x11 STORE  VERSION 1,2,3
   
   if (uarg1>255 || uarg1 == 0)
     zmachine_fatal("Object out of range");
-  if (uarg2>31)
-    zmachine_fatal("Property out of range");
+  if (uarg2>31 || uarg2 == 0)
+    zmachine_fatal("Property %i out of range", uarg1);
   
   p = get_object_prop_3(uarg1, uarg2);
 
@@ -404,7 +404,7 @@ OPCODE "get_prop"      2OP:0x11 STORE  VERSION 4,5,6,7,8
 
   if (uarg1 == 0)
     zmachine_warning("Object 0 has no properties");
-  if (uarg2>63)
+  if (uarg2>63 || uarg2 == 0)
     zmachine_fatal("Property %i out of range", uarg2);
 
 #ifdef DEBUG
@@ -447,8 +447,12 @@ OPCODE "get_prop_addr" 2OP:0x12 STORE  VERSION 1,2,3
 
   if (uarg1 == 0 || uarg1>255)
     zmachine_fatal("Object out of range");
-  if (uarg2 > 31)
-    zmachine_fatal("Property out of range");
+  if (uarg2 > 31 || uarg2 == 0)
+    {
+      zmachine_warning("Attempt to get address of out of range property %i", uarg2);
+      store(stack, st, 0);
+      goto loop;
+    }
   
   obj_adr = Obj3(uarg1);
 
@@ -480,8 +484,11 @@ OPCODE "get_prop_addr" 2OP:0x12 STORE  VERSION 4,5,6,7,8
       zmachine_warning("Object 0 has no properties");
       store(stack, st, 0);
     }
-  if (uarg2 > 63)
-    zmachine_fatal("Property %i out of range", uarg2);
+  if (uarg2 > 63 || uarg2 == 0)
+    {
+      zmachine_warning("Attempt to get address of out of range property %i", uarg2);
+      store(stack, st, 0);
+    }
   
   obj_adr = Obj4(uarg1);
   
@@ -550,7 +557,7 @@ OPCODE "get_next_prop" 2OP:0x13 STORE  VERSION 4,5,6,7,8
   if (uarg1 == 0)
     zmachine_fatal("Object 0 has no properties");
   if (uarg2 > 63)
-    zmachine_fatal("Property out of range");
+    zmachine_fatal("Property %i out of range", uarg2);
   
   if (uarg2 == 0)
     {
@@ -1287,7 +1294,7 @@ OPCODE "put_prop"       VAR:0x03 ARGS:3               VERSION 1,2,3
   if (argblock.arg[0]>255 || argblock.arg[0] == 0)
     zmachine_fatal("Object out of range");
   if (argblock.arg[1]>31)
-    zmachine_fatal("Property out of range");
+    zmachine_fatal("Property %i out of range", argblock.arg[1]);
   
   p = get_object_prop_3(argblock.arg[0], argblock.arg[1]);
   if (p->isdefault)
@@ -1316,7 +1323,7 @@ OPCODE "put_prop"       VAR:0x03 ARGS:3               VERSION 4,5,6,7,8
   if (argblock.arg[0] == 0)
     zmachine_fatal("Object 0 has no properties");
   if (argblock.arg[1]>63)
-    zmachine_fatal("Property out of range");
+    zmachine_fatal("Property %i out of range", argblock.arg[1]);
   
   p = get_object_prop_4(argblock.arg[0], argblock.arg[1]);
   if (p->isdefault)
@@ -2069,6 +2076,7 @@ OPCODE "restore_undo"  EXT:0x0a ARGS:0 STORE CANJUMP VERSION 5,6,7,8
 OPCODE "print_unicode" EXT:0x0b ARGS:1        VERSION 5,7,8
 OPCODE "check_unicode" EXT:0x0c ARGS:1 STORE  VERSION 5,7,8
 
+####                           ----// 888 \\----                           ####
 # Our own extensions - benchmarking/profiling operations
 OPCODE "start_timer"   EXT:0x80               VERSION 4,5,6,7,8
 %{
