@@ -768,8 +768,8 @@ static void draw_input_text(void)
 			       istrlen(text_buf));
 
       PenNormal();
-      rct.left   = portRect.left + input_x + w + BORDERWIDTH;
-      rct.right  = portRect.left + input_x + input_width;
+      rct.left   = portRect.left + input_x + BORDERWIDTH;
+      rct.right  = portRect.left + input_x + input_width + BORDERWIDTH;
       rct.top    = portRect.top + caret_y + BORDERWIDTH;
       rct.bottom = rct.top + xfont_get_height(font[style_font[(style>>1)&15]]);
       RGBForeColor(carbon_get_colour(bg));
@@ -3066,6 +3066,8 @@ void display_plot_gtext(const int* text, int len,
   int ft;
   int fg, bg;
 
+  float width, height;
+
   if (len == 0)
     return;
 
@@ -3087,6 +3089,41 @@ void display_plot_gtext(const int* text, int len,
 #ifdef USE_QUARTZ
   carbon_set_context();
 #endif
+
+  width = xfont_get_text_width(font[ft],
+			       text, len);
+  height = xfont_get_height(font[ft])+0.5;
+  if (bg >= 0)
+    {
+      if (carbon_prefs.use_quartz)
+	{
+	  CGRect bgr;
+	  RGBColor bg_col;
+	  
+	  bg_col = *carbon_get_colour(bg);
+	  bgr = CGRectMake(x,
+			   pix_h - y - xfont_get_descent(font[ft]),
+			   width,
+			   height);
+	  CGContextSetRGBFillColor(carbon_quartz_context, 
+				   (float)bg_col.red/65536.0,
+				   (float)bg_col.green/65536.0,
+				   (float)bg_col.blue/65536.0,
+				   1.0);
+	  CGContextFillRect(carbon_quartz_context, bgr);
+	}
+      else
+	{
+	  Rect frct;
+
+	  frct.left = x;
+	  frct.right = x+width;
+	  frct.top = y - xfont_get_ascent(font[ft]);
+	  frct.bottom = frct.top + height;
+	  RGBForeColor(carbon_get_colour(bg));
+	  PaintRect(&frct);
+	}
+    }
 
   xfont_set_colours(fg, bg);
   xfont_plot_string(font[ft], x, -y,

@@ -39,6 +39,7 @@
 #include "rc.h"
 #include "hash.h"
 #include "xfont.h"
+#include "format.h"
 #include "carbondisplay.h"
 
 WindowRef carbon_prefdlog    = nil;
@@ -478,7 +479,8 @@ static void pref_store(void)
   /* Reset the display */
   rc_set_game(Address(ZH_serial), Word(ZH_release), Word(ZH_checksum));
   carbon_display_rejig();
-
+  zmachine_mark_statusbar();
+  
   /* Rewrite the preferences file */
   pref_write();
 

@@ -661,6 +661,14 @@ void zmachine_resize_display(ZDisplay* dis)
     }
 }
 
+void zmachine_mark_statusbar(void)
+{
+  if (machine.memory[0] == 6)
+    {
+      Flag(ZH_flags2+1, 2, 1);
+    }
+}
+
 #ifdef DEBUG
 extern ZWord debug_print_var(ZWord val, int var)
 {

@@ -40,6 +40,7 @@
 #include "hash.h"
 #include "blorb.h"
 #include "xfont.h"
+#include "stream.h"
 #include "carbondisplay.h"
 
 enum zcode_type
