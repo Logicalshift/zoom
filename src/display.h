@@ -31,6 +31,7 @@
 #define __DISPLAY_H
 
 /***                           ----// 888 \\----                           ***/
+
 /* Printing & housekeeping functions */
 extern void printf_debug(char* format, ...);
 extern void printf_info (char* format, ...);

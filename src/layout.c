@@ -24,6 +24,94 @@
 #include <stdlib.h>
 
 #include "zmachine.h"
-#include "random.h"
+#include "layout.h"
 
-static layout_window lwin[8] =  
+layout* layout_create(layout_functions* funs)
+{
+  layout* result;
+  
+  result = malloc(sizeof(layout));
+
+  result->n_windows  = 0;
+  result->win        = NULL;
+  result->cur_window = -1;
+  result->fun        = *funs;
+
+  return result;
+}
+
+void layout_create_window(layout* lay,
+			  int     win)
+{
+  if (lay->n_windows < win)
+    {
+      lay->win = malloc(sizeof(layout_window)*(win+1));
+
+      while (lay->n_windows < win)
+	{
+	  lay->win[lay->n_windows].is_array = 0;
+	  lay->win[lay->n_windows].cellline = NULL;
+	  lay->win[lay->n_windows].ar_x     = 0;
+	  lay->win[lay->n_windows].ar_y     = 0;
+	  lay->win[lay->n_windows].am_text  = 0;
+	  lay->win[lay->n_windows].win_x    = 0;
+	  lay->win[lay->n_windows].win_y    = 0;
+	  lay->win[lay->n_windows].text     = NULL;
+	  lay->win[lay->n_windows].line     = NULL;
+	  
+	  lay->n_windows++;
+	}
+    }
+}
+
+void layout_set_window(layout* lay,
+		       int win,
+		       int xsize,
+		       int ysize,
+		       int is_array)
+{
+  int y, x;
+  
+  if (lay->n_windows < win)
+    layout_create_window(lay, win);
+
+  lay->win[win].is_array = is_array;
+
+  if (is_array)
+    {
+      if (xsize > lay->win[win].ar_x)
+	{
+	}
+      
+      if (ysize > lay->win[win].ar_y)
+	{
+	  lay->win[win].cellline = realloc(lay->win[win].cellline,
+					   ysize*sizeof(layout_cell_line));
+
+	  for (y=lay->win[win].ar_y; y<ysize; y++)
+	    {
+	      lay->win[win].cellline[y].cell =
+		malloc(sizeof(int*)*lay->win[win].ar_x);
+	      lay->win[win].cellline[y].fg =
+		malloc(sizeof(char*)*lay->win[win].ar_x);
+	      lay->win[win].cellline[y].bg =
+		malloc(sizeof(char*)*lay->win[win].ar_x);
+	      lay->win[win].cellline[y].font =
+		malloc(sizeof(char*)*lay->win[win].ar_x);
+
+	      for (x=0; x<lay->win[win].ar_x; x++)
+		{
+		  lay->win[win].cellline[y].cell[x] = -1;
+		  lay->win[win].cellline[y].fg[x]   = 0;
+		  lay->win[win].cellline[y].bg[x]   = 0;
+		  lay->win[win].cellline[y].font[x] = 0;
+		}
+	    }
+	}
+      lay->win[win].ar_y = ysize;
+    }
+  else
+    {
+    }
+}
+
