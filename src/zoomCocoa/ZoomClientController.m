@@ -22,7 +22,7 @@
 }
 
 - (void) dealloc {
-    NSLog(@"ZoomClientController dealloc");
+    if (zoomView) [zoomView killTask];
     
     [super dealloc];
 }

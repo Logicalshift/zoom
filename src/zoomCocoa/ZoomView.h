@@ -61,6 +61,8 @@
 - (void) setDelegate: (id) delegate;
 - (id)   delegate;
 
+- (void) killTask;
+
 // Specifying what to run
 - (void) setZMachine: (NSObject<ZMachine>*) machine;
 - (void) runNewServer: (NSString*) serverName;

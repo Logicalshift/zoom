@@ -889,4 +889,8 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     return delegate;
 }
 
+- (void) killTask {
+    if (zoomTask) [zoomTask terminate];
+}
+
 @end
