@@ -19,7 +19,7 @@ struct ZFile {
 // = Files =
 ZFile* open_file_from_object(NSObject<ZFile>* file) {
     if (file == nil)
-        return nil;
+        return NULL;
 
     ZFile* res = malloc(sizeof(ZFile));
 
@@ -82,18 +82,18 @@ ZUWord read_word(ZFile* file) {
 
 ZUWord read_rword(ZFile* file) {
     NSLog(@"read_rword: Function not implemented: %s %i", __FILE__, __LINE__);
+    
+    return 0;
 }
 
 ZByte* read_page(ZFile* file, int page_no) {
     NSLog(@"read_page: Function not implemented: %s %i", __FILE__, __LINE__);
+    
+    return NULL;
 }
 
 ZByte* read_block(ZFile* file, int start_pos, int end_pos) {
     static NSData* result = nil;
-
-    if (result != nil) {
-        [result release];
-    }
 
     [file->theFile seekTo: start_pos];
     result = [file->theFile readBlock: end_pos - start_pos];
@@ -112,15 +112,26 @@ void   read_block2(ZByte* block, ZFile* file, int start_pos, int end_pos) {
     memcpy(block, [result bytes], [result length]);
 }
 
-void   write_block    (ZFile* file, ZByte* block, int length) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
+void   write_block(ZFile* file, ZByte* block, int length) { 
+    [file->theFile writeBlock: [NSData dataWithBytes: block length: length]];
+}
 
-void   write_byte     (ZFile* file, ZByte byte) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
+void write_byte(ZFile* file, ZByte byte) {
+    [file->theFile writeByte: byte];
+}
 
-void   write_word     (ZFile* file, ZWord word) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
+void write_word(ZFile* file, ZWord word) { 
+    [file->theFile writeWord: word];
+}
 
-void   write_dword    (ZFile* file, ZDWord word) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
+void write_dword(ZFile* file, ZDWord word) { 
+    [file->theFile writeDWord: word];
+}
 
-ZDWord get_file_size  (char* filename) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
+ZDWord get_file_size(char* filename) { 
+    NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
+    return 0;
+}
 
 ZDWord get_size_of_file(ZFile* file) {
     return [file->theFile fileSize];

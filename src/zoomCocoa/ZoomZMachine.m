@@ -36,7 +36,7 @@
 
         inputBuffer = [[NSMutableString allocWithZone: [self zone]] init];
         outputBuffer = [[ZBuffer allocWithZone: [self zone]] init];
-        //outputBuffer = [[NSMutableArray allocWithZone: [self zone]] init];
+        lastFile = nil;
 
         windows[0] = windows[1] = windows[2] = nil;
 
@@ -67,6 +67,8 @@
     [outputBuffer release];
 
     mainMachine = nil;
+    
+    if (lastFile) [lastFile release];
 
     if (machineFile) {
         close_file(machineFile);
@@ -205,18 +207,67 @@
     }
 
     display_finalise();
+    [mainPool release];
 }
 
 // = Debugging =
 - (NSData*) staticMemory {
 }
 
-// = Recieving text/characters =
+// = Receiving text/characters =
 - (void) inputText: (NSString*) text {
     [inputBuffer appendString: text];
 }
 
-- (void) inputChar: (int) character {
+//- (void) inputChar: (int) character {
+//}
+
+// = Receiving files =
+- (void) filePromptCancelled {
+    if (lastFile) {
+        [lastFile release];
+        lastFile = nil;
+        lastSize = -1;
+    }
+    
+    filePromptFinished = YES;
+}
+
+- (void) promptedFileIs: (NSObject<ZFile>*) file
+                   size: (int) size {
+    if (lastFile) [lastFile release];
+    
+    lastFile = [file retain];
+    lastSize = size;
+    
+    filePromptFinished = YES;
+}
+
+- (void) filePromptStarted {
+    filePromptFinished = NO;
+    if (lastFile) {
+        [lastFile release];
+        lastFile = nil;
+    }
+}
+
+- (BOOL) filePromptFinished {
+    return filePromptFinished;
+}
+
+- (NSObject<ZFile>*) lastFile {
+    return lastFile;
+}
+
+- (int) lastSize {
+    return lastSize;
+}
+
+- (void) clearFile {
+    if (lastFile) {
+        [lastFile release];
+        lastFile = nil;
+    }
 }
 
 // = Our own functions =

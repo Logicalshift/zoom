@@ -2018,7 +2018,7 @@ OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
       ZFile* f;
 
       stream_printf("\nPlease supply a filename for save\n");
-      f = get_file_write(NULL, save_fname);
+      f = get_file_write(NULL, save_fname, ZFile_save);
 
       store(stack, st, 2);
       if (state_save(f, stack, pc))
@@ -2061,7 +2061,7 @@ OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
       if (prompt)
 	{
       	  stream_printf("\nPlease supply a filename for data save\n");
-      	  file = get_file_write(NULL, fname);
+      	  file = get_file_write(NULL, fname, ZFile_data);
 	}
       else
         {
@@ -2099,7 +2099,7 @@ OPCODE "restore"       EXT:0x01 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
       ZDWord sz;
 
       stream_printf("\nPlease supply a filename for restore\n");
-      f = get_file_read(&sz, save_fname);
+      f = get_file_read(&sz, save_fname, ZFile_save);
 
       if (state_load(f, sz, stack, &pc))
 	{
@@ -2139,7 +2139,7 @@ OPCODE "restore"       EXT:0x01 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
       if (prompt)
         {
           stream_printf("\nPlease supply a filename for data restore\n");
-          file = get_file_read(&sz, fname);
+          file = get_file_read(&sz, fname, ZFile_data);
         }
       else
         {

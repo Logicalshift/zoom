@@ -935,6 +935,100 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     [[zoomTaskStdout fileHandleForReading] waitForDataInBackgroundAndNotify];
 }
 
+// = Prompting for files =
+- (void) setupPanel: (NSSavePanel*) panel
+               type: (ZFileType) type {
+    [panel setPrompt: @"Save"];
+    
+    BOOL supportsMessage = [panel respondsToSelector: @selector(setMessage:)];
+    [panel setCanSelectHiddenExtension: YES];
+    
+    switch (type) {
+        default:
+        case ZFileQuetzal:
+            if (supportsMessage) {
+                [panel setMessage: @"Save as savegame (quetzal) file"];
+            }
+            [panel setAllowedFileTypes: [NSArray arrayWithObjects: @"qut", nil]];
+            break;
+            
+        case ZFileData:
+            if (supportsMessage) {
+                [panel setMessage: @"Save as data file"];
+                
+                // (Assume if setMessage is supported, we have 10.3)
+                [panel setAllowsOtherFileTypes: YES];
+            }
+            [panel setAllowedFileTypes: [NSArray arrayWithObjects: @"dat", @"qut", nil]];
+            break;
+            
+        case ZFileRecording:
+            if (supportsMessage) {
+                [panel setMessage: @"Save as command recording file"];
+            }
+            [panel setPrompt: @"Record"];
+            [panel setAllowedFileTypes: [NSArray arrayWithObjects: @"txt", nil]];
+            break;
+            
+        case ZFileTranscript:
+            if (supportsMessage) {
+                [panel setMessage: @"Save as transcript recording file"];
+            }
+            [panel setPrompt: @"Record"];
+            [panel setAllowedFileTypes: [NSArray arrayWithObjects: @"txt", nil]];
+            break;
+    }
+}
+
+- (void) promptForFileToWrite: (ZFileType) type
+                  defaultName: (NSString*) name {
+    // FIXME: preferences
+    
+    NSSavePanel* panel = [NSSavePanel savePanel];
+    
+    [self setupPanel: panel
+                type: type];
+    
+    [panel beginSheetForDirectory: @"~" // FIXME: prefs
+                             file: nil
+                   modalForWindow: [self window]
+                    modalDelegate: self
+                   didEndSelector: @selector(savePanelDidEnd:returnCode:contextInfo:) 
+                      contextInfo: nil];
+}
+
+- (void)savePanelDidEnd: (NSSavePanel *) panel 
+             returnCode: (int) returnCode 
+            contextInfo: (void*) contextInfo {
+    if (returnCode != NSOKButton) {
+        [zMachine filePromptCancelled];
+    } else {
+        NSString* fn = [panel filename];
+        NSFileHandle* file = nil;
+        
+        if ([[NSFileManager defaultManager] createFileAtPath:fn
+                                                        contents:[NSData data]
+                                                      attributes:nil]) {
+            file = [NSFileHandle fileHandleForWritingAtPath: fn];
+        }
+        
+        if (file) {
+            ZHandleFile* f;
+            
+            f = [[ZHandleFile alloc] initWithFileHandle: file];
+            
+            [zMachine promptedFileIs: [f autorelease]
+                                size: 0];
+        } else {
+            [zMachine filePromptCancelled];
+        }
+    }
+}
+
+- (void) promptForFileToRead: (ZFileType) type
+                 defaultName: (NSString*) name {
+}
+
 // = The delegate =
 - (void) setDelegate: (id) dg {
     // (Not retained)

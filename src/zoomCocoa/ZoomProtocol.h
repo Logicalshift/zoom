@@ -61,6 +61,11 @@ typedef enum {
                                     Y: (int) y;
 
 - (void) displaySizeHasChanged;
+
+// Recieving files
+- (oneway void) filePromptCancelled;
+- (oneway void) promptedFileIs: (in byref NSObject<ZFile>*) file
+                          size: (int) size;
 @end
 
 // == Client-side objects ==
@@ -144,12 +149,10 @@ typedef enum {
 - (oneway void) flushBuffer: (in bycopy ZBuffer*) toFlush;
 
 // Prompting for files
-- (out bycopy NSObject<ZFile>*) promptForFileToWrite: (in ZFileType) type
-                                         defaultName: (in bycopy NSString*) name
-                                                size: (out int*) sz;
-- (out bycopy NSObject<ZFile>*) promptForFileToRead: (in ZFileType) type
-                                        defaultName: (in bycopy NSString*) name
-                                               size: (out int*) sz;
+- (void) promptForFileToWrite: (in ZFileType) type
+                                         defaultName: (in bycopy NSString*) name;
+- (void) promptForFileToRead: (in ZFileType) type
+                 defaultName: (in bycopy NSString*) name;
 @end
 
 // Some useful standard classes

@@ -26,6 +26,13 @@
 
 #include "ztypes.h"
 
+typedef enum {
+    ZFile_save,
+    ZFile_data,
+    ZFile_transcript,
+    ZFile_recording
+} ZFile_type;
+
 typedef struct ZFile ZFile;
 
 extern ZFile* open_file      (char* filename);
@@ -43,7 +50,7 @@ extern void   write_word     (ZFile* file, ZWord word);
 extern void   write_dword    (ZFile* file, ZDWord word);
 extern ZDWord get_file_size  (char* filename);
 
-extern ZFile* get_file_write (int* size, char* name);
-extern ZFile* get_file_read  (int* size, char* name);
+extern ZFile* get_file_write (int* size, char* name, ZFile_type purpose);
+extern ZFile* get_file_read  (int* size, char* name, ZFile_type purpose);
 
 #endif

@@ -530,36 +530,73 @@ void display_beep(void) {
     NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
 }
 
-// = Getting filenames =
-ZFile* get_file_write (int* size, char* name) {
+// = Getting files =
+static ZFileType convert_file_type(ZFile_type typein) {
+    switch (typein) {
+        case ZFile_save:
+            return ZFileQuetzal;
+            
+        case ZFile_data:
+            return ZFileData;
+            
+        case ZFile_transcript:
+            return ZFileTranscript;
+            
+        case ZFile_recording:
+            return ZFileRecording;
+            
+        default:
+            return ZFileData;
+    }
+}
+
+static void wait_for_file(void) {
+    [mainMachine flushBuffers];
+        
+    while (mainMachine != nil &&
+           ![mainMachine filePromptFinished]) {
+        [mainLoop acceptInputForMode: NSDefaultRunLoopMode
+                          beforeDate: [NSDate distantFuture]];
+    }
+}
+
+ZFile* get_file_write(int* size, char* name, ZFile_type purpose) {
     // FIXME: fill in size
-    int sz;
+    NSObject<ZFile>* res = NULL;
     
-    ZFile* res = [[mainMachine display] promptForFileToWrite: ZFileQuetzal
-                                                 defaultName: [NSString stringWithCString: name]
-                                                        size: &sz];
+    [mainMachine filePromptStarted];
+    [[mainMachine display] promptForFileToWrite: convert_file_type(purpose)
+                                    defaultName: [NSString stringWithCString: name]];
+    
+    wait_for_file();
+    res = [[mainMachine lastFile] retain];
+    [mainMachine clearFile];
 
     if (res) {
-        if (size) *size = sz;
-        return res;
+        if (size) *size = [mainMachine lastSize];
+        return open_file_from_object([res autorelease]);
     } else {
-        if (size) *size = 0;
+        if (size) *size = -1;
         return NULL;
     }
 }
 
-ZFile* get_file_read  (int* size, char* name) {
-    int sz;
+ZFile* get_file_read(int* size, char* name, ZFile_type purpose) {
+    NSObject<ZFile>* res = NULL;
     
-    ZFile* res = [[mainMachine display] promptForFileToRead: ZFileQuetzal
-                                                defaultName: [NSString stringWithCString: name]
-                                                       size: &sz];
+    [mainMachine filePromptStarted];
+    [[mainMachine display] promptForFileToRead: convert_file_type(purpose)
+                                   defaultName: [NSString stringWithCString: name]];
+    
+    wait_for_file();
+    res = [[mainMachine lastFile] retain];
+    [mainMachine clearFile];
 
     if (res) {
-        if (size) *size = sz;
-        return res;
+        if (size) *size = [mainMachine lastSize];
+        return open_file_from_object([res autorelease]);
     } else {
-        if (size) *size = 0;
+        if (size) *size = -1;
         return NULL;
     }
 }

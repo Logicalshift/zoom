@@ -491,6 +491,7 @@ static void tracking_print(char* format, ...)
 }
 #endif
 
+#if 0
 static void zcode_op_print_obj_123(ZStack* stack, ZWord arg)
 {
   ZByte* obj;
@@ -506,6 +507,7 @@ static void zcode_op_print_obj_123(ZStack* stack, ZWord arg)
 
   stream_prints(zscii_to_unicode(prop, &len));
 }
+#endif
 
 #ifdef SUPPORT_VERSION_3
 static void draw_statusbar_123(ZStack* stack)
@@ -628,6 +630,7 @@ inline static int convert_colour(int col)
 char save_fname[256] = "savefile.qut";
 char script_fname[256] = "script.txt";
 
+#if WINDOW_SYSTEM != 3 && WINDOW_SYSTEM !=4
 static void get_fname(char* name, int len, int save)
 {
 #if WINDOW_SYSTEM != 2
@@ -737,10 +740,12 @@ static void get_fname(char* name, int len, int save)
     }
 #endif
 }
+#endif
 
 #if WINDOW_SYSTEM != 3 && WINDOW_SYSTEM != 4
 ZFile* get_file_write(int* fsize,
-		      char* save_fname)
+		      char* save_fname,
+                      ZFile_type purpose)
 {
   int fs, ok;
 
@@ -776,7 +781,8 @@ ZFile* get_file_write(int* fsize,
 }
 
 ZFile* get_file_read(int* fsize,
-		     char* save_fname)
+		     char* save_fname,
+                     ZFile_type purpose)
 {
   int fs;
 
@@ -800,7 +806,7 @@ static int save_1234(ZDWord  pc,
   ZFile* f;
 
   stream_printf("\nPlease supply a filename for save\n");
-  f = get_file_write(NULL, save_fname);
+  f = get_file_write(NULL, save_fname, ZFile_save);
   
   if (st >= 0)
     store(stack, st, 2);
@@ -828,7 +834,7 @@ static int restore_1234(ZDWord* pc, ZStack* stack)
   ZDWord sz;
 
   stream_printf("\nPlease supply a filename for restore\n");
-  f = get_file_read(&sz, save_fname);
+  f = get_file_read(&sz, save_fname, ZFile_save);
   
   if (state_load(f, sz, stack, pc))
     {

@@ -24,11 +24,21 @@ extern NSAutoreleasePool* displayPool;
     // Some pieces of state information
     NSMutableString* inputBuffer;
     ZBuffer*         outputBuffer;
+    
+    BOOL             filePromptFinished;
+    NSObject<ZFile>* lastFile;
+    int              lastSize;
 }
 
 - (NSObject<ZDisplay>*) display;
 - (NSObject<ZWindow>*)  windowNumber: (int) num;
 - (NSMutableString*)    inputBuffer;
+
+- (void)                filePromptStarted;
+- (BOOL)                filePromptFinished;
+- (NSObject<ZFile>*)    lastFile;
+- (int)                 lastSize;
+- (void)                clearFile;
 
 - (ZBuffer*) buffer;
 - (void) flushBuffers;
