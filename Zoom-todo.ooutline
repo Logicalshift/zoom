@@ -302,6 +302,8 @@ Bug reported by Chris Klimas}</string>
 
 \f0\fs24 \cf0 Double-clicking on a savegame file produces a blank screen for some reason now}</string>
 						</array>
+						<key>State</key>
+						<integer>1</integer>
 					</dict>
 					<dict>
 						<key>Cols</key>
@@ -1095,6 +1097,8 @@ Graham thinks lock button should (additionally?) disable the 'delete item' butto
 
 \f0\fs24 \cf0 Skeins}</string>
 				</array>
+				<key>Expanded</key>
+				<true/>
 				<key>State</key>
 				<integer>2</integer>
 			</dict>

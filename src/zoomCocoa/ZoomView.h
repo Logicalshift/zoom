@@ -93,6 +93,7 @@ extern NSString* ZoomStyleAttributeName;
 	// Autosave
 	NSData* lastAutosave;
 	int		upperWindowsToRestore;
+	BOOL	restoring;
 	
 	// Output receivers
 	NSMutableArray* outputReceivers;

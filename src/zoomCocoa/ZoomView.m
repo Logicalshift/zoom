@@ -46,6 +46,8 @@ static void finalizeViews(void) {
     self = [super initWithFrame:frame];
 	
     if (self) {
+		restoring = NO;
+		
         // Mark views as allocated
         allocatedViews = realloc(allocatedViews, sizeof(ZoomView*) * (nAllocatedViews+1));
         allocatedViews[nAllocatedViews] = self;
@@ -1362,18 +1364,21 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     }
 	
 	// Reset the display
-	if (pixmapCursor) [pixmapCursor release];
-	pixmapCursor = nil;
-	if (pixmapWindow) [pixmapWindow release];
-	pixmapWindow = nil;
-	focusedView = nil;
+	if (!restoring) {
+		if (pixmapCursor) [pixmapCursor release];
+		pixmapCursor = nil;
+		if (pixmapWindow) [pixmapWindow release];
+		pixmapWindow = nil;
+		focusedView = nil;
 	
-	[textView setString: @""];
+		[textView setString: @""];
 	
-	[upperWindows release];
-	[lowerWindows release];
-	upperWindows = [[NSMutableArray alloc] init];
-	lowerWindows = [[NSMutableArray alloc] init];
+		[upperWindows release];
+		[lowerWindows release];
+		upperWindows = [[NSMutableArray alloc] init];
+		lowerWindows = [[NSMutableArray alloc] init];
+	}
+	restoring = NO;
 	
 	receiving = NO;
 	receivingCharacters = NO;
@@ -2078,6 +2083,8 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	
     if (self) {
 		int encodingVersion;
+		
+		restoring = YES;
 		
 		[decoder decodeValueOfObjCType: @encode(int)
 									at: &encodingVersion];

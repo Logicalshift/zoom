@@ -26,6 +26,8 @@
 	NSData*   saveData;
 	
 	ZoomBlorbFile* resources;
+	
+	BOOL wasRestored;
 }
 
 - (NSData*) gameData;
@@ -41,6 +43,7 @@
 // Loading a zoomSave file
 - (ZoomView*) defaultView;
 - (NSData*)   saveData;
+- (void)	  setSaveData: (NSData*) saveData;
 
 // Resources
 - (void)           setResources: (ZoomBlorbFile*) resources;

@@ -67,6 +67,7 @@
 		autosaveData = nil;
 		skein = [[ZoomSkein alloc] init];
 		resources = nil;
+		wasRestored = NO;
     }
 
     return self;
@@ -198,7 +199,13 @@
 }
 
 - (NSString*) displayName {
-	if (story && [story title]) return [story title];
+	if (story && [story title]) {
+		if (wasRestored) {
+			return [NSString stringWithFormat: @"%@ (restored from %@)", [story title], [super displayName]];
+		} else {
+			return [story title];
+		}
+	}
 	
 	return [super displayName];
 }
@@ -378,7 +385,7 @@
 	// Get the saved view state for this game
 	NSData* savedViewArchive = [[[wrapper fileWrappers] objectForKey: @"ZoomStatus.dat"] regularFileContents];
 	ZoomView* savedView = nil;
-	
+		
 	if (savedViewArchive) 
 		savedView = [NSUnarchiver unarchiveObjectWithData: savedViewArchive];
 	
@@ -404,6 +411,7 @@
 	
 	// NOTE: saveData is the data minus the 'FORM' chunk - that is, valid input for state_decompile()
 	// (which doesn't use this chunk)
+	wasRestored = YES;
 	
 	[self setFileName: gameFile];
 	return [self loadDataRepresentation: data
@@ -416,6 +424,11 @@
 
 - (NSData*) saveData {
 	return saveData;
+}
+
+- (void) setSaveData: (NSData*) newSaveData {
+	[saveData release];
+	saveData = [newSaveData copy];
 }
 
 - (ZoomSkein*) skein {
