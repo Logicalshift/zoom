@@ -334,6 +334,8 @@ void v6_prints(const int* text)
 	      display_wait_for_more();
 	    }
 	  ACTWIN.want_more = 0;
+	  
+	  scroll_to_height(display_get_font_height(ACTWIN.style));
 
 	  if (more == 2)
 	    return;
