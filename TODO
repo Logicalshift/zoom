@@ -7,13 +7,13 @@ Hmm, this file was a bit out of date.
  X save window size under Carbon
  X text corruption under Shogun
  X Zork Zero colour changing
- * sigh, creating files under Carbon still broken (set file type)
+ X bug with XDBE and v6 games
+ X 'MORE' not displayed in Shogun
+ X sigh, creating files under Carbon still broken (set file type)
+ X segfault on window resize occasionally
  * problem with resize when 'MORE' is displayed.
  * startup message
  * Colour preference thing
  * warning for non-fixed font set as fixed font
- * segfault on window resize occasionally
  * reset pixmap display on restart under v6
  * drag and drop support for file loading
- * 'MORE' not displayed in Shogun
- X bug with XDBE and v6 games

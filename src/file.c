@@ -419,26 +419,74 @@ ZFile* open_file(char* filename)
 
 ZFile* open_file_write(char* filename)
 {
-  FSRef ref;
+  FSRef    ref;
+  FSSpec   spec;
   OSStatus erm;
+  FInfo    inf;
+  int      x;
 
+  char*    dirname;
+  UniChar* uniname;
+  int      lastslash = -1;
+  FSRef    parent;
+  
   erm = FSPathMakeRef(filename, &ref, NULL);
 
-  if (erm == fnfErr)
+  if (erm != fnfErr)
     {
-      FILE* f;
-
-      /* Is there a better way to do this? */
-      f = fopen(filename, "w");
-      if (f != NULL)
-	fclose(f);
-
-      erm = FSPathMakeRef(filename, &ref, NULL);
+      erm = FSDeleteObject(&ref);
+      if (erm != noErr)
+	return NULL;
     }
-
+  
+  dirname = malloc(strlen(filename)+1);
+  uniname = malloc((strlen(filename)+1)*sizeof(int));
+  strcpy(dirname, filename);
+  for (x=0; filename[x] != 0; x++)
+    {
+      uniname[x] = filename[x];
+      if (filename[x] == '/')
+	lastslash = x;
+    }
+  uniname[x] = 0;
+  
+  if (lastslash == -1)
+    {
+      free(dirname);
+      free(uniname);
+      return NULL;
+    }
+  dirname[lastslash] = 0;
+  
+  erm = FSPathMakeRef(dirname, &parent, NULL);
+  if (erm != NULL)
+    {
+      free(dirname);
+      free(uniname);
+      return NULL;
+    }
+  
+  erm = FSCreateFileUnicode(&parent, strlen(filename) - lastslash-1, 
+			    uniname + lastslash + 1, 
+			    kFSCatInfoNone, NULL, &ref, &spec);
+  
   if (erm != noErr)
-    return NULL;
+      {
+	free(dirname);
+	free(uniname);
+	return NULL;
+      }
 
+  free(dirname);
+  free(uniname);
+  
+  FSpGetFInfo(&spec, &inf);
+  
+  inf.fdType    = 'IFZS';
+  inf.fdCreator = SIGNATURE;
+  
+  FSpSetFInfo(&spec, &inf);
+  
   return open_file_write_fsref(&ref);
 }
 
