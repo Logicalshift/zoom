@@ -36,16 +36,16 @@
 extern void display_initialise  (void); /* Called on startup */
 extern void display_reinitialise(void); /* Called on startup */
 extern void display_finalise    (void); /* Called on shutdown */
-extern void display_poll        (void); /* Called frequently to keep the display 'alive' */
 
 /***                           ----// 888 \\----                           ***/
 
 /* Output functions */
-extern void display_clear (void);
-extern void display_prints(const int*);
-extern void display_prints_c(const char* string);
-extern void display_printc(int);
-extern void display_printf(const char*, ...);
+extern void display_clear     (void);
+extern void display_prints    (const int*);
+extern void display_prints_c  (const char* string);
+extern void display_printc    (int);
+extern void display_printf    (const char*, ...);
+extern int  display_check_char(int);
 
 /* Input functions */
 extern int  display_readline(int*, int, long int);

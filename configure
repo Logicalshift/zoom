@@ -2987,7 +2987,8 @@ trap 'rm -fr `echo "
   m4/Makefile
   src/Makefile
   src/ztypes.h
-  builder/Makefile config.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
+  builder/Makefile
+  bonus/Makefile config.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
@@ -3092,7 +3093,8 @@ CONFIG_FILES=\${CONFIG_FILES-"Makefile
   m4/Makefile
   src/Makefile
   src/ztypes.h
-  builder/Makefile"}
+  builder/Makefile
+  bonus/Makefile"}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
 for ac_file in .. $CONFIG_FILES; do if test "x$ac_file" != x..; then

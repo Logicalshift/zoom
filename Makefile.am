@@ -1,1 +1,1 @@
-SUBDIRS = m4 builder src
+SUBDIRS = m4 builder src bonus

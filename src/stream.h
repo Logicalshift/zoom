@@ -24,8 +24,9 @@
 #ifndef __STREAM_H
 #define __STREAM_H
 
-extern void stream_prints       (const char* s);
+extern void stream_prints       (const unsigned char* s);
 extern void stream_printf       (const char* f, ...);
+extern void stream_printc       (int c);
 extern void stream_input        (const char* s);
 extern int  stream_readline     (char* buf, int len, long int timeout);
 extern void stream_buffering    (int buffer);

@@ -153,4 +153,5 @@ AC_OUTPUT([
   m4/Makefile
   src/Makefile
   src/ztypes.h
-  builder/Makefile])
+  builder/Makefile
+  bonus/Makefile])

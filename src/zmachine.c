@@ -204,8 +204,12 @@ void zmachine_setup_header(void)
 {
   machine.dinfo = display_get_info();
 
-  if (machine.memory[0]<5)
-    machine.graphical = 0;
+  if (machine.memory[0]<5 || (Word(ZH_flags2)&8) == 0)
+    {
+      if (machine.graphical)
+	zmachine_warning("Graphics turned off");
+      machine.graphical = 0;
+    }
   
   switch (machine.memory[0])
     {
@@ -238,6 +242,8 @@ void zmachine_setup_header(void)
     case 8:
     case 7:
     case 5:
+      zscii_install_alphabet();
+      
       Flag(1, 0, machine.dinfo->colours);
       machine.memory[ZH_deffore]    = machine.dinfo->fore+2;
       machine.memory[ZH_defback]    = machine.dinfo->back+2;

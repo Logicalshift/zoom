@@ -51,17 +51,20 @@ Using Zoom
         font 6 "-*-courier-medium-o-*-*-14-*-*-*-*-*-*-*"   fixed-italic
         font 7 "-*-courier-bold-o-*-*-14-*-*-*-*-*-*-*"     fixed-bold-italic
         font 8 "-*-helvetica-bold-o-*-*-14-*-*-*-*-*-*-*"   bold-italic
+        font 9 "font3"                                      symbolic
       
         colours (0,0,0), (255,0,0), (0,255,0), (255,255,0), (0,0,255),
                 (255,0,255), (0,255,255), (255,255,204),
       	        # These are the colours provided by DOS interpreters
       	        (187, 187, 187), (136, 136, 136), (68, 68, 68)
 
+        size 80, 30
+
         gamedir "/usr/local/share/games/zcode"
         savedir "/home/me/zcode/save"
       }
 
-   This illustrates all the available options. Unless you have a
+   This illustrates most of the available options. Unless you have a
    particular reason for setting the interpreter number and revision, 
    the values given should do a reasonable job (version 6 games, and
    Beyond Zork benefit from setting the interpreter number).
@@ -73,12 +76,13 @@ Using Zoom
    Where <num> specifies the font number (note that font 4 *must* be
    a fixed-pitch font), and <style> is a list of style attributes
    (attributes can be seperated by commas). A style attribute is one
-   of 'roman', 'bold', 'italic' or 'fixed', or a combination made by
-   combining attributes with hyphens, for example 'fixed-bold'. If
+   of 'roman', 'bold', 'italic', 'fixed' or 'symbolic', or a combination
+   made by combining attributes with hyphens, for example 'fixed-bold'. If
    you don't specify a font with a given combination of style
    attributes, Zoom will use font 1 (for normal text) or font 4 (for
    fixed pitch text). You can work out font names with the aid of
-   xfontsel.
+   xfontsel. The special font name 'font3' refers to the built-in
+   symbolic font.
 
    Colours are defined using a list of values of the form (R, G,
    B). There should be at least 8 colours, coresponding to the
@@ -100,6 +104,21 @@ Using Zoom
 
    Colour 0 is the first specified in the list, and the rest follow
    in sequence.
+
+   size <n>, <m> sets the size of the display to (n x m)
+   characters. These characters are the size of the fixed-pitch font
+   (font 4). For a version 6 game, the graphics file can be specified
+   using a command like
+
+      graphics "/home/me/infocom/zorkzero/ZORK0/ZORK0.EG1"
+
+   Presently only .eg1 and .mg1 graphics files are supported. for all
+   versions, a sound ZIP file may be specified with a command like
+
+      sounds "/home/me/infocom/lurking_sounds.zip"
+
+   Although I haven't got round to implementing sound effects as of
+   the time of writing of this file.
 
    If Zoom is run without a game specified, it will try to look in the
    directory specified by 'gamedir', and list all of the games it finds
@@ -133,6 +152,24 @@ Using Zoom
 
    An example .zoomrc file can be found in the source distribution as 
    'zoomrc'
+
+Extensions and oddities
+=======================
+
+  Zoom supports graphical version 5 games. To enable this feature, you
+  must pass the '-g' option on the command line. Most Inform games do not
+  support this feature, but most of 'em don't set the 'pictures' flag in the
+  header either, so it should be no big deal. (This function is added because
+  there are more interesting ways to abuse the Z-Machine when @set_cursor is
+  graphical ;-). In fact, the only reason it's optional is because the
+  standard suggests that it should be so; with this flag enabled, Zoom behaves
+  like Infocom's Beyond Zork interpreter. This could probably be enabled
+  by default, as even though the german version of Zork I contains duff
+  calculation code, it also doesn't set the pictures flag.
+
+  Zoom supports Unicode, but it requires that you use a font that contains
+  Unicode characters - most X fonts don't, unfortunately, and the Impulse
+  font system isn't near finished yet.
 
 Why it goes fast
 ================
@@ -207,24 +244,14 @@ print_timer (EXT:131)
     This displays the difference between the start time and end time as a
     decimal number of seconds, to centisecond precision.
 
-FreeType rant
-=============
+   If you want to add your own extensions for some nefarious purpose, all
+   opcodes are defined in src/zcode.ops, with definitions like:
 
-I was going to try to include freetype support, because anti-aliased
-fonts look nice. However, I've ended up not doing this for a number of 
-reasons, mainly because freetype sucks rocks (to put it mildly). Their 
-license probably isn't compatable with the GPL (but I'd sort that out
-by changing Zoom's licence), their documentation is wrong (even their
-comments are wrong), the font metrics returned for type 1 fonts seem
-to be completely random (and don't look right for the truetype fonts
-I've tried), it's hell to get it to compile properly under any variety 
-of Unix, ...
+OPCODE "print_unicode" EXT:0x0b ARGS:1        VERSION 5,7,8
+%{
+  stream_printc(argblock.arg[0]);
+%}
 
-The interface is a pain to use, too, even when you use the non-b0rken
-features (glyph numbers different to character numbers - whatever
-happened to Unicode? Dealing with glyphs independantly is a PITA, too, 
-not to mention probably a tad inefficient).
-
-Ho-hum. You'll get anti-aliased fonts when the Impulse font renderer
-is complete and I can do the things that Zoom requires without
-premature hair loss.
+   Extended ops are only available in v4+ games and the Z-Machine
+   specification suggests that you only use extended opcodes that are greater
+   than 0x80 to add new instructions.

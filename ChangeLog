@@ -1,3 +1,9 @@
+2000-11-25  Andrew Hunter    <andrew@logicalshift.co.uk>
+
+	* display drivers changed to support ISO 10646 characters. That
+	is, Unicode. Now plays the German version of Zork I, although for
+	some obscure reason it doesn't recognise 'ja'...
+
 2000-11-21  Andrew Hunter    <andrew@logicalshift.co.uk>
 
 	* header flags now set (more?) correctly

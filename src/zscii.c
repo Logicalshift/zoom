@@ -30,12 +30,14 @@ static unsigned char *buf  = NULL;
 static unsigned char *buf2 = NULL;
 static int maxlen;
 
-static char convert[3][33] =
+static unsigned char* convert_table[33] =
 {
   "\0\0\0\0\0\0abcdefghijklmnopqrstuvwxyz",
   "\0\0\0\0\0\0ABCDEFGHIJKLMNOPQRSTUVWXYZ",
   "\0\0\0\0\0\0 \n0123456789.,!?_#'\"/\\-:()"
 };
+
+static unsigned char** convert = convert_table;
 
 /*
  * Convert a ZSCII string (packed) to ASCII (unpacked)
@@ -163,7 +165,7 @@ char* zscii_to_ascii(ZByte* string, int* len)
  *
  * A packlen of 6 gives us v3 format, and 9 gives us v5
  */
-static unsigned char zscii[256] =
+static unsigned char zscii_table[256] =
 {
   0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00, /* 8 */
   0x00,0xc7,0x00,0x00, 0x00,0x00,0x00,0x00, /* 16 */
@@ -199,6 +201,9 @@ static unsigned char zscii[256] =
   0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00, /* 120 */
   0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00  /* 128 */
 };
+
+static unsigned char* zscii = zscii_table;
+
 void pack_zscii(ZByte* string, int strlen, ZByte* packed, int packlen)
 {
   int  x;
@@ -254,6 +259,9 @@ void pack_zscii(ZByte* string, int strlen, ZByte* packed, int packlen)
   packed[wordlen*2-2] |= 0x80;
 }
 
+/*
+ * Works out the length (in bytes) of a packed Z-string
+ */
 int zstrlen(ZByte* string)
 {
   int x = 0;
@@ -264,3 +272,63 @@ int zstrlen(ZByte* string)
   return x*3+3;
 }
 
+/*
+ * Installs the alphabet table associated with the currently loaded story
+ */
+void zscii_install_alphabet(void)
+{
+  if (Byte(0)>=5)
+    {
+      ZUWord table;
+
+      table = Word(ZH_alphatable);
+      if (table)
+	{
+	  static unsigned char** conv = NULL;
+	  static unsigned char* zsc = NULL;
+	  ZByte* alpha;
+	  int x, y;
+
+	  alpha = Address(table);
+
+	  if (conv == NULL)
+	    {
+	      conv = malloc(sizeof(char*)*3);
+	      for (x=0; x<3; x++)
+		conv[x] = malloc(sizeof(char)*32);
+	    }
+	  
+	  zsc = realloc(zsc, sizeof(char)*128);
+	  for (x=0; x<128; x++)
+	    zsc[x] = 0;
+	  
+	  for (y=0; y<3; y++)
+	    {
+	      for (x=0; x<6; x++)
+		conv[y][x] = 0;
+	      
+	      for (x=0; x<26; x++)
+		{
+		  conv[y][x+6]      = *(alpha++);
+		  zsc[conv[y][x+6]] = (x+6)|(y<<6);
+		}
+	    }
+
+	  conv[2][7] = 10;
+	  conv[2][6] = 32;
+	  
+	  convert = conv;
+	  zscii = zsc;
+	}
+      else
+	{
+	  convert = convert_table;
+	  zscii = zscii_table;
+	}
+    }
+  else
+    {
+      convert = convert_table;
+      zscii = zscii_table;
+    }
+}
