@@ -19,6 +19,8 @@
 
 static ZoomiFictionController* sharedController = nil;
 
+static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
+
 // = Setup/initialisation =
 
 + (ZoomiFictionController*) sharediFictionController {
@@ -27,6 +29,15 @@ static ZoomiFictionController* sharedController = nil;
 	}
 	
 	return sharedController;
+}
+
++ (void) initialize {
+	// Create user defaults
+	NSString* docDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)
+		objectAtIndex: 0];
+	
+	[[NSUserDefaults standardUserDefaults] registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
+		docDir, addDirectory, nil]];
 }
 
 - (void) dealloc {
@@ -139,9 +150,84 @@ static ZoomiFictionController* sharedController = nil;
 	return newStory;
 }
 
+// = Panel actions =
+
+- (void) addFilesFromPanel: (NSOpenPanel *)sheet
+				returnCode: (int)returnCode
+			   contextInfo: (void *)contextInfo {
+	if (returnCode != NSOKButton) return;
+
+	NSArray* fileTypes = [NSArray arrayWithObjects: @"z3", @"z4", @"z5", @"z6", @"z7", @"z8", nil];
+	
+	// Store the defaults
+	[[NSUserDefaults standardUserDefaults] setObject: [sheet directory]
+											  forKey: addDirectory];
+	
+	// Add all the files we can
+	NSMutableArray* selectedFiles = [[sheet filenames] mutableCopy];
+	NSEnumerator* selFileEnum = [selectedFiles objectEnumerator];
+	NSString* filename;
+	
+	while (filename = [selFileEnum nextObject]) {
+		NSAutoreleasePool* p = [[NSAutoreleasePool alloc] init];
+		BOOL isDir;
+		
+		isDir = NO;
+		[[NSFileManager defaultManager] fileExistsAtPath: filename
+											 isDirectory: &isDir];
+		
+		NSString* fileType = [filename pathExtension];
+		
+		if (isDir) {
+			NSArray* dirContents = [[NSFileManager defaultManager] directoryContentsAtPath: filename];
+			
+			NSEnumerator* dirContentsEnum = [dirContents objectEnumerator];
+			NSString* dirComponent;
+			
+			while (dirComponent = [dirContentsEnum nextObject]) {
+				if ([fileTypes containsObject: [dirComponent pathExtension]]) {
+					[selectedFiles addObject: [filename stringByAppendingPathComponent: dirComponent]];
+				}
+			}
+		} else if ([fileTypes containsObject: fileType]) {
+			ZoomStoryID* fileID = [[ZoomStoryID alloc] initWithZCodeFile: filename];
+			
+			if (fileID != nil) {
+				[[ZoomStoryOrganiser sharedStoryOrganiser] addStory: filename
+														  withIdent: fileID];
+				
+				[fileID release];
+			}
+		}
+		
+		[p release];
+	}
+	
+	[selectedFiles release];
+}
+
 // = IB actions =
 
 - (IBAction) addButtonPressed: (id) sender {
+	// Create an open panel
+	NSOpenPanel* storiesToAdd;
+	NSArray* fileTypes = [NSArray arrayWithObjects: @"z3", @"z4", @"z5", @"z6", @"z7", @"z8", nil];
+	
+	storiesToAdd = [NSOpenPanel openPanel];
+	
+	[storiesToAdd setAllowsMultipleSelection: YES];
+	[storiesToAdd setCanChooseDirectories: YES];
+	[storiesToAdd setCanChooseFiles: YES];
+	
+	NSString* path = [[NSUserDefaults standardUserDefaults] objectForKey: addDirectory];
+	
+	[storiesToAdd beginSheetForDirectory: path
+									file: nil
+								   types: fileTypes
+						  modalForWindow: [self window]
+						   modalDelegate: self
+						  didEndSelector: @selector(addFilesFromPanel:returnCode:contextInfo:)
+							 contextInfo: nil];
 }
 
 - (IBAction) drawerButtonPressed: (id) sender {

@@ -47,6 +47,11 @@
 		NSData* data = [fh readDataOfLength: 64];
 		[fh closeFile];
 		
+		if ([data length] < 64) {
+			[self release];
+			return nil;
+		}
+		
 		bytes = [data bytes];
 		
 		ident = IFID_Alloc();
