@@ -81,6 +81,10 @@
     }
 	
 	// Draw the cursor
+	if (inputLine) {
+		[inputLine drawAtPoint: inputLinePos];
+	}
+	
 	[cursor draw];
 }
 
@@ -89,6 +93,24 @@
 }
 
 // = Flashing the cursor =
+
+- (NSPoint) cursorPos {
+	// NOTE: will break in v3 games that get input in the upper window. Luckily, none exist.
+	ZoomUpperWindow* activeWindow = (ZoomUpperWindow*)[zoomView focusedView];
+	
+	if (![activeWindow isKindOfClass: [ZoomUpperWindow class]]) {
+		// Can't update
+		return NSMakePoint(0,0);
+	}
+
+	NSPoint cp = [activeWindow cursorPosition];
+		
+    NSSize fixedSize = [@"M" sizeWithAttributes:
+        [NSDictionary dictionaryWithObjectsAndKeys:
+            [zoomView fontWithStyle:ZFixedStyle], NSFontAttributeName, nil]];
+	
+	return NSMakePoint(cp.x * fixedSize.width, cp.y * fixedSize.height);
+}
 
 - (void) updateCursor {
 	ZoomUpperWindow* activeWindow = (ZoomUpperWindow*)[zoomView focusedView];
@@ -162,6 +184,72 @@
 						 withCount: [evt clickCount]];
 	
 	[super mouseUp: evt];
+}
+
+// = Input line =
+
+- (void) activateInputLine {
+	ZoomUpperWindow* activeWindow = (ZoomUpperWindow*)[zoomView focusedView];
+	
+	if (![activeWindow isKindOfClass: [ZoomUpperWindow class]]) {
+		// Can't update
+		return;
+	}
+
+	// FOXME: send input styles over from the server
+	ZStyle* style = [[ZStyle alloc] init];
+	[style autorelease];
+	[style setFixed: YES];
+	[style setReversed: YES];
+	
+	// Position the input line
+	NSDictionary* styleAttributes = [zoomView attributesForStyle: style];
+
+	[cursor positionAt: [self cursorPos]
+			  withFont: [zoomView fontWithStyle: ZFixedStyle]];
+	inputLinePos = [self cursorPos];
+	inputLinePos.y -= [[styleAttributes objectForKey: NSFontAttributeName] descender];
+	
+	if (!inputLine) {
+		inputLine = [[ZoomInputLine alloc] initWithCursor: cursor
+											   attributes: [zoomView attributesForStyle: style]];
+	}
+	
+	// Start receiving input
+	[inputLine setDelegate: self];
+	[cursor setShown: YES];
+	[cursor setBlinking: YES];
+	
+	[self setNeedsDisplay: YES];
+}
+
+- (void) inputLineHasChanged: (ZoomInputLine*) sender {
+	[self setNeedsDisplay: YES];
+}
+
+- (void) endOfLineReached: (ZoomInputLine*) sender {
+	[zoomView endOfLineReached: sender];
+	
+	[cursor setShown: NO];
+	
+	if (sender == inputLine) {
+		[inputLine release];
+		inputLine = nil;
+	}
+}
+
+- (NSString*) lastHistoryItem {
+	return [zoomView lastHistoryItem];
+}
+
+- (NSString*) nextHistoryItem {
+	return [zoomView nextHistoryItem];
+}
+
+- (void) keyDown: (NSEvent*) evt {
+	if (![zoomView handleKeyDown: evt]) {
+		[inputLine keyDown: evt];
+	}
 }
 
 @end

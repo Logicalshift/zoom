@@ -398,6 +398,7 @@ static void finalizeViews(void) {
 	lastAutosave = [[zMachine createGameSave] retain];
 		
 	if (pixmapWindow == nil) {
+		// Input into a non-v6 window
 		[self rearrangeUpperWindows];
 		
 		int currentSize = [self upperWindowSize];
@@ -443,7 +444,7 @@ static void finalizeViews(void) {
 		[pixmapCursor setShown: !moreOn];
 	}
 	
-	// Become the first responder
+	// Set the first responder correctly
 	if (pixmapWindow != nil) {
 		[[self window] makeFirstResponder: self];
 	} else if ([focusedView isKindOfClass: [ZoomUpperWindow class]]) {
@@ -497,15 +498,25 @@ static void finalizeViews(void) {
 			[textView pasteUpperWindowLinesFrom: win];
 		}
     
+		BOOL isUpperWindow = [focusedView isKindOfClass: [ZoomUpperWindow class]];
+		
 		// If the more prompt is off, then set up for editing
-		if (!moreOn) {
+		if (!isUpperWindow && !moreOn) {
 			[textView setEditable: YES];
 
 			[self resetMorePrompt];
 		}
-
-		[self scrollToEnd];
-		inputPos = [[textView textStorage] length];
+		
+		// If we're using the upper window, run using the inputLine system
+		if (isUpperWindow) {
+			[[textScroller upperWindowView] activateInputLine];
+		}
+		
+		// Scroll, input
+		if (!isUpperWindow) {
+			[self scrollToEnd];
+			inputPos = [[textView textStorage] length];
+		}
 	} else {
 		// == Version 6 pixmap entry routines ==
 		
@@ -2372,6 +2383,10 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	inputLinePos = pos;
 }
 
+- (ZoomInputLine*) inputLine {
+	return inputLine;
+}
+
 - (void) setInputLine: (ZoomInputLine*) input {
 	if (inputLine) [inputLine release];
 	inputLine = [input retain];
@@ -2385,10 +2400,8 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 }
 
 - (void) endOfLineReached: (ZoomInputLine*) sender {
-	[self setNeedsDisplayInRect: [inputLine rectForPoint: inputLinePos]];
-	
 	if (receiving) {
-		NSString* inputText = [inputLine inputLine];
+		NSString* inputText = [sender inputLine];
 		
 		[commandHistory addObject: inputText];
 		
@@ -2399,8 +2412,12 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		historyPos = [commandHistory count];
 	}
 	
-	[inputLine release];
-	inputLine = nil;
+	if (sender == inputLine) {
+		// When inputting in the upper window, sender might not be inputLine
+		[self setNeedsDisplayInRect: [sender rectForPoint: inputLinePos]];
+		[inputLine release];
+		inputLine = nil;
+	}
 }
 
 // = Output receivers =

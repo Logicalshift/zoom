@@ -195,6 +195,7 @@ extern NSString* ZoomStyleAttributeName;
 // 'Manual' input
 - (void) setInputLinePos: (NSPoint) pos;
 - (void) setInputLine: (ZoomInputLine*) input;
+- (ZoomInputLine*) inputLine;
 
 // Output receivers
 - (void) addOutputReceiver: (id) receiver;

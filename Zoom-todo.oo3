@@ -16,7 +16,9 @@
   <editor should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="b2oX2vP-L4o"/>
+    <selected-rows ids="f899YDFVn7y"/>
+    <selected-columns ids=":941128d340f2709e21a6e303"/>
+    <selected-characters range="{59, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -605,20 +607,6 @@
         </text>
       </values>
       <children>
-        <item id="o6FZTTYE9jr">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Allow line input in the upper window</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
         <item id="fPtw9vJC0Fq">
           <values>
             <text>
@@ -799,6 +787,15 @@
               <p/>
             </text>
           </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>(We have this for v6 windows, but not for the general case)</lit>
+                </run>
+              </p>
+            </text>
+          </note>
         </item>
         <item id="m9hL7srSzjO">
           <values>
@@ -826,6 +823,20 @@
               </p>
             </text>
           </note>
+        </item>
+        <item id="o6FZTTYE9jr" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Allow line input in the upper window</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
         </item>
         <item id="dg44Q4Z-9Kj" state="checked">
           <values>
