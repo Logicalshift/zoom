@@ -375,7 +375,7 @@ static void finalizeViews(void) {
 - (void) shouldReceiveCharacters {
 	if (lastAutosave) [lastAutosave release];
 	lastAutosave = [[zMachine createGameSave] retain];
-	
+		
 	if (pixmapWindow == nil) {
 		[self rearrangeUpperWindows];
 		
@@ -400,8 +400,8 @@ static void finalizeViews(void) {
 		// If the more prompt is off, then set up for editing
 		if (!moreOn) {
 			[self resetMorePrompt];
-			[self scrollToEnd];
 		}
+		[self scrollToEnd];
 	}
     
     receivingCharacters = YES;
@@ -454,7 +454,7 @@ static void finalizeViews(void) {
 - (void) shouldReceiveText: (int) maxLength {
 	if (lastAutosave) [lastAutosave release];
 	lastAutosave = [[zMachine createGameSave] retain];
-
+	
 	if (pixmapWindow == nil) {
 		// == Version 1-5/7/8 routines ==
 		[self rearrangeUpperWindows];
@@ -480,9 +480,9 @@ static void finalizeViews(void) {
 			[textView setEditable: YES];
 
 			[self resetMorePrompt];
-			[self scrollToEnd];
 		}
 
+		[self scrollToEnd];
 		inputPos = [[textView textStorage] length];
 	} else {
 		// == Version 6 pixmap entry routines ==
@@ -518,8 +518,11 @@ static void finalizeViews(void) {
 		[[self window] makeFirstResponder: [textScroller upperWindowView]];
 	} else {
 		[[self window] makeFirstResponder: textView];
-		[textView scrollRangeToVisible: NSMakeRange([[textView string] length], 0)];
-		[textView setSelectedRange: NSMakeRange([[textView string] length], 0)];
+		
+		if (!moreOn) {
+			[textView scrollRangeToVisible: NSMakeRange([[textView string] length], 0)];
+			[textView setSelectedRange: NSMakeRange([[textView string] length], 0)];
+		}
 	}	
 	
     receiving = YES;
@@ -562,6 +565,7 @@ static void finalizeViews(void) {
     receivingCharacters = NO;
     [textView setEditable: NO];
 	[[textScroller upperWindowView] setFlashCursor: NO]; 
+	[self resetMorePrompt];
 }
 
 - (void) dimensionX: (out int*) xSize
