@@ -30,6 +30,7 @@
 #include "zscii.h"
 #include "display.h"
 #include "rc.h"
+#include "stream.h"
 
 void zmachine_load_story(char* filename, ZMachine* machine)
 {
@@ -100,7 +101,14 @@ void zmachine_load_story(char* filename, ZMachine* machine)
 						 ZH_extntable)];
       machine->heblen = GetWord(machine->heb, ZHEB_len);
 
-      stream_update_unicode_table();
+      if (machine->heblen > 32)
+	{
+	  zmachine_warning("Dodgy-looking header extension table (%i bytes long??), ignoring", machine->heblen);
+	  machine->heb    = NULL;
+	  machine->heblen = 0;
+	}
+      else
+	stream_update_unicode_table();
     }
 
   /* Parse the abbreviations table */
