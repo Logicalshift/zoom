@@ -289,7 +289,7 @@ void read_block2(ZByte* block,
 {
   DWORD  nread;
 
-  if (!SetFilePointer(file->file, start_pos, NULL, FILE_BEGIN))
+  if (SetFilePointer(file->file, start_pos, NULL, FILE_BEGIN) == -1)
     zmachine_fatal("Unable to seek");
   if (!ReadFile(file->file, block, end_pos-start_pos, &nread, NULL))
     zmachine_fatal("Unable to read file");
