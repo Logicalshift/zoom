@@ -24,12 +24,18 @@
 #ifndef __BLORB_H
 #define __BLORB_H
 
+#include "ztypes.h"
+#include "file.h"
+
 typedef struct IffChunk IffChunk;
 typedef struct IffForm  IffForm;
 typedef struct IffFile  IffFile;
 
-#include "ztypes.h"
-#include "file.h"
+typedef struct BlorbIndex      BlorbIndex;
+typedef struct BlorbImage      BlorbImage;
+typedef struct BlorbSound      BlorbSound;
+typedef struct BlorbResolution BlorbResolution;
+typedef struct BlorbFile       BlorbFile;
 
 /* General IFF-reading routines */
 struct IffChunk
@@ -59,6 +65,53 @@ IffForm*  iff_decode_form      (ZFile*    file);
 IffFile*  iff_decode_file      (ZFile*    file);
 
 /* Blorb-specific routines */
-int blorb_is_blorbfile(ZFile* file);
+struct BlorbIndex
+{
+  int         npictures;
+  BlorbImage* picture;
+  int         nsounds;
+  BlorbSound* sound;
+};
+
+struct BlorbImage
+{
+  int file_offset;
+  int number;
+  
+  int width;
+  int height;
+
+  /* Scaling info - _n = numerator, _d = denominator */
+  int std_n, std_d;
+  int min_n, min_d;
+  int max_n, max_d;
+};
+
+struct BlorbSound
+{
+  int file_offset;
+  int number;
+};
+
+struct BlorbResolution
+{
+  int px, py;
+  int minx, miny;
+  int maxx, maxy;
+};
+
+struct BlorbFile
+{
+  BlorbIndex index;
+
+  int zcode_offset;
+  int release_number;
+  char* game_id;
+  
+  BlorbResolution reso;
+};
+
+int        blorb_is_blorbfile(ZFile* file);
+BlorbFile* blorb_loadfile(ZFile* file);
 
 #endif

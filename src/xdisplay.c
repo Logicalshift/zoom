@@ -377,6 +377,10 @@ static void draw_input_text(void)
       { XftDraw* xft_lastdraw; /* Save the last drawable */
       if (xft_drawable != NULL && xft_maindraw != NULL)
 	{
+	  /* 
+	   * Need to draw any XFT stuff on the main window, not the hidden
+	   * buffer 
+	   */
 	  xft_lastdraw = xft_drawable;
 	  xft_drawable = xft_maindraw;
 	}
