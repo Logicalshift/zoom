@@ -200,6 +200,36 @@
 						<key>State</key>
 						<integer>1</integer>
 					</dict>
+					<dict>
+						<key>Cols</key>
+						<array>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720
+
+\f0\fs24 \cf2 Need to check behaviour when resources are deleted (ex: keep games organised and deleting a story) - do we remember the old location for too long when the resources cannot be found?}</string>
+						</array>
+					</dict>
+					<dict>
+						<key>Cols</key>
+						<array>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720
+
+\f0\fs24 \cf2 Need to show an error message when a game has resources set but they cannot be found}</string>
+						</array>
+					</dict>
 				</array>
 				<key>Cols</key>
 				<array>
