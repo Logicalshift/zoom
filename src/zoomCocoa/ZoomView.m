@@ -2033,6 +2033,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 - (BOOL) createAutosaveDataWithCoder: (NSCoder*) encoder {
 	if (lastAutosave == nil) return NO;
 	
+#if 0
 	int autosaveVersion = 101;
 	
 	[encoder encodeValueOfObjCType: @encode(int) 
@@ -2049,6 +2050,23 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	
 	// DOH!
 	[encoder encodeObject: pixmapWindow];
+#else
+	int autosaveVersion = 102;
+
+	[encoder encodeValueOfObjCType: @encode(int) 
+								at: &autosaveVersion]; // HACK: required to support the old, broken, format
+	
+	NSDictionary* saveData = [NSDictionary dictionaryWithObjectsAndKeys:
+		lastAutosave, @"lastAutosave",
+		upperWindows, @"upperWindows",
+		lowerWindows, @"lowerWindows",
+		[textView textStorage], @"textStorage",
+		commandHistory, @"commandHistory",
+		pixmapWindow, @"pixmapWindow",
+		nil];
+	
+	[encoder encodeRootObject: saveData];
+#endif
 	
 	// All we need, I think
 	
@@ -2062,7 +2080,47 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	[decoder decodeValueOfObjCType: @encode(int)
 								at: &autosaveVersion];
 	
-	if (autosaveVersion == 100 || autosaveVersion == 101) {
+	if (autosaveVersion == 102) {
+		if (lastAutosave) [lastAutosave release];
+		if (upperWindows) [upperWindows release];
+		if (lowerWindows) [lowerWindows release];
+		if (commandHistory) [commandHistory release];
+		
+		NSDictionary* restored = [decoder decodeObject];
+		
+		lastAutosave = [[restored objectForKey: @"lastAutosave"] retain];
+		upperWindows = [[restored objectForKey: @"upperWindows"] retain];
+		lowerWindows = [[restored objectForKey: @"lowerWindows"] retain];
+		commandHistory = [[restored objectForKey: @"commandHistory"] retain];
+		
+		NSTextStorage* storage = [restored objectForKey: @"textStorage"];
+		
+		// Workaround for a Cocoa bug
+		[[textView textStorage] setAttributedString: [[[NSAttributedString alloc] initWithAttributedString: storage] autorelease]];
+		
+		// Final setup
+		upperWindowsToRestore = [upperWindows count];
+		
+		[upperWindows makeObjectsPerformSelector: @selector(setZoomView:)
+									  withObject: self];
+		[lowerWindows makeObjectsPerformSelector: @selector(setZoomView:)
+									  withObject: self];
+		
+		if (pixmapWindow) {
+			[pixmapWindow setZoomView: self];
+		}
+		
+		// Load the state into the z-machine
+		if (zMachine) {
+			[zMachine restoreSaveState: lastAutosave];
+		}
+		
+		[self reformatWindow];
+		[self resetMorePrompt];
+		[self scrollToEnd];
+		inputPos = [[textView textStorage] length];		
+	} else if (autosaveVersion == 100 || autosaveVersion == 101) {
+		// (Autosave versions only used up to 1.0.2beta1)
 		if (lastAutosave) [lastAutosave release];
 		if (upperWindows) [upperWindows release];
 		if (lowerWindows) [lowerWindows release];

@@ -275,29 +275,31 @@
 	[self recordGameInfo: self];
 	
 	// Record autosave data
-	NSMutableData* autosaveData = [[NSMutableData alloc] init];
-	NSArchiver* theCoder = [[NSArchiver alloc] initForWritingWithMutableData: autosaveData];
-	
-	BOOL autosave = [[ZoomPreferences globalPreferences] autosaveGames]?[zoomView createAutosaveDataWithCoder: theCoder]:NO;
-	
-	[theCoder release];
+	BOOL autosave = [[ZoomPreferences globalPreferences] autosaveGames];
 	
 	NSString* autosaveDir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: [[self document] storyId]
 																				  create: autosave];
 	NSString* autosaveFile = [autosaveDir stringByAppendingPathComponent: @"autosave.zoomauto"];
 	
 	if (autosave) {
+		NSMutableData* autosaveData = [[NSMutableData alloc] init];
+		NSArchiver* theCoder = [[NSArchiver alloc] initForWritingWithMutableData: autosaveData];
+	
+		BOOL saveOK = [zoomView createAutosaveDataWithCoder: theCoder];
+	
+		[theCoder release];
+	
 		// Produce an autosave file
-		[autosaveData writeToFile: autosaveFile atomically: YES];
+		if (saveOK) [autosaveData writeToFile: autosaveFile atomically: YES];
+
+		[autosaveData release];
 	} else {
 		if ([[NSFileManager defaultManager] fileExistsAtPath: autosaveFile]) {
 			[[NSFileManager defaultManager] removeFileAtPath: autosaveFile
 													 handler: nil];
 		}
 	}
-	
-	[autosaveData release];
-	
+		
 	return YES;
 }
 
