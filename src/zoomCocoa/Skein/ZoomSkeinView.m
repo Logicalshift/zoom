@@ -479,6 +479,7 @@ enum ZSVbutton
 	
 	[self layoutSkein];
 	[self updateTrackingRects];
+	[self scrollToItem: [skein activeItem]];
 }
 
 // = Laying things out =
@@ -1096,6 +1097,7 @@ enum ZSVbutton
 - (void) deleteButtonClicked: (NSEvent*) event
 					withItem: (NSDictionary*) item {
 	ZoomSkeinItem* skeinItem = [item objectForKey: ZSitem];
+	ZoomSkeinItem* itemParent = [skeinItem parent];
 	
 	if ([skeinItem parent] == nil) return;
 	
@@ -1114,6 +1116,10 @@ enum ZSVbutton
 	[skeinItem removeFromParent];
 	[skein zoomSkeinChanged];
 	[self skeinNeedsLayout];
+	
+	if (itemParent) {
+		[self scrollToItem: itemParent];
+	}
 }
 
 - (void) lockButtonClicked: (NSEvent*) event
