@@ -780,6 +780,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     // The task has finished
     if (zMachine) {
         [zMachine release];
+        zMachine = nil;
     }
 
     // Notify the user (display a message)
