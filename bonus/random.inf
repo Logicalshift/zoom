@@ -3,7 +3,7 @@
 !
 
 Constant usualIter = 20000;
-Constant time = 200;
+Constant time = 50;
 Global iterations = 0;
 Global height = 0;
 

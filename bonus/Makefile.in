@@ -76,7 +76,7 @@ ZMACHINE_CONV_WORD = @ZMACHINE_CONV_WORD@
 ZUWORD_TYPE = @ZUWORD_TYPE@
 ZWORD_TYPE = @ZWORD_TYPE@
 
-extra_DIST = zmark.inf
+extra_DIST = zmark.inf random.inf
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 

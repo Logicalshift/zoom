@@ -31,6 +31,8 @@
  *                                                      n      n-1
  * My choices for a and c may not be optimal, but we only use this to
  * generate the seed sequence for the additive generator below
+ *
+ * Note that lin_rand can return negative integers!
  */
 
 static ZDWord ls = 1;
