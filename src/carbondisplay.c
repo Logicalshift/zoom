@@ -2714,7 +2714,9 @@ void carbon_display_rejig(void)
 
   rejig_fonts();
   total_x = total_y = 0;
+  scroll_overlays = 0;
   resize_window();
+  scroll_overlays = 1;
   display_update();
 }
 
