@@ -895,10 +895,20 @@ int tableSorter(id a, id b, void* context) {
 	if (teaser == nil) teaser = @"";
 	
 	if (![[commentView string] isEqualToString: comment]) {
+		[commentView setString: @""];
+		NSSize sz = [commentView frame].size;
+		sz.height = 2;
+		[commentView setFrameSize: sz];
+
 		[commentView setString: comment];
 	}
 	if (![[teaserView string] isEqualToString: teaser]) {
 		// FIXME: when ending editing the teaser is temporarily set to "", which mucks things up a bit
+		[teaserView setString: @""];
+		NSSize sz = [teaserView frame].size;
+		sz.height = 2;
+		[teaserView setFrameSize: sz];
+
 		[teaserView setString: teaser];
 	}
 	
