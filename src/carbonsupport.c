@@ -796,7 +796,9 @@ FSRef* carbon_get_zcode_file(void)
    * events will all be one event behind. This creates a fairly bizarre
    * experience for the user, to say the least.
    */
-  dlOpts.modality     = kWindowModalityNone;
+  dlOpts.modality      = kWindowModalityNone;
+  
+  dlOpts.preferenceKey = 1;
 
   /* Create the dialog box */
   NavCreateGetFileDialog(&dlOpts, nil, 
@@ -969,6 +971,7 @@ ZFile* get_file_write(int* fsize, char* save_fname)
   dlOpts.modality     = kWindowModalityWindowModal;
   dlOpts.saveFileName = CFStringCreateWithCString(NULL, save_fname, 
 						  kCFStringEncodingMacRoman);
+  dlOpts.preferenceKey = 2;
 
   /* Create the dialog box */
   NavCreatePutFileDialog(&dlOpts,
@@ -1003,6 +1006,21 @@ ZFile* get_file_write(int* fsize, char* save_fname)
 
   if (fileref != NULL)
     {
+      HFSUniStr255 name;
+      int x;
+
+      FSGetCatalogInfo(fileref, kFSCatInfoNone, NULL,
+		       &name, NULL, NULL);
+      
+      for (x=0; x<name.length; x++)
+	{
+	  if (name.unicode[x] >= 32 && name.unicode[x] < 256)
+	    save_fname[x] = name.unicode[x];
+	  else
+	    save_fname[x] = '_';
+	}
+      save_fname[name.length] = 0;
+
       if (fsize != NULL)
 	(*fsize) = 0;
       return open_file_write_fsref(fileref);
@@ -1045,8 +1063,9 @@ ZFile* get_file_read(int* fsize, char* save_fname)
   /* Get the default options */
   NavGetDefaultDialogCreationOptions(&dlOpts);
 
-  dlOpts.parentWindow = zoomWindow;
-  dlOpts.modality     = kWindowModalityWindowModal;
+  dlOpts.parentWindow  = zoomWindow;
+  dlOpts.modality      = kWindowModalityWindowModal;
+  dlOpts.preferenceKey = 2;
 
   /* Create the dialog box */
   NavCreateGetFileDialog(&dlOpts, nil, 
