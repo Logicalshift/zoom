@@ -78,7 +78,7 @@ int displayed_text = 0;
 
 /* The caret */
 int  caret_x, caret_y, caret_height;
-int  input_x, input_y;
+int  input_x, input_y, input_width;
 int  caret_on = 0;
 int  caret_shown = 0;
 int  caret_flashing = 0;

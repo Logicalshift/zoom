@@ -943,7 +943,7 @@ OPCODE "ret"          1OP:0x0b CANJUMP      VERSION all
 %{
   ZFrame* oldframe;
   int     end_func;
-  
+
   oldframe = stack->current_frame;
   stack->current_frame = oldframe->last_frame;
   stack->stack_top  -= oldframe->frame_size;
@@ -958,6 +958,9 @@ OPCODE "ret"          1OP:0x0b CANJUMP      VERSION all
     (oldframe->v4read)(&pc, stack, &oldframe->readblock);
   if (oldframe->v5read != NULL)
     {
+#ifdef DEBUG
+      printf_debug("Stack: Calling V5 callback routine\n");
+#endif
       (oldframe->v5read)(&pc, stack, &oldframe->readblock, oldframe->readstore);
       end_func = 1;
     }
@@ -976,7 +979,12 @@ OPCODE "ret"          1OP:0x0b CANJUMP      VERSION all
   free(oldframe);
 
   if (end_func)
-    return;
+    {
+#ifdef DEBUG
+      printf_debug("Stack: Exit from interpreter loop\n");
+#endif
+      return;
+    }
 %}
 
 OPCODE "jump"         1OP:0x0c CANJUMP      VERSION all
@@ -2545,6 +2553,11 @@ OPCODE "draw_picture"  EXT:0x05 ARGS:3        VERSION 6
       if (argblock.n_args < 2)
         y = v6_get_cursor_y();
 
+#ifdef DEBUG
+      printf_debug("Drawing image %i @ (%i, %i)\n", argblock.arg[0],
+	x, y);
+#endif
+
       display_plot_image(img, x+windows[win].x-1, y+windows[win].y-1);
     }
 %}
@@ -2631,7 +2644,7 @@ OPCODE "move_window"   EXT:0x10               VERSION 6
   int win;
 
   stream_flush_buffer();
-  
+
   win = v6_get_window();
   v6_set_window(argblock.arg[0]);
 
@@ -2685,10 +2698,14 @@ OPCODE "window_style"  EXT:0x12               VERSION 6
 %{
   stream_flush_buffer();
 
+  printf("Window_style bugged: args %i, %i %i\n", argblock.arg[0], argblock.arg[1], argblock.arg[2]);
+
+#if 0
   StyleSet(windows[argblock.arg[0]].wrapping,   argblock.arg[1]&1);
   StyleSet(windows[argblock.arg[0]].scrolling,  argblock.arg[1]&2);
   StyleSet(windows[argblock.arg[0]].transcript, argblock.arg[1]&4);
   StyleSet(windows[argblock.arg[0]].buffering,  argblock.arg[1]&8);
+#endif
 %}
 
 OPCODE "get_wind_prop" EXT:0x13        STORE  VERSION 6

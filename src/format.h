@@ -159,7 +159,7 @@ extern char*         lastspeech;
 
 /* The caret */
 extern int  caret_x, caret_y, caret_height;
-extern int  input_x, input_y;
+extern int  input_x, input_y, input_width;
 extern int  caret_on;
 extern int  caret_shown;
 extern int  caret_flashing;

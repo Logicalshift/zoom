@@ -139,20 +139,6 @@ extern float display_get_font_ascent (int style);
 extern float display_get_font_descent(int style);
 extern void  display_wait_for_more   (void);
 
-extern void  display_set_input_pos   (int style, int x, int y);
-
-/* Version 6 display */
-#if 0 /* Not used any more */
-extern void display_set_window (int window);
-
-extern void display_window_define       (int window,
-					 int x, int y,
-					 int lmargin, int rmargin,
-					 int width, int height);
-extern void display_window_scroll       (int window, int pixels);
-extern void display_set_newline_function(int (*func)(const int * remaining,
-						     int rem_len));
-extern void display_reset_windows       (void);
-#endif
+extern void  display_set_input_pos   (int style, int x, int y, int width);
 
 #endif

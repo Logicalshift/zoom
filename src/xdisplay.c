@@ -285,11 +285,13 @@ static void draw_caret(void)
 static int pix_cstyle = 0;
 static int pix_cx = 0;
 static int pix_cy = 0;
+static int pix_cw = 0;
 
-void display_set_input_pos(int style, int x, int y)
+void display_set_input_pos(int style, int x, int y, int width)
 {
   pix_cstyle = style;
   pix_cx = x; pix_cy = y;
+  pix_cw = width;
 }
 
 static void move_caret(void)
@@ -395,6 +397,7 @@ static void draw_input_text(void)
       input_x = caret_x = pix_cx;
       input_y = caret_y = pix_cy;
       input_y += xfont_get_ascent(font[style_font[(pix_cstyle>>1)&15]]);
+      input_width = pix_cw;
       caret_height = xfont_get_height(font[style_font[(pix_cstyle>>1)&15]])-1;
     }
   else
@@ -421,6 +424,8 @@ static void draw_input_text(void)
 	      caret_height = xfont_y-1;
 	    }
 	}
+
+      input_width = win_x - input_x;
     }
 
   if (text_buf != NULL)
@@ -433,7 +438,7 @@ static void draw_input_text(void)
       XFillRectangle(x_display, x_mainwin, x_wingc,
 		     input_x + BORDER_SIZE,
 		     caret_y + BORDER_SIZE,
-		     win_x - input_x,
+		     input_width,
 		     xfont_get_height(font[style_font[(style>>1)&15]]));
 
       caret_x += xfont_get_text_width(font[style_font[(style>>1)&15]],

@@ -160,9 +160,9 @@ void v6_prints(const int* text)
     t[len] = text[len];
   t[len] = 0;
 
-  printf_debug("V6: Printing text to window %i (style %x): >%s<\n", active_win, 
-	       ACTWIN.style, t);
-#endif
+  printf_debug("V6: Printing text to window %i (style %x, colours %i, %i): >%s<\n", active_win, 
+	       ACTWIN.style, ACTWIN.fore, ACTWIN.back, t);
+  #endif
 
   for (len=0; text[len] != 0; len++);
 
@@ -179,7 +179,7 @@ void v6_prints(const int* text)
       width = 0;
       last_word = this_word = text_pos;
 
-      while (ACTWIN.curx + width < ACTWIN.xpos + ACTWIN.width - ACTWIN.rmargin &&
+      while (ACTWIN.curx + width <= ACTWIN.xpos + ACTWIN.width - ACTWIN.rmargin &&
 	     text[text_pos] != 10 && text[text_pos] != 0)
 	{
 	  if (text[text_pos] == ' ' || 
@@ -202,7 +202,8 @@ void v6_prints(const int* text)
 				      ACTWIN.style);
 
       /* Back up a word, if necessary */
-      if (ACTWIN.curx + width >= ACTWIN.xpos + ACTWIN.width - ACTWIN.rmargin)
+      if (ACTWIN.curx + width >= ACTWIN.xpos + ACTWIN.width - ACTWIN.rmargin &&
+	  (ACTWIN.curx != ACTWIN.xpos + ACTWIN.lmargin || last_word != start_pos))
 	{
 	  text_pos = last_word;
 	  this_word = last_word;
@@ -211,7 +212,7 @@ void v6_prints(const int* text)
 					text_pos - start_pos + 1,
 					ACTWIN.style);
 	}
-      
+
       /* Work out the new height of this line... */
       if (text_pos != start_pos ||
 	  (text_pos == start_pos && text[text_pos] == 10))
@@ -344,7 +345,8 @@ void v6_prints_c(const char* text)
 
 void v6_set_caret(void)
 {
-  display_set_input_pos(ACTWIN.style, ACTWIN.curx, ACTWIN.cury);
+  display_set_input_pos(ACTWIN.style, ACTWIN.curx, ACTWIN.cury,
+			(ACTWIN.xpos+ACTWIN.width)-ACTWIN.curx);
   ACTWIN.text_amount = 0;
 }
 
@@ -390,6 +392,18 @@ void v6_set_colours(int fg, int bg)
     bg = -1;
   ACTWIN.fore = fg;
   ACTWIN.back = bg;
+
+#ifdef DEBUG
+  if (ACTWIN.fore > 7 || ACTWIN.fore < 0)
+    {
+      printf("Bad colour...\n");
+      ACTWIN.fore = 0;
+    }
+  if (ACTWIN.back > 7 || ACTWIN.back < 0)
+    {
+      printf("Bad colour...\n");
+    }
+#endif
 }
 
 int v6_set_style(int style)
