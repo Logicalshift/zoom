@@ -63,12 +63,10 @@ void random_seed(int seed)
 
   do
     {
-      for (x=0; x<56; x++)
-	seq[x] = lin_rand();
-
       odd = even = 0;
-      for (x=0; x<55; x++)
+      for (x=0; x<56; x++)
 	{
+	  seq[x] = lin_rand();
 	  if (seq[x]&1)
 	    odd++;
 	  else
