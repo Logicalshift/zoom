@@ -203,8 +203,8 @@ xfont* xfont_load_font(char* font)
 	  XftResult   res;
 
 	  pat = XftXlfdParse(font, False, False);
-	  /* XftPatternAddBool(pat, XFT_ANTIALIAS,
-	     rc_get_antialias()?True:False); */
+	  XftPatternAddBool(pat, XFT_ANTIALIAS,
+	     rc_get_antialias()?True:False);
 
 	  if (!pat) {
 	    f->data.Xft = NULL;
