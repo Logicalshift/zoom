@@ -1,0 +1,16 @@
+2000-11-07  Andrew Hunter    <andrew@logicalshift.co.uk>
+
+	* version changed to 0.9.99dev4
+	
+	* zoom-0.9.99beta3 released
+
+	* debugging: started adding attribute, property and object watch
+	routines
+
+	* bugfixes: transcript now works when header bit is
+	set. Seastalker window display fixed. Undo no longer leaks
+	memory. zoomrc file added to tarball. Save/restore now print
+	reasons when they fail. Output stream 3 fixed to comply better
+	with specification.
+
+	* version changed to 0.9.99dev3

@@ -1,0 +1,174 @@
+                               Zoom - A Z-Machine
+                               ----// 8888 \\----
+
+by Andrew Hunter
+
+   Zoom is a fast Z-Machine (around 1.5x faster than frotz). It was
+   written by me to investigate the effects of specialisation on
+   bytecode languages similar to ZCode. It's a bit rough around the
+   edges, as most of the interpreter was written in a single weekend.
+
+   Send any bug reports to bugs@logicalshift.co.uk, and anything else
+   to andrew@logicalshift.co.uk. Zoom's homepage can be located at
+   http://www.logicalshift.co.uk/unix/zoom/
+
+Using Zoom
+==========
+
+   Running Zoom is fairly simple - zoom <filename> should do the
+   trick, where <filename> is a Z-Code file (modern files created by
+   Inform tend to have a .z5 or .z8 filename, original Infocom files
+   tend to have a .dat or .zip filename - note that the .zip stands
+   for 'Z-Code Interpreter', not PKZip as you might think). Assuming
+   you haven't tinkered with zmachine.h, Zoom will support Z-Code
+   versions 3, 4, 5, 7 and 8. You can compile version 6 support in,
+   but the display doesn't look even remotely right.
+
+   Zoom needs a configuration file called '.zoomrc' in your home
+   directory. This file tells Zoom about the colours and fonts it
+   should use, and also identifies game titles. It consists of many
+   entries of the form 'game "mygame" 12.345678 { options }', where
+   'mygame' is the text that appears in the title bar, and { options } 
+   is the options for this game (in curly brackets). You can omit the
+   options altogether if you want the options to be the same as the
+   default. There is also exactly one default block, which has the
+   form 'default "%s (%i.%.6s)" { options }'. The default block must
+   define the interpreter number and revision, at least 4 fonts, and
+   the default set of colours:
+
+      # Standard settings - applies to all interpreters
+      # (Note, font 4 must always be fixed-pitch)
+      default "%s (%i.%.6s)"
+      {
+        interpreter 1
+        revision    Z
+      
+        font 1 "-*-helvetica-medium-r-*-*-14-*-*-*-*-*-*-*" roman
+        font 2 "-*-helvetica-bold-r-*-*-14-*-*-*-*-*-*-*"   bold
+        font 3 "-*-helvetica-medium-o-*-*-14-*-*-*-*-*-*-*" italic
+        font 4 "-*-courier-medium-r-*-*-14-*-*-*-*-*-*-*"   fixed
+        font 5 "-*-courier-bold-r-*-*-14-*-*-*-*-*-*-*"     fixed-bold
+        font 6 "-*-courier-medium-o-*-*-14-*-*-*-*-*-*-*"   fixed-italic
+        font 7 "-*-courier-bold-o-*-*-14-*-*-*-*-*-*-*"     fixed-bold-italic
+        font 8 "-*-helvetica-bold-o-*-*-14-*-*-*-*-*-*-*"   bold-italic
+      
+        colours (0,0,0), (255,0,0), (0,255,0), (255,255,0), (0,0,255),
+                (255,0,255), (0,255,255), (255,255,204),
+      	        # These are the colours provided by DOS interpreters
+      	        (187, 187, 187), (136, 136, 136), (68, 68, 68)
+      }
+
+   This illustrates all the available options. Unless you have a
+   particular reason for setting the interpreter number and revision, 
+   the values given should do a reasonable job (version 6 games, and
+   Beyond Zork benefit from setting the interpreter number).
+
+   Fonts are defined using statements of the form:
+
+      font <num> "<name>" <style>
+
+   Where <num> specifies the font number (note that font 4 *must* be
+   a fixed-pitch font), and <style> is a list of style attributes
+   (attributes can be seperated by commas). A style attribute is one
+   of 'roman', 'bold', 'italic' or 'fixed', or a combination made by
+   combining attributes with hyphens, for example 'fixed-bold'. If
+   you don't specify a font with a given combination of style
+   attributes, Zoom will use font 1 (for normal text) or font 4 (for
+   fixed pitch text). You can work out font names with the aid of
+   xfontsel.
+
+   Colours are defined using a list of values of the form (R, G,
+   B). There should be at least 8 attributes, coresponding to the
+   Infocom colour scheme, and there can be up to 11 (corresponding
+   to the colour scheme allowed by various interpreter versions):
+
+      0  = black
+      1  = red
+      2  = green
+      3  = yellow
+      4  = blue
+      5  = magenta
+      6	 = cyan
+      7  = white
+   (I prefer cream to white, but that's a matter of personal preference)
+      8  = light grey (amiga) dark grey (DOS)
+      9  = medium grey (amiga)
+      10 = dark grey (amiga)
+
+   Colour 0 is the first specified in the list, and the rest follow
+   in sequence.
+
+   Each game can be specified with a block like this, or the block
+   can be omitted. If you do specify a block for a game, the options
+   there override the defaults. For example:
+
+      game "Planetfall (Solid Gold edition)" 10.880531
+
+   might have no options, so it runs as the default - but,
+
+       game "Beyond Zork" 47.870915, 49.870917, 51.870923, 57.871221
+       {
+         interpreter 5
+         revision    Z
+       }
+
+   specifies that Beyond Zork requires a different intepreter number
+   - note that you can also specify different colour schemes and
+   fonts here (with fonts you can give a partial specification, so
+   just adding, say, 'font 1 "-weird-font" roman' would cause Zoom to 
+   use that font instead of the default font 1, but keep the defaults 
+   for the rest)
+
+   An example .zoomrc file can be found in the source distribution as 
+   'zoomrc'
+
+Why it goes fast
+================
+
+   Specialisation is a formal name for an optimisation strategy that
+   removes layers of interpretation from a program. A classic example
+   is the standard C printf statement:
+
+     printf("Foo %i bar %s baz\n", i, s);
+
+   The usual technique is for the runtime system to parse the string
+   and insert the values of i and s appropriately. A specialised
+   version of this statement would note that the format string is
+   /constant/, and never changes, so a specialised version of that
+   printf statement would evaluate the format string at compile time
+   and output simpler routines that just print 'Foo ', then i, then '
+   bar ', followed by s and ' baz\n'.
+
+   Zoom's particular specialisation is to note that many of the
+   bytecodes can only appear in limited combinations, so instead of
+   testing for the opcodes and then working out what the various bits
+   mean, Zoom simply tests for all possible values in an enormous
+   switch statement (or three) - this process is applied to the
+   opcodes themselves and their arguments. In addition, various
+   opcodes can be 'branch' opcodes or 'store' opcodes, etc. A custom
+   decoding routine is written for each and every opcode.
+
+   This would obviously take rather a long time to do by hand, but the 
+   code is actually generated automatically by a helper program
+   (general purpose programs like this are known as 'partial
+   evaluators', but I'm not sure if the name applies to helper
+   programs such as the one used here). The code has to be generated
+   individually for different ZCode versions, and a consequence of
+   this is the rather large size of the Zoom executable (it's strongly 
+   recommended you strip it to get rid of the excessively large
+   debugging tables :-)
+
+   Note that Zoom also makes extensive use of function inlining
+   (supported in C by gcc) to give an extra speed boost (actually
+   only an extra few %). If you compile in support for many Z-Code
+   versions, you may find that turning it off (by uncommenting the
+   '#define inline' in interp.c) will decrease the executable size
+   somewhat - as a side note, Zoom also depends on the compiler having
+   a few sensible optimisation strategies for its speed. Turning
+   optimisation off is probably never a good idea, as (under gcc under 
+   x86 Linux) that increases the size of the executable and gives
+   quite a performance hit on those switch statements.
+
+   That's actually about it. Zoom is probably actually slower than
+   frotz in a few areas, I'll get round to writing a few benchmarks to 
+   check them out and see what can be improved.

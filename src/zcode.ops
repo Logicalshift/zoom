@@ -1,0 +1,180 @@
+# ZCode operations file
+# This file is 'partially evaluated' to generate a (long!) C source file
+# that should provide a performance boost to the execution of instructions
+
+# YMMV, depending on your compilers optimisation abilities
+
+# 2OPs
+
+# je is weird and is actually treated as a VAR op instead of a 2OP
+OPCODE "je"         2OP:0x01 BRANCH REALLYVAR VERSION all
+
+OPCODE "jl"         2OP:0x02 BRANCH VERSION all
+OPCODE "jg"         2OP:0x03 BRANCH VERSION all
+OPCODE "dec_chk"    2OP:0x04 BRANCH VERSION all
+OPCODE "inc_chk"    2OP:0x05 BRANCH VERSION all
+OPCODE "jin"        2OP:0x06 BRANCH VERSION 1,2,3
+OPCODE "jin"        2OP:0x06 BRANCH VERSION 4,5,6,7,8
+OPCODE "test"       2OP:0x07 BRANCH VERSION all
+
+OPCODE "test_attr"     2OP:0x0a BRANCH VERSION 1,2,3
+OPCODE "test_attr"     2OP:0x0a BRANCH VERSION 4,5,6,7,8
+OPCODE "set_attr"      2OP:0x0b        VERSION 1,2,3
+OPCODE "set_attr"      2OP:0x0b        VERSION 4,5,6,7,8
+OPCODE "clear_attr"    2OP:0x0c        VERSION 1,2,3
+OPCODE "clear_attr"    2OP:0x0c        VERSION 4,5,6,7,8
+OPCODE "insert_obj"    2OP:0x0e        VERSION 1,2,3
+OPCODE "insert_obj"    2OP:0x0e        VERSION 4,5,6,7,8
+OPCODE "get_prop"      2OP:0x11 STORE  VERSION 1,2,3
+OPCODE "get_prop"      2OP:0x11 STORE  VERSION 4,5,6,7,8
+OPCODE "get_prop_addr" 2OP:0x12 STORE  VERSION 1,2,3
+OPCODE "get_prop_addr" 2OP:0x12 STORE  VERSION 4,5,6,7,8
+OPCODE "get_next_prop" 2OP:0x13 STORE  VERSION 1,2,3
+OPCODE "get_next_prop" 2OP:0x13 STORE  VERSION 4,5,6,7,8
+
+OPCODE "store"        2OP:0x0d        VERSION all
+OPCODE "loadw"        2OP:0x0f STORE  VERSION all
+OPCODE "loadb"        2OP:0x10 STORE  VERSION all
+
+OPCODE "or"           2OP:0x08 STORE  VERSION all
+OPCODE "and"          2OP:0x09 STORE  VERSION all
+OPCODE "add"          2OP:0x14 STORE  VERSION all
+OPCODE "sub"          2OP:0x15 STORE  VERSION all
+OPCODE "mul"          2OP:0x16 STORE  VERSION all
+OPCODE "div"          2OP:0x17 STORE  VERSION all
+OPCODE "mod"          2OP:0x18 STORE  VERSION all
+
+OPCODE "call_2s"      2OP:0x19 CANJUMP STORE VERSION 4,5,6,7,8
+OPCODE "call_2n"      2OP:0x1a CANJUMP       VERSION 5,6,7,8
+OPCODE "set_colour"   2OP:0x1b               VERSION 5,7,8
+OPCODE "set_colour"   2OP:0x1b REALLYVAR     VERSION 6
+OPCODE "throw"        2OP:0x1c CANJUMP       VERSION 5,6,7,8
+
+# 1OPs
+
+OPCODE "jz"           1OP:0x00 BRANCH       VERSION all
+OPCODE "get_sibling"  1OP:0x01 BRANCH STORE VERSION 1,2,3
+OPCODE "get_sibling"  1OP:0x01 BRANCH STORE VERSION 4,5,6,7,8
+OPCODE "get_child"    1OP:0x02 BRANCH STORE VERSION 1,2,3
+OPCODE "get_child"    1OP:0x02 BRANCH STORE VERSION 4,5,6,7,8
+OPCODE "get_parent"   1OP:0x03        STORE VERSION 1,2,3
+OPCODE "get_parent"   1OP:0x03        STORE VERSION 4,5,6,7,8
+OPCODE "get_prop_len" 1OP:0x04        STORE VERSION 1,2,3
+OPCODE "get_prop_len" 1OP:0x04        STORE VERSION 4,5,6,7,8
+OPCODE "inc"          1OP:0x05              VERSION all
+OPCODE "dec"          1OP:0x06              VERSION all
+OPCODE "print_addr"   1OP:0x07              VERSION all
+OPCODE "call_1s"      1OP:0x08 CANJUMP STORE VERSION 4,5,6,7,8
+OPCODE "remove_obj"   1OP:0x09              VERSION 1,2,3
+OPCODE "remove_obj"   1OP:0x09              VERSION 4,5,6,7,8
+OPCODE "print_obj"    1OP:0x0a              VERSION 1,2,3
+OPCODE "print_obj"    1OP:0x0a              VERSION 4,5,6,7,8
+OPCODE "ret"          1OP:0x0b CANJUMP      VERSION all
+OPCODE "jump"         1OP:0x0c CANJUMP      VERSION all
+OPCODE "print_paddr"  1OP:0x0d              VERSION 1,2,3
+OPCODE "print_paddr"  1OP:0x0d              VERSION 4,5,6,7,8
+OPCODE "load"         1OP:0x0e        STORE VERSION all
+OPCODE "not"          1OP:0x0f        STORE VERSION 1,2,3,4
+OPCODE "call_1n"      1OP:0x0f CANJUMP      VERSION 5,6,7,8
+
+# 0OPs
+
+OPCODE "rtrue"       0OP:0x00 CANJUMP VERSION all
+OPCODE "rfalse"      0OP:0x01 CANJUMP VERSION all
+OPCODE "print"       0OP:0x02 STRING  VERSION all
+OPCODE "print_ret"   0OP:0x03 CANJUMP STRING  VERSION all
+OPCODE "nop"         0OP:0x04         VERSION all
+OPCODE "save"        0OP:0x05 BRANCH  VERSION 1,2,3
+OPCODE "save"        0OP:0x05 STORE CANJUMP VERSION 4
+OPCODE "restore"     0OP:0x06 BRANCH  VERSION 1,2,3
+OPCODE "restore"     0OP:0x06 STORE CANJUMP VERSION 4
+OPCODE "restart"     0OP:0x07 CANJUMP VERSION all
+OPCODE "ret_popped"  0OP:0x08 CANJUMP VERSION all
+OPCODE "pop"         0OP:0x09         VERSION 1,2,3,4
+OPCODE "catch"       0OP:0x09 STORE   VERSION 5,6,7,8
+OPCODE "quit"        0OP:0x0a CANJUMP VERSION all
+OPCODE "new_line"    0OP:0x0b         VERSION all
+OPCODE "show_status" 0OP:0x0c         VERSION 3
+OPCODE "status_nop"  0OP:0x0c         VERSION 4,5,6,7,8
+OPCODE "verify"      0OP:0x0d BRANCH  VERSION 3,4,5,6,7,8
+OPCODE "piracy"      0OP:0x0f BRANCH  VERSION 5,6,7,8
+
+# VAR ops
+
+OPCODE "call"           VAR:0x00        STORE CANJUMP VERSION 1,2,3
+OPCODE "call_vs"        VAR:0x00        STORE CANJUMP VERSION 4,5,6,7,8
+OPCODE "storew"         VAR:0x01 ARGS:3               VERSION all
+OPCODE "storeb"         VAR:0x02 ARGS:3               VERSION all
+OPCODE "put_prop"       VAR:0x03 ARGS:3               VERSION 1,2,3
+OPCODE "put_prop"       VAR:0x03 ARGS:3               VERSION 4,5,6,7,8
+OPCODE "sread"          VAR:0x04 ARGS:2               VERSION 1,2,3
+OPCODE "sread"          VAR:0x04 ARGS:4       CANJUMP VERSION 4
+OPCODE "aread"          VAR:0x04 ARGS:4 STORE CANJUMP VERSION 5,6,7,8
+OPCODE "print_char"     VAR:0x05 ARGS:1               VERSION all
+OPCODE "print_num"      VAR:0x06 ARGS:1               VERSION all
+OPCODE "random"         VAR:0x07 ARGS:1 STORE         VERSION all
+OPCODE "push"           VAR:0x08 ARGS:1               VERSION all
+OPCODE "pull"           VAR:0x09 ARGS:1               VERSION 1,2,3,4,5,7,8
+OPCODE "pull"           VAR:0x09 ARGS:1 STORE         VERSION 6
+OPCODE "split_window"   VAR:0x0a ARGS:1               VERSION 3,4,5,6,7,8
+OPCODE "set_window"     VAR:0x0b ARGS:1               VERSION 3,4,5,7,8
+OPCODE "set_window"     VAR:0x0b ARGS:1               VERSION 6
+OPCODE "call_vs2"       VAR:0x0c   STORE LONG CANJUMP VERSION 4,5,6,7,8
+OPCODE "erase_window"   VAR:0x0d ARGS:1               VERSION 4,5,6,7,8
+OPCODE "erase_line"     VAR:0x0e ARGS:1               VERSION 4,5,7,8
+OPCODE "erase_line"     VAR:0x0e ARGS:1               VERSION 6
+OPCODE "set_cursor"     VAR:0x0f ARGS:2               VERSION 4,5,7,8
+OPCODE "set_cursor"     VAR:0x0f ARGS:3               VERSION 6
+OPCODE "get_cursor"     VAR:0x10 ARGS:1               VERSION 4,5,6,7,8
+OPCODE "set_text_style" VAR:0x11 ARGS:1               VERSION 4,5,6,7,8
+OPCODE "buffer_mode"    VAR:0x12 ARGS:1               VERSION 4,5,6,7,8
+OPCODE "output_stream"  VAR:0x13 ARGS:1               VERSION 3
+OPCODE "output_stream"  VAR:0x13 ARGS:2               VERSION 4,5,7,8
+OPCODE "output_stream"  VAR:0x13 ARGS:3               VERSION 6
+OPCODE "input_stream"   VAR:0x14 ARGS:1               VERSION 3,4,5,6,7,8
+OPCODE "sound_effect"   VAR:0x15                      VERSION 3,4,5,6,7,8
+OPCODE "read_char"      VAR:0x16 ARGS:3 STORE         VERSION 4,5,6,7,8
+OPCODE "scan_table"     VAR:0x17        BRANCH STORE  VERSION 4,5,6,7,8
+OPCODE "not"            VAR:0x18 ARGS:1 STORE         VERSION 5,6,7,8
+OPCODE "call_vn"        VAR:0x19 CANJUMP              VERSION 5,6,7,8
+OPCODE "call_vn2"       VAR:0x1a CANJUMP LONG         VERSION 5,6,7,8
+OPCODE "tokenise"       VAR:0x1b ARGS:4               VERSION 5,6,7,8
+OPCODE "encode_text"    VAR:0x1c ARGS:4               VERSION 5,6,7,8
+OPCODE "copy_table"     VAR:0x1d ARGS:3               VERSION 5,6,7,8
+OPCODE "print_table"    VAR:0x1e                      VERSION 5,6,7,8
+OPCODE "check_argcount" VAR:0x1f ARGS:1 BRANCH        VERSION 5,6,7,8
+
+# EXT ops
+
+OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
+OPCODE "restore"       EXT:0x01 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
+OPCODE "log_shift"     EXT:0x02 ARGS:2 STORE  VERSION 5,6,7,8
+OPCODE "art_shift"     EXT:0x03 ARGS:2 STORE  VERSION 5,6,7,8
+OPCODE "set_font"      EXT:0x04 ARGS:1 STORE  VERSION 5,6,7,8
+OPCODE "draw_picture"  EXT:0x05 ARGS:3        VERSION 6
+OPCODE "picture_data"  EXT:0x06 BRANCH        VERSION 6
+OPCODE "erase_picture" EXT:0x07               VERSION 6
+OPCODE "set_margins"   EXT:0x08 ARGS:3        VERSION 6
+OPCODE "save_undo"     EXT:0x09 ARGS:0 STORE CANJUMP VERSION 5,6,7,8
+OPCODE "restore_undo"  EXT:0x0a ARGS:0 STORE CANJUMP VERSION 5,6,7,8
+OPCODE "print_unicode" EXT:0x0b ARGS:1        VERSION 5,7,8
+OPCODE "check_unicode" EXT:0x0c ARGS:1 STORE  VERSION 5,7,8
+OPCODE "move_window"   EXT:0x10               VERSION 6
+OPCODE "window_size"   EXT:0x11               VERSION 6
+OPCODE "window_style"  EXT:0x12               VERSION 6
+OPCODE "get_wind_prop" EXT:0x13        STORE  VERSION 6
+OPCODE "scroll_window" EXT:0x14               VERSION 6
+OPCODE "pop_stack"     EXT:0x15               VERSION 6
+OPCODE "read_mouse"    EXT:0x16               VERSION 6
+OPCODE "mouse_window"  EXT:0x17               VERSION 6
+OPCODE "push_stack"    EXT:0x18        BRANCH VERSION 6
+OPCODE "put_wind_prop" EXT:0x19               VERSION 6
+OPCODE "print_form"    EXT:0x1a               VERSION 6
+OPCODE "make_menu"     EXT:0x1b        BRANCH VERSION 6
+OPCODE "picture_table" EXT:0x1c               VERSION 6
+
+# Our own extensions - benchmarking/profiling operations
+OPCODE "start_timer"   EXT:0x80               VERSION 4,5,6,7,8
+OPCODE "stop_timer"    EXT:0x81               VERSION 4,5,6,7,8
+OPCODE "read_timer"    EXT:0x82 STORE         VERSION 4,5,6,7,8
+OPCODE "print_timer"   EXT:0x83      	      VERSION 4,5,6,7,8

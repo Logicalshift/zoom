@@ -1,0 +1,75 @@
+#
+# Sample Zoom configuration file
+#
+
+# Standard settings - applies to all interpreters
+# (Note, font 4 must always be fixed-pitch)
+default "%s (%i.%.6s)"
+{
+  interpreter 1
+  revision    Z
+
+  font 1 "-*-helvetica-medium-r-*-*-14-*-*-*-*-*-*-*" roman
+  font 2 "-*-helvetica-bold-r-*-*-14-*-*-*-*-*-*-*"   bold
+  font 3 "-*-helvetica-medium-o-*-*-14-*-*-*-*-*-*-*" italic
+  font 4 "-*-courier-medium-r-*-*-14-*-*-*-*-*-*-*"   fixed
+  font 5 "-*-courier-bold-r-*-*-14-*-*-*-*-*-*-*"     fixed-bold
+  font 6 "-*-courier-medium-o-*-*-14-*-*-*-*-*-*-*"   fixed-italic
+  font 7 "-*-courier-bold-o-*-*-14-*-*-*-*-*-*-*"     fixed-bold-italic
+  font 8 "-*-helvetica-bold-o-*-*-14-*-*-*-*-*-*-*"   bold-italic
+
+  colours (0,0,0), (255,0,0), (0,255,0), (255,255,0), (0,0,255), (255,0,255),
+          (0,255,255), (255,255,204),
+	  # These are the colours provided by DOS interpreters
+	  (187, 187, 187), (136, 136, 136), (68, 68, 68)
+}
+
+# Settings for individual games - overrides default settings
+
+# -- Version 3 --
+game "Ballyhoo" 97.851218
+game "Cutthroats" 23.840809
+game "Deadline" 18.820311, 19.820427, 21.820512, 26.821108, 27.831005
+game "Enchanter" 10.830810, 15.831107, 16.831118, 24.851118, 29.860820
+game "The Hitch Hiker's Guide To The Galaxy" 47.840914, 56.841221, 58.851002, 59.851108
+game "Hollywood Hijinx" 37.861215 
+game "Infidel" 22.830916
+game "Leather Goddesses of Phobos" 59.860730, 59.861114
+game "Lurking Horror" 203.870506, 219.870912, 221.870918
+game "Mini-Zork I" 34.871124
+game "Moonmist" 4.860918, 9.861022 
+game "Planetfall" 20.830708, 29.840118, 37.851003
+game "Seastalker" 15.840501, 15.840522, 16.850515, 16.850603
+game "Sorcerer" 4.840131, 6.840508, 13.851021, 15.851108, 18.860904
+game "Spellbreaker" 63.850916, 87.860904
+game "Starcross" 15.820901, 17.821021
+game "Stationfall" 107.870430
+game "Suspect" 14.841005
+game "Suspended" 5.830222, 7.830419, 8.830521, 8.840521 
+game "Wishbringer" 68.850501, 69.850920
+game "Witness" 13.830524, 18.830910, 20.831119, 21.831208, 22.840924
+game "Zork I" 23.820428, 25.820515, 26.820803, 28.821013, 30.830330, 75.830929, 76.840509, 88.840726
+game "Zork II" 17.820427, 18.820512, 18.820517, 19.820721, 22.830331, 23.830411
+game "Zork III" 10.820818, 15.830331, 16.830410, 15.840518, 17.840727
+
+# -- Version 4 --
+game "A Mind Forever Voyaging" 77.850814, 79.851122
+game "Bureaucracy" 86.870212, 116.870602
+game "Nord and Bert Couldn't Make Head Nor Tail Of It" 19.870722
+game "Trinity" 11.860509, 12.860926
+
+# -- Version 5 --
+game "Beyond Zork" 47.870915, 49.870917, 51.870923, 57.871221
+{
+  interpreter 5
+  revision    Z
+}
+
+game "Border Zone" 9.871008
+game "The Hitch Hiker's Guide To The Galaxy (Solid Gold edition)" 31.871119
+game "Leather Goddesses of Phobos (Solid Gold edition)" 4.880405
+game "Planetfall (Solid Gold edition)" 10.880531
+game "Sherlock" 21.871214, 26.880127
+game "Wishbringer (Solid Gold edition)" 23.880706
+game "Zork I (Solid Gold edition)" 52.871125
+

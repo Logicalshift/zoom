@@ -1,0 +1,146 @@
+
+AC_PREREQ(2.13)
+AC_INIT()
+
+VERSION=0.9.99dev4
+PACKAGE=zoom
+
+UTIL_DISPLAY_INIT()
+UTIL_DISPLAY_HEADER(Andrew Hunter, 2000)
+
+UTIL_DISPLAY_SECTION(automake)
+AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
+AM_CONFIG_HEADER(config.h)
+
+UTIL_DISPLAY_SECTION(compilers)
+AC_PROG_CC
+AC_PROG_CPP
+AM_PROG_LEX
+AC_PROG_YACC
+AC_PATH_PROG(PERL, perl)
+
+ACLOCAL="$ACLOCAL -I m4"
+
+UTIL_DISPLAY_SECTION(compiler characteristics)
+
+AC_C_INLINE
+UTIL_CHECK_CFLAG(Wall)
+UTIL_CHECK_CFLAG(finline-functions)
+UTIL_CHECK_CFLAG(funroll-loops)
+
+UTIL_DISPLAY_SECTION(architecture characteristics)
+
+AC_CHECK_SIZEOF(unsigned char, 1)
+AC_CHECK_SIZEOF(short int,     2)
+AC_CHECK_SIZEOF(int,           4)
+AC_CHECK_SIZEOF(long int,      4)
+
+case 1 in
+$ac_cv_sizeof_unsigned_char)
+    ZBYTE_TYPE="unsigned char";;
+
+$ac_cv_sizeof_short_int)
+    ZBYTE_TYPE="unsigned short int";;
+
+*)
+    ZBYTE_TYPE="unsigned char"
+esac
+
+case 2 in
+$ac_cv_sizeof_short_int)
+    ZWORD_TYPE="signed short int"
+    ZUWORD_TYPE="unsigned short int";;
+
+$ac_cv_sizeof_int)
+    ZWORD_TYPE="signed int"
+    ZUWORD_TYPE="unsigned int";;
+
+*)
+    ZWORD_TYPE="signed short int"
+esac
+
+case 4 in
+$ac_cv_sizeof_int)
+    ZDWORD_TYPE="int";;
+
+$ac_cv_sizeof_long_int)
+    ZDWORD_TYPE="long int";;
+
+*)
+    ZDWORD_TYPE="long int"
+esac
+
+AC_SUBST(ZBYTE_TYPE)
+AC_SUBST(ZWORD_TYPE)
+AC_SUBST(ZUWORD_TYPE)
+AC_SUBST(ZDWORD_TYPE)
+
+AC_MSG_CHECKING(byte ordering of $ZWORD_TYPE)
+AC_TRY_RUN([
+  int main()
+    {
+      union { $ZWORD_TYPE word; $ZBYTE_TYPE byte[2]; } foo;
+
+      foo.byte[0] = 1;
+      foo.byte[1] = 2;
+
+      if (foo.word == 0x102)
+        return 0;
+      else
+        return 1;
+    }
+  ],
+  AC_MSG_RESULT([zmachine standard])
+  ZMACHINE_CONV_WORD=0,
+  AC_MSG_RESULT([backwards])
+  ZMACHINE_CONV_WORD=1,
+  AC_MSG_RESULT([unknown - assuming is backwards])
+)
+
+AC_SUBST(ZMACHINE_CONV_WORD)
+
+UTIL_DISPLAY_SECTION(features)
+
+AC_PATH_XTRA
+if test "$no_x" = "yes"; then
+  AC_MSG_ERROR([Zoom currently requires X to compile its display drivers])
+fi
+
+AC_MSG_CHECKING([for argp])
+
+AC_TRY_LINK([
+  #include <argp.h>
+],
+[
+  argp_parse(NULL, 0, NULL, 0, 0, NULL);
+],
+[
+  AC_MSG_RESULT(yes)
+  AC_DEFINE(OPT_TYPE, 0)
+],
+  AC_MSG_RESULT(no)
+  AC_MSG_CHECKING([for getopt])
+  AC_TRY_LINK([
+    #include <unistd.h>
+  ],
+  [
+    getopt(0, NULL, NULL);
+  ],
+  [
+    AC_MSG_RESULT([yes])
+    AC_DEFINE(OPT_TYPE, 1)
+  ],
+  [
+    AC_MSG_RESULT(no)
+    AC_DEFINE(OPT_TYPE, 200)
+  ])
+)
+
+UTIL_DISPLAY_INFO(Generating files)
+
+AC_OUTPUT([
+  Makefile
+  m4/Makefile
+  src/Makefile
+  src/ztypes.h
+  builder/Makefile])
