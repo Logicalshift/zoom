@@ -1,4 +1,4 @@
-Hmm, this file was a bit out of date.
+GENERAL:
 
  * Crash with graphics set to a directory?
  * Allow for graphics directories
@@ -15,9 +15,17 @@ Hmm, this file was a bit out of date.
  * Remove font numbering
  * '>>' '<<' bug? again?
  
+ COCOA:
  * Cocoa version has the restart bug again (erg)
  * Problem with overwriting things in the upper window? (Beyond Zork)
+ * upper window behaviour really needs to change:
+    - when resizing the upper window, need to stop moving the contents of the
+      lower window down (can achieve this by extending it and scrolling to the end,
+      I think)
+    - if the upper window is resized over the lower window cursor, the lower window
+      cursor should be moved to accomodate it.
 
+FUTURE:
  * Sound
  * Internationalisation support
  * One-shot warning messages

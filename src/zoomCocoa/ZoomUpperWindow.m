@@ -52,7 +52,6 @@
            withStyle: (ZStyle*) style {
     [style setFixed: YES];
 
-    // FIXME: \ns in string
     int x;
     int len = [string length];
     for (x=0; x<len; x++) {
@@ -110,8 +109,6 @@
     xpos += strlen;
 
     [theView upperWindowNeedsRedrawing];
-
-    // FIXME: things outside the current split point
 }
 
 // Size (-1 to indicate an unsplit window)
