@@ -100,6 +100,10 @@ static void new_line(int more,
 {
   struct line* line;
 
+  static int reformatting;
+
+  reformatting = 0;
+
   if (CURWIN.lastline == NULL)
     {
       CURWIN.lastline = CURWIN.line = malloc(sizeof(struct line));
@@ -116,6 +120,7 @@ static void new_line(int more,
 
       displayed_text = CURWIN.lastline->ascent + CURWIN.lastline->descent;
       
+      reformatting = 1;
       return;
     }
 
@@ -129,6 +134,8 @@ static void new_line(int more,
 	  more_on = 1;
 	  display_readchar(0);
 	  more_on = 0;
+	  if (reformatting)
+	    return;
 	}
       displayed_text += distext;
     }
@@ -198,6 +205,8 @@ static void new_line(int more,
 
       display_update();
     }
+
+  reformatting = 1;
 }
 
 void format_last_text(int more)
@@ -208,7 +217,11 @@ void format_last_text(int more)
   XFONT_MEASURE xpos;
   xfont* fn;
   struct line* line;
-  
+
+  static int reformatting = 0;
+
+  reformatting = 0;
+
   text = CURWIN.lasttext;
 
   fn = font[text->font];
@@ -216,6 +229,8 @@ void format_last_text(int more)
   if (CURWIN.lastline == NULL)
     {
       new_line(more, text->font);
+      if (reformatting)
+	return;
     }
 
   if (text->spacer)
@@ -223,6 +238,8 @@ void format_last_text(int more)
       line = CURWIN.lastline;
       
       new_line(more, text->font);
+      if (reformatting)
+	return;
 
       CURWIN.lastline->descent = 0;
       CURWIN.lastline->baseline =
@@ -230,6 +247,8 @@ void format_last_text(int more)
       CURWIN.lastline->ascent = text->space;
 
       new_line(more, text->font);
+      if (reformatting)
+	return;
     }
   else
     {
@@ -422,6 +441,8 @@ void format_last_text(int more)
 	    {
 	      /* This word goes on the next line */
 	      new_line(more, text->font);
+	      if (reformatting)
+		return;
 
 	      xpos = CURWIN.xpos + text->word[x].width;
 	      text_start = CURWIN.xpos;
@@ -438,6 +459,8 @@ void format_last_text(int more)
 	  if (text->word[x].newline)
 	    {
 	      new_line(more, text->font);
+	      if (reformatting)
+		return;
 	      
 	      text_start = xpos = CURWIN.xpos;
 	      line = CURWIN.lastline;
@@ -464,4 +487,6 @@ void format_last_text(int more)
 			CURWIN.lastline->baseline - CURWIN.lastline->ascent,
 			win_x,
 			CURWIN.lastline->baseline + CURWIN.lastline->descent);
+
+  reformatting = 1;
 }
