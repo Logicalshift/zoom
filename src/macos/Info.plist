@@ -74,6 +74,10 @@
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>Zoom</string>
+	<key>CFBundleHelpBookFolder</key>
+	<string>Zoom Help</string>
+	<key>CFBundleHelpBookName</key>
+	<string>Zoom Help</string>
 	<key>CFBundleIconFile</key>
 	<string>zoom-app.icns</string>
 	<key>CFBundleInfoDictionaryVersion</key>
