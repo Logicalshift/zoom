@@ -1,1 +1,1 @@
-EXTRA_DIST = zmark.inf random.inf
+EXTRA_DIST = zmark.inf random.inf ztest.inf v6tests.h spec11.h
