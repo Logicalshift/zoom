@@ -568,7 +568,7 @@ static pascal OSStatus pref_wnd_evt(EventHandlerCallRef handler,
 	{
 	case kEventWindowBoundsChanged:
 	  {
-	    const UInt32 toSize[36] =
+	    const UInt32 toSize[54] =
 	      { 
 		CARBON_FONTLIST, CARBON_FONTLISTID, 3,
 	        CARBON_COLLIST, CARBON_COLLISTID, 3,
@@ -581,7 +581,13 @@ static pascal OSStatus pref_wnd_evt(EventHandlerCallRef handler,
 	        'bar ', 200, 1,
 	        'bar ', 201, 1,
 	        'bar ', 202, 1,
-	        'bar ', 203, 1
+	        'bar ', 203, 1,
+		CARBON_TITLE, CARBON_TITLEID, 1,
+		CARBON_INTERP, CARBON_INTERPID, 1,
+		CARBON_REVISION, CARBON_REVISIONID, 1,
+		'TogB', 799, 3,
+		CARBON_RESFILE, CARBON_RESFILEID, 1,
+		'FilB', 1099, 1
 	      };
 
 	    const UInt32 toMove[4] =
@@ -601,7 +607,7 @@ static pascal OSStatus pref_wnd_evt(EventHandlerCallRef handler,
 			      NULL, &newSize);
 
 	    /* Resize those as need resizing */
-	    for (x=0; x<36; x+=3)
+	    for (x=0; x<54; x+=3)
 	      {
 		ControlRef cntl;
 		ControlID  id;
@@ -891,6 +897,11 @@ static pascal OSStatus pref_wnd_evt(EventHandlerCallRef handler,
 		  /* Update... */
 		  pref_store();
 		}
+		break;
+
+	      case CARBON_RENDER:
+	      case CARBON_ANTI:
+		pref_store(); /* Update... */
 		break;
 		
 	      case kHICommandOK:
