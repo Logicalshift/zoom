@@ -30,6 +30,10 @@
 	return self;
 }
 
+- (void) awakeFromNib {
+	[(NSPanel*)[self window] setBecomesKeyOnlyIfNeeded: YES];
+}
+
 - (void) setSkein: (ZoomSkein*) skein {
 	if (skeinView == nil) {
 		[self loadWindow];

@@ -21,6 +21,20 @@
 	NSMutableDictionary* tree;
 	NSMutableArray* levels;
 	float globalOffset, globalWidth;
+	
+	// Cursor flags
+	BOOL overWindow;
+	BOOL overItem;
+	
+	NSMutableArray* trackingRects;
+	NSDictionary* trackedItem;
+	
+	BOOL    dragScrolling;
+	NSPoint dragOrigin;
+	NSRect  dragInitialVisible;
+	
+	// Annoyingly poor support for tracking rects band-aid
+	NSRect lastVisibleRect;
 }
 
 // Setting/getting the source
@@ -32,5 +46,6 @@
 
 // Affecting the display
 - (void) scrollToItem: (ZoomSkeinItem*) item;
+- (ZoomSkeinItem*) itemAtPoint: (NSPoint) point;
 
 @end
