@@ -85,6 +85,7 @@ BlorbFile* blorb_loadfile(ZFile* file)
   res->zcode_offset    = -1;
   res->release_number  = -1;
   res->game_id         = NULL;
+  res->source          = file;
 
   res->index.offset    = -1;
   res->index.npictures = 0;
@@ -289,3 +290,24 @@ BlorbFile* blorb_loadfile(ZFile* file)
   return res;
 }
 
+BlorbImage* blorb_findimage(BlorbFile* blb, int number)
+{
+  int x;
+  BlorbImage* res;
+
+  if (blb == NULL)
+    return NULL;
+  
+  for (x=0; x<blb->index.npictures; x++)
+    {
+      if (blb->index.picture[x].number == number)
+	{
+	  res = blb->index.picture + x;
+	}
+    }
+
+  if (res->loaded == NULL)
+    res->loaded = image_load(blb->source, res->file_offset, res->file_len);
+
+  return res;
+}

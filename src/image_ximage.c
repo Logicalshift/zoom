@@ -55,6 +55,19 @@
 # include <X11/extensions/Xrender.h>
 #endif
 
+struct x_data 
+{
+  Display* display;
+
+  XImage* image;
+  XImage* mask;
+
+#ifdef HAVE_XRENDER
+  Pixmap  pmap;
+  Picture piccy;
+#endif
+};
+
 /*
  * 16 or 32-bit truecolour images.
  */
@@ -486,6 +499,179 @@ XImage* image_to_mask_truecolour(XImage*     orig,
 
   return xim;
 }
+
+static void x_destruct(image_data* img, void* data)
+{
+  struct x_data* d;
+
+  d = data;
+
+  if (d->image != NULL)
+    {
+      XDestroyImage(d->image);
+    }
+  if (d->mask != NULL)
+    {
+      XDestroyImage(d->mask);
+    }
+#ifdef HAVE_XRENDER
+  if (d->pmap != None)
+    {
+      XFreePixmap(d->display, d->pmap);
+    }
+  if (d->piccy != None)
+    {
+      XRenderFreePicture(d->display, d->piccy);
+    }
+#endif
+
+  free(d);
+}
+
+void image_plot_X(image_data* img,
+		  Display*  display,
+		  Drawable  draw,
+		  GC        gc,
+		  int x, int y,
+		  int n, int d)
+{
+  struct x_data* data;
+
+  data = image_get_data(img);
+
+  if (data == NULL)
+    {
+      data = malloc(sizeof(struct x_data));
+      data->image = NULL;
+      data->mask  = NULL;
+      data->display = display;
+
+#ifdef HAVE_XRENDER
+      data->pmap = None;
+      data->piccy = None;
+#endif
+
+      image_set_data(img, data, x_destruct);
+    }
+
+  if (data->image == NULL)
+    {
+      image_unload_rgb(img);
+      if (n != d)
+	image_resample(img, n, d);
+
+      data->image = image_to_ximage_truecolour(img,
+					       display,
+					       DefaultVisual(display, DefaultScreen(display)));
+    }
+  if (data->mask == NULL)
+    {
+      data->mask = image_to_mask_truecolour(data->image,
+					    img, display,
+					    DefaultVisual(display, DefaultScreen(display)));
+    }
+  image_unload_rgb(img);
+
+  XSetFunction(display, gc, GXand);
+  XPutImage(display, draw, gc, data->mask, 0,0,0,0,
+	    image_width(img), image_height(img));
+  XSetFunction(display, gc, GXor);
+  XPutImage(display, draw, gc, data->image, 0,0,0,0,
+	    image_width(img), image_height(img));
+  XSetFunction(display, gc, GXset);
+}
+
+#ifdef HAVE_XRENDER
+void image_plot_Xrender(image_data* img,
+			Display*  display,
+			Picture   pic,
+			int x, int y,
+			int n, int d)
+{
+  struct x_data* data;
+
+  data = image_get_data(img);
+
+  if (data == NULL)
+    {
+      data = malloc(sizeof(struct x_data));
+      data->image = NULL;
+      data->mask  = NULL;
+      data->display = display;
+
+      data->pmap = None;
+      data->piccy = None;
+
+      image_set_data(img, data, x_destruct);
+    }
+  
+  /* Get the format if necessary */
+  if (format == NULL)
+    {
+      XRenderPictFormat pf;
+
+      pf.depth = 32;
+      pf.type  = PictTypeDirect;
+
+      format = XRenderFindFormat(display,
+				 PictFormatType|PictFormatDepth,
+				 &pf, 0);
+      if (format == NULL)
+	{
+	  zmachine_fatal("Unable to find a suitable format for XRender");
+	  return;
+	}
+    }
+
+  if (data->piccy == None)
+    {
+      if (data->pmap == None)
+	{
+	  XImage* xim;
+	  GC      agc;
+
+	  image_unload_rgb(img);
+	  if (n != d)
+	    image_resample(img, n, d);
+
+	  /* Create a pixmap of the appropriate format */
+	  data->pmap = XCreatePixmap(display,
+				     RootWindow(display, DefaultScreen(display)),
+				     image_width(img), image_height(img),
+				     format->depth);
+	  if (data->pmap == None)
+	    return;
+
+	  /* ... and create the XRender picture */
+	  data->piccy = XRenderCreatePicture(display,
+					     data->pmap,
+					     format, 0, 0);
+
+	  /* Now, create and render the image... */
+	  xim = image_to_ximage_render(img, display, DefaultVisual(display, DefaultScreen(display)));
+
+	  agc = XCreateGC(display, data->pmap, 0, NULL);
+	  XPutImage(display, data->pmap, agc, xim,
+		    0,0,0,0,
+		    image_width(img), image_height(img));
+
+	  XDestroyImage(xim);
+	  XFreeGC(display, agc);
+
+	  /* Destroy all data that's now unnecessary */
+	  image_unload_rgb(img);
+	}
+    }
+  
+  XRenderComposite(display, PictOpOver,
+		   data->piccy,
+		   None,
+		   pic,
+		   0,0,0,0,
+		   0,0,
+		   image_width(img), image_height(img));
+}
+#endif
 
 #endif
 

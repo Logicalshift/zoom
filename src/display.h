@@ -31,6 +31,7 @@
 #define __DISPLAY_H
 
 #include "image.h"
+#include "blorb.h"
 
 /***                           ----// 888 \\----                           ***/
 
@@ -126,13 +127,15 @@ extern void  display_plot_rect      (int x, int y,
 extern void  display_scroll_region  (int x, int y, 
 				     int width, int height,
 				     int xoff, int yoff);
-extern void  display_pixmap_cols    (int fg, int bg);
-extern void  display_plot_gtext     (int*, int len, int style, int x, int y);
-extern void  display_plot_image     (image_data*, int x, int y);
-extern float display_measure_text   (int*, int style);
-extern void  display_wait_for_more  (void);
-extern int   display_get_font_width (void);
-extern int   display_get_font_height(void);
+extern void  display_pixmap_cols     (int fg, int bg);
+extern void  display_plot_gtext      (int*, int len, int style, int x, int y);
+extern void  display_plot_image      (BlorbImage*, int x, int y);
+extern float display_measure_text    (int*, int len, int style);
+extern float display_get_font_width  (int style);
+extern float display_get_font_height (int style);
+extern float display_get_font_ascent (int style);
+extern float display_get_font_descent(int style);
+extern void  display_wait_for_more   (void);
 
 /* Version 6 display */
 extern void display_set_window (int window);

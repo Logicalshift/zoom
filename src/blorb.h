@@ -114,6 +114,8 @@ struct BlorbFile
 {
   BlorbIndex index;
 
+  ZFile* source;
+
   int zcode_offset, zcode_len;
   int release_number;
   char* game_id;
@@ -126,7 +128,8 @@ struct BlorbFile
   char* author;
 };
 
-int        blorb_is_blorbfile(ZFile* file);
-BlorbFile* blorb_loadfile(ZFile* file);
+int         blorb_is_blorbfile(ZFile* file);
+BlorbFile*  blorb_loadfile    (ZFile* file);
+BlorbImage* blorb_findimage   (BlorbFile* blorb, int num);
 
 #endif

@@ -46,10 +46,21 @@ extern XImage* image_to_mask_truecolour  (XImage*     orig,
 					  image_data* img,
 					  Display*    display,
 					  Visual*     visual);
+extern void    image_plot_X              (image_data* img,
+					  Display*  display,
+					  Drawable  draw,
+					  GC        gc,
+					  int x, int y,
+					  int n, int d);
 #  ifdef HAVE_XRENDER
 extern XImage* image_to_ximage_render(image_data* img,
 				      Display*    display,
 				      Visual*     visual);
+extern void    image_plot_Xrender    (image_data* img,
+				      Display*  display,
+				      Picture   pic,
+				      int x, int y,
+				      int n, int d);
 #  endif
 
 # endif

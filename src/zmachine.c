@@ -101,6 +101,8 @@ void zmachine_load_story(char* filename, ZMachine* machine)
       display_init_pixmap(640, 480);
       display_pixmap_cols(0, -1);
       display_plot_gtext(test, 4, 2, 100, 100);
+      display_plot_image(blorb_findimage(machine->blorb, 21),
+			 100, 100);
       display_clear();
       display_prints_c("Hello\n");
       display_readchar(0);

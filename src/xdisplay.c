@@ -1029,81 +1029,6 @@ static void draw_window()
 
   resetregion = 1;
 
-  /* Image test */
-  if (machine.blorb != NULL)
-    {
-      image_data* img;
-      XImage*     xim;
-      XImage*     mask;
-      
-      img = image_load(machine.blorb_file,
-		       machine.blorb->index.picture[20].file_offset,
-		       machine.blorb->index.picture[20].file_len);
-
-      if (img == NULL)
-	zmachine_fatal("Unable to load image");
-
-      image_resample(img, 3, 2);
-
-#ifdef HAVE_XRENDER
-      {
-	Pixmap hum;
-	Picture drum;
-	XRenderPictFormat pf;
-	XRenderPictFormat* format;
-	GC mygc;
-
-	pf.depth = 32;
-	pf.type  = PictTypeDirect;
-	
-	format = XRenderFindFormat(x_display,
-				   PictFormatType|PictFormatDepth,
-				   &pf, 0);
-
-	/* Verry dodgy test :-) */
-	xim = image_to_ximage_render(img, x_display, DefaultVisual(x_display, 0));
-	hum = XCreatePixmap(x_display, RootWindow(x_display, 0),
-			    image_width(img), image_height(img),
-			    format->depth);
-	drum = XRenderCreatePicture(x_display, hum, format, 0, 0);
-
-	mygc = XCreateGC(x_display, hum, 0, NULL);
-
-	XPutImage(x_display, hum, 
-		  mygc, xim, 0,0,0,0,
-		  image_width(img), image_height(img));
-
-	XRenderComposite(x_display, PictOpOver,
-			 drum,
-			 None,
-			 x_winpic,
-			 0,0,0,0,
-			 0,0,
-			 image_width(img), image_height(img));
-      }
-#else
-      xim = image_to_ximage_truecolour(img,
-				       x_display,
-				       DefaultVisual(x_display, 0));
-      mask = image_to_mask_truecolour(xim,
-				      img,
-				      x_display,
-				      DefaultVisual(x_display, 0));
-      
-      XSetFunction(x_display, x_wingc, GXand);
-      XPutImage(x_display, x_drawable,
-		x_wingc, mask,
-		0, 0, 0, 0,
-		image_width(img), image_height(img));
-      XSetFunction(x_display, x_wingc, GXor);
-      XPutImage(x_display, x_drawable,
-		x_wingc, xim,
-		0, 0, 0, 0,
-		image_width(img), image_height(img));
-      XSetFunction(x_display, x_wingc, GXcopy);
-#endif
-    }
-
   /* Flip buffers */
 #ifdef HAVE_XDBE
   if (x_backbuffer != None)
@@ -2498,6 +2423,16 @@ ZDisplay* display_get_info(void)
 static int pix_fore;
 static int pix_back;
 
+static void pixmap_update(int left, int top, int right, int bottom)
+{
+  int xp, yp;
+
+  xp = win_x/2 - pix_w/2;
+  yp = win_y/2 - pix_h/2;
+
+  display_update_region(xp+left, yp+top, xp+right, yp+bottom);
+}
+
 int display_init_pixmap(int width, int height)
 {
   if (x_pixmap != None)
@@ -2558,28 +2493,139 @@ void display_plot_gtext(int* text,
   int fg, bg;
   int ft;
 
+  int width, height;
+
   fg = pix_fore; bg = pix_back;
   if (style&1)
     { fg = pix_back; bg = pix_fore; }
   if (fg < 0)
-    fg = 0;
+    fg = FIRST_ZCOLOUR+7;
 
   ft = style_font[(style>>1)&15];
 
   xfont_set_colours(fg, bg);
+
+  width = xfont_get_text_width(font[ft],
+			       text, len);
+  height = xfont_get_height(font[ft]);
+
   if (bg >= 0)
     {
       XSetForeground(x_display, x_pixgc,
 		     x_colour[bg].pixel);
       XFillRectangle(x_display, x_pixmap, x_pixgc,
 		     x, y-xfont_get_ascent(font[ft]),
-		     xfont_get_text_width(font[ft],
-					  text, len),
-		     xfont_get_height(font[ft]));
+		     width,
+		     height);
     }
   xfont_plot_string(font[ft], x_pixmap, x_pixgc,
 		    x, y,
 		    text, len);
+
+  y -= xfont_get_ascent(font[ft]);
+  pixmap_update(x, y, x+width, y+height);
+}
+
+void display_plot_rect(int x, int y,
+		       int width, int height)
+{
+  XSetForeground(x_display, x_pixgc,
+		 x_colour[pix_fore].pixel);
+  XFillRectangle(x_display, x_pixmap, x_pixgc,
+		 x, y,
+		 width, height);
+
+  pixmap_update(x, y, x+width, y+height);
+}
+
+void display_scroll_region(int x, int y,
+			   int width, int height,
+			   int xoff, int yoff)
+{
+  int rx, ry, rw, rh;
+
+  XCopyArea(x_display, x_pixmap, x_pixmap, x_pixgc,
+	    x, y,
+	    width, height,
+	    x+xoff, y+yoff);
+
+  rx = x;     ry = y;
+  rw = width; rh = height;
+  
+  if (xoff < 0)
+    rx += xoff;
+  else
+    rw += xoff;
+  if (yoff < 0)
+    ry += yoff;
+  else
+    rh += yoff;
+  
+  pixmap_update(rx, ry, rw, rh);
+}
+
+float display_measure_text(int* text, int len, int style)
+{
+  int ft;
+
+  ft = style_font[(style>>1)&15];
+
+  return xfont_get_text_width(font[ft], text, len);
+}
+
+float display_get_font_width(int style)
+{
+  int ft;
+
+  ft = style_font[(style>>1)&15];
+
+  return xfont_get_width(font[ft]);
+}
+
+float display_get_font_height(int style)
+{
+  int ft;
+
+  ft = style_font[(style>>1)&15];
+
+  return xfont_get_width(font[ft]);
+}
+
+float display_get_font_ascent(int style)
+{
+  int ft;
+
+  ft = style_font[(style>>1)&15];
+
+  return xfont_get_ascent(font[ft]);
+}
+
+float display_get_font_descent(int style)
+{
+  int ft;
+
+  ft = style_font[(style>>1)&15];
+
+  return xfont_get_descent(font[ft]);
+}
+
+void display_plot_image(BlorbImage* img, int x, int y)
+{
+  if (img == NULL)
+    return;
+
+#ifdef HAVE_XRENDER
+  if (x_pixpic != None)
+    {
+      image_plot_Xrender(img->loaded, x_display, x_pixpic,
+			 x, y, img->std_n, img->std_d);
+    }
+  else
+#endif
+    {
+      image_plot_X(img->loaded, x_display, x_pixmap, x_pixgc,
+		 x, y, img->std_n, img->std_d);
+    }
 }
 
 #endif

@@ -507,6 +507,9 @@ void xfont_plot_string(xfont* f,
 	  XSetBackground(x_display, gc, x_colour[back].pixel);
 	if (rc_get_antialias() && back > -1)
 	  {
+	    /*
+	     * NOTE: can't antialias with transparent backgrounds...
+	     */
 	    T1_AASetStringX(draw, gc, T1_TRANSPARENT, 
 			    x, y + (f->data.t1.bounds.llx*f->data.t1.size)/1000, 
 			    f->data.t1.id,

@@ -43,6 +43,9 @@ struct image_data
 
   png_bytep  image;
   png_bytep* row;
+
+  void (*data_destruct)(image_data*, void*);
+  void* data;
 };
 
 struct file_data
@@ -111,6 +114,9 @@ static image_data* iload(image_data* resin, ZFile* file, int offset, int realrea
   res->offset = offset;
   res->row    = NULL;
   res->image  = NULL;
+
+  res->data          = NULL;
+  res->data_destruct = NULL;
 
   png_read_info(png, png_info);
   png_get_IHDR(png, png_info,
@@ -196,6 +202,11 @@ void image_unload(image_data* data)
 {
   if (data == NULL)
     return;
+
+  if (data->data != NULL)
+    {
+      (data->data_destruct)(data, data->data);
+    }
 
   if (data->image != NULL)
     free(data->image);
@@ -540,6 +551,18 @@ void image_resample(image_data* data, int n, int d)
     {
       data->row[ny] = newimage + 4*ny*newwidth;
     }
+}
+
+void image_set_data(image_data* img, void* data,
+		    void (*destruct)(image_data*, void*))
+{
+  img->data = data;
+  img->data_destruct = destruct;
+}
+
+void* image_get_data(image_data* img)
+{
+  return img->data;
 }
 
 #endif

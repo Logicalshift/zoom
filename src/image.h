@@ -50,5 +50,9 @@ unsigned char* image_rgb       (image_data*);
 
 void           image_resample  (image_data*, int n, int d);
 
+void           image_set_data  (image_data*, void*,
+				void (*destruct)(image_data*, void*));
+void*          image_get_data  (image_data*);
+
 #endif
 
