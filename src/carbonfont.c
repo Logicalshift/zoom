@@ -18,7 +18,7 @@
  */
 
 /*
- * Fonts for Mac OS
+ * Fonts for Mac OS (Carbon)
  */
 
 #include "../config.h"
@@ -52,11 +52,15 @@ struct xfont
       int isitalic;
       int isunderlined;
 
+      int ascent, descent, maxwidth;
+
       TextEncoding      encoding;
       UnicodeToTextInfo convert;
     } mac;
   } data;
 };
+
+static int fg_col, bg_col;
 
 /***                           ----// 888 \\----                           ***/
 
@@ -66,6 +70,15 @@ void xfont_initialise(void)
 
 void xfont_shutdown(void)
 {
+}
+
+static void select_font(xfont* font)
+{
+  TextFont(font->data.mac.family);
+  TextSize(font->data.mac.size);
+  TextFace((font->data.mac.isbold?bold:0)           |
+	   (font->data.mac.isitalic?italic:0)       |
+	   (font->data.mac.isunderlined?underline:0));
 }
 
 #define DEFAULT_FONT applFont
@@ -105,6 +118,10 @@ xfont* xfont_load_font(char* font)
   xfont* xf;
 
   int x;
+
+  GrafPtr oldport;
+  FontInfo fm;
+  int aspace[] = { 'M' };
 
   if (strcmp(font, "font3") == 0)
     {
@@ -244,6 +261,18 @@ xfont* xfont_load_font(char* font)
       != noErr)
     zmachine_fatal("Unable to create TextInfo structure for font '%s'", face_name);
 
+  GetPort(&oldport);
+  SetPort(GetWindowPort(zoomWindow));
+
+  select_font(xf);
+  GetFontInfo(&fm);
+
+  xf->data.mac.ascent   = fm.ascent;
+  xf->data.mac.descent  = fm.descent + fm.leading;
+  xf->data.mac.maxwidth =  xfont_get_text_width(xf, aspace, 1);
+
+  SetPort(oldport);
+
   return xf;
 }
 
@@ -253,82 +282,30 @@ void xfont_release_font(xfont* xf)
   free(xf);
 }
 
-static void select_font(xfont* font)
-{
-  TextFont(font->data.mac.family);
-  TextSize(font->data.mac.size);
-  TextFace((font->data.mac.isbold?bold:0)           |
-	   (font->data.mac.isitalic?italic:0)       |
-	   (font->data.mac.isunderlined?underline:0));
-}
-
 void xfont_set_colours(int fg, int bg)
 {
-  /* Implement me */
+  fg_col = fg;
+  bg_col = bg;
 }
 
 int xfont_get_height(xfont* xf)
 {
-  GrafPtr oldport;
-  FontInfo fm;
-
-  GetPort(&oldport);
-  SetPort(GetWindowPort(zoomWindow));
-
-  select_font(xf);
-  GetFontInfo(&fm);
-
-  SetPort(oldport);
-
-  return fm.ascent + fm.descent;
+  return xf->data.mac.ascent + xf->data.mac.descent;
 }
 
 int xfont_get_ascent(xfont* xf)
 {
-  GrafPtr oldport;
-  FontInfo fm;
-
-  GetPort(&oldport);
-  SetPort(GetWindowPort(zoomWindow));
-
-  select_font(xf);
-  GetFontInfo(&fm);
-
-  SetPort(oldport);
-
-  return fm.ascent;
+  return xf->data.mac.ascent;
 }
 
 int xfont_get_descent(xfont* xf)
 {
-  GrafPtr oldport;
-  FontInfo fm;
-
-  GetPort(&oldport);
-  SetPort(GetWindowPort(zoomWindow));
-
-  select_font(xf);
-  GetFontInfo(&fm);
-
-  SetPort(oldport);
-
-  return fm.descent;
+  return xf->data.mac.descent;
 }
 
 int xfont_get_width(xfont* xf)
 {
-  GrafPtr oldport;
-  FontInfo fm;
-
-  GetPort(&oldport);
-  SetPort(GetWindowPort(zoomWindow));
-
-  select_font(xf);
-  GetFontInfo(&fm);
-
-  SetPort(oldport);
-
-  return fm.widMax;
+  return xf->data.mac.maxwidth;
 }
 
 static char* convert_text(xfont* font,
@@ -411,14 +388,26 @@ void xfont_plot_string(xfont* font,
   ByteCount outlen;
 
   Rect portRect;
+  Rect bgRect;
 
   CGrafPtr thePort = GetQDGlobalsThePort();
   
   GetPortBounds(thePort, &portRect);
 
   outbuf = convert_text(font, string, length, &outlen);
-  
   select_font(font);
+
+  RGBForeColor(&maccolour[bg_col]);
+  bgRect.left   = portRect.left+x;
+  bgRect.right  = bgRect.left+TextWidth(outbuf, 0, outlen);
+  bgRect.top    = portRect.top-y - font->data.mac.ascent;
+  bgRect.bottom = bgRect.top +
+    font->data.mac.ascent + font->data.mac.descent;
+
+  PaintRect(&bgRect);
+
+  RGBBackColor(&maccolour[bg_col]);
+  RGBForeColor(&maccolour[fg_col]);
   MoveTo(portRect.left+x, portRect.top - y);
   DrawText(outbuf, 0, outlen);
 }

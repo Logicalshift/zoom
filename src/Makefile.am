@@ -8,7 +8,7 @@ zoom_SOURCES = \
 	main.c interp.c file.c options.c zmachine.c zscii.c xdisplay.c \
 	hash.c tokenise.c stream.c font3.c state.c pix.c rc.c rc_parse.y \
 	rc_lex.l menu.c xfont.c windisplay.c winfont.c random.c \
-	layout.c carbondisplay.c carbonfont.c \
+	layout.c carbondisplay.c carbonfont.c carbonsupport.c \
 	\
 	file.h zmachine.h options.h interp.h zscii.h display.h hash.h \
 	tokenise.h stream.h font3.h state.h pix.h rc.h rcp.h rc_parse.h \
@@ -47,14 +47,15 @@ zoom$(EXEEXT): $(zoom_OBJECTS) $(zoom_DEPENDENCIES)
 	@rm -f zoom
 	$(LINK) $(zoom_LDFLAGS) $(zoom_OBJECTS) $(zoom_LDADD) $(LIBS)
 if CARBON_VERSION
-	-mkdir zoom.app
-	-mkdir zoom.app/Contents
-	-mkdir zoom.app/Contents/MacOS
-	-mkdir zoom.app/Contents/Resources
-	-mkdir zoom.app/Contents/Resources/English.lproj
-	cp zoom$(EXEEXT) zoom.app/Contents/MacOS
-	cp -Rf $(srcdir)/macos/zoom.nib zoom.app/Contents/Resources/English.lproj
-	cp $(srcdir)/macos/Info.plist $(srcdir)/macos/PkgInfo zoom.app/Contents
+	-mkdir Zoom.app
+	-mkdir Zoom.app/Contents
+	-mkdir Zoom.app/Contents/MacOS
+	-mkdir Zoom.app/Contents/Resources
+	-mkdir Zoom.app/Contents/Resources/English.lproj
+	cp zoom$(EXEEXT) Zoom.app/Contents/MacOS/Zoom
+	cp -Rf $(srcdir)/macos/zoom.nib Zoom.app/Contents/Resources/English.lproj
+	cp $(srcdir)/macos/zoom-app.icns $(srcdir)/macos/zoom-file.icns $(srcdir)/macos/zoom-game.icns Zoom.app/Contents/Resources
+	cp $(srcdir)/macos/Info.plist $(srcdir)/macos/PkgInfo Zoom.app/Contents
 endif
 endif
 

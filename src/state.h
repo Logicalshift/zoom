@@ -35,8 +35,8 @@ extern int    state_decompile(ZByte*  state,
 			      ZStack* stack,
 			      ZDWord* pc,
 			      ZDWord  len);
-extern int    state_save     (char* filename, ZStack* stack, ZDWord  pc);
-extern int    state_load     (char* filename, ZStack* stack, ZDWord* pc);
+extern int    state_save     (ZFile* file, ZStack* stack, ZDWord  pc);
+extern int    state_load     (ZFile* file, ZDWord fsize, ZStack* stack, ZDWord* pc);
 extern char*  state_fail     (void);
 
 #endif

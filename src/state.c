@@ -367,22 +367,19 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
   return data;
 }
   
-int state_save(char* filename, ZStack* stack, ZDWord pc)
+int state_save(ZFile* f, ZStack* stack, ZDWord pc)
 {
-  ZFile* f;
   ZDWord flen;
   ZByte* data;
 
   detail = NULL;
 
+  if (!f)
+    return 0;
+
   data = state_compile(stack, pc, &flen, 1);
 
   if (data == NULL)
-    return 0;
-  
-  f = open_file_write(filename);
-
-  if (!f)
     return 0;
   
   /* Output the file itself */
@@ -648,32 +645,32 @@ int state_decompile(ZByte* st, ZStack* stack, ZDWord* pc, ZDWord len)
   return 1;
 }
 
-int state_load(char* filename, ZStack* stack, ZDWord* pc)
+int state_load(ZFile* f, ZDWord fsize,  ZStack* stack, ZDWord* pc)
 {
-  ZFile* f;
   ZByte* file;
-  ZDWord fsize, formsize;
+  ZDWord formsize;
 
   detail = NULL;
 
-  fsize = get_file_size(filename);
-  if (fsize < 0)
-    {
-      detail = "Savefile not found";
-      return 0;
-    }
-  if (fsize < 8)
-    {
-      detail = "Savefile is WAY too small";
-      return 0;
-    }
-
-  f = open_file(filename);
   if (f == NULL)
     {
       detail = "Unable to open file";
       return 0;
     }
+
+  if (fsize < 0)
+    {
+      detail = "Savefile not found";
+      close_file(f);
+      return 0;
+    }
+  if (fsize < 8)
+    {
+      detail = "Savefile is WAY too small";
+      close_file(f);
+      return 0;
+    }
+
   file = read_block(f, 0, fsize);
   if (file == NULL)
     {

@@ -43,4 +43,7 @@ extern void   write_word     (ZFile* file, ZWord word);
 extern void   write_dword    (ZFile* file, ZDWord word);
 extern ZDWord get_file_size  (char* filename);
 
+extern ZFile* get_file_write (int* size);
+extern ZFile* get_file_read  (int* size);
+
 #endif

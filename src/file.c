@@ -30,7 +30,7 @@
 #include "file.h"
 #include "zmachine.h"
 
-#if WINDOW_SYSTEM != 2
+#if WINDOW_SYSTEM != 2 && WINDOW_SYSTEM != 3
 
 struct ZFile
 {
@@ -165,9 +165,7 @@ void write_dword(ZFile* file, ZDWord word)
   write_byte(file, word);
 }
 
-#endif
-
-#if WINDOW_SYSTEM == 2
+#elif WINDOW_SYSTEM == 2
 
 #include <windows.h>
 
@@ -345,6 +343,228 @@ ZDWord get_file_size(char* filename)
   CloseHandle(hnd);
   
   return sz;
+}
+
+#elif WINDOW_SYSTEM == 3
+
+/* Mac OS file handling functions */
+
+#include <Carbon/Carbon.h>
+#include "carbondisplay.h"
+
+/* 
+ * We add a couple of functions to deal with opening files straight from
+ * FSRefs
+ */
+
+struct ZFile
+{
+  SInt16 forkref;
+};
+
+static char* file_error_text(OSStatus stat)
+{
+  switch (stat)
+    {
+    case notOpenErr:
+      return "Volume not found";
+    case dirFulErr:
+      return "Directory full";
+    case dskFulErr:
+      return "Disk full";
+    case nsvErr:
+      return "Volume not found";
+    case ioErr:
+      return "I/O error";
+    case bdNamErr:
+      return "Bad filename";
+    case fnOpnErr:
+      return "File not open";
+    case eofErr:
+      return "End of file";
+    case posErr:
+      return "Bad file position";
+    case tmfoErr:
+      return "Too many files open";
+    case fnfErr:
+      return "File not found";
+    case wPrErr:
+    case vLckdErr:
+      return "Volume locked";
+    case fLckdErr:
+      return "File locked";
+    case fBsyErr:
+      return "File busy";
+    case rfNumErr:
+      return "Invalid reference number";
+    default:
+      {
+	static char str[255];
+
+	sprintf(str, "Unknown reason code - %i", (int) stat);
+	return str;
+      }
+    }
+}
+
+ZFile* open_file(char* filename)
+{
+  FSRef ref;
+
+  FSPathMakeRef(filename, &ref, NULL);
+
+  return open_file_fsref(&ref);
+}
+
+ZFile* open_file_write(char* filename)
+{
+  FSRef ref;
+
+  FSPathMakeRef(filename, &ref, NULL);
+
+  return open_file_write_fsref(&ref);
+}
+
+ZFile* open_file_fsref(FSRef* ref)
+{
+  HFSUniStr255 dfork;
+  ZFile *file;
+  SInt16 refnum;
+  OSErr erm;
+
+  FSGetDataForkName(&dfork);
+
+  erm = FSOpenFork(ref, dfork.length, dfork.unicode, fsRdPerm, &refnum);
+  
+  if (erm != noErr)
+    return NULL;
+
+  file = malloc(sizeof(ZFile));
+  file->forkref = refnum;
+
+  return file;
+}
+
+ZFile* open_file_write_fsref(FSRef* ref)
+{
+  HFSUniStr255 dfork;
+  ZFile *file;
+  SInt16 refnum;
+  OSErr erm;
+
+  FSGetDataForkName(&dfork);
+
+  erm = FSOpenFork(ref, dfork.length, dfork.unicode, fsWrPerm, &refnum);
+  
+  if (erm != noErr)
+    return NULL;
+
+  file = malloc(sizeof(ZFile));
+  file->forkref = refnum;
+
+  return file;
+}
+
+void   close_file(ZFile* file)
+{
+  FSCloseFork(file->forkref);
+  free(file);
+}
+
+ZByte* read_page(ZFile* file, int page_no)
+{
+  return read_block(file, 4096*page_no, 4096*page_no+4096);
+}
+
+ZByte* read_block(ZFile* file, int start_pos, int end_pos)
+{
+  ZByte* block;
+  OSStatus erm;
+  ByteCount rd;
+  
+  block = malloc(end_pos-start_pos);
+  if (block == NULL)
+    return NULL;
+
+  erm = FSReadFork(file->forkref, fsFromStart, start_pos,
+		   end_pos-start_pos, block, &rd);
+  if (erm != noErr)
+    zmachine_fatal("Error while reading from file - %s", file_error_text(erm));
+  if (rd != end_pos-start_pos)
+    zmachine_fatal("Tried to read %i items of 1 byte, got %i items",
+		   end_pos-start_pos, rd);
+
+  return block;
+}
+
+ZByte inline read_byte(ZFile* file)
+{
+  char byte;
+
+  FSReadFork(file->forkref, fsAtMark, 0, 1, &byte, NULL);
+  return byte;
+}
+
+ZUWord read_word(ZFile* file)
+{
+  return (read_byte(file)<<8)|read_byte(file);
+}
+
+ZUWord read_rword(ZFile* file)
+{
+  return read_byte(file)|(read_byte(file)<<8);
+}
+
+void read_block2(ZByte* block, ZFile* file, int start_pos, int end_pos)
+{
+  FSReadFork(file->forkref, fsFromStart, start_pos,
+	     start_pos-end_pos, block, NULL);
+}
+
+ZDWord get_file_size(char* filename)
+{
+  FSRef ref;
+  OSStatus res;
+
+  res = FSPathMakeRef(filename, &ref, NULL);
+  
+  if (res != noErr)
+    return -1;
+
+  return get_file_size_fsref(&ref);
+}
+
+ZDWord get_file_size_fsref(FSRef* file)
+{
+  FSCatalogInfo inf;
+
+  FSGetCatalogInfo(file, kFSCatInfoDataSizes, &inf, NULL, NULL, NULL);
+
+  return inf.dataLogicalSize;
+}
+
+void write_block(ZFile* file, ZByte* block, int length)
+{
+  FSWriteFork(file->forkref, fsAtMark, 0, length, block, NULL);
+}
+
+inline void write_byte(ZFile* file, ZByte byte)
+{
+   FSWriteFork(file->forkref, fsAtMark, 0, 1, &byte, NULL); 
+}
+
+void write_word(ZFile* file, ZWord word)
+{
+  write_byte(file, word>>8);
+  write_byte(file, word);
+}
+
+void write_dword(ZFile* file, ZDWord word)
+{
+  write_byte(file, word>>24);
+  write_byte(file, word>>16);
+  write_byte(file, word>>8);
+  write_byte(file, word);
 }
 
 #endif

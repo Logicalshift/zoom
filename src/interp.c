@@ -512,7 +512,7 @@ inline static int convert_colour(int col)
 char save_fname[256] = "savefile.qut";
 char script_fname[256] = "script.txt";
 
-static void get_filename(char* name, int len, int save)
+static void get_fname(char* name, int len, int save)
 {
 #if WINDOW_SYSTEM != 2
   char fname[256];
@@ -613,43 +613,72 @@ static void get_filename(char* name, int len, int save)
 #endif
 }
 
+#if WINDOW_SYSTEM != 3
+ZFile* get_file_write(int* fsize)
+{
+  int fs, ok;
+
+  {
+    ok = 1;
+    get_fname(save_fname, 255, 1);
+
+    fs = get_file_size(save_fname);
+    
+    if (fs != -1)
+      {
+	char yn[5];
+	
+	yn[0] = 0;
+	ok = 0;
+	stream_prints("That file already exists!\nAre you sure? (y/N) ");
+	stream_readline(yn, 1, 0);
+	
+	if (tolower(yn[0]) == 'y')
+	  ok = 1;
+	else
+	  {
+	    return NULL;
+	  }
+      }
+  }
+  while (!ok);
+
+  if (fsize != NULL)
+    (*fsize) = fs;
+
+  return open_file_write(save_fname);
+}
+
+ZFile* get_file_read(int* fsize)
+{
+  int fs;
+
+  get_fname(save_fname, 255, 0);
+  
+  fs = get_file_size(save_fname);
+
+  if (fsize != NULL)
+    (*fsize) = fs;
+
+  return open_file(save_fname);
+}
+#endif
+
 #if defined(SUPPORT_VERSION_4) || defined(SUPPORT_VERSION_3)
 static int save_1234(ZDWord  pc,
 		     ZStack* stack,
 		     int     st)
 {
   ZWord tmp;
-  int ok;
+  ZFile* f;
 
-  do
-    {
-      ok = 1;
-      stream_prints("\nPlease supply a filename for save\n");
-      get_filename(save_fname, 255, 1);
-
-      if (get_file_size(save_fname) != -1)
-	{
-	  char yn[5];
-
-	  yn[0] = 0;
-	  ok = 0;
-	  stream_prints("That file already exists!\nAre you sure? (y/N) ");
-	  stream_readline(yn, 4, 0);
-
-	  if (tolower(yn[0]) == 'y')
-	    ok = 1;
-	  else
-	    {
-	      return 0;
-	    }
-	}
-    }
-  while (!ok);
+  stream_prints("\nPlease supply a filename for save\n");
+  f = get_file_write(NULL);
   
   if (st >= 0)
     store(stack, st, 2);
 
-  if (state_save(save_fname, stack, pc))
+  if (state_save(f, stack, pc))
     {
       if (st == 0)
 	tmp = GetVar(st);
@@ -668,10 +697,13 @@ static int save_1234(ZDWord  pc,
 
 static int restore_1234(ZDWord* pc, ZStack* stack)
 {
+  ZFile* f;
+  ZDWord sz;
+
   stream_prints("\nPlease supply a filename for restore\n");
-  get_filename(save_fname, 255, 1);
+  f = get_file_read(&sz);
   
-  if (state_load(save_fname, stack, pc))
+  if (state_load(f, sz, stack, pc))
     {
       restart_machine();
       return 1;
@@ -1483,7 +1515,12 @@ void zmachine_run(const int version,
 
   if (savefile != NULL)
     {
-      if (state_load(savefile, stack, &pc))
+      ZFile* zf;
+      ZDWord sz;
+
+      sz = get_file_size(savefile);
+      zf = open_file(savefile);
+      if (state_load(zf, sz, stack, &pc))
 	{
 	  zmachine_setup_header();
 	}

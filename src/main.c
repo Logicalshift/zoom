@@ -46,6 +46,11 @@
 
 #include "display.h"
 
+#if WINDOW_SYSTEM == 3
+#include <Carbon/Carbon.h>
+#include "carbondisplay.h"
+#endif
+
 ZMachine machine;
 extern char save_fname[256];
 extern char script_fname[256];
@@ -67,7 +72,14 @@ int zoom_main(int argc, char** argv)
   random_seed((unsigned int)time(NULL));
 #endif
 
+#if WINDOW_SYSTEM != 3
   get_options(argc, argv, &args);
+#else
+  args.story_file = NULL;
+  args.save_file = NULL;
+  args.warning_level = 0;
+  args.track_attr = args.track_objs = args.track_props = args.graphical = 0;
+#endif
   machine.warning_level = args.warning_level;
 
 #ifdef TRACKING
@@ -77,7 +89,8 @@ int zoom_main(int argc, char** argv)
 #endif
 
   rc_load();
-  
+
+#if WINDOW_SYSTEM != 3  
   if (args.story_file == NULL)
     {
       rc_set_game("xxxxxx", 65535);
@@ -93,6 +106,17 @@ int zoom_main(int argc, char** argv)
       rc_set_game(Address(ZH_serial), Word(ZH_release));
       display_initialise();
     }
+#else
+  {
+    static char path[256];
+
+    zmachine_load_story(NULL, &machine);
+    FSRefMakePath(lastopenfs, path, 256);
+    args.story_file = path;
+    rc_set_game(Address(ZH_serial), Word(ZH_release));
+    display_initialise();
+  }
+#endif
 
   {
     char  title[256];
@@ -152,7 +176,7 @@ int zoom_main(int argc, char** argv)
   display_set_style(6);
   display_prints_c("Zoom " VERSION);
   display_set_style(-4);
-  display_prints_c(" Copyright (c) Andrew Hunter, 2000\n");
+  display_prints_c(" Copyright (c) Andrew Hunter, 2000-2002\n");
   display_set_style(0);
   
   display_prints_c("This program is free software; you can redistribute and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.\n\n");

@@ -50,15 +50,39 @@ void zmachine_load_story(char* filename, ZMachine* machine)
   ZDWord size;
   ZFrame* frame;
 
-  machine->story_length = size = get_file_size(filename);
-  if (size < 0)
-    zmachine_fatal("Unable to open story file");
-  if (size < 64)
-    zmachine_fatal("Story file is way too small (%i bytes)", size);
+#if WINDOW_SYSTEM == 3
+  if (filename == NULL)
+    {
+      FSRef* ref;
 
-  machine->file = open_file(filename);
-  if (machine->file == NULL)
-    zmachine_fatal("Unable to open story file");
+      ref = carbon_get_zcode_file();
+
+      if (ref == NULL)
+	zmachine_fatal("No story file");
+
+      machine->story_length = size = get_file_size_fsref(ref);
+      if (size < 0)
+	zmachine_fatal("Unable to open story file");
+      if (size < 64)
+	zmachine_fatal("Story file is way too small (%i bytes)", size);
+      
+      machine->file = open_file_fsref(ref);
+      if (machine->file == NULL)
+	zmachine_fatal("Unable to open story file");      
+    }
+  else
+#endif
+    {
+      machine->story_length = size = get_file_size(filename);
+      if (size < 0)
+	zmachine_fatal("Unable to open story file");
+      if (size < 64)
+	zmachine_fatal("Story file is way too small (%i bytes)", size);
+      
+      machine->file = open_file(filename);
+      if (machine->file == NULL)
+	zmachine_fatal("Unable to open story file");
+    }
   machine->memory = read_block(machine->file, 0, size);
   if (machine->memory == NULL)
     zmachine_fatal("Unable to read story file");
@@ -174,6 +198,7 @@ void zmachine_fatal(char* format, ...)
   vsprintf(string, format, ap);
   va_end(ap);
 
+#if WINDOW_SYSTEM != 3
   if (machine.display_active)
     {
       machine.display_active = 0;
@@ -193,8 +218,11 @@ void zmachine_fatal(char* format, ...)
       display_set_style(0);
       display_prints_c("\n\n[Press any key to exit]\n");
       display_readchar(0);
+
+      display_exit(1);
     }
   else
+#endif
     {
 #if WINDOW_SYSTEM == 2
       char erm[512];
@@ -206,36 +234,72 @@ void zmachine_fatal(char* format, ...)
 # endif
       MessageBox(NULL, erm, "Zoom " VERSION " - fatal error",
 		 MB_OK|MB_ICONSTOP|MB_TASKMODAL);
+      display_exit(1);
 #elif WINDOW_SYSTEM == 3
       Str255 erm;
       Str255 title;
       SInt16 item;
-      AlertStdAlertParamRec par;
-
-      par.movable = false;
-      par.helpButton = false;
-      par.filterProc = nil;
-      par.defaultText = "\004Quit";
-      par.cancelText = nil;
-      par.otherText = nil;
-      par.defaultButton = kAlertStdAlertOKButton;
-      par.cancelButton = 0;
-      par.position = kWindowAlertPositionOnParentWindow;
 
       title[0] = strlen("Zoom " VERSION " - fatal error");
       strcpy(title+1, "Zoom " VERSION " - fatal error");
       sprintf(erm + 1, "(PC = #%x) %s", machine.zpc, string);
       erm[0] = strlen(erm+1);
-      StandardAlert(kAlertStopAlert, title, erm, &par, &item);
+      if (window_available == 0)
+	{
+	  AlertStdAlertParamRec par;
+
+	  par.movable = false;
+	  par.helpButton = false;
+	  par.filterProc = nil;
+	  par.defaultText = "\004Quit";
+	  par.cancelText = nil;
+	  par.otherText = nil;
+	  par.defaultButton = kAlertStdAlertOKButton;
+	  par.cancelButton = 0;
+	  par.position = 0;
+
+	  StandardAlert(kAlertStopAlert, title, erm, &par, &item);
+  
+	  display_exit(1);
+	}
+      else
+	{
+	  AlertStdCFStringAlertParamRec par;
+	  OSStatus res;
+
+	  par.version       = kStdCFStringAlertVersionOne;
+	  par.movable       = false;
+	  par.helpButton    = false;
+	  par.defaultText   = CFSTR("Quit");
+	  par.cancelText    = nil;
+	  par.otherText     = nil;
+	  par.defaultButton = kAlertStdAlertOKButton;
+	  par.cancelButton  = 0;
+	  par.position      = kWindowDefaultPosition;
+	  par.flags         = 0;
+	  
+	  res = CreateStandardSheet(kAlertStopAlert, 
+				    CFStringCreateWithPascalString(NULL, title, kCFStringEncodingMacRoman),
+				    CFStringCreateWithPascalString(NULL, erm, kCFStringEncodingMacRoman),
+				    &par,
+				    GetWindowEventTarget(zoomWindow),
+				    &fataldlog);
+	  if (res == noErr)
+	    ShowSheetWindow(GetDialogWindow(fataldlog), zoomWindow);
+	  else
+	    {
+	      StandardAlert(kAlertStopAlert, title, erm, NULL, &item);
+	      display_exit(1);
+	    }
+	}
 #else
       fprintf(stderr, "\nINTERPRETER PANIC - %s", string);
 #ifdef GLOBAL_PC
       fprintf(stderr, " (PC = #%x)\n\n", machine.zpc);
 #endif
+      display_exit(1);
 #endif
     }
-  
-  display_exit(1);
 }
 
 void zmachine_warning(char* format, ...)
