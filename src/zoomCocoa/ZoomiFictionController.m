@@ -218,12 +218,12 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	[teaserView setDelegate: self];
 	[commentView setDelegate: self];
 	
+	[collapseView addSubview: previewView
+				   withTitle: @"Savegames"];
 	[collapseView addSubview: teaserView
 				   withTitle: @"Teaser"];
 	[collapseView addSubview: commentView
 				   withTitle: @"Comments"];
-	[collapseView addSubview: previewView
-				   withTitle: @"Savegames"];
 }
 
 - (void) close {
