@@ -209,6 +209,7 @@ static NSArray* defaultColours = nil;
     int currentSize = [self upperWindowSize];
     if (currentSize != lastTileSize) {
         [textScroller tile];
+        [self updateMorePrompt];
         lastTileSize = currentSize;
     }
     
@@ -234,6 +235,7 @@ static NSArray* defaultColours = nil;
     int currentSize = [self upperWindowSize];
     if (currentSize != lastTileSize) {
         [textScroller tile];
+        [self updateMorePrompt];
         lastTileSize = currentSize;
     }
 
@@ -279,7 +281,7 @@ static NSArray* defaultColours = nil;
 
     [textView scrollPoint:
         NSMakePoint(0,
-                    NSMaxY(endRect) - [[textScroller contentView] frame].size.height)];
+                    NSMaxY(endRect))];
 }
 
 - (void) displayMoreIfNecessary {
@@ -294,7 +296,7 @@ static NSArray* defaultColours = nil;
 
     NSRect endRect = [mgr boundingRectForGlyphRange: endGlyph
                                     inTextContainer: [textView textContainer]];
-    double endPoint = endRect.origin.y + endRect.size.height;
+    double endPoint = endRect.origin.y;
     NSSize maxSize = [textView maxSize];
 
     if (endPoint > maxSize.height) {
@@ -325,7 +327,7 @@ static NSArray* defaultColours = nil;
     if (endGlyph.location < 0xf0000000) {
         NSRect endRect = [mgr boundingRectForGlyphRange: endGlyph
                                         inTextContainer: [textView textContainer]];
-        maxHeight = endRect.origin.y + endRect.size.height;
+        maxHeight = endRect.origin.y;
     } else {
         maxHeight = 0;
     }
@@ -691,7 +693,6 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 
         if (theContainer == upperWindowBuffer) {
             [[[textView textStorage] mutableString] appendString: @"\n"];
-            NSLog(@"%@", [[textView textStorage] mutableString]);
         }
 
         // I suppose there's an outside chance of an infinite loop here
