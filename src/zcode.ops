@@ -2378,6 +2378,10 @@ OPCODE "set_text_style" VAR:0x11 ARGS:1               VERSION 6
     windows[cwin].style = 0;
 
   v6_set_style(argblock.arg[0]);
+  if (windows[cwin].font_num == 4 && argblock.arg[0] == 0)
+    v6_set_style(8);
+  if (windows[cwin].font_num == 3 && argblock.arg[0] == 0)
+    v6_set_style(16);
 %}
 
 OPCODE "read_char"      VAR:0x16 ARGS:3 STORE CANJUMP VERSION 6
@@ -2620,6 +2624,7 @@ OPCODE "erase_window"   VAR:0x0d ARGS:1               VERSION 6
           windows[x].x = windows[x].y = 1;
           windows[x].xsize = machine.dinfo->width; 
 	  windows[x].ysize = machine.dinfo->height;
+	  windows[x].font_num = 0;
 
 	  /* windows[x].colour = ((machine.dinfo->back+2)<<8)|(machine.dinfo->fore+2);
 	  v6_set_colours(machine.dinfo->fore, machine.dinfo->back); */
@@ -2661,11 +2666,18 @@ OPCODE "set_cursor"    VAR:0x0f ARGS:3        VERSION 6
   if (argblock.n_args < 3)
     argblock.arg[2] = v6_get_window();
 
-  owin = v6_get_window();
-  v6_set_window(WinNum(argblock.arg[2]));
-  v6_set_cursor(argblock.arg[1],
-		argblock.arg[0]);
-  v6_set_window(owin);
+  if (argblock.arg[0] > 0)
+    {
+      owin = v6_get_window();
+      v6_set_window(WinNum(argblock.arg[2]));
+      v6_set_cursor(argblock.arg[1],
+	  	    argblock.arg[0]);
+      v6_set_window(owin);
+    }
+  else
+    {
+      /* FIXME: implement cursor hiding */
+    }
 %}
 
 OPCODE "get_cursor"    VAR:0x10 ARGS:1        VERSION 6
@@ -2706,24 +2718,28 @@ OPCODE "set_font"      EXT:0x04 ARGS:1 STORE  VERSION 6
       v6_set_window(WinNum(argblock.arg[2]));
       working = WinNum(argblock.arg[2]);
     }  
- 
+
   switch (argblock.arg[0])
     {
     case 1:
       v6_set_style(-16);
       v6_set_style(-8);
 
+      windows[working].font_num = argblock.arg[0];
+ 
       windows[working].style &= ~(16|8);
       store(stack, st, 1);
       break;
 
     case 3:
+      windows[working].font_num = argblock.arg[0];
       v6_set_style(16);
       windows[working].style |= 16;
       store(stack, st, 1);
       break;
 
     case 4:
+      windows[working].font_num = argblock.arg[0];
       v6_set_style(-16);
       v6_set_style(8);
       windows[working].style &= ~16;

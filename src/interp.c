@@ -1394,6 +1394,8 @@ void zcode_v6_initialise(void)
       windows[x].xsize = machine.dinfo->width; 
       windows[x].ysize = machine.dinfo->height;
 
+      windows[x].font_num = 0;
+
       v6_set_style(0);
       windows[x].style = 0;
       v6_set_colours(machine.dinfo->fore, machine.dinfo->back);
