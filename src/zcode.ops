@@ -2677,30 +2677,49 @@ OPCODE "output_stream" VAR:0x13 ARGS:3        VERSION 6
 
 OPCODE "set_font"      EXT:0x04 ARGS:1 STORE  VERSION 6
 %{
+  int win = 0;
+  int working;
+
   stream_flush_buffer();
 
-  store(stack, st, 1);
+  win = working = v6_get_window();
+  if (argblock.n_args > 2)
+    {
+      win = v6_get_window();
+      v6_set_window(WinNum(argblock.arg[2]));
+      working = WinNum(argblock.arg[2]);
+    }  
  
   switch (argblock.arg[0])
     {
     case 1:
       v6_set_style(-16);
       v6_set_style(-8);
+
+      windows[working].style &= ~(16|8);
+      store(stack, st, 1);
       break;
 
     case 3:
       v6_set_style(16);
+      windows[working].style |= 16;
+      store(stack, st, 1);
       break;
 
     case 4:
       v6_set_style(-16);
       v6_set_style(8);
+      windows[working].style &= ~16;
+      windows[working].style |= 8;
+      store(stack, st, 1);
       break;
 
     default:
       zmachine_warning("Font %i not supported", argblock.arg[0]);
       store(stack, st, 0);
    }
+
+  v6_set_window(win);
 %}
 
 OPCODE "draw_picture"  EXT:0x05 ARGS:3        VERSION 6
@@ -2711,8 +2730,6 @@ OPCODE "draw_picture"  EXT:0x05 ARGS:3        VERSION 6
   stream_flush_buffer();
 
   win = v6_get_window();
-
-  printf("Picture %i\n", argblock.arg[0]);
 
   if (machine.blorb != NULL)
     {
@@ -3199,7 +3216,10 @@ OPCODE "print_form"    EXT:0x1a               VERSION 6
 OPCODE "make_menu"     EXT:0x1b        BRANCH VERSION 6
 %{
   /* Hum, the spec is unclear on what the branch does... */
-  printf_debug("make_menu not implemented\n");
+  /* printf_debug("make_menu not implemented\n"); */
+
+  result = 0;
+  dobranch;
 %}
 
 OPCODE "picture_table" EXT:0x1c               VERSION 6
