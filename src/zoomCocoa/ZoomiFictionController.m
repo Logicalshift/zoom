@@ -81,6 +81,30 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	
 	[self configureFromMainTableSelection];
 	[mainTableView reloadData];
+	
+	// Add to the collapsable view
+	commentView = [[NSTextView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
+	teaserView = [[NSTextView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
+	
+	[teaserView setMaxSize: NSMakeSize(1e8, 1e8)];
+    [teaserView setHorizontallyResizable: NO];
+    [teaserView setVerticallyResizable: YES];
+    [[teaserView textContainer] setWidthTracksTextView: YES];
+    [[teaserView textContainer] setContainerSize: NSMakeSize(1e8, 1e8)];	
+	
+	[commentView setMaxSize: NSMakeSize(1e8, 1e8)];
+    [commentView setHorizontallyResizable: NO];
+    [commentView setVerticallyResizable: YES];
+    [[commentView textContainer] setWidthTracksTextView: YES];
+    [[commentView textContainer] setContainerSize: NSMakeSize(1e8, 1e8)];	
+	
+	[teaserView setDelegate: self];
+	[commentView setDelegate: self];
+	
+	[collapseView addSubview: teaserView
+				   withTitle: @"Teaser"];
+	[collapseView addSubview: commentView
+				   withTitle: @"Comments"];
 }
 
 - (void) close {
@@ -702,8 +726,13 @@ int tableSorter(id a, id b, void* context) {
 	if (comment == nil) comment = @"";
 	if (teaser == nil) teaser = @"";
 	
-	[commentView setString: comment];
-	[teaserView setString: teaser];
+	if (![[commentView string] isEqualToString: comment]) {
+		[commentView setString: comment];
+	}
+	if (![[teaserView string] isEqualToString: teaser]) {
+		// FIXME: when ending editing the teaser is temporarily set to "", which mucks things up a bit
+		[teaserView setString: teaser];
+	}
 	
 	if ([comment length] == 0 && [teaser length] == 0) {
 		[drawer close];

@@ -9,6 +9,7 @@
 #import <AppKit/AppKit.h>
 #import "ZoomiFButton.h"
 #import "ZoomStory.h"
+#import "ZoomCollapsableView.h"
 
 @interface ZoomiFictionController : NSWindowController {
 	IBOutlet ZoomiFButton* addButton;
@@ -17,8 +18,10 @@
 	IBOutlet ZoomiFButton* drawerButton;
 	IBOutlet ZoomiFButton* infoButton;
 	
-	IBOutlet NSTextView*   commentView;
-	IBOutlet NSTextView*   teaserView;
+	IBOutlet ZoomCollapsableView* collapseView;
+	
+	NSTextView*   commentView;
+	NSTextView*   teaserView;
 	
 	IBOutlet NSDrawer* drawer;
 	IBOutlet NSView*   drawerView;

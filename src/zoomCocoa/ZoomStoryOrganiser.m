@@ -13,6 +13,9 @@
 
 NSString* ZoomStoryOrganiserChangedNotification = @"ZoomStoryOrganiserChangedNotification";
 static NSString* defaultName = @"ZoomStoryOrganiser";
+static NSString* ZoomGameDirectories = @"ZoomGameDirectories";
+static NSString* ZoomGameStorageDirectory = @"ZoomGameStorageDirectory";
+static NSString* ZoomIdentityFilename = @".zoomIdentity";
 
 @implementation ZoomStoryOrganiser
 
@@ -164,8 +167,12 @@ static NSString* defaultName = @"ZoomStoryOrganiser";
 	// User defaults
     NSUserDefaults *defaults  = [NSUserDefaults standardUserDefaults];
 	ZoomStoryOrganiser* defaultPrefs = [[[[self class] alloc] init] autorelease];
-    NSDictionary *appDefaults = [NSDictionary dictionaryWithObject: [defaultPrefs dictionary]
-															forKey: defaultName];
+	
+		NSArray* libraries = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+		NSString* libraryDir = [[libraries objectAtIndex: 0] stringByAppendingPathComponent: @"Interactive Fiction"];
+	
+    NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys: [defaultPrefs dictionary], defaultName,
+		libraryDir, ZoomGameStorageDirectory, nil];
 	
     [defaults registerDefaults: appDefaults];	
 }
@@ -300,24 +307,180 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 }
 
 // Story-specific data
-- (NSString*) directoryForIdent: (ZoomStoryID*) ident {
-	NSString* confDir = [[NSApp delegate] zoomConfigDirectory];
+
+- (NSString*) preferredDirectoryForIdent: (ZoomStoryID*) ident {
+	// The preferred directory is defined by the story group and title
+	// (Ungrouped/untitled if there is no story group/title)
+
+	// TESTME: what does stringByAppendingPathComponent do in the case where the group/title
+	// contains a '/' or other evil character?
+	NSString* confDir = [[NSUserDefaults standardUserDefaults] objectForKey: ZoomGameStorageDirectory];
+	ZoomStory* theStory = [[NSApp delegate] findStory: ident];
 	
-	if (!confDir) return nil;
-	confDir = [confDir stringByAppendingPathComponent: [ident description]];
-	if (!confDir) return nil;
-	
-	if (![[NSFileManager defaultManager] fileExistsAtPath: confDir]) {
-		[[NSFileManager defaultManager] createDirectoryAtPath: confDir
-												   attributes: nil];
-	}
-	
-	BOOL isDir;
-	if (![[NSFileManager defaultManager] fileExistsAtPath: confDir
-											  isDirectory: &isDir]) return nil;
-	if (!isDir) return nil;
+	confDir = [confDir stringByAppendingPathComponent: [theStory group]];
+	confDir = [confDir stringByAppendingPathComponent: [theStory title]];
 	
 	return confDir;
+}
+
+- (BOOL) directory: (NSString*) dir
+		 isForGame: (ZoomStoryID*) ident {
+	// If the preferences get corrupted or something similarily silly happens,
+	// we want to avoid having games point to the wrong directories. This
+	// routine checks that a directory belongs to a particular game.
+	BOOL isDir;
+	
+	if (![[NSFileManager defaultManager] fileExistsAtPath: dir
+											  isDirectory: &isDir]) {
+		// Corner case
+		return YES;
+	}
+	
+	if (!isDir) // Files belong to no game
+		return NO;
+	
+	NSString* idFile = [dir stringByAppendingPathComponent: ZoomIdentityFilename];
+	if (![[NSFileManager defaultManager] fileExistsAtPath: idFile
+											  isDirectory: &isDir]) {
+		// Directory has no identification
+		return NO;
+	}
+	
+	if (isDir) // Identification must be a file
+		return NO;
+	
+	ZoomStoryID* owner = [NSUnarchiver unarchiveObjectWithFile: idFile];
+	
+	if (owner && [owner isKindOfClass: [ZoomStoryID class]] && [owner isEqual: ident])
+		return YES;
+	
+	// Directory belongs to some other game
+	return NO;
+}
+
+- (NSString*) directoryForIdent: (ZoomStoryID*) ident {
+	NSString* confDir = nil;
+	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+	
+	// If there is a directory in the preferences, then that's the directory to use
+	NSDictionary* gameDirs = [defaults objectForKey: ZoomGameDirectories];
+	
+	if (gameDirs)
+		confDir = [gameDirs objectForKey: [ident description]];
+
+	BOOL isDir;
+	if (![[NSFileManager defaultManager] fileExistsAtPath: confDir
+											  isDirectory: &isDir]) {
+		confDir = nil;
+	}
+	
+	if (!isDir)
+		confDir = nil;
+	
+	if (confDir && [self directory: confDir isForGame: ident])
+		return confDir;
+	
+	confDir = nil;
+	
+	// No directory in the preferences, so we should try to find/create it...
+	ZoomStory* theStory = [[NSApp delegate] findStory: ident];
+	
+	// Find the root directory
+	NSString* rootDir = [[NSUserDefaults standardUserDefaults] objectForKey: ZoomGameStorageDirectory];
+	
+	if (![[NSFileManager defaultManager] fileExistsAtPath: rootDir
+											  isDirectory: &isDir]) {
+		[[NSFileManager defaultManager] createDirectoryAtPath: rootDir
+												   attributes: nil];
+		isDir = YES;
+	}
+		
+	if (!isDir) {
+		static BOOL warned = NO;
+		
+		if (!warned)
+			NSRunAlertPanel([NSString stringWithFormat: @"Game library not found"],
+							[NSString stringWithFormat: @"Warning: %@ is a file", rootDir], 
+							@"OK", nil, nil);
+		warned = YES;
+		return nil;
+	}
+	
+	// Find the group directory
+	NSString* groupDir = [rootDir stringByAppendingPathComponent: [theStory group]];
+	
+	if (![[NSFileManager defaultManager] fileExistsAtPath: groupDir
+											  isDirectory: &isDir]) {
+		[[NSFileManager defaultManager] createDirectoryAtPath: groupDir
+												   attributes: nil];
+		isDir = YES;
+	}
+	
+	if (!isDir) {
+		static BOOL warned = NO;
+		
+		if (!warned)
+			NSRunAlertPanel([NSString stringWithFormat: @"Group directory not found"],
+							[NSString stringWithFormat: @"Warning: %@ is a file", groupDir], 
+							@"OK", nil, nil);
+		warned = YES;
+		return nil;
+	}
+	
+	// Now the game directory
+	NSString* gameDir = [groupDir stringByAppendingPathComponent: [theStory title]];
+	int number = 0;
+	const int maxNumber = 20;
+	
+	while (![self directory: gameDir 
+				  isForGame: ident] &&
+		   number < maxNumber) {
+		number++;
+		gameDir = [rootDir stringByAppendingPathComponent: [NSString stringWithFormat: @"%@ %i", [theStory title], number]];
+	}
+	
+	if (number >= maxNumber) {
+		static BOOL warned = NO;
+		
+		if (!warned)
+			NSRunAlertPanel([NSString stringWithFormat: @"Game directory not found"],
+							[NSString stringWithFormat: @"Zoom was unable to locate a directory for the game '%@'", [theStory title]], 
+							@"OK", nil, nil);
+		warned = YES;
+		return nil;
+	}
+	
+	// Create the directory if necessary
+	if (![[NSFileManager defaultManager] fileExistsAtPath: gameDir
+											  isDirectory: &isDir]) {
+		[[NSFileManager defaultManager] createDirectoryAtPath: gameDir
+												   attributes: nil];
+	}
+
+	if (![[NSFileManager defaultManager] fileExistsAtPath: gameDir
+											  isDirectory: &isDir] || !isDir) {
+		// Chances of reaching here should have been eliminated previously
+		return nil;
+	}
+	
+	// Create the identifier file
+	NSString* identityFile = [gameDir stringByAppendingPathComponent: ZoomIdentityFilename];
+	[NSArchiver archiveRootObject: ident
+						   toFile: identityFile];
+		
+	// Store this directory as the dir for this game
+	NSMutableDictionary* newGameDirs = [gameDirs mutableCopy];
+
+	if (newGameDirs == nil) {
+		newGameDirs = [[NSMutableDictionary alloc] init];
+	}
+
+	[newGameDirs setObject: gameDir
+					forKey: [ident description]];
+	[defaults setObject: [newGameDirs autorelease]
+				 forKey: ZoomGameDirectories];
+	
+	return gameDir;
 }
 
 @end

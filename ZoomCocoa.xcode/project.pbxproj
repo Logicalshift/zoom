@@ -1707,6 +1707,8 @@
 				4B807BA405BFEE2700681653,
 				4B807BEA05C009ED00681653,
 				4B807BEB05C009ED00681653,
+				4B926F8805E7F9DA00E5C0EA,
+				4B926F8905E7F9DA00E5C0EA,
 			);
 			isa = PBXGroup;
 			name = iFiction;
@@ -1845,6 +1847,34 @@
 		};
 		4B807BED05C009ED00681653 = {
 			fileRef = 4B807BEB05C009ED00681653;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B926F8805E7F9DA00E5C0EA = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = ZoomCollapsableView.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B926F8905E7F9DA00E5C0EA = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = ZoomCollapsableView.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B926F8A05E7F9DA00E5C0EA = {
+			fileRef = 4B926F8805E7F9DA00E5C0EA;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B926F8B05E7F9DA00E5C0EA = {
+			fileRef = 4B926F8905E7F9DA00E5C0EA;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -2104,6 +2134,7 @@
 				4B807BA505BFEE2700681653,
 				4B807BAB05BFEE7200681653,
 				4B807BEC05C009ED00681653,
+				4B926F8A05E7F9DA00E5C0EA,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2158,6 +2189,7 @@
 				4B807BA605BFEE2700681653,
 				4B807BAC05BFEE7200681653,
 				4B807BED05C009ED00681653,
+				4B926F8B05E7F9DA00E5C0EA,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
