@@ -14,6 +14,8 @@ Hmm, this file was a bit out of date.
  * crash when moving a file and it's resources in OS X?
  * Remove font numbering
  * '>>' '<<' bug? again?
+ 
+ * Cocoa version 'bounces' around when 
 
  * Sound
  * Internationalisation support

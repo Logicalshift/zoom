@@ -31,6 +31,7 @@
     BOOL receivingCharacters;
 
     double morePoint;
+    double moreReferencePoint;
     BOOL moreOn;
 
     ZoomMoreView* moreView;
@@ -50,6 +51,7 @@
 
 - (void) scrollToEnd;
 - (void) resetMorePrompt;
+- (void) updateMorePrompt;
 
 - (void) setShowsMorePrompt: (BOOL) shown;
 - (void) displayMoreIfNecessary;

@@ -93,6 +93,7 @@ static NSArray* defaultColours = nil;
         receiving = NO;
         receivingCharacters = NO;
         moreOn    = NO;
+        moreReferencePoint = 0.0;
 
         [textView setDelegate: self];
         [[textView textStorage] setDelegate: self];
@@ -198,6 +199,12 @@ static NSArray* defaultColours = nil;
         [textView pasteUpperWindowLinesFrom: win];
     }
 
+    // If the more prompt is off, then set up for editting
+    if (!moreOn) {
+        [self resetMorePrompt];
+        [self scrollToEnd];
+    }
+    
     receivingCharacters = YES;
 }
 
@@ -297,10 +304,21 @@ static NSArray* defaultColours = nil;
         maxHeight = 0;
     }
 
+    moreReferencePoint = maxHeight;
     maxHeight += [textScroller contentSize].height;
 
     [textView setMaxSize: NSMakeSize(1e8, maxHeight)];
     [self scrollToEnd];
+}
+
+- (void) updateMorePrompt {
+    // Updates the more prompt to represent the new height of the window
+    double maxHeight = moreReferencePoint + [textScroller contentSize].height;
+
+    [textView setMaxSize: NSMakeSize(1e8, maxHeight)];
+    [textView sizeToFit];
+    [self scrollToEnd];
+    [self displayMoreIfNecessary];
 }
 
 - (void) page {
@@ -312,13 +330,10 @@ static NSArray* defaultColours = nil;
     [self setShowsMorePrompt: NO];
     
     double maxHeight = [textView maxSize].height;
+    moreReferencePoint = maxHeight;
     maxHeight += [textScroller contentSize].height;
 
-    [textView setMaxSize: NSMakeSize(1e8, maxHeight)];
-    [textView sizeToFit];
-
-    [self scrollToEnd];
-    [self displayMoreIfNecessary];
+    [self updateMorePrompt];
 
     if (!moreOn && receiving) {
         [textView setEditable: YES];
@@ -406,7 +421,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     if (moreOn) {
         // FIXME: maybe only respond to certain keys
         [self page];
-        return NO;
+        return YES;
     }
 
     if (receivingCharacters) {
@@ -577,6 +592,8 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     if (newSize != lastUpperWindowSize) {
         [textScroller tile];
         lastUpperWindowSize = newSize;
+
+        [self updateMorePrompt];
     }
 
     // Redraw the upper windows if necessary

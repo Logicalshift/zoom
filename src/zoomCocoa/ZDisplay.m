@@ -170,8 +170,6 @@ void display_prints_c(const char* buf) {
     [mainMachine bufferString: str
                     forWindow: currentWindow
                     withStyle: currentStyle];
-    //[[mainMachine windowNumber: currentWindow] writeString: str
-    //                                             withStyle: currentStyle];
 }
 
 void display_printc(int chr) {
@@ -184,8 +182,6 @@ void display_printc(int chr) {
     [mainMachine bufferString: str
                     forWindow: currentWindow
                     withStyle: currentStyle];
-    //[[mainMachine windowNumber: currentWindow] writeString: str
-    //                                             withStyle: currentStyle];
 }
 
 void display_printf(const char* format, ...) {
