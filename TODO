@@ -4,6 +4,6 @@ Hmm, this file was a bit out of date.
  X @sound_data, such as it can be
  X @save/@restore prompt thing
  X Blinking cursor
- * Investigate 'files nested too deeply' error
- * Implement 'APal' chunk...
+ X Investigate 'files nested too deeply' error
+ X Implement 'APal' chunk...
  * CREDITS file :-)
