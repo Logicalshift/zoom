@@ -106,6 +106,19 @@
 			settings = {
 			};
 		};
+		4B1C14D205C69CAD00E5796D = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			path = "iFiction-10.2.nib";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B1C14D305C69CAD00E5796D = {
+			fileRef = 4B1C14D205C69CAD00E5796D;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		4B1E3F47050F7AD000A8E303 = {
 			children = (
 				4B1E3FD2050F7DFD00A8E303,
@@ -2119,6 +2132,7 @@
 				4B61963205C1AD170019AFF7,
 				4B61963305C1AD170019AFF7,
 				4B1C13FE05C5A94B00E5796D,
+				4B1C14D305C69CAD00E5796D,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2369,6 +2383,7 @@
 				4B418E140594FCDB009C44DE,
 				4B2EAF9905B056EC0021A5E6,
 				4BB515B405BC615F00D00C96,
+				4B1C14D205C69CAD00E5796D,
 			);
 			isa = PBXGroup;
 			name = Resources;
