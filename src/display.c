@@ -52,7 +52,7 @@ void display_clear(void)
   int x, y, z;
 
   displayed_text = 0;
-  
+
   /* Clear the main text window */
   text_win[0].force_fixed = 0;
   text_win[0].overlay     = 0;
@@ -561,6 +561,10 @@ void display_set_cursor  (int x, int y)
 {
   if (CURWIN.overlay)
     {
+      if (CURWIN.xpos >= size_x)
+	CURWIN.xpos = size_x-1;
+      if (CURWIN.ypos >= size_y)
+	CURWIN.ypos = size_y-1;
       CURWIN.xpos = x;
       CURWIN.ypos = y;
     }

@@ -45,7 +45,10 @@ char*         lastspeech = NULL;
 
 /* Window data structures themselves */
 int cur_win;
-struct window text_win[3];
+struct window text_win[3] = 
+  { { 0,0, 0,0,0,0, 0,0,0,0, 0,7,0, 7, NULL, NULL, NULL, NULL, NULL, NULL }, 
+    { 0,0, 0,0,0,0, 0,0,0,0, 0,7,0, 7, NULL, NULL, NULL, NULL, NULL, NULL }, 
+    { 0,0, 0,0,0,0, 0,0,0,0, 0,7,0, 7, NULL, NULL, NULL, NULL, NULL, NULL } };
 
 #define CURWIN text_win[cur_win]
 #define CURSTYLE (text_win[cur_win].style|(text_win[cur_win].force_fixed<<3))

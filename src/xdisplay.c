@@ -382,6 +382,7 @@ static void draw_input_text(void)
     show_caret();
 }
 
+static void resize_window(void);
 static void size_window(void)
 {
   XSizeHints* hints;
@@ -681,6 +682,7 @@ static void draw_window()
 		      while (text_win[win].cline[y].font[x+len] == fn &&
 			     text_win[win].cline[y].fg[x+len]   == fg &&
 			     text_win[win].cline[y].bg[x+len]   == bg &&
+			     x+len < size_x &&
 			     (bg != 255 ||
 			      text_win[win].cline[y].cell[x+len] != ' ' ||
 			      y*xfont_y<text_win[win].winly))
@@ -983,6 +985,11 @@ static void resize_window()
 
   size_x = win_x/xfont_x;
   size_y = win_y/xfont_y;
+
+  if (size_x == 0)
+    size_x = 1;
+  if (size_y == 0)
+    size_y = 1;
 
   /* Resize and reformat the overlay windows */
   for (x=1; x<=2; x++)
@@ -1984,6 +1991,51 @@ void display_initialise(void)
 
   /* Start up the font system */
   xfont_initialise();
+  
+  win_attr.event_mask = ExposureMask|KeyPressMask|KeyReleaseMask|StructureNotifyMask|ButtonPressMask|ButtonReleaseMask|ButtonMotionMask;
+  win_attr.background_pixel = None;
+
+  /* Create the main window */
+  x_mainwin = XCreateWindow(x_display,
+			    RootWindow(x_display, x_screen),
+			    100,100, 
+			    total_x= ((win_x=(xfont_x*rc_get_xsize())) + BORDER_SIZE*2+SCROLLBAR_SIZE),
+			    total_y=((win_y=(xfont_y*rc_get_ysize())) + BORDER_SIZE*2),
+			    1, DefaultDepth(x_display, x_screen), InputOutput,
+			    CopyFromParent,
+			    CWEventMask|CWBackPixel,
+			    &win_attr);
+
+  /* Give it a back buffer, if the extension is available */
+  x_drawable = x_mainwin;
+
+#ifdef HAVE_XDBE
+  x_backbuffer = None;
+  if (XdbeQueryExtension(x_display, &x, &y))
+    {
+      if (x >= 1)
+	{
+	  x_backbuffer = XdbeAllocateBackBufferName(x_display, 
+						    x_mainwin,
+						    XdbeCopied);
+	}
+      if (x_backbuffer != None)
+	x_drawable = x_backbuffer;
+    }
+#endif
+
+#ifdef HAVE_XFT
+  if (XftDefaultHasRender(x_display))
+    {
+      xft_drawable = XftDrawCreate(x_display, x_drawable,
+				   DefaultVisual(x_display, x_screen), 
+				   DefaultColormap(x_display, x_screen));
+    }
+  else
+    {
+      xft_drawable = NULL;
+    }
+#endif
 
   /* Allocate fonts */
   for (x=0; x<num; x++)
@@ -2030,47 +2082,14 @@ void display_initialise(void)
       x_colour[x+FIRST_ZCOLOUR].green = cols[x].g<<8;
       x_colour[x+FIRST_ZCOLOUR].blue  = cols[x].b<<8;
     }
-  
-  win_attr.event_mask = ExposureMask|KeyPressMask|KeyReleaseMask|StructureNotifyMask|ButtonPressMask|ButtonReleaseMask|ButtonMotionMask;
-  win_attr.background_pixel = None;
 
-  /* Create the main window */
-  x_mainwin = XCreateWindow(x_display,
-			    RootWindow(x_display, x_screen),
-			    100,100, 
-			    total_x= ((win_x=(xfont_x*rc_get_xsize())) + BORDER_SIZE*2+SCROLLBAR_SIZE),
-			    total_y=((win_y=(xfont_y*rc_get_ysize())) + BORDER_SIZE*2),
-			    1, DefaultDepth(x_display, x_screen), InputOutput,
-			    CopyFromParent,
-			    CWEventMask|CWBackPixel,
-			    &win_attr);
-  
-  XMapWindow(x_display, x_mainwin);
-
-  /* Give it a back buffer, if the extension is available */
-  x_drawable = x_mainwin;
-
-#ifdef HAVE_XDBE
-  x_backbuffer = None;
-  if (XdbeQueryExtension(x_display, &x, &y))
-    {
-      x_backbuffer = XdbeAllocateBackBufferName(x_display, 
-						x_mainwin,
-						XdbeCopied);
-      if (x_backbuffer != None)
-	x_drawable = x_backbuffer;
-    }
-#endif
-
-#ifdef HAVE_XFT
-  xft_drawable = XftDrawCreate(x_display, x_drawable,
-			       DefaultVisual(x_display, x_screen), 
-			       DefaultColormap(x_display, x_screen));
-#endif
-
+  /* Size the window */
   max_x = size_x = rc_get_xsize();
   max_y = size_y = rc_get_ysize();
   size_window();
+  
+  /* Show the window */
+  XMapWindow(x_display, x_mainwin);
 
   /* Window properties */
   {
