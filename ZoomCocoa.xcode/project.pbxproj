@@ -1651,6 +1651,12 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
+		4B59C83B0602201500BA8983 = {
+			fileRef = 4B1E3FBE050F7DE200A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		4B61963005C1AD170019AFF7 = {
 			isa = PBXFileReference;
 			lastKnownFileType = image.png;
@@ -2135,6 +2141,7 @@
 				4B807BAB05BFEE7200681653,
 				4B807BEC05C009ED00681653,
 				4B926F8A05E7F9DA00E5C0EA,
+				4B59C83B0602201500BA8983,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

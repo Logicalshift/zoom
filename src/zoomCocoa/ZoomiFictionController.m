@@ -89,12 +89,14 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	[teaserView setMaxSize: NSMakeSize(1e8, 1e8)];
     [teaserView setHorizontallyResizable: NO];
     [teaserView setVerticallyResizable: YES];
+	[teaserView setRichText: NO];
     [[teaserView textContainer] setWidthTracksTextView: YES];
     [[teaserView textContainer] setContainerSize: NSMakeSize(1e8, 1e8)];	
 	
 	[commentView setMaxSize: NSMakeSize(1e8, 1e8)];
     [commentView setHorizontallyResizable: NO];
     [commentView setVerticallyResizable: YES];
+	[commentView setRichText: NO];
     [[commentView textContainer] setWidthTracksTextView: YES];
     [[commentView textContainer] setContainerSize: NSMakeSize(1e8, 1e8)];	
 	
@@ -289,7 +291,8 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	ZoomStoryID* ident = [self selectedStoryID];
 	
 	// If an autosave file exists, query the user
-	NSString* autosaveDir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: ident];
+	NSString* autosaveDir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: ident
+																				  create: NO];
 	NSString* autosaveFile = [autosaveDir stringByAppendingPathComponent: @"autosave.zoomauto"];
 	
 	if ([[NSFileManager defaultManager] fileExistsAtPath: autosaveFile]) {
@@ -691,7 +694,8 @@ int tableSorter(id a, id b, void* context) {
 		} else {
 			[newgameButton setEnabled: YES];
 			
-			NSString* autosaveDir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: ident];
+			NSString* autosaveDir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: ident
+																						  create: NO];
 			NSString* autosaveFile = [autosaveDir stringByAppendingPathComponent: @"autosave.zoomauto"];
 
 			if ([[NSFileManager defaultManager] fileExistsAtPath: autosaveFile]) {

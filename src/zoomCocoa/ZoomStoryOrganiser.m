@@ -192,6 +192,12 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 		port2 = nil;
 		mainThread = nil;
 		subThread = nil;
+		
+		// Any time a story changes, we move it
+		[[NSNotificationCenter defaultCenter] addObserver: self
+												 selector: @selector(someStoryHasChanged:)
+													 name: ZoomStoryDataHasChangedNotification
+												   object: nil];
 	}
 	
 	return self;
@@ -208,6 +214,8 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 	[port2 release];
 	[mainThread release];
 	[subThread release];
+	
+	[[NSNotificationCenter defaultCenter] removeObserver: self];
 	
 	[super dealloc];
 }
@@ -235,9 +243,24 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 - (void) addStory: (NSString*) filename
 		withIdent: (ZoomStoryID*) ident
 		 organise: (BOOL) organise {
-	// FIXME: Organise not supported yet
 	if (organise) {
-		// Move to a standard directory, change the filename we're using
+		// Copy to a standard directory, change the filename we're using
+		filename = [filename stringByStandardizingPath];
+		
+		NSString* fileDir = [self directoryForIdent: ident create: YES];
+		NSString* destFile = [fileDir stringByAppendingPathComponent: @"game.z5"];
+		destFile = [destFile stringByStandardizingPath];
+		
+		if (![filename isEqualToString: destFile]) {
+			[[NSFileManager defaultManager] removeFileAtPath: destFile handler: nil];
+			if ([[NSFileManager defaultManager] copyPath: filename
+												  toPath: destFile
+												 handler: nil]) {
+				filename = destFile;
+			} else {
+				NSLog(@"Warning: couldn't copy '%@' to '%@'", filename, destFile);
+			}
+		}
 	}
 	
 	[storyLock lock];
@@ -266,7 +289,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	
 	NSString* newFilename = [[filename copy] autorelease];
 	NSString* newIdent    = [[ident copy] autorelease];
-	
+		
 	[storyFilenames addObject: newFilename];
 	[storyIdents addObject: newIdent];
 	
@@ -358,43 +381,37 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	return NO;
 }
 
-- (NSString*) directoryForIdent: (ZoomStoryID*) ident {
+- (NSString*) findDirectoryForIdent: (ZoomStoryID*) ident
+					  createGameDir: (BOOL) createGame
+					 createGroupDir: (BOOL) createGroup {
+	// Assuming a story doesn't already have a directory, find (and possibly create)
+	// a directory for it
 	NSString* confDir = nil;
-	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-	
-	// If there is a directory in the preferences, then that's the directory to use
-	NSDictionary* gameDirs = [defaults objectForKey: ZoomGameDirectories];
-	
-	if (gameDirs)
-		confDir = [gameDirs objectForKey: [ident description]];
-
 	BOOL isDir;
-	if (![[NSFileManager defaultManager] fileExistsAtPath: confDir
-											  isDirectory: &isDir]) {
-		confDir = nil;
-	}
 	
-	if (!isDir)
-		confDir = nil;
-	
-	if (confDir && [self directory: confDir isForGame: ident])
-		return confDir;
-	
-	confDir = nil;
-	
-	// No directory in the preferences, so we should try to find/create it...
 	ZoomStory* theStory = [[NSApp delegate] findStory: ident];
+	NSString* group = [theStory group];
+	NSString* title = [theStory title];
+	
+	if (group == nil || [group isEqualToString: @""])
+		group = @"Ungrouped";
+	if (title == nil || [title isEqualToString: @""])
+		title = @"Untitled";
 	
 	// Find the root directory
 	NSString* rootDir = [[NSUserDefaults standardUserDefaults] objectForKey: ZoomGameStorageDirectory];
 	
 	if (![[NSFileManager defaultManager] fileExistsAtPath: rootDir
 											  isDirectory: &isDir]) {
-		[[NSFileManager defaultManager] createDirectoryAtPath: rootDir
-												   attributes: nil];
-		isDir = YES;
+		if (createGroup) {
+			[[NSFileManager defaultManager] createDirectoryAtPath: rootDir
+													   attributes: nil];
+			isDir = YES;
+		} else {
+			return nil;
+		}
 	}
-		
+	
 	if (!isDir) {
 		static BOOL warned = NO;
 		
@@ -407,13 +424,17 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	}
 	
 	// Find the group directory
-	NSString* groupDir = [rootDir stringByAppendingPathComponent: [theStory group]];
+	NSString* groupDir = [rootDir stringByAppendingPathComponent: group];
 	
 	if (![[NSFileManager defaultManager] fileExistsAtPath: groupDir
 											  isDirectory: &isDir]) {
-		[[NSFileManager defaultManager] createDirectoryAtPath: groupDir
-												   attributes: nil];
-		isDir = YES;
+		if (createGroup) {
+			[[NSFileManager defaultManager] createDirectoryAtPath: groupDir
+													   attributes: nil];
+			isDir = YES;
+		} else {
+			return nil;
+		}
 	}
 	
 	if (!isDir) {
@@ -428,7 +449,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	}
 	
 	// Now the game directory
-	NSString* gameDir = [groupDir stringByAppendingPathComponent: [theStory title]];
+	NSString* gameDir = [groupDir stringByAppendingPathComponent: title];
 	int number = 0;
 	const int maxNumber = 20;
 	
@@ -453,8 +474,165 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	// Create the directory if necessary
 	if (![[NSFileManager defaultManager] fileExistsAtPath: gameDir
 											  isDirectory: &isDir]) {
-		[[NSFileManager defaultManager] createDirectoryAtPath: gameDir
-												   attributes: nil];
+		if (createGame) {
+			[[NSFileManager defaultManager] createDirectoryAtPath: gameDir
+													   attributes: nil];
+		} else {
+			if (createGroup) {
+				// Special case, really. Sometimes we need to know where we're going to move the game to
+				return gameDir;
+			} else {
+				return nil;
+			}
+		}
+	}
+	
+	if (![[NSFileManager defaultManager] fileExistsAtPath: gameDir
+											  isDirectory: &isDir] || !isDir) {
+		// Chances of reaching here should have been eliminated previously
+		return nil;
+	}
+	
+	// Create the identifier file
+	NSString* identityFile = [gameDir stringByAppendingPathComponent: ZoomIdentityFilename];
+	[NSArchiver archiveRootObject: ident
+						   toFile: identityFile];
+	
+	/* -- Not used here
+	// Store this directory as the dir for this game
+	NSMutableDictionary* newGameDirs = [gameDirs mutableCopy];
+	
+	if (newGameDirs == nil) {
+		newGameDirs = [[NSMutableDictionary alloc] init];
+	}
+	
+	[newGameDirs setObject: gameDir
+					forKey: [ident description]];
+	[defaults setObject: [newGameDirs autorelease]
+				 forKey: ZoomGameDirectories];
+	 */
+	
+	return gameDir;
+}
+
+- (NSString*) directoryForIdent: (ZoomStoryID*) ident
+						 create: (BOOL) create {
+	NSString* confDir = nil;
+	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+		
+	// If there is a directory in the preferences, then that's the directory to use
+	NSDictionary* gameDirs = [defaults objectForKey: ZoomGameDirectories];
+	
+	if (gameDirs)
+		confDir = [gameDirs objectForKey: [ident description]];
+
+	BOOL isDir;
+	if (![[NSFileManager defaultManager] fileExistsAtPath: confDir
+											  isDirectory: &isDir]) {
+		confDir = nil;
+	}
+	
+	if (!isDir)
+		confDir = nil;
+	
+	if (confDir && [self directory: confDir isForGame: ident])
+		return confDir;
+	
+	confDir = nil;
+	
+#if 0
+	// No directory in the preferences, so we should try to find/create it...
+	ZoomStory* theStory = [[NSApp delegate] findStory: ident];
+	NSString* group = [theStory group];
+	NSString* title = [theStory title];
+	
+	if (group == nil || [group isEqualToString: @""])
+		group = @"Ungrouped";
+	if (title == nil || [title isEqualToString: @""])
+		title = @"Untitled";
+	
+	// Find the root directory
+	NSString* rootDir = [[NSUserDefaults standardUserDefaults] objectForKey: ZoomGameStorageDirectory];
+	
+	if (![[NSFileManager defaultManager] fileExistsAtPath: rootDir
+											  isDirectory: &isDir]) {
+		if (create) {
+			[[NSFileManager defaultManager] createDirectoryAtPath: rootDir
+													   attributes: nil];
+			isDir = YES;
+		} else {
+			return nil;
+		}
+	}
+		
+	if (!isDir) {
+		static BOOL warned = NO;
+		
+		if (!warned)
+			NSRunAlertPanel([NSString stringWithFormat: @"Game library not found"],
+							[NSString stringWithFormat: @"Warning: %@ is a file", rootDir], 
+							@"OK", nil, nil);
+		warned = YES;
+		return nil;
+	}
+	
+	// Find the group directory
+	NSString* groupDir = [rootDir stringByAppendingPathComponent: group];
+	
+	if (![[NSFileManager defaultManager] fileExistsAtPath: groupDir
+											  isDirectory: &isDir]) {
+		if (create) {
+			[[NSFileManager defaultManager] createDirectoryAtPath: groupDir
+													   attributes: nil];
+			isDir = YES;
+		} else {
+			return nil;
+		}
+	}
+	
+	if (!isDir) {
+		static BOOL warned = NO;
+		
+		if (!warned)
+			NSRunAlertPanel([NSString stringWithFormat: @"Group directory not found"],
+							[NSString stringWithFormat: @"Warning: %@ is a file", groupDir], 
+							@"OK", nil, nil);
+		warned = YES;
+		return nil;
+	}
+	
+	// Now the game directory
+	NSString* gameDir = [groupDir stringByAppendingPathComponent: title];
+	int number = 0;
+	const int maxNumber = 20;
+	
+	while (![self directory: gameDir 
+				  isForGame: ident] &&
+		   number < maxNumber) {
+		number++;
+		gameDir = [rootDir stringByAppendingPathComponent: [NSString stringWithFormat: @"%@ %i", [theStory title], number]];
+	}
+	
+	if (number >= maxNumber) {
+		static BOOL warned = NO;
+		
+		if (!warned)
+			NSRunAlertPanel([NSString stringWithFormat: @"Game directory not found"],
+							[NSString stringWithFormat: @"Zoom was unable to locate a directory for the game '%@'", [theStory title]], 
+							@"OK", nil, nil);
+		warned = YES;
+		return nil;
+	}
+	
+	// Create the directory if necessary
+	if (![[NSFileManager defaultManager] fileExistsAtPath: gameDir
+											  isDirectory: &isDir]) {
+		if (create) {
+			[[NSFileManager defaultManager] createDirectoryAtPath: gameDir
+													   attributes: nil];
+		} else {
+			return nil;
+		}
 	}
 
 	if (![[NSFileManager defaultManager] fileExistsAtPath: gameDir
@@ -467,6 +645,13 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	NSString* identityFile = [gameDir stringByAppendingPathComponent: ZoomIdentityFilename];
 	[NSArchiver archiveRootObject: ident
 						   toFile: identityFile];
+#endif
+	
+	NSString* gameDir = [self findDirectoryForIdent: ident
+									  createGameDir: create
+									 createGroupDir: create];
+	
+	if (gameDir == nil) return nil;
 		
 	// Store this directory as the dir for this game
 	NSMutableDictionary* newGameDirs = [gameDirs mutableCopy];
@@ -481,6 +666,119 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 				 forKey: ZoomGameDirectories];
 	
 	return gameDir;
+}
+
+- (BOOL) moveStoryToPreferredDirectoryWithIdent: (ZoomStoryID*) ident {
+	// Get the current directory
+	NSString* currentDir = [self directoryForIdent: ident 
+											create: NO];
+	currentDir = [currentDir stringByStandardizingPath];
+	
+	if (currentDir == nil) return NO;
+	
+	// Get the 'ideal' directory
+	NSString* idealDir = [self findDirectoryForIdent: ident
+									   createGameDir: NO
+									  createGroupDir: YES];
+	idealDir = [idealDir stringByStandardizingPath];
+	
+	// See if they already match
+	if ([idealDir isEqualToString: currentDir]) 
+		return;
+	
+	// If they don't match, then idealDir should be new (or something weird has just occured)
+	if ([[NSFileManager defaultManager] fileExistsAtPath: idealDir]) {
+		// Doh!
+		NSLog(@"Wanted to move game from '%@' to '%@', but '%@' already exists", currentDir, idealDir, idealDir);
+		return NO;
+	}
+	
+	// Move the old directory to the new directory
+	
+	// Vague possibilities of this failing: in particular, currentDir may be not write-accessible or
+	// something might appear there between our check and actually moving the directory
+	if (![[NSFileManager defaultManager] movePath: currentDir
+										  toPath: idealDir
+										 handler: nil]) {
+		NSLog(@"Failed to move '%@' to '%@'", currentDir, idealDir);
+		return NO;
+	}
+	
+	// Success: store the new directory in the defaults
+	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+	
+	NSDictionary* gameDirs = [defaults objectForKey: ZoomGameDirectories];
+	if (gameDirs == nil) gameDirs = [NSDictionary dictionary];
+	NSMutableDictionary* newGameDirs = [gameDirs mutableCopy];
+	
+	if (newGameDirs == nil) {
+		newGameDirs = [[NSMutableDictionary alloc] init];
+	}
+	
+	[newGameDirs setObject: idealDir
+					forKey: [ident description]];
+	[defaults setObject: [newGameDirs autorelease]
+				 forKey: ZoomGameDirectories];	
+	
+	return YES;
+}
+
+- (void) someStoryHasChanged: (NSNotification*) not {
+	ZoomStory* story = [not object];
+	
+	if (![story isKindOfClass: [ZoomStory class]]) {
+		NSLog(@"someStoryHasChanged: called with a non-story object");
+		return; // Unlikely but possible
+	}
+	
+	// For our pre-arranged stories, several IDs are possible, but more usually one
+	NSEnumerator* identEnum = [[story storyIDs] objectEnumerator];
+	ZoomStoryID* ident;
+	BOOL changed = NO;
+	
+	while (ident = [identEnum nextObject]) {
+		int identID = [storyIdents indexOfObject: ident];
+		
+		if (identID != NSNotFound) {
+			// Get the old location of the game
+			ZoomStoryID* realID = [storyIdents objectAtIndex: identID];
+			
+			NSString* oldGameFile = [self directoryForIdent: ident create: NO];
+			oldGameFile = [oldGameFile stringByAppendingPathComponent: @"game.z5"];
+			NSString* oldGameLoc = [storyFilenames objectAtIndex: identID];
+			
+			oldGameFile = [oldGameFile stringByStandardizingPath];
+			oldGameLoc = [oldGameLoc stringByStandardizingPath];
+
+			// Actually perform the move
+			if ([self moveStoryToPreferredDirectoryWithIdent: [storyIdents objectAtIndex: identID]]) {
+				changed = YES;
+			
+				// Store the new location of the game, if necessary
+				if ([oldGameLoc isEqualToString: oldGameFile]) {
+					NSString* newGameFile = [[self directoryForIdent: ident create: NO] stringByAppendingPathComponent: @"game.z5"];
+					newGameFile = [newGameFile stringByStandardizingPath];
+
+					if (![oldGameFile isEqualToString: newGameFile]) {
+						[filenamesToIdents removeObjectForKey: oldGameFile];
+						
+						[filenamesToIdents setObject: realID
+											  forKey: newGameFile];
+						[identsToFilenames setObject: newGameFile
+											  forKey: realID];
+						
+						[storyFilenames replaceObjectAtIndex: identID
+												  withObject: newGameFile];
+					}
+				}
+			}
+		} else {
+			NSLog(@"Story move ignored");
+		}
+	}
+	
+	if (changed)
+		[self organiserChanged];
 }
 
 @end

@@ -164,8 +164,14 @@
 - (void) loadDefaultAutosave {
 	if (autosaveData) [autosaveData release];
 	
-	NSString* autosaveDir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: storyId];
+	NSString* autosaveDir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: storyId
+																				  create: NO];
 	NSString* autosaveFile = [autosaveDir stringByAppendingPathComponent: @"autosave.zoomauto"];
+	
+	if (![[NSFileManager defaultManager] fileExistsAtPath: autosaveFile]) {
+		autosaveData = nil;
+		return;
+	}
 	
 	autosaveData = [[NSData dataWithContentsOfFile: autosaveFile] retain];
 }
