@@ -41,30 +41,6 @@ static int* buffer = NULL;
 extern int* zscii_unicode;
 extern int  zscii_unicode_table[];
 
-/*
- * Translate a ZSCII string to a ISO 10646 one (well, Unicode, really)
- */
-#if 0
-int* zscii_to_unicode(ZByte* string, int* len)
-{
-  static int* unistring = NULL;
-  unsigned char* ascii;
-  int x, l;
-
-  ascii = zscii_to_ascii(string, len);
-
-  l = strlen(ascii);
-  unistring = realloc(unistring, sizeof(int)*(l+1));
-  for (x=0; x<l; x++)
-    {
-      unistring[x] = zscii_unicode[ascii[x]];
-    }
-  unistring[l] = 0;
-
-  return unistring;
-}
-#endif
-
 static void prints_reformat_width(int len)
 {
   int* text;

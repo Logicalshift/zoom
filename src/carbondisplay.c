@@ -576,7 +576,6 @@ static void size_window(void)
     }
   else
     {
-      //GetWindowBounds(zoomWindow, kWindowContentRgn, &bounds);
       SetWindowBounds(zoomWindow, kWindowContentRgn, &bounds);
 
       total_x = bounds.right - bounds.left;

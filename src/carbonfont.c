@@ -1108,31 +1108,6 @@ void xfont_plot_string(xfont* font,
 	  winlastfont = font;
 	}
       
-#if 0
-      /* Blank out the background */
-      CGContextSetTextDrawingMode(carbon_quartz_context, kCGTextInvisible);
-      CGContextSetTextPosition(carbon_quartz_context, 0, 0);
-      CGContextShowGlyphs(carbon_quartz_context, glyph, outlen);
-      pt = CGContextGetTextPosition(carbon_quartz_context);
-      
-      if (!transpar)
-	{
-	  CGRect bgr;
-
-	  CGContextSetRGBFillColor(carbon_quartz_context, 
-				   (float)bg_col.red/65536.0,
-				   (float)bg_col.green/65536.0,
-				   (float)bg_col.blue/65536.0,
-				   1.0);
-	  bgr = CGRectMake(portRect.left + x,
-			   (portRect.bottom-portRect.top) + y - font->data.mac.descent,
-			   
-			   pt.x,
-			   font->data.mac.ascent + font->data.mac.descent);
-	  CGContextFillRect(carbon_quartz_context, bgr);
-	}
-#endif
-            
       CGContextSetRGBFillColor(carbon_quartz_context, 
 			       (float)fg_col.red/65536.0,
 			       (float)fg_col.green/65536.0,

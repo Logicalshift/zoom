@@ -211,23 +211,17 @@ xfont* xfont_load_font(char* font)
 	  if (match && res != XftResultNoMatch)
 	    {
 	      f->data.Xft = XftFontOpenPattern(x_display, match);
-	      //XftPatternDestroy(match);
 	    }
 	  else
 	    {
 	      f->data.Xft = NULL;
 	    }
 	  XftPatternDestroy(pat);
-
-	  //f->data.Xft = XftFontOpenXlfd(x_display, x_screen, font);
 	}
       else
 	{
 	  f->data.Xft = NULL;
 	}
-      /*
-				    XFT_XLFD, XftTypeString, font,
-				    XFT_ANTIALIAS, XftTypeBool, True); */
       if (f->data.Xft != NULL)
 	return f;
 

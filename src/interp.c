@@ -1460,7 +1460,6 @@ static int newline_function(const int* remaining,
 				  UnpackR(windows[win].newline_routine));
 	  newframe->storevar = 255;
 	  newframe->discard  = 1;
-	  // newframe->v5read   = newline_return;
 	  newframe->end_func = 1;
 
 	  zmachine_runsome(machine.version, machine.zpc);
