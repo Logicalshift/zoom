@@ -1,4 +1,14 @@
-2000-12-08  Andrew Hunter    <amdrew@logicalshift.co.uk>
+2000-12-11  Andrew Hunter    <andrew@logicalshift.co.uk>
+
+	* version updated to 0.9.99dev9 (release of beta5)
+
+	* resource leak fixed (windisplay.c)
+
+	* display flicker reduced (windisplay.c)
+
+	* line history added (windisplay.c)
+	
+2000-12-08  Andrew Hunter    <andrew@logicalshift.co.uk>
 
 	* save/restore now display windows dialogue boxes. Unless its the X
 	version, o'course.

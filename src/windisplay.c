@@ -200,6 +200,14 @@ static int   buf_offset;
 static int   more_on = 0;
 static int   displayed_text = 0;
 
+typedef struct history_item
+{
+  int* string;
+  struct history_item* next;
+  struct history_item* last;
+} history_item;
+static history_item* last_string = NULL;
+
 static void draw_input_text(HDC dc);
 static void update_status_text(void);
 
@@ -211,6 +219,11 @@ static inline int istrlen(const int* string)
 
   while (string[x] != 0) x++;
   return x;
+}
+
+static inline void istrcpy(int* dest, const int* src)
+{
+  memcpy(dest, src, (istrlen(src)+1)*sizeof(int));
 }
 
 /***                           ----// 888 \\----                           ***/
@@ -1739,21 +1752,56 @@ static void draw_caret(HDC dc)
 {
   if ((caret_on^caret_shown))
     {
-      HPEN tpen;
-      HGDIOBJ ob;
+      HGDIOBJ lpen;
+      HGDIOBJ lbrush;
       
       SetROP2(dc, R2_XORPEN);
 
-      if (insert)
-	tpen = CreatePen(PS_SOLID, 1, wincolour[CURWIN.back]);
+      if (!insert && text_buf != NULL)
+	{
+	  int w;
+
+	  w = xfont_get_text_width(font[CURSTYLE],
+				   text_buf + buf_offset,
+				   1);
+	  if (text_buf[buf_offset] == 0)
+	    w = 3;
+
+	  lpen   = SelectObject(dc, winpen[CURWIN.back]);
+	  lbrush = SelectObject(dc, winbrush[CURWIN.back]);
+	  Rectangle(dc,
+		    caret_x+4, caret_y+4,
+		    caret_x+4+w+1, caret_y+caret_height+5);
+	  SelectObject(dc, lbrush);
+	  SelectObject(dc, lpen);
+	  
+	  lpen   = SelectObject(dc, winpen[7]);
+	  lbrush = SelectObject(dc, winbrush[7]);
+	  Rectangle(dc,
+		    caret_x+4, caret_y+4,
+		    caret_x+4+w+1, caret_y+caret_height+5);
+	  SelectObject(dc, lbrush);
+	  SelectObject(dc, lpen);
+	}
       else
-	tpen = CreatePen(PS_SOLID, 2, wincolour[CURWIN.back]);
-      ob = SelectObject(dc, tpen);
-      MoveToEx(dc, caret_x+5, caret_y+4, NULL);
-      LineTo(dc, caret_x+5, caret_y+4+caret_height);
-      SelectObject(dc, ob);
-      DeleteObject(tpen);
-      
+	{
+	  lpen   = SelectObject(dc, winpen[CURWIN.back]);
+	  lbrush = SelectObject(dc, winbrush[CURWIN.back]);
+	  Rectangle(dc,
+		    caret_x+3, caret_y+4,
+		    caret_x+5, caret_y+caret_height+5);
+	  SelectObject(dc, lbrush);
+	  SelectObject(dc, lpen);
+	  
+	  lpen   = SelectObject(dc, winpen[7]);
+	  lbrush = SelectObject(dc, winbrush[7]);
+	  Rectangle(dc,
+		    caret_x+3, caret_y+4,
+		    caret_x+5, caret_y+caret_height+5);
+	  SelectObject(dc, lbrush);
+	  SelectObject(dc, lpen);
+	}
+	  
       SetROP2(dc, R2_COPYPEN);
       caret_shown = !caret_shown;
     }
@@ -2488,6 +2536,7 @@ static int process_events(long int timeout,
 			  int  buflen)
 {
   MSG msg;
+  history_item*  history = NULL;
 
   if (!more_on)
     caret_flashing = 1;
@@ -2631,7 +2680,57 @@ static int process_events(long int timeout,
 			}
 		      break;
 
+		    case VK_UP:
+		      if (history == NULL)
+			history = last_string;
+		      else
+			if (history->next != NULL)
+			  history = history->next;
+		      if (history != NULL)
+			{
+			  if (istrlen(history->string) < buflen)
+			    istrcpy(buf, history->string);
+
+			  buf_offset = istrlen(buf);
+			}
+
+		      draw_input_text(mainwindc);
+		      break;
+
+		    case VK_DOWN:
+		      if (history != NULL)
+			{
+			  history = history->last;
+			  if (history != NULL)
+			    {
+			      if (istrlen(history->string) < buflen)
+				istrcpy(buf, history->string);
+			      buf_offset = istrlen(buf);
+			    }
+			  else
+			    {
+			      buf[0] = 0;
+			      buf_offset = 0;
+			    }
+			}
+
+		      draw_input_text(mainwindc);
+		      break;
+		      
 		    case VK_RETURN:
+		      {
+			history_item* newhist;
+			
+			newhist = malloc(sizeof(history_item));
+			newhist->last = NULL;
+			newhist->next = last_string;
+			if (last_string)
+			  last_string->last = newhist;
+			newhist->string = malloc(sizeof(int)*(istrlen(buf)+1));
+			istrcpy(newhist->string, buf);
+			last_string = newhist;
+		      }
+		      
 		      text_buf = NULL;
 		      display_prints(buf);
 		      display_prints_c("\n");
