@@ -1493,7 +1493,7 @@ OPCODE "pull"           VAR:0x09 ARGS:1               VERSION 1,2,3,4,5,7,8
   store(stack, argblock.arg[0], val);
 %}
 
-OPCODE "split_window"   VAR:0x0a ARGS:1               VERSION all # 3,4,5,6,7,8
+OPCODE "split_window"   VAR:0x0a ARGS:1               VERSION all # 3,4,5,7,8
 %{
   stream_flush_buffer();
 
@@ -1636,10 +1636,7 @@ OPCODE "set_cursor"     VAR:0x0f ARGS:2               VERSION 4,5,7,8
 #endif
   if (display_get_window() == 2)
     { 
-      if (machine.graphical)
-        display_set_gcursor(argblock.arg[1]-1, argblock.arg[0]-1);
-      else
-        display_set_cursor(argblock.arg[1]-1, argblock.arg[0]-1);
+      display_set_cursor(argblock.arg[1]-1, argblock.arg[0]-1);
     }
 %}
 
@@ -1658,7 +1655,7 @@ OPCODE "get_cursor"     VAR:0x10 ARGS:1               VERSION 4,5,7,8
   dest[3] = x;
 %}
 
-OPCODE "set_text_style" VAR:0x11 ARGS:1               VERSION 4,5,6,7,8
+OPCODE "set_text_style" VAR:0x11 ARGS:1               VERSION 4,5,7,8
 %{
   stream_flush_buffer();
 #ifndef SPEC_11
@@ -1691,7 +1688,7 @@ OPCODE "output_stream"  VAR:0x13 ARGS:2               VERSION 4,5,7,8
   zcode_op_output_stream(stack, &argblock);
 %}
 
-OPCODE "input_stream"   VAR:0x14 ARGS:1               VERSION all # 3,4,5,6,7,8
+OPCODE "input_stream"   VAR:0x14 ARGS:1               VERSION all # 3,4,5,7,8
 %{
   switch (argblock.arg[0])
     {
@@ -1901,14 +1898,14 @@ OPCODE "copy_table"     VAR:0x1d ARGS:3               VERSION 5,6,7,8
     }
 %}
 
-OPCODE "print_table"    VAR:0x1e                      VERSION 5,6,7,8
+OPCODE "print_table"    VAR:0x1e                      VERSION 5,7,8
 %{
   ZByte* table;
   int x,y;
   int xpos;
 
   stream_flush_buffer();
-  xpos = display_get_gcur_x();
+  xpos = display_get_cur_x();
 
   if (argblock.arg[2] == 0)
     argblock.arg[2] = 1;
@@ -1926,7 +1923,7 @@ OPCODE "print_table"    VAR:0x1e                      VERSION 5,6,7,8
 	  stream_prints("\n");
 	  stream_flush_buffer();
 	  if (machine.screen_on)
-	    display_set_gcursor(xpos, display_get_gcur_y());
+	    display_set_cursor(xpos, display_get_cur_y());
 	}
 
       for (x=0; x<argblock.arg[1]; x++)
@@ -2102,7 +2099,7 @@ OPCODE "art_shift"     EXT:0x03 ARGS:2 STORE  VERSION 5,6,7,8
     }  
 %}
 
-OPCODE "set_font"      EXT:0x04 ARGS:1 STORE  VERSION 5,6,7,8
+OPCODE "set_font"      EXT:0x04 ARGS:1 STORE  VERSION 5,7,8
 %{
   stream_flush_buffer();
 
@@ -2242,7 +2239,7 @@ OPCODE "restart"     0OP:0x07 CANJUMP VERSION 6
   
   read_block2(machine.memory, machine.file, 0, machine.dynamic_ceiling);
 
-  display_reset_windows();
+  v6_reset();
 
   for (x=0; x<8; x++)
     {
@@ -2268,21 +2265,21 @@ OPCODE "set_colour"    2OP:0x1b REALLYVAR     VERSION 6
   int win = 0;
   int working;
 
-  working = display_get_window();
+  working = v6_get_window();
   if (argblock.n_args > 2)
     {
-      win = display_get_window();
-      display_set_window(argblock.arg[2]);
+      win = v6_get_window();
+      v6_set_window(argblock.arg[2]);
       working = argblock.arg[2];
     }
   
-  display_set_colour(convert_colour(argblock.arg[0]),
-		     convert_colour(argblock.arg[1]));
+  v6_set_colours(convert_colour(argblock.arg[0]),
+		 convert_colour(argblock.arg[1]));
   windows[working].colour = argblock.arg[0]|(argblock.arg[1]<<8);
   
   if (argblock.n_args > 2)
     {
-      display_set_window(win);
+      v6_set_window(win);
     }
 %}
 
@@ -2315,7 +2312,7 @@ OPCODE "erase_window"   VAR:0x0d ARGS:1               VERSION 6
   int old_win, ewin;
 
   stream_flush_buffer();
-  old_win = display_get_window();
+  old_win = v6_get_window();
 
   if (argblock.arg[0] == -3)
     ewin = old_win;  
@@ -2326,7 +2323,7 @@ OPCODE "erase_window"   VAR:0x0d ARGS:1               VERSION 6
     {
       old_win = 0;
       ewin = 0;
-      display_reset_windows();
+      v6_reset_windows();
 
       for (x=0; x<8; x++)
         {
@@ -2343,15 +2340,15 @@ OPCODE "erase_window"   VAR:0x0d ARGS:1               VERSION 6
   if (ewin < 0)
     zmachine_fatal("Attempt to erase invalid window %i", ewin);
 
-  display_set_window(ewin);
-  display_erase_window();
-  display_set_gcursor(windows[ewin].x,windows[ewin].y);
-  display_set_window(old_win);
+  v6_set_window(ewin);
+  v6_erase_window();
+  v6_set_cursor(windows[ewin].x,windows[ewin].y);
+  v6_set_window(old_win);
 %}
 
 OPCODE "erase_line"    VAR:0x0e ARGS:1        VERSION 6
 %{
-  display_erase_line(argblock.arg[0]);
+  v6_erase_line(argblock.arg[0]);
 %}
 
 OPCODE "set_window"    VAR:0x0b ARGS:1        VERSION 6
@@ -2366,13 +2363,13 @@ OPCODE "set_cursor"    VAR:0x0f ARGS:3        VERSION 6
   int owin;
 
   if (argblock.n_args < 3)
-    argblock.arg[2] = display_get_window();
+    argblock.arg[2] = v6_get_window();
 
-  owin = display_get_window();
-  display_set_window(argblock.arg[2]);
-  display_set_gcursor(argblock.arg[1] + windows[argblock.arg[2]].x,
-		      argblock.arg[0] + windows[argblock.arg[2]].y);
-  display_set_window(owin);
+  owin = v6_get_window();
+  v6_set_window(argblock.arg[2]);
+  v6_set_cursor(argblock.arg[1] + windows[argblock.arg[2]].x,
+		argblock.arg[0] + windows[argblock.arg[2]].y);
+  v6_set_window(owin);
 %}
 
 OPCODE "get_cursor"    VAR:0x10 ARGS:1        VERSION 6
@@ -2381,11 +2378,11 @@ OPCODE "get_cursor"    VAR:0x10 ARGS:1        VERSION 6
   int x, y;
   int win;
 
-  win = display_get_window();
+  win = v6_get_window();
 
   dest = Address((ZUWord)argblock.arg[0]);
-  x = display_get_gcur_x()-windows[win].x;
-  y = display_get_gcur_y()-windows[win].y;
+  x = v6_get_cursor_x()-windows[win].x;
+  y = v6_get_cursor_y()-windows[win].y;
 
   dest[0] = y>>8;
   dest[1] = y;
@@ -2402,6 +2399,7 @@ OPCODE "draw_picture"  EXT:0x05 ARGS:3        VERSION 6
 
 OPCODE "picture_data"  EXT:0x06 BRANCH        VERSION 6
 %{
+#if 0
   ZByte* d;
   ZUWord width, height;
 
@@ -2414,6 +2412,7 @@ OPCODE "picture_data"  EXT:0x06 BRANCH        VERSION 6
   d[1] = height;
   d[2] = width>>8;
   d[3] = width;
+#endif
 %}
 
 OPCODE "erase_picture" EXT:0x07               VERSION 6
@@ -2423,9 +2422,9 @@ OPCODE "set_margins"   EXT:0x08 ARGS:3        VERSION 6
   int win, yp;
 
   if (argblock.n_args < 3)
-    argblock.arg[2] = display_get_window();
-  win = display_get_window();
-  display_set_window(argblock.arg[2]);
+    argblock.arg[2] = v6_get_window();
+  win = v6_get_window();
+  v6_set_window(argblock.arg[2]);
 
   windows[argblock.arg[2]].leftmar  = argblock.arg[0];
   windows[argblock.arg[2]].rightmar = argblock.arg[1];
@@ -2433,32 +2432,16 @@ OPCODE "set_margins"   EXT:0x08 ARGS:3        VERSION 6
   printf_debug("Margins of window %i set to %i, %i\n", argblock.arg[2], argblock.arg[0], argblock.arg[1]);
   
   zcode_setup_window(argblock.arg[2]);
-  if (display_get_gcur_x() < windows[argblock.arg[2]].x+
-                             windows[argblock.arg[2]].leftmar)
+  if (v6_get_cursor_x() < windows[argblock.arg[2]].x+
+                          windows[argblock.arg[2]].leftmar)
     {
-      yp = display_get_gcur_y();
+      yp = v6_get_cursor_y();
     
-      display_set_gcursor(windows[argblock.arg[2]].x+
-                            windows[argblock.arg[2]].leftmar,
-                          yp);
+      v6_set_cursor(windows[argblock.arg[2]].x+
+                    windows[argblock.arg[2]].leftmar,
+                    yp);
     }
-  display_set_window(win);
-%}
-
-OPCODE "set_true_colour" EXT:0x0d VERSION 5,6,7,8
-%{
-#ifndef SPEC_11
-  zmachine_warning("set_true_colour has no effect before standard 1.1");
-#else
-#endif
-%}
-
-OPCODE "sound_data" EXT:0x0e VERSION 5,6,7,8
-%{
-#ifndef SPEC_11
-  zmachine_warning("sound_data has no effect before standard 1.1");
-#else
-#endif
+  v6_set_window(win);
 %}
 
 OPCODE "move_window"   EXT:0x10               VERSION 6
@@ -2466,14 +2449,14 @@ OPCODE "move_window"   EXT:0x10               VERSION 6
   int xmove, ymove;
   int win;
   
-  win = display_get_window();
-  display_set_window(argblock.arg[0]);
+  win = v6_get_window();
+  v6_set_window(argblock.arg[0]);
 
   xmove = argblock.arg[2]-windows[argblock.arg[0]].x;
   ymove = argblock.arg[1]-windows[argblock.arg[0]].y;
 
-  display_set_gcursor(display_get_gcur_x()+xmove,
-                      display_get_gcur_y()+ymove);
+  v6_set_cursor(display_get_cursor_x()+xmove,
+                display_get_cursor_y()+ymove);
 
   windows[argblock.arg[0]].x = argblock.arg[2];
   windows[argblock.arg[0]].y = argblock.arg[1];
@@ -2481,7 +2464,7 @@ OPCODE "move_window"   EXT:0x10               VERSION 6
   windows[argblock.arg[0]].rightmar = 0;
   
   zcode_setup_window(argblock.arg[0]);
-  display_set_window(win);
+  v6_set_window(win);
 %}
 
 OPCODE "window_size"   EXT:0x11               VERSION 6
@@ -2493,9 +2476,9 @@ OPCODE "window_size"   EXT:0x11               VERSION 6
 
   {
     int win;
-    win = display_get_window();
+    win = v6_get_window();
     zcode_setup_window(argblock.arg[0]);
-    display_set_window(win);
+    v6_set_window(win);
   }
 %}
 
@@ -2511,12 +2494,12 @@ OPCODE "get_wind_prop" EXT:0x13        STORE  VERSION 6
 %{
   int win;
 
-  win = display_get_window();
+  win = v6_get_window();
 
   argblock.arg[0] = v6_window(argblock.arg[0]);
   if (argblock.arg[0] < 0)
     zmachine_fatal("Bad window for get_wind_prop: %i", argblock.arg[0]);
-  display_set_window(argblock.arg[0]);
+  v6_set_window(argblock.arg[0]);
   switch(argblock.arg[1])
     {
     case 0:
@@ -2532,10 +2515,10 @@ OPCODE "get_wind_prop" EXT:0x13        STORE  VERSION 6
       store(stack, st, windows[argblock.arg[0]].xsize);
       break;
     case 4:
-      store(stack, st, display_get_gcur_x()-windows[argblock.arg[0]].x);
+      store(stack, st, v6_get_cursor_x()-windows[argblock.arg[0]].x);
       break;
     case 5:
-      store(stack, st, display_get_gcur_y()-windows[argblock.arg[0]].y);
+      store(stack, st, v6_get_cursor_y()-windows[argblock.arg[0]].y);
       break;
     case 6:
       store(stack, st, windows[argblock.arg[0]].leftmar);
@@ -2560,7 +2543,7 @@ OPCODE "get_wind_prop" EXT:0x13        STORE  VERSION 6
       break;
     case 13:
       store(stack, st, (display_get_font_height()<<8)|
-                       display_get_font_width());
+                        display_get_font_width());
       break;
     case 14:
       store(stack, st,
@@ -2577,7 +2560,7 @@ OPCODE "get_wind_prop" EXT:0x13        STORE  VERSION 6
     default:
       zmachine_fatal("Attempt to access out of range window property %i", argblock.arg[1]);
    }
-  display_set_window(win);
+  v6_set_window(win);
 %}
 
 OPCODE "scroll_window" EXT:0x14               VERSION 6
@@ -2617,8 +2600,8 @@ OPCODE "put_wind_prop" EXT:0x19               VERSION 6
 %{
   int win;
 
-  win = display_get_window();
-  display_set_window(argblock.arg[0]);
+  win = v6_get_window();
+  v6_set_window(argblock.arg[0]);
   switch(argblock.arg[1])
     {
     case 0:
@@ -2639,11 +2622,11 @@ OPCODE "put_wind_prop" EXT:0x19               VERSION 6
       break;
     case 4:
       zmachine_warning("Bad put_wind_prop: should use set_cursor instead");
-      display_set_gcursor(display_get_gcur_x(), argblock.arg[2]);
+      v6_set_cursor(display_get_cursor_x(), argblock.arg[2]);
       break;
     case 5:
       zmachine_warning("Bad put_wind_prop: should use set_cursor instead");
-      display_set_gcursor(argblock.arg[2], display_get_gcur_y());
+      v6_set_gcursor(argblock.arg[2], display_get_cursor_y());
       break;
     case 6:
       windows[argblock.arg[0]].leftmar = argblock.arg[2];
@@ -2679,10 +2662,28 @@ OPCODE "put_wind_prop" EXT:0x19               VERSION 6
     default:
       zmachine_fatal("Attempt to access out of range window property %i", argblock.arg[1]);
    }
-  display_set_window(win);  
+  v6_set_window(win);  
 %}
 
 OPCODE "print_form"    EXT:0x1a               VERSION 6
 OPCODE "make_menu"     EXT:0x1b        BRANCH VERSION 6
 OPCODE "picture_table" EXT:0x1c               VERSION 6
 
+####                           ----// 888 \\----                           ####
+# Standard 1.1 opcodes
+
+OPCODE "set_true_colour" EXT:0x0d VERSION 5,6,7,8
+%{
+#ifndef SPEC_11
+  zmachine_warning("set_true_colour has no effect before standard 1.1");
+#else
+#endif
+%}
+
+OPCODE "sound_data" EXT:0x0e VERSION 5,6,7,8
+%{
+#ifndef SPEC_11
+  zmachine_warning("sound_data has no effect before standard 1.1");
+#else
+#endif
+%}

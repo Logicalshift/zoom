@@ -115,7 +115,7 @@ BlorbFile* blorb_loadfile(ZFile* file)
 				       sizeof(BlorbImage)*res->index.npictures);
 	  res->index.picture[res->index.npictures-1].file_offset =
 	    iff->chunk[x].offset;
-	  res->index.picture[res->index.npictures-1].file_len -
+	  res->index.picture[res->index.npictures-1].file_len =
 	    iff->chunk[x].length;
 	  res->index.picture[res->index.npictures-1].number = -1;
 	  res->index.picture[res->index.npictures-1].width = -1;
@@ -130,8 +130,6 @@ BlorbFile* blorb_loadfile(ZFile* file)
 	  res->index.picture[res->index.npictures-1].loaded      = NULL;
 	  res->index.picture[res->index.npictures-1].in_use      = 0;
 	  res->index.picture[res->index.npictures-1].usage_count = 0;
-
-	  image_load(file, iff->chunk[x].offset, iff->chunk[x].length);
 	}
       else if (cmp_token(iff->chunk[x].id, "FORM"))
 	{

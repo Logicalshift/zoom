@@ -1327,15 +1327,15 @@ static int newline_function(const char* remaining,
 
 static inline void zcode_setup_window(int window)
 {
-  display_set_window(window);
-  display_window_define(window,
-			windows[window].x, windows[window].y,
-			windows[window].leftmar, windows[window].rightmar,
-			windows[window].xsize, windows[window].ysize);
-  display_set_scroll(windows[window].scrolling);
-  display_set_more(window, windows[window].scrolling);
+  v6_set_window(window);
+  v6_window_define(window,
+		   windows[window].x, windows[window].y,
+		   windows[window].leftmar, windows[window].rightmar,
+		   windows[window].xsize, windows[window].ysize);
+  v6_set_scroll(windows[window].scrolling);
+  v6_set_more(window, windows[window].scrolling);
   if (windows[window].line_count == -999)
-    display_set_more(window, 0);
+    v6_set_more(window, 0);
   stream_buffering(windows[window].buffering);
 }
 static inline int zcode_v6_push_stack(ZStack* stack,

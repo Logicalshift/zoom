@@ -12,14 +12,14 @@ zoom_SOURCES = \
 	main.c interp.c file.c options.c zmachine.c zscii.c display.c \
 	xdisplay.c hash.c tokenise.c stream.c font3.c state.c pix.c rc.c \
 	rc_parse.y rc_lex.l menu.c xfont.c windisplay.c winfont.c random.c \
-	format.c layout.c carbondisplay.c carbonfont.c carbonsupport.c \
+	format.c v6display.c carbondisplay.c carbonfont.c carbonsupport.c \
 	carbonprefs.c debug.c eval.y iff.c blorb.c image_libpng.c \
 	image_ximage.c image_carbon.c \
 	\
 	file.h zmachine.h options.h interp.h zscii.h display.h hash.h \
 	tokenise.h stream.h font3.h state.h pix.h rc.h rcp.h rc_parse.h \
 	menu.h xdisplay.h xfont.h zoomres.h windisplay.h random.h format.h \
-	carbondisplay.h layout.h debug.h blorb.h image.h image_ximage.h
+	carbondisplay.h v6display.h debug.h blorb.h image.h image_ximage.h
 
 $(srcdir)/interp.c: interp_gen.h interp_z3.h interp_z4.h interp_z5.h interp_z6.h varop.h
 

@@ -34,6 +34,7 @@
 #include "xfont.h"
 #include "font3.h"
 #include "format.h"
+#include "rc.h"
 
 #ifdef HAVE_XFT
 # include <X11/Xft/Xft.h>
