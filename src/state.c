@@ -31,7 +31,7 @@
 #include "file.h"
 #include "../config.h"
 
-#define DEBUG
+/* #define DEBUG */
 
 enum header_blocks
 {
