@@ -444,7 +444,7 @@
           <object class="IBCarbonStaticText" id="300">
             <string name="bounds">44 115 60 184 </string>
             <ostype name="controlSignature">Vers</ostype>
-            <string name="title">1.0.1beta1</string>
+            <string name="title">1.0.1beta2</string>
           </object>
           <object class="IBCarbonStaticText" id="301">
             <string name="bounds">68 20 84 279 </string>
