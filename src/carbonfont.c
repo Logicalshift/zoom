@@ -27,6 +27,7 @@
  *
  * ATSUI is slow, and to use it properly you'd really need to rewrite
  * the whole rendering interface. That's probably not worth it...
+ * (Well, it would make copy/paste a bit easier to implement
  *
  * QuickDraw uses a crappy font rendering engine
  *

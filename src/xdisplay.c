@@ -2913,7 +2913,7 @@ void display_plot_gtext(const int* text,
 
   float width, height;
 
-  if (len == 0)
+  if (len <= 0)
     return;
 
   if (x<0 || y<0)
