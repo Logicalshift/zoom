@@ -53,6 +53,10 @@ extern int       quitflag;
 extern int       mac_openflag;
 extern char      carbon_title[];
 
+#ifdef USE_QUARTZ
+extern CGContextRef carbon_quartz_context;
+#endif
+
 extern FSRef* carbon_get_zcode_file(void);
 
 extern ZFile* open_file_fsref(FSRef* ref);
@@ -84,6 +88,12 @@ extern void carbon_display_rejig  (void);
 extern void carbon_show_prefs(void);
 extern void carbon_set_context(void);
 extern void carbon_set_quartz(int q);
+
+/* image_ routines have their own naming convention, which we preserve */
+extern void image_draw_carbon(image_data* img, 
+			      CGrafPtr port, 
+			      int x, int y,
+			      int n, int d);
 
 /* Font information */
 typedef struct carbon_font

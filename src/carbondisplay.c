@@ -42,7 +42,10 @@
 #include "rc.h"
 #include "hash.h"
 #include "xfont.h"
+#include "blorb.h"
+#include "image.h"
 #include "carbondisplay.h"
+#include "v6display.h"
 
 #define DEBUG
 
@@ -96,6 +99,15 @@ char carbon_title[256];
 #else
 #define BORDERWIDTH 2
 #endif
+
+/* Pixmap display */
+static GWorldPtr pixmap = NULL;
+
+static int pix_w, pix_h;
+static int pix_fore;
+static int pix_back;
+
+static int mousew_x, mousew_y, mousew_w, mousew_h = -1;
 
 /* Preferences */
 carbon_preferences carbon_prefs = { 0, 0, 0, 0 };
@@ -888,6 +900,42 @@ static void draw_window(int   win,
   GetPortBounds(thePort, &portRect);
 
   dassert(rct != NULL);
+
+  if (pixmap != NULL)
+    {
+      Rect src, dst;
+      PixMapHandle winPix, pixPix;
+
+      static const RGBColor black = { 0,0,0 };
+      static const RGBColor white = { 0xffff, 0xffff, 0xffff };
+
+      if (win != 0)
+	return;
+
+      src.left   = 0;
+      src.top    = 0;
+      src.right  = pix_w;
+      src.bottom = pix_h;
+
+      dst = src;
+
+      RGBForeColor(&black);
+      RGBBackColor(&white);
+
+      winPix = GetPortPixMap(thePort);
+      pixPix = GetGWorldPixMap(pixmap);
+
+      if (!LockPixels(winPix))
+	zmachine_fatal("Unable to lock window");
+      if (!LockPixels(pixPix))
+	zmachine_fatal("Unable to lock pixmap");
+      CopyBits((BitMap*)*pixPix, (BitMap*)*winPix, &src, &dst,
+	       srcCopy, NULL);
+      UnlockPixels(pixPix);
+      UnlockPixels(winPix);
+
+      return;
+    }
 
   if (text_win[win].overlay)
     {
@@ -2036,6 +2084,15 @@ ZDisplay* display_get_info(void)
   dis.fore          = DEFAULT_FORE;
   dis.back          = DEFAULT_BACK;
 
+  if (pixmap != NULL)
+    {
+      dis.width = pix_w;
+      dis.height = pix_h;
+
+      dis.font_width = xfont_get_width(font[style_font[4]])+0.5;
+      dis.font_height = xfont_get_height(font[style_font[4]])+0.5;
+    }
+
   return &dis;
 }
 
@@ -2395,51 +2452,194 @@ static int process_events(long int timeout,
  */
 int display_init_pixmap(int width, int height)
 {
+  QDErr erm;
+  Rect  bounds;
+
+  if (pixmap != NULL)
+    {
+      zmachine_fatal("Can't initialise a pixmap twice in succession");
+      return 0;
+    }
+
+  if (width < 0)
+    {
+      width = win_x; height = win_y;
+    }
+
+  pix_w = width; pix_h = height;
+
+  bounds.left   = 0;
+  bounds.top    = 0;
+  bounds.right  = width;
+  bounds.bottom = height;
+ 
+  erm = NewGWorld(&pixmap, 0, &bounds, NULL, NULL, 0);
+
+  if (erm != noErr)
+    return 0; /* Drat it */
+
+  win_x = width; win_y = height;
+  total_x = win_x + BORDERWIDTH*2+15;
+  total_y = win_y + BORDERWIDTH*2;
+
+  GetWindowBounds(zoomWindow, kWindowContentRgn, &bounds);
+  bounds.right = bounds.left + total_x;
+  bounds.bottom = bounds.top + total_y;
+  SetWindowBounds(zoomWindow, kWindowContentRgn, &bounds);
+
+  resize_window();
+
+  return 1;
 }
 
 void display_plot_rect(int x, int y, int width, int height)
 {
+  Rect r;
+
+  if (!LockPixels(GetGWorldPixMap(pixmap)))
+    zmachine_fatal("Unable to lock pixmap");
+  SetGWorld(pixmap, nil);
+  
+  r.left   = x;
+  r.top    = y;
+  r.right  = x+width;
+  r.bottom = y+height;
+
+  RGBForeColor(&maccolour[FIRST_ZCOLOUR+pix_fore]);
+  PaintRect(&r);
+  
+  UnlockPixels(GetGWorldPixMap(pixmap));
 }
 
 void display_scroll_region(int x, int y, int width, int height, int xoff, int yoff)
 {
+  Rect src, dst;
+
+  PixMapHandle pixPix;
+
+  static const RGBColor black = { 0,0,0 };
+  static const RGBColor white = { 0xffff, 0xffff, 0xffff };
+
+  if (!LockPixels(GetGWorldPixMap(pixmap)))
+    zmachine_fatal("Unable to lock pixmap");
+  SetGWorld(pixmap, nil);
+  pixPix = GetGWorldPixMap(pixmap);
+
+  RGBForeColor(&black);
+  RGBBackColor(&white);
+
+  src.left = x;
+  src.top = y;
+  src.right = x+width;
+  src.bottom = y+height;
+
+  dst = src;
+  dst.left += xoff; dst.right += xoff;
+  dst.top  += yoff; dst.bottom += yoff;
+
+  CopyBits((BitMap*)*pixPix, (BitMap*)*pixPix, &src, &dst, srcCopy, NULL);
+
+  UnlockPixels(GetGWorldPixMap(pixmap));
 }
 
 void display_pixmap_cols(int fg, int bg)
 {
+  pix_fore = fg; pix_back = bg;
 }
 
 int display_get_pix_colour(int x, int y)
 {
+  return 0;
 }
 
 void display_plot_gtext(const int* text, int len,
 			int style, int x, int y)
 {
+  int ft;
+
+  ft = style_font[(style>>1)&15];
+
+  if (!LockPixels(GetGWorldPixMap(pixmap)))
+    zmachine_fatal("Unable to lock pixmap");
+  SetGWorld(pixmap, nil);
+
+#ifdef USE_QUARTZ
+  carbon_set_context();
+#endif
+
+  xfont_set_colours(pix_fore + FIRST_ZCOLOUR, pix_back + FIRST_ZCOLOUR);
+  xfont_plot_string(font[ft], x, -y,
+		    text, len);
+  
+  UnlockPixels(GetGWorldPixMap(pixmap));
 }
 
 float display_measure_text(const int* text, int len, int style)
 {
+  int ft;
+
+  ft = style_font[(style>>1)&15];
+
+  return xfont_get_text_width(font[ft], text, len);
 }
 
 float display_get_font_width(int style)
 {
+  int ft;
+
+  ft = style_font[(style>>1)&15];
+
+  return xfont_get_width(font[ft]);
 }
 
 float display_get_font_height(int style)
 {
+  int ft;
+
+  ft = style_font[(style>>1)&15];
+
+  return xfont_get_height(font[ft]);
 }
 
 float display_get_font_ascent(int style)
 {
+  int ft;
+
+  ft = style_font[(style>>1)&15];
+
+  return xfont_get_ascent(font[ft]);
 }
 
 float display_get_font_descent(int style)
 {
+  int ft;
+
+  ft = style_font[(style>>1)&15];
+
+  return xfont_get_descent(font[ft]);
 }
 
 void display_plot_image(BlorbImage* img, int x, int y)
 {
+  int sc_n, sc_d;
+
+  if (pixmap == NULL)
+    printf("Blech\n");
+
+  if (img == NULL)
+    return;
+
+  v6_scale_image(img, &sc_n, &sc_d);
+
+  if (img->loaded != NULL)
+    {
+      if (!LockPixels(GetGWorldPixMap(pixmap)))
+	zmachine_fatal("Unable to lock pixmap");
+      SetGWorld(pixmap, nil);
+      image_draw_carbon(img->loaded, pixmap, x, y, sc_n, sc_d);
+
+      UnlockPixels(GetGWorldPixMap(pixmap));
+    }
 }
 
 void display_wait_for_more(void)

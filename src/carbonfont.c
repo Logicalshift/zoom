@@ -98,7 +98,7 @@ struct xfont
 static int fg_col, bg_col;
 
 #ifdef USE_QUARTZ
-static CGContextRef wincontext = nil;
+CGContextRef carbon_quartz_context = nil;
 
 static xfont*       winlastfont = NULL;
 static int          enable_quartz = 0;
@@ -111,8 +111,8 @@ void carbon_set_context(void)
 {
   CGrafPtr thePort = GetQDGlobalsThePort();
 
-  CGContextRelease(wincontext);
-  CreateCGContextForPort(thePort, &wincontext);
+  CGContextRelease(carbon_quartz_context);
+  CreateCGContextForPort(thePort, &carbon_quartz_context);
   winlastfont = NULL;
 }
 
@@ -127,14 +127,14 @@ void xfont_initialise(void)
   int x;
 
 #ifdef USE_QUARTZ
-  if (wincontext == nil)
+  if (carbon_quartz_context == nil)
     {
       CGrafPtr p;
       OSStatus res;
       
       p = GetWindowPort(zoomWindow);
 
-      res = CreateCGContextForPort(p, &wincontext);
+      res = CreateCGContextForPort(p, &carbon_quartz_context);
       
       winlastfont = NULL;
     }
@@ -889,16 +889,16 @@ XFONT_MEASURE xfont_get_text_width(xfont* xf,
       
       if (winlastfont != xf)
 	{
-	  CGContextSelectFont(wincontext, xf->data.mac.psname, 
+	  CGContextSelectFont(carbon_quartz_context, xf->data.mac.psname, 
 			      xf->data.mac.size,
 			      kCGEncodingMacRoman);
 	  winlastfont = xf;
 	}
-      CGContextSetTextPosition(wincontext, 0, 0);
-      CGContextSetTextDrawingMode(wincontext, kCGTextInvisible);
-      CGContextShowText(wincontext, outbuf, outlen);
+      CGContextSetTextPosition(carbon_quartz_context, 0, 0);
+      CGContextSetTextDrawingMode(carbon_quartz_context, kCGTextInvisible);
+      CGContextShowText(carbon_quartz_context, outbuf, outlen);
       
-      end = CGContextGetTextPosition(wincontext);
+      end = CGContextGetTextPosition(carbon_quartz_context);
       
       res = end.x;
     }
@@ -928,17 +928,17 @@ static void plot_font_3(int chr, XFONT_MEASURE xpos, XFONT_MEASURE ypos)
 #ifdef USE_QUARTZ
   if (enable_quartz)
     {
-      CGContextBeginPath(wincontext);
-      CGContextMoveToPoint(wincontext,
+      CGContextBeginPath(carbon_quartz_context);
+      CGContextMoveToPoint(carbon_quartz_context,
 			   (font_3.chr[chr].coords[0]*xfont_x) / 8.0 + xpos, 
 			   ((8-font_3.chr[chr].coords[1])*xfont_y) / 8.0 + ypos);
       for (x=0; x<font_3.chr[chr].num_coords; x++)
 	{
-	  CGContextAddLineToPoint(wincontext,
+	  CGContextAddLineToPoint(carbon_quartz_context,
 				  (font_3.chr[chr].coords[x<<1]*xfont_x) / 8.0 + xpos, 
 				  ((8-font_3.chr[chr].coords[(x<<1)+1])*xfont_y) / 8.0 + ypos);
 	}
-      CGContextEOFillPath(wincontext);
+      CGContextEOFillPath(carbon_quartz_context);
     }
   else
 #endif
@@ -993,7 +993,7 @@ void xfont_plot_string(xfont* font,
 #ifdef USE_QUARTZ
       if (enable_quartz)
 	{
-	  CGContextSetRGBFillColor(wincontext, 
+	  CGContextSetRGBFillColor(carbon_quartz_context, 
 				   (float)maccolour[fg_col].red/65536.0,
 				   (float)maccolour[fg_col].green/65536.0,
 				   (float)maccolour[fg_col].blue/65536.0,
@@ -1071,7 +1071,7 @@ void xfont_plot_string(xfont* font,
     {
       CGPoint pt;
       
-      CGContextSetRGBFillColor(wincontext, 
+      CGContextSetRGBFillColor(carbon_quartz_context, 
 			       (float)maccolour[fg_col].red/65536.0,
 			       (float)maccolour[fg_col].green/65536.0,
 			       (float)maccolour[fg_col].blue/65536.0,
@@ -1087,20 +1087,20 @@ void xfont_plot_string(xfont* font,
        */
       if (winlastfont != font)
 	{
-	  CGContextSelectFont(wincontext, font->data.mac.psname, 
+	  CGContextSelectFont(carbon_quartz_context, font->data.mac.psname, 
 			      font->data.mac.size,
 			      kCGEncodingMacRoman);
 	  winlastfont = font;
       }
-      //CGContextSetFont(wincontext, font->data.mac.cgfont);
+      //CGContextSetFont(carbon_quartz_context, font->data.mac.cgfont);
       
       /* Blank out the background */
-      CGContextSetTextDrawingMode(wincontext, kCGTextInvisible);
-      CGContextSetTextPosition(wincontext, 0, 0);
-      CGContextShowText(wincontext,
+      CGContextSetTextDrawingMode(carbon_quartz_context, kCGTextInvisible);
+      CGContextSetTextPosition(carbon_quartz_context, 0, 0);
+      CGContextShowText(carbon_quartz_context,
 			outbuf, outlen);
-      // CGContextShowGlyphs(wincontext, glyph, outlen);
-      pt = CGContextGetTextPosition(wincontext);
+      // CGContextShowGlyphs(carbon_quartz_context, glyph, outlen);
+      pt = CGContextGetTextPosition(carbon_quartz_context);
       
       RGBForeColor(&maccolour[bg_col]);
       bgRect.left   = portRect.left+x;
@@ -1110,11 +1110,11 @@ void xfont_plot_string(xfont* font,
 	font->data.mac.ascent + font->data.mac.descent;
       PaintRect(&bgRect);
       
-      CGContextSetTextDrawingMode(wincontext, kCGTextFill);
-      CGContextSetTextPosition(wincontext,
+      CGContextSetTextDrawingMode(carbon_quartz_context, kCGTextFill);
+      CGContextSetTextPosition(carbon_quartz_context,
 			       portRect.left + x, 
 			       (portRect.bottom-portRect.top)+y);
-      CGContextShowText(wincontext,
+      CGContextShowText(carbon_quartz_context,
 			outbuf, outlen);
     }
 # endif

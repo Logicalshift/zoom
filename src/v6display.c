@@ -79,7 +79,11 @@ void v6_startup      (void)
   printf_debug("V6: startup\n");
 #endif
 
-  display_init_pixmap(-1, -1);
+  if (!display_init_pixmap(-1, -1))
+    {
+      zmachine_fatal("Display driver does not support pixmap display: unable to initialise v6 display");
+      return;
+    }
   display_is_v6();
 
   machine.dinfo = display_get_info();
