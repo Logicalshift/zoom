@@ -1029,16 +1029,6 @@ void xfont_plot_string(xfont* font,
     {
       int pos;
       
-      if (!transpar)
-	{
-	  RGBForeColor(&bg_col);
-	  bgRect.left   = portRect.left+x;
-	  bgRect.right  = bgRect.left+length*xfont_x;
-	  bgRect.top    = portRect.top-y - xfont_y;
-	  bgRect.bottom = bgRect.top + xfont_y;
-	  PaintRect(&bgRect);
-	}
-
 #ifdef USE_QUARTZ
       if (enable_quartz)
 	{
@@ -1079,18 +1069,6 @@ void xfont_plot_string(xfont* font,
    ATSUCreateTextLayout(&lo);
    make_layout(font, string, length, lo);
 
-   if (!transpar)
-     {
-       ATSUMeasureText(lo, 0, length, &before, &after, &ascent, &descent);
-       RGBForeColor(&bg_col);
-       bgRect.left   = portRect.left+x;
-       bgRect.right  = bgRect.left+(after>>16);
-       bgRect.top    = portRect.top-y - (ascent>>16);
-       bgRect.bottom = bgRect.top +
-	 (ascent>>16) + (descent>>16);
-       PaintRect(&bgRect);
-     }
-
    RGBForeColor(&fg_col);
    ATSUDrawText(lo, 0, length, (portRect.left + x)*65536.0, 
 		(portRect.top - y)*65536.0);
@@ -1105,17 +1083,6 @@ void xfont_plot_string(xfont* font,
 # endif
       select_font(font);
 
-      if (!transpar)
-	{
-	  RGBForeColor(&bg_col);
-	  bgRect.left   = portRect.left+x;
-	  bgRect.right  = bgRect.left+TextWidth(outbuf, 0, outlen);
-	  bgRect.top    = portRect.top-y - font->data.mac.ascent;
-	  bgRect.bottom = bgRect.top +
-	    font->data.mac.ascent + font->data.mac.descent;
-	  PaintRect(&bgRect);
-	}
-      
       RGBBackColor(&bg_col);
       RGBForeColor(&fg_col);
       MoveTo(portRect.left+x, portRect.top - y);
@@ -1145,6 +1112,7 @@ void xfont_plot_string(xfont* font,
 	  winlastfont = font;
 	}
       
+#if 0
       /* Blank out the background */
       CGContextSetTextDrawingMode(carbon_quartz_context, kCGTextInvisible);
       CGContextSetTextPosition(carbon_quartz_context, 0, 0);
@@ -1167,6 +1135,7 @@ void xfont_plot_string(xfont* font,
 			   font->data.mac.ascent + font->data.mac.descent);
 	  CGContextFillRect(carbon_quartz_context, bgr);
 	}
+#endif
             
       CGContextSetRGBFillColor(carbon_quartz_context, 
 			       (float)fg_col.red/65536.0,

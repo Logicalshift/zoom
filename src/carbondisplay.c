@@ -1162,6 +1162,38 @@ static void draw_window(int   win,
 		  if (bg < 0)
 		    bg = -(bg+1);
 
+		  if (carbon_prefs.use_quartz)
+		    {
+		      CGRect bgr;
+		      RGBColor bg_col;
+
+		      bg_col = *carbon_get_colour(bg);
+		      
+		      bgr = CGRectMake(portRect.left+BORDERWIDTH+(float)x*xfont_x,
+				       (portRect.bottom-portRect.top)-
+				       ((float)y*xfont_y+
+					xfont_y+
+					BORDERWIDTH),
+				       xfont_x*len,
+				       xfont_y);
+		      CGContextSetRGBFillColor(carbon_quartz_context, 
+					       (float)bg_col.red/65536.0,
+					       (float)bg_col.green/65536.0,
+					       (float)bg_col.blue/65536.0,
+					       1.0);
+		      CGContextFillRect(carbon_quartz_context, bgr);
+		    }
+		  else
+		    {
+		      frct.top    = portRect.top + (y*xfont_y + BORDERWIDTH);
+		      frct.bottom = frct.top + xfont_y;
+		      frct.left   = portRect.left + BORDERWIDTH +
+			x*xfont_x;
+		      frct.right  = frct.left + xfont_x*len;
+		      RGBForeColor(carbon_get_colour(bg));
+		      PaintRect(&frct);
+		    }
+
 		  xfont_set_colours(fg, bg);
 		  xfont_plot_string(font[text_win[win].cline[y].font[x]],
 				    BORDERWIDTH + (float)x*xfont_x,
@@ -1292,7 +1324,7 @@ static void draw_window(int   win,
 	   */
 	  for (x=0; x<line->n_chars;)
 	    {
-	      int w;
+	      XFONT_MEASURE w;
 	      int toprint;
 
 	      /* 
@@ -1317,15 +1349,36 @@ static void draw_window(int   win,
 					   text->text + offset,
 					   toprint);
 
-		  /*
-		  frct.top    = portRect.top + line->baseline - line->ascent 
-		    + BORDERWIDTH - scrollpos;
-		  frct.bottom = frct.top + line->ascent + line->descent;
-		  frct.left   = portRect.left + width + BORDERWIDTH;
-		  frct.right  = frct.left + w;
-		  RGBForeColor(carbon_get_colour(text->bg));
-		  PaintRect(&frct);
-		  */
+		  if (carbon_prefs.use_quartz)
+		    {
+		      CGRect bgr;
+		      RGBColor bg_col;
+
+		      bg_col = *carbon_get_colour(text->bg);
+		      
+		      bgr = CGRectMake(portRect.left+width+BORDERWIDTH,
+				       (portRect.bottom-portRect.top)-
+				       (line->baseline+line->descent+
+					BORDERWIDTH-scrollpos),
+				       w,
+				       line->ascent+line->descent);
+		      CGContextSetRGBFillColor(carbon_quartz_context, 
+					       (float)bg_col.red/65536.0,
+					       (float)bg_col.green/65536.0,
+					       (float)bg_col.blue/65536.0,
+					       1.0);
+		      CGContextFillRect(carbon_quartz_context, bgr);
+		    }
+		  else
+		    {
+		      frct.top    = portRect.top + line->baseline - line->ascent 
+			+ BORDERWIDTH - scrollpos;
+		      frct.bottom = frct.top + line->ascent + line->descent;
+		      frct.left   = portRect.left + width + BORDERWIDTH;
+		      frct.right  = frct.left + w;
+		      RGBForeColor(carbon_get_colour(text->bg));
+		      PaintRect(&frct);
+		    }
 
 		  xfont_set_colours(text->fg,
 				    text->bg);
