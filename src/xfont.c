@@ -195,7 +195,6 @@ xfont* xfont_load_font(char* font)
 	f->data.Xft = XftFontOpenXlfd(x_display, x_screen, font);
       else
 	{
-	  printf("Blech - %x\n", xft_drawable);
 	  f->data.Xft = NULL;
 	}
       /*

@@ -204,7 +204,8 @@ static void reset_clip(void)
       XUnionRectWithRegion(&clip, rgn, rgn);
       XSetRegion(x_display, x_wingc, rgn);
 #ifdef HAVE_XFT
-      XftDrawSetClip(xft_drawable, rgn);
+      if (xft_drawable != NULL)
+	XftDrawSetClip(xft_drawable, rgn);
 #endif
 
       resetregion = 0;
@@ -573,7 +574,8 @@ static void draw_window()
 
   XSetRegion(x_display, x_wingc, dregion);
 #ifdef HAVE_XFT
-  XftDrawSetClip(xft_drawable, dregion);
+  if (xft_drawable != NULL)
+    XftDrawSetClip(xft_drawable, dregion);
 #endif
 
   /* Draw border */
@@ -651,7 +653,8 @@ static void draw_window()
   
   XSetRegion(x_display, x_wingc, newregion);
 #ifdef HAVE_XFT
-  XftDrawSetClip(xft_drawable, newregion);
+  if (xft_drawable != NULL)
+    XftDrawSetClip(xft_drawable, newregion);
 #endif
 
   /* Text */
@@ -734,7 +737,8 @@ static void draw_window()
 
 	  XSetRegion(x_display, x_wingc, r);
 #ifdef HAVE_XFT
-	  XftDrawSetClip(xft_drawable, newregion);
+	  if (xft_drawable != NULL)
+	    XftDrawSetClip(xft_drawable, newregion);
 #endif
 	  XFree(r);
 
@@ -922,7 +926,8 @@ static void draw_window()
 
       XSetRegion(x_display, x_wingc, dregion);
 #ifdef HAVE_XFT
-      XftDrawSetClip(xft_drawable, dregion);
+      if (xft_drawable != NULL)
+	XftDrawSetClip(xft_drawable, dregion);
 #endif
 
       XSetForeground(x_display, x_wingc, x_colour[4].pixel);
@@ -1607,10 +1612,7 @@ static int process_events(long int to, int* buf, int buflen)
 		   * resized - in particular when we're using DBE.
 		   * Recreating it fixes this...
 		   */
-		  XftDrawDestroy(xft_drawable);
-		  xft_drawable = XftDrawCreate(x_display, x_drawable,
-					       DefaultVisual(x_display, x_screen), 
-					       DefaultColormap(x_display, x_screen));
+		  XftDrawChange(xft_drawable, x_drawable);
 		}
 #endif
 
@@ -2160,7 +2162,10 @@ void display_initialise(void)
     }
 
 #ifdef HAVE_XFT
-  alloc_xft_colours();
+  if (XftDefaultHasRender(x_display) && xft_drawable != NULL)
+    {
+      alloc_xft_colours();
+    }
 #endif
 
   /* Create the display pixmap */
