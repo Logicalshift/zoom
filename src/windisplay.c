@@ -1645,6 +1645,7 @@ static LRESULT CALLBACK display_winproc(HWND hwnd,
 
 	if (text_buf != NULL)
 	  {
+	    xfont_set_colours(CURWIN.fore, CURWIN.back);
 	    xfont_plot_string(font[CURSTYLE],
 			      paint.hdc,
 			      input_x+4, input_y+4,
@@ -2010,7 +2011,7 @@ static int process_events(long int timeout,
 		{
 		  if (buf[buf_offset] == 0 &&
 		      buf_offset < buflen)
-		    {		      
+		    { 
 		      buf[buf_offset++] = msg.wParam;
 		      buf[buf_offset] = 0;
 		    }
