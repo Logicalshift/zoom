@@ -1511,7 +1511,7 @@ OPCODE "push"           VAR:0x08 ARGS:1               VERSION all
   push(stack, argblock.arg[0]);
 %}
 
-OPCODE "pull"           VAR:0x09 ARGS:1               VERSION 1,2,3,4,5,7,8
+OPCODE "pull"           VAR:0x09 ARGS:1               VERSION 3,4,5,7,8
 %{
   ZUWord val;
 
