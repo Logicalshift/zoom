@@ -57,6 +57,6 @@
 	<key>CFBundleVersion</key>
 	<string>1.0.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>Zoom 0.99.9dev10, compiled for Mac OS X</string>
+	<string>Zoom 1.0.0, compiled for Mac OS X</string>
 </dict>
 </plist>
