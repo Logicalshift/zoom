@@ -26,13 +26,40 @@
 
 #include "ztypes.h"
 
-extern char* zscii_to_ascii        (ZByte* string, int* len);
+//extern char* zscii_to_ascii        (ZByte* string, int* len);
 extern int*  zscii_to_unicode      (ZByte* string, int* len);
 extern int   zstrlen               (ZByte* string);
-extern void  pack_zscii            (ZByte* string,
+extern void  pack_zscii            (int*   string,
 				   int strlen,
 				   ZByte* packed,
 			           int packlen);
 extern void  zscii_install_alphabet(void);
+
+extern int* zscii_unicode;
+
+static inline char zscii_get_char(int unicode)
+{
+  if ((unicode >= 32 && unicode <= 127) ||
+      (unicode == 10 || unicode == 13))
+    return unicode;
+  else if (unicode > 127)
+    {
+      int x;
+
+      for (x=128; x<255; x++)
+	if (zscii_unicode[x] == unicode)
+	  return x;
+    }
+  else
+    {
+      int x;
+
+      for (x=0; x<32; x++)
+	if (zscii_unicode[x] == unicode)
+	  return x;
+    }
+  
+  return '?';
+}
 
 #endif

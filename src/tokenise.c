@@ -136,7 +136,7 @@ ZDictionary* dictionary_cache(const ZUWord dict_pos)
 
 int cache = 1;
 
-inline ZUWord lookup_word(unsigned char* word,
+inline ZUWord lookup_word(unsigned int*  word,
 			  int            wordlen,
 			  ZUWord         dct)
 {
@@ -213,14 +213,14 @@ inline ZUWord lookup_word(unsigned char* word,
     }
 }
 
-void tokenise_string(unsigned char* string,
+void tokenise_string(unsigned int* string,
 		     ZUWord dct,
 		     ZByte* tokbuf,
 		     int    flag,
 		     int    add)
 {
   ZDictionary*       dict;
-  char*              word;
+  int*               word;
   int                strpos, wordlen, wordstart;
   int                wordno, tokpos;
   ZUWord             ent;

@@ -27,7 +27,7 @@
 #include "zmachine.h"
 
 extern ZDictionary* dictionary_cache(const ZUWord dict_pos);
-extern void tokenise_string(unsigned char* string,
+extern void tokenise_string(unsigned int* string,
 			    ZUWord dct,
 			    ZByte* tokbuf,
 			    int flag,

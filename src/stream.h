@@ -24,14 +24,14 @@
 #ifndef __STREAM_H
 #define __STREAM_H
 
-extern void stream_prints              (const unsigned char* s);
+extern void stream_prints              (const unsigned int* s);
 extern void stream_printf              (const char* f, ...);
 extern void stream_printc              (int c);
-extern void stream_input               (const char* s);
-extern int  stream_readline            (char* buf, int len, long int timeout);
+extern void stream_input               (const int* s);
+extern int  stream_readline            (int* buf, int len, long int timeout);
 extern void stream_buffering           (int buffer);
 extern void stream_flush_buffer        (void);
-extern void stream_remove_buffer       (const char* s);
+extern void stream_remove_buffer       (const int* s);
 extern void stream_update_unicode_table(void);
 
 #endif

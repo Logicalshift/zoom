@@ -218,7 +218,7 @@ typedef struct ZMachine
 
   ZStack   stack;
 
-  char*    abbrev     [96];
+  int*     abbrev     [96];
   int      abbrev_addr[96];
 
   ZByte*   dict;

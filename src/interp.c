@@ -409,7 +409,7 @@ static inline struct prop* get_object_prop_4(ZUWord object, ZWord property)
 }
 
 #ifdef TRACKING
-static char* tracking_object(ZUWord arg)
+static int* tracking_object(ZUWord arg)
 {
   ZByte* obj;
   ZByte* prop;
@@ -419,13 +419,13 @@ static char* tracking_object(ZUWord arg)
     {
       obj = Obj3(arg);
       prop = machine.memory + ((obj[7]<<8)|obj[8]) + 1;
-      return zscii_to_ascii(prop, &len);
+      return zscii_to_unicode(prop, &len);
     }
   else
     {
       obj = Obj4(arg);
       prop = Address((ZUWord)GetPropAddr4(obj)+1);
-      return zscii_to_ascii(prop, &len);
+      return zscii_to_unicode(prop, &len);
     }
 }
 
@@ -453,10 +453,10 @@ static void zcode_op_print_obj_123(ZStack* stack, ZWord arg)
   prop = machine.memory + ((obj[7]<<8)|obj[8]) + 1;
 
 #ifdef DEBUG
-  printf_debug(">%s<\n", zscii_to_ascii(prop, &len));
+  /* printf_debug(">%s<\n", zscii_to_ascii(prop, &len)); */
 #endif
 
-  stream_prints(zscii_to_ascii(prop, &len));
+  stream_prints(zscii_to_unicode(prop, &len));
 }
 
 #ifdef SUPPORT_VERSION_3
@@ -547,14 +547,19 @@ char script_fname[256] = "script.txt";
 static void get_fname(char* name, int len, int save)
 {
 #if WINDOW_SYSTEM != 2
-  char fname[256];
+  int fname[256];
+  int x, y;
 
-  strcpy(fname, name);
+  static const int file[] = { 'F', 'i', 'l', 'e', ':', ' ', 0 };
+
+  for (x=0; name[x] != 0; x++)
+    fname[x] = name[x];
+  fname[x] = 0;
   if (len > 255)
     len = 255;
   len -= strlen(rc_get_savedir())+1;
     
-  stream_prints("File: ");
+  stream_prints(file);
   stream_readline(fname, len, 0);
 
   if (fname[0] != '/')
@@ -564,7 +569,11 @@ static void get_fname(char* name, int len, int save)
     }
   else
     name[0] = 0;
-  strcat(name, fname);
+
+  for (x=0; name[x] != 0; x++);
+  for (y=0; fname[y] != 0; y++, x++)
+    name[x] = fname[y];
+  name[x] = 0;
 #else
   char fname[256];
   OPENFILENAME fn;
@@ -658,11 +667,11 @@ ZFile* get_file_write(int* fsize)
     
     if (fs != -1)
       {
-	char yn[5];
+	int yn[5];
 	
 	yn[0] = 0;
 	ok = 0;
-	stream_prints("That file already exists!\nAre you sure? (y/N) ");
+	stream_printf("That file already exists!\nAre you sure? (y/N) ");
 	stream_readline(yn, 1, 0);
 	
 	if (tolower(yn[0]) == 'y')
@@ -704,7 +713,7 @@ static int save_1234(ZDWord  pc,
   ZWord tmp;
   ZFile* f;
 
-  stream_prints("\nPlease supply a filename for save\n");
+  stream_printf("\nPlease supply a filename for save\n");
   f = get_file_write(NULL);
   
   if (st >= 0)
@@ -732,7 +741,7 @@ static int restore_1234(ZDWord* pc, ZStack* stack)
   ZFile* f;
   ZDWord sz;
 
-  stream_prints("\nPlease supply a filename for restore\n");
+  stream_printf("\nPlease supply a filename for restore\n");
   f = get_file_read(&sz);
   
   if (state_load(f, sz, stack, pc))
@@ -773,15 +782,24 @@ static void zcode_op_output_stream(ZStack* stack,
     case 2:
       if (machine.transcript_file == NULL)
 	{
-	  stream_prints("\nPlease supply a filename for transcript\nFile: ");
-	  stream_readline(script_fname, 256, 0);
+	  int fname[256];
+	  int x;
+
+	  for (x=0; script_fname[x] != 0; x++)
+	    fname[x] = script_fname[x];
+	  fname[x] = 0;
+	  stream_printf("\nPlease supply a filename for transcript\nFile: ");
+	  stream_readline(fname, 256, 0);
+	  for (x=0; fname[x] != 0; x++)
+	    script_fname[x] = fname[x];
+	  script_fname[x] = 0;
 
 	  if (get_file_size(script_fname) != -1)
 	    {
-	      char yn[5];
+	      int yn[5];
 
 	      yn[0] = 0;
-	      stream_prints("That file already exists!\nAre you sure? (y/N) ");
+	      stream_printf("That file already exists!\nAre you sure? (y/N) ");
 	      stream_readline(yn, 1, 0);
 	      
 	      if (tolower(yn[0]) == 'y')
@@ -867,15 +885,24 @@ static void zcode_op_output_stream(ZStack* stack,
     case 4:
       if (machine.transcript_file == NULL)
 	{
-	  stream_prints("\nPlease supply a filename for transcript\nFile: ");
-	  stream_readline(script_fname, 256, 0);
+	  int fname[256];
+	  int x;
+
+	  for (x=0; script_fname[x] != 0; x++)
+	    fname[x] = script_fname[x];
+	  fname[x] = 0;
+	  stream_printf("\nPlease supply a filename for transcript\nFile: ");
+	  stream_readline(fname, 256, 0);
+	  for (x=0; fname[x] != 0; x++)
+	    script_fname[x] = fname[x];
+	  script_fname[x] = 0;
 
 	  if (get_file_size(script_fname) != -1)
 	    {
-	      char yn[5];
+	      int yn[5];
 
 	      yn[0] = 0;
-	      stream_prints("That file already exists!\nAre you sure? (y/N) ");
+	      stream_printf("That file already exists!\nAre you sure? (y/N) ");
 	      stream_readline(yn, 1, 0);
 	      
 	      if (tolower(yn[0]) == 'y')
@@ -982,11 +1009,11 @@ static void zcode_op_aread_5678(ZDWord* pc,
 				int st)
 {
   ZByte* mem;
-  char* buf;
+  int* buf;
   int x;
   
   mem = machine.memory + (ZUWord) args->arg[0];
-  buf = malloc(sizeof(char)*(mem[0]+1));
+  buf = malloc(sizeof(int)*(mem[0]+1));
 
   if (args->arg[7] != 0)
     {
@@ -1011,7 +1038,7 @@ static void zcode_op_aread_5678(ZDWord* pc,
       
       for (x=0; x<mem[1]; x++)
 	{
-	  buf[x] = mem[x+2];
+	  buf[x] = zscii_unicode[mem[x+2]];
 	}
       buf[x] = 0;
 
@@ -1099,7 +1126,7 @@ static void zcode_op_aread_5678(ZDWord* pc,
 	    {
 	      mem[1]++;
 	      buf[x] = tolower(buf[x]);
-	      mem[x+2] = buf[x];
+	      mem[x+2] = zscii_get_char(buf[x]);
 	    }
 
 	  newframe = call_routine(pc, stack, UnpackR(args->arg[3]));
@@ -1145,7 +1172,7 @@ static void zcode_op_aread_5678(ZDWord* pc,
     {
       mem[1]++;
       buf[x] = tolower(buf[x]);
-      mem[x+2] = buf[x];
+      mem[x+2] = zscii_get_char(buf[x]);
     }
 
   if (args->n_args > 1 && args->arg[1] != 0)
@@ -1210,7 +1237,7 @@ static void zcode_op_sread_4(ZDWord* pc,
 			     ZArgblock* args)
 {
   ZByte* mem;
-  static char* buf;
+  static int* buf;
   int x;
 
   stream_flush_buffer();
@@ -1233,7 +1260,7 @@ static void zcode_op_sread_4(ZDWord* pc,
     }
   else
     {
-      buf = malloc(sizeof(char)*(mem[0]+1));
+      buf = malloc(sizeof(int)*(mem[0]+1));
       buf[0] = 0;
     }
   
@@ -1272,7 +1299,7 @@ static void zcode_op_sread_4(ZDWord* pc,
   for (x=0; buf[x] != 0; x++)
     {
       buf[x] = tolower(buf[x]);
-      mem[x+1] = buf[x];
+      mem[x+1] = zscii_get_char(buf[x]);
     }
   mem[x+1] = 0;
 
@@ -1654,7 +1681,7 @@ void zmachine_runsome(const int version,
 #define uarg2 ((ZUWord)argblock.arg[1])
   ZArgblock      argblock;
   ZStack*        stack;
-  char*          string;
+  int *          string;
   register ZByte instr;
 
   int x;

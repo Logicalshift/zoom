@@ -873,7 +873,7 @@ OPCODE "print_addr"   1OP:0x07              VERSION all
   printf_debug(">%s<\n", zscii_to_ascii(machine.memory + uarg1, &len));
 #endif
   
-  stream_prints(zscii_to_ascii(machine.memory + uarg1, &len));  
+  stream_prints(zscii_to_unicode(machine.memory + uarg1, &len));  
 %}
 
 OPCODE "call_1s"      1OP:0x08 CANJUMP STORE VERSION 4,5,6,7,8
@@ -918,7 +918,7 @@ OPCODE "print_obj"    1OP:0x0a              VERSION 1,2,3
   printf_debug(">%s<\n", zscii_to_ascii(prop, &len));
 #endif
 
-  stream_prints(zscii_to_ascii(prop, &len));
+  stream_prints(zscii_to_unicode(prop, &len));
 %}
 
 OPCODE "print_obj"    1OP:0x0a              VERSION 4,5,6,7,8
@@ -934,7 +934,7 @@ OPCODE "print_obj"    1OP:0x0a              VERSION 4,5,6,7,8
   printf_debug(">%s<\n", zscii_to_ascii(prop, &len));
 #endif
 
-  stream_prints(zscii_to_ascii(prop, &len));
+  stream_prints(zscii_to_unicode(prop, &len));
 %}
 
 OPCODE "ret"          1OP:0x0b CANJUMP      VERSION all
@@ -996,7 +996,7 @@ OPCODE "print_paddr"  1OP:0x0d              VERSION 1,2,3
   printf_debug(">%s<\n", zscii_to_ascii(machine.memory + (((ZDWord)uarg1)<<1), &len));
 #endif
 
-  stream_prints(zscii_to_ascii(machine.memory + (((ZDWord)uarg1)<<1), &len));
+  stream_prints(zscii_to_unicode(machine.memory + (((ZDWord)uarg1)<<1), &len));
 %}
 
 OPCODE "print_paddr"  1OP:0x0d              VERSION 4,5,6,7,8
@@ -1007,7 +1007,7 @@ OPCODE "print_paddr"  1OP:0x0d              VERSION 4,5,6,7,8
   printf_debug(">%s<\n", zscii_to_ascii(machine.memory + UnpackS(uarg1), &len));
 #endif
 
-  stream_prints(zscii_to_ascii(machine.memory + UnpackS(uarg1), &len));
+  stream_prints(zscii_to_unicode(machine.memory + UnpackS(uarg1), &len));
 %}
 
 OPCODE "load"         1OP:0x0e        STORE VERSION all
@@ -1064,7 +1064,7 @@ OPCODE "print_ret"   0OP:0x03 CANJUMP STRING  VERSION all
   printf_debug(">%s<\n", string);
 #endif
   stream_prints(string);
-  stream_prints("\n");
+  stream_printf("\n");
   stream_flush_buffer();
   goto op_rtrue;
 %}
@@ -1169,7 +1169,7 @@ OPCODE "quit"        0OP:0x0a CANJUMP VERSION all
 
 OPCODE "new_line"    0OP:0x0b         VERSION all
 %{
-  stream_prints("\n");
+  stream_printf("\n");
   stream_flush_buffer();  
 %}
 
@@ -1396,13 +1396,13 @@ OPCODE "put_prop"       VAR:0x03 ARGS:3               VERSION 4,5,6,7,8
 OPCODE "sread"          VAR:0x04 ARGS:2               VERSION 1,2,3
 %{
   ZByte* mem;
-  char* buf;
+  int* buf;
   int x;
 
   stream_flush_buffer();
 
   mem = machine.memory + (ZUWord) argblock.arg[0];
-  buf = malloc(sizeof(char)*(mem[0]+1));
+  buf = malloc(sizeof(int)*(mem[0]+1));
   
   buf[0] = 0;
   draw_statusbar_123(stack);
@@ -1411,7 +1411,7 @@ OPCODE "sread"          VAR:0x04 ARGS:2               VERSION 1,2,3
   for (x=0; buf[x] != 0; x++)
     {
       buf[x] = tolower(buf[x]);
-      mem[x+1] = buf[x];
+      mem[x+1] = zscii_get_char(buf[x]);
     }
   mem[x+1] = 0;
 
@@ -1720,8 +1720,17 @@ OPCODE "input_stream"   VAR:0x14 ARGS:1               VERSION all # 3,4,5,7,8
       machine.script_on = 0;
       if (!machine.script_file)
         {
-	  stream_prints("\nPlease supply a file for input\nFile: ");
-	  stream_readline(script_fname, 256, 0);
+	  int fname[256];
+	  int x;
+
+	  for (x=0; script_fname[x] != 0; x++)
+	    fname[x] = script_fname[x];
+	  fname[x] = 0;
+	  stream_printf("\nPlease supply a file for input\nFile: ");
+	  stream_readline(fname, 256, 0);
+	  for (x=0; fname[x] != 0; x++)
+	    script_fname[x] = fname[x];
+	  script_fname[x] = 0;
 
 	  machine.script_file = fopen(script_fname, "r");
 	}
@@ -1827,12 +1836,14 @@ OPCODE "call_vn2"       VAR:0x1a CANJUMP LONG         VERSION 5,6,7,8
 OPCODE "tokenise"       VAR:0x1b ARGS:4               VERSION 5,6,7,8
 %{
   ZByte* text;
-  char*  buf;
+  int*  buf;
+  int x;
 
   text = Address((ZUWord)argblock.arg[0]);
-  buf = malloc(text[0]+1);
-  strncpy(buf, text + 2, text[1]);
-  buf[text[1]] = 0;
+  buf = malloc(sizeof(int)*(text[1]+1));
+  for (x=0; x<text[1]; x++)
+    buf[x] = zscii_get_char(text[x+2]);
+  buf[x] = 0;
   
   tokenise_string(buf,
 		  argblock.arg[2]==0?Word(ZH_dict):argblock.arg[2],
@@ -1862,11 +1873,24 @@ OPCODE "tokenise"       VAR:0x1b ARGS:4               VERSION 5,6,7,8
 
 OPCODE "encode_text"    VAR:0x1c ARGS:4               VERSION 5,6,7,8
 %{
+  int* buf;
+  int x;
+  char* d;
+
+  buf = malloc(sizeof(int)*(argblock.arg[1]+1));
+  d = Address((ZUWord)argblock.arg[0]) + argblock.arg[2];
+  
+  for (x=0; x<argblock.arg[1]; x++)
+    buf[x] = zscii_get_char(d[x]);
+  buf[x] = 0;
+
   /* Note: I haven't tested this yet */
-  pack_zscii(Address((ZUWord)argblock.arg[0]) + argblock.arg[2],
+  pack_zscii(buf,
 	     argblock.arg[1],
 	     Address((ZUWord)argblock.arg[3]),
 	     9);
+
+  free(buf);
 %}
 
 OPCODE "copy_table"     VAR:0x1d ARGS:3               VERSION 5,6,7,8
@@ -1937,7 +1961,7 @@ OPCODE "print_table"    VAR:0x1e                      VERSION 5,7,8
     {
       if (y != 0)
 	{
-	  stream_prints("\n");
+	  stream_printf("\n");
 	  stream_flush_buffer();
 	  if (machine.screen_on)
 	    display_set_cursor(xpos, display_get_cur_y());
@@ -1977,7 +2001,7 @@ OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
       ZWord tmp;
       ZFile* f;
       
-      stream_prints("\nPlease supply a filename for save\n");
+      stream_printf("\nPlease supply a filename for save\n");
       f = get_file_write(NULL);
 
       store(stack, st, 2);
@@ -2012,7 +2036,7 @@ OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
       else
 	strcpy(fname, "table.dat");
 
-      stream_prints("\nPlease supply a filename for data save\n");
+      stream_printf("\nPlease supply a filename for data save\n");
       file = get_file_write(NULL);
 
       if (!(file))
@@ -2036,7 +2060,7 @@ OPCODE "restore"       EXT:0x01 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
       ZFile* f;
       ZDWord sz;
 
-      stream_prints("\nPlease supply a filename for restore\n");
+      stream_printf("\nPlease supply a filename for restore\n");
       f = get_file_read(&sz);
 
       if (state_load(f, sz, stack, &pc))
@@ -2068,7 +2092,7 @@ OPCODE "restore"       EXT:0x01 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
       else
 	strcpy(fname, "table.dat");
 
-      stream_prints("\nPlease supply a filename for data restore\n");
+      stream_printf("\nPlease supply a filename for data restore\n");
       file = get_file_read(&sz);
 
       if (!(file))
@@ -2341,7 +2365,7 @@ OPCODE "print_table"    VAR:0x1e                      VERSION 6
     {
       if (y != 0)
 	{
-	  stream_prints("\n");
+	  stream_printf("\n");
 	  stream_flush_buffer();
 	  if (machine.screen_on)
 	    v6_set_cursor(xpos, v6_get_cursor_y());

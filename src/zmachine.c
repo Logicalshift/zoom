@@ -196,18 +196,24 @@ void zmachine_load_story(char* filename, ZMachine* machine)
   /* Parse the abbreviations table */
   {
     ZByte* abbrev;
-    char*  word;
+    int*  word;
     int x, len;
 
     abbrev = machine->memory + GetWord(machine->header, ZH_abbrevs);
 
     for (x=0; x<96*2; x+=2)
       {
+	int y;
+
 	machine->abbrev_addr[x>>1] = ((abbrev[x]<<9)|(abbrev[x+1]<<1));
-	word = zscii_to_ascii(machine->memory +
-			      ((abbrev[x]<<9)|(abbrev[x+1]<<1)), &len);
-	machine->abbrev[x>>1] = malloc(strlen(word)+1);
-	strcpy(machine->abbrev[x>>1], word);
+	word = zscii_to_unicode(machine->memory +
+				((abbrev[x]<<9)|(abbrev[x+1]<<1)), &len);
+	for (y=0; word[y] != 0; y++);
+	machine->abbrev[x>>1] = malloc(sizeof(int)*(y+1));
+
+	for (y=0; word[y] != 0; y++)
+	  machine->abbrev[x>>1][y] = word[y];
+	machine->abbrev[x>>1][y] = 0;
       }
   }
 

@@ -38,47 +38,13 @@ static int  buflen    = 0;
 static int  bufpos    = 0;
 static int* buffer = NULL;
 
-static int  zscii_unicode_table[256] =
-{
-  0x3f,0x3f,0x3f,0x3f, 0x3f,0x3f,0x3f,0x3f, /* 000-007 */
-  0x3f,0x3f,0x0a,0x3f, 0x3f,0x0a,0x3f,0x3f, /* 008-015 */
-  0x3f,0x3f,0x3f,0x3f, 0x3f,0x3f,0x3f,0x3f, /* 016-023 */
-  0x3f,0x3f,0x3f,0x3f, 0x3f,0x3f,0x3f,0x3f, /* 024-031 */
-  0x20,0x21,0x22,0x23, 0x24,0x25,0x26,0x27, /* 032-039 */
-  0x28,0x29,0x2a,0x2b, 0x2c,0x2d,0x2e,0x2f, /* 040-047 */
-  0x30,0x31,0x32,0x33, 0x34,0x35,0x36,0x37, /* 048-055 */
-  0x38,0x39,0x3a,0x3b, 0x3c,0x3d,0x3e,0x3f, /* 056-063 */
-  0x40,0x41,0x42,0x43, 0x44,0x45,0x46,0x47, /* 064-071 */
-  0x48,0x49,0x4a,0x4b, 0x4c,0x4d,0x4e,0x4f, /* 072-079 */
-  0x50,0x51,0x52,0x53, 0x54,0x55,0x56,0x57, /* 080-087 */
-  0x58,0x59,0x5a,0x5b, 0x5c,0x5d,0x5e,0x5f, /* 088-095 */
-  0x60,0x61,0x62,0x63, 0x64,0x65,0x66,0x67, /* 096-103 */
-  0x68,0x69,0x6a,0x6b, 0x6c,0x6d,0x6e,0x6f, /* 104-111 */
-  0x70,0x71,0x72,0x73, 0x74,0x75,0x76,0x77, /* 112-119 */
-  0x78,0x79,0x7a,0x7b, 0x7c,0x7d,0x7e,0x7f, /* 120-127 */
-  0x3f,0x3f,0x3f,0x3f, 0x3f,0x3f,0x3f,0x3f, /* 128-135 */
-  0x3f,0x3f,0x3f,0x3f, 0x3f,0x3f,0x3f,0x3f, /* 136-143 */
-  0x3f,0x3f,0x3f,0x3f, 0x3f,0x3f,0x3f,0x3f, /* 144-151 */
-  0x3f,0x3f,0x3f,0xe4, 0xf6,0xfc,0xc4,0xd6, /* 152-159 */
-  0xdc,0xdf,0xbb,0xab, 0xeb,0xef,0xff,0xcb, /* 160-167 */
-  0xcf,0xe1,0xe9,0xed, 0xf3,0xfa,0xfd,0xc1, /* 168-175 */
-  0xc9,0xcd,0xd3,0xda, 0xdd,0xe0,0xe8,0xec, /* 176-183 */
-  0xf2,0xf9,0xc0,0xc8, 0xcc,0xd2,0xd9,0xe2, /* 184-191 */
-  0xea,0xee,0xf4,0xfb, 0xc2,0xca,0xce,0xd4, /* 192-199 */
-  0xdb,0xe5,0xc5,0xf8, 0xd8,0xe3,0xf1,0xf5, /* 200-207 */
-  0xc3,0xd1,0xd5,0xe6, 0xc6,0xe7,0xc7,0xfe, /* 208-215 */
-  0xf0,0xde,0xd0,0xa3, 0x153,0x152,0xa1,0xbf, /* 216-223 */
-  0x3f,0x3f,0x3f,0x3f, 0x3f,0x3f,0x3f,0x3f, /* 224-231 */
-  0x3f,0x3f,0x3f,0x3f, 0x3f,0x3f,0x3f,0x3f, /* 232-239 */
-  0x3f,0x3f,0x3f,0x3f, 0x3f,0x3f,0x3f,0x3f, /* 240-247 */
-  0x3f,0x3f,0x3f,0x3f, 0x3f,0x3f,0x3f,0x3f  /* 248-255 */
-};
-
-static int* zscii_unicode = zscii_unicode_table;
+extern int* zscii_unicode;
+extern int  zscii_unicode_table[];
 
 /*
  * Translate a ZSCII string to a ISO 10646 one (well, Unicode, really)
  */
+#if 0
 int* zscii_to_unicode(ZByte* string, int* len)
 {
   static int* unistring = NULL;
@@ -97,6 +63,7 @@ int* zscii_to_unicode(ZByte* string, int* len)
 
   return unistring;
 }
+#endif
 
 static void prints_reformat_width(int len)
 {
@@ -111,7 +78,7 @@ static void prints_reformat_width(int len)
     {
       text = malloc(sizeof(int)*len);
       for (x=0; x<len; x++)
-	text[x] = mem[x+2];
+	text[x] = zscii_unicode[mem[x+2]];
       
       split = v6_split_point(text, len, 
 			     machine.memory_width[machine.memory_on-1],
@@ -157,7 +124,7 @@ static void prints(const int* const s)
 	      if (s[x] == 10)
 		mem[(len++)+2] = 13;
 	      else
-		mem[(len++)+2] = s[x];
+		mem[(len++)+2] = zscii_get_char(s[x]);
 	    }
 
 	  mem[0] = len>>8;
@@ -188,7 +155,7 @@ static void prints(const int* const s)
 		  len = 0;
 		}
 	      else
-		mem[(len++)+2] = s[x];
+		mem[(len++)+2] = zscii_get_char(s[x]);
 	    }
 
 	  mem[0] = len>>8;
@@ -250,30 +217,22 @@ static void prints(const int* const s)
     }
 }
 
-void stream_prints(const unsigned char* s)
+void stream_prints(const unsigned int* s)
 {
   int len, x;
-  static int line = 0;
   
   if (!buffering)
     {
-      int* txt;
-      int x;
-
 #ifdef DEBUG
       printf_debug("Stream: (Buffering off)\n");
 #endif
 
-      txt = malloc(sizeof(int)*(strlen(s)+1));
-      for (x=0; s[x] != 0; x++)
-	txt[x] = zscii_unicode[s[x]];
-      txt[x] = 0;
-      prints(txt);
-      free(txt);
+      prints(s);
       return;
     }
 
-  len = strlen(s);
+  for (len=0; s[len] != 0; len++);
+
   while (bufpos + len + 1 > buflen)
     {
       buflen += 1024;
@@ -295,7 +254,7 @@ void stream_prints(const unsigned char* s)
 	    }
 	}
       */
-      buffer[bufpos++] = zscii_unicode[s[x]];
+      buffer[bufpos++] = s[x];
     }
 }
 
@@ -325,20 +284,22 @@ void stream_printc(int c)
     }
 }
 
-void stream_input(const char* s)
+void stream_input(const int* s)
 {
   if (machine.transcript_on == 1 ||
       machine.transcript_commands == 1)
     {
-      fputs(s, machine.transcript_file);
+      int x;
+
+      for (x=0; s[x] != 0; x++)
+	fputc(s[x]<128?s[x]:'?', machine.transcript_file);
       fputc('\n', machine.transcript_file);
     }
 }
 
-int stream_readline(char* buf, int len, long int timeout)
+int stream_readline(int* buf, int len, long int timeout)
 {
-  int r,x;
-  int* realbuf;
+  int r;
 
   stream_flush_buffer();
 
@@ -346,6 +307,7 @@ int stream_readline(char* buf, int len, long int timeout)
     {
       int pos = 0;
       char rc;
+      static const int nl[] = { '\n', 0 };
 
       display_update();
       
@@ -378,22 +340,11 @@ int stream_readline(char* buf, int len, long int timeout)
 
       buf[pos++] = 0;
       stream_prints(buf);
-      stream_prints("\n");
+      stream_prints(nl);
     }
   else
     {
-      realbuf = malloc(sizeof(int)*(len+1));
-      for (x=0; x<len; x++)
-	realbuf[x] = buf[x];
-      
-      r = display_readline(realbuf, len, timeout);
-      for (x=0; x<len; x++)
-	{
-	  if (realbuf[x] > 127)
-	    buf[x] = '?';
-	  else
-	    buf[x] = realbuf[x];
-	}
+      r = display_readline(buf, len, timeout);
       
       if (r)
 	stream_input(buf);
@@ -442,15 +393,23 @@ void stream_printf(const char* const f, ...)
 {
   va_list  ap;
   char     string[512];
+  int*     buf;
+  int      x;
 
   va_start(ap, f);
   vsprintf(string, f, ap);
   va_end(ap);
 
-  stream_prints(string);  
+  buf = malloc(sizeof(int)*(strlen(string)+1));
+  for (x=0; string[x] != 0; x++)
+    buf[x] = string[x];
+  buf[x] = 0;
+
+  stream_prints(buf);
+  free(buf);
 }
 
-void stream_remove_buffer(const char* s)
+void stream_remove_buffer(const int* s)
 {
   int len, x;
 
@@ -463,7 +422,6 @@ void stream_remove_buffer(const char* s)
     {
       if (tolower(buffer[bufpos-1]) != tolower(s[x]))
 	return;
-      printf("Removing %i\n", s[x]);
       bufpos--;
     }
 }
