@@ -3,16 +3,20 @@
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
             ACTIONS = {
+                autosaveChanged = id; 
+                changeOrganiseDir = id; 
                 displayWarningsChanged = id; 
                 fatalWarningsChanged = id; 
                 interpreterChanged = id; 
+                keepOrganisedChanged = id; 
+                resetOrganiseDir = id; 
                 revisionChanged = id; 
                 speakGameTextChanged = id; 
-                titleChanged = id; 
             }; 
             CLASS = ZoomPreferenceWindow; 
             LANGUAGE = ObjC; 
             OUTLETS = {
+                autosaveGames = NSButton; 
                 colourSettingsView = NSView; 
                 colours = NSTableView; 
                 displayWarnings = NSButton; 
@@ -20,9 +24,10 @@
                 fontSettingsView = NSView; 
                 fonts = NSTableView; 
                 gameSettingsView = NSView; 
-                gameTitle = NSTextField; 
                 generalSettingsView = NSView; 
                 interpreter = NSPopUpButton; 
+                keepGamesOrganised = NSButton; 
+                organiseDir = NSTextView; 
                 revision = NSTextField; 
                 speakGameText = NSButton; 
             }; 
