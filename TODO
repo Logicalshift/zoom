@@ -13,3 +13,5 @@ Hmm, this file was a bit out of date.
  X save window size under Carbon
  * reset pixmap display on restart under v6
  * drag and drop support for file loading
+ X text corruption under Shogun
+ * 'MORE' not displayed in Shogun
