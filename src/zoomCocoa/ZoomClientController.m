@@ -10,6 +10,7 @@
 #import "ZoomPreferenceWindow.h"
 #import "ZoomGameInfoController.h"
 
+#import "ZoomAppDelegate.h"
 
 @implementation ZoomClientController
 
