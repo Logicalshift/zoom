@@ -2,17 +2,29 @@
 <!DOCTYPE outline PUBLIC "-//omnigroup.com//DTD OUTLINE 3.0//EN" "http://www.omnigroup.com/namespace/OmniOutliner/xmloutline-v3.dtd">
 <outline xmlns="http://www.omnigroup.com/namespace/OmniOutliner/v3">
   <style-attribute-registry>
+    <style-attribute version="0" key="font-fill" group="font" name="fill color" class="color">
+      <color catalog="System" name="textColor"/>
+    </style-attribute>
+    <style-attribute version="0" key="font-italic" group="font" name="italic" class="bool">no</style-attribute>
+    <style-attribute version="0" key="font-size" group="font" name="size" class="number">12</style-attribute>
     <style-attribute version="0" key="font-weight" group="font" name="weight" class="number">5</style-attribute>
     <style-attribute version="0" key="text-background-color" group="text" name="background color" class="color">
       <color w="0" a="0"/>
     </style-attribute>
   </style-attribute-registry>
   <settings/>
-  <editor is-spellchecking-enabled="yes">
+  <editor should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
+      <style>
+        <value key="font-fill">
+          <color w="0.4"/>
+        </value>
+        <value key="font-italic">yes</value>
+        <value key="font-size">10</value>
+      </style>
       <title>
         <text>
           <p/>
@@ -44,14 +56,16 @@
   </columns>
   <root>
     <style>
+      <value key="font-size">13</value>
       <value key="font-weight">9</value>
     </style>
     <style>
+      <value key="font-weight">9</value>
       <value key="text-background-color">
         <color r="0.815686" g="0.870588" b="1"/>
       </value>
     </style>
-    <item id="kzPdhsKinRx" expanded="yes" state="indeterminate">
+    <item id="kzPdhsKinRx" state="indeterminate">
       <values>
         <text>
           <p>
@@ -615,7 +629,7 @@
         </item>
       </children>
     </item>
-    <item id="d4dIn82q4rK" expanded="yes">
+    <item id="d4dIn82q4rK">
       <values>
         <text>
           <p>
@@ -810,7 +824,7 @@
         </item>
       </children>
     </item>
-    <item id="gkaYwyn-BUm" expanded="yes" state="indeterminate">
+    <item id="gkaYwyn-BUm" state="indeterminate">
       <values>
         <text>
           <p>
@@ -1098,7 +1112,7 @@
         </item>
       </children>
     </item>
-    <item id="fE7yPLdCuAv" expanded="yes" state="indeterminate">
+    <item id="fE7yPLdCuAv" state="indeterminate">
       <values>
         <text>
           <p>
@@ -1322,7 +1336,7 @@
         </item>
       </children>
     </item>
-    <item id="a7CWuJH7UlV" expanded="yes">
+    <item id="a7CWuJH7UlV">
       <values>
         <text>
           <p>
