@@ -101,10 +101,58 @@ AC_SUBST(ZMACHINE_CONV_WORD)
 
 UTIL_DISPLAY_SECTION(features)
 
-AC_PATH_XTRA
-if test "$no_x" = "yes"; then
-  AC_MSG_ERROR([Zoom currently requires X to compile its display drivers])
+AC_CYGWIN
+
+if test "$CYGWIN" = "yes"; then
+  UTIL_CHECK_CFLAG(mwindows)
+  UTIL_CHECK_LDFLAG(mwindows)
+  UTIL_CHECK_CFLAG(mno-cygwin)
+  UTIL_CHECK_LDFLAG(mno-cygwin)
+  AC_PATH_PROG(WINDRES, windres)
+  RESEXTN=o
+  AC_SUBST(RESEXTN)
+
+  AM_CONDITIONAL(WINDOWS_VERSION, true)
+  AM_CONDITIONAL(BORLAND_VERSION, false)
+
+  AC_DEFINE(WINDOW_SYSTEM, 2)
+else
+  AC_PATH_XTRA
+  if test "$no_x" = "yes"; then
+    AC_MSG_CHECKING([for Windows headers & libraries])
+    AC_TRY_LINK([#include <windows.h>],
+                [ { MessageBox(NULL, "Arg", "Whoops", MB_OK | MB_SYSTEMMODAL); } ],
+		AC_MSG_RESULT(yes),
+		AC_MSG_RESULT(no)
+		AC_MSG_ERROR([No supported display interfaces found]))
+    AC_PATH_PROG(WINDRES, brcc32)
+    RESEXTN=res
+    AC_SUBST(RESEXTN)
+
+    AM_CONDITIONAL(WINDOWS_VERSION, true)
+    AM_CONDITIONAL(BORLAND_VERSION, true)
+
+    AC_DEFINE(WINDOW_SYSTEM, 2)
+  else
+    AC_DEFINE(WINDOW_SYSTEM, 1)
+
+    AM_CONDITIONAL(WINDOWS_VERSION, false)
+
+    LIBS="$LIBS -lX11"
+  fi
 fi
+
+AC_HEADER_STDC
+AC_CHECK_HEADERS(unistd.h)
+AC_CHECK_HEADERS(sys/time.h)
+
+AC_MSG_CHECKING([for gettimeofday])
+AC_TRY_LINK(
+  [#include <sys/time.h>],
+  [{struct timeval tv; gettimeofday(&tv, NULL);}],
+  AC_MSG_RESULT([yes])
+  AC_DEFINE(HAVE_GETTIMEOFDAY),
+  AC_MSG_RESULT([no]))
 
 AC_MSG_CHECKING([for argp])
 
@@ -153,5 +201,6 @@ AC_OUTPUT([
   m4/Makefile
   src/Makefile
   src/ztypes.h
+  src/zoom.rc
   builder/Makefile
   bonus/Makefile])
