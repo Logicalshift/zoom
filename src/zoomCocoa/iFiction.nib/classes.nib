@@ -13,9 +13,11 @@
             LANGUAGE = ObjC; 
             OUTLETS = {
                 addButton = ZoomiFButton; 
+                continueButton = ZoomiFButton; 
                 drawer = NSDrawer; 
                 drawerButton = ZoomiFButton; 
                 drawerView = NSView; 
+                newgameButton = ZoomiFButton; 
             }; 
             SUPERCLASS = NSWindowController; 
         }

@@ -12,11 +12,11 @@
 	<key>IBFramework Version</key>
 	<string>349.0</string>
 	<key>IBOldestOS</key>
-	<integer>1</integer>
+	<integer>2</integer>
 	<key>IBOpenObjects</key>
 	<array>
-		<integer>38</integer>
 		<integer>5</integer>
+		<integer>38</integer>
 	</array>
 	<key>IBSystem Version</key>
 	<string>7D24</string>
