@@ -23,7 +23,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include <time.h>
 
@@ -32,7 +31,7 @@
 #include "file.h"
 #include "../config.h"
 
-/* #define DEBUG */
+#define DEBUG
 
 enum header_blocks
 {
@@ -68,11 +67,7 @@ static ZByte* stacks = NULL;
 static char*  detail = NULL;
 static ZWord* stackpos = NULL;
 
-/*
- * Push is redefined here to avoid a conflict between the way gcc
- * compiles things, and the way Borland C compiles things
- */
-void push(ZStack* stack, const ZWord word)
+inline void push(ZStack* stack, const ZWord word)
 {
   *(stack->stack_top++) = word;
   stack->stack_size--;
@@ -109,6 +104,10 @@ static int format_stacks(ZStack* stack, ZFrame* frame)
   
   if (frame->last_frame != NULL)
     size = format_stacks(stack, frame->last_frame);
+
+#ifdef DEBUG
+  printf_debug("Compile: Formatting stack frame (%i locals, %i entries)\n", frame->nlocals, frame->frame_size);
+#endif
 
   pos = size;
   size += 8+frame->nlocals*2+frame->frame_size*2;
@@ -170,47 +169,6 @@ static inline void xor_memory(void)
     }
 }
 
-static inline void wblock(ZByte*  x,
-			  int     len,
-			  ZDWord* flen,
-			  ZByte** data)
-{
-  *flen += len;
-  *data = realloc(*data, *flen+16);
-  memcpy(*data + *flen - len, x, len);
-}
-
-static inline void wdword(ZDWord  w,
-			  ZDWord* flen,
-			  ZByte** data)
-{
-  *flen +=4;
-  *data = realloc(*data, *flen+16);
-  (*data)[*flen-4] = w>>24;
-  (*data)[*flen-3] = w>>16;
-  (*data)[*flen-2] = w>>8;
-  (*data)[*flen-1] = w;
-}
-
-static inline void wword(ZUWord  w,
-			 ZDWord* flen,
-			 ZByte** data)
-{
-  *flen += 2;
-  *data = realloc(*data, *flen+16);
-  (*data)[*flen-2] = w>>8;
-  (*data)[*flen-1] = w;
-}
-
-static inline void wbyte(ZUWord  w,
-			 ZDWord* flen,
-			 ZByte** data)
-{
-  flen += 1;
-  *data = realloc(*data, *flen+16);
-  (*data)[*flen-1] = w;
-}
-
 ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
 {
   ZByte* data = NULL;
@@ -218,7 +176,39 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
   int size;
   char anno[256];
   time_t now;
-  ZByte version;  
+  ZByte version;
+  
+  static inline void wblock(ZByte* x, int len)
+    {
+      flen += len;
+      data = realloc(data, flen+16);
+      memcpy(data + flen - len, x, len);
+    }
+  
+  static inline void wdword(ZDWord w)
+    {
+      flen +=4;
+      data = realloc(data, flen+16);
+      data[flen-4] = w>>24;
+      data[flen-3] = w>>16;
+      data[flen-2] = w>>8;
+      data[flen-1] = w;
+    }
+  
+  static inline void wword(ZUWord w)
+    {
+      flen += 2;
+      data = realloc(data, flen+16);
+      data[flen-2] = w>>8;
+      data[flen-1] = w;
+    }
+  
+  static inline void wbyte(ZUWord w)
+    {
+      flen += 1;
+      data = realloc(data, flen+16);
+      data[flen-1] = w;
+    }
 
   *len = -1;
   version = Byte(0);
@@ -238,19 +228,19 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
 #endif
   
   /* header */
-  wblock(blocks[IFhd].text, 4, &flen, &data);
-  wdword(13, &flen, &data);
-  wword(Word(ZH_release), &flen, &data);
-  wblock(Address(ZH_serial), 6, &flen, &data);
-  wword(Word(ZH_checksum), &flen, &data);
+  wblock(blocks[IFhd].text, 4);
+  wdword(13);
+  wword(Word(ZH_release));
+  wblock(Address(ZH_serial), 6);
+  wword(Word(ZH_checksum));
 #ifdef DEBUG
   printf_debug("Save: release %i, checksum %i\n", Word(ZH_release), Word(ZH_checksum));
 #endif
-  wbyte(pc>>16, &flen, &data);
-  wbyte(pc>>8, &flen, &data);
-  wbyte(pc, &flen, &data);
+  wbyte(pc>>16);
+  wbyte(pc>>8);
+  wbyte(pc);
 
-  wbyte(0, &flen, &data);
+  wbyte(0);
 
   /* Dynamic memory */
   if (compress)
@@ -308,12 +298,12 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
 	    }
 	}
 
-      wblock(blocks[CMem].text, 4, &flen, &data);
-      wdword(clen, &flen, &data);
-      wblock(comp, clen, &flen, &data);
+      wblock(blocks[CMem].text, 4);
+      wdword(clen);
+      wblock(comp, clen);
 
       if (clen&1)
-	wbyte(0, &flen, &data);
+	wbyte(0);
 
       free(comp);
       
@@ -321,27 +311,30 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
     }
   else
     {
-      wblock(blocks[UMem].text, 4, &flen, &data);
-      wdword(machine.dynamic_ceiling, &flen, &data);
-      wblock(Address(0), machine.dynamic_ceiling, &flen, &data);
+#ifdef DEBUG
+      printf_debug("Compile: storing memory from 0 to %x\n", machine.dynamic_ceiling);
+#endif
+      wblock(blocks[UMem].text, 4);
+      wdword(machine.dynamic_ceiling);
+      wblock(Address(0), machine.dynamic_ceiling);
 
       if (machine.dynamic_ceiling&1)
-	wbyte(0, &flen, &data);
+	wbyte(0);
     }
 
   /* Stack frames */
   stackpos = stack->stack;
   size = format_stacks(stack, stack->current_frame);
-  wblock(blocks[Stks].text, 4, &flen, &data);
-  wdword(size, &flen, &data);
-  wblock(stacks, size, &flen, &data);
+  wblock(blocks[Stks].text, 4);
+  wdword(size);
+  wblock(stacks, size);
 
   free(stacks);
   stacks = NULL;
 
   /* Annotations */
   now = time(NULL);
-  wblock(blocks[ANNO].text, 4, &flen, &data);
+  wblock(blocks[ANNO].text, 4);
   if (version <= 3)
     {
       char score[64];
@@ -364,10 +357,10 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
       sprintf(anno, "Version %i game, saved from Zoom version "
 	      VERSION " @%s", version, ctime(&now));
     }
-  wdword(strlen(anno), &flen, &data);
-  wblock(anno, strlen(anno), &flen, &data);
+  wdword(strlen(anno));
+  wblock(anno, strlen(anno));
   if (strlen(anno)&1)
-    wbyte(0, &flen, &data);
+    wbyte(0);
   
   *len = flen;
   return data;
@@ -469,6 +462,10 @@ int state_decompile(ZByte* st, ZStack* stack, ZDWord* pc, ZDWord len)
     {
 #ifdef DEBUG
       printf_debug("Decompile: missing block\n");
+      printf_debug("IFhd = %i\n", blocks[IFhd].pos);
+      printf_debug("CMem = %i\n", blocks[CMem].pos);
+      printf_debug("UMem = %i\n", blocks[UMem].pos);
+      printf_debug("Stks = %i\n", blocks[Stks].pos);
 #endif
       detail = "Required block missing from savefile";
       return 0;
