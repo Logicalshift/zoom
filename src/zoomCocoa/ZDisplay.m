@@ -12,6 +12,7 @@
 
 #include "file.h"
 #include "display.h"
+#include "v6display.h"
 
 #ifdef DEBUG
 # define NOTE(x) NSLog(@"ZDisplay: %@", x)
@@ -21,9 +22,10 @@
 
 // = Display state =
 NSAutoreleasePool* displayPool = nil;
+static int is_v6 = 0;
 
-static int currentWindow = 0;
-static ZStyle* currentStyle = nil;
+int zDisplayCurrentWindow = 0;
+ZStyle* zDisplayCurrentStyle = nil;
 
 // = Display =
 
@@ -36,6 +38,7 @@ void printf_debug(char* format, ...) {
     vsprintf(string, format, ap);
     va_end(ap);
 
+	NSLog(@"DEBUG: %s", string);
     fputs(string, stdout);
 }
 
@@ -67,16 +70,22 @@ ZDisplay* display_get_info(void) {
     dis.mouse         = 0;
 
     int xsize, ysize;
+    int pxsize, pysize;
+	int fontwidth, fontheight;
     [[mainMachine display] dimensionX: &xsize
                                     Y: &ysize];
+    [[mainMachine display] pixmapX: &pxsize
+								 Y: &pysize];
+	[[mainMachine display] fontWidth: &fontwidth
+							  height: &fontheight];
 
     dis.lines         = ysize;
     dis.columns       = xsize;
-    dis.width         = xsize;
-    dis.height        = ysize;
+    dis.width         = pxsize;
+    dis.height        = pysize;
     
-    dis.font_width    = 1;
-    dis.font_height   = 1;
+    dis.font_width    = fontwidth;
+    dis.font_height   = fontheight;
     dis.pictures      = 1;
     dis.fore          = 0; // Implement me: make configurable
     dis.back          = 7; // Implement me: make configurable
@@ -105,8 +114,8 @@ ZDisplay* display_get_info(void) {
 void display_initialise(void) {
 	NOTE(@"display_initialise");
 
-	if (currentStyle) [currentStyle release];
-    currentStyle = [[ZStyle alloc] init];
+	if (zDisplayCurrentStyle) [zDisplayCurrentStyle release];
+    zDisplayCurrentStyle = [[ZStyle alloc] init];
 
     //display_clear(); (Commented out to support autosave)
 }
@@ -114,8 +123,8 @@ void display_initialise(void) {
 void display_reinitialise(void) {
 	NOTE(@"display_reinitialise");
 	
-    if (currentStyle) [currentStyle release];
-    currentStyle = [[ZStyle alloc] init];
+    if (zDisplayCurrentStyle) [zDisplayCurrentStyle release];
+    zDisplayCurrentStyle = [[ZStyle alloc] init];
 
     display_clear();
 }
@@ -124,8 +133,8 @@ void display_finalise(void) {
 	NOTE(@"display_finalise");
 	
     [mainMachine flushBuffers];
-    if (currentStyle) [currentStyle release];
-    currentStyle = nil;
+    if (zDisplayCurrentStyle) [zDisplayCurrentStyle release];
+    zDisplayCurrentStyle = nil;
 }
 
 void display_exit(int code) {
@@ -144,42 +153,52 @@ void display_clear(void) {
 	
 	NOTE(@"display_clear");
     
-    currentWindow = 0;
+    zDisplayCurrentWindow = 0;
 
     [mainMachine flushBuffers];
 
     win = [mainMachine windowNumber: 1];
-    [win clearWithStyle: currentStyle];
+    [win clearWithStyle: zDisplayCurrentStyle];
     [(NSObject<ZUpperWindow>*)win startAtLine: 0];
     [(NSObject<ZUpperWindow>*)win endAtLine: 0];
 
     win = [mainMachine windowNumber: 2];
-    [win clearWithStyle: currentStyle];
+    [win clearWithStyle: zDisplayCurrentStyle];
     [(NSObject<ZUpperWindow>*)win startAtLine: 0];
     [(NSObject<ZUpperWindow>*)win endAtLine: 0];
     
     win = [mainMachine windowNumber: 0];
-    [win clearWithStyle: currentStyle];
+    [win clearWithStyle: zDisplayCurrentStyle];
 }
 
 void display_erase_window(void) {
 	NOTE(@"display_erase_window");
 	
-    [[mainMachine buffer] clearWindow: [mainMachine windowNumber: currentWindow]
-                            withStyle: currentStyle];
+    [[mainMachine buffer] clearWindow: [mainMachine windowNumber: zDisplayCurrentWindow]
+                            withStyle: zDisplayCurrentStyle];
     //[mainMachine flushBuffers];
-    //[[mainMachine windowNumber: currentWindow] clearWithStyle: currentStyle];
+    //[[mainMachine windowNumber: zDisplayCurrentWindow] clearWithStyle: zDisplayCurrentStyle];
 }
 
 void display_erase_line(int val) {
 	NOTE(@"display_erase_line");
 	
-    [[mainMachine buffer] eraseLineInWindow: [mainMachine windowNumber: currentWindow]
-                                  withStyle: currentStyle];
+    [[mainMachine buffer] eraseLineInWindow: [mainMachine windowNumber: zDisplayCurrentWindow]
+                                  withStyle: zDisplayCurrentStyle];
 }
 
 // Display functions
 void display_prints(const int* buf) {
+	if (is_v6)
+    {
+#ifdef DEBUG
+		NSLog(@"display_prints: redirecting to v6...");
+#endif
+		
+		v6_prints(buf);
+		return;
+    }
+
     // Convert buf to an NSString
     int length;
     static unichar* bufU = NULL;
@@ -200,11 +219,11 @@ void display_prints(const int* buf) {
 
     // Send to the window
     [[mainMachine buffer] writeString: str
-                            withStyle: currentStyle
-                             toWindow: [mainMachine windowNumber: currentWindow]];
+                            withStyle: zDisplayCurrentStyle
+                             toWindow: [mainMachine windowNumber: zDisplayCurrentWindow]];
     /*
-    [[mainMachine windowNumber: currentWindow] writeString: str
-                                                 withStyle: currentStyle];
+    [[mainMachine windowNumber: zDisplayCurrentWindow] writeString: str
+                                                 withStyle: zDisplayCurrentStyle];
      */
 }
 
@@ -213,15 +232,15 @@ void display_prints_c(const char* buf) {
 	NSLog(@"ZDisplay: display_prints_c(\"%s\")", buf);
 #endif
 	
-	if ([mainMachine windowNumber: currentWindow] == nil) {
+	if ([mainMachine windowNumber: zDisplayCurrentWindow] == nil) {
 		NSLog(@"No window: leaking '%s'", buf);
 		return;
 	}
 	
     NSString* str = [NSString stringWithCString: buf];
     [[mainMachine buffer] writeString: str
-                            withStyle: currentStyle
-                             toWindow: [mainMachine windowNumber: currentWindow]];
+                            withStyle: zDisplayCurrentStyle
+                             toWindow: [mainMachine windowNumber: zDisplayCurrentWindow]];
 }
 
 void display_printc(int chr) {
@@ -229,7 +248,7 @@ void display_printc(int chr) {
 	NSLog(@"ZDisplay: display_printc(\"%c\")", chr);
 #endif
 	
-	if ([mainMachine windowNumber: currentWindow] == nil) {
+	if ([mainMachine windowNumber: zDisplayCurrentWindow] == nil) {
 		NSLog(@"No window: leaking '%c'", chr);
 		return;
 	}
@@ -241,8 +260,8 @@ void display_printc(int chr) {
     NSString* str = [NSString stringWithCharacters: bufU
                                             length: 1];
     [[mainMachine buffer] writeString: str
-                            withStyle: currentStyle
-                             toWindow: [mainMachine windowNumber: currentWindow]];
+                            withStyle: zDisplayCurrentStyle
+                             toWindow: [mainMachine windowNumber: zDisplayCurrentWindow]];
 }
 
 void display_printf(const char* format, ...) {
@@ -273,7 +292,7 @@ int display_readline(int* buf, int len, long int timeout) {
     [[mainMachine inputBuffer] setString: @""];
     
     [display shouldReceiveText: len];
-    [[mainMachine windowNumber: currentWindow] setFocus];
+    [[mainMachine windowNumber: zDisplayCurrentWindow] setFocus];
 
     NSDate* when;
 
@@ -356,7 +375,7 @@ int display_readchar(long int timeout) {
     [[mainMachine inputBuffer] setString: @""];
 
     [display shouldReceiveCharacters];
-    [[mainMachine windowNumber: currentWindow] setFocus];
+    [[mainMachine windowNumber: zDisplayCurrentWindow] setFocus];
 
     NSDate* when;
 
@@ -415,7 +434,8 @@ void display_desanitise(void) {
 
 void display_is_v6(void) { 
 	NOTE(@"display_is_v6");
-	NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); 
+	
+	is_v6 = 1;
 }
 
 int display_set_font(int font) {
@@ -427,8 +447,13 @@ int display_set_font(int font) {
 int display_set_style(int style) {
 	NOTE(@"display_set_style");
 	
+	if (is_v6) {
+		v6_set_style(style);
+		return style;
+	}
+	
     // Copy the old style
-    ZStyle* newStyle = [currentStyle copy];
+    ZStyle* newStyle = [zDisplayCurrentStyle copy];
 
     int oldStyle =
         ([newStyle reversed]?1:0)|
@@ -438,7 +463,7 @@ int display_set_style(int style) {
         ([newStyle symbolic]?16:0);
     
     // Not using this any more
-    if (currentStyle) [currentStyle release];
+    if (zDisplayCurrentStyle) [zDisplayCurrentStyle release];
 
     BOOL flag = (style<0)?NO:YES;
     if (style < 0) style = -style;
@@ -451,7 +476,7 @@ int display_set_style(int style) {
         [newStyle setSymbolic: NO];
         [newStyle setReversed: NO];
 
-        currentStyle = newStyle;
+        zDisplayCurrentStyle = newStyle;
         return oldStyle;
     }
 
@@ -462,7 +487,7 @@ int display_set_style(int style) {
     if (style&16) [newStyle setSymbolic: flag];
 
     // Set as the current style
-    currentStyle = newStyle;
+    zDisplayCurrentStyle = newStyle;
 
     return oldStyle;
 }
@@ -485,27 +510,27 @@ void display_set_colour(int fore, int back) {
 	NSLog(@"ZDisplay: display_set_colour(%i, %i)", fore, back);
 #endif
 	
-    currentStyle = [[currentStyle autorelease] copy];
+    zDisplayCurrentStyle = [[zDisplayCurrentStyle autorelease] copy];
 
     if (fore == -1) fore = 0;
     if (back == -1) back = 7;
     
     if (fore < 16) {
         if (fore >= 0) {
-            [currentStyle setForegroundTrue: nil];
-            [currentStyle setForegroundColour: fore];
+            [zDisplayCurrentStyle setForegroundTrue: nil];
+            [zDisplayCurrentStyle setForegroundColour: fore];
         }
     } else {
-        [currentStyle setForegroundTrue: getTrue(fore)];
+        [zDisplayCurrentStyle setForegroundTrue: getTrue(fore)];
     }
 
     if (back < 16) {
         if (back >= 0) {
-            [currentStyle setBackgroundTrue: nil];
-            [currentStyle setBackgroundColour: back];
+            [zDisplayCurrentStyle setBackgroundTrue: nil];
+            [zDisplayCurrentStyle setBackgroundColour: back];
         }
     } else {
-        [currentStyle setBackgroundTrue: getTrue(back)];
+        [zDisplayCurrentStyle setBackgroundTrue: getTrue(back)];
     }
 }
 
@@ -532,7 +557,7 @@ void display_join(int win1, int win2) {
 
     /*
     [mainMachine flushBuffers];
-    [[mainMachine windowNumber: win2] clearWithStyle: currentStyle];
+    [[mainMachine windowNumber: win2] clearWithStyle: zDisplayCurrentStyle];
      */
 }
 
@@ -541,12 +566,12 @@ void display_set_window(int window) {
 	NSLog(@"ZDisplay: display_set_window(%i)", window);
 #endif
 
-    currentWindow = window;
+    zDisplayCurrentWindow = window;
 }
 
 int  display_get_window(void) {
 	NOTE(@"display_get_window");
-    return currentWindow;
+    return zDisplayCurrentWindow;
 }
 
 void display_set_cursor(int x, int y) {
@@ -554,23 +579,23 @@ void display_set_cursor(int x, int y) {
 	NSLog(@"ZDisplay: display_set_cursor(%i, %i)", x, y);
 #endif
 
-    if (currentWindow > 0) {
+    if (zDisplayCurrentWindow > 0) {
         [[mainMachine buffer] moveTo: NSMakePoint(x,y)
-                            inWindow: [mainMachine windowNumber: currentWindow]];
+                            inWindow: [mainMachine windowNumber: zDisplayCurrentWindow]];
     }
 }
 
 int display_get_cur_x(void) {
 	NOTE(@"display_get_cur_x");
 	
-    if (currentWindow == 0) {
+    if (zDisplayCurrentWindow == 0) {
         NSLog(@"Get_cur_x called for lower window");
         return -1; // No cursor position for the lower window
     }
 
     [mainMachine flushBuffers];
     
-    NSPoint pos = [(NSObject<ZUpperWindow>*)[mainMachine windowNumber: currentWindow]
+    NSPoint pos = [(NSObject<ZUpperWindow>*)[mainMachine windowNumber: zDisplayCurrentWindow]
         cursorPosition];
     return pos.x;
 }
@@ -578,14 +603,14 @@ int display_get_cur_x(void) {
 int display_get_cur_y(void) {
 	NOTE(@"display_get_cur_y");
 	
-    if (currentWindow == 0) {
+    if (zDisplayCurrentWindow == 0) {
         NSLog(@"Get_cur_y called for lower window");
         return -1; // No cursor position for the lower window
     }
 
     [mainMachine flushBuffers];
 
-    NSPoint pos = [(NSObject<ZUpperWindow>*)[mainMachine windowNumber: currentWindow]
+    NSPoint pos = [(NSObject<ZUpperWindow>*)[mainMachine windowNumber: zDisplayCurrentWindow]
         cursorPosition];
     return pos.y;
 }

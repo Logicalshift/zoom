@@ -22,6 +22,7 @@ extern NSString* ZoomStyleAttributeName;
 
 @class ZoomScrollView;
 @class ZoomTextView;
+@class ZoomPixmapWindow;
 @interface ZoomView : NSView<ZDisplay, NSCoding> {
     NSObject<ZMachine>* zMachine;
 
@@ -74,6 +75,9 @@ extern NSString* ZoomStyleAttributeName;
 	
 	// View with input focus
 	NSObject<ZWindow>* focusedView;
+	
+	// Pixmap view
+	ZoomPixmapWindow* pixmapWindow;
 	
 	// Autosave
 	NSData* lastAutosave;
@@ -171,5 +175,7 @@ extern NSString* ZoomStyleAttributeName;
 - (BOOL)      useSavePackage;
 
 - (void) hitBreakpoint: (int) pc;
+
+- (void) zoomViewIsNotResizable;
 
 @end

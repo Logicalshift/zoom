@@ -85,6 +85,12 @@
 	if (isFullscreen) [self playInFullScreen: self];
 }
 
+- (void) zoomViewIsNotResizable {
+	[[self window] setContentMaxSize: [zoomView frame].size];
+	[[self window] setContentMinSize: [zoomView frame].size];
+	[[self window] setShowsResizeIndicator: NO];
+}
+
 - (BOOL) useSavePackage {
 	// Using a save package allows us to restore games without needing to restart them first
 	// It also allows us to show a preview in the iFiction window

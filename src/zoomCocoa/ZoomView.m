@@ -11,6 +11,7 @@
 #import "ZoomView.h"
 #import "ZoomLowerWindow.h"
 #import "ZoomUpperWindow.h"
+#import "ZoomPixmapWindow.h"
 
 #import "ZoomScrollView.h"
 
@@ -196,6 +197,21 @@ static void finalizeViews(void) {
     [super dealloc];
 }
 
+// Drawing
+- (void) drawRect: (NSRect) rect {
+	if (pixmapWindow != nil) {
+		NSRect bounds = [self bounds];
+		NSImage* pixmap = [pixmapWindow pixmap];
+		NSSize pixSize = [pixmap size];
+		
+		[pixmap drawAtPoint: NSMakePoint(floor(bounds.origin.x + (bounds.size.width-pixSize.width)/2.0), floor(bounds.origin.y + (bounds.size.height-pixSize.height)/2.0))
+				   fromRect: NSMakeRect(0,0,pixSize.width, pixSize.height)
+				  operation: NSCompositeSourceOver
+				   fraction: 1.0];
+	}
+}
+
+// Scaling
 - (void) setScaleFactor: (float) scaling {
 	scaleFactor = scaling;
 	[textScroller setScaleFactor: scaling];
@@ -253,6 +269,20 @@ static void finalizeViews(void) {
 
     [win clearWithStyle: [[[ZStyle alloc] init] autorelease]];
     return [win autorelease];
+}
+
+- (out byref NSObject<ZPixmapWindow>*) createPixmapWindow {
+	if (pixmapWindow == nil) {
+		pixmapWindow = [[ZoomPixmapWindow alloc] initWithZoomView: self];
+	}
+	
+	[textScroller removeFromSuperview];
+	
+	if (delegate != nil && [delegate respondsToSelector: @selector(zoomViewIsNotResizable)]) {
+		[delegate zoomViewIsNotResizable];
+	}
+	
+	return pixmapWindow;
 }
 
 - (void) startExclusive {
@@ -358,10 +388,40 @@ static void finalizeViews(void) {
     NSSize fixedSize = [@"M" sizeWithAttributes:
         [NSDictionary dictionaryWithObjectsAndKeys:
             [self fontWithStyle:ZFixedStyle], NSFontAttributeName, nil]];
-    NSRect ourBounds = [textView bounds];
+    NSRect ourBounds = NSMakeRect(0,0,0,0);
+	
+	if (pixmapWindow == nil)
+		ourBounds = [textView bounds];
+	else
+		ourBounds.size = [[pixmapWindow pixmap] size];
 
     *xSize = floor(ourBounds.size.width  / fixedSize.width);
     *ySize = floor(ourBounds.size.height / fixedSize.height);
+}
+
+- (void) pixmapX: (out int*) xSize
+			   Y: (out int*) ySize {
+	if (pixmapWindow == nil) {
+		[self dimensionX: xSize Y: ySize];
+	} else {
+		NSSize pixSize = [[pixmapWindow pixmap] size];
+		
+		*xSize = pixSize.width;
+		*ySize = pixSize.height;
+	}
+}
+
+- (void) fontWidth: (out int*) width
+			height: (out int*) height {
+	if (pixmapWindow == nil) {
+		*width = 1;
+		*height = 1;
+	} else {
+		NSFont* font = [self fontWithStyle: ZFixedStyle];
+	
+		*width = [font widthOfString: @"M"];
+		*height = [font defaultLineHeightForFont];
+	}
 }
 
 - (void) boundsChanged: (NSNotification*) not {

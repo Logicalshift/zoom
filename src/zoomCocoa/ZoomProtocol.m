@@ -456,6 +456,9 @@ NSString* ZBufferMoveTo      = @"ZBMT";
 NSString* ZBufferEraseLine   = @"ZBEL";
 NSString* ZBufferSetWindow   = @"ZBSW";
 
+NSString* ZBufferPlotRect    = @"ZBPR";
+NSString* ZBufferPlotText    = @"ZBPT";
+
 @implementation ZBuffer
 
 // Initialisation
@@ -592,6 +595,35 @@ NSString* ZBufferSetWindow   = @"ZBSW";
 	[self addedToBuffer];
 }
 
+// Pixmap window routines
+- (void) plotRect: (NSRect) rect
+		withStyle: (ZStyle*) style
+		 inWindow: (NSObject<ZPixmapWindow>*) window {
+    [buffer addObject:
+        [NSArray arrayWithObjects:
+            ZBufferPlotRect,
+			[NSValue valueWithRect: rect],
+			style,
+			window,
+            nil]];
+	[self addedToBuffer];
+}
+
+- (void) plotText: (NSString*) text
+		  atPoint: (NSPoint) point
+		withStyle: (ZStyle*) style
+		 inWindow: (NSObject<ZPixmapWindow>*) win {
+    [buffer addObject:
+        [NSArray arrayWithObjects:
+            ZBufferPlotText,
+			[[text copy] autorelease],
+			[NSValue valueWithPoint: point],
+			style,
+			win,
+            nil]];
+	[self addedToBuffer];
+}
+
 // Unbuffering
 - (BOOL) empty {
     if ([buffer count] < 1)
@@ -664,6 +696,22 @@ NSString* ZBufferSetWindow   = @"ZBSW";
 #ifdef DEBUG
 			NSLog(@"Buffer: ZBufferSetWindow(%i, %i)", startLine, endLine);
 #endif
+		} else if ([entryType isEqualToString: ZBufferPlotRect]) {
+			NSRect rect = [[entry objectAtIndex: 1] rectValue];
+			ZStyle* style = [entry objectAtIndex: 2];
+			NSObject<ZPixmapWindow>* win = [entry objectAtIndex: 3];
+			
+			[win plotRect: rect
+				withStyle: style];
+		} else if ([entryType isEqualToString: ZBufferPlotText]) {
+			NSString* text = [entry objectAtIndex: 1];
+			NSPoint point = [[entry objectAtIndex: 2] pointValue];
+			ZStyle* style = [entry objectAtIndex: 3];
+			NSObject<ZPixmapWindow>* win = [entry objectAtIndex: 4];
+			
+			[win plotText: text
+				  atPoint: point
+				withStyle: style];
         } else {
             NSLog(@"Unknown buffer type: %@", entryType);
         }

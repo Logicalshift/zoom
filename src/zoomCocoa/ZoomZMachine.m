@@ -180,7 +180,7 @@
             break;
 
         case 6:
-            // Implement me
+			windows[0] = [[display createPixmapWindow] retain];
             break;
     }
 
@@ -225,6 +225,7 @@
         case 6:
             v6_startup();
             v6_set_cursor(1,1);
+			
             if (!wasRestored) zmachine_run(6, NULL); else zmachine_runsome(6, machine.zpc);
             break;
 #endif
@@ -550,55 +551,3 @@ void  zmachine_warning(char* format, ...) {
 	
 	[[mainMachine display] displayWarning: [NSString stringWithCString: fatalBuf]];
 }
-
-// Various Zoom C functions (not yet implemented elsewhere)
-#include "file.h"
-#include "display.h"
-
-// = V6 display =
-
-extern int   display_init_pixmap    (int width, int height) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-extern void  display_plot_rect      (int x, int y,
-                                     int width, int height) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-extern void  display_scroll_region   (int x, int y,
-                                      int width, int height,
-                                      int xoff, int yoff) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-extern void  display_pixmap_cols     (int fg, int bg) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-extern int   display_get_pix_colour  (int x, int y) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-extern void  display_plot_gtext      (const int* buf, int len,
-                                      int style, int x, int y) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-extern void  display_plot_image      (BlorbImage* img, int x, int y) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-extern float display_measure_text    (const int* buf, int len, int style) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-extern float display_get_font_width  (int style) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-extern float display_get_font_height (int style) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-extern float display_get_font_ascent (int style) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-extern float display_get_font_descent(int style) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-extern void  display_wait_for_more   (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-
-extern void  display_read_mouse      (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-extern int   display_get_pix_mouse_b (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-extern int   display_get_pix_mouse_x (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-extern int   display_get_pix_mouse_y (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-
-extern void  display_set_input_pos   (int style, int x, int y, int width) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-extern void  display_set_mouse_win   (int x, int y, int width, int height) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-
-// = Images =
-image_data*    image_load       (ZFile* file,
-                                 int offset,
-                                 int len,
-                                 image_data* palimg) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-void           image_unload     (image_data* img) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-void           image_unload_rgb (image_data* img) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-
-int            image_cmp_palette(image_data* img1, image_data* img2) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-
-int            image_width      (image_data* img) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-int            image_height     (image_data* img) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-unsigned char* image_rgb        (image_data* img) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-
-void           image_resample   (image_data* img, int n, int d) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-
-void           image_set_data   (image_data* img, void* data,
-                                 void (*destruct)(image_data*, void*)) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
-void*          image_get_data   (image_data* img) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }

@@ -153,16 +153,53 @@ typedef enum {
 @protocol ZLowerWindow<ZWindow>
 @end
 
+@protocol ZPixmapWindow<ZWindow>
+// Pixmap windows are used by version 6 Z-Machines
+// You can't combine pixmap and ordinary windows (as yet)
+
+// Sets the size of this window
+- (void) setSize: (in NSSize) windowSize;
+
+// Plots a rectangle in a given style
+- (void) plotRect: (in NSRect) rect
+		withStyle: (in bycopy ZStyle*) style;
+
+// Plots some text of a given size at a given point
+- (void) plotText: (in bycopy NSString*) text
+		  atPoint: (in NSPoint) point
+		withStyle: (in bycopy ZStyle*) style;
+
+// Gets information about a font
+- (void) getInfoForStyle: (in bycopy ZStyle*) style
+				   width: (out float*) width
+				  height: (out float*) height
+				  ascent: (out float*) ascent
+				 descent: (out float*) descent;
+- (out bycopy NSDictionary*) attributesForStyle: (in bycopy ZStyle*) style;
+
+// Reading information about the pixmap
+- (out bycopy NSColor*) colourAtPixel: (NSPoint) point;
+
+// Measures a string
+- (NSSize) measureString: (in bycopy NSString*) string
+			   withStyle: (in bycopy ZStyle*) style;
+@end
+
 @protocol ZDisplay
 // Overall display functions
 
 // Display information
 - (void) dimensionX: (out int*) xSize
                   Y: (out int*) ySize;
+- (void) pixmapX: (out int*) xSize
+			   Y: (out int*) ySize;
+- (void) fontWidth: (out int*) width
+			height: (out int*) height;
 
 // Functions to create the standard windows
 - (out byref NSObject<ZLowerWindow>*) createLowerWindow;
 - (out byref NSObject<ZUpperWindow>*) createUpperWindow;
+- (out byref NSObject<ZPixmapWindow>*) createPixmapWindow;
 
 // Requesting user input from
 - (void)		shouldReceiveCharacters;
@@ -303,6 +340,15 @@ extern NSString* ZStyleAttributeName;
 - (void) setWindow: (NSObject<ZUpperWindow>*) window
          startLine: (int) startLine
            endLine: (int) endLine;
+
+// Pixmap window routines
+- (void) plotRect: (NSRect) rect
+		withStyle: (ZStyle*) style
+		 inWindow: (NSObject<ZPixmapWindow>*) win;
+- (void) plotText: (NSString*) text
+		  atPoint: (NSPoint) point
+		withStyle: (ZStyle*) style
+		 inWindow: (NSObject<ZPixmapWindow>*) win;
 
 // Unbuffering
 - (BOOL) empty; // YES if the buffer has no data

@@ -308,6 +308,7 @@
 				4BCF3F60050FBAAF00A8E303,
 				4B4EF622050FD67C00A8E303,
 				4BE447B90510DE5900A8E303,
+				4BE621EC068C21E300369528,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1283,6 +1284,7 @@
 				4BCF3F34050FAE5700A8E303,
 				4B4EF620050FD66E00A8E303,
 				4BE447B80510DE5900A8E303,
+				4BE621CF068C20D500369528,
 			);
 			isa = PBXGroup;
 			name = ZoomCocoa;
@@ -2337,6 +2339,7 @@
 				4B13ECD6060F93F400021429,
 				4BCB09640615D0D800CDFB98,
 				4BBC1F78062F43BB00FE547F,
+				4BE6220C068C273900369528,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2902,6 +2905,7 @@
 				4B2D95CB053706CD00A8E303,
 				4B2D95D005372EF900A8E303,
 				4B418EDD05961E0F009C44DE,
+				4BE6220A068C273400369528,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2926,6 +2930,7 @@
 				4B2D95CC053706CD00A8E303,
 				4B2D95D105372EF900A8E303,
 				4B418EDE05961E0F009C44DE,
+				4BE6220B068C273400369528,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3179,6 +3184,8 @@
 				4B2D95CA053706CD00A8E303,
 				4B2D95CE05372EF900A8E303,
 				4B2D95CF05372EF900A8E303,
+				4BE62208068C273400369528,
+				4BE62209068C273400369528,
 			);
 			isa = PBXGroup;
 			name = ZoomView;
@@ -3221,6 +3228,54 @@
 			path = display.c;
 			refType = 4;
 			sourceTree = "<group>";
+		};
+		4BE621CF068C20D500369528 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = Z6Display.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BE621EC068C21E300369528 = {
+			fileRef = 4BE621CF068C20D500369528;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BE62208068C273400369528 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = ZoomPixmapWindow.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BE62209068C273400369528 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = ZoomPixmapWindow.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BE6220A068C273400369528 = {
+			fileRef = 4BE62208068C273400369528;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BE6220B068C273400369528 = {
+			fileRef = 4BE62209068C273400369528;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BE6220C068C273900369528 = {
+			fileRef = 4BE62208068C273400369528;
+			isa = PBXBuildFile;
+			settings = {
+			};
 		};
 		4BECA7F705B194AA006840BA = {
 			isa = PBXFileReference;
