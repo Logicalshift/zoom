@@ -50,8 +50,8 @@ rc_game*        rc_defgame = NULL;
 
 void rc_error(char* erm)
 {
-  zmachine_warning("Error while parsing .zoomrc (line %i): %s",
-		   _rc_line, erm);
+  zmachine_info("Error while parsing .zoomrc (line %i): %s",
+		_rc_line, erm);
 }
 
 void rc_load(void)
