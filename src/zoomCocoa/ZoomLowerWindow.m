@@ -38,7 +38,7 @@
     }
     
     [[[[zoomView textView] textStorage] mutableString] setString: @""];
-    [[zoomView textView] setBackgroundColor: [zoomView backgroundColourForStyle: style]];
+    [[zoomView textView] setBackgroundColor: [style reversed]?[zoomView foregroundColourForStyle: style]:[zoomView backgroundColourForStyle: style]];
     [[zoomView textView] clearPastedLines]; 
 	//[zoomView rearrangeUpperWindows];
 	[zoomView retileUpperWindowIfRequired];

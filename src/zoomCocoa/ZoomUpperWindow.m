@@ -38,7 +38,8 @@
     xpos = ypos = 0;
 
     [backgroundColour release];
-    backgroundColour = [[theView backgroundColourForStyle: style] retain];
+    backgroundColour = [[style reversed]?[theView foregroundColourForStyle: style]:[theView backgroundColourForStyle: style]
+		retain];
 }
 
 // Sets the input focus to this window
