@@ -65,6 +65,7 @@
 		story = nil;
 		storyId = nil;
 		autosaveData = nil;
+		skein = [[ZoomSkein alloc] init];
     }
 
     return self;
@@ -77,6 +78,8 @@
 	
 	if (defaultView) [defaultView release];
 	if (saveData) [saveData release];
+	
+	[skein release];
     
     [super dealloc];
 }
@@ -310,6 +313,10 @@
 
 - (NSData*) saveData {
 	return saveData;
+}
+
+- (ZoomSkein*) skein {
+	return skein;
 }
 
 @end

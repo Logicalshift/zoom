@@ -56,6 +56,9 @@
     
 	[zoomView setDelegate: self];
     [zoomView runNewServer: nil];
+	
+	// Add a skein view as an output receiver for the ZoomView
+	[zoomView addOutputReceiver: [[self document] skein]];
 }
 
 - (void) zMachineStarted: (id) sender {

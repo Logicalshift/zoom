@@ -9,6 +9,7 @@
 #import <AppKit/AppKit.h>
 #import "ZoomProtocol.h"
 #import "ZoomStory.h"
+#import "ZoomSkein.h"
 
 @class ZoomView;
 @interface ZoomClient : NSDocument {
@@ -19,13 +20,15 @@
 	
 	NSData* autosaveData;
 	
-	ZoomView* defaultView;
+	ZoomView*  defaultView;
+	ZoomSkein* skein;
 	NSData*   saveData;
 }
 
 - (NSData*) gameData;
 - (ZoomStory*) storyInfo;
 - (ZoomStoryID*) storyId;
+- (ZoomSkein*)   skein;
 
 // Restoring from an autosave
 - (void) loadDefaultAutosave;
