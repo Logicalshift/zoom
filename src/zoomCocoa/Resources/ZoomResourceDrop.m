@@ -232,11 +232,8 @@ notAFilename:
 	
 	if (![file parseResourceIndex]) {
 		NSLog(@"Failed to parse index");
-	} else {
-		NSLog(@"Parsed index. Image 1: %@", [file imageDataWithNumber: 1]);
 	}
 	
-	NSLog(@"Releasing file");
 	[file release];
 }
 
