@@ -161,7 +161,7 @@ static image_data* iload(image_data* resin, ZFile* file, int offset, int realrea
   return res;
 }
 
-image_data*    image_load  (ZFile* file, int offset)
+image_data* image_load(ZFile* file, int offset, int length)
 {
   return iload(NULL, file, offset, 0);
 }
@@ -216,6 +216,165 @@ unsigned char* image_rgb(image_data* data)
   return data->image;
 }
 
+void image_resample(image_data* data, int n, int d)
+{
+  unsigned char* newimage, *ip;
+  int ny;
+
+  int newwidth, newheight;
+
+  int filter[3][3] =
+    { { 1, 2, 1 },
+      { 2, 4, 2 },
+      { 1, 2, 1 } };
+  
+  if (data->image == NULL)
+    {
+      if (iload(data, data->file, data->offset, 1) == NULL)
+	{
+	  return;
+	}
+    }
+
+  /*
+   * The algorithm we use is a sort of bastardisation of the Weiman
+   * algorith. In particular, instead of actually calculating the
+   * Rothstein code, we just use Bresenham and work it out for ourselves
+   * as we go.
+   *
+   * The filter we use is a rather simple 3x3 filter; this produces
+   * acceptable results. At least, it does IMO.
+   */
+   
+  newwidth  = (data->width*n)/d;
+  newheight = (data->height*n)/d;
+
+  ip = newimage = malloc(newwidth*newheight*3);
+
+  n *= 3; /* 3x3 filter, y'see */
+
+  if (n >= d) /* Far more likely to happen... */
+    {
+      int dfx, dfy, E, NE;
+      unsigned char* xp[3];
+      int yp, dstx, dsty;
+
+      int i;
+
+      /* Minor adjustment (ensures we don't overrun) */
+      if (newwidth < newheight)
+	{ n = newwidth*3; d = data->width-1; }
+      else
+	{ n = newheight*3; d = data->height-1; }
+
+      /* Set up for bresenham */
+      dfx = dfy = 2*d-n;
+      E = 2*d;
+      NE = 2*(d-n);
+
+      /* Calculate our 3 initial y positions */
+      yp = 0;
+      for (i=0; i<3; i++)
+	{
+	  xp[i] = data->row[yp];
+
+	  /* Next position */
+	  if (dfy <= 0)
+	    {
+	      dfy += E;
+	    }
+	  else
+	    {
+	      dfy += NE;
+	      yp++;
+	    }
+	}
+
+      ip = newimage; /* Current position */
+
+      for (dsty = 0; dsty<newheight; dsty++)
+	{
+	  for (dstx = 0; dstx<newwidth; dstx++)
+	    {
+	      int rs, gs, bs;
+
+	      /* Do the sampling */
+	      rs = gs = bs = 0;
+
+	      for (i=0; i<3; i++)
+		{
+		  int j;
+
+		  for (j=0; j<3; j++)
+		    {
+		      rs += xp[j][0]*filter[i][j];
+		      gs += xp[j][1]*filter[i][j];
+		      bs += xp[j][2]*filter[i][j];
+		    }
+
+		  /* Next X */
+		  if (dfx <= 0)
+		    {
+		      dfx += E;
+		    }
+		  else
+		    {
+		      for (j=0; j<3; j++)
+			xp[j] += 3;
+		      dfx += NE;
+		    }
+		}
+
+	      /* Scale the sample */
+	      rs >>= 4; gs >>= 4; bs >>= 4;
+
+	      /* store the sample */
+	      (*ip++) = rs;
+	      (*ip++) = gs;
+	      (*ip++) = bs;
+	    }
+
+	  /* Next 3 y positions */
+	  for (i=0; i<3; i++)
+	    {
+	      xp[i] = data->row[yp];
+
+	      /* Next position */
+	      if (dfy <= 0)
+		{
+		  dfy += E;
+		}
+	      else
+		{
+		  dfy += NE;
+		  yp++;
+		}
+	    }
+
+	  dfx = 2*d-n;
+	}
+    }
+  else
+    {
+      zmachine_fatal("Hoojamah!");
+    }
+
+  /* Reset the data structures */
+  free(data->image);
+
+  data->image = newimage;
+  data->width = newwidth;
+  data->height = newheight;
+
+  data->row = realloc(data->row, sizeof(png_bytep)*newheight);
+
+  for (ny=0; ny<newheight; ny++)
+    {
+      data->row[ny] = newimage + 3*ny*newwidth;
+    }
+}
+
+#if 0 /* Old image resampling routine */
 void image_resample(image_data* data, int n, int d)
 {
   unsigned char* newimage, *ip;
@@ -317,5 +476,6 @@ void image_resample(image_data* data, int n, int d)
       data->row[ny] = newimage + 3*ny*newwidth;
     }
 }
+#endif
 
 #endif

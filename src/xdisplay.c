@@ -992,7 +992,8 @@ static void draw_window()
       XImage*     xim;
 
       img = image_load(machine.blorb_file,
-		       machine.blorb->index.picture[0].file_offset);
+		       machine.blorb->index.picture[0].file_offset,
+		       machine.blorb->index.picture[0].file_len);
 
       if (img == NULL)
 	zmachine_fatal("Unable to load image");
