@@ -17,6 +17,9 @@ default "%s (%i.%.6s)"
   font 6 "-*-courier-medium-o-*-*-14-*-*-*-*-*-*-*"   fixed-italic
   font 7 "-*-courier-bold-o-*-*-14-*-*-*-*-*-*-*"     fixed-bold-italic
   font 8 "-*-helvetica-bold-o-*-*-14-*-*-*-*-*-*-*"   bold-italic
+  font 9 "font3"                                      symbolic
+  
+  size 80,30
 
   colours (0,0,0), (255,0,0), (0,255,0), (255,255,0), (0,0,255), (255,0,255),
           (0,255,255), (255,255,204),

@@ -187,12 +187,14 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
 	 * frotz suggests this is the thing to do
 	 */
 
+#ifdef SAFE
   if (version < 3)
     {
       /* Shouldn't be able to run 'em, either */
       zmachine_warning("Can't save files for versions <3");
       return NULL;
     }
+#endif
   
   /* header */
   wblock(blocks[IFhd].text, 4);
@@ -337,15 +339,15 @@ int state_save(char* filename, ZStack* stack, ZDWord pc)
   ZByte* data;
 
   detail = NULL;
-  
-  f = open_file_write(filename);
-
-  if (!f)
-    return 0;
 
   data = state_compile(stack, pc, &flen, 1);
 
   if (data == NULL)
+    return 0;
+  
+  f = open_file_write(filename);
+
+  if (!f)
     return 0;
   
   /* Output the file itself */
@@ -383,6 +385,12 @@ int state_decompile(ZByte* st, ZStack* stack, ZDWord* pc, ZDWord len)
   ZDWord pos;
   int x;
 
+  for (x=0; x<N_BLOCKS; x++)
+    {
+      blocks[x].pos = NULL;
+      blocks[x].len = 0;
+    }
+  
   pos = 4;
 
   while (pos<len)

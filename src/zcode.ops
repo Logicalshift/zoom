@@ -1673,7 +1673,15 @@ OPCODE "sound_effect"   VAR:0x15                      VERSION all # 3,4,5,6,7,8
 OPCODE "read_char"      VAR:0x16 ARGS:3 STORE         VERSION 4,5,6,7,8
 %{
   stream_flush_buffer();
-  store(stack, st, display_readchar(0));
+
+  if (argblock.n_args < 2)
+    {
+      store(stack, st, display_readchar(0));
+    }
+  else
+    {
+      zcode_op_readchar(&pc, stack, &argblock, st);
+    }
 %}
 
 OPCODE "scan_table"     VAR:0x17        BRANCH STORE  VERSION 4,5,6,7,8
@@ -1861,7 +1869,7 @@ OPCODE "print_table"    VAR:0x1e                      VERSION 5,6,7,8
 	  if (machine.screen_on)
 	    display_set_gcursor(xpos, display_get_gcur_y());
 	}
-      
+
       for (x=0; x<argblock.arg[1]; x++)
 	{
 	  unsigned char c;
@@ -1945,10 +1953,13 @@ OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
       char fname[256];
       ZFile* file;
 
-      /* Untested */
-
       if (argblock.arg[2] != 0)
-	strncpy(fname, Address(argblock.arg[2]+1), Address(argblock.arg[2])[0]);
+        {
+	  strncpy(fname, 
+	          Address(argblock.arg[2]+1),
+		  Byte(argblock.arg[2]));
+          fname[Byte(argblock.arg[2])] = 0;
+	}
       else
 	strcpy(fname, "table.dat");
 
@@ -1962,6 +1973,8 @@ OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
 	}
 
       write_block(file, Address(argblock.arg[0]), (ZUWord)argblock.arg[1]);
+
+      close_file(file);
 	
       store(stack, st, 1);
     }
@@ -1992,10 +2005,13 @@ OPCODE "restore"       EXT:0x01 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
       char fname[256];
       ZFile* file;
 
-      /* Untested */
-
-      if (argblock.arg[3] != 0)
-	strcpy(fname, Address(argblock.arg[2]));
+      if (argblock.arg[2] != 0)
+        {
+	  strncpy(fname,
+	          Address(argblock.arg[2]+1),
+		  Byte(argblock.arg[2]));
+	  fname[Byte(argblock.arg[2])] = 0;
+	}
       else
 	strcpy(fname, "table.dat");
 
@@ -2010,6 +2026,8 @@ OPCODE "restore"       EXT:0x01 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
 
       read_block2(Address(argblock.arg[0]),
 		  file, 0, (ZUWord)argblock.arg[1]);
+
+      close_file(file);
 	
       store(stack, st, 1);
     }
@@ -2046,26 +2064,29 @@ OPCODE "art_shift"     EXT:0x03 ARGS:2 STORE  VERSION 5,6,7,8
 OPCODE "set_font"      EXT:0x04 ARGS:1 STORE  VERSION 5,6,7,8
 %{
   stream_flush_buffer();
-  
+
+  store(stack, st, 1);
+ 
   switch (argblock.arg[0])
     {
     case 1:
-      display_set_font(0);
+      display_set_style(-16);
+      display_set_style(-8);
       break;
 
     case 3:
-      display_set_font(-1);
+      display_set_style(16);
       break;
 
     case 4:
-      display_set_font(3);
+      display_set_style(-16);
+      display_set_style(8);
       break;
 
     default:
       zmachine_warning("Font %i not supported", argblock.arg[0]);
-    }
-
-  store(stack, st, 1);
+      store(stack, st, 0);
+   }
 %}
 
 OPCODE "save_undo"     EXT:0x09 ARGS:0 STORE CANJUMP VERSION 5,6,7,8
@@ -2106,13 +2127,14 @@ OPCODE "restore_undo"  EXT:0x0a ARGS:0 STORE CANJUMP VERSION 5,6,7,8
 	  machine.undo = NULL;
 	  goto loop;
 	}
-      free(machine.undo);
-      machine.undo = NULL;
+      if (state_fail())
+        {
+	  stream_printf("[ Undo failed, %s ]\n", state_fail());
+	}
       store(stack, st, 0);
     }
-#else
-  store(stack, st, 0);
 #endif
+  store(stack, st, 0);
 %}
 
 OPCODE "print_unicode" EXT:0x0b ARGS:1        VERSION 5,7,8

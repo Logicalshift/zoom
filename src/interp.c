@@ -198,8 +198,11 @@ void restart_machine(void)
     }
   machine.memory_on = 0;
 
-  display_set_window(0);
-  display_join(0,2);
+  if (Byte(0) < 4)
+    {
+      display_set_window(0);
+      display_join(0,2);
+    }
 
   zmachine_setup_header();
 }
@@ -713,6 +716,48 @@ static void zcode_op_output_stream(ZStack* stack,
       zmachine_warning("Stream number %i not supported by this interpreter (for versions 4, 5, 7 & 8)", args->arg[0]);
     }
 }
+
+static void zcode_op_readchar(ZDWord* pc,
+			      ZStack* stack,
+			      ZArgblock* args,
+			      int st)
+{
+  int chr;
+  
+  if (args->arg[7] != 0)
+    {
+      ZWord ret;
+      
+      ret = pop(stack);
+      
+      if (ret != 0)
+	{
+	  store(stack, st, 0);
+	  return;
+	}
+    }
+
+  chr = display_readchar(args->arg[1]*100);
+  if (chr == 0)
+    {
+      if (args->arg[2] != 0)
+	{
+	  ZFrame* newframe;
+	  
+	  newframe = call_routine(pc, stack, UnpackR(args->arg[2]));
+	  args->arg[7] = 1;
+	  newframe->storevar  = 0;
+	  newframe->flags     = 0;
+	  newframe->readblock = *args;
+	  newframe->readstore = st;
+	  newframe->v5read    = zcode_op_readchar;
+	  return;
+	}
+    }
+  
+  store(stack, st, chr);
+}
+
 
 static void zcode_op_aread_5678(ZDWord* pc,
 				ZStack* stack,

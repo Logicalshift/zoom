@@ -1,3 +1,15 @@
+2000-11-19  Andrew Hunter    <andrew@logicalshift.co.uk>
+
+	* read_char timing implemented
+	
+	* bug fixed in timed input
+	
+	* state_decompile silly bug fixed
+	
+	* input_stream implemented, bugs in output_stream fixed
+
+	* freetype work abandoned; freetype far too buggy
+	
 2000-11-17  Andrew Hunter    <andrew@logicalshift.co.uk>
 
 	* freetype work started. Version changed to 0.9.99dev6

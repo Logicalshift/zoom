@@ -130,6 +130,7 @@ static inline rc_game merge_games(const rc_game* a, const rc_game* b)
 %token BOLD
 %token ITALIC
 %token FIXED
+%token SYMBOLIC
 %token GAMEDIR
 %token SAVEDIR
 %token SOUNDS
@@ -313,10 +314,11 @@ FontDefn:	  FontQual
 		    }
 		;
 
-FontQual:	  ROMAN   { $$ = 0; }
-		| BOLD    { $$ = 1; }
-		| ITALIC  { $$ = 2; }
-		| FIXED   { $$ = 4; }
+FontQual:	  ROMAN    { $$ = 0; }
+		| BOLD     { $$ = 1; }
+		| ITALIC   { $$ = 2; }
+		| FIXED    { $$ = 4; }
+                | SYMBOLIC { $$ = 8; }
 		;
 
 ColourList:	  ColourDefn

@@ -83,6 +83,7 @@ static void prints(const char* const s)
 void stream_prints(const char* s)
 {
   int len, x;
+  static int line = 0;
   
   if (!buffering)
     {
@@ -100,7 +101,15 @@ void stream_prints(const char* s)
   for (x=0; x<len; x++)
     {
       if (s[x] == 10)
-	stream_flush_buffer();
+	{
+	  line++;
+	  stream_flush_buffer();
+	  if (line > 20)
+	    {
+	      line = 0;
+	      display_update();
+	    }
+	}
       buffer[bufpos++] = s[x];
     }
 }
@@ -125,6 +134,8 @@ int stream_readline(char* buf, int len, long int timeout)
     {
       int pos = 0;
       char rc;
+
+      display_update();
       
       r = 1;
 

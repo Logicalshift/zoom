@@ -23,6 +23,7 @@ roman				return ROMAN;
 bold				return BOLD;
 italic				return ITALIC;
 fixed				return FIXED;
+symbolic                        return SYMBOLIC;
 
 gamedir                         return GAMEDIR;
 savedir				return SAVEDIR;

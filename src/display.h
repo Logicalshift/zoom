@@ -76,6 +76,7 @@ extern ZDisplay* display_get_info(void);
 /* Display attribute functions */
 
 extern void display_set_title(const char* title);
+extern void display_update   (void);
 
 /* Version 1-5 display */
 extern void display_set_colour  (int fore, int back);

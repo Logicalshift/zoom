@@ -34,7 +34,6 @@
 
 #include "zmachine.h"
 #include "display.h"
-#include "font3.h"
 #include "rc.h"
 
 /* #define DEBUG */
@@ -101,8 +100,8 @@ static int n_fonts = N_FONTS;
  */
 Pixmap x_pix;
 
-static int font_x;
-static int font_y;
+int xfont_x;
+int xfont_y;
 static int win_x;
 static int win_y;
 static int win_width;
@@ -121,7 +120,8 @@ static int more_on = 0;
 static int font_num;
 static int cur_style;
 
-static int style_font[8] = { 0, 0, 0, 0, 3, 3, 3, 3 };
+static int style_font[16] = {  0, 0, 0, 0, 3, 3, 3, 3,
+			      -1,-1,-1,-1,-1,-1,-1,-1 };
 static int reverse = 0;
 
 static int (*newline_func)(const char*, int) = NULL;
@@ -161,42 +161,6 @@ struct window text_win[32];
 static int process_events(long int, char*, int);
 static void draw_window(void);
 static void display_more(void);
-
-/***                           ----// 888 \\----                           ***/
-
-/*
- * Function to plot a font 3 definition
- */
-static void plot_font_3(int chr, int xpos, int ypos)
-{
-  static XPoint poly[32];
-  int x;
-    
-  if (chr > 127 || chr < 32)
-    return;
-  chr-=32;
-
-  if (font_3.chr[chr].num_coords < 0)
-    {
-      zmachine_warning("Attempt to plot unspecified character %i",
-		       chr+32);
-      return;
-    }
-  
-  for (x=0; x<font_3.chr[chr].num_coords; x++)
-    {
-      poly[x].x = font_3.chr[chr].coords[x<<1];
-      poly[x].y = font_3.chr[chr].coords[(x<<1)+1];
-
-      poly[x].x *= font_x; poly[x].x /= 8; poly[x].x += xpos;
-      poly[x].y *= font_y; poly[x].y /= 8; poly[x].y += ypos;
-    }
-
-  XFillPolygon(x_display,
-	       x_pix, x_pixgc,
-	       poly, font_3.chr[chr].num_coords,
-	       Complex, CoordModeOrigin);
-}
 
 /***                           ----// 888 \\----                           ***/
 
@@ -241,9 +205,19 @@ void display_initialise(void)
 	  style_font[fonts[x].attributes[y]] = fonts[x].num-1;
 	}
     }
+  
+  for (y=0; y<16; y++)
+    {
+      if (style_font[y] == -1)
+	{
+	  style_font[y] = style_font[8];
+	}
+
+      printf("style_font[%i] = %i\n", y, style_font[y]);
+    }
     
-  font_x = xfont_get_width(x_fonts[3]);
-  font_y = xfont_get_height(x_fonts[3]);;
+  xfont_x = xfont_get_width(x_fonts[3]);
+  xfont_y = xfont_get_height(x_fonts[3]);;
 
   cols = rc_get_colours(&num);
   if (num > 11)
@@ -268,8 +242,8 @@ void display_initialise(void)
   x_mainwin = XCreateWindow(x_display,
 			    RootWindow(x_display, x_screen),
 			    100,100, 
-			    win_width=((win_x=(font_x*rc_get_xsize())) + 16),
-			    win_height=((win_y=(font_y*rc_get_ysize())) + 16),
+			    win_width=((win_x=(xfont_x*rc_get_xsize())) + 16),
+			    win_height=((win_y=(xfont_y*rc_get_ysize())) + 16),
 			    1, DefaultDepth(x_display, x_screen), InputOutput,
 			    CopyFromParent,
 			    CWEventMask|CWBackPixel,
@@ -333,8 +307,8 @@ void display_initialise(void)
   /* Create the display pixmap */
   x_pix = XCreatePixmap(x_display,
 			x_mainwin,
-			font_x*rc_get_xsize(),
-			font_y*rc_get_ysize(),
+			xfont_x*rc_get_xsize(),
+			xfont_y*rc_get_ysize(),
 			DefaultDepth(x_display, x_screen));
 
   x_wingc   = XCreateGC(x_display, x_mainwin, 0, NULL);
@@ -398,9 +372,17 @@ void display_reinitialise(void)
 	  style_font[fonts[x].attributes[y]] = fonts[x].num-1;
 	}
     }
-    
-  font_x = xfont_get_width(x_fonts[3]);
-  font_y = xfont_get_height(x_fonts[3]);
+  
+  for (y=0; y<16; y++)
+    {
+      if (style_font[y] == -1)
+	{
+	  style_font[y] = style_font[8];
+	}
+    }
+	  
+  xfont_x = xfont_get_width(x_fonts[3]);
+  xfont_y = xfont_get_height(x_fonts[3]);
 
   /* Reallocate colours */
   cols = rc_get_colours(&num);
@@ -427,15 +409,15 @@ void display_reinitialise(void)
 	}
     }
   
-  win_x=(font_x*rc_get_xsize());
-  win_y=(font_y*rc_get_ysize());
+  win_x=(xfont_x*rc_get_xsize());
+  win_y=(xfont_y*rc_get_ysize());
   
   /* Recreate pixmap */
   XFreePixmap(x_display, x_pix);
   x_pix = XCreatePixmap(x_display,
 			x_mainwin,
-			font_x*rc_get_xsize(),
-			font_y*rc_get_ysize(),
+			xfont_x*rc_get_xsize(),
+			xfont_y*rc_get_ysize(),
 			DefaultDepth(x_display, x_screen));
 
   x_pixgc   = XCreateGC(x_display, x_pix, 0, NULL);
@@ -522,7 +504,7 @@ static void new_line(int more)
   if (font_num >= 0)
     CURWIN.line_height = xfont_get_height(x_fonts[font_num]);
   else
-    CURWIN.line_height = font_y;
+    CURWIN.line_height = xfont_y;
 
   if ((CURWIN.ypos+CURWIN.line_height) > CURWIN.winly)
     {
@@ -596,27 +578,6 @@ static int outputs(const char* string, int font, int len, int split)
       return 0;
     }
 
-  if (font < 0)
-    {
-      int x;
-
-      XSetForeground(x_display, x_pixgc,
-		     x_colour[CURWIN.back+FIRST_ZCOLOUR].pixel);
-      XFillRectangle(x_display, x_pix, x_pixgc,
-		     CURWIN.xpos, CURWIN.ypos,
-		     font_x*len, font_y);	 
-      
-      XSetForeground(x_display, x_pixgc,
-		     x_colour[CURWIN.fore+FIRST_ZCOLOUR].pixel);      
-      for (x=0; x<len; x++)
-	{
-	  plot_font_3(string[x], CURWIN.xpos, CURWIN.ypos);
-	  CURWIN.xpos += font_x;
-	}
-      
-      return 0;
-    }
-  
   width  = xfont_get_text_width(x_fonts[font], string, len);
   height = xfont_get_height(x_fonts[font]);
 
@@ -792,7 +753,9 @@ void display_prints(const char* string)
 
   oldfont = font_num;
   if (CURWIN.force_fixed && font_num >= 0)
-    display_set_font(3);
+    {
+      display_set_font(style_font[((cur_style|8)>>1)&15]);
+    }
 
   if (reverse)
     {
@@ -1058,6 +1021,16 @@ static void draw_input_text(char* buf, int inputpos)
 }
 
 /*
+ * Called periodically when the interpreter thinks the display would
+ * benefit from being updated.
+ */
+void display_update(void)
+{
+  if (do_redraw)
+    draw_window();
+}
+
+/*
  * Process X events
  */
 int process_events(long int to, char* buf, int buflen)
@@ -1113,7 +1086,7 @@ int process_events(long int to, char* buf, int buflen)
   gettimeofday(&now, NULL);
   timeout.tv_sec  = now.tv_sec + (to/1000);
   timeout.tv_usec = now.tv_usec + ((to%1000)*1000);
-  timeout.tv_sec += now.tv_usec/1000000;
+  timeout.tv_sec += timeout.tv_usec/1000000;
   timeout.tv_usec %= 1000000;
   
   while (1) 
@@ -1137,6 +1110,7 @@ int process_events(long int to, char* buf, int buflen)
 
 	  tv.tv_sec  += tv.tv_usec/1000000;
 	  tv.tv_usec %= 1000000;
+
 	  if (tv.tv_usec < 0)
 	    {
 	      tv.tv_usec += 1000000;
@@ -1429,8 +1403,11 @@ void display_set_colour(int fore, int back)
 int display_set_font(int font)
 {
   int old_font;
+
+  if (font == -1)
+    display_set_style(-16);
   
-  if (font < -1)
+  if (font < 0)
     return 0;
   if (font >= n_fonts)
     return 0;
@@ -1451,7 +1428,8 @@ void display_set_scroll(int scroll)
 
 /*
  * Sets the style to use (the style is a bitfield, bit 0 is reverse,
- * bit 1 is bold, bit 2 is italic and bit 3 is fixed-pitch)
+ * bit 1 is bold, bit 2 is italic, bit 3 is fixed-pitch and bit 4 is
+ * symbolic)
  */
 int display_set_style(int style)
 {
@@ -1472,7 +1450,7 @@ int display_set_style(int style)
 	cur_style &= ~(-style);
     }
 
-  display_set_font(style_font[(cur_style>>1)&7]);
+  display_set_font(style_font[(cur_style>>1)&15]);
   
   reverse = cur_style&1;
 
@@ -1501,8 +1479,8 @@ ZDisplay* display_get_info(void)
   info.columns = rc_get_xsize();
   info.width = win_x;
   info.height = win_y;
-  info.font_width  = font_x;
-  info.font_height = font_y;
+  info.font_width  = xfont_x;
+  info.font_height = xfont_y;
   info.fore = DEFAULT_FORE;
   info.back = DEFAULT_BACK;
 
@@ -1521,7 +1499,7 @@ void display_split(int lines, int window)
   text_win[window].winsx       = CURWIN.winsx;
   text_win[window].winlx       = CURWIN.winlx;
   text_win[window].winsy       = CURWIN.winsy;
-  text_win[window].winly       = CURWIN.winsy + font_y*lines;
+  text_win[window].winly       = CURWIN.winsy + xfont_y*lines;
   text_win[window].fore        = CURWIN.fore;
   text_win[window].back        = CURWIN.back;
   text_win[window].text_amount = 0;
@@ -1535,7 +1513,7 @@ void display_split(int lines, int window)
   printf("Bottom of window is now %i\n", text_win[window].winly);
 #endif
   
-  CURWIN.winsy += font_y*lines;
+  CURWIN.winsy += xfont_y*lines;
   if (CURWIN.ypos < CURWIN.winsy)
     CURWIN.ypos = CURWIN.winsy;
 }
@@ -1581,7 +1559,7 @@ void display_erase_window(void)
   if (font_num >= 0)
     height = xfont_get_height(x_fonts[font_num]);
   else
-    height = font_y;
+    height = xfont_y;
   
   XSetForeground(x_display, x_pixgc, x_colour[FIRST_ZCOLOUR+CURWIN.back].pixel);
 
@@ -1625,8 +1603,8 @@ void display_erase_line(int val)
  */
 void display_set_cursor(int x, int y)
 {
-  CURWIN.xpos = CURWIN.winsx+x*font_x;
-  CURWIN.ypos = y*font_y;
+  CURWIN.xpos = CURWIN.winsx+x*xfont_x;
+  CURWIN.ypos = y*xfont_y;
   
   if (CURWIN.xpos > CURWIN.winlx)
     CURWIN.xpos = CURWIN.winlx;
@@ -1701,7 +1679,7 @@ int display_get_gcur_y(void)
  */
 int display_get_cur_x(void)
 {
-  return (CURWIN.xpos-CURWIN.winsx)/font_x;
+  return (CURWIN.xpos-CURWIN.winsx)/xfont_x;
 }
 
 /*
@@ -1709,7 +1687,7 @@ int display_get_cur_x(void)
  */
 int display_get_cur_y(void)
 {
-  return (CURWIN.ypos-CURWIN.winsy)/font_y;
+  return (CURWIN.ypos-CURWIN.winsy)/xfont_y;
 }
 
 /*
