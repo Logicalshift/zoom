@@ -191,12 +191,17 @@ static NSString* convertCommand(NSString* command) {
 	return NO;
 }
 
-- (BOOL) hasChildWithCommand: (NSString*) command {
+- (BOOL) hasChildWithCommand: (NSString*) theCommand {
 	NSEnumerator* childEnum = [children objectEnumerator];
 	ZoomSkeinItem* child;
 	
+	if (theCommand == nil) theCommand = @"";
+	
 	while (child = [childEnum nextObject]) {
-		if ([[child command] isEqualToString: command]) return YES;
+		NSString* childCommand = [child command];
+		if (childCommand == nil) childCommand = @"";
+		
+		if ([childCommand isEqualToString: theCommand]) return YES;
 	}
 	
 	return NO;
