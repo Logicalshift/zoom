@@ -135,9 +135,9 @@ typedef enum {
 - (out byref NSObject<ZLowerWindow>*) createLowerWindow;
 - (out byref NSObject<ZUpperWindow>*) createUpperWindow;
 
-// Set whether or not we recieve certain types of data
-- (oneway void) shouldReceiveCharacters;
-- (oneway void) shouldReceiveText: (in int) maxLength;
+// Requesting user input from
+- (void)		shouldReceiveCharacters;
+- (void)		shouldReceiveText: (in int) maxLength;
 - (void)        stopReceiving;
 
 - (oneway void) setTerminatingCharacters: (in bycopy NSArray*) characters;
