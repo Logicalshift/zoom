@@ -127,15 +127,15 @@ void display_clear(void)
       for (y=0; y<size_y; y++)
 	{
 	  text_win[x].cline[y].cell = malloc(sizeof(int)*size_x);
-	  text_win[x].cline[y].fg   = malloc(sizeof(char)*size_x);
-	  text_win[x].cline[y].bg   = malloc(sizeof(char)*size_x);
+	  text_win[x].cline[y].fg   = malloc(sizeof(int)*size_x);
+	  text_win[x].cline[y].bg   = malloc(sizeof(int)*size_x);
 	  text_win[x].cline[y].font = malloc(sizeof(char)*size_x);
 	  
 	  for (z=0; z<size_x; z++)
 	    {
 	      text_win[x].cline[y].cell[z] = ' ';
 	      text_win[x].cline[y].fg[z]   = DEFAULT_BACK;
-	      text_win[x].cline[y].bg[z]   = 255;
+	      text_win[x].cline[y].bg[z]   = -DEFAULT_BACK-1;
 	      text_win[x].cline[y].font[z] = style_font[4];
 	    }
 	}
@@ -163,6 +163,7 @@ void display_erase_window(void)
       int x,y;
 
       /* Blank an overlay window */
+      CURWIN.winback = CURWIN.back;
 
       for (y=0; y<(CURWIN.winly/xfont_y); y++)
 	{
@@ -170,7 +171,7 @@ void display_erase_window(void)
 	    {
 	      CURWIN.cline[y].cell[x] = ' ';
 	      CURWIN.cline[y].fg[x]   = CURWIN.back;
-	      CURWIN.cline[y].bg[x]   = 255;
+	      CURWIN.cline[y].bg[x]   = -CURWIN.back-1;
 	      CURWIN.cline[y].font[x] = style_font[4];
 	    }
 	}
@@ -212,7 +213,7 @@ void display_erase_window(void)
 		{
 		  text_win[z].cline[y].cell[x] = ' ';
 		  text_win[z].cline[y].fg[x]   = DEFAULT_BACK;
-		  text_win[z].cline[y].bg[x]   = 255;
+		  text_win[z].cline[y].bg[x]   = -DEFAULT_BACK-1;
 		  text_win[z].cline[y].font[x] = style_font[4];
 		}
 	    }
@@ -420,7 +421,7 @@ void display_erase_line  (int val)
 	{
 	  CURWIN.cline[CURWIN.ypos].cell[x] = ' ';
 	  CURWIN.cline[CURWIN.ypos].fg[x]   = CURWIN.back;
-	  CURWIN.cline[CURWIN.ypos].bg[x]   = 255;
+	  CURWIN.cline[CURWIN.ypos].bg[x]   = -CURWIN.back-1;
 	  CURWIN.cline[CURWIN.ypos].font[x] = style_font[4];
 	}
     }
@@ -534,7 +535,21 @@ void display_set_colour  (int fore, int back)
 
 void display_split       (int lines, int window)
 {
+  int y;
+
   NOTV6;
+
+  for (y=text_win[window].winly/xfont_y; 
+       y<(text_win[window].winsy/xfont_y)+lines;
+       y++)
+    {
+      int x;
+      for (x=0; x<max_x; x++)
+	{
+	  if (text_win[window].cline[y].bg[x] < 0)
+	    text_win[window].cline[y].bg[x] = - text_win[window].back-1;
+	}
+    }
   
   text_win[window].winsx = CURWIN.winsx;
   text_win[window].winlx = CURWIN.winsx;

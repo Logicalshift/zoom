@@ -397,8 +397,8 @@ static void resize_window()
 	  for (y=max_y; y<size_y; y++)
 	    {
 	      CURWIN.cline[y].cell = malloc(sizeof(int)*max_x);
-	      CURWIN.cline[y].fg   = malloc(sizeof(char)*max_x);
-	      CURWIN.cline[y].bg   = malloc(sizeof(char)*max_x);
+	      CURWIN.cline[y].fg   = malloc(sizeof(int)*max_x);
+	      CURWIN.cline[y].bg   = malloc(sizeof(int)*max_x);
 	      CURWIN.cline[y].font = malloc(sizeof(char)*max_x);
 
 	      for (z=0; z<max_x; z++)
@@ -419,9 +419,9 @@ static void resize_window()
 	      CURWIN.cline[y].cell = realloc(CURWIN.cline[y].cell,
 					     sizeof(int)*size_x);
 	      CURWIN.cline[y].fg   = realloc(CURWIN.cline[y].fg,
-					     sizeof(char)*size_x);
+					     sizeof(int)*size_x);
 	      CURWIN.cline[y].bg   = realloc(CURWIN.cline[y].bg,
-					     sizeof(char)*size_x);
+					     sizeof(int)*size_x);
 	      CURWIN.cline[y].font = realloc(CURWIN.cline[y].font,
 					     sizeof(char)*size_x);
 	      for (z=max_x; z<size_x; z++)
@@ -990,10 +990,9 @@ static inline int isect_rect(Rect* r1, Rect* r2)
  * Each overlay window has a 'solid' section and a 'transparent' section.
  * The 'solid' section is that defined by the split, the rest is transparent.
  * The difference between the sections comes when the background colour of
- * a cell is set to 255. In the 'solid' section, this cell will be plotted
- * in the background colour of the window. In the 'transparent' section,
- * this cell will not be plotted. All other cells are plotted in both
- * sections.
+ * a cell is set to -colour-1. In the 'solid' section, this cell will be
+ * plotted in that colour. In the 'transparent' section, this cell will not
+ * be plotted. All other cells are plotted in both sections.
  *
  * The text window should be drawn first, followed by the overlay windows.
  */
@@ -1095,7 +1094,7 @@ static void draw_window(int   win,
 	  for (x=0; x<size_x; x++)
 	    {
 	      if (text_win[win].cline[y].cell[x] != ' ' ||
-		  text_win[win].cline[y].bg[x] != 255   ||
+		  text_win[win].cline[y].bg[x] >= 0     ||
 		  y*xfont_y<text_win[win].winly)
 		{
 		  int len;
@@ -1111,7 +1110,7 @@ static void draw_window(int   win,
 			 text_win[win].cline[y].font[x+len] == fn &&
 			 text_win[win].cline[y].fg[x+len]   == fg &&
 			 text_win[win].cline[y].bg[x+len]   == bg &&
-			 (bg != 255 ||
+			 (bg >= 0 ||
 			  text_win[win].cline[y].cell[x+len] != ' ' ||
 			  y*xfont_y<text_win[win].winly))
 		    len++;
@@ -1119,11 +1118,9 @@ static void draw_window(int   win,
 		  dassert(x + len <= size_x);
 		  dassert(fg >= 0);
 		  
-		  if (bg == 255)
-		    bg = fg;
+		  if (bg < 0)
+		    bg = -(bg+1);
 
-		  dassert(bg < 14);
-		  
 		  xfont_set_colours(fg, bg);
 		  xfont_plot_string(font[text_win[win].cline[y].font[x]],
 				    BORDERWIDTH + (float)x*xfont_x,

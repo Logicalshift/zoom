@@ -211,7 +211,7 @@ xfont* xfont_load_font(char* font)
 	  if (match && res != XftResultNoMatch)
 	    {
 	      f->data.Xft = XftFontOpenPattern(x_display, match);
-	      XftPatternDestroy(match);
+	      //XftPatternDestroy(match);
 	    }
 	  else
 	    {

@@ -997,7 +997,7 @@ static void draw_window()
 		  for (x=0; x<size_x; x++)
 		    {
 		      if (text_win[win].cline[y].cell[x] != ' ' ||
-			  text_win[win].cline[y].bg[x]   != 255 ||
+			  text_win[win].cline[y].bg[x]   >= 0 ||
 			  y*xfont_y < text_win[win].winly)
 			{
 			  int len;
@@ -1012,13 +1012,13 @@ static void draw_window()
 				 text_win[win].cline[y].fg[x+len]   == fg &&
 				 text_win[win].cline[y].bg[x+len]   == bg &&
 				 x+len < size_x &&
-				 (bg != 255 ||
+				 (bg >= 0 ||
 				  text_win[win].cline[y].cell[x+len] != ' ' ||
 				  y*xfont_y<text_win[win].winly))
 			    len++;
 			  
-			  if (bg == 255)
-			    bg = fg;
+			  if (bg < 0)
+			    bg = -(bg+1);
 			  
 			  XSetForeground(x_display, x_wingc,
 					 xdisplay_get_pixel_value(bg));
@@ -1026,7 +1026,7 @@ static void draw_window()
 					 x*xfont_x + BORDER_SIZE,
 					 y*xfont_y + BORDER_SIZE,
 					 len*xfont_x,
-					 xfont_y);
+					 xfont_y+0.5);
 			  
 			  xfont_set_colours(fg, bg);
 			  xfont_plot_string(font[fn],
@@ -1386,8 +1386,8 @@ static void resize_window()
 	    {
 	      CURWIN.cline[y].cell = malloc(sizeof(int)*max_x);
 	      CURWIN.cline[y].fg   = malloc(sizeof(char)*max_x);
-	      CURWIN.cline[y].bg   = malloc(sizeof(char)*max_x);
-	      CURWIN.cline[y].font = malloc(sizeof(char)*max_x);
+	      CURWIN.cline[y].bg   = malloc(sizeof(int)*max_x);
+	      CURWIN.cline[y].font = malloc(sizeof(int)*max_x);
 
 	      for (z=0; z<max_x; z++)
 		{
@@ -1407,9 +1407,9 @@ static void resize_window()
 	      CURWIN.cline[y].cell = realloc(CURWIN.cline[y].cell,
 					     sizeof(int)*size_x);
 	      CURWIN.cline[y].fg   = realloc(CURWIN.cline[y].fg,
-					     sizeof(char)*size_x);
+					     sizeof(int)*size_x);
 	      CURWIN.cline[y].bg   = realloc(CURWIN.cline[y].bg,
-					     sizeof(char)*size_x);
+					     sizeof(int)*size_x);
 	      CURWIN.cline[y].font = realloc(CURWIN.cline[y].font,
 					     sizeof(char)*size_x);
 	      for (z=max_x; z<size_x; z++)

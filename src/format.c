@@ -193,7 +193,7 @@ static void new_line(int more,
 	  text_win[2].cline[size_y-1].cell[x] = ' ';
 	  text_win[2].cline[size_y-1].font[x] = style_font[4];
 	  text_win[2].cline[size_y-1].fg[x]   = DEFAULT_BACK;
-	  text_win[2].cline[size_y-1].bg[x]   = 255;
+	  text_win[2].cline[size_y-1].bg[x]   = -DEFAULT_BACK-1;
 	}
 
       display_update();

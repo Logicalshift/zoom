@@ -91,8 +91,8 @@ struct line
 struct cellline
 {
   int*           cell;
-  unsigned char* fg;
-  unsigned char* bg;
+  int* fg;
+  int* bg;
   unsigned char* font;
 };
 
