@@ -895,7 +895,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         if (modifiers == 0) {
             NSRange selRange = [textView selectedRange];
                         
-            if (selRange.location < inputPos) {
+            if (selRange.location < inputPos || [chars isEqualToString: @"\n"] || [chars isEqualToString: @"\r"]) {
                 [textView setSelectedRange: NSMakeRange([[textView textStorage] length], 0)];
             }
         }
