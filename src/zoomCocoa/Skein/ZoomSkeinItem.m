@@ -13,8 +13,8 @@
 
 // = Initialisation =
 
-+ (ZoomSkeinItem) skeinItemWithCommand: (NSString*) command {
-	return [[[[self class] alloc] initWithCommand: command] autorelease];
++ (ZoomSkeinItem*) skeinItemWithCommand: (NSString*) com {
+	return [[[[self class] alloc] initWithCommand: com] autorelease];
 }
 
 - (id) initWithCommand: (NSString*) com {
@@ -30,7 +30,7 @@
 		temporary = YES;
 		tempScore = 0;
 		played    = NO;
-		change    = NO;
+		changed   = NO;
 		
 		annotation = nil;
 	}
@@ -160,7 +160,7 @@
 }
 
 - (int)  temporaryScore {
-	return temporaryScore;
+	return tempScore;
 }
 
 - (BOOL) played {
@@ -172,17 +172,17 @@
 }
 
 - (void) setTemporary: (BOOL) isTemporary {
-	temporary = isTemporary
+	temporary = isTemporary;
 }
 
-static int tempScore = 1;
+static int currentScore = 1;
 
 - (void) zoomSetTemporaryScore {
-	temporaryScore = tempScore;
+	tempScore = currentScore;
 }
 
 - (void) increaseTemporaryScore {
-	temporaryScore = tempScore++;
+	tempScore = currentScore++;
 	
 	// Also set the parent's scores
 	ZoomSkeinItem* item = parent;

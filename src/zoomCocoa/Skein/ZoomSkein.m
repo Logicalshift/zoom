@@ -21,4 +21,8 @@
 	return self;
 }
 
+- (ZoomSkeinItem*) rootItem {
+	return rootItem;
+}
+
 @end

@@ -25,7 +25,7 @@
 }
 
 // Initialisation
-+ (ZoomSkeinItem) skeinItemWithCommand: (NSString*) command;
++ (ZoomSkeinItem*) skeinItemWithCommand: (NSString*) command;
 
 - (id) initWithCommand: (NSString*) command;
 
