@@ -88,7 +88,6 @@ Test colourTest "Version 6 colours test"
 	rtrue;
     ];
 
-#ifdef Foo;
 Test windowTest "V6 window test"
     with
     Run
@@ -108,5 +107,4 @@ Test windowTest "V6 window test"
 
 	    rtrue;
 	];     
-#endif;
 
