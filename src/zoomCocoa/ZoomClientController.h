@@ -14,6 +14,7 @@
 @interface ZoomClientController : NSWindowController {
     IBOutlet ZoomView* zoomView;
 	BOOL isFullscreen;
+	BOOL finished;
 	
 	NSRect oldWindowFrame;
 }

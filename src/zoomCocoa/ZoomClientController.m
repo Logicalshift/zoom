@@ -21,6 +21,7 @@
     if (self) {
         [self setShouldCloseDocument: YES];
 		isFullscreen = NO;
+		finished = NO;
     }
 
     return self;
@@ -74,6 +75,7 @@
 
 - (void) zMachineFinished: (id) sender {
 	[[self window] setTitle: [NSString stringWithFormat: @"%@ (finished)", [[self window] title]]];
+	finished = YES;
 	
 	if (isFullscreen) [self playInFullScreen: self];
 }
@@ -322,6 +324,19 @@
 		
 		isFullscreen = YES;
 	}
+}
+
+// = Window title =
+- (NSString *) windowTitleForDocumentDisplayName: (NSString *)displayName {
+	ZoomStory* story = [[self document] storyInfo];
+	
+	if (story == nil) return displayName;
+	
+	if (finished) {
+		return [NSString stringWithFormat: @"%@ (finished)", [story title]];
+	}
+	
+	return [story title];
 }
 
 @end
