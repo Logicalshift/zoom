@@ -136,6 +136,9 @@
     machine.story_length = get_size_of_file(machineFile);
     zmachine_load_file(machineFile, &machine);
 	machine.blorb = blorb_loadfile(NULL);
+
+	// Set up the rc system (we do this twice: this particular case helps with the )
+    rc_set_game(zmachine_get_serial(), Word(ZH_release), Word(ZH_checksum));
 }
 
 // = Running =
@@ -605,12 +608,49 @@ static NSString* zscii_to_string(ZByte* buf) {
 	return storyData;
 }
 
-- (void) restoreSaveState: (NSData*) saveData {
+- (NSString*) restoreSaveState: (NSData*) saveData {
 	const ZByte* gameData = [saveData bytes];
 	
 	// NOTE: suppresses a warning (but it should be OK)
-	state_decompile((ZByte*)gameData, &machine.stack, &machine.zpc, [saveData length]);
-	wasRestored = YES;
+	if (!state_decompile((ZByte*)gameData, &machine.stack, &machine.zpc, [saveData length])) {
+		NSLog(@"ZoomServer: restoreSaveState: failed");
+		return [NSString stringWithCString: state_fail()];
+	} else {
+		zmachine_setup_header();
+		
+		// Must do the same setup tasks as zmachine_run would do
+		switch (machine.memory[0]) {
+			case 3:
+				machine.packtype = packed_v3;
+				break;
+			
+			case 4:
+			case 5:
+				machine.packtype = packed_v4;
+				break;
+				
+			case 8:
+				machine.packtype = packed_v8;
+				break;
+				
+			case 6:
+			case 7:	
+				machine.packtype = packed_v6;
+				machine.routine_offset = 8*Word(ZH_routines);
+				machine.string_offset = 8*Word(ZH_staticstrings);
+				break;
+		}
+		
+		int x;
+		for (x=0; x<UNDO_LEVEL; x++) {
+			machine.undo[x] = NULL;
+		}
+		
+		// Note that we're restoring, not restarting
+		wasRestored = YES;
+	}
+	
+	return nil;
 }
 
 // = Receiving text/characters =

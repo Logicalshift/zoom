@@ -2034,6 +2034,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	if (lastAutosave == nil) return NO;
 	
 #if 0
+	// BORKED
 	int autosaveVersion = 101;
 	
 	[encoder encodeValueOfObjCType: @encode(int) 
@@ -2245,7 +2246,11 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 }
 
 - (void) restoreSaveState: (NSData*) state {
-	[zMachine restoreSaveState: state];
+	NSString* error = [zMachine restoreSaveState: state];
+	
+	if (error) {
+		NSLog(@"Failed to restore save state: %@", error);
+	}
 	
 	[self reformatWindow];
 	[self resetMorePrompt];

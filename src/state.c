@@ -512,7 +512,7 @@ int state_decompile(ZByte* st, ZStack* stack, ZDWord* pc, ZDWord len)
 #ifdef DEBUG
 	printf_debug("Decompile: IFhd len is %i", blocks[IFhd].len);
 #endif
-	detail = "Savefile is not compatable quetzal 1.3b format";
+	detail = "Savefile is not compatible quetzal 1.3b format";
 	return 0;
       }
   }

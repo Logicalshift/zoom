@@ -25,6 +25,7 @@ extern int zoomImageCacheSize;
 
     // The file
 	NSData* storyData;
+	NSData* dataToRestore;
     ZFile* machineFile;
 
     // Some pieces of state information

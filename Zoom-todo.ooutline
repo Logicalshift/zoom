@@ -78,15 +78,49 @@
 						<key>Cols</key>
 						<array>
 							<string>{\rtf1\mac\ansicpg10000\cocoartf102
-{\fonttbl}
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
-}</string>
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 Store 'last save directory' individually for specific games?}</string>
 							<string>{\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720
 
-\f0\fs24 \cf2 When saving (or autosaving) version 6 data, the v6 screen state is not saved. We need to retrieve this from the ZoomServer process and restore it as required}</string>
+\f0\fs24 \cf2 When 'Keep games organised' is on, we default to the last save directory, not the save directory for the specific game}</string>
+						</array>
+					</dict>
+					<dict>
+						<key>Cols</key>
+						<array>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 You have to page through the entire game text, sigh}</string>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720
+
+\f0\fs24 \cf2 Restoring a savegame by double-clicking displays [MORE] erroneously}</string>
+						</array>
+					</dict>
+					<dict>
+						<key>Cols</key>
+						<array>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl}
+{\colortbl;\red255\green255\blue255;}
+}</string>
+							<string>{\rtf1\mac\ansicpg10000\cocoartf102
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural
+
+\f0\fs24 \cf0 When saving (or autosaving) version 6 data, the v6 screen state is not saved. We need to retrieve this from the ZoomServer process and restore it as required}</string>
 						</array>
 					</dict>
 					<dict>
@@ -116,7 +150,9 @@
 
 \f0\fs24 \cf0 Fixed the problem with the thing crashing: (weird bug with NSTextStorage there. If you unarchive an NSTextStorage, and then call setAttributedString: with the unarchived NSTextStorage on *another* NSTextStorage, then -beginEditing and -endEditing blow up).\
 \
-However, we're getting an 'undefined opcode' error when double-clicking a save file now, so something somewhere isn't setting things up right: either a bad PC or we're restoring the wrong file, and ZoomServer's error checking isn't working.}</string>
+However, we're getting an 'undefined opcode' error when double-clicking a save file now, so something somewhere isn't setting things up right: either a bad PC or we're restoring the wrong file, and ZoomServer's error checking isn't working.\
+\
+FIXED: this only happened on v8 files, because we weren't setting the address packtype before calling zmachine_runsome() - ie, not performing the setup tasks that are done by zmachine_run() by default.}</string>
 							<string>{\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
@@ -124,6 +160,8 @@ However, we're getting an 'undefined opcode' error when double-clicking a save f
 
 \f0\fs24 \cf0 Double-clicking games broken again}</string>
 						</array>
+						<key>State</key>
+						<integer>1</integer>
 					</dict>
 					<dict>
 						<key>Cols</key>

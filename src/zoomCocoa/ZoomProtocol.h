@@ -53,8 +53,8 @@ enum ZValueTypeMasks {
 // Setup
 - (void) loadStoryFile: (in bycopy NSData*) storyFile;
 
-// Restoring game state
-- (void) restoreSaveState: (in bycopy NSData*) gameSave;
+// Restoring game state (returns nil if successful)
+- (out bycopy NSString*) restoreSaveState: (in bycopy NSData*) gameSave;
 
 // Running
 - (oneway void) startRunningInDisplay: (in byref NSObject<ZDisplay>*) display;
