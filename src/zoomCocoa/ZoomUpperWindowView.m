@@ -3,7 +3,7 @@
 //  ZoomCocoa
 //
 //  Created by Andrew Hunter on Fri Oct 10 2003.
-//  Copyright (c) 2003 __MyCompanyName__. All rights reserved.
+//  Copyright (c) 2003 Andrew Hunter. All rights reserved.
 //
 
 #import "ZoomUpperWindowView.h"

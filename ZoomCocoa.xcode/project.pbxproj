@@ -207,7 +207,7 @@
 			productReference = 4B1E3F5C050F7B2500A8E303;
 		};
 		4B1E3F5C050F7B2500A8E303 = {
-			expectedFileType = "compiled.mach-o.executable";
+			explicitFileType = "compiled.mach-o.executable";
 			fallbackIsa = PBXFileReference;
 			isa = PBXExecutableFileReference;
 			path = ZoomServer;
@@ -239,9 +239,9 @@
 			sourceTree = "<group>";
 		};
 		4B1E3F60050F7BA000A8E303 = {
-			expectedFileType = wrapper.framework;
 			fallbackIsa = PBXFileReference;
 			isa = PBXFrameworkReference;
+			lastKnownFileType = wrapper.framework;
 			name = Cocoa.framework;
 			path = /System/Library/Frameworks/Cocoa.framework;
 			refType = 0;
@@ -273,59 +273,56 @@
 			name = Interpreter;
 			passBuildSettingsInEnvironment = 1;
 			productName = Interpreter;
-			settingsToExpand = 6;
-			settingsToPassInEnvironment = 287;
-			settingsToPassOnCommandLine = 280;
 		};
 		4B1E3F68050F7C2000A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = interp_z3.h;
 			path = build/interp_z3.h;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
 		4B1E3F6A050F7C2000A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = interp_z4.h;
 			path = build/interp_z4.h;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
 		4B1E3F6B050F7C2000A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = interp_gen.h;
 			path = build/interp_gen.h;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
 		4B1E3F6C050F7C2000A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = interp_z5.h;
 			path = build/interp_z5.h;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
 		4B1E3F6D050F7C2000A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = varop.h;
 			path = build/varop.h;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
 		4B1E3F6E050F7C2000A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = interp_z6.h;
 			path = build/interp_z6.h;
 			refType = 2;
@@ -424,7 +421,7 @@
 			productReference = 4B1E3F7A050F7C3900A8E303;
 		};
 		4B1E3F7A050F7C3900A8E303 = {
-			expectedFileType = "compiled.mach-o.executable";
+			explicitFileType = "compiled.mach-o.executable";
 			fallbackIsa = PBXFileReference;
 			isa = PBXExecutableFileReference;
 			path = Builder;
@@ -459,33 +456,33 @@
 			sourceTree = SOURCE_ROOT;
 		};
 		4B1E3F80050F7CC500A8E303 = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			path = main.c;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3F81050F7CC500A8E303 = {
-			expectedFileType = sourcecode.lex;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.lex;
 			path = lex.l;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3F82050F7CC500A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = operation.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3F83050F7CC500A8E303 = {
-			expectedFileType = sourcecode.yacc;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.yacc;
 			path = gram.y;
 			refType = 4;
 			sourceTree = "<group>";
@@ -523,153 +520,153 @@
 			sourceTree = "<group>";
 		};
 		4B1E3F89050F7D5200A8E303 = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			path = iff.c;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3F8A050F7D5200A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = rc.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3F8B050F7D5200A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = font3.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3F8C050F7D5200A8E303 = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			path = main.c;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3F8D050F7D5200A8E303 = {
-			expectedFileType = sourcecode.yacc;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.yacc;
 			path = rc_parse.y;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3F8E050F7D5200A8E303 = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			path = options.c;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3F8F050F7D5200A8E303 = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			path = file.c;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3F90050F7D5200A8E303 = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			path = hash.c;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3F91050F7D5200A8E303 = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			path = blorb.c;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3F92050F7D5200A8E303 = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			path = rc.c;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3F93050F7D5200A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = rcp.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3F94050F7D5200A8E303 = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			path = font3.c;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3F95050F7D5200A8E303 = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			path = menu.c;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3F96050F7D5200A8E303 = {
-			expectedFileType = sourcecode.lex;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.lex;
 			path = rc_lex.l;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3F97050F7D5200A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = options.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3F98050F7D5200A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = menu.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3F99050F7D5200A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = blorb.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3F9A050F7D5200A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = file.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3F9B050F7D5200A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = hash.h;
 			refType = 4;
 			sourceTree = "<group>";
@@ -815,137 +812,137 @@
 			sourceTree = SOURCE_ROOT;
 		};
 		4B1E3FB0050F7DE200A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = debug.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3FB1050F7DE200A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = zmachine.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3FB2050F7DE200A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = zscii.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3FB3050F7DE200A8E303 = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			path = state.c;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3FB4050F7DE200A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = tokenise.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3FB5050F7DE200A8E303 = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			path = tokenise.c;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3FB6050F7DE200A8E303 = {
-			expectedFileType = sourcecode.yacc;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.yacc;
 			path = eval.y;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3FB7050F7DE200A8E303 = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			path = debug.c;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3FB8050F7DE200A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = state.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3FB9050F7DE200A8E303 = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			path = zmachine.c;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3FBA050F7DE200A8E303 = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			path = zscii.c;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3FBB050F7DE200A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = stream.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3FBC050F7DE200A8E303 = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			path = stream.c;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3FBD050F7DE200A8E303 = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			path = random.c;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3FBE050F7DE200A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = random.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3FBF050F7DE200A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = interp.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B1E3FC0050F7DE200A8E303 = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			path = interp.c;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1053,51 +1050,51 @@
 			};
 		};
 		4B1E3FD2050F7DFD00A8E303 = {
-			expectedFileType = text;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = text;
 			path = TODO;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
 		4B1E3FD3050F7E0800A8E303 = {
-			expectedFileType = text;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = text;
 			path = THANKS;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
 		4B1E3FD4050F7E1000A8E303 = {
-			expectedFileType = text;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = text;
 			path = README;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
 		4B1E3FD5050F7E1A00A8E303 = {
-			expectedFileType = text;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = text;
 			name = zcode.ops;
 			path = src/zcode.ops;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
 		4B1E3FD6050F7E3100A8E303 = {
-			expectedFileType = text.script.sh;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = text.script.sh;
 			name = build_files.sh;
 			path = ProjectBuilder/build_files.sh;
 			refType = 2;
 			sourceTree = SOURCE_ROOT;
 		};
 		4B1E3FD7050F7E3100A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = config.h;
 			path = ProjectBuilder/config.h;
 			refType = 2;
@@ -1110,9 +1107,9 @@
 			};
 		};
 		4B1E3FD9050F7E4300A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = ztypes.h;
 			path = ProjectBuilder/etc/ztypes.h;
 			refType = 2;
@@ -1166,17 +1163,17 @@
 			};
 		};
 		4B23C64E053C9C8C00A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = ZoomAppDelegate.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B23C64F053C9C8C00A8E303 = {
-			expectedFileType = sourcecode.c.objc;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = ZoomAppDelegate.m;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1194,17 +1191,17 @@
 			};
 		};
 		4B2D95C9053706CD00A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = ZoomScrollView.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B2D95CA053706CD00A8E303 = {
-			expectedFileType = sourcecode.c.objc;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = ZoomScrollView.m;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1231,17 +1228,17 @@
 			};
 		};
 		4B2D95CE05372EF900A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = ZoomUpperWindowView.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B2D95CF05372EF900A8E303 = {
-			expectedFileType = sourcecode.c.objc;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = ZoomUpperWindowView.m;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1302,6 +1299,99 @@
 			remoteGlobalIDString = 4BDFA4B90535E64900A8E303;
 			remoteInfo = ZoomView;
 		};
+		4B418DC30594FB97009C44DE = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = ZoomPreferenceWindow.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B418DC40594FB97009C44DE = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = ZoomPreferenceWindow.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B418DC50594FB97009C44DE = {
+			fileRef = 4B418DC30594FB97009C44DE;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B418DC60594FB97009C44DE = {
+			fileRef = 4B418DC40594FB97009C44DE;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B418DE40594FC3B009C44DE = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			path = gameSettings.png;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B418DE50594FC3B009C44DE = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			path = fontSettings.png;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B418DE60594FC3B009C44DE = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			path = generalSettings.png;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B418DE70594FC3B009C44DE = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			path = colourSettings.png;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B418DE80594FC3B009C44DE = {
+			fileRef = 4B418DE40594FC3B009C44DE;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B418DE90594FC3B009C44DE = {
+			fileRef = 4B418DE50594FC3B009C44DE;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B418DEA0594FC3B009C44DE = {
+			fileRef = 4B418DE60594FC3B009C44DE;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B418DEB0594FC3B009C44DE = {
+			fileRef = 4B418DE70594FC3B009C44DE;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B418E140594FCDB009C44DE = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			path = Preferences.nib;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B418E150594FCDB009C44DE = {
+			fileRef = 4B418E140594FCDB009C44DE;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		4B4EF61C050FCEA600A8E303 = {
 			buildActionMask = 2147483647;
 			dstPath = "";
@@ -1319,9 +1409,9 @@
 			};
 		};
 		4B4EF620050FD66E00A8E303 = {
-			expectedFileType = sourcecode.c.objc;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = ZFiles.m;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1333,41 +1423,41 @@
 			};
 		};
 		4B4EF623050FDC6800A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = ZoomView.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B4EF624050FDC6800A8E303 = {
-			expectedFileType = sourcecode.c.objc;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = ZoomView.m;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B7D1DAD0534999E00A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = ZoomLowerWindow.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4B7D1DAE0534999E00A8E303 = {
-			expectedFileType = sourcecode.c.objc;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = ZoomLowerWindow.m;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4BCF3F27050F8BB200A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = ZoomProtocol.h;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1379,9 +1469,9 @@
 			};
 		};
 		4BCF3F29050F8E0000A8E303 = {
-			expectedFileType = sourcecode.c.objc;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = ZoomProtocol.m;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1393,9 +1483,9 @@
 			};
 		};
 		4BCF3F2B050F8E2400A8E303 = {
-			expectedFileType = wrapper.framework;
 			fallbackIsa = PBXFileReference;
 			isa = PBXFrameworkReference;
+			lastKnownFileType = wrapper.framework;
 			name = Foundation.framework;
 			path = /System/Library/Frameworks/Foundation.framework;
 			refType = 0;
@@ -1408,9 +1498,9 @@
 			};
 		};
 		4BCF3F2D050F8ECD00A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = display.h;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1422,17 +1512,17 @@
 			};
 		};
 		4BCF3F2F050F9E8F00A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = ZoomServer.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4BCF3F30050F9E8F00A8E303 = {
-			expectedFileType = sourcecode.c.objc;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = ZoomServer.m;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1450,17 +1540,17 @@
 			};
 		};
 		4BCF3F33050FAE5700A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = ZoomZMachine.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4BCF3F34050FAE5700A8E303 = {
-			expectedFileType = sourcecode.c.objc;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = ZoomZMachine.m;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1491,6 +1581,7 @@
 				4B2D95D205372EFB00A8E303,
 				4BFD6B3C0538A71700A8E303,
 				4B23C650053C9C8C00A8E303,
+				4B418DC50594FB97009C44DE,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1504,6 +1595,11 @@
 				4BCF3F4A050FB21C00A8E303,
 				4BCF3F52050FB42600A8E303,
 				4BCF3F58050FB49F00A8E303,
+				4B418DE80594FC3B009C44DE,
+				4B418DE90594FC3B009C44DE,
+				4B418DEA0594FC3B009C44DE,
+				4B418DEB0594FC3B009C44DE,
+				4B418E150594FCDB009C44DE,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1515,6 +1611,7 @@
 				4BDFA4E10535E81300A8E303,
 				4BDFA4E20535E85900A8E303,
 				4B23C651053C9C8C00A8E303,
+				4B418DC60594FB97009C44DE,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1672,7 +1769,7 @@
 ";
 		};
 		4BCF3F3D050FB1B400A8E303 = {
-			expectedFileType = wrapper.application;
+			explicitFileType = wrapper.application;
 			fallbackIsa = PBXFileReference;
 			isa = PBXApplicationReference;
 			path = Zoom.app;
@@ -1694,6 +1791,8 @@
 				4BCF3F5A050FB57A00A8E303,
 				4B23C64E053C9C8C00A8E303,
 				4B23C64F053C9C8C00A8E303,
+				4B418DC30594FB97009C44DE,
+				4B418DC40594FB97009C44DE,
 				4BDFA4E80535E9DE00A8E303,
 			);
 			isa = PBXGroup;
@@ -1708,8 +1807,13 @@
 				4BCF3F44050FB21C00A8E303,
 				4BCF3F45050FB21C00A8E303,
 				4BCF3F46050FB21C00A8E303,
+				4B418DE40594FC3B009C44DE,
+				4B418DE50594FC3B009C44DE,
+				4B418DE60594FC3B009C44DE,
+				4B418DE70594FC3B009C44DE,
 				4BCF3F51050FB42600A8E303,
 				4BCF3F57050FB49F00A8E303,
+				4B418E140594FCDB009C44DE,
 			);
 			isa = PBXGroup;
 			name = Resources;
@@ -1718,32 +1822,32 @@
 			sourceTree = SOURCE_ROOT;
 		};
 		4BCF3F43050FB21C00A8E303 = {
-			expectedFileType = image.icns;
 			isa = PBXFileReference;
+			lastKnownFileType = image.icns;
 			name = "zoom-app.icns";
 			path = "../macos/zoom-app.icns";
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4BCF3F44050FB21C00A8E303 = {
-			expectedFileType = text.rtf;
 			isa = PBXFileReference;
+			lastKnownFileType = text.rtf;
 			name = macreadme.rtf;
 			path = ../macos/macreadme.rtf;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4BCF3F45050FB21C00A8E303 = {
-			expectedFileType = image.icns;
 			isa = PBXFileReference;
+			lastKnownFileType = image.icns;
 			name = "zoom-file.icns";
 			path = "../macos/zoom-file.icns";
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4BCF3F46050FB21C00A8E303 = {
-			expectedFileType = image.icns;
 			isa = PBXFileReference;
+			lastKnownFileType = image.icns;
 			name = "zoom-game.icns";
 			path = "../macos/zoom-game.icns";
 			refType = 4;
@@ -1774,9 +1878,9 @@
 			};
 		};
 		4BCF3F4B050FB2C500A8E303 = {
-			expectedFileType = sourcecode.c.objc;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = main.m;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1800,8 +1904,8 @@
 			};
 		};
 		4BCF3F51050FB42600A8E303 = {
-			expectedFileType = wrapper.nib;
 			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
 			path = MainMenu.nib;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1813,24 +1917,24 @@
 			};
 		};
 		4BCF3F53050FB47200A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = ZoomClient.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4BCF3F54050FB47200A8E303 = {
-			expectedFileType = sourcecode.c.objc;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = ZoomClient.m;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4BCF3F57050FB49F00A8E303 = {
-			expectedFileType = wrapper.nib;
 			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
 			path = ZoomClient.nib;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1842,17 +1946,17 @@
 			};
 		};
 		4BCF3F59050FB57A00A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = ZoomClientController.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4BCF3F5A050FB57A00A8E303 = {
-			expectedFileType = sourcecode.c.objc;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = ZoomClientController.m;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1863,17 +1967,17 @@
 			targetProxy = 4B3C675E05566FE200764D1A;
 		};
 		4BCF3F5E050FBAAF00A8E303 = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			path = v6display.c;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4BCF3F5F050FBAAF00A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = v6display.h;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1891,9 +1995,9 @@
 			};
 		};
 		4BCF3F62050FBB3F00A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = image.h;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1905,49 +2009,49 @@
 			};
 		};
 		4BDFA46305358F1200A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = ZoomUpperWindow.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4BDFA46405358F1200A8E303 = {
-			expectedFileType = sourcecode.c.objc;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = ZoomUpperWindow.m;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4BDFA4AC0535C42C00A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = ZoomMoreView.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4BDFA4AD0535C42C00A8E303 = {
-			expectedFileType = sourcecode.c.objc;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = ZoomMoreView.m;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4BDFA4B00535E10200A8E303 = {
-			expectedFileType = sourcecode.c.h;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = ZoomTextView.h;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		4BDFA4B10535E10200A8E303 = {
-			expectedFileType = sourcecode.c.objc;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = ZoomTextView.m;
 			refType = 4;
 			sourceTree = "<group>";
@@ -2057,7 +2161,7 @@
 ";
 		};
 		4BDFA4BA0535E64900A8E303 = {
-			expectedFileType = wrapper.framework;
+			explicitFileType = wrapper.framework;
 			fallbackIsa = PBXFileReference;
 			isa = PBXFrameworkReference;
 			path = ZoomView.framework;
@@ -2264,9 +2368,9 @@
 			};
 		};
 		4BE447B80510DE5900A8E303 = {
-			expectedFileType = sourcecode.c.objc;
 			fileEncoding = 4;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = ZDisplay.m;
 			refType = 4;
 			sourceTree = "<group>";
@@ -2278,9 +2382,9 @@
 			};
 		};
 		4BE447BA0510E0E000A8E303 = {
-			expectedFileType = sourcecode.c.c;
 			fileEncoding = 30;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			path = display.c;
 			refType = 4;
 			sourceTree = "<group>";

@@ -2303,37 +2303,6 @@ OPCODE "check_unicode" EXT:0x0c ARGS:1 STORE  VERSION 5,7,8
 %}
 
 ####                           ----// 888 \\----                           ####
-# Our own extensions - benchmarking/profiling operations
-OPCODE "start_timer"   EXT:0x80               VERSION 4,5,6,7,8
-%{
-  start_clock = clock();
-%}
-
-OPCODE "stop_timer"    EXT:0x81               VERSION 4,5,6,7,8
-%{
-  end_clock = clock();
-%}
-
-OPCODE "read_timer"    EXT:0x82 STORE         VERSION 4,5,6,7,8
-%{
-  clock_t now;
-
-  now = end_clock - start_clock;
-
-  store(stack, st, (ZUWord) (now*100)/CLOCKS_PER_SEC);
-%}
-
-OPCODE "print_timer"   EXT:0x83      	      VERSION 4,5,6,7,8
-%{
-  clock_t now;
-  
-  now = end_clock - start_clock;
-
-  stream_printf("%i.%02i secs", (signed int) (now/CLOCKS_PER_SEC),
-		(signed int) ((now*100)/CLOCKS_PER_SEC)%100);
-%}
-
-####                           ----// 888 \\----                           ####
 # Version 6 opcodes
 
 OPCODE "aread"          VAR:0x04 ARGS:4 STORE CANJUMP VERSION 6
@@ -3302,4 +3271,35 @@ OPCODE "sound_data" EXT:0x0e BRANCH VERSION 5,6,7,8
 
   result = 0;
   dobranch;
+%}
+
+####                           ----// 888 \\----                           ####
+# Our own extensions - benchmarking/profiling operations
+OPCODE "start_timer"   EXT:0x80               VERSION 4,5,6,7,8
+%{
+  start_clock = clock();
+%}
+
+OPCODE "stop_timer"    EXT:0x81               VERSION 4,5,6,7,8
+%{
+  end_clock = clock();
+%}
+
+OPCODE "read_timer"    EXT:0x82 STORE         VERSION 4,5,6,7,8
+%{
+  clock_t now;
+
+  now = end_clock - start_clock;
+
+  store(stack, st, (ZUWord) (now*100)/CLOCKS_PER_SEC);
+%}
+
+OPCODE "print_timer"   EXT:0x83      	      VERSION 4,5,6,7,8
+%{
+  clock_t now;
+  
+  now = end_clock - start_clock;
+
+  stream_printf("%i.%02i secs", (signed int) (now/CLOCKS_PER_SEC),
+		(signed int) ((now*100)/CLOCKS_PER_SEC)%100);
 %}
