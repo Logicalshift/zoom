@@ -386,11 +386,14 @@ void display_prints_c(const char* str)
   int* txt;
   int x, len;
 
-  txt = malloc((len=strlen(str))*sizeof(int)+sizeof(int));
+  len = strlen(str);
+
+  txt = malloc((len+1)*sizeof(int)+sizeof(int));
   for (x=0; x<=len; x++)
     {
       txt[x] = str[x];
     }
+  txt[len] = 0;
   display_prints(txt);
   free(txt);
 }

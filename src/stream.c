@@ -181,8 +181,6 @@ static void prints(const int* const s)
     }
   if (machine.transcript_on == 1)
     {
-      int x;
-    
       write_stringu(machine.transcript_file, s);
     }
 }
@@ -261,8 +259,6 @@ void stream_input(const int* s)
   if (machine.transcript_on == 1 ||
       machine.transcript_commands == 1)
     {
-      int x;
-
       write_stringu(machine.transcript_file, s);
       write_string(machine.transcript_file, "\n");
     }

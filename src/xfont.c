@@ -203,13 +203,13 @@ xfont* xfont_load_font(char* font)
 	  XftResult   res;
 
 	  pat = XftXlfdParse(font, False, False);
-	  XftPatternAddBool(pat, XFT_ANTIALIAS,
-	     rc_get_antialias()?True:False);
 
 	  if (!pat) {
 	    f->data.Xft = NULL;
 	  } else {
 	    // FcPatternPrint(pat);
+
+	    XftPatternAddBool(pat, XFT_ANTIALIAS, rc_get_antialias()?True:False);
 
 	    res = XftResultNoMatch; /* Bug in Xft... */
 	    match = XftFontMatch(x_display, x_screen, pat, &res);
