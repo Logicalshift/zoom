@@ -2300,8 +2300,6 @@ OPCODE "set_text_style" VAR:0x11 ARGS:1               VERSION 6
   if (argblock.arg[0] == 0)
     windows[cwin].style = 0;
 
-  machine.memory[ZH_fontheight] = display_get_font_height(windows[argblock.arg[0]].style)+0.5;
-
   v6_set_style(argblock.arg[0]);
 %}
 
