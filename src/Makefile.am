@@ -66,7 +66,8 @@ if CARBON_VERSION
 	cp $(srcdir)/macos/zoom-app.icns $(srcdir)/macos/zoom-file.icns $(srcdir)/macos/zoom-game.icns $(srcdir)/macos/zoomrc Zoom.app/Contents/Resources
 	cp $(srcdir)/macos/Info.plist $(srcdir)/macos/PkgInfo Zoom.app/Contents
 	cp $(srcdir)/../manual/*.html $(srcdir)/../manual/*.png Zoom.app/Contents/Resources/Zoom\ Help/main
-	cp $(srcdir)/../manual/ztitle.html $(srcdir)/../manual/zicon.gif $(srcdir)/../manual/Zoom\ Help\ idx Zoom.app/Contents/Resources/Zoom\ Help
+	cp $(srcdir)/../manual/ztitle.html $(srcdir)/../manual/zicon.gif Zoom.app/Contents/Resources/Zoom\ Help
+	cp $(srcdir)/../manual/idx Zoom.app/Contents/Resources/Zoom\ Help/Zoom\ Help\ idx
 	mv Zoom.app/Contents/Resources/Zoom\ Help/ztitle.html Zoom.app/Contents/Resources/Zoom\ Help/Zoom\ Help.htm
 endif
 endif
