@@ -30,6 +30,14 @@ Compiling Zoom
    all that's required to build Zoom for either X or Mac OS X.
    Please report any build problems to the bugs address listed 
    above: Zoom should work on a reasonably wide variety of systems.
+   
+   You can also build the Carbon version of Zoom by opening the
+   Zoom.pbproj file in Project Builder. The Cocoa version of Zoom has
+   to be built with XCode, using the ZoomCocoa.xcode file. Building
+   with project builder may cause problems with yacc generating corrupt 
+   files, producing many spurious errors (XCode does not appear to have
+   these problems). If this occurs, delete the relevant files from
+   the build/Zoom.build/DerivedSources directory.
 
    You may want to try the --enable-new-terp option to configure:
    this enables an experimental new interpreter design. This gives
