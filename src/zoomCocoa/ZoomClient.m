@@ -54,27 +54,29 @@
 	
 	storyId = [[[ZoomStoryID alloc] initWithZCodeStory: gameData] autorelease];
 	
-	story = [[NSApp delegate] findStory: storyId];
-	
-	if ([[[NSApp delegate] userMetadata] findStory: storyId] != nil) {
-		NSLog(@"Already user story!");
-	}
-	
-	if (story == nil) {
-		story = [[ZoomStory alloc] init];
-		[story setTitle: [[[self fileName] lastPathComponent] stringByDeletingPathExtension]];
-	} else {
-		[story retain];
-	}
-
-	[story addID: storyId];
-
-	[[[NSApp delegate] userMetadata] storeStory: [[story copy] autorelease]];
-	[story release];
-	
 	story = [[[NSApp delegate] userMetadata] findStory: storyId];
-	if (story == nil) {
-		story = [[ZoomStory alloc] init];
+	
+	if (!story) {
+		story = [[NSApp delegate] findStory: storyId];
+		
+		if (story == nil) {
+			story = [[ZoomStory alloc] init];
+			[story setTitle: [[[self fileName] lastPathComponent] stringByDeletingPathExtension]];
+		} else {
+			[story retain];
+		}
+		
+		[story addID: storyId];
+		
+		[[[NSApp delegate] userMetadata] storeStory: [[story copy] autorelease]];
+		[story release];
+		
+		story = [[[NSApp delegate] userMetadata] findStory: storyId];
+		if (story == nil) {
+			story = [[ZoomStory alloc] init];
+		} else {
+			[story retain];
+		}
 	} else {
 		[story retain];
 	}
