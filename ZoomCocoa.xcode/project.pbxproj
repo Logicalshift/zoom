@@ -155,6 +155,7 @@
 		};
 		4B1E3F47050F7AD000A8E303 = {
 			children = (
+				4B3DA126068DAEA800B7090F,
 				4B1E3FD2050F7DFD00A8E303,
 				4B1E3FD3050F7E0800A8E303,
 				4B1E3FD4050F7E1000A8E303,
@@ -1510,6 +1511,53 @@
 			remoteGlobalIDString = 4BDFA4B90535E64900A8E303;
 			remoteInfo = ZoomView;
 		};
+		4B3DA126068DAEA800B7090F = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			name = Makefile.am;
+			path = src/Makefile.am;
+			refType = 4;
+			sourceTree = "<group>";
+			tabWidth = 8;
+		};
+		4B3DA12F068DAF9E00B7090F = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = ZoomInputLine.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B3DA130068DAF9E00B7090F = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = ZoomInputLine.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B3DA131068DAF9E00B7090F = {
+			fileRef = 4B3DA12F068DAF9E00B7090F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B3DA133068DAFA800B7090F = {
+			fileRef = 4B3DA130068DAF9E00B7090F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B3DA134068DAFA900B7090F = {
+			fileRef = 4B3DA12F068DAF9E00B7090F;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
 		4B418DC30594FB97009C44DE = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -2340,6 +2388,8 @@
 				4BCB09640615D0D800CDFB98,
 				4BBC1F78062F43BB00FE547F,
 				4BE6220C068C273900369528,
+				4BE6236F068CB86C00369528,
+				4B3DA131068DAF9E00B7090F,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2906,6 +2956,8 @@
 				4B2D95D005372EF900A8E303,
 				4B418EDD05961E0F009C44DE,
 				4BE6220A068C273400369528,
+				4BE6236D068CB86300369528,
+				4B3DA134068DAFA900B7090F,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2931,6 +2983,8 @@
 				4B2D95D105372EF900A8E303,
 				4B418EDE05961E0F009C44DE,
 				4BE6220B068C273400369528,
+				4BE6236E068CB86300369528,
+				4B3DA133068DAFA800B7090F,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3186,6 +3240,10 @@
 				4B2D95CF05372EF900A8E303,
 				4BE62208068C273400369528,
 				4BE62209068C273400369528,
+				4BE6236B068CB86300369528,
+				4BE6236C068CB86300369528,
+				4B3DA12F068DAF9E00B7090F,
+				4B3DA130068DAF9E00B7090F,
 			);
 			isa = PBXGroup;
 			name = ZoomView;
@@ -3263,6 +3321,9 @@
 			fileRef = 4BE62208068C273400369528;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		4BE6220B068C273400369528 = {
@@ -3273,6 +3334,43 @@
 		};
 		4BE6220C068C273900369528 = {
 			fileRef = 4BE62208068C273400369528;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BE6236B068CB86300369528 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = ZoomCursor.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BE6236C068CB86300369528 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = ZoomCursor.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BE6236D068CB86300369528 = {
+			fileRef = 4BE6236B068CB86300369528;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
+		4BE6236E068CB86300369528 = {
+			fileRef = 4BE6236C068CB86300369528;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BE6236F068CB86C00369528 = {
+			fileRef = 4BE6236B068CB86300369528;
 			isa = PBXBuildFile;
 			settings = {
 			};

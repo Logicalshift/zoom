@@ -181,6 +181,12 @@ static void finalizeViews(void) {
             nAllocatedViews--;
         }
     }
+	
+	if (pixmapWindow) {
+		[pixmapCursor setDelegate: nil];
+		[pixmapCursor release];
+		[pixmapWindow release];
+	}
 
     [[NSNotificationCenter defaultCenter] removeObserver: self];
 
@@ -193,6 +199,8 @@ static void finalizeViews(void) {
 	[viewPrefs release];
 	[commandHistory release];
 	if (lastAutosave) [lastAutosave release];
+	
+	if (inputLine) [inputLine release];
 
     [super dealloc];
 }
@@ -204,11 +212,31 @@ static void finalizeViews(void) {
 		NSImage* pixmap = [pixmapWindow pixmap];
 		NSSize pixSize = [pixmap size];
 		
+		/*
 		[pixmap drawAtPoint: NSMakePoint(floor(bounds.origin.x + (bounds.size.width-pixSize.width)/2.0), floor(bounds.origin.y + (bounds.size.height-pixSize.height)/2.0))
 				   fromRect: NSMakeRect(0,0,pixSize.width, pixSize.height)
 				  operation: NSCompositeSourceOver
 				   fraction: 1.0];
+		 */
+				
+		bounds.origin.y += bounds.size.height;
+		bounds.size.height = -bounds.size.height;
+
+		[pixmap drawInRect: bounds
+				  fromRect: NSMakeRect(0,0,pixSize.width, pixSize.height)
+				 operation: NSCompositeSourceOver
+				  fraction: 1.0];
+		
+		[pixmapCursor draw];
+		
+		if (inputLine) {
+			[inputLine drawAtPoint: inputLinePos];
+		}
 	}
+}
+
+- (BOOL) isFlipped {
+	return YES;
 }
 
 // Scaling
@@ -274,6 +302,16 @@ static void finalizeViews(void) {
 - (out byref NSObject<ZPixmapWindow>*) createPixmapWindow {
 	if (pixmapWindow == nil) {
 		pixmapWindow = [[ZoomPixmapWindow alloc] initWithZoomView: self];
+
+		pixmapCursor = [[ZoomCursor alloc] init];
+		[pixmapCursor setDelegate: self];
+		
+		// FIXME: test of the cursor
+		[pixmapCursor positionAt: NSMakePoint(100, 100)
+						withFont: [self fontWithStyle: 0]];
+		[pixmapCursor setShown: NO];
+		[pixmapCursor setBlinking: YES];
+		[pixmapCursor setActive: YES];
 	}
 	
 	[textScroller removeFromSuperview];
@@ -346,33 +384,62 @@ static void finalizeViews(void) {
 	if (lastAutosave) [lastAutosave release];
 	lastAutosave = [[zMachine createGameSave] retain];
 
-    [self rearrangeUpperWindows];
-
-    int currentSize = [self upperWindowSize];
-    if (currentSize != lastTileSize) {
-        [textScroller tile];
-        [self updateMorePrompt];
-        lastTileSize = currentSize;
-    }
+	if (pixmapWindow == nil) {
+		// == Version 1-5/7/8 routines ==
+		[self rearrangeUpperWindows];
+		
+		int currentSize = [self upperWindowSize];
+		if (currentSize != lastTileSize) {
+			[textScroller tile];
+			[self updateMorePrompt];
+			lastTileSize = currentSize;
+		}
 	
-	historyPos = [commandHistory count];
+		historyPos = [commandHistory count];
 
-    // Paste stuff
-    NSEnumerator* upperEnum = [upperWindows objectEnumerator];
-    ZoomUpperWindow* win;
-    while (win = [upperEnum nextObject]) {
-        [textView pasteUpperWindowLinesFrom: win];
-    }
+		// Paste stuff
+		NSEnumerator* upperEnum = [upperWindows objectEnumerator];
+		ZoomUpperWindow* win;
+		while (win = [upperEnum nextObject]) {
+			[textView pasteUpperWindowLinesFrom: win];
+		}
     
-    // If the more prompt is off, then set up for editing
-    if (!moreOn) {
-        [textView setEditable: YES];
+		// If the more prompt is off, then set up for editing
+		if (!moreOn) {
+			[textView setEditable: YES];
 
-        [self resetMorePrompt];
-        [self scrollToEnd];
-    }
+			[self resetMorePrompt];
+			[self scrollToEnd];
+		}
 
-    inputPos = [[textView textStorage] length];
+		inputPos = [[textView textStorage] length];
+	} else {
+		// == Version 6 pixmap entry routines ==
+		
+		// Move the cursor to the appropriate position
+		ZStyle* style = [pixmapWindow inputStyle];
+		int fontnum =
+			([style bold]?1:0)|
+			([style underline]?2:0)|
+			([style fixed]?4:0)|
+			([style symbolic]?8:0);
+		
+		[pixmapCursor positionAt: [pixmapWindow inputPos]
+						withFont: [self fontWithStyle: fontnum]];
+
+		// Display the cursor
+		[pixmapCursor setShown: YES];
+		
+		// Setup the input line
+		[self setInputLinePos: [pixmapWindow inputPos]];
+		[self setInputLine: [[[ZoomInputLine alloc] initWithCursor: pixmapCursor
+														attributes: [self attributesForStyle: [pixmapWindow inputStyle]]]
+			autorelease]];
+		
+		// Make ourselves the first responder
+		[[self window] makeFirstResponder: self];
+	}
+	
     receiving = YES;
 }
 
@@ -626,6 +693,11 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         [self page];
         return YES;
     }
+	
+	if (inputLine) {
+		[inputLine keyDown: theEvent];
+		return YES;
+	}
     
     if (receivingCharacters) {
         NSString* chars = [theEvent characters];
@@ -724,6 +796,10 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     }
 
     return NO;
+}
+
+- (void) keyDown: (NSEvent*) event {
+	[self handleKeyDown: event];
 }
 
 // = Formatting, fonts, colours, etc =
@@ -1809,6 +1885,89 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 
 - (NSObject<ZWindow>*) focusedView {
 	return focusedView;
+}
+
+// = Cursor delegate =
+- (void) viewWillMoveToWindow: (NSWindow*) newWindow {
+	// Will observe events in a new window
+	if ([self window] != nil) {
+		[[NSNotificationCenter defaultCenter] removeObserver: self
+														name: NSWindowDidBecomeKeyNotification
+													  object: [self window]];
+		[[NSNotificationCenter defaultCenter] removeObserver: self
+														name: NSWindowDidResignKeyNotification
+													  object: [self window]];
+	}
+	
+	if (newWindow != nil) {
+		[[NSNotificationCenter defaultCenter] addObserver: self
+												 selector: @selector(windowDidBecomeKey:)
+													 name: NSWindowDidBecomeKeyNotification
+												   object: [self window]];
+		[[NSNotificationCenter defaultCenter] addObserver: self
+												 selector: @selector(windowDidResignKey:)
+													 name: NSWindowDidResignKeyNotification
+												   object: [self window]];		
+	}
+}
+
+- (void) windowDidBecomeKey: (NSNotification*) not {
+	if (pixmapCursor) {
+		[pixmapCursor setActive: YES];
+	}
+}
+
+- (void) windowDidResignKey: (NSNotification*) not {
+	if (pixmapCursor) {
+		[pixmapCursor setActive: NO];
+	}
+}
+
+- (void) blinkCursor: (ZoomCursor*) sender {
+	[self setNeedsDisplayInRect: [sender cursorRect]];
+}
+
+- (BOOL) acceptsFirstResponder {
+	if (pixmapWindow != nil) {
+		return YES;
+	}
+	
+	return NO;
+}
+
+- (BOOL) becomeFirstResponder {
+	if (pixmapCursor) {
+		[pixmapCursor setFirst: YES];
+		return YES;
+	}
+	
+	return NO;
+}
+
+- (BOOL) resignFirstResponder {
+	if (pixmapCursor) {
+		[pixmapCursor setFirst: NO];
+	}
+	
+	return YES;
+}
+
+// = Manual input =
+
+- (void) setInputLinePos: (NSPoint) pos {
+	inputLinePos = pos;
+}
+
+- (void) setInputLine: (ZoomInputLine*) input {
+	if (inputLine) [inputLine release];
+	inputLine = [input retain];
+	
+	if ([inputLine delegate] == nil)
+		[inputLine setDelegate: self];
+}
+
+- (void) inputLineHasChanged: (ZoomInputLine*) sender {
+	[self setNeedsDisplayInRect: [inputLine rectForPoint: inputLinePos]];
 }
 
 @end

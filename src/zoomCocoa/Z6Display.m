@@ -241,6 +241,15 @@ int display_get_pix_colour(int x, int y) {
 	return (redComponent)|(greenComponent<<5)|(blueComponent<<10);
 }
 
+// Input
+
+void display_set_input_pos   (int style, int x, int y, int width) { 
+	set_style(style);
+	
+	[(NSObject<ZPixmapWindow>*)[mainMachine windowNumber: 0] setInputPosition: NSMakePoint(x, y)
+																	withStyle: zDisplayCurrentStyle];
+}
+
 extern void  display_scroll_region   (int x, int y,
                                       int width, int height,
                                       int xoff, int yoff) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
@@ -252,7 +261,6 @@ extern int   display_get_pix_mouse_b (void) { NSLog(@"Function not implemented: 
 extern int   display_get_pix_mouse_x (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
 extern int   display_get_pix_mouse_y (void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
 
-extern void  display_set_input_pos   (int style, int x, int y, int width) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
 extern void  display_set_mouse_win   (int x, int y, int width, int height) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
 
 // = Images =

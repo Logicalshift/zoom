@@ -19,6 +19,8 @@
 		pixmap = [[NSImage alloc] initWithSize: NSMakeSize(640, 480)];
 		[pixmap setFlipped: YES];
 		zView = view;
+		
+		inputStyle = nil;
 	}
 	
 	return self;
@@ -26,6 +28,7 @@
 
 - (void) dealloc {
 	[pixmap release];
+	[inputStyle release];
 	
 	[super dealloc];
 }
@@ -159,6 +162,24 @@
 	[pixmap unlockFocus];
 	
 	return [[res copy] autorelease];
+}
+
+// Input
+- (void) setInputPosition: (NSPoint) point
+				withStyle: (in bycopy ZStyle*) style {
+	inputPos = point;
+	if (inputStyle) {
+		[inputStyle release];
+		inputStyle = style;
+	}
+}
+
+- (NSPoint) inputPos {
+	return inputPos;
+}
+
+- (ZStyle*) inputStyle {
+	return inputStyle;
 }
 
 @end

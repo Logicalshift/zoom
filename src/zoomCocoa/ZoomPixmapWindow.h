@@ -13,6 +13,9 @@
 @interface ZoomPixmapWindow : NSObject<ZPixmapWindow, NSCoding> {
 	NSImage* pixmap;
 	ZoomView* zView;
+	
+	NSPoint inputPos;
+	ZStyle* inputStyle;
 }
 
 // Initialisation
@@ -20,5 +23,9 @@
 
 // Getting the pixmap
 - (NSImage*) pixmap;
+
+// Input information
+- (NSPoint) inputPos;
+- (ZStyle*) inputStyle;
 
 @end

@@ -183,6 +183,10 @@ typedef enum {
 // Measures a string
 - (NSSize) measureString: (in bycopy NSString*) string
 			   withStyle: (in bycopy ZStyle*) style;
+
+// Sets the input position in the window
+- (void) setInputPosition: (NSPoint) point
+				withStyle: (in bycopy ZStyle*) style;
 @end
 
 @protocol ZDisplay

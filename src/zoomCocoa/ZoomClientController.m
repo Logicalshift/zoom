@@ -86,9 +86,9 @@
 }
 
 - (void) zoomViewIsNotResizable {
-	[[self window] setContentMaxSize: [zoomView frame].size];
+	//[[self window] setContentMaxSize: [zoomView frame].size];
 	[[self window] setContentMinSize: [zoomView frame].size];
-	[[self window] setShowsResizeIndicator: NO];
+	//[[self window] setShowsResizeIndicator: NO];
 }
 
 - (BOOL) useSavePackage {

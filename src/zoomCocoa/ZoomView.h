@@ -12,6 +12,8 @@
 #import "ZoomTextView.h"
 #import "ZoomScrollView.h"
 #import "ZoomPreferences.h"
+#import "ZoomCursor.h"
+#import "ZoomInputLine.h"
 
 #define ZBoldStyle 1
 #define ZUnderlineStyle 2
@@ -77,7 +79,12 @@ extern NSString* ZoomStyleAttributeName;
 	NSObject<ZWindow>* focusedView;
 	
 	// Pixmap view
+	ZoomCursor*       pixmapCursor;
 	ZoomPixmapWindow* pixmapWindow;
+	
+	// Manual input
+	ZoomInputLine*    inputLine;
+	NSPoint			  inputLinePos;
 	
 	// Autosave
 	NSData* lastAutosave;
@@ -162,6 +169,10 @@ extern NSString* ZoomStyleAttributeName;
 - (BOOL) isRunning;
 
 - (void) restoreSaveState: (NSData*) state;
+
+// 'Manual' input
+- (void) setInputLinePos: (NSPoint) pos;
+- (void) setInputLine: (ZoomInputLine*) input;
 
 @end
 
