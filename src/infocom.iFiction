@@ -191,6 +191,17 @@ The Circle rises and intones a richly woven spell, whose many textures imbue the
          <release>59</release>
        </zcode>
     </id>
+
+    <title>The Hitchhiker's Guide To The Galaxy</title>
+    <headline>Infocom interactive fiction - a science fiction story</headline>
+    <teaser>You wake up. The room is spinning very gently round your head. Or at least it would be if you could see it which you can't.</teaser>
+	<group>Infocom</group>
+	<year>1984</year>
+	<genre>Science fiction</genre>
+	<author>Douglas Adams and Steve Meretzky</author>
+  </story>
+
+  <story>
     <id>
       <format>zcode</format>
       <zcode>
@@ -199,7 +210,7 @@ The Circle rises and intones a richly woven spell, whose many textures imbue the
 	  </zcode>
     </id>
 
-    <title>The Hitch Hiker's Guide To The Galaxy</title>
+    <title>The Hitchhiker's Guide To The Galaxy (Solid Gold)</title>
     <headline>Infocom interactive fiction - a science fiction story</headline>
     <teaser>You wake up. The room is spinning very gently round your head. Or at least it would be if you could see it which you can't.</teaser>
 	<group>Infocom</group>
@@ -974,6 +985,7 @@ Untied Press International
 	  </zcode>
 	</id>
 	<title>Trinity</title>
+	<headline>An Interactive Fantasy</headline>
 	<teaser>
 		Sharp words between the superpowers. Tanks in East Berlin. And now, reports the BBC, rumors of a satellite blackout. It's enough to spoil your continental breakfast.
 		<br/><br/>
@@ -1072,7 +1084,7 @@ Hier ist ein kleiner Briefkasten.
 	    <serial>880405</serial><release>4</release>
 	  </zcode>
 	</id>
-	<title>Leather Goddesses of Phobos (Solid Gold edition)</title>
+	<title>Leather Goddesses of Phobos (Solid Gold)</title>
 	<group>Infocom</group>
     <headline>Infocom interactive fiction -- a racy space-age spoof</headline>
     <teaser>
@@ -1090,7 +1102,7 @@ Hier ist ein kleiner Briefkasten.
 	  </zcode>
 	</id>
 	
-	<title>Planetfall (Solid Gold edition)</title>
+	<title>Planetfall (Solid Gold)</title>
     <headline>Infocom interactive fiction - a science fiction story</headline>
     <teaser>
       Another routine day of drudgery aboard the Stellar Patrol Ship Feinstein. This morning's assignment for a certain lowly Ensign Seventh Class: scrubbing the filthy metal deck at the port end of Level Nine. With your Patrol-issue self-contained multi-purpose all-weather scrub brush you shine the floor with a diligence born of the knowledge that at any moment dreaded Ensign First Class Blather, the bane of your shipboard existence, could appear.
@@ -1127,7 +1139,7 @@ Hier ist ein kleiner Briefkasten.
 	    <serial>880706</serial><release>23</release>
 	  </zcode>
 	</id>
-	<title>Wishbringer (Solid Gold edition)</title>
+	<title>Wishbringer (Solid Gold)</title>
     <headline>The Magick Stone of Dreams</headline>
     <teaser>
 "Behind you!" cries the Princess. "It's a trap!"<br/>
@@ -1151,7 +1163,7 @@ The reptile bellows with rage and flaps its wings to fan the fire in its belly. 
 	  </zcode>
 	</id>
 
-    <title>Zork I (Solid Gold Edition)</title>
+    <title>Zork I (Solid Gold)</title>
     <headline>The Great Underground Empire</headline>
     <teaser>West of House<br/>
 You are standing in an open field west of a white house, with a boarded front door.<br/>

@@ -168,12 +168,15 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	[drawerButton setPushedImage: [NSImage imageNamed: @"drawer-in"]];		
 	[infoButton setPushedImage: [NSImage imageNamed: @"information-in"]];		
 	
+	[drawerButton setEnabled: YES];
 	[continueButton setEnabled: NO];
 	[newgameButton setEnabled: NO];
 	
 	[[self window] setFrameUsingName: @"iFiction"];
 	[[self window] setExcludedFromWindowsMenu: YES];
-	
+
+	[self setupSplitView];
+		
 	// Set up the filter table headers (panther only)
 	if (objc_lookUpClass("NSShadow") != nil) {
 		// We have NSShadow - go ahead
@@ -193,7 +196,8 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	showDrawer = YES;
 	needsUpdating = YES;
 	
-	sortColumn = [@"group" retain];
+	sortColumn = [@"title" retain];
+	[mainTableView setHighlightedTableColumn:[mainTableView tableColumnWithIdentifier:sortColumn]];
 	
 	[mainTableView setAllowsColumnSelection: NO];
 	
@@ -247,6 +251,11 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 				   withTitle: @"Teaser"];
 	[collapseView addSubview: commentView
 				   withTitle: @"Comments"];
+
+	[mainTableView registerForDraggedTypes:[NSArray arrayWithObjects:NSFilenamesPboardType, nil]];
+				   
+	[mainTableView setDoubleAction:@selector(startNewGame:)];
+
 }
 
 - (void) close {
@@ -255,6 +264,10 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 }
 
 - (void)windowDidMove:(NSNotification *)aNotification {
+	[[self window] saveFrameUsingName: @"iFiction"];
+}
+
+- (void)windowDidResize:(NSNotification *)notification {
 	[[self window] saveFrameUsingName: @"iFiction"];
 }
 
@@ -324,46 +337,57 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 
 - (void) addFilesFromPanel: (NSOpenPanel *)sheet
 				returnCode: (int)returnCode
-			   contextInfo: (void *)contextInfo {
+			   contextInfo: (void *)contextInfo 
+{
 	if (returnCode != NSOKButton) return;
-
-	NSArray* fileTypes = [NSArray arrayWithObjects: @"z3", @"z4", @"z5", @"z6", @"z7", @"z8", nil];
 	
 	// Store the defaults
 	[[NSUserDefaults standardUserDefaults] setObject: [sheet directory]
 											  forKey: addDirectory];
 	
+	NSArray * filenames = [sheet filenames];
+	[self addFiles:filenames];
+}
+
+- (void) addFiles: (NSArray *)filenames
+{
+	NSArray* fileTypes = [NSArray arrayWithObjects: @"z3", @"z4", @"z5", @"z6", @"z7", @"z8", nil];
+
 	// Add all the files we can
-	NSMutableArray* extraFiles = [NSMutableArray array];
-	NSMutableArray* selectedFiles = [[sheet filenames] mutableCopy];
-	NSEnumerator* selFileEnum = [selectedFiles objectEnumerator];
+	NSMutableArray* selectedFiles = [filenames mutableCopy];
 	NSString* filename;
 	
-	while (filename = [selFileEnum nextObject]) {
+	while( [selectedFiles count] > 0 ) 
+	{
 		NSAutoreleasePool* p = [[NSAutoreleasePool alloc] init];
 		BOOL isDir;
 		
+		filename = [selectedFiles objectAtIndex:0];
+
 		isDir = NO;
 		[[NSFileManager defaultManager] fileExistsAtPath: filename
 											 isDirectory: &isDir];
 		
 		NSString* fileType = [filename pathExtension];
 		
-		if (isDir) {
+		if (isDir) 
+		{
 			NSArray* dirContents = [[NSFileManager defaultManager] directoryContentsAtPath: filename];
 			
 			NSEnumerator* dirContentsEnum = [dirContents objectEnumerator];
 			NSString* dirComponent;
 			
-			while (dirComponent = [dirContentsEnum nextObject]) {
-				if ([fileTypes containsObject: [dirComponent pathExtension]]) {
-					[extraFiles addObject: [filename stringByAppendingPathComponent: dirComponent]];
-				}
+			while (dirComponent = [dirContentsEnum nextObject]) 
+			{
+				[selectedFiles addObject: [filename stringByAppendingPathComponent: dirComponent]];
 			}
-		} else if ([fileTypes containsObject: fileType]) {
+		} 
+		else if ( [fileTypes containsObject: fileType] ) 
+		{
 			ZoomStoryID* fileID = [[ZoomStoryID alloc] initWithZCodeFile: filename];
 			
-			if (fileID != nil) {
+			if (fileID != nil) 
+			{
 				[[ZoomStoryOrganiser sharedStoryOrganiser] addStory: filename
 														  withIdent: fileID
 														   organise: [[ZoomPreferences globalPreferences] keepGamesOrganised]];
@@ -371,35 +395,9 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 				[fileID release];
 			}
 		}
-		
-		[p release];
-	}
-	
-	// Add any extra files we got from selected directories
-	selFileEnum = [extraFiles objectEnumerator];
-	
-	while (filename = [selFileEnum nextObject]) {
-		NSAutoreleasePool* p = [[NSAutoreleasePool alloc] init];
-		BOOL isDir;
-		
-		isDir = NO;
-		[[NSFileManager defaultManager] fileExistsAtPath: filename
-											 isDirectory: &isDir];
-		
-		NSString* fileType = [filename pathExtension];
-		
-		if (!isDir && [fileTypes containsObject: fileType]) {
-			ZoomStoryID* fileID = [[ZoomStoryID alloc] initWithZCodeFile: filename];
-			
-			if (fileID != nil) {
-				[[ZoomStoryOrganiser sharedStoryOrganiser] addStory: filename
-														  withIdent: fileID
-														   organise: [[ZoomPreferences globalPreferences] keepGamesOrganised]];
+
+		[selectedFiles removeObjectAtIndex:0];
 				
-				[fileID release];
-			}
-		}
-		
 		[p release];
 	}
 	
@@ -460,6 +458,9 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 - (IBAction) startNewGame: (id) sender {
 	ZoomStoryID* ident = [self selectedStoryID];
 	
+	if( ident == NULL )
+		return;
+		
 	// If an autosave file exists, query the user
 	NSString* autosaveDir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: ident
 																				  create: NO];
@@ -832,6 +833,7 @@ int tableSorter(id a, id b, void* context) {
 - (id)				tableView: (NSTableView *) aTableView 
 	objectValueForTableColumn: (NSTableColumn *) aTableColumn 
 						  row: (int) rowIndex {
+		
 	if (needsUpdating) [self reloadTableData];
 
 	if (aTableView == mainTableView) {
@@ -927,7 +929,7 @@ int tableSorter(id a, id b, void* context) {
 		comment = [story comment];
 		teaser = [story teaser];
 		
-		[drawerButton setEnabled: YES];
+	//	[drawerButton setEnabled: YES];
 		
 		NSString* dir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: ident 
 																			  create: NO];
@@ -940,7 +942,7 @@ int tableSorter(id a, id b, void* context) {
 		comment = @"";
 		teaser = @"";
 
-		[drawerButton setEnabled: NO];
+//		[drawerButton setEnabled: NO];
 		[previewView setDirectoryToUse: nil];
 	}
 	
@@ -966,12 +968,13 @@ int tableSorter(id a, id b, void* context) {
 	}
 	
 	[collapseView finishRearranging];
-	
+#if 0	
 	if ([comment length] == 0 && [teaser length] == 0) {
-		[drawer close];
+//		[drawer close];
 	} else if (showDrawer && [[self window] isMainWindow]) {
 		[drawer open];
 	}
+#endif
 }
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification {
@@ -996,7 +999,7 @@ int tableSorter(id a, id b, void* context) {
 			  row:(int)rowIndex {
 	if (needsUpdating) [self reloadTableData];
 
-	if (tableView == mainTableView) {
+	if (tableView == mainTableView) {		
 		ZoomStoryID* ident = [storyList objectAtIndex: [mainTableView selectedRow]];
 		ZoomStory* story = [self storyForID: ident];
 		
@@ -1008,6 +1011,186 @@ int tableSorter(id a, id b, void* context) {
 
 	[[[NSApp delegate] userMetadata] writeToDefaultFile];
 }
+
+- (BOOL)tableView:(NSTableView *)tv writeRows:(NSArray*)rows toPasteboard:(NSPasteboard*)pboard
+{
+	if(tv != mainTableView )
+		return NO;
+		
+	if( [rows count] == 0 )
+		return NO;
+	
+	if( ![[ZoomPreferences globalPreferences] keepGamesOrganised] )
+		return NO;
+	
+	[mainTableView cancelEditTimer];
+	
+	NSMutableArray * fileList = [NSMutableArray array];
+
+	int i;
+	for( i = 0; i < [rows count]; i++ )
+	{
+		ZoomStoryID* ident = [storyList objectAtIndex:[[rows objectAtIndex:i] intValue]];
+		NSString* gamedir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: ident create: NO];
+		if( gamedir != NULL )
+		{
+			[fileList addObject:gamedir];
+		}
+	}
+
+	[pboard declareTypes:[NSArray arrayWithObject:NSFilenamesPboardType] owner:nil];
+	[pboard setPropertyList:fileList forType:NSFilenamesPboardType];
+	
+	return YES;
+}
+
+- (NSDragOperation)tableView:(NSTableView *)tv
+                validateDrop:(id <NSDraggingInfo>)sender
+                 proposedRow:(int)row
+       proposedDropOperation:(NSTableViewDropOperation)op
+
+{
+    NSPasteboard * pasteboard = [sender draggingPasteboard];
+    NSArray * types = [pasteboard types];
+	
+	if( op == NSTableViewDropOn ) 
+	{
+		[tv setDropRow:row dropOperation:NSTableViewDropAbove];
+	}
+	
+	if( [sender draggingSource] == mainTableView )
+	{
+		return NSDragOperationNone;
+	}
+	
+	if( [types containsObject:NSFilenamesPboardType] )
+	{
+		return NSDragOperationCopy;
+	}
+	else
+	{
+		return NSDragOperationNone;
+	}
+}
+
+- (BOOL)tableView:(NSTableView *)tv 
+	acceptDrop:(id <NSDraggingInfo>)sender 
+	row:(int)row
+    dropOperation:(NSTableViewDropOperation)op
+{
+    NSPasteboard * pasteboard = [sender draggingPasteboard];
+    NSArray * filenames = [pasteboard propertyListForType:NSFilenamesPboardType];
+	[self addFiles:filenames];
+
+	return YES;
+}
+
+
+#pragma mark -
+/////////////////////////////////////////////////////////////////////////////
+// split view 
+//
+
+// setupSplitView
+//
+//
+
+- (void) setupSplitView
+{
+	NSNumber * split_view_percent_number = [[NSUserDefaults standardUserDefaults] objectForKey:@"iFictionSplitViewPercentage"];
+	NSNumber * split_view_collapsed_number = [[NSUserDefaults standardUserDefaults] objectForKey:@"iFictionSplitViewCollapsed"];
+	
+	if( split_view_percent_number && split_view_collapsed_number )
+	{
+		splitViewPercentage = [split_view_percent_number floatValue];
+		splitViewCollapsed = [split_view_collapsed_number boolValue];
+		
+		if( splitViewCollapsed )
+		{
+			[splitView resizeSubviewsToPercentage:0.0];
+		}
+		else
+		{
+			[splitView resizeSubviewsToPercentage:splitViewPercentage];
+		}
+	}
+	else
+	{
+		splitViewPercentage = [splitView getSplitPercentage];
+		splitViewCollapsed = NO;
+	}
+}
+
+// splitViewDidResizeSubviews
+//
+//
+
+- (void)splitViewDidResizeSubviews:(NSNotification *)notification
+{
+	float pos = [splitView getSplitPercentage];
+	
+	if( pos == 0.0 )
+	{
+		[self collapseSplitView];
+	}
+}
+
+// splitViewMouseDownProcessed
+//
+//
+
+- (void)splitViewMouseDownProcessed:(NSSplitView *)aSplitView 
+{
+    float pos = [splitView getSplitPercentage];
+	
+	if( pos > 0.0 ) 
+	{
+		splitViewPercentage = pos;
+		splitViewCollapsed = NO;
+	
+		[[NSUserDefaults standardUserDefaults] setObject: [NSNumber numberWithFloat:splitViewPercentage] forKey:@"iFictionSplitViewPercentage"];
+		[[NSUserDefaults standardUserDefaults] setObject: [NSNumber numberWithBool:splitViewCollapsed] forKey:@"iFictionSplitViewCollapsed"];
+	}
+}
+
+// splitViewDoubleClickedOnDivider
+//
+//
+
+- (void)splitViewDoubleClickedOnDivider:(NSSplitView *)aSplitView 
+{
+    float pos = [splitView getSplitPercentage];
+	
+    if (pos == 0.0) 
+	{
+        [splitView resizeSubviewsToPercentage:splitViewPercentage];
+    } 
+	else 
+	{
+		[splitView resizeSubviewsToPercentage:0.0];
+		[self collapseSplitView];
+    }
+}
+
+// collapseSplitView
+//
+//
+
+- (void)collapseSplitView
+{	
+	splitViewCollapsed = YES;
+
+	[[NSUserDefaults standardUserDefaults] setObject: [NSNumber numberWithFloat:splitViewPercentage] forKey:@"iFictionSplitViewPercentage"];
+	[[NSUserDefaults standardUserDefaults] setObject: [NSNumber numberWithBool:splitViewCollapsed] forKey:@"iFictionSplitViewCollapsed"];
+		
+	// reset browser selection, since the browser is getting hidden
+	[filterTable2 selectRow: 0 byExtendingSelection: NO];
+	[filterTable1 selectRow: 0 byExtendingSelection: NO];
+		
+	[self reloadTableData]; [mainTableView reloadData];
+}
+
+#pragma mark -
 
 - (IBAction) updateGameInfo: (id) sender {
 	[self configureFromMainTableSelection];
@@ -1180,11 +1363,25 @@ int tableSorter(id a, id b, void* context) {
 	// If the games are kept organised, then ask if the user wants to move games to the trash
 	// (give the option of always doing this)
 	if ([[ZoomPreferences globalPreferences] keepGamesOrganised]) {
+
+#if 0
+		// this seems like a bit too much confirmation
+		
+		// this is more a degree of how the user will want iFiction to organize files than
+		// something that I think a user will want to decide dynamically on each story deletion
+		// moving to the trash still gives the user a chance to recover the story
+		
 		[[NSRunLoop currentRunLoop] performSelector: @selector(showTrashConfirm:)
 											 target: self
 										   argument: [storiesToDelete retain]
 											  order: 256
 											  modes: [NSArray arrayWithObject: NSDefaultRunLoopMode]];
+#else
+		[self confirmMoveToTrash: NULL 
+				 returnCode: NSAlertDefaultReturn 
+				contextInfo:[storiesToDelete retain]];
+#endif
+
 	}
 }
 

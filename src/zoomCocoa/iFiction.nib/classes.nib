@@ -11,7 +11,15 @@
             LANGUAGE = ObjC; 
             SUPERCLASS = NSObject; 
         }, 
+        {CLASS = NSSplitView; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
         {CLASS = ZoomCollapsableView; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
+        {CLASS = ZoomCollapsingSplitView; LANGUAGE = ObjC; SUPERCLASS = NSSplitView; }, 
+        {
+            ACTIONS = {editSelectedCell = id; }; 
+            CLASS = ZoomStoryTableView; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSTableView; 
+        }, 
         {
             CLASS = ZoomiFButton; 
             LANGUAGE = ObjC; 
@@ -45,6 +53,7 @@
                 newgameButton = ZoomiFButton; 
                 saveMenu = NSMenu; 
                 searchField = NSTextField; 
+                splitView = ZoomCollapsingSplitView; 
                 storyMenu = NSMenu; 
             }; 
             SUPERCLASS = NSWindowController; 

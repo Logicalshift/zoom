@@ -6,6 +6,8 @@
 //  Copyright (c) 2003 Andrew Hunter. All rights reserved.
 //
 
+// Modifications by Collin Pieper to add transparency support
+
 #import "ZoomPreferenceWindow.h"
 
 

@@ -265,7 +265,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	ZoomStoryID* oldIdent;
 	
 	oldFilename = [identsToFilenames objectForKey: ident];
-	oldIdent = [filenamesToIdents objectForKey: filename];
+	oldIdent = [filenamesToIdents objectForKey: oldFilename];
 	
 	if (organise) {		
 		ZoomStory* theStory = [[NSApp delegate] findStory: ident];
@@ -347,7 +347,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 
 - (ZoomStoryID*) identForFilename: (NSString*) filename {
 	ZoomStoryID* res;
-	
+		
 	[storyLock lock];
 	res = [[[filenamesToIdents objectForKey: filename] retain] autorelease];
 	[storyLock unlock];

@@ -11,6 +11,7 @@
 #import "ZoomStory.h"
 #import "ZoomCollapsableView.h"
 #import "ZoomSavePreviewView.h"
+#import "ZoomCollapsingSplitView.h"
 
 @interface ZoomiFictionController : NSWindowController {
 	IBOutlet ZoomiFButton* addButton;
@@ -26,6 +27,11 @@
 	
 	IBOutlet NSDrawer* drawer;
 	IBOutlet NSView*   drawerView;
+
+	IBOutlet ZoomCollapsingSplitView * splitView;
+
+	float splitViewPercentage;
+	BOOL splitViewCollapsed;
 	
 	IBOutlet NSTableView* mainTableView;
 	IBOutlet NSTableView* filterTable1;
@@ -69,5 +75,10 @@
 - (void) reloadTableData;
 
 - (void) mergeiFictionFromFile: (NSString*) filename;
+
+- (void) addFiles: (NSArray *)filenames;
+
+- (void) setupSplitView;
+- (void) collapseSplitView;
 
 @end
