@@ -97,6 +97,7 @@ struct xfont
 };
 
 static RGBColor fg_col, bg_col;
+static int transpar = 0;
 
 #ifdef USE_QUARTZ
 CGContextRef carbon_quartz_context = nil;
@@ -658,7 +659,12 @@ void xfont_release_font(xfont* xf)
 void xfont_set_colours(int fg, int bg)
 {
   fg_col = *carbon_get_colour(fg);
-  bg_col = *carbon_get_colour(bg);
+
+  transpar = 0;
+  if (bg >= 0)
+    bg_col = *carbon_get_colour(bg);
+  else
+    transpar = 1;
 }
 
 XFONT_MEASURE xfont_get_height(xfont* xf)
@@ -1017,12 +1023,15 @@ void xfont_plot_string(xfont* font,
     {
       int pos;
       
-      RGBForeColor(&bg_col);
-      bgRect.left   = portRect.left+x;
-      bgRect.right  = bgRect.left+length*xfont_x;
-      bgRect.top    = portRect.top-y - xfont_y;
-      bgRect.bottom = bgRect.top + xfont_y;
-      PaintRect(&bgRect);
+      if (!transpar)
+	{
+	  RGBForeColor(&bg_col);
+	  bgRect.left   = portRect.left+x;
+	  bgRect.right  = bgRect.left+length*xfont_x;
+	  bgRect.top    = portRect.top-y - xfont_y;
+	  bgRect.bottom = bgRect.top + xfont_y;
+	  PaintRect(&bgRect);
+	}
 
 #ifdef USE_QUARTZ
       if (enable_quartz)
@@ -1064,14 +1073,17 @@ void xfont_plot_string(xfont* font,
    ATSUCreateTextLayout(&lo);
    make_layout(font, string, length, lo);
 
-   ATSUMeasureText(lo, 0, length, &before, &after, &ascent, &descent);
-   RGBForeColor(&bg_col);
-   bgRect.left   = portRect.left+x;
-   bgRect.right  = bgRect.left+(after>>16);
-   bgRect.top    = portRect.top-y - (ascent>>16);
-   bgRect.bottom = bgRect.top +
-     (ascent>>16) + (descent>>16);
-   PaintRect(&bgRect);
+   if (!transpar)
+     {
+       ATSUMeasureText(lo, 0, length, &before, &after, &ascent, &descent);
+       RGBForeColor(&bg_col);
+       bgRect.left   = portRect.left+x;
+       bgRect.right  = bgRect.left+(after>>16);
+       bgRect.top    = portRect.top-y - (ascent>>16);
+       bgRect.bottom = bgRect.top +
+	 (ascent>>16) + (descent>>16);
+       PaintRect(&bgRect);
+     }
 
    RGBForeColor(&fg_col);
    ATSUDrawText(lo, 0, length, (portRect.left + x)*65536.0, 
@@ -1087,13 +1099,16 @@ void xfont_plot_string(xfont* font,
 # endif
       select_font(font);
 
-      RGBForeColor(&bg_col);
-      bgRect.left   = portRect.left+x;
-      bgRect.right  = bgRect.left+TextWidth(outbuf, 0, outlen);
-      bgRect.top    = portRect.top-y - font->data.mac.ascent;
-      bgRect.bottom = bgRect.top +
-	font->data.mac.ascent + font->data.mac.descent;
-      PaintRect(&bgRect);
+      if (!transpar)
+	{
+	  RGBForeColor(&bg_col);
+	  bgRect.left   = portRect.left+x;
+	  bgRect.right  = bgRect.left+TextWidth(outbuf, 0, outlen);
+	  bgRect.top    = portRect.top-y - font->data.mac.ascent;
+	  bgRect.bottom = bgRect.top +
+	    font->data.mac.ascent + font->data.mac.descent;
+	  PaintRect(&bgRect);
+	}
       
       RGBBackColor(&bg_col);
       RGBForeColor(&fg_col);
@@ -1136,13 +1151,16 @@ void xfont_plot_string(xfont* font,
       CGContextShowGlyphs(carbon_quartz_context, glyph, outlen);
       pt = CGContextGetTextPosition(carbon_quartz_context);
       
-      RGBForeColor(&bg_col);
-      bgRect.left   = portRect.left+x;
-      bgRect.right  = bgRect.left+(pt.x+0.5);
-      bgRect.top    = portRect.top-y - font->data.mac.ascent;
-      bgRect.bottom = bgRect.top +
-	font->data.mac.ascent + font->data.mac.descent;
-      PaintRect(&bgRect);
+      if (!transpar)
+	{
+	  RGBForeColor(&bg_col);
+	  bgRect.left   = portRect.left+x;
+	  bgRect.right  = bgRect.left+(pt.x+0.5);
+	  bgRect.top    = portRect.top-y - font->data.mac.ascent;
+	  bgRect.bottom = bgRect.top +
+	    font->data.mac.ascent + font->data.mac.descent;
+	  PaintRect(&bgRect);
+	}
       
       CGContextSetTextDrawingMode(carbon_quartz_context, kCGTextFill);
       CGContextSetTextPosition(carbon_quartz_context,

@@ -2890,6 +2890,19 @@ void display_wait_for_more(void)
   more_on = 0;
 }
 
+void display_read_mouse(void)
+{
+  Point loc;
+  Rect      bound;
+
+  GetMouse(&loc);
+  
+  GetWindowBounds(zoomWindow, kWindowContentRgn, &bound);
+  
+  click_x = (loc.h - BORDERWIDTH - bound.left);
+  click_y = (loc.v - BORDERWIDTH - bound.top);
+}
+
 int display_get_pix_mouse_x(void)
 {
   return click_x - (win_x/2-pix_w/2);  
@@ -2898,6 +2911,11 @@ int display_get_pix_mouse_x(void)
 int display_get_pix_mouse_y(void)
 {
   return click_y - (win_y/2-pix_h/2);
+}
+
+int display_get_pix_mouse_b(void)
+{
+  return Button()?1:0;
 }
 
 void display_set_input_pos(int style, int x, int y, int width)
