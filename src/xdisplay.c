@@ -1132,7 +1132,7 @@ static void draw_window()
 	      /* Skip to the first visible line */
 	      if (line != NULL)
 		{
-		  while (line->baseline + line->descent - scrollpos < text_win[win].winsy)
+		  while (line != NULL && line->baseline + line->descent - scrollpos < text_win[win].winsy)
 		    line = line->next;
 		}
 	      
