@@ -48,6 +48,7 @@ enum zcode_type
     TYPE_ZCOD,
     TYPE_IFZS,
     TYPE_IFRS,
+    TYPE_BINA,
     TYPE_BORING
   };
 
@@ -352,6 +353,9 @@ static enum zcode_type type_fsref(FSRef* file)
     case 'BINA':
     case 0:
     default:
+      if (inf.fdCreator == SIGNATURE)
+	return TYPE_BINA;
+
       if (outname.unicode[outname.length-3] == '.' &&
 	  outname.unicode[outname.length-2] == 'z' &&
 	  outname.unicode[outname.length-1] >= '3' &&
@@ -554,6 +558,11 @@ OSErr ae_opendocs_handler(const AppleEvent* evt,
 				     "Zoom is not currently in a state where it can force a restore");
 	    }
 	}
+      break;
+
+    case TYPE_BINA:
+      carbon_display_message("Cannot load file",
+			     "This file is a memory dump saved from a game. Use the functions in the relevant game to load it");
       break;
 
     case TYPE_BORING:

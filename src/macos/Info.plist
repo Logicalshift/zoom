@@ -73,6 +73,20 @@
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array/>
+			<key>CFBundleTypeIconFile</key>
+			<string>zoom-file.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>Z-Code game memory save</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<key>BINA</key>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>Zoom</string>

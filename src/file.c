@@ -482,7 +482,7 @@ ZFile* open_file_write(char* filename)
   
   FSpGetFInfo(&spec, &inf);
   
-  inf.fdType    = 'IFZS';
+  inf.fdType    = 'BINA';
   inf.fdCreator = SIGNATURE;
   
   FSpSetFInfo(&spec, &inf);
