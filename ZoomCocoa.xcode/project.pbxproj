@@ -2056,7 +2056,8 @@
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = text.xml;
-			path = archive.iFiction;
+			name = archive.iFiction;
+			path = src/archive.iFiction;
 			refType = 4;
 			sourceTree = "<group>";
 		};

@@ -34,11 +34,22 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/ZoomCollapsableView.m	  zoomCocoa/ZoomSavePreview.h \
 	zoomCocoa/ZoomSavePreview.m	  zoomCocoa/ZoomSavePreviewView.h \
 	zoomCocoa/ZoomSavePreviewView.m	  zoomCocoa/ZoomRatingCell.h \
-	zoomCocoa/ZoomRatingCell.m	  Z6Display.m \
+	zoomCocoa/ZoomRatingCell.m	  zoomCocoa/Z6Display.m \
 	zoomCocoa/ZoomPixmapWindow.h	  zoomCocoa/ZoomPixmapWindow.m \
 	zoomCocoa/ZoomCursor.h		  zoomCocoa/ZoomCursor.m \
-	zoomCocoa/Skein/ZoomSkein.h  zoomCocoa/Skein/ZoomSkeinItem.h \
-	zoomCocoa/Skein/ZoomSkein.m  zoomCocoa/Skein/ZoomSkeinItem.m \
+	zoomCocoa/Skein/ZoomSkein.h       zoomCocoa/Skein/ZoomSkeinItem.h \
+	zoomCocoa/Skein/ZoomSkein.m       zoomCocoa/Skein/ZoomSkeinItem.m \
+	zoomCocoa/Resources/ZoomBlorbFile.h zoomCocoa/Resources/ZoomBlorbFile.m \
+	zoomCocoa/ZoomCollapsingSplitView.h zoomCocoa/ZoomCollapsingSplitView.m \
+	zoomCocoa/ZoomConnector.h         zoomCocoa/ZoomConnector.m \
+	zoomCocoa/ZoomInputLine.h         zoomCocoa/ZoomInputLine.m \
+	zoomCocoa/Resources/ZoomResourceDrop.h      zoomCocoa/Resources/ZoomResourceDrop.m \
+	zoomCocoa/Skein/ZoomSkeinController.h zoomCocoa/Skein/ZoomSkeinController.m \
+	zoomCocoa/Skein/ZoomSkeinLayout.h zoomCocoa/Skein/ZoomSkeinLayout.m \
+	zoomCocoa/Skein/ZoomSkeinView.h   zoomCocoa/Skein/ZoomSkeinView.m \
+	zoomCocoa/Skein/ZoomSkeinViewWeb.m zoomCocoa/Skein/ZoomSkeinWeb.m \
+	zoomCocoa/Skein/ZoomSkeinXML.m \
+	zoomCocoa/ZoomStoryTableView.h    zoomCocoa/ZoomStoryTableView.m \
 	zoomCocoa/MainMenu.nib/classes.nib zoomCocoa/MainMenu.nib/info.nib \
 	zoomCocoa/MainMenu.nib/keyedobjects.nib \
 	zoomCocoa/MainMenu.nib/objects.nib \
@@ -61,7 +72,11 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/iFiction-10.2.nib/info.nib \
 	zoomCocoa/iFiction-10.2.nib/keyedobjects.nib \
 	zoomCocoa/iFiction-10.2.nib/objects.nib \
-	infocom.iFiction ifmetadata.c ifmetadata.h \
+	zoomCocoa/Skein.nib/classes.nib \
+	zoomCocoa/Skein.nib/info.nib \
+	zoomCocoa/Skein.nib/keyedobjects.nib \
+	zoomCocoa/Skein.nib/objects.nib \
+	infocom.iFiction archive.iFiction ifmetadata.c ifmetadata.h \
 	zoomCocoa/add-in.png 		zoomCocoa/add-out.png \
 	zoomCocoa/continue-in.png	zoomCocoa/continue-out.png \
 	zoomCocoa/colourSettings.png 	zoomCocoa/disabledButton.png \
@@ -74,6 +89,13 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/stars-red.png		zoomCocoa/stars-none.png \
 	zoomCocoa/iFiction.icns 	zoomCocoa/saveBackground.png \
 	zoomCocoa/saveHighlightActive.png zoomCocoa/saveHighlightInactive.png \
+	zoomCocoa/Blorb.icns		zoomCocoa/Resources/NeedDrop.png \
+	zoomCocoa/Skein/Skein-active.png zoomCocoa/Skein/Skein-changed.png \
+	zoomCocoa/Skein/Skein-selected.png zoomCocoa/Skein/Skein-unchanged.png \
+	zoomCocoa/Skein/Skein-unplayed.png zoomCocoa/Skein/SkeinAdd.png \
+	zoomCocoa/Skein/SkeinAnnotate.png zoomCocoa/Skein/SkeinDelete.png \
+	zoomCocoa/Skein/SkeinLocked.png zoomCocoa/Skein/SkeinTranscript.png \
+	zoomCocoa/Skein/SkeinUnlocked.png \
 	zoomCocoa/English.lproj/Credits.rtf
 
 zoom_SOURCES = \
