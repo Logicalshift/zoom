@@ -1,0 +1,199 @@
+<html>	
+
+<head>
+<title>
+Zoom Manual - Troubleshooting
+</title>
+
+<link rel=stylesheet type="text/css"
+      href="style.css"
+      title="Logical shift">
+
+</head>
+
+<body>
+  <table>
+    <tr>
+      <td>
+        <a href="index.html">
+	  Home
+	</a>
+      </td>
+
+      <td>
+        Previous
+      </td>
+
+      <td>
+        Next
+      </td>
+    </tr>
+  </table>
+
+  <img src="zoom-icon.png" align=right>
+  <h1>
+    Troubleshooting
+  </h1>
+
+  <h2>
+    General
+  </h2>
+
+  <h3>
+    Version 6 images
+  </h3>
+
+  <p>
+    In order to see images for version 6 games, you will requires the
+    resources in Blorb format: Zoom does not support any other format
+    for images. All new games should come with images in this
+    format. For the old infocom games, Blorb versions of the game
+    resources are available from the IF-Archive, at
+    <a
+    href="http://www.ifarchive.org/indexes/if-archiveXinfocomXmedia.html">http://www.ifarchive.org/indexes/if-archiveXinfocomXmedia.html</a>.
+    See the sections on configuration for information on how to get
+    Zoom to load these resources.
+  </p>
+
+  <p>
+    Zoom is a truecolour and not a paletted interpreter. Therefore, it
+    renders images using the exact colours given in the image
+    files. Unfortunately, Infocom relied on palette effects for its
+    games, and the Blorb files seem to be a fairly literal translation
+    of the Infocom images. This means that some images might render in
+    the wrong colours for Infocom games.
+  </p>
+  
+  <p>
+    Zoom does not support JPEG images: there are currently patent
+    issues with this format.
+  </p>
+
+  <h3>
+    Fonts
+  </h3>
+
+  <p>
+    Some version 6 games may not deal with proportional fonts
+    adequately: if you find a game is drawing text in the wrong place,
+    try using a fixed pitch font for the 'roman' style.
+  </p>
+
+  <h2>
+    Mac OS X
+  </h2>
+
+  <h3>
+    Images
+  </h3>
+
+  <p>
+    (This only applies to people compiling Zoom)
+  </p>
+
+  <p>
+    If image quality is low, this may be because your version of Zoom
+    was compiled using QuickTime to draw its images. This happens if
+    Zoom was compiled without libpng available: it is highly
+    recommended to install libpng if you are compiling under Mac OS X
+    (binary releases have libpng built-in, so this won't be an issue).
+  </p>
+
+  <h2>
+    X-Windows
+  </h2>
+
+  <h3>
+    Images
+  </h3>
+
+  <p>
+    When you compile Zoom, make sure that libpng is available, or
+    image support will be disabled.
+  </p>
+
+  <h3>
+    Fonts
+  </h3>
+
+  <p>
+    The font situation under X-Windows is slightly confused. The
+    standard X font system (which Zoom prefers to use as a last
+    resort) does not support anti-aliasing or Unicode. Xft is the
+    preferred rendering system: it has full support for Unicode, it's
+    fast and it's flexible. Unfortunately, it might require some
+    configuration on your system. If games render strangely, it may be
+    that Xft is not set up, and is using daft defaults for the fixed
+    pitch fonts.
+  </p>
+
+  <p>
+    If you have problems with the font rendering, it might well be
+    Xft. To check this, set 'antialias' to 'no' in the .zoomrc file
+    and see if that solves the problem. If it does, it may be worth
+    taking the time to set up Xft properly (if you use KDE, this will
+    also allow you to use the antialiased fonts there).
+  </p>
+
+  <p>
+    Xft is set up through the configuration file 'XftConfig'. If you
+    have X installed under /usr/X11R6/, this should be in
+    /usr/X11R6/lib/X11/ by default. A minimal file might be:
+  </p>
+
+  <pre>
+dir &quot;/usr/X11R6/lib/X11/fonts/TrueType&quot;
+dir &quot;/usr/X11R6/lib/X11/fonts/Type1&quot;
+  </pre>
+
+  <p>
+    Remove the first line if you don't have a TrueType font directory
+    in your installation. See <a
+    href="http://keithp.com/~keithp/fonts/XftConfig">http://keithp.com/~keithp/fonts/XftConfig</a>
+    for a larger example of an XftConfig file. Most X11 distributions
+    should have a courier font in the Type1 directory.
+  </p>
+
+  <p>
+    Zoom sometimes has trouble calculating the screen metrics for a
+    T1Lib font. This is not usually noticable, but it does mean that
+    you should not use T1Lib for the fixed pitch fonts, and it creates
+    a glitch on the status bar in Infocom's Arthur (T1Lib fonts are
+    specified by filename rather than by their X font specifier).
+  </p>
+
+  <h2>
+    Older versions
+  </h2>
+
+  <p>
+    This section lists some problems with older versions of Zoom.
+  </p>
+
+  <h3>1.0.1beta1</h3>
+
+  <ul>
+    <li>Spec 1.1 errors:
+      <ul>
+        <li>New header extension words not implemented
+	<li>@save/@restore always prompt
+	<li>@sound_data is not a branch instruction (will crash the game)
+      </ul>
+    <li>@read_mouse doesn't store coordinates correctly
+    <li>@erase_picture always erases to white, and not the background
+      colour
+    <li><code>antialias</code> option does not disable Xft. (Comment
+      out <code>#define HAVE_XFT</code> in config.h and recompile to
+      disable Xft in this revision).
+  </ul>
+
+  <hr>
+
+  <p class=titchy>
+    Zoom written by Andrew Hunter. Mail any suggestions, bug reports
+    or abuse to <a
+    href="mailto:andrew@logicalshift.demon.co.uk">andrew@logicalshift.demon.co.uk</a>
+  </p>
+
+</body>
+</html>
