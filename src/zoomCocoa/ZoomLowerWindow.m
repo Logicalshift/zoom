@@ -40,6 +40,8 @@
     [[[[zoomView textView] textStorage] mutableString] setString: @""];
     [[zoomView textView] setBackgroundColor: [zoomView backgroundColourForStyle: style]];
     [[zoomView textView] clearPastedLines]; 
+	//[zoomView rearrangeUpperWindows];
+	[zoomView retileUpperWindowIfRequired];
     [zoomView scrollToEnd];
     [zoomView resetMorePrompt];
 	[zoomView padToLowerWindow];

@@ -91,6 +91,8 @@ extern NSString* ZoomStyleAttributeName;
 - (void) displayMoreIfNecessary;
 - (void) page;
 
+- (void) retileUpperWindowIfRequired;
+
 // Formatting a string
 - (NSDictionary*) attributesForStyle: (ZStyle*) style;
 - (NSAttributedString*) formatZString: (NSString*) zString

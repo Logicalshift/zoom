@@ -1354,4 +1354,13 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	[textScroller updateUpperWindows];
 }
 
+- (void) retileUpperWindowIfRequired {
+    int currentSize = [self upperWindowSize];
+    if (currentSize != lastTileSize) {
+        [textScroller tile];
+        [self updateMorePrompt];
+        lastTileSize = currentSize;
+    }
+}
+
 @end
