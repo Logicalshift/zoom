@@ -25,7 +25,7 @@ GENERAL:
  * Fullscreen mode
  * Ability to reformat display
  * crash when running spacest2.z5? (FIXED, I think)
- * various crashes to do with releasing autorelease pools (particularily associated with baluthar from '03)
+ * various crashes to do with releasing autorelease pools (particularily associated with baluthar from '03) (FIXED?)
  * way to distinguish between data/quetzal file types when opening files to save
  * way to prompt for script files (recording + transcript)
 

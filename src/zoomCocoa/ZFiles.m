@@ -93,6 +93,7 @@ ZByte* read_page(ZFile* file, int page_no) {
 }
 
 ZByte* read_block(ZFile* file, int start_pos, int end_pos) {
+    NSAutoreleasePool* p = [[NSAutoreleasePool alloc] init];
     static NSData* result = nil;
 
     [file->theFile seekTo: start_pos];
@@ -100,16 +101,20 @@ ZByte* read_block(ZFile* file, int start_pos, int end_pos) {
 
     ZByte* res2 = malloc([result length]);
     memcpy(res2, [result bytes], [result length]);
+    
+    [p release];
     return res2;
 }
 
 void   read_block2(ZByte* block, ZFile* file, int start_pos, int end_pos) {
+    NSAutoreleasePool* p = [[NSAutoreleasePool alloc] init];
     NSData* result = nil;
 
     [file->theFile seekTo: start_pos];
     result = [file->theFile readBlock: end_pos - start_pos];
 
     memcpy(block, [result bytes], [result length]);
+    [p release];
 }
 
 void   write_block(ZFile* file, ZByte* block, int length) { 
