@@ -122,6 +122,8 @@ BlorbFile* blorb_loadfile(ZFile* file)
 	  res->index.picture[res->index.npictures-1].min_d = 1;
 	  res->index.picture[res->index.npictures-1].max_n = 1;
 	  res->index.picture[res->index.npictures-1].max_d = 0;
+	  
+	  image_load(file, iff->chunk[x].offset);
 	}
       else if (cmp_token(iff->chunk[x].id, "FORM"))
 	{
