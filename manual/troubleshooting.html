@@ -179,13 +179,14 @@ dir &quot;/usr/X11R6/lib/X11/fonts/Type1&quot;
 	<li>@save/@restore always prompt
 	<li>@sound_data is not a branch instruction (will crash the game)
       </ul>
-    <li>@set_font did not update v6 structures correctly
+    <li>@set_font doesn't update v6 structures correctly
     <li>@read_mouse doesn't store coordinates correctly
     <li>@erase_picture always erases to white, and not the background
       colour
     <li><code>antialias</code> option does not disable Xft. (Comment
       out <code>#define HAVE_XFT</code> in config.h and recompile to
       disable Xft in this revision).
+    <li>Display drivers not reporting that they supported pictures
   </ul>
 
   <hr>
