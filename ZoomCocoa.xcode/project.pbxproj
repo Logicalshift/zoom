@@ -1651,6 +1651,12 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
+		4B58A09306039995003D1828 = {
+			fileRef = 4BCF3F46050FB21C00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		4B59C83B0602201500BA8983 = {
 			fileRef = 4B1E3FBE050F7DE200A8E303;
 			isa = PBXBuildFile;
@@ -2157,7 +2163,6 @@
 			files = (
 				4BCF3F47050FB21C00A8E303,
 				4BCF3F49050FB21C00A8E303,
-				4BCF3F4A050FB21C00A8E303,
 				4BCF3F52050FB42600A8E303,
 				4BCF3F58050FB49F00A8E303,
 				4B418DE80594FC3B009C44DE,
@@ -2183,6 +2188,7 @@
 				4B1C13FE05C5A94B00E5796D,
 				4B1C14D305C69CAD00E5796D,
 				4B9ED9D00602977C0049E468,
+				4B58A09306039995003D1828,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2483,12 +2489,6 @@
 		};
 		4BCF3F49050FB21C00A8E303 = {
 			fileRef = 4BCF3F45050FB21C00A8E303;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		4BCF3F4A050FB21C00A8E303 = {
-			fileRef = 4BCF3F46050FB21C00A8E303;
 			isa = PBXBuildFile;
 			settings = {
 			};

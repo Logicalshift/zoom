@@ -119,12 +119,12 @@
 	NSMutableData* autosaveData = [[NSMutableData alloc] init];
 	NSArchiver* theCoder = [[NSArchiver alloc] initForWritingWithMutableData: autosaveData];
 	
-	BOOL autosave = [zoomView createAutosaveDataWithCoder: theCoder];
+	BOOL autosave = [[ZoomPreferences globalPreferences] autosaveGames]?[zoomView createAutosaveDataWithCoder: theCoder]:NO;
 	
 	[theCoder release];
 	
 	NSString* autosaveDir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: [[self document] storyId]
-																				  create: YES];
+																				  create: autosave];
 	NSString* autosaveFile = [autosaveDir stringByAppendingPathComponent: @"autosave.zoomauto"];
 	
 	if (autosave) {

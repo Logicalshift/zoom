@@ -363,6 +363,10 @@ static void appendStyle(NSMutableString* styleName,
 
 - (IBAction) keepOrganisedChanged: (id) sender {
 	[prefs setKeepGamesOrganised: [sender state]==NSOnState];
+	if ([sender state]==NSOffState) {
+		[autosaveGames setState: NSOffState];
+		[prefs setAutosaveGames: NO];
+	}
 }
 
 
