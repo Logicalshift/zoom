@@ -26,18 +26,13 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 	NSEnumerator* filenameEnum = [filenamesToIdents keyEnumerator];
 	NSString* filename;
 	
-	NSLog(@"*** dictionary start");
 	while (filename = [filenameEnum nextObject]) {
 		NSData* encodedId = [NSArchiver archivedDataWithRootObject: [filenamesToIdents objectForKey: filename]];
-		
-		NSLog(@" -- %@", filename);
 		
 		[defaultDictionary setObject: encodedId
 							  forKey: filename];
 	}
-	
-	NSLog(@"*** dictionary end");
-	
+		
 	return defaultDictionary;
 }
 
