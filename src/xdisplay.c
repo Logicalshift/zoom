@@ -2975,7 +2975,7 @@ void display_scroll_region(int x, int y,
 
   rx = x;     ry = y;
   rw = width; rh = height;
-  
+
   if (xoff < 0)
     rx += xoff;
   else
@@ -2991,13 +2991,16 @@ void display_scroll_region(int x, int y,
 float display_measure_text(const int* text, int len, int style)
 {
   int ft;
+  float res;
 
   if (len <= 0)
     return 0;
 
   ft = style_font[(style>>1)&15];
 
-  return xfont_get_text_width(font[ft], text, len);
+  res =  xfont_get_text_width(font[ft], text, len);
+
+  return res;
 }
 
 float display_get_font_width(int style)

@@ -208,7 +208,7 @@ static void scroll_to_height(int height, int change_baseline)
       
       display_scroll_region(ACTWIN.xpos,  ACTWIN.cury,
 			    ACTWIN.width, oldheight,
-			    ACTWIN.xpos,  scrollby);
+			    0,  scrollby);
       
       if (bg >= 0)
 	{
