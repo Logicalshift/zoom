@@ -197,9 +197,10 @@ fi
 if test "$WINDOW_SYSTEM" = "2"; then
   AC_MSG_CHECKING(that we can link to various windows libraries)
   ac_OLD_LIBS=$LIBS
-  LIBS="$LIBS -lcomctl32"
+  LIBS="$LIBS -lcomctl32 -lcomdlg32"
   AC_TRY_LINK([#include <windows.h>
-               #include <commctrl.h>],
+               #include <commctrl.h>
+	       #include <commdlg.h>],
 	      [ {
 	          InitCommonControls();
 		}

@@ -41,6 +41,13 @@
 #include "rc.h"
 #include "random.h"
 
+#if WINDOW_SYSTEM == 2
+#include <windows.h>
+#include <commdlg.h>
+
+#include "windisplay.h"
+#endif
+
 /***                           ----// 888 \\----                           ***/
 
 /* Utilty functions */
@@ -500,6 +507,7 @@ char script_fname[256] = "script.txt";
 
 static void get_filename(char* name, int len, int save)
 {
+#if WINDOW_SYSTEM != 2
   char fname[256];
 
   strcpy(fname, name);
@@ -518,6 +526,57 @@ static void get_filename(char* name, int len, int save)
   else
     name[0] = 0;
   strcat(name, fname);
+#else
+  char fname[256];
+  OPENFILENAME fn;
+  static char filter[] = "Quetzal files (*.qut)\0*.qut\0Data files (*.dat)\0*.dat\0Text files (*.txt)\0*.txt\0All files (*.*)\0*.*\0\0";
+  BOOL result;
+  int x;
+
+  strcpy(fname, name);
+  
+  fn.lStructSize       = sizeof(fn);
+  fn.hwndOwner         = mainwin;
+  fn.hInstance         = NULL;
+  fn.lpstrFilter       = filter;
+  fn.lpstrCustomFilter = NULL;
+  fn.nFilterIndex      = 1;
+  fn.lpstrFile         = fname;
+  fn.nMaxFile          = 256;
+  fn.lpstrFileTitle    = NULL;
+  fn.lpstrInitialDir   = NULL;
+  fn.lpstrTitle        = NULL;
+  fn.nFileOffset       = 0;
+  fn.nFileExtension    = 0;
+  fn.Flags             = 0;
+  fn.lpstrDefExt       = "qut";
+
+  for (x=0; x<strlen(fname); x++)
+    {
+      if (fname[x] == '\\')
+	fn.nFileOffset = x+1;
+    }
+
+  for (x=0; x<strlen(fname); x++)
+    {
+      if (fname[x] == '.')
+	fn.nFileExtension = x+1;
+    }
+  
+  if (save)
+    result = GetSaveFileName(&fn);
+  else
+    result = GetOpenFileName(&fn);
+
+  if (result)
+    {
+      strcpy(name, fn.lpstrFile);
+    }
+  else
+    {
+      strcpy(name, "");
+    }
+#endif
 }
 
 static int save_1234(ZDWord  pc,
@@ -531,7 +590,7 @@ static int save_1234(ZDWord  pc,
     {
       ok = 1;
       stream_prints("\nPlease supply a filename for save\n");
-      get_filename(save_fname, 255);
+      get_filename(save_fname, 255, 1);
 
       if (get_file_size(save_fname) != -1)
 	{
@@ -575,7 +634,7 @@ static int save_1234(ZDWord  pc,
 static int restore_1234(ZDWord* pc, ZStack* stack)
 {
   stream_prints("\nPlease supply a filename for restore\n");
-  get_filename(save_fname, 255);
+  get_filename(save_fname, 255, 1);
   
   if (state_load(save_fname, stack, pc))
     {
