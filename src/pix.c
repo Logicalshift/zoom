@@ -110,5 +110,5 @@ ZUWord pix_width(ZUWord picture)
 
 ZUWord pix_height(ZUWord picture)
 {
-  return pix_dir[picture-1].height;
+  return pix_dir[picture-1].height*2;
 }

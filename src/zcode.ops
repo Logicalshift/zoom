@@ -1534,7 +1534,7 @@ OPCODE "call_vs2"       VAR:0x0c   STORE LONG CANJUMP VERSION 4,5,6,7,8
   goto op_call_vs_45678;
 %}
 
-OPCODE "erase_window"   VAR:0x0d ARGS:1               VERSION 4,5,6,7,8
+OPCODE "erase_window"   VAR:0x0d ARGS:1               VERSION 4,5,7,8
 %{
   int old_win;
 
@@ -1846,7 +1846,6 @@ OPCODE "check_argcount" VAR:0x1f ARGS:1 BRANCH        VERSION 5,6,7,8
 
 OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
 %{
-  static char fname[256] = "savefile.qut";
   int ok;
 
   stream_flush_buffer();
@@ -1858,10 +1857,10 @@ OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
       do
 	{
 	  ok = 1;
-	  display_prints("\nPlease supply a filename for save\nFile: ");
-	  display_readline(fname, 255, 0);
+	  display_prints("\nPlease supply a filename for save\n");
+	  get_filename(save_fname, 255);
 
-	  if (get_file_size(fname) != -1)
+	  if (get_file_size(save_fname) != -1)
 	    {
 	      char yn[5];
 
@@ -1882,7 +1881,7 @@ OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
       while (!ok);
 
       store(stack, st, 2);
-      if (state_save(fname, stack, pc))
+      if (state_save(save_fname, stack, pc))
 	{
 	  tmp = GetVar(st); /* Pop the variable if it was on the stack */
 	  store(stack, st, 1);
@@ -1927,14 +1926,12 @@ OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
 
 OPCODE "restore"       EXT:0x01 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
 %{
-  static char fname[256] = "savefile.qut";
-  
   if (argblock.n_args == 0)
     {
-      display_prints("\nPlease supply a filename for restore\nFile: ");
-      display_readline(fname, 255, 0);
+      display_prints("\nPlease supply a filename for restore\n");
+      get_filename(save_fname, 255);
 
-      if (state_load(fname, stack, &pc))
+      if (state_load(save_fname, stack, &pc))
 	{
 	  zmachine_setup_header();
 	  goto loop;
@@ -2156,6 +2153,24 @@ OPCODE "pull"          VAR:0x09 ARGS:1 STORE  VERSION 6
     }
 %}
 
+OPCODE "erase_window"   VAR:0x0d ARGS:1               VERSION 6
+%{
+  int old_win, ewin;
+
+  stream_flush_buffer();
+  old_win = display_get_window();
+
+  if (argblock.arg[0] == -1)
+    ewin = old_win;  
+  else
+    ewin = argblock.arg[0];
+
+  display_set_window(ewin);
+  display_erase_window();
+  display_set_gcursor(0,0);
+  display_set_window(old_win);
+%}
+
 OPCODE "erase_line"    VAR:0x0e ARGS:1        VERSION 6
 %{
   display_erase_line(argblock.arg[0]);
@@ -2175,12 +2190,10 @@ OPCODE "set_cursor"    VAR:0x0f ARGS:3        VERSION 6
   if (argblock.n_args < 3)
     argblock.arg[2] = display_get_window();
 
-  printf("Moving cursor to %x, %x (window %i)\n", argblock.arg[0], argblock.arg[1], argblock.arg[2]);
-
   owin = display_get_window();
   display_set_window(argblock.arg[2]);
-  display_set_gcursor(argblock.arg[0] + windows[argblock.arg[2]].x,
-		      argblock.arg[1] + windows[argblock.arg[2]].y);
+  display_set_gcursor(argblock.arg[1] + windows[argblock.arg[2]].x,
+		      argblock.arg[0] + windows[argblock.arg[2]].y);
   display_set_window(owin);
 %}
 
@@ -2305,6 +2318,10 @@ OPCODE "get_wind_prop" EXT:0x13        STORE  VERSION 6
   int win;
 
   win = display_get_window();
+
+  argblock.arg[0] = v6_window(argblock.arg[0]);
+  if (argblock.arg[0] < 0)
+    zmachine_fatal("Bad window for get_wind_prop: %i", argblock.arg[0]);
   display_set_window(argblock.arg[0]);
   switch(argblock.arg[1])
     {
@@ -2348,7 +2365,8 @@ OPCODE "get_wind_prop" EXT:0x13        STORE  VERSION 6
       store(stack, st, windows[argblock.arg[0]].font_num);
       break;
     case 13:
-      store(stack, st, windows[argblock.arg[0]].font_size);
+      store(stack, st, (display_get_font_height()<<8)|
+                       display_get_font_width());
       break;
     case 14:
       store(stack, st,

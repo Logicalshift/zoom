@@ -146,6 +146,7 @@ struct window
   int fore, back;
 
   int winsx, winsy;
+  int lmargin, rmargin;
   int winlx, winly;
 
   int text_amount;
@@ -505,6 +506,7 @@ void display_clear(void)
   text_win[0].back = DEFAULT_BACK;
   text_win[0].line_height = 0;
   text_win[0].winsx = text_win[0].winsy = 0;
+  text_win[0].lmargin = text_win[0].rmargin = 0;
   text_win[0].winlx = win_x;
   text_win[0].winly = win_y;
   text_win[0].text_amount = 0;
@@ -525,7 +527,7 @@ static void new_line(int more)
   CURWIN.ypos += CURWIN.line_height;
   CURWIN.text_amount += CURWIN.line_height;
   
-  CURWIN.xpos = CURWIN.winsx;
+  CURWIN.xpos = CURWIN.winsx + CURWIN.lmargin;
   if (font_num >= 0)
     CURWIN.line_height = x_fonti[font_num]->ascent +
       x_fonti[font_num]->descent;
@@ -557,7 +559,9 @@ static void new_line(int more)
 	      CURWIN.text_amount = 0;
 	    }
 	  if (more == 1 && !CURWIN.no_more)
-	    display_more();
+	    {
+	      display_more();
+	    }
 	  
 	  /* Need to scroll window */
 	  XCopyArea(x_display, x_pix, x_pix, x_pixgc, 
@@ -579,7 +583,7 @@ static void new_line(int more)
 /*
  * Displays the 'more' prompt
  */
-void display_more(void)
+static void display_more(void)
 {
   more_on = 1;
   draw_window();
@@ -592,14 +596,14 @@ void display_more(void)
  * Outputs a string - this must not contain newline characters
  * This function performs word wrapping
  */
-static void outputs(const char* string, int font, int len, int split)
+static int outputs(const char* string, int font, int len, int split)
 {
   int width, height;
   int oldheight;
 
   if (CURWIN.winsy >= CURWIN.winly)
     {
-      return;
+      return 0;
     }
 
   if (font < 0)
@@ -620,7 +624,7 @@ static void outputs(const char* string, int font, int len, int split)
 	  CURWIN.xpos += font_x;
 	}
       
-      return;
+      return 0;
     }
   
   width  = XTextWidth(x_fonti[font], string, len);
@@ -649,23 +653,23 @@ static void outputs(const char* string, int font, int len, int split)
 				 string + word_start,
 				 word_len+1);
 
-	      if (xpos > CURWIN.winlx)
+	      if (xpos > CURWIN.winlx-CURWIN.rmargin)
 		{
 		  int more = -1;
 		  outputs(string, font, total_len, 0);
 
 		  if (newline_func != NULL)
 		    more = (newline_func)(string + total_len, len - total_len);
-		  new_line(more);
 
 		  if (more == 2)
 		    {
-		      return;
+		      return 1;
 		    }
+
+		  new_line(more);
 		  
-		  outputs(string + total_len,
-			  font, len - total_len, 1);
-		  return;
+		  return outputs(string + total_len,
+				 font, len - total_len, 1);
 		}
 	      
 	      total_len += word_len + 1;
@@ -678,7 +682,7 @@ static void outputs(const char* string, int font, int len, int split)
 	    }
 	}
       
-      return;
+      return 0;
     }
 
   oldheight = CURWIN.line_height;
@@ -691,10 +695,13 @@ static void outputs(const char* string, int font, int len, int split)
       
       scrollby = (CURWIN.ypos+CURWIN.line_height)-CURWIN.winly;
 
-      if (CURWIN.text_amount + scrollby > CURWIN.winly-CURWIN.winsy)
+      if (CURWIN.text_amount + scrollby > CURWIN.winly-CURWIN.winsy &&
+	  !CURWIN.no_scroll)
 	{
 	  if (!CURWIN.no_more)
-	    display_more();
+	    {
+	      display_more();
+	    }
 	  CURWIN.text_amount = 0;
 	}
 
@@ -762,6 +769,8 @@ static void outputs(const char* string, int font, int len, int split)
   do_redraw = 1;
 
   CURWIN.xpos += width;
+
+  return 0;
 }
 
 /*
@@ -818,7 +827,7 @@ void display_prints(const char* string)
 	      more = (newline_func)(string + ls + lp + 1,
 				    strlen(string)-lp-ls-1);
 	    }
-	  
+
 	  new_line(more);
 
 	  if (more == 2)
@@ -1082,7 +1091,7 @@ int process_events(long int to, char* buf, int buflen)
   XSetForeground(x_display, x_caretgc,
 		 x_colour[FIRST_ZCOLOUR+1].pixel^x_colour[FIRST_ZCOLOUR+CURWIN.back].pixel);
 
-  display_prints(" ");
+  /* display_prints(" "); */
   CURWIN.xpos = caret_x;
   do_redraw = 1;
       
@@ -1184,7 +1193,7 @@ int process_events(long int to, char* buf, int buflen)
 	}
       
       if (isevent)
-	{    
+	{
 	  XNextEvent(x_display, &ev);
 	  
 	  switch (ev.type)
@@ -1523,6 +1532,8 @@ void display_join(int window1, int window2)
 
 void display_set_window(int window)
 {
+  if (window < 0)
+    zmachine_fatal("Can't set window to %i", window);
   text_win[window].fore = CURWIN.fore;
   text_win[window].back = CURWIN.back;
   cur_win = window;
@@ -1548,7 +1559,7 @@ void display_erase_window(void)
 		 CURWIN.winsx, CURWIN.winsy,
 		 CURWIN.winlx-CURWIN.winsx,
 		 CURWIN.winly-CURWIN.winsy);
-  CURWIN.xpos = 0;
+  CURWIN.xpos = CURWIN.winsx + CURWIN.lmargin;
   CURWIN.ypos = CURWIN.winlx - height;
   CURWIN.line_height = height;
   do_redraw =  1;
@@ -1663,12 +1674,15 @@ extern void display_force_fixed (int window, int val)
 
 void display_window_define(int window,
 			   int x, int y,
+			   int lmargin, int rmargin,
 			   int width, int height)
 {
-  text_win[window].winsx = x;
-  text_win[window].winsy = y;
-  text_win[window].winlx = x + width;
-  text_win[window].winly = y + height;
+  text_win[window].winsx   = x;
+  text_win[window].winsy   = y;
+  text_win[window].lmargin = lmargin;
+  text_win[window].rmargin = rmargin;
+  text_win[window].winlx   = x + width;
+  text_win[window].winly   = y + height;
 
   /* if (text_win[window].xpos < x || text_win[window].xpos > x+width ||
       text_win[window].ypos < y || text_win[window].ypos > y+height)
@@ -1682,4 +1696,14 @@ void display_set_newline_function(int (*func)(const char* remaining,
 					      int rem_len))
 {
   newline_func = func;
+}
+
+int display_get_font_height(void)
+{
+  return x_fonti[font_num]->ascent + x_fonti[font_num]->descent;
+}
+
+int display_get_font_width(void)
+{
+  return XTextWidth(x_fonti[font_num], "0", 1);
 }

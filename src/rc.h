@@ -50,6 +50,7 @@ typedef struct
   rc_colour* colours;
   int        n_colours;
   char*      gamedir;
+  char*      savedir;
 } rc_game;
 
 extern void       rc_load           (void);
@@ -61,5 +62,6 @@ extern char*      rc_get_game_name  (char* serial, int revision);
 extern int        rc_get_interpreter(void);
 extern int        rc_get_revision   (void);
 extern char*      rc_get_gamedir    (void);
+extern char*      rc_get_savedir    (void);
 
 #endif

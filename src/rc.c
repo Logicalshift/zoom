@@ -185,3 +185,14 @@ char* rc_get_gamedir(void)
     }
   return game->gamedir;
 }
+
+char* rc_get_savedir(void)
+{
+  if (game->savedir == NULL)
+    {
+      if (defgame->gamedir == NULL)
+	return "./";
+      return defgame->savedir;
+    }
+  return game->savedir;
+}

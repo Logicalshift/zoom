@@ -1,3 +1,10 @@
+2000-11-10  Andrew Hunter    <andrew@logicalshift.co.uk>
+
+	* savedir option added to .zoomrc
+
+	* V6 support improved further... Zork Zero is now displaying
+	almost correctly
+
 2000-11-09  Andrew Hunter    <andrew@logicalshift.co.uk>
 
         * bug fixed in xdisplay.c that caused the cursor to slowly

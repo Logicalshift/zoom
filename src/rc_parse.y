@@ -17,7 +17,7 @@ extern hash rc_hash;
 extern void rc_error(char*);
 extern int  rc_lex(void);
 
-#define EMPTY_GAME(x) x.interpreter = -1; x.revision = -1; x.name = NULL; x.fonts = NULL; x.n_fonts = -1; x.colours = NULL; x.n_colours = -1; x.gamedir = NULL;
+#define EMPTY_GAME(x) x.interpreter = -1; x.revision = -1; x.name = NULL; x.fonts = NULL; x.n_fonts = -1; x.colours = NULL; x.n_colours = -1; x.gamedir = NULL; x.savedir = NULL;
 
 static inline rc_game merge_games(const rc_game* a, const rc_game* b)
 {
@@ -81,6 +81,11 @@ static inline rc_game merge_games(const rc_game* a, const rc_game* b)
     r.gamedir = b->gamedir;
   else
     r.gamedir = a->gamedir;
+
+  if (a->savedir == NULL)
+    r.savedir = b->savedir;
+  else
+    r.savedir = a->savedir;
 
   return r;
 }
@@ -239,6 +244,11 @@ RCOption:	  INTERPRETER NUMBER
 		    {
 		      EMPTY_GAME($$);
 		      $$.gamedir = $2;
+		    }
+                | SAVEDIR STRING
+		    {
+		      EMPTY_GAME($$);
+		      $$.savedir = $2;
 		    }
 		;
 

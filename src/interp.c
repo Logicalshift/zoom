@@ -36,6 +36,7 @@
 #include "stream.h"
 #include "state.h"
 #include "tokenise.h"
+#include "rc.h"
 
 /***                           ----// 888 \\----                           ***/
 
@@ -480,21 +481,42 @@ inline static int convert_colour(int col)
     }
 }
 
+static char save_fname[256] = "savefile.qut";
+
+static void get_filename(char* name, int len)
+{
+  char fname[256];
+
+  strcpy(fname, name);
+  if (len > 255)
+    len = 255;
+  len -= strlen(rc_get_savedir())+1;
+    
+  display_prints("File: ");
+  display_readline(fname, len, 0);
+
+  if (fname[0] != '/')
+    strcpy(name, rc_get_savedir());
+  else
+    name[0] = 0;
+  strcat(name, "/");
+  strcat(name, fname);
+}
+
 static int save_1234(ZDWord  pc,
 			    ZStack* stack,
 			    int     st)
 {
-  static char fname[256] = "savefile.qut";
   ZWord tmp;
   int ok;
 
   do
     {
       ok = 1;
-      display_prints("\nPlease supply a filename for save\nFile: ");
-      display_readline(fname, 255, 0);
+      display_prints("\nPlease supply a filename for save\n");
+      get_filename(save_fname, 255);
 
-      if (get_file_size(fname) != -1)
+      if (get_file_size(save_fname) != -1)
 	{
 	  char yn[5];
 
@@ -516,7 +538,7 @@ static int save_1234(ZDWord  pc,
   if (st >= 0)
     store(stack, st, 2);
 
-  if (state_save(fname, stack, pc))
+  if (state_save(save_fname, stack, pc))
     {
       if (st == 0)
 	tmp = GetVar(st);
@@ -535,12 +557,10 @@ static int save_1234(ZDWord  pc,
 
 static int restore_1234(ZDWord* pc, ZStack* stack)
 {
-  static char fname[256] = "savefile.qut";
+  display_prints("\nPlease supply a filename for restore\n");
+  get_filename(save_fname, 255);
   
-  display_prints("\nPlease supply a filename for restore\nFile: ");
-  display_readline(fname, 255, 0);
-  
-  if (state_load(fname, stack, pc))
+  if (state_load(save_fname, stack, pc))
     {
       restart_machine();
       return 1;
@@ -1071,10 +1091,9 @@ static inline void zcode_setup_window(int window)
 {
   display_set_window(window);
   display_window_define(window,
-			windows[window].x+windows[window].leftmar,
-			windows[window].y,
-			windows[window].xsize-windows[window].leftmar-windows[window].rightmar,
-			windows[window].ysize);
+			windows[window].x, windows[window].y,
+			windows[window].leftmar, windows[window].rightmar,
+			windows[window].xsize, windows[window].ysize);
   display_set_scroll(windows[window].scrolling);
   display_set_more(window, windows[window].scrolling);
   if (windows[window].line_count == -999)
@@ -1110,6 +1129,18 @@ static inline int zcode_v6_push_stack(ZStack* stack,
   s[1] = len;
 
   return 1;
+}
+
+static inline int v6_window(int win)
+{
+  if (win > 7)
+    zmachine_fatal("No such window: %i", win);
+  if (win == -3)
+    win = display_get_window();
+  if (win < -2)
+    zmachine_fatal("Bad value for window: %i", win);
+  
+  return win;
 }
 #endif
 

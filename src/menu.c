@@ -143,7 +143,7 @@ char* menu_get_story(void)
   di = display_get_info();
 
   selection = 0;
-  height = di->lines-6;
+  height = (di->lines-6)&~1;
   sprintf(format, " %%.%is ", di->columns-6);
 
   if (n_games < 1)
@@ -169,7 +169,12 @@ char* menu_get_story(void)
 	  start = 0;
 	}
       if (end > n_games)
-	end = n_games;
+	{
+	  end = n_games;
+	  start = end - height;
+	  if (start < 0)
+	    start = 0;
+	}
       
       for (x=0; x<(end-start); x++)
 	{
@@ -186,6 +191,10 @@ char* menu_get_story(void)
 
       switch (read)
 	{
+	case 'Q':
+	case 'q':
+	  exit(1);
+	  
 	case 129:
 	  selection--;
 	  if (selection<0)
