@@ -457,14 +457,14 @@ static void draw_scrollbar(int isselected)
   pos = (scroll_pos*total_y)/scroll_range;
   height = (scroll_height*total_y)/scroll_range;
 
-  if (height < 10)
-    height = 10;
+  if (height < 20)
+    height = 20;
 
   if (pos > total_y)
-    pos = total_y-10;
+    pos = total_y-height-1;
   if (pos + height >= total_y)
     {
-      pos -= (pos+height)-total_y-1;
+      pos -= (pos+height)-total_y+1;
     }
 
   if (pos < 0 || (pos+height) >= total_y)
@@ -1585,8 +1585,8 @@ static int process_events(long int to, int* buf, int buflen)
 		  pos = (scroll_pos*total_y)/scroll_range;
 		  height = (scroll_height*total_y)/scroll_range;
 		  
-		  if (height < 10)
-		    height = 10;
+		  if (height < 20)
+		    height = 20;
 		  
 		  if (pos > total_y)
 		    pos = total_y-10;
@@ -1660,8 +1660,8 @@ static int process_events(long int to, int* buf, int buflen)
 		      pos = (scroll_pos*total_y)/scroll_range;
 		      height = (scroll_height*total_y)/scroll_range;
 		      
-		      if (height < 10)
-			height = 10;
+		      if (height < 20)
+			height = 20;
 		      
 		      if (pos > total_y)
 			pos = total_y-10;
