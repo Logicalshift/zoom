@@ -71,8 +71,8 @@
 	<key>CFBundleSignature</key>
 	<string>YZZY</string>
 	<key>CFBundleVersion</key>
-	<string>1.0.0</string>
+	<string>1.0.1</string>
 	<key>CFBundleShortVersionString</key>
-	<string>Zoom 1.0.0, compiled for Mac OS X</string>
+	<string>Zoom 1.0.1, compiled for Mac OS X</string>
 </dict>
 </plist>
