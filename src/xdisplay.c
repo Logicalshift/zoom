@@ -1571,17 +1571,21 @@ static int process_events(long int to, int* buf, int buflen)
 	      break;
 
 	    case ConfigureNotify:
-	      win_width  = total_x = ev.xconfigure.width;
-	      win_height = total_y = ev.xconfigure.height;
-	      win_x      = total_x - (BORDER_SIZE*2) - SCROLLBAR_SIZE;
-	      win_y      = total_y - (BORDER_SIZE*2);
-
-	      win_left   = BORDER_SIZE;
-	      win_top    = BORDER_SIZE;
-
-	      /* Reformat window here */
-	      resize_window();
-	      move_caret();
+	      if (ev.xconfigure.width != win_width ||
+		  ev.xconfigure.height != win_height)
+		{
+		  win_width  = total_x = ev.xconfigure.width;
+		  win_height = total_y = ev.xconfigure.height;
+		  win_x      = total_x - (BORDER_SIZE*2) - SCROLLBAR_SIZE;
+		  win_y      = total_y - (BORDER_SIZE*2);
+		  
+		  win_left   = BORDER_SIZE;
+		  win_top    = BORDER_SIZE;
+		  
+		  /* Reformat window here */
+		  resize_window();
+		  move_caret();
+		}
 	      break;
 
 	    case ButtonPress:
