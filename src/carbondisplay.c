@@ -86,7 +86,7 @@ void display_prints_c(const char* str)
 {
 }
 
-void display_printc(int)
+void display_printc(int chr)
 {
 }
 
