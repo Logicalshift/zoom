@@ -31,6 +31,12 @@ Versions
    Windows interface: 0.9.99beta5
    Carbon interface: 1.0.1
    Cocoa interface: 2.0.0alpha1
+   
+   Note that Zoom's display system underwent a fairly major change
+   between 1.0.0 and 1.0.1 due to the addition of version 6 support. This
+   means that the Windows version of Zoom will not compile any longer.
+   The 2.0 version of the Cocoa interface refers to the version number
+   displayed in the About box for the Macintosh version of Zoom.
 
 Compiling Zoom
 ==============
