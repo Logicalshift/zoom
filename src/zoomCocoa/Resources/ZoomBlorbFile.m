@@ -174,8 +174,10 @@ static unsigned int Int4(const unsigned char* bytes) {
 	if (typesToBlocks) [typesToBlocks release];
 	if (locationsToBlocks) [locationsToBlocks release];
 	
-	if (resourceIndex) [resourceIndex release];
-	if (resolution) [resolution release];
+	if (resourceIndex)  [resourceIndex release];
+	if (resolution)		[resolution release];
+	if (adaptiveImages) [adaptiveImages release];
+	if (activePalette)  [activePalette release];
 	
 	[super dealloc];
 }
@@ -244,6 +246,22 @@ static unsigned int Int4(const unsigned char* bytes) {
 		// Check against the data we've already parsed for this file
 		if ([locationsToBlocks objectForKey: start] == nil) {
 			NSLog(@"ZoomBlorbFile: Warning: '%@' resource %@ not found (at %@)", usage, num, start);
+		}
+	}
+	
+	// Process the adaptive palette chunk (if present)
+	adaptive = NO;
+	NSData* aPal = [self dataForChunkWithType: @"APal"];
+	
+	if (aPal != nil) {
+		adaptive = YES;
+		
+		const unsigned char* pal = [aPal bytes];
+		adaptiveImages = [[NSMutableSet alloc] init];
+		
+		for (pos=0; pos+4<=[aPal length]; pos+=4) {
+			NSNumber* num = [NSNumber numberWithUnsignedInt: Int4(pal + pos)];
+			[adaptiveImages addObject: num];
 		}
 	}
 	
@@ -343,9 +361,70 @@ static unsigned int Int4(const unsigned char* bytes) {
 				[NSNumber numberWithUnsignedInt: num]]]];
 }
 
-// Fiddling with PNG palettes
+// = Fiddling with PNG palettes =
 
-// Decoded data
+- (NSData*) paletteForPng: (NSData*) png {
+	// (Appends the CRC to the palette, too)
+	const unsigned char* data = [png bytes];
+	unsigned int length = [png length];
+	
+	unsigned int pos = 8;
+	
+	while (pos+8 < length) {
+		unsigned int blockLength = Int4(data + pos);
+		NSString* type = [NSString stringWithCString: data + pos + 4
+											  length: 4];
+		
+		if ([type isEqualToString: @"PLTE"]) {
+			return [png subdataWithRange: NSMakeRange(pos+8, blockLength+4)];
+		}
+		
+		pos += blockLength + 12;
+	}
+	
+	return nil;
+}
+
+- (NSData*) adaptPng: (NSData*) png
+		 withPalette: (NSData*) newPalette {
+	if (newPalette == nil) return png;
+	
+	NSMutableData* newPng = [[png mutableCopy] autorelease];
+
+	const unsigned char* data = [newPng bytes];
+	unsigned int length = [newPng length];
+	
+	unsigned int pos = 8;
+	
+	while (pos+8 < length) {
+		unsigned int blockLength = Int4(data + pos);
+		NSString* type = [NSString stringWithCString: data + pos + 4
+											  length: 4];
+		
+		if ([type isEqualToString: @"PLTE"]) {
+			unsigned char lenBlock[4];
+			unsigned int newLen = [newPalette length];
+			
+			newLen -= 4;
+			lenBlock[0] = (unsigned char)(newLen>>24); lenBlock[1] = (unsigned char)(newLen>>16);
+			lenBlock[2] = (unsigned char)(newLen>>8); lenBlock[3] = (unsigned char)(newLen>>0);
+			[newPng replaceBytesInRange: NSMakeRange(pos, 4)
+							  withBytes: lenBlock];
+			
+			[newPng replaceBytesInRange: NSMakeRange(pos+8, blockLength+4)
+							  withBytes: [newPalette bytes]
+								 length: newLen + 4];
+			break;
+		}
+		
+		pos += blockLength + 12;
+	}
+	
+	return newPng;
+}
+
+// = Decoded data =
+
 - (NSSize) sizeForImageWithNumber: (int) num
 					forPixmapSize: (NSSize) pixmapSize {
 	// Decode the resolution chunk if necessary
@@ -447,6 +526,16 @@ static unsigned int Int4(const unsigned char* bytes) {
 	} else if ([type isEqualToString: @"PNG "]) {
 		// PNG file
 		NSData* pngData = [self dataForChunk: imageBlock];
+		
+		if (adaptive) {
+			if ([adaptiveImages containsObject: [NSNumber numberWithUnsignedInt: num]]) {
+				pngData = [self adaptPng: pngData
+							 withPalette: activePalette];
+			} else {
+				if (activePalette) [activePalette release];
+				activePalette = [[self paletteForPng: pngData] retain];
+			}
+		}
 		
 		res = [[[NSImage alloc] initWithData: pngData] autorelease];
 	} else if ([type isEqualToString: @"JPEG"]) {

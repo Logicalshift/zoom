@@ -22,6 +22,10 @@
 	
 	NSMutableDictionary* resourceIndex;
 	
+	BOOL adaptive;
+	NSMutableSet* adaptiveImages;
+	NSData*       activePalette;
+	
 	NSSize stdSize;
 	NSSize minSize;
 	NSSize maxSize;
