@@ -298,8 +298,8 @@ void zscii_install_alphabet(void)
 		conv[x] = malloc(sizeof(char)*32);
 	    }
 	  
-	  zsc = realloc(zsc, sizeof(char)*128);
-	  for (x=0; x<128; x++)
+	  zsc = realloc(zsc, sizeof(char)*256);
+	  for (x=0; x<256; x++)
 	    zsc[x] = 0;
 	  
 	  for (y=0; y<3; y++)
@@ -310,7 +310,8 @@ void zscii_install_alphabet(void)
 	      for (x=0; x<26; x++)
 		{
 		  conv[y][x+6]      = *(alpha++);
-		  zsc[conv[y][x+6]] = (x+6)|(y<<6);
+		  if (y != 2 || x>2)
+		    zsc[conv[y][x+6]] = (x+6)|(y<<6);
 		}
 	    }
 
