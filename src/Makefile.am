@@ -37,6 +37,8 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/ZoomRatingCell.m	  Z6Display.m \
 	zoomCocoa/ZoomPixmapWindow.h	  zoomCocoa/ZoomPixmapWindow.m \
 	zoomCocoa/ZoomCursor.h		  zoomCocoa/ZoomCursor.m \
+	zoomCocoa/Skein/ZoomSkein.h  zoomCocoa/Skein/ZoomSkeinItem.h \
+	zoomCocoa/Skein/ZoomSkein.m  zoomCocoa/Skein/ZoomSkeinItem.m \
 	zoomCocoa/MainMenu.nib/classes.nib zoomCocoa/MainMenu.nib/info.nib \
 	zoomCocoa/MainMenu.nib/keyedobjects.nib \
 	zoomCocoa/MainMenu.nib/objects.nib \

@@ -192,6 +192,8 @@ typedef enum {
 @protocol ZDisplay
 // Overall display functions
 
+- (void) zMachineHasRestarted;
+
 // Display information
 - (void) dimensionX: (out int*) xSize
                   Y: (out int*) ySize;

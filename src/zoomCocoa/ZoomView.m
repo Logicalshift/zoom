@@ -2062,4 +2062,8 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	}
 }
 
+- (void) zMachineHasRestarted {
+	[self orInterpreterRestart];
+}
+
 @end

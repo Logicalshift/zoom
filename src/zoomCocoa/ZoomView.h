@@ -91,7 +91,7 @@ extern NSString* ZoomStyleAttributeName;
 	int		upperWindowsToRestore;
 	
 	// Output receivers
-	NSMutableArray* outputRecievers;
+	NSMutableArray* outputReceivers;
 }
 
 // The delegate

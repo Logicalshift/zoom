@@ -29,6 +29,10 @@ int display_init_pixmap(int width, int height) {
 	return 1;
 }
 
+void display_has_restarted(void) {
+	[[mainMachine display] zMachineHasRestarted];
+}
+
 static int set_style(int style) {
     // Copy the old style
     ZStyle* newStyle = [zDisplayCurrentStyle copy];

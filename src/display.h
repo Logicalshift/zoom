@@ -59,6 +59,8 @@ extern void display_printf    (const char*, ...);
 extern void display_sanitise  (void);
 extern void display_desanitise(void);
 
+extern void display_has_restarted(void);
+
 /* Version 1-5 display */
 extern void display_is_v6       (void);
 extern void display_erase_window(void);

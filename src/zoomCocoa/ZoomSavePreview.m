@@ -200,7 +200,7 @@ static NSImage* saveBackground;
 }
 
 - (void) mouseUp: (NSEvent*) event {
-	ZoomSavePreviewView* superview = [self superview];
+	ZoomSavePreviewView* superview = (ZoomSavePreviewView*)[self superview];
 	
 	if ([superview isKindOfClass: [ZoomSavePreviewView class]]) {
 		// The superview has priority

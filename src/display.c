@@ -693,3 +693,8 @@ void display_force_fixed (int window, int val)
   NOTV6;
   CURWIN.force_fixed = val;
 }
+
+void display_has_restarted(void) 
+{
+  /* Notification function, mainly used by ZoomCocoa. We do nothing here */
+}

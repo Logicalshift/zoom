@@ -294,6 +294,7 @@ void restart_machine(void)
     }
 
   zmachine_setup_header();
+  display_has_restarted();
 }
 
 #define Obj3(x) (machine.memory + GetWord(machine.header, ZH_objs) + 62+(((x)-1)*9))
