@@ -5,9 +5,7 @@
 ! Requires a v5 or v6 interpreter
 ! ====================================
 
-Switches v6;
-
-Constant V6Tests;
+! Switches v6;
 
 Global standard_interpreter = 0;
 
@@ -41,9 +39,13 @@ Class Test
 	    new_line;
 	];
 
-#ifdef V6Tests;
+#IFV5;
+! Lalalala
+#IFNOT;
 #include "v6tests";
-#endif;
+#ENDIF;
+
+#include "spec11";
 
 [ Main x i obj;
     print "^^^^";
@@ -84,7 +86,10 @@ Class Test
 	
 	print "Test #", i++, " (", (name) obj, ")...^";
 	obj.test_result = obj.Run();
- 	@read_char 1 20 -> x;
+
+	@set_colour 1 1;
+	print "Press a key for the next test^";
+ 	@read_char 1 -> x;
 
 	@set_colour 1 1;
    }
