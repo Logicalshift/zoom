@@ -91,6 +91,7 @@ enum ZValueTypeMasks {
 - (BOOL)   setBreakpointAtName: (NSString*) name;
 - (void)   removeBreakpointAt: (int) address;
 - (void)   removeBreakpointAtName: (NSString*) name;
+- (void)   removeAllBreakpoints;
 
 - (int)        addressForName: (NSString*) name;
 - (NSString*)  nameForAddress: (int) address;

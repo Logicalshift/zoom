@@ -528,6 +528,17 @@ static NSString* zscii_to_string(ZByte* buf) {
 	}
 }
 
+- (void) removeAllBreakpoints {
+	while (debug_nbps > 0) {
+		// NOT temporary breakpoints
+		int index = 0;
+		while (index < debug_nbps && debug_bplist[index].temporary != 0) index++;
+		if (index >= debug_nbps) break;
+		
+		debug_clear_breakpoint(debug_bplist + index);
+	}
+}
+
 - (int) addressForName: (NSString*) name {
 	return debug_find_named_address([name cString]);
 }
