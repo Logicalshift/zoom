@@ -34,6 +34,9 @@ extern NSString* ZoomStoryOrganiserProgressNotification;
 	NSConnection* subThread;
 	
 	NSLock* storyLock;
+	
+	// Story organising thread
+	BOOL alreadyOrganising;
 }
 
 // The shared organiser
@@ -67,7 +70,6 @@ extern NSString* ZoomStoryOrganiserProgressNotification;
 - (void) endedActing;
 
 // Organising stories
-- (NSString*) directoryForStory: (ZoomStory*) story;
 - (void)      organiseStory: (ZoomStory*) story;
 - (void)      organiseStory: (ZoomStory*) story
 				  withIdent: (ZoomStoryID*) ident;

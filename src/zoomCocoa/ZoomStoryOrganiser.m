@@ -970,4 +970,130 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	}
 }
 
+- (void) organiseAllStories {
+	// Forces an organisation of all the stories stored in the database.
+	// This is useful if, for example, the 'keep games organised' option is switched on/off
+	
+	// Create the ports for the thread
+	NSPort* threadPort1 = [NSMachPort port];
+	NSPort* threadPort2 = [NSMachPort port];
+	
+	[[NSRunLoop currentRunLoop] addPort: threadPort1
+								forMode: NSDefaultRunLoopMode];
+	
+	// Create the information dictionary
+	NSDictionary* threadDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+		threadPort1, @"threadPort1",
+		threadPort2, @"threadPort2",
+		nil];
+	
+	[storyLock lock];
+	if (alreadyOrganising) {
+		NSLog(@"ZoomStoryOrganiser: organiseAllStories called while Zoom was already in the process of organising");
+		[storyLock unlock];
+		return;
+	}
+	
+	alreadyOrganising = YES;
+	
+	// Run a separate thread to do (some of) the work
+	[self retain]; // Released by the thread when it finishes
+	[NSThread detachNewThreadSelector: @selector(organiserThread:)
+							 toTarget: self
+						   withObject: threadDictionary];
+	[storyLock unlock];
+}
+
+- (void) reorganiseStoriesTo: (NSString*) newStoryDirectory {
+	// Changes the story organisation directory
+	// Meh. Can just rename the directory, perhaps?
+}
+
+- (void) reorganiseStoryWithFilename: (NSString*) filename {
+	ZoomStoryID* ident = [filenamesToIdents objectForKey: filename];
+	ZoomStory*   story = [[NSApp delegate] findStory: ident];
+	
+	if (ident == nil) {
+		// Story has disappeared in the meantime
+		return;
+	}
+	
+	if (story == nil) {
+		// Uh, something weird has happened... The story is missing from the metadata database
+		NSLog(@"Unable to find metadata for %@", filename);
+		return;
+	}
+	
+	[self organiseStory: story
+			  withIdent: ident];
+}
+
+- (void) organiserThread: (NSDictionary*) dict {
+	NSAutoreleasePool* p = [[NSAutoreleasePool alloc] init];
+	
+	// Retrieve the info from the dictionary
+	NSPort* threadPort1 = [dict objectForKey: @"threadPort1"];
+	NSPort* threadPort2 = [dict objectForKey: @"threadPort2"];
+	
+	// Connect to the main thread
+	[[NSRunLoop currentRunLoop] addPort: threadPort2
+                                forMode: NSDefaultRunLoopMode];
+	subThread = [[NSConnection allocWithZone: [self zone]]
+        initWithReceivePort: threadPort2
+                   sendPort: threadPort1];
+	[subThread setRootObject: self];
+	
+	// Start things rolling
+	[(ZoomStoryOrganiser*)[subThread rootProxy] startedActing];
+	
+	// Get the list of stories we need to update
+	// It is assumed any new stories at this point will be organised correctly
+	[storyLock lock];
+	NSArray* filenames = [[filenamesToIdents allKeys] copy];
+	[storyLock unlock];
+	
+	NSEnumerator* filenameEnum = [filenames objectEnumerator];
+	NSString* filename;
+	
+	while (filename = [filenameEnum nextObject]) {
+		// First: check that the file exists
+		struct stat sb;
+		
+		[storyLock lock];
+		if (stat([filename UTF8String], &sb) != 0) {
+			// The story does not exist: remove from the database and keep moving
+			
+			ZoomStoryID* oldID = [filenamesToIdents objectForKey: filename];
+			
+			if (oldID != nil) {
+				// Is actually still in the database as that filename
+				[filenamesToIdents removeObjectForKey: filename];
+				[identsToFilenames removeObjectForKey: oldID];
+				
+				[(ZoomStoryOrganiser*)[subThread rootProxy] organiserChanged];
+			}
+			
+			[storyLock unlock];
+			continue;
+		}		
+		[storyLock unlock];
+		
+		// OK, the story still exists with that filename. Pass this off to the main thread
+		// for organisation
+		[(ZoomStoryOrganiser*)[subThread rootProxy] reorganiseStoryWithFilename: filename];
+	}
+	
+	// Not organising any more
+	[storyLock lock];
+	alreadyOrganising = NO;
+	[storyLock unlock];
+	
+	// Tidy up
+	[self release];
+	
+	[(ZoomStoryOrganiser*)[subThread rootProxy] endedActing];
+	[subThread release];
+	[p release];
+}
+
 @end
