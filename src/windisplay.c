@@ -91,15 +91,15 @@ static int     n_fonts = 9;
 
 static char*   fontlist[] =
 {
-  "'Arial' 10",
-  "'Arial' 10 b",
-  "'Arial' 10 i",
-  "'Courier New' 10 f",
+  "'Helvetica' 10",
+  "'Helvetica' 10 b",
+  "'Helvetica' 10 i",
+  "'Courier' 10",
   "font3",
-  "'Arial' 10 ib",
-  "'Courier New' 10 fb",
-  "'Courier New' 10 fi",
-  "'Courier New' 10 fib"
+  "'Helvetica' 10 ib",
+  "'Courier' 10 fb",
+  "'Courier' 10 fi",
+  "'Courier' 10 fib"
 };
 
 static int style_font[16] = { 0, 1, 2, 5, 3, 6, 7, 8,

@@ -200,7 +200,7 @@ struct window
   struct cellline* cline;
 };
 
-/* Windows data structures 'emselves */
+/* Window data structures 'emselves */
 int cur_win;
 struct window text_win[3];
 

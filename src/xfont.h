@@ -57,6 +57,13 @@ extern XFONT_MEASURE xfont_get_text_width(xfont*,
 					  const int*,
 					  int);
 #if WINDOW_SYSTEM==1
+
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
+#include <X11/Xutil.h>
+#include <X11/Xresource.h>
+#include <X11/keysym.h>
+
 extern void    xfont_plot_string   (xfont*,
 				    Drawable,
 				    GC,
