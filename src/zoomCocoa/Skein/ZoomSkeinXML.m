@@ -48,10 +48,11 @@ static NSString* xmlEncode(NSString* str) {
 	NSMutableString* result = [[[NSMutableString alloc] init] autorelease];
 	
 	// Write header
-	[result appendString: 
-		[NSString stringWithFormat: @"<Skein rootNode=\"%@\" xmlns=\"http://www.logicalshift.org.uk/IF/Skein\">\n",
-			idForNode(rootItem)]];
+	[result appendFormat: 
+		@"<Skein rootNode=\"%@\" xmlns=\"http://www.logicalshift.org.uk/IF/Skein\">\n",
+			idForNode(rootItem)];
 	[result appendString: @"  <generator>Zoom</generator>\n"];
+	[result appendFormat: @"  <activeNode nodeId=\"%@\" />\n", idForNode(activeItem)];
 	
 	// Write items
 	NSMutableArray* itemStack = [NSMutableArray array];

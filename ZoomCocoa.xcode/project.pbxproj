@@ -123,6 +123,20 @@
 			settings = {
 			};
 		};
+		4B14632106A2DD9E00398650 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = ZoomSkeinXML.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B14632206A2DD9E00398650 = {
+			fileRef = 4B14632106A2DD9E00398650;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		4B1884AF06975647004D8501 = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -2356,6 +2370,7 @@
 			children = (
 				4BA2BCEB06949E730082C022,
 				4BA2BCEC06949E730082C022,
+				4B14632106A2DD9E00398650,
 				4BA2BCF20694A0830082C022,
 				4BA2BCF30694A0830082C022,
 				4B1884AF06975647004D8501,
@@ -3474,6 +3489,7 @@
 				4BA2BCEF06949E790082C022,
 				4BA2BCF60694A08D0082C022,
 				4B1884B206975647004D8501,
+				4B14632206A2DD9E00398650,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
