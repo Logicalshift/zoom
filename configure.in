@@ -398,4 +398,5 @@ AC_OUTPUT([
   src/ztypes.h
   src/zoom.rc
   builder/Makefile
+  manual/Makefile
   bonus/Makefile])
