@@ -30,7 +30,11 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/ZoomiFictionController.m zoomCocoa/ZoomStoryOrganiser.h \
 	zoomCocoa/ZoomStoryOrganiser.m    zoomCocoa/ZoomGameInfoController.h \
 	zoomCocoa/ZoomGameInfoController.m zoomCocoa/ZoomiFButton.h \
-	zoomCocoa/ZoomiFButton.m \
+	zoomCocoa/ZoomiFButton.m 	  zoomCocoa/ZoomCollapsableView.h \
+	zoomCocoa/ZoomCollapsableView.m	  zoomCocoa/ZoomSavePreview.h \
+	zoomCocoa/ZoomSavePreview.m	  zoomCocoa/ZoomSavePreviewView.h \
+	zoomCooca/ZoomSavePreviewView.m	  zoomCocoa/ZoomRatingCell.h \
+	zoomCocoa/ZoomRatingCell.m	  \
 	zoomCocoa/MainMenu.nib/classes.nib zoomCocoa/MainMenu.nib/info.nib \
 	zoomCocoa/MainMenu.nib/keyedobjects.nib \
 	zoomCocoa/MainMenu.nib/objects.nib \
@@ -62,7 +66,8 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/generalSettings.png 	zoomCocoa/information-in.png \
 	zoomCocoa/information-out.png	zoomCocoa/newgame-in.png \
 	zoomCocoa/newgame-out.png	zoomCocoa/Z-Decal.png  \
-	zoomCocoa/Metal-Title.png \
+	zoomCocoa/Metal-Title.png 	zoomCocoa/stars-grey.png \
+	zoomCocoa/stars-red.png		zoomCocoa/stars-none.png \
 	zoomCocoa/English.lproj/Credits.rtf
 
 zoom_SOURCES = \
