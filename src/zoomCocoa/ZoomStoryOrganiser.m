@@ -548,17 +548,47 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 
 // = Story-specific data =
 
+- (NSString*) directoryForName: (NSString*) name {
+	// Gets rid of certain illegal characters from the name, returning a valid directory name
+	//	(Most illegal characters are replaced by '?', but '/' is replaced by ':' - look in the finder
+	//	to see why)
+	
+	// Techincally, only '/' and NUL are invalid characters under UNIX. We invalidate a few more so as to
+	// avoid the possibility of slightly dumb-looking filenames.
+	int len = [name length];
+	unichar* result = malloc(len*sizeof(unichar));
+	int x;
+	
+	for (x=0; x<len; x++) {
+		result[x] = [name characterAtIndex: x];
+		
+		switch (result[x]) {
+			case '/': result[x] = ':'; break;	// Makes some twisted kind of sense
+			case ':': result[x] = '?'; break;
+			default:
+				if (result[x] < 32) result[x] = '?';
+		}
+	}
+	
+	NSString* dir = [NSString stringWithCharacters: result
+											length: len];
+	free(result);
+	
+	return dir;
+}
+
 - (NSString*) preferredDirectoryForIdent: (ZoomStoryID*) ident {
 	// The preferred directory is defined by the story group and title
 	// (Ungrouped/untitled if there is no story group/title)
 
 	// TESTME: what does stringByAppendingPathComponent do in the case where the group/title
 	// contains a '/' or other evil character?
-	NSString* confDir = [[NSUserDefaults standardUserDefaults] objectForKey: ZoomGameStorageDirectory];
+	// NSString* confDir = [[NSUserDefaults standardUserDefaults] objectForKey: ZoomGameStorageDirectory];
+	NSString* confDir = [[ZoomPreferences globalPreferences] organiserDirectory];
 	ZoomStory* theStory = [[NSApp delegate] findStory: ident];
 	
-	confDir = [confDir stringByAppendingPathComponent: [theStory group]];
-	confDir = [confDir stringByAppendingPathComponent: [theStory title]];
+	confDir = [confDir stringByAppendingPathComponent: [self directoryForName: [theStory group]]];
+	confDir = [confDir stringByAppendingPathComponent: [self directoryForName: [theStory title]]];
 	
 	return confDir;
 }
@@ -606,8 +636,8 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	BOOL isDir;
 	
 	ZoomStory* theStory = [[NSApp delegate] findStory: ident];
-	NSString* group = [theStory group];
-	NSString* title = [theStory title];
+	NSString* group = [self directoryForName: [theStory group]];
+	NSString* title = [self directoryForName: [theStory title]];
 	
 	if (group == nil || [group isEqualToString: @""])
 		group = @"Ungrouped";
@@ -615,7 +645,8 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		title = @"Untitled";
 	
 	// Find the root directory
-	NSString* rootDir = [[NSUserDefaults standardUserDefaults] objectForKey: ZoomGameStorageDirectory];
+	// NSString* rootDir = [[NSUserDefaults standardUserDefaults] objectForKey: ZoomGameStorageDirectory];
+	NSString* rootDir = [[ZoomPreferences globalPreferences] organiserDirectory];
 	
 	if (![[NSFileManager defaultManager] fileExistsAtPath: rootDir
 											  isDirectory: &isDir]) {
@@ -778,12 +809,16 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	idealDir = [idealDir stringByStandardizingPath];
 	
 	// See if they already match
-	if ([idealDir isEqualToString: currentDir]) 
+	if ([[idealDir lowercaseString] isEqualToString: [currentDir lowercaseString]]) 
 		return YES;
 	
 	// If they don't match, then idealDir should be new (or something weird has just occured)
 	// Hmph. HFS+ is case-insensitve, and stringByStandardizingPath does not take account of this. This could
 	// cause some major problems with organiseStory:withIdent:, as that deletes/copies files...
+	// We're dealing with this by calling lowercaseString, but there's no guarantee that this matches the algorithm
+	// used for comparing filenames internally to HFS+.
+	//
+	// Don't even think about UFS or HFSX. There's no way to tell which we're using
 	if ([[NSFileManager defaultManager] fileExistsAtPath: idealDir]) {
 		// Doh!
 		NSLog(@"Wanted to move game from '%@' to '%@', but '%@' already exists", currentDir, idealDir, idealDir);
@@ -926,7 +961,8 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		}
 		
 		// The file might already be organised, but in the wrong directory
-		NSString* gameStorageDirectory = [[NSUserDefaults standardUserDefaults] objectForKey: ZoomGameStorageDirectory];
+		// NSString* gameStorageDirectory = [[NSUserDefaults standardUserDefaults] objectForKey: ZoomGameStorageDirectory];
+		NSString* gameStorageDirectory = [[ZoomPreferences globalPreferences] organiserDirectory];
 		NSArray* storageComponents = [gameStorageDirectory pathComponents];
 
 		NSArray* filenameComponents = [filename pathComponents];
@@ -1110,8 +1146,9 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 }
 
 - (NSString*) gameStorageDirectory {
-	// We also can't use the user defaults from a thread
-	return [[NSUserDefaults standardUserDefaults] objectForKey: ZoomGameStorageDirectory];
+	// We also can't use the user defaults from a thread (legacy: we're using the ZoomPreferences object now)
+	return [[ZoomPreferences globalPreferences] organiserDirectory];
+	// return [[NSUserDefaults standardUserDefaults] objectForKey: ZoomGameStorageDirectory];
 }
 
 - (NSDictionary*) storyInfoForFilename: (NSString*) filename {
@@ -1289,7 +1326,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		BOOL inWrongGroup = NO;
 		
 		[storyLock lock];
-		NSString* expectedGroup = [[[story group] copy] autorelease];
+		NSString* expectedGroup = [self directoryForName: [[[story group] copy] autorelease]];
 		NSString* actualGroup = [filenameComponents objectAtIndex: [filenameComponents count]-3];
 		if (expectedGroup == nil || [expectedGroup isEqualToString: @""]) expectedGroup = @"Ungrouped";
 		[storyLock unlock];
@@ -1303,7 +1340,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		BOOL inWrongDirectory = NO;
 		
 		[storyLock lock];
-		NSString* expectedDir = [[[story title] copy] autorelease];
+		NSString* expectedDir = [self directoryForName: [[[story title] copy] autorelease]];
 		NSString* actualDir = [filenameComponents objectAtIndex: [filenameComponents count]-2];
 		[storyLock unlock];
 		
