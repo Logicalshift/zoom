@@ -278,6 +278,13 @@ static void move_caret(void)
 	}
     } 
 
+  if (text_buf != NULL)
+    {
+      caret_x += xfont_get_text_width(font[style_font[(CURSTYLE>>1)&15]],
+				      text_buf,
+				      buf_offset);
+    }
+
   caret_on = last_on;
   draw_caret();
 }

@@ -361,7 +361,7 @@ XFONT_MEASURE xfont_get_text_width(xfont* f, const int* text, int len)
   static XChar2b* xtxt = NULL;
   int x;
 
-  if (len == 0)
+  if (len <= 0)
     return 0;
 
   switch (f->type)
@@ -437,6 +437,9 @@ void xfont_plot_string(xfont* f,
 {
   static XChar2b* xtxt = NULL;
   int i;
+  
+  if (len <= 0)
+    return;
   
   switch (f->type)
     {

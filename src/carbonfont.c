@@ -834,6 +834,9 @@ XFONT_MEASURE xfont_get_text_width(xfont* xf,
   
   int x;
 
+  if (length <= 0)
+    return;
+
   ATSUTextMeasurement before, after, ascent, descent;
 
   if (xf->type == FONT_FONT3)
@@ -970,6 +973,9 @@ void xfont_plot_string(xfont* font,
   Rect bgRect;
 
   CGrafPtr thePort = GetQDGlobalsThePort();
+
+  if (length <= 0)
+    return;
   
   GetPortBounds(thePort, &portRect);
 
