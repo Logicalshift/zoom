@@ -50,6 +50,7 @@ extern NSString* ZoomSkeinChangedNotification;
 // Annotation lists
 - (NSArray*) annotations;
 - (void)	 populatePopupButton: (NSPopUpButton*) button;
+- (NSArray*) itemsWithAnnotation: (NSString*) annotation;
 
 @end
 

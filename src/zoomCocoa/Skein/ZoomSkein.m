@@ -266,6 +266,31 @@ static NSComparisonResult stringCompare(id a, id b, void* context) {
 	[button addItemsWithTitles: items];
 }
 
+- (NSArray*) itemsWithAnnotation: (NSString*) annotation {
+	if (rootItem == nil) return nil;
+	
+	// The result
+	NSMutableArray* res = [NSMutableArray array];
+	
+	// Iterate through the items
+	NSMutableArray* stack = [NSMutableArray array];
+	[stack addObject: rootItem];
+	
+	while ([stack count] > 0) {
+		ZoomSkeinItem* item = [stack lastObject];
+		[stack removeLastObject];
+		
+		if ([annotation isEqualToString: [item annotation]]) {
+			[res addObject: item];
+		}
+		
+		[stack addObjectsFromArray: [[item children] allObjects]];
+	}
+	
+	// Return the result
+	return res;
+}
+
 @end
 
 // = Our input source object =
