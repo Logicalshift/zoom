@@ -1122,12 +1122,6 @@ void xfont_plot_string(xfont* font,
       CGPoint pt;
       CGGlyph* glyph;
       
-      CGContextSetRGBFillColor(carbon_quartz_context, 
-			       (float)fg_col.red/65536.0,
-			       (float)fg_col.green/65536.0,
-			       (float)fg_col.blue/65536.0,
-			       1.0);
-      
       //outbuf = convert_text(font, string, length, &outlen);
       
       glyph = convert_glyphs(font, string, length, &outlen);
@@ -1154,6 +1148,7 @@ void xfont_plot_string(xfont* font,
       
       if (!transpar)
 	{
+	  /*
 	  RGBForeColor(&bg_col);
 	  bgRect.left   = portRect.left+x;
 	  bgRect.right  = bgRect.left+(pt.x+0.5);
@@ -1161,8 +1156,28 @@ void xfont_plot_string(xfont* font,
 	  bgRect.bottom = bgRect.top +
 	    font->data.mac.ascent + font->data.mac.descent;
 	  PaintRect(&bgRect);
+	  */
+	  CGRect bgr;
+
+	  CGContextSetRGBFillColor(carbon_quartz_context, 
+				   (float)bg_col.red/65536.0,
+				   (float)bg_col.green/65536.0,
+				   (float)bg_col.blue/65536.0,
+				   1.0);
+	  bgr = CGRectMake(portRect.left + x,
+			   (portRect.bottom-portRect.top) + y - font->data.mac.descent,
+			   
+			   pt.x,
+			   font->data.mac.ascent + font->data.mac.descent);
+	  CGContextFillRect(carbon_quartz_context, bgr);
 	}
-      
+            
+      CGContextSetRGBFillColor(carbon_quartz_context, 
+			       (float)fg_col.red/65536.0,
+			       (float)fg_col.green/65536.0,
+			       (float)fg_col.blue/65536.0,
+			       1.0);
+
       CGContextSetTextDrawingMode(carbon_quartz_context, kCGTextFill);
       CGContextSetTextPosition(carbon_quartz_context,
 			       portRect.left + x, 

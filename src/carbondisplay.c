@@ -777,6 +777,8 @@ static void redraw_input_text(void)
   clip.top = 0;
   clip.bottom = total_y;
   ClipRect(&clip);
+
+  CGContextSynchronize(carbon_quartz_context);
 }
 
 /* Redraw (part of?) the window */
@@ -822,6 +824,8 @@ void redraw_window(Rect* rct)
       SetClip(oldclip);
       DisposeRgn(oldclip);
     }
+
+  CGContextSynchronize(carbon_quartz_context);
 }
 
 /***                           ----// 888 \\----                           ***/
@@ -1276,6 +1280,7 @@ static void draw_window(int   win,
 					   text->text + offset,
 					   toprint);
 
+		  /*
 		  frct.top    = portRect.top + line->baseline - line->ascent 
 		    + BORDERWIDTH - scrollpos;
 		  frct.bottom = frct.top + line->ascent + line->descent;
@@ -1283,6 +1288,7 @@ static void draw_window(int   win,
 		  frct.right  = frct.left + w;
 		  RGBForeColor(carbon_get_colour(text->bg));
 		  PaintRect(&frct);
+		  */
 
 		  xfont_set_colours(text->fg,
 				    text->bg);
