@@ -16,7 +16,7 @@
   <editor should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="oT5FWMDPl-G"/>
+    <selected-rows ids="bhtNI9CHXrl"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -701,20 +701,6 @@
             </text>
           </note>
         </item>
-        <item id="oT5FWMDPl-G">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>&apos;Organise now&apos; button in game preferences b0rked.</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
         <item id="hG0bTrug_84">
           <values>
             <text>
@@ -791,6 +777,106 @@
             </text>
           </note>
         </item>
+        <item id="g9H8U-s3ymD" expanded="yes">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Might cause bugs</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+          <children>
+            <item id="bVLHTzQZCjp">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Groups or titles with a directory separator in them (&apos;/&apos; or &apos;:&apos; ?)</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="bhtNI9CHXrl">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Games in the same group, but with different case</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="aDlVfH8pC6s">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Renaming a game to have different case</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+          </children>
+        </item>
+        <item id="jB0jGi2zEea">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Renaming a game in the iFiction window at the moment doesn&apos;t seem to change the name on disk when keep games organised is on... Ah, this only happens if the dir name isn&apos;t exactly right.</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="jQG-R3T8GU5">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Except that when we run it, it gets COPIED. Argh.</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="icIWCXitNrm">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Removing the last game from a group causes an exception</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
         <item id="jJMBXeb7ZyL" state="checked">
           <values>
             <text>
@@ -805,6 +891,20 @@
             </text>
           </values>
           <children>
+            <item id="oT5FWMDPl-G" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>&apos;Organise now&apos; button in game preferences b0rked.</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
             <item id="gVVi72GTiUQ" state="checked">
               <values>
                 <text>
@@ -1329,20 +1429,6 @@
             </text>
           </note>
         </item>
-        <item id="l0FkrJM0w6I" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Remaining infocom games in file</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
         <item id="h1lSb8If3u8">
           <values>
             <text>
@@ -1447,6 +1533,36 @@
                   <p>
                     <run>
                       <lit>Develop metadata format 1.0, adjust interface</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+          </children>
+        </item>
+        <item id="d5VGR4xaf2H" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Fixed</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+          <children>
+            <item id="l0FkrJM0w6I" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Remaining infocom games in file</lit>
                     </run>
                   </p>
                 </text>
