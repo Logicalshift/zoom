@@ -40,6 +40,9 @@
 #include "display.h"
 #include "rc.h"
 
+#include "image.h"
+#include "image_ximage.h"
+
 #include "format.h"
 
 #ifdef HAVE_XFT
@@ -981,6 +984,28 @@ static void draw_window()
   dregion = None;
 
   resetregion = 1;
+
+  /* Image test */
+  if (machine.blorb != NULL)
+    {
+      image_data* img;
+      XImage*     xim;
+
+      img = image_load(machine.blorb_file,
+		       machine.blorb->index.picture[0].file_offset);
+
+      if (img == NULL)
+	zmachine_fatal("Unable to load image");
+
+      xim = image_to_ximage_truecolour(img,
+				       x_display,
+				       DefaultVisual(x_display, 0));
+
+      XPutImage(x_display, x_drawable,
+		x_wingc, xim,
+		0, 0, 0, 0,
+		320, 200);
+    }
 
   /* Flip buffers */
 #ifdef HAVE_XDBE

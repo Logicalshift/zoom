@@ -136,19 +136,24 @@ static image_data* iload(image_data* resin, ZFile* file, int offset, int realrea
 	       &res->depth, &res->colour,
 	       NULL, NULL, NULL);
 
-  res->row = malloc(sizeof(png_bytep)*res->height);
-  res->image = malloc(sizeof(png_byte)*png_get_rowbytes(png, png_info)*res->height);
-
-  for (x=0; x<res->height; x++)
-    {
-      res->row[x] = res->image + (x*png_get_rowbytes(png, png_info));
-    }
-
   if (realread)
     {
+      res->row = malloc(sizeof(png_bytep)*res->height);
+      res->image = malloc(sizeof(png_byte)*png_get_rowbytes(png, png_info)*res->height);
+      
+      for (x=0; x<res->height; x++)
+	{
+	  res->row[x] = res->image + (x*png_get_rowbytes(png, png_info));
+	}
+      
       png_read_image(png, res->row);
       
       png_read_end(png, end_info);
+    }
+  else
+    {
+      res->row = NULL;
+      res->image = NULL;
     }
       
   png_destroy_read_struct(&png, &png_info, &end_info);

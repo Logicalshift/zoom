@@ -264,7 +264,9 @@ typedef struct ZMachine
   int track_attributes;
 #endif
 
-  IffFile* blorb_tokens;
+  ZFile*     blorb_file;
+  IffFile*   blorb_tokens;
+  BlorbFile* blorb;
 } ZMachine;
 
 typedef struct ZDictionary

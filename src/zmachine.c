@@ -85,11 +85,20 @@ void zmachine_load_story(char* filename, ZMachine* machine)
 	zmachine_fatal("Unable to open story file");
     }
 
+  machine->blorb_tokens = NULL;
+  machine->blorb = NULL;
   if (blorb_is_blorbfile(machine->file))
     {
-      printf("Blorb...\n");
+      machine->blorb_file = machine->file;
       machine->blorb_tokens = iff_decode_file(machine->file);
-      blorb_loadfile(machine->file);
+      machine->blorb = blorb_loadfile(machine->file);
+
+      rc_set_game("xxxxxx", 65535);
+
+      display_initialise();
+      display_clear();
+      display_prints_c("Hello\n");
+      display_readchar(0);
       exit(0);
     }
   else

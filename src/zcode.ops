@@ -1662,13 +1662,14 @@ OPCODE "set_text_style" VAR:0x11 ARGS:1               VERSION 4,5,6,7,8
 %{
   stream_flush_buffer();
 #ifndef SPEC_11
-  if (argblock.arg[0] != 1 &&
+  if (argblock.arg[0] != 0 &&
+      argblock.arg[0] != 1 &&
       argblock.arg[0] != 2 &&
       argblock.arg[0] != 4 &&
       argblock.arg[0] != 8 &&
       argblock.arg[0] != 16)
     {
-      zmachine_warning("Multiple styles not (officially) supported in version 1.0");
+      zmachine_warning("Multiple styles not (officially) supported in standard 1.0", argblock.arg[0]);
     }
 #endif
   display_set_style(argblock.arg[0]);  
