@@ -259,4 +259,10 @@ ZDisplay* display_get_info(void)
   return &dis;
 }
 
+extern int zoom_main(int, char**);
+
+int main(int argc, char** argv)
+{
+}
+
 #endif
