@@ -113,6 +113,7 @@ void zmachine_load_file(ZFile* file, ZMachine* machine) {
     frame->nlocals      = 0;
     frame->v4read       = NULL;
     frame->v5read       = NULL;
+	frame->break_on_return = 0;
 
     machine->header = machine->memory;
 

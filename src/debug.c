@@ -42,6 +42,11 @@ int				  debug_expr_pos  = 0;
 
 static debug_breakpoint_handler bp_handler = NULL;
 
+/*
+static debug_breakpoint* return_breakpoint;
+static ZFrame*			 return_frame;
+ */
+
 typedef struct debug_display
 {
   int*  expr;
@@ -67,21 +72,15 @@ void debug_run_breakpoint(ZDWord pc)
   debug_breakpoint* bp;
   static int banner = 0;
   int x;
+  ZFrame* frame;
 
   bp = debug_get_breakpoint(pc);
-  if (bp == NULL)
-    {
-      display_sanitise();
-      display_printf("=! Unexpected breakpoint\n");
-      display_desanitise();
-      return;
-    }
 
-  if (bp->usage == 1 && bp->funcbp && !stepinto)
+  if (bp && bp->usage == 1 && bp->funcbp && !stepinto)
     return;
 
   addr = debug_find_address(pc);
-  if (bp->usage == 1 && bp->funcbp && 
+  if (bp && bp->usage == 1 && bp->funcbp && 
       (!stepinto || addr.routine->defn_fl == 0 || addr.routine->defn_fl == 255))
     {
       return;
@@ -96,6 +95,13 @@ void debug_run_breakpoint(ZDWord pc)
 	  x--;
 	}
     }
+  
+  /* Clear any return breakpoints */
+  if (machine.stack.current_frame) {
+	  for (frame = machine.stack.current_frame; frame != NULL; frame = frame->last_frame) {
+		  frame->break_on_return = 0;
+	  }
+  }
   
   stepinto = 0;
   
@@ -1564,6 +1570,7 @@ void debug_set_bp_handler(debug_breakpoint_handler handler) {
 
 void debug_set_temp_breakpoints(debug_step_type step) {
 	int ln;
+	ZFrame* frame;
 	
 	if (addr.routine != NULL) {	
 		ln = addr.line_no;
@@ -1588,7 +1595,9 @@ void debug_set_temp_breakpoints(debug_step_type step) {
 	}
 	
 	/* Set a breakpoint on the return location of this function */
-	if (machine.stack.current_frame != NULL) {
-		debug_set_breakpoint(machine.stack.current_frame->ret, 1, 0);
+	if (machine.stack.current_frame) {
+		for (frame = machine.stack.current_frame->last_frame; frame != NULL; frame = frame->last_frame) {
+			frame->break_on_return = 1;
+		}
 	}
 }

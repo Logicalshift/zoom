@@ -188,9 +188,6 @@
     for (x=0; x<3; x++) {
         [windows[x] setProtocolForProxy: @protocol(ZVendor)];
     }
-	
-	// Setup our debugger callback
-	debug_set_bp_handler(cocoa_debug_handler);
 
     // Setup the display, etc
     rc_set_game(zmachine_get_serial(), Word(ZH_release), Word(ZH_checksum));
@@ -313,8 +310,11 @@ void cocoa_debug_handler(ZDWord pc) {
 }
 
 - (void) loadDebugSymbolsFrom: (NSString*) symbolFile
-			   withSourcePath: (NSString*) sourcePath {
+			   withSourcePath: (NSString*) sourcePath {	
 	debug_load_symbols([symbolFile cString], [sourcePath cString]);
+
+	// Setup our debugger callback
+	debug_set_bp_handler(cocoa_debug_handler);
 }
 
 - (int) evaluateExpression: (NSString*) expression {
@@ -340,22 +340,45 @@ void cocoa_debug_handler(ZDWord pc) {
 	return debug_eval_result;
 }
 
-- (void)   setBreakpointAt: (int) address {
+- (void) setBreakpointAt: (int) address {
+	debug_set_breakpoint(address, 0, 0);
 }
 
-- (BOOL)   setBreakpointAtName: (NSString*) name {
+- (BOOL) setBreakpointAtName: (NSString*) name {
+	int address = [self addressForName: name];
+	
+	if (address >= 0) {
+		[self setBreakpointAt: address];
+		return YES;
+	} else {
+		return NO;
+	}
 }
 
-- (void)   removeBreakpointAt: (int) address {
+- (void) removeBreakpointAt: (int) address {
+	debug_clear_breakpoint(debug_get_breakpoint(address));
 }
 
-- (void)   removeBreakpointAtName: (NSString*) name {
+- (void) removeBreakpointAtName: (NSString*) name {
+	int address = [self addressForName: name];
+	
+	if (address >= 0) {
+		[self removeBreakpointAt: address];
+	}
 }
 
-- (int)        addressForName: (NSString*) name {
+- (int) addressForName: (NSString*) name {
+	return debug_find_named_address([name cString]);
 }
 
-- (NSString*)  nameForAddress: (int) address {
+- (NSString*) nameForAddress: (int) address {
+	debug_address addr = debug_find_address(address);
+	
+	if (addr.routine != NULL) {
+		return [NSString stringWithCString: addr.routine->name];
+	}
+	
+	return nil;
 }
 
 - (NSString*) sourceFileForAddress: (int) address {

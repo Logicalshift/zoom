@@ -179,6 +179,8 @@ typedef struct ZFrame
 
   ZWord  local[16];
   ZUWord frame_num;
+  
+  int break_on_return; /* Used by the debugger */
 
   void (*v4read)(ZDWord*, struct ZStack*, ZArgblock*);
   void (*v5read)(ZDWord*, struct ZStack*, ZArgblock*, int);

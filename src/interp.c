@@ -187,6 +187,7 @@ ZFrame* call_routine(ZDWord* pc, ZStack* stack, ZDWord start)
   newframe->storevar     = 0;
   newframe->discard      = 0;
   newframe->frame_size   = 0;
+  newframe->break_on_return = 0;
   if (stack->current_frame != NULL)
     newframe->frame_num  = stack->current_frame->frame_num+1;
   else

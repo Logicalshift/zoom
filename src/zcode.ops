@@ -987,6 +987,12 @@ OPCODE "ret"          1OP:0x0b CANJUMP      VERSION all
   end_func = oldframe->end_func;
   
   free(oldframe);
+  
+  if (stack->current_frame && stack->current_frame->break_on_return)
+    {
+	  /* Treat as a breakpoint */
+	  debug_run_breakpoint(pc);
+	}
 
   if (end_func)
     {

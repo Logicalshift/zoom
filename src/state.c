@@ -616,6 +616,7 @@ int state_decompile(ZByte* st, ZStack* stack, ZDWord* pc, ZDWord len)
 	newframe->frame_size   = 0;
 	newframe->v4read       = NULL;
 	newframe->v5read       = NULL;
+	newframe->break_on_return = 0;
 	newframe->end_func     = 0;
 	if (stack->current_frame != NULL)
 	  newframe->frame_num  = stack->current_frame->frame_num+1;
