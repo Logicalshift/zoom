@@ -230,9 +230,12 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 		imgRect.origin = NSMakePoint(0,0);
 		imgRect.size   = [add size];
 		
-		[[self class] drawButton: annotate
-						 atPoint: NSMakePoint(left, ypos - 18)
-					 highlighted: activeButton == ZSVannotateButton];
+		if (itemParent != nil) {
+			// Can't annotate the parent item (well, technically we can, but the editor routine we have at the moment will break if we try to edit the top item)
+			[[self class] drawButton: annotate
+							 atPoint: NSMakePoint(left, ypos - 18)
+						 highlighted: activeButton == ZSVannotateButton];
+		}
 		[[self class] drawButton: transcript
 						 atPoint: NSMakePoint(left + 14, ypos - 18)
 					 highlighted: activeButton==ZSVtranscriptButton];
@@ -729,7 +732,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	// See where was clicked
 	if (offset.y > -18.0 && offset.y < -6.0) {
 		// Upper row of buttons
-		if (offset.x > left+2.0 && offset.x < left+14.0) return ZSVannotateButton;
+		if (offset.x > left+2.0 && offset.x < left+14.0) return [item parent]!=nil?ZSVannotateButton:ZSVnoButton;
 		if (offset.x > left+16.0 && offset.x < left+28.0) return ZSVtranscriptButton;
 		if (offset.x > right+2.0 && offset.x < right+14.0) return ZSVaddButton;
 		if (offset.x > right-12.0 && offset.x < right-0.0) return ZSVdeleteButton;
