@@ -1016,7 +1016,7 @@ void display_prints_c(const char* str)
 
 void display_printf(const char* format, ...)
 {
-  va_list ap;
+  va_list  ap;
   char     string[512];
   int x,len;
   int      istr[512];
@@ -1072,7 +1072,7 @@ static BOOL CALLBACK ctlExitHandler(DWORD ct)
 
 void printf_debug(char* format, ...)
 {
-  va_list ap;
+  va_list  ap;
   char     string[512];
 
   va_start(ap, format);
@@ -1109,7 +1109,7 @@ void printf_debug(char* format, ...)
 
 void printf_info(char* format, ...)
 {
-  va_list ap;
+  va_list  ap;
   char     string[512];
 
   va_start(ap, format);
@@ -1174,7 +1174,7 @@ void display_exit(int code)
 static char* error = NULL;
 void printf_error(char* format, ...)
 {
-  va_list ap;
+  va_list  ap;
   char     string[512];
 
   va_start(ap, format);

@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
 
 #include "zmachine.h"
 #include "file.h"
@@ -119,7 +120,7 @@ void zmachine_load_story(char* filename, ZMachine* machine)
 	  
 	  if (machine->heblen > 32)
 	    {
-	      zmachine_warning("Dodgy-looking header extension table (%i bytes long??), ignoring", machine->heblen);
+	      zmachine_warning("Dodgy-looking header extension table (%i bytes long?), ignoring", machine->heblen);
 	      machine->heb    = NULL;
 	      machine->heblen = 0;
 	    }
@@ -161,7 +162,7 @@ void zmachine_load_story(char* filename, ZMachine* machine)
 
 void zmachine_fatal(char* format, ...)
 {
-  va_list* ap;
+  va_list  ap;
   char     string[256];
 
   va_start(ap, format);
@@ -213,7 +214,7 @@ void zmachine_fatal(char* format, ...)
 
 void zmachine_warning(char* format, ...)
 {
-  va_list* ap;
+  va_list  ap;
   char     string[256];
 
   if (machine.warning_level == 0)

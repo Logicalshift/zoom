@@ -402,7 +402,7 @@ static char* tracking_object(ZUWord arg)
 #include <stdarg.h>
 static void tracking_print(char* format, ...)
 {
-  va_list* ap;
+  va_list ap;
   char str[512];
 
   va_start(ap, format);

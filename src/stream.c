@@ -318,7 +318,7 @@ void stream_buffering(int buf)
 
 void stream_printf(const char* const f, ...)
 {
-  va_list* ap;
+  va_list  ap;
   char     string[512];
 
   va_start(ap, f);

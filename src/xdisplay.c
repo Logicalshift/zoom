@@ -816,7 +816,7 @@ static int outputs(const int* string, int font, int len, int split)
  */
 void display_printf(const char* format, ...)
 {
-  va_list* ap;
+  va_list  ap;
   char     string[512];
   int x,len;
   int      istr[512];
@@ -2369,7 +2369,7 @@ void display_exit(int status)
 
 void printf_debug(char* format, ...)
 {
-  va_list* ap;
+  va_list  ap;
   char     string[512];
 
   va_start(ap, format);
@@ -2381,7 +2381,7 @@ void printf_debug(char* format, ...)
 
 void printf_error(char* format, ...)
 {
-  va_list* ap;
+  va_list  ap;
   char     string[512];
 
   va_start(ap, format);
@@ -2393,7 +2393,7 @@ void printf_error(char* format, ...)
   
 void printf_info(char* format, ...)
 {
-  va_list* ap;
+  va_list  ap;
   char     string[512];
 
   va_start(ap, format);
