@@ -13,6 +13,7 @@
 #import "ZoomAppDelegate.h"
 #import "ZoomGameInfoController.h"
 #import "ZoomClient.h"
+#import "ZoomSavePreviewView.h"
 
 #import "ifmetadata.h"
 
@@ -48,6 +49,9 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	[storyList release];
 	[sortColumn release];
 	[filterSet1 release]; [filterSet2 release];
+	[previewView release];
+	[commentView release];
+	[teaserView release];
 	
 	[[NSNotificationCenter defaultCenter] removeObserver: self];
 	
@@ -195,6 +199,7 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	// Add to the collapsable view
 	commentView = [[NSTextView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
 	teaserView = [[NSTextView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
+	previewView = [[ZoomSavePreviewView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
 	
 	[teaserView setMaxSize: NSMakeSize(1e8, 1e8)];
     [teaserView setHorizontallyResizable: NO];
@@ -217,6 +222,8 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 				   withTitle: @"Teaser"];
 	[collapseView addSubview: commentView
 				   withTitle: @"Comments"];
+	[collapseView addSubview: previewView
+				   withTitle: @"Savegames"];
 }
 
 - (void) close {
@@ -822,6 +829,8 @@ int tableSorter(id a, id b, void* context) {
 	NSString* comment;
 	NSString* teaser;
 	
+	[collapseView startRearranging];
+	
 	if (numSelected == 1) {
 		ZoomStoryID* ident = [storyList objectAtIndex: [mainTableView selectedRow]];
 		ZoomStory* story = [self storyForID: ident];
@@ -832,6 +841,10 @@ int tableSorter(id a, id b, void* context) {
 		teaser = [story teaser];
 		
 		[drawerButton setEnabled: YES];
+		
+		NSString* dir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: ident 
+																			  create: NO];
+		[previewView setDirectoryToUse: [dir stringByAppendingPathComponent: @"Saves"]];
 	} else {
 		[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
 		
@@ -839,6 +852,7 @@ int tableSorter(id a, id b, void* context) {
 		teaser = @"";
 
 		[drawerButton setEnabled: NO];
+		[previewView setDirectoryToUse: nil];
 	}
 	
 	if (comment == nil) comment = @"";
@@ -851,6 +865,8 @@ int tableSorter(id a, id b, void* context) {
 		// FIXME: when ending editing the teaser is temporarily set to "", which mucks things up a bit
 		[teaserView setString: teaser];
 	}
+	
+	[collapseView finishRearranging];
 	
 	if ([comment length] == 0 && [teaser length] == 0) {
 		[drawer close];

@@ -1312,13 +1312,21 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 													  forWriting: YES];
 			
 			if (f) {
+				int windowNumber = 0;
+				
 				[f setAttributes: [NSDictionary dictionaryWithObjectsAndKeys: 
 					[NSNumber numberWithLong: creatorCode], NSFileHFSCreatorCode,
 					[NSNumber numberWithLong: typeCode], NSFileHFSTypeCode,
 					[NSNumber numberWithBool: [panel isExtensionHidden]], NSFileExtensionHidden,
 					nil]];
 				
-				[f addData: [NSArchiver archivedDataWithRootObject: [upperWindows objectAtIndex: 0]]
+				if ([[upperWindows objectAtIndex: 0] length] > 0) {
+					windowNumber = 0;
+				} else {
+					windowNumber = 1;
+				}
+				
+				[f addData: [NSArchiver archivedDataWithRootObject: [upperWindows objectAtIndex: windowNumber]]
 			   forFilename: @"ZoomPreview.dat"];
 				[f addData: [NSArchiver archivedDataWithRootObject: self]
 			   forFilename: @"ZoomStatus.dat"];

@@ -10,6 +10,7 @@
 #import "ZoomiFButton.h"
 #import "ZoomStory.h"
 #import "ZoomCollapsableView.h"
+#import "ZoomSavePreviewView.h"
 
 @interface ZoomiFictionController : NSWindowController {
 	IBOutlet ZoomiFButton* addButton;
@@ -35,6 +36,9 @@
 	BOOL showDrawer;
 	
 	BOOL needsUpdating;
+	
+	// Save game previews
+	ZoomSavePreviewView* previewView;
 	
 	// Data source information
 	NSMutableArray* filterSet1;

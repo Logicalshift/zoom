@@ -83,6 +83,40 @@
 			settings = {
 			};
 		};
+		4B13ECD2060F93F200021429 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = ZoomSavePreviewView.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B13ECD3060F93F200021429 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = ZoomSavePreviewView.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B13ECD4060F93F200021429 = {
+			fileRef = 4B13ECD2060F93F200021429;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B13ECD5060F93F200021429 = {
+			fileRef = 4B13ECD3060F93F200021429;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B13ECD6060F93F400021429 = {
+			fileRef = 4B807BEA05C009ED00681653;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		4B1C13F905C5A94300E5796D = {
 			isa = PBXFileReference;
 			lastKnownFileType = text.rtf;
@@ -1657,12 +1691,6 @@
 			settings = {
 			};
 		};
-		4B59C83B0602201500BA8983 = {
-			fileRef = 4B1E3FBE050F7DE200A8E303;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		4B61963005C1AD170019AFF7 = {
 			isa = PBXFileReference;
 			lastKnownFileType = image.png;
@@ -1721,6 +1749,10 @@
 				4B807BEB05C009ED00681653,
 				4B926F8805E7F9DA00E5C0EA,
 				4B926F8905E7F9DA00E5C0EA,
+				4B13ECD2060F93F200021429,
+				4B13ECD3060F93F200021429,
+				4BCB09620615D0D800CDFB98,
+				4BCB09630615D0D800CDFB98,
 			);
 			isa = PBXGroup;
 			name = iFiction;
@@ -2016,6 +2048,73 @@
 			settings = {
 			};
 		};
+		4BCB09620615D0D800CDFB98 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = ZoomSavePreview.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BCB09630615D0D800CDFB98 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = ZoomSavePreview.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BCB09640615D0D800CDFB98 = {
+			fileRef = 4BCB09620615D0D800CDFB98;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCB09650615D0D800CDFB98 = {
+			fileRef = 4BCB09630615D0D800CDFB98;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCB09660615D67C00CDFB98 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			path = saveHighlightInactive.png;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BCB09670615D67C00CDFB98 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			path = saveBackground.png;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BCB09680615D67C00CDFB98 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			path = saveHighlightActive.png;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BCB09690615D67C00CDFB98 = {
+			fileRef = 4BCB09660615D67C00CDFB98;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCB096A0615D67C00CDFB98 = {
+			fileRef = 4BCB09670615D67C00CDFB98;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BCB096B0615D67C00CDFB98 = {
+			fileRef = 4BCB09680615D67C00CDFB98;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		4BCF3F27050F8BB200A8E303 = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -2153,7 +2252,9 @@
 				4B807BA505BFEE2700681653,
 				4B807BAB05BFEE7200681653,
 				4B926F8A05E7F9DA00E5C0EA,
-				4B59C83B0602201500BA8983,
+				4B13ECD4060F93F200021429,
+				4B13ECD6060F93F400021429,
+				4BCB09640615D0D800CDFB98,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2189,6 +2290,9 @@
 				4B1C14D305C69CAD00E5796D,
 				4B9ED9D00602977C0049E468,
 				4B58A09306039995003D1828,
+				4BCB09690615D67C00CDFB98,
+				4BCB096A0615D67C00CDFB98,
+				4BCB096B0615D67C00CDFB98,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2210,6 +2314,8 @@
 				4B807BAC05BFEE7200681653,
 				4B807BED05C009ED00681653,
 				4B926F8B05E7F9DA00E5C0EA,
+				4B13ECD5060F93F200021429,
+				4BCB09650615D0D800CDFB98,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2452,6 +2558,9 @@
 				4B0DC66805C0A425000B96A3,
 				4B61963005C1AD170019AFF7,
 				4B61963105C1AD170019AFF7,
+				4BCB09660615D67C00CDFB98,
+				4BCB09670615D67C00CDFB98,
+				4BCB09680615D67C00CDFB98,
 				4BCF3F51050FB42600A8E303,
 				4BCF3F57050FB49F00A8E303,
 				4B418E140594FCDB009C44DE,

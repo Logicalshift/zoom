@@ -19,6 +19,8 @@
 
 - (void) addSubview: (NSView*) subview
 		  withTitle: (NSString*) title;
+- (void) startRearranging;
+- (void) finishRearranging;
 - (void) rearrangeSubviews;
 - (void) subviewFrameChanged: (NSNotification*) not;
 
