@@ -31,6 +31,8 @@
 
 #include "image.h"
 
+#define MAX_IMAGES 32
+
 static inline int cmp_token(const char* data, const char* token)
 {
   if (*((ZDWord*)data) == *((ZDWord*)token))
@@ -446,6 +448,9 @@ BlorbFile* blorb_loadfile(ZFile* file)
   return res;
 }
 
+static int         nloaded = 0;
+static BlorbImage* image_queue[MAX_IMAGES];
+
 BlorbImage* blorb_findimage(BlorbFile* blb, int number)
 {
   int x;
@@ -472,9 +477,35 @@ BlorbImage* blorb_findimage(BlorbFile* blb, int number)
   if (res->loaded == NULL)
     {
       res->loaded = image_load(blb->source, res->file_offset, res->file_len);
+      if (res->loaded == NULL)
+	return res;
       res->width  = image_width(res->loaded);
       res->height = image_height(res->loaded);
     }
+
+  for (x=0; x<nloaded; x++)
+    {
+      if (image_queue[x] == res)
+	{
+	  nloaded--;
+	  memmove(image_queue + x,
+		  image_queue + x + 1,
+		  sizeof(BlorbImage*)*(nloaded-x));
+	  break;
+	}
+    }
+
+  if (nloaded >= MAX_IMAGES)
+    {
+      nloaded--;
+      image_unload(image_queue[nloaded]->loaded);
+      image_queue[nloaded]->loaded = NULL;
+    }
+
+  memmove(image_queue+1, image_queue,
+	  sizeof(BlorbImage*)*nloaded);
+  nloaded++;
+  image_queue[0] = res;
 
   return res;
 }

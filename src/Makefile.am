@@ -14,7 +14,7 @@ zoom_SOURCES = \
 	rc_parse.y rc_lex.l menu.c xfont.c windisplay.c winfont.c random.c \
 	format.c v6display.c carbondisplay.c carbonfont.c carbonsupport.c \
 	carbonprefs.c debug.c eval.y iff.c blorb.c image_libpng.c \
-	image_ximage.c image_carbon.c \
+	image_ximage.c image_carbon.c image_none.c \
 	\
 	file.h zmachine.h options.h interp.h zscii.h display.h hash.h \
 	tokenise.h stream.h font3.h state.h rc.h rcp.h rc_parse.h \
