@@ -3,6 +3,9 @@
 /* Define as __inline if that's what the C compiler calls it.  */
 #undef inline
 
+/* Define if you have the ANSI C header files.  */
+#undef STDC_HEADERS
+
 /* Define if the X Window System is missing or not being used.  */
 #undef X_DISPLAY_MISSING
 
@@ -11,6 +14,12 @@
 
 /* Which parser to use for command line options */
 #undef OPT_TYPE
+
+/* Which window system to use */
+#undef WINDOW_SYSTEM
+
+/* Do we have gettimeofday? */
+#undef HAVE_GETTIMEOFDAY
 
 /* The number of bytes in a int.  */
 #undef SIZEOF_INT
@@ -23,6 +32,12 @@
 
 /* The number of bytes in a unsigned char.  */
 #undef SIZEOF_UNSIGNED_CHAR
+
+/* Define if you have the <sys/time.h> header file.  */
+#undef HAVE_SYS_TIME_H
+
+/* Define if you have the <unistd.h> header file.  */
+#undef HAVE_UNISTD_H
 
 /* Define if you have the freetype library (-lfreetype).  */
 #undef HAVE_LIBFREETYPE

@@ -63,8 +63,10 @@ LEX = @LEX@
 MAKEINFO = @MAKEINFO@
 PACKAGE = @PACKAGE@
 PERL = @PERL@
+RESEXTN = @RESEXTN@
 UTIL_PROG_TPUT = @UTIL_PROG_TPUT@
 VERSION = @VERSION@
+WINDRES = @WINDRES@
 YACC = @YACC@
 ZBYTE_TYPE = @ZBYTE_TYPE@
 ZDWORD_TYPE = @ZDWORD_TYPE@
@@ -86,7 +88,7 @@ LIBS = @LIBS@ @X_PRE_LIBS@ @X_LIBS@ -lX11 @X_EXTRA_LIBS@ @LEXLIB@
 YFLAGS = -d
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
-CONFIG_CLEAN_FILES =  ztypes.h
+CONFIG_CLEAN_FILES =  ztypes.h zoom.rc
 PROGRAMS =  $(bin_PROGRAMS)
 
 
@@ -110,7 +112,8 @@ CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 DATA =  $(pkgdata_DATA)
 
-DIST_COMMON =  Makefile.am Makefile.in rc_lex.c rc_parse.c ztypes.h.in
+DIST_COMMON =  Makefile.am Makefile.in rc_lex.c rc_parse.c zoom.rc.in \
+ztypes.h.in
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
@@ -136,6 +139,8 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 ztypes.h: $(top_builddir)/config.status ztypes.h.in
+	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+zoom.rc: $(top_builddir)/config.status zoom.rc.in
 	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 mostlyclean-binPROGRAMS:

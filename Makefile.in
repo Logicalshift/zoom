@@ -63,8 +63,10 @@ LEX = @LEX@
 MAKEINFO = @MAKEINFO@
 PACKAGE = @PACKAGE@
 PERL = @PERL@
+RESEXTN = @RESEXTN@
 UTIL_PROG_TPUT = @UTIL_PROG_TPUT@
 VERSION = @VERSION@
+WINDRES = @WINDRES@
 YACC = @YACC@
 ZBYTE_TYPE = @ZBYTE_TYPE@
 ZDWORD_TYPE = @ZDWORD_TYPE@
@@ -73,6 +75,8 @@ ZUWORD_TYPE = @ZUWORD_TYPE@
 ZWORD_TYPE = @ZWORD_TYPE@
 
 SUBDIRS = m4 builder src bonus
+
+EXTRA_DIST = bcc_conf bcc_wrapper
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
