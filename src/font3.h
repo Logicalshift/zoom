@@ -36,8 +36,8 @@ typedef struct
 typedef struct
 {
   font_char chr[96];
-} font;
+} font3;
 
-extern font font_3;
+extern font3 font_3;
 
 #endif

@@ -154,7 +154,9 @@ static enum zcode_type type_fsref(FSRef* file)
 
     case '????':
     case 'TEXT':
+    case 'BINA':
     case 0:
+    default:
       if (outname.unicode[outname.length-3] == '.' &&
 	  outname.unicode[outname.length-2] == 'z' &&
 	  outname.unicode[outname.length-1] >= '3' &&

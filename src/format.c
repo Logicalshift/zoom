@@ -189,7 +189,7 @@ static void new_line(int more,
 	{
 	  text_win[2].cline[size_y-1].cell[x] = ' ';
 	  text_win[2].cline[size_y-1].font[x] = style_font[4];
-	  text_win[2].cline[size_y-1].fg[x]   = DEFAULT_BACK+FIRST_ZCOLOUR;
+	  text_win[2].cline[size_y-1].fg[x]   = DEFAULT_BACK;
 	  text_win[2].cline[size_y-1].bg[x]   = 255;
 	}
 
@@ -432,7 +432,7 @@ void format_last_text(int more)
       display_set_scroll_region(CURWIN.winly-CURWIN.winsy);
       display_set_scroll_range (CURWIN.line->baseline - CURWIN.line->ascent - 
 				CURWIN.winsy,
-				0);
+				CURWIN.winly - CURWIN.winsy);
     }
   else
     {

@@ -27,11 +27,22 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "zmachine.h"
 #include "xdisplay.h"
 #include "xfont.h"
 #include "font3.h"
+#include "format.h"
+
+#ifdef HAVE_XFT
+# include <X11/Xft/Xft.h>
+#endif
+
+#ifdef HAVE_T1LIB
+# include <t1lib.h>
+# include <t1libx.h>
+#endif
 
 /* Definition of an xfont */
 
@@ -40,11 +51,18 @@ struct xfont
   enum
   {
     XFONT_X,
+    XFONT_T1LIB,
+    XFONT_XFT,
     XFONT_FONT3
   } type;
   union
   {
     XFontStruct* X;
+    struct {
+      int id;
+      double size;
+    } t1;
+    XftFont* Xft;
   } data;
 };
 
@@ -90,7 +108,14 @@ static void plot_font_3(Drawable draw, GC gc, int chr, int xpos, int ypos)
 /***                           ----// 888 \\----                           ***/
 
 void xfont_initialise(void)
-{ }
+{
+#ifdef HAVE_T1LIB
+  T1_InitLib(LOGFILE|T1_AA_CACHING);
+  T1_SetX11Params(x_display, DefaultVisual(x_display, x_screen),
+		  DefaultDepth(x_display, x_screen),
+		  DefaultColormap(x_display, x_screen));
+#endif
+}
 
 void xfont_shutdown(void)
 { }
@@ -107,12 +132,33 @@ xfont* xfont_load_font(char* font)
       return f;
     }
   
+#ifdef HAVE_T1LIB
+  if (strcmp(font, "t1test") == 0)
+    {
+      f->type    = XFONT_T1LIB;
+      f->data.t1.id   = 0;
+      f->data.t1.size = 12;
+      return f;
+    }
+#endif
+
   if (font[0] == '/')
     {
       zmachine_fatal("Font files are not supported in this version");
     }
   else
     {
+#ifdef HAVE_XFT
+      f->type = XFONT_XFT;
+      f->data.Xft = XftFontOpenXlfd(x_display, x_screen, font);
+      /*
+				    XFT_XLFD, XftTypeString, font,
+				    XFT_ANTIALIAS, XftTypeBool, True); */
+      if (f->data.Xft != NULL)
+	return f;
+
+      zmachine_warning("XFT: Unable to load font '%s', trying standard X font", font);
+#endif
       f->type = XFONT_X;
       f->data.X = XLoadQueryFont(x_display, font);
       if (f->data.X == NULL)
@@ -148,10 +194,27 @@ void xfont_set_colours(int foreground,
   back = background;
 }
 
-int xfont_get_width(xfont* f)
+XFONT_MEASURE xfont_get_width(xfont* f)
 {
   switch (f->type)
     {
+#ifdef HAVE_XFT
+    case XFONT_XFT:
+      return f->data.Xft->max_advance_width;
+      break;
+#endif
+#ifdef HAVE_T1LIB
+    case XFONT_T1LIB:
+      {
+	BBox bounds;
+
+	bounds = T1_GetFontBBox(f->data.t1.id);
+
+	return (XFONT_MEASURE)(bounds.urx - bounds.llx)*f->data.t1.size / 
+	  (XFONT_MEASURE)(bounds.ury - bounds.lly);
+      }
+      break;
+#endif
     case XFONT_X:
       return f->data.X->max_bounds.width;
     case XFONT_FONT3:
@@ -162,10 +225,18 @@ int xfont_get_width(xfont* f)
   return -1;
 }
 
-int xfont_get_height(xfont* f)
+XFONT_MEASURE xfont_get_height(xfont* f)
 {
   switch (f->type)
     {
+#ifdef HAVE_XFT
+    case XFONT_XFT:
+      return f->data.Xft->height;
+#endif
+#ifdef HAVE_T1LIB
+    case XFONT_T1LIB:
+      return f->data.t1.size;
+#endif
     case XFONT_X:
       return f->data.X->ascent + f->data.X->descent;
     case XFONT_FONT3:
@@ -176,10 +247,25 @@ int xfont_get_height(xfont* f)
   return -1;
 }
 
-int xfont_get_ascent(xfont* f)
+XFONT_MEASURE xfont_get_ascent(xfont* f)
 {
   switch (f->type)
     {
+#ifdef HAVE_XFT
+    case XFONT_XFT:
+      return f->data.Xft->ascent;
+#endif
+#ifdef HAVE_T1LIB
+    case XFONT_T1LIB:
+      {
+	BBox bounds;
+
+	bounds = T1_GetFontBBox(f->data.t1.id);
+
+	return (XFONT_MEASURE)(bounds.ury-bounds.lly)/
+	  (XFONT_MEASURE)(bounds.ury*f->data.t1.size);
+      }
+#endif
     case XFONT_X:
       return f->data.X->ascent;
     case XFONT_FONT3:
@@ -190,10 +276,14 @@ int xfont_get_ascent(xfont* f)
   return -1;
 }
 
-int xfont_get_descent(xfont* f)
+XFONT_MEASURE xfont_get_descent(xfont* f)
 {
   switch (f->type)
     {
+#ifdef HAVE_XFT
+    case XFONT_XFT:
+      return f->data.Xft->descent;
+#endif
     case XFONT_X:
       return f->data.X->descent;
     case XFONT_FONT3:
@@ -204,13 +294,30 @@ int xfont_get_descent(xfont* f)
   return -1;
 }
 
-int xfont_get_text_width(xfont* f, const int* text, int len)
+XFONT_MEASURE xfont_get_text_width(xfont* f, const int* text, int len)
 {
   static XChar2b* xtxt = NULL;
   int x;
-  
+
   switch (f->type)
     {
+#ifdef HAVE_XFT
+    case XFONT_XFT:
+      {
+	XGlyphInfo ext;
+	static XftChar16* xfttxt;
+
+	xfttxt = realloc(xfttxt, (len+1)*sizeof(XftChar16));
+	for (x=0; x<len; x++)
+	  {
+	    xfttxt[x] = text[x];
+	  }
+
+	XftTextExtents16(x_display, f->data.Xft, xfttxt, len, &ext);
+
+	return ext.xOff;
+      }
+#endif
     case XFONT_X:
       xtxt = realloc(xtxt, (len+1)*sizeof(int));
       for (x=0; x<len; x++)
@@ -218,6 +325,7 @@ int xfont_get_text_width(xfont* f, const int* text, int len)
 	  xtxt[x].byte2 = text[x]&255;
 	  xtxt[x].byte1 = (text[x]>>8)&255;
 	}
+
       return XTextWidth16(f->data.X, xtxt, len);
     case XFONT_FONT3:
       return len*xfont_x;
@@ -238,6 +346,23 @@ void xfont_plot_string(xfont* f,
   
   switch (f->type)
     {
+#ifdef HAVE_XFT
+    case XFONT_XFT:
+      {
+	static XftChar16* xfttxt;
+
+	xfttxt = realloc(xfttxt, (len+1)*sizeof(XftChar16));
+	for (i=0; i<len; i++)
+	  {
+	    xfttxt[i] = text[i];
+	  }
+
+	XftDrawString16(xft_drawable, &xft_colour[fore], f->data.Xft,
+			x, y, xfttxt, len);
+      }
+      break;
+#endif
+
     case XFONT_X:
       xtxt = realloc(xtxt, (len+1)*sizeof(int));
       for (i=0; i<len; i++)

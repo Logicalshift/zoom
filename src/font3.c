@@ -29,7 +29,7 @@
 
 #include "font3.h"
 
-font font_3 =
+font3 font_3 =
 {
   {
     { 0,

@@ -30,6 +30,10 @@
 #include <X11/Xresource.h>
 #include <X11/keysym.h>
 
+#ifdef HAVE_XFT
+#include <X11/Xft/Xft.h>
+#endif
+
 /* Globals */
 
 extern Display*      x_display;
@@ -43,7 +47,9 @@ extern GC            x_pixgc;
 extern Pixmap        x_pix;
 extern XColor        x_colour[];
 
-extern int xfont_x;
-extern int xfont_y;
+#ifdef HAVE_XFT
+extern XftColor xft_colour[];
+extern XftDraw* xft_drawable;
+#endif
 
 #endif

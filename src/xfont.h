@@ -34,7 +34,7 @@
 #  define XFONT_MEASURE int
 # endif
 #else
-# define XFONT_MEASURE int
+# define XFONT_MEASURE float
 #endif
 
 struct xfont;

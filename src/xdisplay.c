@@ -40,30 +40,64 @@
 #include "display.h"
 #include "rc.h"
 
+#include "format.h"
+
+#ifdef HAVE_XFT
+# include <X11/Xft/Xft.h>
+#endif
+
 /* #define DEBUG */
 
 /* Globals */
-
 Display*     x_display;
 int          x_screen = 0;
 
-/*
-Font*         x_font  = NULL;
-XFontStruct** x_fonti = NULL;
-*/
-
-xfont**      x_fonts = NULL;
-
 Window       x_mainwin;
-GC           x_wingc;
-GC           x_caretgc;
-GC           x_pixgc;
+GC           x_wingc, x_caretgc;
 
-#define N_COLS 14
+static Region dregion = None;
+static int    resetregion = 0;
+
+static int scroll_pos    = 20;
+static int scroll_range  = 500;
+static int scroll_height = 100;
+static int scroll_top    = 0;
+int scrollpos = 0;
+
+/* (Used by a scroll in progress) */
+static int scroll_start  = 0;
+static int scroll_offset = 0;
+static int scroll_state  = 0;
+static int scrolling     = 0;
+
+static int win_left, win_top;
+static int win_width, win_height;
+static int click_x, click_y;
+
+static Atom x_prot[5];
+static Atom wmprots;
+
+#define SCROLLBAR_SIZE 15
+#undef  BORDER_PLAIN
+
+#ifndef BORDER_PLAIN
+# define BORDER_3D
+# define BORDER_SIZE 4
+#else
+# define BORDER_SIZE 1
+#endif
+
+#define N_COLS 18
 XColor   x_colour[N_COLS] =
-{ { 0, 0xdd00,0xdd00,0xdd00, DoRed|DoGreen|DoBlue, 0 },
-  { 0, 0xaa00,0xaa00,0xaa00, DoRed|DoGreen|DoBlue, 0 },
+{ { 0, 0xbb00,0xbb00,0xbb00, DoRed|DoGreen|DoBlue, 0 },
+  { 0, 0x6600,0x6600,0x6600, DoRed|DoGreen|DoBlue, 0 },
   { 0, 0xff00,0xff00,0xff00, DoRed|DoGreen|DoBlue, 0 },
+  { 0, 0xee00,0xee00,0xee00, DoRed|DoGreen|DoBlue, 0 },
+
+  /* Scrollbar colours */
+  { 0, 0x0080,0x9900,0xee00, DoRed|DoGreen|DoBlue, 0 },
+  { 0, 0x00bb,0xdd00,0xff00, DoRed|DoGreen|DoBlue, 0 },
+  { 0, 0x0020,0x6600,0xaa00, DoRed|DoGreen|DoBlue, 0 },
 
   /* ZMachine colours start here */
   { 0, 0x0000,0x0000,0x0000, DoRed|DoGreen|DoBlue, 0 },
@@ -79,102 +113,14 @@ XColor   x_colour[N_COLS] =
   { 0, 0x8800,0x8800,0x8800, DoRed|DoGreen|DoBlue, 0 },
   { 0, 0x4400,0x4400,0x4400, DoRed|DoGreen|DoBlue, 0 }};
 
+#ifdef HAVE_XFT
+XftColor xft_colour[N_COLS];
+XftDraw* xft_drawable;
+#endif
+
 #define DEFAULT_FORE 0
 #define DEFAULT_BACK 7
-
-#define N_FONTS 6
-static int n_fonts = N_FONTS;
-
-/*
- * Font 0 is the default font, font 1 is the bold font, font 2 the
- * italic font, and font 3 the fixed pitch font. Other fonts are user
- * defined (and can be set using the set_font directive)
- *
- * Window size is determined by the metrics of font 3, which should be 
- * fixed pitch if you don't want anything daft happening (note that
- * this is really the preserve of the game; this interpreter is quite
- * capable of dealing with different sized fonts)
- */
-
-#define FIRST_ZCOLOUR 3
-
-/*
- * In order to best support version 6, we use a pixmap to output all display
- * information to.
- */
-Pixmap x_pix;
-
-int xfont_x;
-int xfont_y;
-static int win_x;
-static int win_y;
-static int win_left, win_top;
-static int win_width;
-static int win_height;
-static int do_redraw = 0;
-
-static int redraw_minx = -1;
-static int redraw_miny = -1;
-static int redraw_maxx = -1;
-static int redraw_maxy = -1;
-
-static int caret = 0;
-static int caret_x, caret_y;
-static int caret_h;
-static int input_sx;
-static int input_sy;
-static int input_sh;
-static int insert_mode = 1;
-static int more_on = 0;
-
-static int font_num;
-static int cur_style;
-
-static int style_font[16] = {  0, 0, 0, 0, 3, 3, 3, 3,
-			      -1,-1,-1,-1,-1,-1,-1,-1 };
-static int reverse = 0;
-
-static int click_x, click_y;
-
-static int (*newline_func)(const int*, int) = NULL;
-
-typedef struct history_item
-{
-  int* string;
-  struct history_item* next;
-  struct history_item* last;
-} history_item;
-static history_item* last_string = NULL;
-
-/* Variables relating to the display itself */
-
-struct window
-{
-  int xpos, ypos;
-  int line_height;
-  
-  int fore, back;
-
-  int winsx, winsy;
-  int lmargin, rmargin;
-  int winlx, winly;
-
-  int text_amount;
-  int no_more;
-  int force_fixed;
-  int no_scroll;
-};
-
-int cur_win;
-struct window text_win[32];
-
-#define CURWIN text_win[cur_win]
-
-static int process_events(long int, int*, int);
-static void draw_window(void);
-static void display_more(void);
-
-int moretext[] = { '[', 'M', 'O', 'R', 'E', ']', 0 };
+#define FIRST_ZCOLOUR 7
 
 static unsigned char terminating[256] =
 {
@@ -188,7 +134,7 @@ static unsigned char terminating[256] =
   0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0
 };
 
-/***                           ----// 888 \\----                           ***/
+/* === Misc functions === */
 
 static inline int istrlen(const int* string)
 {
@@ -208,1122 +154,974 @@ static inline void istrcpy(int* dest, const int* src)
   dest[x] = 0;
 }
 
-static void redraw_area(int x, int y, int w, int h)
+/* === Functions specific to this display style === */
+
+#ifdef HAVE_XFT
+static void alloc_xft_colours(void)
 {
-  if (do_redraw == 0)
-    {
-      redraw_minx = x;
-      redraw_maxx = x+w;
-      redraw_miny = y;
-      redraw_maxy = y+h;
+  int x;
 
-      do_redraw = 1;
-      return;
-    }
-
-  if (x < redraw_minx)
-    redraw_minx = x;
-  if (y < redraw_miny)
-    redraw_miny = y;
-  if (x+w > redraw_maxx)
-    redraw_maxx = x+w;
-  if (y+h > redraw_maxy)
-    redraw_maxy = y+h;
-}
-
-static Atom x_prot[5];
-static Atom wmprots;
-
-/*
- * Start up X and get things moving
- */
-void display_initialise(void)
-{
-  XSetWindowAttributes win_attr;
-  XWindowAttributes    attr;
-  rc_font*             fonts;
-  rc_colour*           cols;
-  int                  num;
-  
-  int x,y;
-
-  x_display = XOpenDisplay(NULL);
-  x_screen  = DefaultScreen(x_display);
-
-  fonts = rc_get_fonts(&num);
-  n_fonts = 0;
-
-  xfont_initialise();
-
-  for (x=0; x<num; x++)
-    {
-      if (fonts[x].num <= 0)
-	zmachine_fatal("Font numbers must be positive integers");
-      if (fonts[x].num > n_fonts)
-	{
-	  n_fonts = fonts[x].num;
-	  x_fonts = realloc(x_fonts, sizeof(xfont*)*n_fonts);
-	}
-
-      x_fonts[fonts[x].num-1] = xfont_load_font(fonts[x].name);
-
-      for (y=0; y<fonts[x].n_attr; y++)
-	{
-	  style_font[fonts[x].attributes[y]] = fonts[x].num-1;
-	}
-    }
-  
-  for (y=0; y<16; y++)
-    {
-      if (style_font[y] == -1)
-	{
-	  style_font[y] = style_font[8];
-	}
-    }
-    
-  xfont_x = xfont_get_width(x_fonts[3]);
-  xfont_y = xfont_get_height(x_fonts[3]);;
-
-  cols = rc_get_colours(&num);
-  if (num > 11)
-    {
-      num = 11;
-      zmachine_warning("Maximum of 11 colours");
-    }
-  if (num < 8)
-    zmachine_warning("Supplied colourmap doesn't defined all 8 'standard' colours");
-
-  for (x=0; x<num; x++)
-    {
-      x_colour[x+FIRST_ZCOLOUR].red   = cols[x].r<<8;
-      x_colour[x+FIRST_ZCOLOUR].green = cols[x].g<<8;
-      x_colour[x+FIRST_ZCOLOUR].blue  = cols[x].b<<8;
-    }
-  
-  win_attr.event_mask = ExposureMask|KeyPressMask|KeyReleaseMask|StructureNotifyMask|ButtonPressMask;
-  win_attr.background_pixel = x_colour[0].pixel;
-
-  /* Create the main window */
-  x_mainwin = XCreateWindow(x_display,
-			    RootWindow(x_display, x_screen),
-			    100,100, 
-			    win_width=((win_x=(xfont_x*rc_get_xsize())) + 16),
-			    win_height=((win_y=(xfont_y*rc_get_ysize())) + 16),
-			    1, DefaultDepth(x_display, x_screen), InputOutput,
-			    CopyFromParent,
-			    CWEventMask|CWBackPixel,
-			    &win_attr);
-  win_left = (win_width-win_x)>>1;
-  win_top  = (win_height-win_y)>>1;
-  
-  XMapWindow(x_display, x_mainwin);
-
-  /* Window properties */
-  {
-    XTextProperty tprop;
-    XSizeHints*   hints;
-    XWMHints*     wmhints;
-    char*         title = "Zoom " VERSION;
-    char*         icon  = "Zoom";
-    
-    XStringListToTextProperty(&title, 1, &tprop);
-    XSetWMName(x_display, x_mainwin, &tprop);
-    XFree(tprop.value);
-    
-    XStringListToTextProperty(&icon, 1, &tprop);
-    XSetWMIconName(x_display, x_mainwin, &tprop);
-    XFree(tprop.value);
-
-    hints = XAllocSizeHints();
-    hints->min_width  = win_width;
-    hints->min_height = win_height;
-    hints->width      = win_width;
-    hints->height     = win_height;
-    hints->width_inc  = 2;
-    hints->height_inc = 2;
-    hints->flags      = PSize|PMinSize|PResizeInc;
-
-    XSetWMNormalHints(x_display, x_mainwin, hints);
-    XFree(hints);
-
-    wmhints = XAllocWMHints();
-    wmhints->input = True;
-    wmhints->flags = InputHint;
-    
-    XSetWMHints(x_display, x_mainwin, wmhints);
-    XFree(wmhints);
-
-    x_prot[0] = XInternAtom(x_display, "WM_DELETE_WINDOW", False);
-    XSetWMProtocols(x_display, x_mainwin, x_prot, 1);
-    wmprots = XInternAtom(x_display, "WM_PROTOCOLS", False);
-  }
-  
-  /* Allocate colours */
-  XGetWindowAttributes(x_display, x_mainwin, &attr);
   for (x=0; x<N_COLS; x++)
     {
-      if (!XAllocColor(x_display,
-		       DefaultColormap(x_display, x_screen),
-		       &x_colour[x]))
+      XRenderColor fcolour;
+
+      fcolour.red   = x_colour[x].red;
+      fcolour.green = x_colour[x].green;
+      fcolour.blue  = x_colour[x].blue;
+      fcolour.alpha = 0xffff;
+
+      if (!XftColorAllocValue(x_display, DefaultVisual(x_display, x_screen), 
+			      DefaultColormap(x_display, x_screen),
+			      &fcolour, 
+			      &xft_colour[x]))
 	{
-	  fprintf(stderr, "Warning: couldn't allocate colour #%i\n", x);
-	  x_colour[x].pixel = BlackPixel(x_display, x_screen);
+	  fprintf(stderr, "Unable to allocate colour for Xft\n");
 	}
     }
-
-  /* Create the display pixmap */
-  x_pix = XCreatePixmap(x_display,
-			x_mainwin,
-			xfont_x*rc_get_xsize(),
-			xfont_y*rc_get_ysize(),
-			DefaultDepth(x_display, x_screen));
-
-  x_wingc   = XCreateGC(x_display, x_mainwin, 0, NULL);
-  x_pixgc   = XCreateGC(x_display, x_pix, 0, NULL);
-  x_caretgc = XCreateGC(x_display, x_mainwin, 0, NULL);
-
-  XSetForeground(x_display, x_caretgc,
-		 x_colour[FIRST_ZCOLOUR+DEFAULT_FORE].pixel);
-  XSetFunction(x_display, x_caretgc, GXxor);
-  XSetLineAttributes(x_display, x_caretgc, 2, LineSolid, CapButt, JoinBevel);
-  
-  display_clear();
 }
-
-/*
- * When we display the menu, we use the default fonts and colours. The 
- * game might want different fonts & colours, so this frees the ones
- * we have loaded and reloads with the new ones (this also resizes the 
- * game window if necessary)
- */
-void display_reinitialise(void)
-{
-  rc_font*    fonts;
-  rc_colour*  cols;
-  int         num,x,y;
-  XSizeHints* hints;
-
-  /* Deallocate resources */
-  for (x=0; x<n_fonts; x++)
-    {
-      xfont_release_font(x_fonts[x]);
-    }
-  for (x=0; x<N_COLS; x++)
-    {
-      XFreeColors(x_display, DefaultColormap(x_display, x_screen),
-		  &x_colour[x].pixel, 1, 0);
-    }
-
-  xfont_shutdown();
-
-  /* Reallocate fonts */
-  xfont_initialise();
-  
-  fonts = rc_get_fonts(&num);
-  n_fonts = 0;
-
-  for (x=0; x<num; x++)
-    {
-      if (fonts[x].num <= 0)
-	zmachine_fatal("Font numbers must be positive integers");
-      if (fonts[x].num > n_fonts)
-	{
-	  n_fonts = fonts[x].num;
-	  x_fonts = realloc(x_fonts, sizeof(xfont*)*n_fonts);
-	}
-
-      x_fonts[fonts[x].num-1] = xfont_load_font(fonts[x].name);
-
-      for (y=0; y<fonts[x].n_attr; y++)
-	{
-	  style_font[fonts[x].attributes[y]] = fonts[x].num-1;
-	}
-    }
-  
-  for (y=0; y<16; y++)
-    {
-      if (style_font[y] == -1)
-	{
-	  style_font[y] = style_font[8];
-	}
-    }
-	  
-  xfont_x = xfont_get_width(x_fonts[3]);
-  xfont_y = xfont_get_height(x_fonts[3]);
-
-  /* Reallocate colours */
-  cols = rc_get_colours(&num);
-  if (num > 11)
-    {
-      num = 11;
-      zmachine_warning("Maximum of 11 colours");
-    }
-
-  for (x=0; x<num; x++)
-    {
-      x_colour[x+FIRST_ZCOLOUR].red   = cols[x].r<<8;
-      x_colour[x+FIRST_ZCOLOUR].green = cols[x].g<<8;
-      x_colour[x+FIRST_ZCOLOUR].blue  = cols[x].b<<8;
-    }
-  for (x=0; x<N_COLS; x++)
-    {
-      if (!XAllocColor(x_display,
-		       DefaultColormap(x_display, x_screen),
-		       &x_colour[x]))
-	{
-	  fprintf(stderr, "Warning: couldn't allocate colour #%i\n", x);
-	  x_colour[x].pixel = BlackPixel(x_display, x_screen);
-	}
-    }
-  
-  win_x=(xfont_x*rc_get_xsize());
-  win_y=(xfont_y*rc_get_ysize());
-  
-  /* Recreate pixmap */
-  XFreePixmap(x_display, x_pix);
-  x_pix = XCreatePixmap(x_display,
-			x_mainwin,
-			xfont_x*rc_get_xsize(),
-			xfont_y*rc_get_ysize(),
-			DefaultDepth(x_display, x_screen));
-
-  x_pixgc   = XCreateGC(x_display, x_pix, 0, NULL);
-
-  /* Resize main window */
-  hints = XAllocSizeHints();
-  hints->min_width  = win_x+16;
-  hints->min_height = win_y+16;
-  hints->width      = win_x+16;
-  hints->height     = win_y+16;
-  hints->flags      = PSize|PMinSize;  
-  XSetWMNormalHints(x_display, x_mainwin, hints);
-  XFree(hints);
-  
-  XResizeWindow(x_display, x_mainwin,
-		win_width=(win_x+16),
-		win_height=(win_y+16));
-
-  display_clear();
-}
-
-/*
- * Shuts down
- */
-void display_finalise(void)
-{
-  XFreePixmap(x_display, x_pix);
-  XDestroyWindow(x_display, x_mainwin);
-  XCloseDisplay(x_display);
-}
-
-/*
- * Sets the title of the window to the given string
- */
-void display_set_title(const char* title)
-{
-  XTextProperty tprop;
-  char *t;
-
-  t = malloc(sizeof(char)*300);
-  sprintf(t, "Zoom " VERSION " - %s", title);
-    
-  XStringListToTextProperty(&t, 1, &tprop);
-  XSetWMName(x_display, x_mainwin, &tprop);
-  XFree(tprop.value);
-
-  free(t);
-}
-
-/*
- * Blanks the (entire) display and resets window positions
- */
-void display_clear(void)
-{
-  cur_win = 0;
-  text_win[0].xpos = 0;
-  text_win[0].ypos = win_y;
-  text_win[0].fore = DEFAULT_FORE;
-  text_win[0].back = DEFAULT_BACK;
-  text_win[0].line_height = 0;
-  text_win[0].winsx = text_win[0].winsy = 0;
-  text_win[0].lmargin = text_win[0].rmargin = 0;
-  text_win[0].winlx = win_x;
-  text_win[0].winly = win_y;
-  text_win[0].text_amount = 0;
-  text_win[0].no_more = 0;
-  text_win[0].force_fixed = 0;
-  text_win[0].no_scroll = 0;
-  
-  XSetForeground(x_display, x_pixgc, x_colour[FIRST_ZCOLOUR+DEFAULT_BACK].pixel);
-
-  XFillRectangle(x_display, x_pix, x_pixgc, 0, 0, win_x, win_y);
-
-  redraw_area(win_left, win_top, win_x, win_y);
-}
-
-/*
- * Does a quick newline (also handles [MORE] display)
- */
-static void new_line(int more)
-{
-  CURWIN.ypos += CURWIN.line_height;
-  CURWIN.text_amount += CURWIN.line_height;
-  
-  CURWIN.xpos = CURWIN.winsx + CURWIN.lmargin;
-  if (font_num >= 0)
-    CURWIN.line_height = xfont_get_height(x_fonts[font_num]);
-  else
-    CURWIN.line_height = xfont_y;
-
-  if ((CURWIN.ypos+CURWIN.line_height) > CURWIN.winly)
-    {
-      if (CURWIN.no_scroll)
-	{
-#ifdef DEBUG
-	  printf("Scrolling is off - wrapped\n");
-#endif
-	  CURWIN.ypos -= (CURWIN.ypos+CURWIN.line_height)-CURWIN.winly;
-	}
-      else
-	{
-	  int scrollby;
-	  
-	  scrollby = (CURWIN.ypos+CURWIN.line_height)-CURWIN.winly;
-	  
-	  if (CURWIN.text_amount + scrollby > CURWIN.winly-CURWIN.winsy &&
-	      CURWIN.winly != CURWIN.winsy)
-	    {
-	      if (!CURWIN.no_more && more == -1)
-		{
-		  display_more();
-		}
-	      CURWIN.text_amount = 0;
-	    }
-	  if (more == 1 && !CURWIN.no_more)
-	    {
-	      display_more();
-	    }
-	  
-	  /* Need to scroll window */
-	  XCopyArea(x_display, x_pix, x_pix, x_pixgc, 
-		    CURWIN.winsx, CURWIN.winsy+scrollby,
-		    CURWIN.winlx-CURWIN.winsx, (CURWIN.winly-CURWIN.winsy)-scrollby,
-		    CURWIN.winsx, CURWIN.winsy);
-	  
-	  XSetForeground(x_display, x_pixgc,
-			 x_colour[FIRST_ZCOLOUR+CURWIN.back].pixel);
-	  XFillRectangle(x_display, x_pix, x_pixgc,
-			 CURWIN.winsx, CURWIN.winly-scrollby,
-			 CURWIN.winlx-CURWIN.winsx, scrollby);
-	  
-	  CURWIN.ypos -= scrollby;
-
-	  redraw_area(CURWIN.winsx+win_left, CURWIN.winsy+win_top,
-		      CURWIN.winlx-CURWIN.winsx, CURWIN.winly-CURWIN.winsy);
-	}
-    }  
-}
-
-/*
- * Displays the 'more' prompt
- */
-static void display_more(void)
-{
-  int w;
-  
-  w = xfont_get_text_width(x_fonts[3], moretext, 6);
-  
-  more_on = 1;
-  redraw_area(win_width-w-2, win_height-xfont_get_height(x_fonts[3])-2,
-	      w, xfont_get_height(x_fonts[3]));
-  draw_window();
-  display_readchar(0);
-  
-  more_on = 0;
-  redraw_area(win_width-w-2, win_height-xfont_get_height(x_fonts[3])-2,
-	      w, xfont_get_height(x_fonts[3]));
-  draw_window();
-}
-
-/*
- * Outputs a string - this must not contain newline characters
- * This function performs word wrapping
- */
-static int outputs(const int* string, int font, int len, int split)
-{
-  int width, height;
-  int oldheight;
-
-  if (CURWIN.winsy >= CURWIN.winly)
-    {
-      return 0;
-    }
-
-  width  = xfont_get_text_width(x_fonts[font], string, len);
-  height = xfont_get_height(x_fonts[font]);
-
-  if (split && CURWIN.xpos+width > CURWIN.winlx)
-    {
-      int word_start, word_len, total_len, xpos, x;
-
-      /*
-       * FIXME: infinite recursion (yeearrrgh) if a single word is
-       * longer than a line
-       */
-      
-      word_start = 0;
-      total_len = 0;
-      word_len = 0;
-      xpos = CURWIN.xpos;
-
-      for (x=0; x<len; x++)
-	{
-	  if (string[x] == ' ' || x==(len-1))
-	    {
-	      /* We've got a word */
-	      xpos += xfont_get_text_width(x_fonts[font],
-					   string + word_start,
-					   word_len+1);
-
-	      if (xpos > CURWIN.winlx-CURWIN.rmargin)
-		{
-		  int more = -1;
-		  outputs(string, font, total_len, 0);
-
-		  if (newline_func != NULL)
-		    more = (newline_func)(string + total_len, len - total_len);
-
-		  if (more == 2)
-		    {
-		      return 1;
-		    }
-
-		  new_line(more);
-		  
-		  return outputs(string + total_len,
-				 font, len - total_len, 1);
-		}
-	      
-	      total_len += word_len + 1;
-	      word_start = total_len;
-	      word_len = 0;
-	    }
-	  else
-	    {
-	      word_len++;
-	    }
-	}
-      
-      return 0;
-    }
-
-  oldheight = CURWIN.line_height;
-  if (height > oldheight)
-    CURWIN.line_height = height;
-  
-  if ((CURWIN.ypos+CURWIN.line_height) > CURWIN.winly && !CURWIN.no_scroll)
-    {
-      int scrollby;
-      
-      scrollby = (CURWIN.ypos+CURWIN.line_height)-CURWIN.winly;
-
-      if (CURWIN.text_amount + scrollby > CURWIN.winly-CURWIN.winsy &&
-	  !CURWIN.no_scroll)
-	{
-	  if (!CURWIN.no_more)
-	    {
-	      display_more();
-	    }
-	  CURWIN.text_amount = 0;
-	}
-
-      if (CURWIN.no_scroll)
-	{
-	  CURWIN.ypos-=scrollby;
-	}
-      else
-	{
-	  /* Need to scroll window */
-	  XCopyArea(x_display, x_pix, x_pix, x_pixgc, 
-		    CURWIN.winsx, CURWIN.winsy+scrollby,
-		    CURWIN.winlx-CURWIN.winsx, CURWIN.winly-scrollby,
-		    CURWIN.winsx, CURWIN.winsy);
-	  
-	  XSetForeground(x_display, x_pixgc,
-			 x_colour[FIRST_ZCOLOUR+CURWIN.back].pixel);
-	  XFillRectangle(x_display, x_pix, x_pixgc,
-			 CURWIN.winsx, CURWIN.winly-scrollby,
-			 CURWIN.winlx-CURWIN.winsx, scrollby);
-	  
-	  CURWIN.ypos -= scrollby;
-
-	  redraw_area(CURWIN.winsx+win_left, CURWIN.winsy+win_top,
-		      CURWIN.winlx-CURWIN.winsx, CURWIN.winly-CURWIN.winsy);
-	}
-    }
-
-  if (height > oldheight)
-    {
-      int scrollby;
-
-      scrollby = height - oldheight;
-      
-      /* Need to scroll window (again) */
-      XCopyArea(x_display, x_pix, x_pix, x_pixgc, 
-		CURWIN.winsx, CURWIN.ypos,
-		CURWIN.winlx-CURWIN.winsx, oldheight,
-		CURWIN.winsx, CURWIN.ypos+scrollby);
-
-      redraw_area(CURWIN.winsx+win_left, CURWIN.ypos+win_top,
-		  CURWIN.winlx-CURWIN.winsx, height);
-
-      /*
-       * This isn't ideal: Jigsaw fails if we set this to the current
-       * background colour, and Beyond zork fails if we do this. Errrgh
-       */
-      XSetForeground(x_display, x_pixgc,
-		     x_colour[FIRST_ZCOLOUR+DEFAULT_BACK].pixel);
-      XFillRectangle(x_display, x_pix, x_pixgc,
-		     CURWIN.winsx, CURWIN.ypos,
-		     CURWIN.winlx, scrollby);
-    }  
-  
-  XSetForeground(x_display, x_pixgc,
-		 x_colour[CURWIN.back+FIRST_ZCOLOUR].pixel);
-  XFillRectangle(x_display, x_pix, x_pixgc,
-		 CURWIN.xpos, CURWIN.ypos,
-		 width, CURWIN.line_height);	 
-
-  xfont_set_colours(CURWIN.fore+FIRST_ZCOLOUR, CURWIN.back+FIRST_ZCOLOUR);
-
-  xfont_plot_string(x_fonts[font],
-		    x_pix,
-		    x_pixgc,
-		    CURWIN.xpos,
-		    CURWIN.ypos+CURWIN.line_height-xfont_get_descent(x_fonts[font]),
-		    string, len);
-
-  redraw_area(CURWIN.xpos+win_left, CURWIN.ypos+win_top,
-	      width, CURWIN.line_height);
-
-  CURWIN.xpos += width;
-
-  return 0;
-}
-
-/*
- * printf (a convenience function, calls prints)
- */
-void display_printf(const char* format, ...)
-{
-  va_list  ap;
-  char     string[512];
-  int x,len;
-  int      istr[512];
-
-  va_start(ap, format);
-  vsprintf(string, format, ap);
-  va_end(ap);
-
-  len = strlen(string);
-  
-  for (x=0; x<=len; x++)
-    {
-      istr[x] = string[x];
-    }
-  display_prints(istr);
-}
-
-/*
- * prints - prints a string on the display
- */
-void display_prints(const int* string)
-{
-  int x, lp, ls, oldfont;
-
-#ifdef DEBUG
-  printf("Output (at %i, %i - lineheight is %i) >%s<\n", CURWIN.xpos, CURWIN.ypos, CURWIN.line_height, string);
-#endif
-  
-  lp = ls = 0;
-
-  oldfont = font_num;
-  if (CURWIN.force_fixed && font_num >= 0)
-    {
-      display_set_font(style_font[((cur_style|8)>>1)&15]);
-    }
-
-  if (reverse)
-    {
-      int tmp;
-
-      tmp = CURWIN.fore;
-      CURWIN.fore = CURWIN.back;
-      CURWIN.back = tmp;
-    }
-  
-  for (x=0; string[x] != 0; x++, lp++)
-    {
-      if (string[x] == 10)
-	{
-	  int more = -1;
-	  
-	  outputs(string + ls, font_num, lp, 1);
-
-	  if (newline_func != NULL)
-	    {
-	      more = (newline_func)(string + ls + lp + 1,
-				    istrlen(string)-lp-ls-1);
-	    }
-
-	  new_line(more);
-
-	  if (more == 2)
-	    return;
-	  
-	  ls += lp+1;
-	  lp = -1;
-	}
-    }
-  outputs(string + ls, font_num, lp, 1);
-
-  if (reverse)
-    {
-      int tmp;
-
-      tmp = CURWIN.fore;
-      CURWIN.fore = CURWIN.back;
-      CURWIN.back = tmp;
-    }
-
-  if (CURWIN.force_fixed)
-    oldfont = display_set_font(oldfont);
-}
-
-void display_prints_c(const char* string)
-{
-  int* txt;
-  int x, len;
-
-  txt = malloc((len=strlen(string))*sizeof(int)+sizeof(int));
-  for (x=0; x<=len; x++)
-    {
-      txt[x] = string[x];
-    }
-  display_prints(txt);
-  free(txt);
-}
-
-/*
- * Read a character from the console
- */
-int display_readchar(long int timeout)
-{
-  CURWIN.text_amount = 0;
-    
-  return process_events(timeout, NULL, 0);
-}
-
-/*
- * Read a line of text from the console
- */
-int display_readline(int* buf, int buflen, long int timeout)
-{
-  int result;
-  
-  CURWIN.text_amount = 0;
-  
-  result = process_events(timeout, buf, buflen);
-#ifdef DEBUG
-  printf("Input >%s<\n", buf);
 #endif
 
-  if (result == 10)
-    new_line(0);
-
-  return result;
-}
-
-/*
- * Actually plots the game window
- */
-static void draw_window(void)
+static void reset_clip(void)
 {
-  int top, left, bottom, right;
-  XRectangle cl[2];
-  
-  left   = win_left;
-  top    = win_top;
-  right  = left + win_x;
-  bottom = top + win_y;
-  /* Draw the text area */
-  if (do_redraw)
+  if (resetregion)
     {
-      cl[0].x = redraw_minx;
-      cl[0].y = redraw_miny;
-      cl[0].width = redraw_maxx - redraw_minx;
-      cl[0].height = redraw_maxy - redraw_miny;
-      XSetClipRectangles(x_display, x_wingc, 0, 0, cl, 1, YXSorted);
-    }
+      XRectangle clip;
+      Region rgn;
 
-  XCopyArea(x_display, x_pix, x_mainwin,
-	    x_wingc, 0,0, win_x, win_y,
-	    left, top);
-  
-  /* Draw the beveled border */
-  XSetForeground(x_display, x_wingc, x_colour[0].pixel);
-  XFillRectangle(x_display, x_mainwin, x_wingc,
-		 0,0, left, bottom);
-  XFillRectangle(x_display, x_mainwin, x_wingc,
-		 0,0, right, top);
-  
-  XFillRectangle(x_display, x_mainwin, x_wingc,
-		 0, bottom, win_width, top);
-  XFillRectangle(x_display, x_mainwin, x_wingc,
-		 right, 0, left, bottom);
-  
-  XSetLineAttributes(x_display, x_wingc, 2, LineSolid,
-		     CapProjecting, JoinBevel);
-  XSetForeground(x_display, x_wingc, x_colour[1].pixel);
-  XDrawLine(x_display, x_mainwin, x_wingc,
-	    left-1, top-1, right+1, top-1);
-  XDrawLine(x_display, x_mainwin, x_wingc,
-	    left-1, top-1, left-1, bottom+1);
-  
-  XSetForeground(x_display, x_wingc, x_colour[2].pixel);
-  XDrawLine(x_display, x_mainwin, x_wingc,
-	    right+1, bottom+1, right+1, top);
-  XDrawLine(x_display, x_mainwin, x_wingc,
-	    right+1, bottom+1, left, bottom+1);
+      clip.x = clip.y = BORDER_SIZE;
+      clip.width = win_x; clip.height = win_y;
 
-  /* Draw the caret */
-  if (caret && !do_redraw)
-    XDrawLine(x_display, x_mainwin, x_caretgc,
-	      caret_x+left, caret_y+top, caret_x+left, caret_y+top+caret_h);
+      rgn = XCreateRegion();
+      XUnionRectWithRegion(&clip, rgn, rgn);
+      XSetRegion(x_display, x_wingc, rgn);
+#ifdef HAVE_XFT
+      XftDrawSetClip(xft_drawable, rgn);
+#endif
 
-  if (more_on)
-    {
-      int w;
-
-      w = xfont_get_text_width(x_fonts[3], moretext, 6);
-      XSetForeground(x_display, x_wingc,
-		     x_colour[FIRST_ZCOLOUR+6].pixel);
-      XFillRectangle(x_display, x_mainwin, x_wingc,
-		     win_width-w-2,
-		     win_height-xfont_get_height(x_fonts[3])-2,
-		     w, xfont_get_height(x_fonts[3]));
-
-      xfont_set_colours(FIRST_ZCOLOUR+0, FIRST_ZCOLOUR+6);
-
-      xfont_plot_string(x_fonts[3],
-			x_mainwin,
-			x_wingc,
-			win_width-w-2,
-			win_height-xfont_get_descent(x_fonts[3])-2,
-			moretext, 6);
-    }
-
-  if (do_redraw)
-    {
-      cl[0].x = 0;
-      cl[0].y = 0;
-      cl[0].width = win_width;
-      cl[0].height = win_height;
-      XSetClipRectangles(x_display, x_wingc, 0, 0, cl, 1, YXSorted);
-      do_redraw = 0;
+      resetregion = 0;
+      XFree(rgn);
     }
 }
 
-/*
- * Display the text we're currently editting
- */
-static void draw_input_text(int* buf, int inputpos)
+static void invalidate_scrollbar(void)
 {
-  int width;
-  int len;
+  XRectangle thebar;
 
-  if (reverse)
-    {
-      int tmp;
-
-      tmp = CURWIN.fore;
-      CURWIN.fore = CURWIN.back;
-      CURWIN.back = tmp;
-    }
-
-  len = istrlen(buf);
-
-  /* Hide the caret */
-  if (caret)
-    {
-      XDrawLine(x_display, x_mainwin, x_caretgc,
-		caret_x+((win_width-win_x)>>1),
-		caret_y+((win_height-win_y)>>1),
-		caret_x+((win_width-win_x)>>1),
-		caret_y+((win_height-win_y)>>1)+caret_h);
-    }
-
-  caret_y = input_sy;
-  caret_h = input_sh;
+  if (dregion == None)
+    dregion = XCreateRegion();
   
-  /* Erase any old text */
-  XSetForeground(x_display, x_pixgc,
-		 x_colour[CURWIN.back+FIRST_ZCOLOUR].pixel);
-  XFillRectangle(x_display, x_pix, x_pixgc,
-		 input_sx, input_sy,
-		 CURWIN.winlx, input_sh);	 
+  thebar.x = win_x + BORDER_SIZE*2;
+  thebar.y = 0;
+  thebar.width = SCROLLBAR_SIZE;
+  thebar.height = total_y;
+  XUnionRectWithRegion(&thebar, dregion, dregion);
+}
 
-  width = xfont_get_text_width(x_fonts[font_num], buf, len);
+static void draw_caret(void)
+{
+  reset_clip();
 
-  if (input_sx+width < CURWIN.winlx)
-    {
-      /* It all fits in */
-      xfont_set_colours(CURWIN.fore+FIRST_ZCOLOUR,
-			CURWIN.back+FIRST_ZCOLOUR);
-      xfont_plot_string(x_fonts[font_num], x_pix, x_pixgc,
-			input_sx,
-			input_sy+xfont_get_ascent(x_fonts[font_num]),
-			buf, len);
-      caret_x = input_sx+xfont_get_text_width(x_fonts[font_num], buf, inputpos);
-    }
-  else
-    {
-      int width_l, width_r;
-      XRectangle clip[1];
-      GC tempgc;
-
-      tempgc = XCreateGC(x_display, x_pix, 0, NULL);
-
-      xfont_set_colours(CURWIN.fore+FIRST_ZCOLOUR, CURWIN.back+FIRST_ZCOLOUR);
-      
-      width_l   = xfont_get_text_width(x_fonts[font_num], buf, inputpos);
-      width_r   = xfont_get_text_width(x_fonts[font_num],
-				       buf+inputpos, len-inputpos);
-
-      clip[0].x = input_sx;
-      clip[0].y = input_sy;
-      clip[0].width = CURWIN.winlx - input_sx;
-      clip[0].height = input_sh;
-      XSetClipRectangles(x_display, tempgc, 0, 0, clip, 1, Unsorted);
-
-      if (width_l < (CURWIN.winlx-input_sx))
-	{
-	  xfont_plot_string(x_fonts[font_num],
-			    x_pix, tempgc,
-			    input_sx,
-			    input_sy+xfont_get_ascent(x_fonts[font_num]),
-			    buf, len);
-	  
-	  caret_x = input_sx+width_l;
-	}
-      else if (width_r < (CURWIN.winlx-input_sx))
-	{
-	  xfont_plot_string(x_fonts[font_num],
-			    x_pix, tempgc,
-			    CURWIN.winlx-width,
-			    input_sy+xfont_get_ascent(x_fonts[font_num]),
-			    buf, len);
-
-	  caret_x = CURWIN.winlx - width_r;
-	}
-      else
-	{
-	  xfont_plot_string(x_fonts[font_num],
-			    x_pix, tempgc,
-			    (input_sx+3*((CURWIN.winlx-input_sx)/4))-width_l,
-			    input_sy+xfont_get_ascent(x_fonts[font_num]),
-			    buf, len);
-	  caret_x = input_sx+3*((CURWIN.winlx-input_sx)/4);
-	}
-
-      XFreeGC(x_display, tempgc);
-    }
-      
-  XCopyArea(x_display, x_pix, x_mainwin, x_wingc, 
-	    input_sx, input_sy,
-	    CURWIN.winlx-input_sx, input_sh,
-	    input_sx+((win_width-win_x)>>1), input_sy+((win_height-win_y)>>1));
-
-  /* Redisplay the caret */
-  if (insert_mode)
+  if (insert)
     XSetLineAttributes(x_display, x_caretgc, 2, LineSolid,
 		       CapButt, JoinBevel);
   else
     XSetLineAttributes(x_display, x_caretgc, 4, LineSolid,
 		       CapButt, JoinBevel);
 
-  /* Redisplay the caret */
-  if (caret)
-    {
-      XDrawLine(x_display, x_mainwin, x_caretgc,
-		caret_x+((win_width-win_x)>>1),
-		caret_y+((win_height-win_y)>>1),
-		caret_x+((win_width-win_x)>>1),
-		caret_y+((win_height-win_y)>>1)+caret_h);
-    }
-
-  if (reverse)
-    {
-      int tmp;
-
-      tmp = CURWIN.fore;
-      CURWIN.fore = CURWIN.back;
-      CURWIN.back = tmp;
-    }
-}
-
-/*
- * Called periodically when the interpreter thinks the display would
- * benefit from being updated.
- */
-void display_update(void)
-{
-  if (do_redraw)
-    draw_window();
-}
-
-static struct timeval next_flash = { 0, 0 };
-
-/*
- * Process X events
- */
-int process_events(long int to, int* buf, int buflen)
-{
-  static unsigned char keybuf[20];
-  static int     bufsize = 0;
-  static int     bufpos;
-  int            connection_num;
-  struct timeval timeout;
-  struct timeval now;
-  int            inputpos = 0;
-  int            x;
-  KeySym         ks;
-  history_item*  history = NULL;
-
-  if (do_redraw)
-    draw_window();
-
   XSetForeground(x_display, x_caretgc,
-		 x_colour[FIRST_ZCOLOUR+1].pixel^x_colour[FIRST_ZCOLOUR+CURWIN.back].pixel);
-  
-  if (buf != NULL)
+		 x_colour[FIRST_ZCOLOUR+CURWIN.back].pixel ^
+		 x_colour[4].pixel);
+
+  if ((caret_on^caret_shown))
     {
-      /* Display any text that's already in the buffer */
-      input_sx = CURWIN.xpos;
-      input_sy = CURWIN.ypos;
-      input_sh = CURWIN.line_height;
-      
-      inputpos = istrlen(buf);
-      
-      draw_input_text(buf, inputpos);
+      XDrawLine(x_display, x_mainwin, x_caretgc, 
+		caret_x + BORDER_SIZE, caret_y + BORDER_SIZE,
+		caret_x + BORDER_SIZE, caret_y + caret_height + BORDER_SIZE);
+
+      caret_shown = !caret_shown;
+    }
+}
+
+static void move_caret(void)
+{ 
+  int last_on = caret_on;
+
+  caret_on = 0;
+  draw_caret();
+
+  if (CURWIN.overlay)
+    {
+      input_x = caret_x = xfont_x*CURWIN.xpos;
+      input_y = caret_y = xfont_y*CURWIN.ypos;
+      input_y += xfont_get_ascent(font[style_font[(CURSTYLE>>1)&15]]);
+      caret_height = xfont_y;
     }
   else
     {
-      /* Hide caret */
-      if (caret)
+      if (CURWIN.lastline != NULL)
 	{
-	  XDrawLine(x_display, x_mainwin, x_caretgc,
-		    caret_x+((win_width-win_x)>>1),
-		    caret_y+((win_height-win_y)>>1),
-		    caret_x+((win_width-win_x)>>1),
-		    caret_y+((win_height-win_y)>>1)+caret_h);
+	  input_x = caret_x = CURWIN.xpos;
+	  input_y = caret_y = CURWIN.lastline->baseline-scrollpos;
+	  caret_y -= CURWIN.lastline->ascent;
+	  caret_height = CURWIN.lastline->ascent+CURWIN.lastline->descent-1;
+	}
+      else
+	{
+	  input_x = input_y = caret_x = caret_y = 0;
+	  caret_height = xfont_y-1;
+	}
+    } 
+
+  caret_on = last_on;
+  draw_caret();
+}
+
+static void show_caret(void)
+{
+  caret_on = 1;
+  draw_caret();
+}
+
+static void hide_caret(void)
+{
+  caret_on = 0;
+  draw_caret();
+}
+
+static void draw_input_text(void)
+{
+  int w;
+  int on;
+  int fg, bg;
+
+  reset_clip();
+
+  fg = CURWIN.fore;
+  bg = CURWIN.back;
+
+  if (CURWIN.style&1)
+    {
+      fg = CURWIN.back;
+      bg = CURWIN.fore;
+    }
+
+  on = caret_on;
+  hide_caret();
+
+  if (CURWIN.overlay)
+    {
+      input_x = caret_x = xfont_x*CURWIN.xpos;
+      input_y = caret_y = xfont_y*CURWIN.ypos;
+      input_y += xfont_get_ascent(font[style_font[(CURSTYLE>>1)&15]]);
+      caret_height = xfont_y;
+    }
+  else
+    {
+      if (CURWIN.lastline != NULL)
+	{
+	  input_x = caret_x = CURWIN.xpos;
+	  input_y = caret_y = CURWIN.lastline->baseline-scrollpos;
+	  caret_y -= CURWIN.lastline->ascent;
+	  caret_height = CURWIN.lastline->ascent+CURWIN.lastline->descent-1;
+	}
+      else
+	{
+	  input_x = input_y = caret_x = caret_y = 0;
+	  caret_height = xfont_y-1;
+	}
+    }
+
+  if (text_buf != NULL)
+    {
+      w = xfont_get_text_width(font[style_font[(CURSTYLE>>1)&15]],
+			       text_buf,
+			       istrlen(text_buf));
+
+      XSetForeground(x_display, x_wingc, x_colour[bg+FIRST_ZCOLOUR].pixel);
+      XFillRectangle(x_display, x_mainwin, x_wingc,
+		     input_x + BORDER_SIZE,
+		     caret_y + BORDER_SIZE,
+		     win_x - input_x,
+		     xfont_get_height(font[style_font[(CURSTYLE>>1)&15]]));
+
+      caret_x += xfont_get_text_width(font[style_font[(CURSTYLE>>1)&15]],
+				      text_buf,
+				      buf_offset);
+
+      xfont_set_colours(fg+FIRST_ZCOLOUR, bg+FIRST_ZCOLOUR);
+      xfont_plot_string(font[style_font[(CURSTYLE>>1)&15]],
+			x_mainwin, x_wingc,
+			input_x+BORDER_SIZE, input_y+BORDER_SIZE,
+			text_buf,
+			istrlen(text_buf));
+    }
+
+  if (on)
+    show_caret();
+}
+
+static void size_window(void)
+{
+  XSizeHints* hints;
+
+  win_x = size_x*xfont_x;
+  win_y = size_y*xfont_y;
+
+  hints = XAllocSizeHints();
+  hints->min_width  = 200;
+  hints->min_height = 100;
+  hints->width      = win_x+BORDER_SIZE*2;
+  hints->height     = win_y+BORDER_SIZE*2;
+  hints->flags      = PSize|PMinSize;  
+  XSetWMNormalHints(x_display, x_mainwin, hints);
+  XFree(hints);
+  
+  XResizeWindow(x_display, x_mainwin,
+		total_x=(win_x+BORDER_SIZE*2+SCROLLBAR_SIZE),
+		total_y=(win_y+BORDER_SIZE*2));
+}
+
+static void draw_scrollbar(int isselected)
+{
+  int pos, height;
+  int x;
+
+  int ca, cb;
+
+  static XColor scroll_grade[8] = { { 0, 0,0,0, DoRed|DoGreen|DoBlue, 0 } };
+
+#ifdef BORDER_3D
+# define SG_FROM 0
+# define SG_TO   3
+#else
+# define SG_FROM 2
+# define SG_TO   0
+#endif
+
+  reset_clip();
+
+  ca = 5; cb = 6;
+
+  if (isselected)
+    {
+      ca = 6; cb = 5;
+    }
+
+  /* Allocate colours if necessary */
+  if (scroll_grade[0].red == 0)
+    {
+      for (x=0; x<8; x++)
+	{
+	  scroll_grade[x].red = x_colour[SG_FROM].red + 
+	    (((x_colour[SG_TO].red - x_colour[SG_FROM].red)*(x+1))/(8));
+	  scroll_grade[x].green = x_colour[SG_FROM].green + 
+	    (((x_colour[SG_TO].green - x_colour[SG_FROM].green)*(x+1))/8);
+	  scroll_grade[x].blue = x_colour[SG_FROM].blue + 
+	    (((x_colour[SG_TO].blue - x_colour[SG_FROM].blue)*(x+1))/8);
+
+	  scroll_grade[x].flags = DoRed|DoGreen|DoBlue;
+	  scroll_grade[x].pixel = 0;
+	  scroll_grade[x].pad   = 0;
+
+	  if (!XAllocColor(x_display, DefaultColormap(x_display, x_screen),
+			   &scroll_grade[x]))
+	    {
+	      scroll_grade[x].pixel = BlackPixel(x_display, x_screen);
+	    }
+	}
+    }
+
+#ifdef HAVE_XFT
+  alloc_xft_colours();
+#endif
+
+  /* Draw the scrollbar well */
+  for (x=0; x<8; x++)
+    {
+      XSetForeground(x_display, x_wingc, scroll_grade[x].pixel);
+      XFillRectangle(x_display, x_mainwin, x_wingc,
+		     win_x+BORDER_SIZE*2 + ((x*SCROLLBAR_SIZE)/8), 0,
+		     SCROLLBAR_SIZE, total_y);
+    }
+
+  if (scroll_range == 0)
+    return;
+
+  /* Calculate the position and size of the scrollbar tab */
+  pos = (scroll_pos*total_y)/scroll_range;
+  height = (scroll_height*total_y)/scroll_range;
+
+  if (height < 10)
+    height = 10;
+
+  if (pos > total_y)
+    pos = total_y-10;
+  if (pos + height >= total_y)
+    {
+      pos -= (pos+height)-total_y-1;
+    }
+
+  if (pos < 0 || (pos+height) >= total_y)
+    return;
+
+  /* Draw the scrollbar tab */
+  XSetForeground(x_display, x_wingc, x_colour[4].pixel);
+  XFillRectangle(x_display, x_mainwin, x_wingc,
+		 win_x+BORDER_SIZE*2, pos,
+		 SCROLLBAR_SIZE, height);
+
+  XSetForeground(x_display, x_wingc, x_colour[ca].pixel);
+  XDrawLine(x_display, x_mainwin, x_wingc,
+	    win_x+BORDER_SIZE*2, pos,
+	    win_x+BORDER_SIZE*2+SCROLLBAR_SIZE, pos);
+  XDrawLine(x_display, x_mainwin, x_wingc,
+	    win_x+BORDER_SIZE*2, pos,
+	    win_x+BORDER_SIZE*2, pos+height);
+
+  XSetForeground(x_display, x_wingc, x_colour[cb].pixel);
+  XDrawLine(x_display, x_mainwin, x_wingc,
+	    win_x+BORDER_SIZE*2, pos+height,
+	    win_x+BORDER_SIZE*2+SCROLLBAR_SIZE, pos+height);
+  XDrawLine(x_display, x_mainwin, x_wingc,
+	    win_x+BORDER_SIZE*2+SCROLLBAR_SIZE-1, pos,
+	    win_x+BORDER_SIZE*2+SCROLLBAR_SIZE-1, pos+height);
+
+  /* Draw the ridges */
+  XSetForeground(x_display, x_wingc, x_colour[ca].pixel);
+  for (x=0; x<3; x++)
+    {
+      int ypos;
+
+      ypos = pos + (height/2) - 4 + x*4;
+      XDrawLine(x_display, x_mainwin, x_wingc,
+		win_x+BORDER_SIZE*2+3, ypos,
+		win_x+BORDER_SIZE*2+SCROLLBAR_SIZE-4, ypos);
+    }
+
+  XSetForeground(x_display, x_wingc, x_colour[cb].pixel);
+  for (x=0; x<3; x++)
+    {
+      int ypos;
+
+      ypos = pos + (height/2) - 3 + x*4;
+      XDrawLine(x_display, x_mainwin, x_wingc,
+		win_x+BORDER_SIZE*2+3, ypos,
+		win_x+BORDER_SIZE*2+SCROLLBAR_SIZE-4, ypos);
+    }
+}
+
+static void draw_window()
+{
+  int top, left, bottom, right;
+  int win;
+  Region newregion;
+  XRectangle clip;
+
+  hide_caret();
+
+  resetregion = 0;
+
+  top    = BORDER_SIZE;
+  left   = BORDER_SIZE;
+  bottom = top + win_y;
+  right  = left + win_x;
+
+  if (dregion == None)
+    {
+      XRectangle r;
+
+      r.x = 0; r.y = 0;
+      r.width = total_x; r.height = total_y;
+
+      dregion = XCreateRegion();
+      XUnionRectWithRegion(&r, dregion, dregion);
+    }
+
+  XSetRegion(x_display, x_wingc, dregion);
+#ifdef HAVE_XFT
+  XftDrawSetClip(xft_drawable, dregion);
+#endif
+
+  /* Draw border */
+#ifndef BORDER_3D
+  /* Plain white border */
+  XSetForeground(x_display, x_wingc, x_colour[2].pixel);
+  XFillRectangle(x_display, x_mainwin, x_wingc, 
+		 0, 0,
+		 left, bottom);
+  XFillRectangle(x_display, x_mainwin, x_wingc, 
+		 0, 0,
+		 right, top);
+  XFillRectangle(x_display, x_mainwin, x_wingc, 
+		 right, 0,
+		 BORDER_SIZE, bottom);
+  XFillRectangle(x_display, x_mainwin, x_wingc, 
+		 0, bottom,
+		 right+BORDER_SIZE, BORDER_SIZE);
+#else
+  /* Inset 3D border */
+  XSetForeground(x_display, x_wingc, x_colour[3].pixel);
+  XFillRectangle(x_display, x_mainwin, x_wingc, 
+		 0, 0,
+		 left, bottom);
+  XFillRectangle(x_display, x_mainwin, x_wingc, 
+		 0, 0,
+		 right, top);
+  XFillRectangle(x_display, x_mainwin, x_wingc, 
+		 right, 0,
+		 BORDER_SIZE, bottom);
+  XFillRectangle(x_display, x_mainwin, x_wingc, 
+		 0, bottom,
+		 right+BORDER_SIZE, BORDER_SIZE);
+
+  XSetForeground(x_display, x_wingc, x_colour[0].pixel);
+  XFillRectangle(x_display, x_mainwin, x_wingc, 
+		 0, 0,
+		 left-3, bottom+BORDER_SIZE);
+  XFillRectangle(x_display, x_mainwin, x_wingc, 
+		 0, 0,
+		 right+BORDER_SIZE, top-3);
+  XFillRectangle(x_display, x_mainwin, x_wingc, 
+		 right+3, 0,
+		 BORDER_SIZE-3, bottom+BORDER_SIZE);
+  XFillRectangle(x_display, x_mainwin, x_wingc, 
+		 0, bottom+3,
+		 right+BORDER_SIZE, BORDER_SIZE-3);
+
+  XSetLineAttributes(x_display, x_wingc, 1, LineSolid,
+		     CapProjecting, JoinBevel);
+  XSetForeground(x_display, x_wingc, x_colour[1].pixel);
+  XDrawLine(x_display, x_mainwin, x_wingc,
+	    left-3, top-3, right+2, top-3);
+  XDrawLine(x_display, x_mainwin, x_wingc,
+	    left-3, top-3, left-3, bottom+2);
+
+  XSetForeground(x_display, x_wingc, x_colour[2].pixel);
+  XDrawLine(x_display, x_mainwin, x_wingc,
+	    right+2, bottom+2, right+2, top-3);
+  XDrawLine(x_display, x_mainwin, x_wingc,
+	    right+2, bottom+2, left-3, bottom+2);
+#endif
+
+  /* Scrollbar */
+  draw_scrollbar(scroll_state);
+
+  /* Reduce clip region */
+  clip.x = BORDER_SIZE; clip.y = BORDER_SIZE;
+  clip.width = win_x; clip.height = win_y;
+  
+  newregion = XCreateRegion();
+  XUnionRectWithRegion(&clip, newregion, newregion);
+
+  XIntersectRegion(dregion, newregion, newregion);
+  
+  XSetRegion(x_display, x_wingc, newregion);
+#ifdef HAVE_XFT
+  XftDrawSetClip(xft_drawable, newregion);
+#endif
+
+  /* Text */
+  for (win = 0; win<3; win++)
+    {
+      if (text_win[win].overlay)
+	{
+	  int x,y;
+
+	  x=0; y=0;
+
+	  for (y=text_win[win].winsy/xfont_y; y<size_y; y++)
+	    {
+	      for (x=0; x<size_x; x++)
+		{
+		  if (text_win[win].cline[y].cell[x] != ' ' ||
+		      text_win[win].cline[y].bg[x]   != 255 ||
+		      y*xfont_y < text_win[win].winly)
+		    {
+		      int len;
+		      int fn, fg, bg;
+    
+		      len = 1;
+		      fg = text_win[win].cline[y].fg[x];
+		      bg = text_win[win].cline[y].bg[x];
+		      fn = text_win[win].cline[y].font[x];
+		      
+		      while (text_win[win].cline[y].font[x+len] == fn &&
+			     text_win[win].cline[y].fg[x+len]   == fg &&
+			     text_win[win].cline[y].bg[x+len]   == bg &&
+			     (bg != 255 ||
+			      text_win[win].cline[y].cell[x+len] != ' ' ||
+			      y*xfont_y<text_win[win].winly))
+			len++;
+		      
+		      if (bg == 255)
+			bg = fg;
+
+		      XSetForeground(x_display, x_wingc, x_colour[bg+FIRST_ZCOLOUR].pixel);
+		      XFillRectangle(x_display, x_mainwin, x_wingc,
+				     x*xfont_x + BORDER_SIZE,
+				     y*xfont_y + BORDER_SIZE,
+				     len*xfont_x,
+				     xfont_y);
+
+		      xfont_set_colours(fg+FIRST_ZCOLOUR, bg+FIRST_ZCOLOUR);
+		      xfont_plot_string(font[fn],
+					x_mainwin, x_wingc,
+					x*xfont_x+BORDER_SIZE,
+					y*xfont_y+BORDER_SIZE +
+					xfont_get_ascent(font[fn]),
+					&text_win[win].cline[y].cell[x],
+					len);
+
+		      x+=len-1;
+		    }
+		}
+	    }
+	}
+      else
+	{
+	  struct line* line;
+	  struct text* text;
+	  XFONT_MEASURE lasty, width;
+	  int offset;
+
+	  Region r;
+	  XRectangle clip;
+
+	  r = XCreateRegion();
+	  clip.x = 0; clip.y = BORDER_SIZE + text_win[win].winsy;
+	  clip.width = total_x;
+	  clip.height = text_win[win].winly - text_win[win].winsy;
+	  XUnionRectWithRegion(&clip, r, r);
+	  
+	  XIntersectRegion(newregion, r, r);
+
+	  XSetRegion(x_display, x_wingc, r);
+#ifdef HAVE_XFT
+	  XftDrawSetClip(xft_drawable, newregion);
+#endif
+	  XFree(r);
+
+	  line = text_win[win].line;
+	  lasty = BORDER_SIZE;
+
+	  /* Free any lines that scrolled off ages ago */
+	  if (line != NULL)
+	    {
+	      while (line->baseline < -32768)
+		{
+		  struct line* n;
+
+		  n = line->next;
+		  if (n == NULL)
+		    break;
+	      
+		  if (text_win[win].topline == line)
+		    text_win[win].topline = NULL;
+		  
+		  if (n->start != line->start)
+		    {
+		      struct text* nt;
+		      
+		      if (line->start != text_win[win].text)
+			zmachine_fatal("Programmer is a spoon");
+		      text_win[win].text = n->start;
+		      
+		      text = line->start;
+		      while (text != n->start)
+			{
+			  if (text == NULL)
+			    zmachine_fatal("Programmer is a spoon");
+			  nt = text->next;
+			  free(text);
+			  text = nt;
+			}
+		    }
+		  
+		  
+		  free(line);
+		  text_win[win].line = n;
+		  
+		  line = n;
+		}
+	    }
+
+	  /* Skip to the first visible line */
+	  if (line != NULL)
+	    {
+	      while (line->baseline + line->descent - scrollpos < text_win[win].winsy)
+		line = line->next;
+	    }
+
+	  /* Fill in to the start of the lines */
+	  if (line != NULL)
+	    {
+	      XSetForeground(x_display, x_wingc,
+			     x_colour[text_win[win].winback+FIRST_ZCOLOUR].pixel);
+	      if (line->baseline-line->ascent-scrollpos > text_win[win].winsy)
+		{
+		  XFillRectangle(x_display, x_mainwin, x_wingc,
+				 BORDER_SIZE, text_win[win].winsy+BORDER_SIZE,
+				 win_x, line->baseline-line->ascent-scrollpos);
+		}
+	    }
+	  else
+	    lasty = text_win[win].winsy + BORDER_SIZE;
+	  
+	  /* Draw the lines */
+	  while (line != NULL &&
+		 line->baseline - line->ascent - scrollpos < text_win[win].winly)
+	    {
+	      int x;
+
+	      text = line->start;
+	      width = 0;
+	      offset = line->offset;
+
+	      /*
+	       * Each line may span several text objects. We have to plot
+	       * each one in turn.
+	       */
+	      for (x=0; x<line->n_chars;)
+		{
+		  int w;
+		  int toprint;
+		  
+		  /* 
+		   * Work out the amount of text to plot from the current 
+		   * text object 
+		   */
+		  toprint = line->n_chars-x;
+		  if (toprint > (text->len - offset))
+		    toprint = text->len - offset;
+		  
+		  if (toprint > 0)
+		    {
+		      /* Plot the text */
+		      if (text->text[toprint+offset-1] == 10)
+			{
+			  toprint--;
+			  x++;
+			}
+		      
+		      w = xfont_get_text_width(font[text->font],
+					       text->text + offset,
+					       toprint);
+
+		      XSetForeground(x_display, x_wingc,
+				     x_colour[text->bg+FIRST_ZCOLOUR].pixel);
+		      XFillRectangle(x_display, x_mainwin, x_wingc,
+				     width + BORDER_SIZE,
+				     line->baseline + BORDER_SIZE - line->ascent - scrollpos,
+				     w,
+				     line->ascent + line->descent);
+		      
+		      xfont_set_colours(text->fg+FIRST_ZCOLOUR, 
+					text->bg+FIRST_ZCOLOUR);
+		      xfont_plot_string(font[text->font],
+					x_mainwin, x_wingc,
+					width + BORDER_SIZE,
+					line->baseline + BORDER_SIZE - scrollpos,
+					text->text + offset,
+					toprint);
+
+		      x      += toprint;
+		      offset += toprint;
+		      width  += w;
+		    }
+		  else
+		    {
+		      /* At the end of this object - move onto the next */
+		      offset = 0;
+		      text = text->next;
+		    }
+		}
+	      
+	      /* Fill in to the end of the line */
+	      XSetForeground(x_display, x_wingc, x_colour[text_win[win].winback+FIRST_ZCOLOUR].pixel);
+	      XFillRectangle(x_display, x_mainwin, x_wingc,
+			     width + BORDER_SIZE,
+			     line->baseline - line->ascent + BORDER_SIZE - scrollpos,
+			     win_x-width,
+			     line->ascent + line->descent);
+	      
+	      lasty = line->baseline + line->descent - scrollpos + BORDER_SIZE;
+	      
+	      /* Move on */
+	      line = line->next;
+	    }
+
+	  /* Fill in to the bottom of the window */
+	  XSetForeground(x_display, x_wingc, x_colour[text_win[win].winback+FIRST_ZCOLOUR].pixel);
+	  if ((lasty-BORDER_SIZE) < win_y)
+	    {
+	      XFillRectangle(x_display, x_mainwin, x_wingc,
+			     BORDER_SIZE,
+			     lasty,
+			     win_x,
+			     win_y - (lasty-BORDER_SIZE));
+	    }
+
+	  XSetRegion(x_display, x_wingc, newregion);
+	}
+    }
+
+  /* Free regions */
+  XFree(newregion);
+  XFree(dregion);
+  dregion = None;
+
+  resetregion = 1;
+
+  /* Caret */
+  caret_shown = 0;
+  draw_input_text();
+  draw_caret();
+}
+
+static void resize_window()
+{
+  int owin;
+  int x,y,z;
+
+  owin = cur_win;
+
+  /* Resize and reformat the overlay windows */
+  for (x=1; x<=2; x++)
+    {
+      cur_win = x;
+      
+      if (size_y > max_y)
+	{
+	  CURWIN.cline = realloc(CURWIN.cline, sizeof(struct cellline)*size_y);
+
+	  /* Allocate new rows */
+	  for (y=max_y; y<size_y; y++)
+	    {
+	      CURWIN.cline[y].cell = malloc(sizeof(int)*max_x);
+	      CURWIN.cline[y].fg   = malloc(sizeof(char)*max_x);
+	      CURWIN.cline[y].bg   = malloc(sizeof(char)*max_x);
+	      CURWIN.cline[y].font = malloc(sizeof(char)*max_x);
+
+	      for (z=0; z<max_x; z++)
+		{
+		  CURWIN.cline[y].cell[z] = ' ';
+		  CURWIN.cline[y].fg[z]   = CURWIN.cline[max_y-1].fg[z];
+		  CURWIN.cline[y].bg[z]   = CURWIN.cline[max_y-1].bg[z];
+		  CURWIN.cline[y].font[z] = style_font[4];
+		}
+	    }
 	}
       
-      /* Move caret */
-      caret_x = CURWIN.xpos;
-      caret_y = CURWIN.ypos;
-      caret_h = CURWIN.line_height;
-      
-      /* Show caret */
-      if (caret)
+      if (size_x > max_x)
 	{
-	  XDrawLine(x_display, x_mainwin, x_caretgc,
-		    caret_x+((win_width-win_x)>>1),
-		    caret_y+((win_height-win_y)>>1),
-		    caret_x+((win_width-win_x)>>1),
-		    caret_y+((win_height-win_y)>>1)+caret_h);
+	  /* Allocate new columns */
+	  for (y=0; y<(max_y>size_y?max_y:size_y); y++)
+	    {
+	      CURWIN.cline[y].cell = realloc(CURWIN.cline[y].cell,
+					     sizeof(int)*size_x);
+	      CURWIN.cline[y].fg   = realloc(CURWIN.cline[y].fg,
+					     sizeof(char)*size_x);
+	      CURWIN.cline[y].bg   = realloc(CURWIN.cline[y].bg,
+					     sizeof(char)*size_x);
+	      CURWIN.cline[y].font = realloc(CURWIN.cline[y].font,
+					     sizeof(char)*size_x);
+	      for (z=max_x; z<size_x; z++)
+		{
+		  CURWIN.cline[y].cell[z] = ' ';
+		  CURWIN.cline[y].fg[z]   = CURWIN.cline[y].fg[max_x-1];
+		  CURWIN.cline[y].bg[z]   = CURWIN.cline[y].bg[max_x-1];
+		  CURWIN.cline[y].font[z] = style_font[4];
+		}
+	    }
+	}
+    }
+
+  if (size_x > max_x)
+    max_x = size_x;
+  if (size_y > max_y)
+    max_y = size_y;
+  
+  /* Resize and reformat the text window */
+  cur_win = 0;
+  
+  CURWIN.winlx = win_x;
+  CURWIN.winly = win_y;
+
+  if (CURWIN.line != NULL)
+    {
+      struct line* line;
+      struct line* next;
+
+      CURWIN.topline = NULL;
+      
+      CURWIN.ypos = CURWIN.line->baseline - CURWIN.line->ascent;
+      CURWIN.xpos = 0;
+
+      line = CURWIN.line;
+      while (line != NULL)
+	{
+	  next = line->next;
+	  free(line);
+	  line = next;
+	}
+
+      CURWIN.line = CURWIN.lastline = NULL;
+
+      if (CURWIN.text != NULL)
+	{
+	  CURWIN.lasttext = CURWIN.text;
+	  while (CURWIN.lasttext->next != NULL)
+	    {
+	      format_last_text(0);
+	      CURWIN.lasttext = CURWIN.lasttext->next;
+	    }
+	  format_last_text(0);
 	}
     }
   
-  if (bufsize > 0)
+  /* Scroll more text onto the screen if we can */
+  cur_win = 0;
+  if (CURWIN.lastline != NULL)
     {
-      bufsize--;
-      return keybuf[bufpos++];
+      if (CURWIN.lastline->baseline+CURWIN.lastline->descent < win_y)
+	{
+	  /* Scroll everything down */
+	  int down;
+	  struct line* l;
+
+	  down = win_y -
+	    (CURWIN.lastline->baseline+CURWIN.lastline->descent);
+
+	  l = CURWIN.line;
+	  while (l != NULL)
+	    {
+	      l->baseline += down;
+
+	      l = l->next;
+	    }
+	}
+
+      if (CURWIN.line->baseline-CURWIN.line->ascent > start_y)
+	{
+	  /* Scroll everything up */
+	  int up;
+	  struct line* l;
+
+	  up = (CURWIN.line->baseline-CURWIN.line->ascent) - start_y;
+
+	  l = CURWIN.line;
+	  while (l != NULL)
+	    {
+	      l->baseline -= up;
+
+	      l = l->next;
+	    }
+	}
     }
+
+  zmachine_resize_display(display_get_info());
+  
+  cur_win = owin;
+}
+
+static int process_events(long int to, int* buf, int buflen)
+{
+  struct timeval timeout, now;
+
+  int connection_num;
+
+  static int           bufsize = 0;
+  static int           bufpos;
+  static unsigned char keybuf[20];
+
+  int x;
+  KeySym ks;
+
+  if (buf != NULL)
+    {
+      text_buf    = buf;
+      max_buflen  = buflen;
+      buf_offset  = istrlen(buf);
+      history_pos = NULL;
+      read_key    = -1;
+    }
+  else
+    {
+      text_buf   = NULL;
+      buf_offset = 0;
+      read_key   = -1;
+    }
+
+
+  /* Work out when the timeout occurs */
+  gettimeofday(&now, NULL);
+  timeout = now;
+  timeout.tv_sec  += (to/1000);
+  timeout.tv_usec += ((to%1000)*1000);
+  timeout.tv_sec  += timeout.tv_usec/1000000;
+  timeout.tv_usec %= 1000000;
 
   connection_num = ConnectionNumber(x_display);
 
-  gettimeofday(&now, NULL);
-  timeout.tv_sec   = now.tv_sec + (to/1000);
-  timeout.tv_usec  = now.tv_usec + ((to%1000)*1000);
-  timeout.tv_sec  += timeout.tv_usec/1000000;
-  timeout.tv_usec %= 1000000;
-  
+  move_caret();
+  show_caret();
+
   while (1)
     {
       XEvent ev;
       fd_set readfds;
+
       struct timeval tv;
       int isevent;
       int flash;
 
+      static struct timeval next_flash = { 0, 0 };
+
+      /* Get the current time */
       gettimeofday(&now, NULL);
-      if ((next_flash.tv_sec < now.tv_sec ||
-	   (next_flash.tv_sec == now.tv_sec &&
-	    next_flash.tv_usec < now.tv_usec)) &&
-	  caret_y+caret_h <= win_y)
-	{
-	  next_flash.tv_sec   = now.tv_sec;
-	  next_flash.tv_usec  = now.tv_usec + 400000;
-	  next_flash.tv_sec  += next_flash.tv_usec/1000000;
-	  next_flash.tv_usec %= 1000000;
-
-	  caret = !caret;
-	  XDrawLine(x_display, x_mainwin, x_caretgc,
-		    caret_x+((win_width-win_x)>>1),
-		    caret_y+((win_height-win_y)>>1),
-		    caret_x+((win_width-win_x)>>1),
-		    caret_y+((win_height-win_y)>>1)+caret_h);
-	}
-
+      
+      /* Create the selection set */
       FD_ZERO(&readfds);
       FD_SET(connection_num, &readfds);
 
-      flash = 0;
+      /* Calculate the time left to wait */
+      tv = timeout;
+      tv.tv_sec -= now.tv_sec;
+      tv.tv_usec -= now.tv_usec;
 
-      if (to != 0)
+      tv.tv_sec += tv.tv_usec/1000000;
+      tv.tv_usec %= 1000000;
+
+      if (tv.tv_usec < 0)
 	{
-	  tv.tv_sec  = timeout.tv_sec - now.tv_sec;
-	  tv.tv_usec = timeout.tv_usec - now.tv_usec;
-
-	  tv.tv_sec  += tv.tv_usec/1000000;
-	  tv.tv_usec %= 1000000;
-
-	  if (tv.tv_usec < 0)
-	    {
-	      tv.tv_usec += 1000000;
-	      tv.tv_sec  -= 1;
-	    }
-
-	  if (tv.tv_sec < 0)
-	    {
-	      if (buf != NULL)
-		{
-		  /* Erase any old text */
-		  XSetForeground(x_display, x_pixgc,
-				 x_colour[CURWIN.back+FIRST_ZCOLOUR].pixel);
-		  XFillRectangle(x_display, x_pix, x_pixgc,
-				 input_sx, input_sy,
-				 CURWIN.winlx-input_sx, input_sh);  
-		}
-	      return 0;
-	    }
+	  tv.tv_usec += 1000000;
+	  tv.tv_sec  -= 1;
 	}
 
+      /* Calculate the time left til we flash */
+      if (next_flash.tv_sec == 0 &&
+	  next_flash.tv_usec == 0)
+	next_flash = now;
+
+      if ((next_flash.tv_sec < now.tv_sec ||
+	   (next_flash.tv_sec == now.tv_sec &&
+	    next_flash.tv_usec <= now.tv_usec)))
+	{
+	  next_flash.tv_sec  = now.tv_sec;
+	  next_flash.tv_usec = now.tv_usec + 400000;
+	  next_flash.tv_sec  += next_flash.tv_usec/1000000;
+	  next_flash.tv_usec %= 1000000;
+
+	  caret_on = !caret_on;
+	  draw_caret();
+	}
+
+      /* Timeout on flash if that's going to occur sooner */
+      flash = 0;
       if (((tv.tv_sec > next_flash.tv_sec ||
 	    (tv.tv_sec == next_flash.tv_sec &&
 	     tv.tv_usec > next_flash.tv_usec))
-	   || to == 0) && caret_y+caret_h <= win_y)
+	   || to == 0))
 	{
 	  tv.tv_sec  = next_flash.tv_sec - now.tv_sec;
 	  tv.tv_usec = next_flash.tv_usec - now.tv_usec;
@@ -1340,29 +1138,36 @@ int process_events(long int to, int* buf, int buflen)
 	  flash = 1;
 	}
 
+      /* Update the display if necessary */
+      if (dregion != None)
+	{
+	  draw_window();
+	}
+
+      /* Wait for something to happen */
       isevent = 0;
       if (XPending(x_display))
 	isevent = 1;
       else if (select(connection_num+1, &readfds, NULL, NULL,
-		      (to==0&&flash==0)?NULL:&tv))
+		      &tv))
 	isevent = 1;
 
       if (!isevent && flash)
-	{
-	  continue;
-	}
-      
+	continue;
+	
       if (isevent)
 	{
 	  XNextEvent(x_display, &ev);
-	  
+
 	  switch (ev.type)
 	    {
-	    case KeyPress:	      
+	    case KeyPress:
+	      display_set_scroll_position(0);
+
 	      bufpos = 0;
 	      bufsize = XLookupString(&ev.xkey, keybuf, 20, NULL, NULL);
 	      
-	      if (buf == NULL)
+	      if (text_buf == NULL)
 		{
 		  x = 0;
 		  for (ks=XKeycodeToKeysym(x_display, ev.xkey.keycode, x++);
@@ -1433,15 +1238,7 @@ int process_events(long int to, int* buf, int buflen)
 		  
 		  if (bufsize > 0)
 		    {
-		      if (caret)
-			{
-			  caret = 0;
-			  XDrawLine(x_display, x_mainwin, x_caretgc,
-				    caret_x+((win_width-win_x)>>1),
-				    caret_y+((win_height-win_y)>>1),
-				    caret_x+((win_width-win_x)>>1),
-				    caret_y+((win_height-win_y)>>1)+caret_h);
-			}
+		      hide_caret();
 		      bufsize--;
 		      return keybuf[bufpos++];
 		    }
@@ -1460,68 +1257,41 @@ int process_events(long int to, int* buf, int buflen)
 			case XK_Left:
 			  if (terminating[131])
 			    {
-			      if (caret)
-				{
-				  caret = 0;
-				  XDrawLine(x_display, x_mainwin, x_caretgc,
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1),
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1)+caret_h);
-				}
-			      
+			      hide_caret();
 			      return 131;
 			    }
-			  if (inputpos>0)
-			    inputpos--;
+			  if (buf_offset>0)
+			    buf_offset--;
 			  goto gotkeysym2;
 
 			case XK_Right:
 			  if (terminating[132])
 			    {
-			      if (caret)
-				{
-				  caret = 0;
-				  XDrawLine(x_display, x_mainwin, x_caretgc,
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1),
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1)+caret_h);
-				}
-			      
+			      hide_caret();
 			      return 132;
 			    }
-			  if (buf[inputpos] != 0)
-			    inputpos++;
+			  if (text_buf[buf_offset] != 0)
+			    buf_offset++;
 			  goto gotkeysym2;
 
 			case XK_Up:
 			  if (terminating[129])
 			    {
-			      if (caret)
-				{
-				  caret = 0;
-				  XDrawLine(x_display, x_mainwin, x_caretgc,
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1),
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1)+caret_h);
-				}
-			      
+			      hide_caret();
 			      return 129;
 			    }
 			  else
 			    {
-			      if (history == NULL)
-				history = last_string;
+			      if (history_pos == NULL)
+				history_pos = last_string;
 			      else
-				if (history->next != NULL)
-				  history = history->next;
-			      if (history != NULL)
+				if (history_pos->next != NULL)
+				  history_pos = history_pos->next;
+			      if (history_pos != NULL)
 				{
-				  if (istrlen(history->string) < buflen)
-				    istrcpy(buf, history->string);
-				  inputpos = istrlen(buf);
+				  if (istrlen(history_pos->string) < buflen)
+				    istrcpy(text_buf, history_pos->string);
+				  buf_offset = istrlen(text_buf);
 				}
 			    }
 			  goto gotkeysym2;
@@ -1529,59 +1299,50 @@ int process_events(long int to, int* buf, int buflen)
 			case XK_Down:
 			  if (terminating[130])
 			    {
-			      if (caret)
-				{
-				  caret = 0;
-				  XDrawLine(x_display, x_mainwin, x_caretgc,
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1),
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1)+caret_h);
-				}
-			      
+			      hide_caret();
 			      return 130;
 			    }
-			  if (history != NULL)
+			  if (history_pos != NULL)
 			    {
-			      history = history->last;
-			      if (history != NULL)
+			      history_pos = history_pos->last;
+			      if (history_pos != NULL)
 				{
-				  if (istrlen(history->string) < buflen)
-				    istrcpy(buf, history->string);
-				  inputpos = istrlen(buf);
+				  if (istrlen(history_pos->string) < buflen)
+				    istrcpy(text_buf, history_pos->string);
+				  buf_offset = istrlen(text_buf);
 				}
 			      else
 				{
-				  buf[0] = 0;
-				  inputpos = 0;
+				  text_buf[0] = 0;
+				  buf_offset = 0;
 				}
 			    }
 			  goto gotkeysym2;
 
 			case XK_Home:
-			  inputpos = 0;
+			  buf_offset = 0;
 			  goto gotkeysym2;
 
 			case XK_Insert:
-			  insert_mode = !insert_mode;
+			  insert = !insert;
 			  goto gotkeysym2;
 
 			case XK_End:
-			  inputpos = istrlen(buf);
+			  buf_offset = istrlen(text_buf);
 			  goto gotkeysym2;
 
 			case XK_BackSpace:
 			case XK_Delete:
-			  if (inputpos == 0)
+			  if (buf_offset == 0)
 			    goto gotkeysym2;
 			  
-			  if (buf[inputpos] == 0)
-			    buf[--inputpos] = 0;
+			  if (text_buf[buf_offset] == 0)
+			    text_buf[--buf_offset] = 0;
 			  else
 			    {
-			      for (y=inputpos-1; buf[y] != 0; y++)
-				buf[y] = buf[y+1];
-			      inputpos--;
+			      for (y=buf_offset-1; text_buf[y] != 0; y++)
+				text_buf[y] = text_buf[y+1];
+			      buf_offset--;
 			    }
 			  goto gotkeysym2;
 
@@ -1594,201 +1355,97 @@ int process_events(long int to, int* buf, int buflen)
 			    newhist->next = last_string;
 			    if (last_string)
 			      last_string->last = newhist;
-			    newhist->string = malloc(sizeof(int)*(istrlen(buf)+1));
-			    istrcpy(newhist->string, buf);
+			    newhist->string = malloc(sizeof(int)*(istrlen(text_buf)+1));
+			    istrcpy(newhist->string, text_buf);
 			    last_string = newhist;
 			  }
 			  bufsize = 0;
 			  
-			  if (caret)
-			    {
-			      caret = 0;
-			      XDrawLine(x_display, x_mainwin, x_caretgc,
-					caret_x+((win_width-win_x)>>1),
-					caret_y+((win_height-win_y)>>1),
-					caret_x+((win_width-win_x)>>1),
-					caret_y+((win_height-win_y)>>1)+caret_h);
-			    }
+			  hide_caret();
 
 			  return 10;
 
 			case XK_F1:
 			  if (terminating[133])
 			    {
-			      if (caret)
-				{
-				  caret = 0;
-				  XDrawLine(x_display, x_mainwin, x_caretgc,
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1),
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1)+caret_h);
-				}
+			      hide_caret();
 			      return 133;
 			    }
 			  break;
 			case XK_F2:
 			  if (terminating[134])
 			    {
-			      if (caret)
-				{
-				  caret = 0;
-				  XDrawLine(x_display, x_mainwin, x_caretgc,
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1),
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1)+caret_h);
-				}
+			      hide_caret();
 			      return 134;
 			    }
 			  break;
 			case XK_F3:
 			  if (terminating[135])
 			    {
-			      if (caret)
-				{
-				  caret = 0;
-				  XDrawLine(x_display, x_mainwin, x_caretgc,
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1),
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1)+caret_h);
-				}
+			      hide_caret();
 			      return 135;
 			    }
 			  break;
 			case XK_F4:
 			  if (terminating[136])
 			    {
-			      if (caret)
-				{
-				  caret = 0;
-				  XDrawLine(x_display, x_mainwin, x_caretgc,
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1),
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1)+caret_h);
-				}
+			      hide_caret();
 			      return 136;
 			    }
 			  break;
 			case XK_F5:
 			  if (terminating[137])
 			    {
-			      if (caret)
-				{
-				  caret = 0;
-				  XDrawLine(x_display, x_mainwin, x_caretgc,
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1),
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1)+caret_h);
-				}
+			      hide_caret();
 			      return 137;
 			    }
 			  break;
 			case XK_F6:
 			  if (terminating[138])
 			    {
-			      if (caret)
-				{
-				  caret = 0;
-				  XDrawLine(x_display, x_mainwin, x_caretgc,
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1),
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1)+caret_h);
-				}
+			      hide_caret();
 			      return 138;
 			    }
 			  break;
 			case XK_F7:
 			  if (terminating[139])
 			    {
-			      if (caret)
-				{
-				  caret = 0;
-				  XDrawLine(x_display, x_mainwin, x_caretgc,
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1),
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1)+caret_h);
-				}
+			      hide_caret();
 			      return 139;
 			    }
 			  break;
 			case XK_F8:
 			  if (terminating[140])
 			    {
-			      if (caret)
-				{
-				  caret = 0;
-				  XDrawLine(x_display, x_mainwin, x_caretgc,
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1),
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1)+caret_h);
-				}
+			      hide_caret();
 			      return 140;
 			    }
 			  break;
 			case XK_F9:
 			  if (terminating[141])
 			    {
-			      if (caret)
-				{
-				  caret = 0;
-				  XDrawLine(x_display, x_mainwin, x_caretgc,
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1),
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1)+caret_h);
-				}
+			      hide_caret();
 			      return 141;
 			    }
 			  break;
 			case XK_F10:
 			  if (terminating[142])
 			    {
-			      if (caret)
-				{
-				  caret = 0;
-				  XDrawLine(x_display, x_mainwin, x_caretgc,
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1),
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1)+caret_h);
-				}
+			      hide_caret();
 			      return 142;
 			    }
 			  break;
 			case XK_F11:
 			  if (terminating[143])
 			    {
-			      if (caret)
-				{
-				  caret = 0;
-				  XDrawLine(x_display, x_mainwin, x_caretgc,
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1),
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1)+caret_h);
-				}
+			      hide_caret();
 			      return 143;
 			    }
 			  break;
 			case XK_F12:
 			  if (terminating[144])
 			    {
-			      if (caret)
-				{
-				  caret = 0;
-				  XDrawLine(x_display, x_mainwin, x_caretgc,
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1),
-					    caret_x+((win_width-win_x)>>1),
-					    caret_y+((win_height-win_y)>>1)+caret_h);
-				}
+			      hide_caret();
 			      return 144;
 			    }
 			  break;
@@ -1798,58 +1455,150 @@ int process_events(long int to, int* buf, int buflen)
 		  
 		  for (x=0; x<bufsize; x++)
 		    {
-		      if (istrlen(buf) >= buflen)
+		      if (istrlen(text_buf) >= buflen)
 			break;
 		      
 		      if (keybuf[x]>31 && keybuf[x]<127)
 			{
-			  if (buf[inputpos] == 0)
+			  if (text_buf[buf_offset] == 0)
 			    {
-			      buf[inputpos+1] = 0;
-			      buf[inputpos++] = keybuf[x];
+			      text_buf[buf_offset+1] = 0;
+			      text_buf[buf_offset++] = keybuf[x];
 			    }
 			  else
 			    {
-			      if (insert_mode)
+			      if (insert)
 				{
-				  for (y=istrlen(buf)+1; y>inputpos; y--)
+				  for (y=istrlen(text_buf)+1; y>buf_offset; y--)
 				    {
-				      buf[y] = buf[y-1];
+				      text_buf[y] = text_buf[y-1];
 				    }
 				}
-			      buf[inputpos++] = keybuf[x];
+			      text_buf[buf_offset++] = keybuf[x];
 			    }
 			}
 		    }
 		  
 		  bufsize = 0;
 
-		  draw_input_text(buf, inputpos);
+		  draw_input_text();
 		}
 	      break;
 
 	    case ConfigureNotify:
-	      win_width  = ev.xconfigure.width;
-	      win_height = ev.xconfigure.height;
-	      win_left   = (win_width-win_x)>>1;
-	      win_top    = (win_height-win_y)>>1;
+	      win_width  = total_x = ev.xconfigure.width;
+	      win_height = total_y = ev.xconfigure.height;
+	      win_x      = total_x - (BORDER_SIZE*2) - SCROLLBAR_SIZE;
+	      win_y      = total_y - (BORDER_SIZE*2);
+
+	      win_left   = BORDER_SIZE;
+	      win_top    = BORDER_SIZE;
+
+	      /* Reformat window here */
+	      resize_window();
+	      move_caret();
 	      break;
 
 	    case ButtonPress:
-	      if (terminating[254] || buf == NULL)
+	      /* See if the click was within the scrollbar... */
+	      click_x = ev.xbutton.x-win_left;
+	      click_y = ev.xbutton.y-win_top;
+	      
+	      if (click_x >= win_x+BORDER_SIZE)
 		{
-		  if (caret)
+		  int pos, height;
+
+		  click_y += win_top;
+
+		  /* Calculate the position and size of the scrollbar tab */
+		  pos = (scroll_pos*total_y)/scroll_range;
+		  height = (scroll_height*total_y)/scroll_range;
+		  
+		  if (height < 10)
+		    height = 10;
+		  
+		  if (pos > total_y)
+		    pos = total_y-10;
+		  if (pos + height >= total_y)
 		    {
-		      caret = 0;
-		      XDrawLine(x_display, x_mainwin, x_caretgc,
-				caret_x+((win_width-win_x)>>1),
-				caret_y+((win_height-win_y)>>1),
-				caret_x+((win_width-win_x)>>1),
-				caret_y+((win_height-win_y)>>1)+caret_h);
+		      pos -= (pos+height)-total_y-1;
 		    }
+
+		  if /* above */ (click_y < pos)
+		    {
+		      display_set_scroll_position((scroll_pos + scroll_top) - (scroll_height - xfont_y));
+		    }
+		  else if /* below */ (click_y > (pos+height))
+		    {
+		      display_set_scroll_position((scroll_pos + scroll_top) + (scroll_height - xfont_y));
+		    }
+		  else /* within - drag time */
+		    {
+		      /* Depress scrollbar */
+		      scroll_state = 1;
+		      invalidate_scrollbar();
+
+		      /* Record some useful information */
+		      scroll_start = scroll_pos;
+		      scroll_offset = pos - click_y;
+		      
+		      /* Turn on motion events */
+		      scrolling = 1;
+		    }
+		}
+	      else if (terminating[254] || buf == NULL)
+		{
+		  return 254;
+		}
+	      break;
+
+	    case ButtonRelease:
+	      if (scrolling)
+		{
+		  scroll_state = 0;
+		  scrolling = 0;
+		  invalidate_scrollbar();
+		}
+	      break;
+
+	    case MotionNotify:
+	      if (scrolling)
+		{
+		  /* Only happens when we've dragged the scrollbar */
 		  click_x = ev.xbutton.x-win_left;
 		  click_y = ev.xbutton.y-win_top;
-		  return 254;
+		  
+		  if (click_x >= win_x+BORDER_SIZE - SCROLLBAR_SIZE && 
+		      click_x <= total_x + SCROLLBAR_SIZE)
+		    {
+		      int pos, height, newpos;
+		      XFONT_MEASURE sc;
+		      
+		      click_y += win_top;
+		      
+		      /* Calculate the position and size of the scrollbar tab */
+		      pos = (scroll_pos*total_y)/scroll_range;
+		      height = (scroll_height*total_y)/scroll_range;
+		      
+		      if (height < 10)
+			height = 10;
+		      
+		      if (pos > total_y)
+			pos = total_y-10;
+		      if (pos + height >= total_y)
+			{
+			  pos -= (pos+height)-total_y-1;
+			}
+		      
+		      newpos = scroll_offset + click_y;
+		      sc = scroll_top + (newpos*scroll_range)/total_y;
+		      
+		      display_set_scroll_position(sc);
+		    }
+		  else
+		    {
+		      display_set_scroll_position(scroll_start);
+		    }
 		}
 	      break;
 
@@ -1858,514 +1607,29 @@ int process_events(long int to, int* buf, int buflen)
 		{
 		  if (ev.xclient.data.l[0] == x_prot[0])
 		    {
-		      exit(0);
+		      display_exit(0);
 		    }
 		}
 	      break;
-	      
+
 	    case Expose:
-	      redraw_area(ev.xexpose.x, ev.xexpose.y,
-			  ev.xexpose.width, ev.xexpose.height);
+	      if (dregion != None)
+		{
+		  XFree(dregion);
+		  dregion = None;
+		}
 	      draw_window();
 	      break;
 	    }
 	}
-      else
-	{
-	  if (buf != NULL)
-	    {
-	      /* Erase any old text */
-	      XSetForeground(x_display, x_pixgc,
-			     x_colour[CURWIN.back+FIRST_ZCOLOUR].pixel);
-	      XFillRectangle(x_display, x_pix, x_pixgc,
-			     input_sx, input_sy,
-			     CURWIN.winlx-input_sx, input_sh);  
-	    }
-	  return 0;
-	}
-    }
-}
-
-/*
- * Goes beep
- */
-void display_beep(void)
-{
-  XBell(x_display, 70);
-}
-
-/*
- * Sets the terminating characters selection
- */
-void display_terminating(unsigned char* table)
-{
-  int x;
-
-  for (x=0; x<256; x++)
-    terminating[x] = 0;
-
-  if (table != NULL)
-    {
-      for (x=0; table[x] != 0; x++)
-	{
-	  terminating[table[x]] = 1;
-
-	  if (table[x] == 255)
-	    {
-	      int y;
-
-	      for (y=129; y<=154; y++)
-		terminating[y] = 1;
-	      for (y=252; y<255; y++)
-		terminating[y] = 1;
-	    }
-	}
-    }
-}
-
-int display_get_mouse_x(void)
-{
-  return click_x;
-}
-
-int display_get_mouse_y(void)
-{
-  return click_y;
-}
-
-/***                           ----// 888 \\----                           ***/
-
-/*
- * Sets the colours that all future text will be plotted in.
- */
-void display_set_colour(int fore, int back)
-{
-  if (fore == -1)
-    fore = DEFAULT_FORE;
-  if (back == -1)
-    back = DEFAULT_BACK;
-  if (fore == -2)
-    fore = CURWIN.fore;
-  if (back == -2)
-    back = CURWIN.back;
-
-  CURWIN.fore = fore;
-  CURWIN.back = back;
-}
-
-/*
- * Sets the font we will plot in in future (this uses Z-Machine font
- * numbers rather than internal ones)
- */
-int display_set_font(int font)
-{
-  int old_font;
-
-  if (font == -1)
-    display_set_style(-16);
-  
-  if (font < 0)
-    return 0;
-  if (font >= n_fonts)
-    return 0;
-
-  old_font = font_num;
-  font_num = font;
-
-  return old_font;
-}
-
-/*
- * Sets whether or not the current window should scroll or not
- */
-void display_set_scroll(int scroll)
-{
-  CURWIN.no_scroll = !scroll;
-}
-
-/*
- * Sets the style to use (the style is a bitfield, bit 0 is reverse,
- * bit 1 is bold, bit 2 is italic, bit 3 is fixed-pitch and bit 4 is
- * symbolic)
- */
-int display_set_style(int style)
-{
-  int old_style;
-
-  if (font_num < 0)
-    return style;
-
-  old_style = cur_style;
-  
-  if (style == 0)
-    cur_style = 0;
-  else
-    {
-      if (style > 0)
-	cur_style |= style;
-      else
-	cur_style &= ~(-style);
     }
 
-  display_set_font(style_font[(cur_style>>1)&15]);
-  
-  reverse = cur_style&1;
-
-  return old_style;
+  hide_caret();
 }
 
-/*
- * Fills in a ZDisplay block to tell the interpreter about our display
- * (this should be a static block, as this gets called more than once
- * for v6 games)
- */
-ZDisplay* display_get_info(void)
-{
-  static ZDisplay info;
+/* === Display functions === */
 
-  info.status_line = 1;
-  info.can_split = 1;
-  info.variable_font = 1;
-  info.colours = 1;
-  info.boldface = 1;
-  info.italic = 1;
-  info.fixed_space = 1;
-  info.sound_effects = 0;
-  info.timed_input = 1;
-  info.lines = rc_get_ysize();
-  info.columns = rc_get_xsize();
-  info.width = win_x;
-  info.height = win_y;
-  info.font_width  = xfont_x;
-  info.font_height = xfont_y;
-  info.fore = DEFAULT_FORE;
-  info.back = DEFAULT_BACK;
-  info.mouse = 1;
-  
-  info.pictures = 0;
-
-  return &info;
-}
-
-/*
- * Splits a window in two at the given offset (lines is from the top
- * of the window). The window number specifies the number of the
- * future upper window.
- */
-void display_split(int lines, int window)
-{
-  text_win[window].winsx       = CURWIN.winsx;
-  text_win[window].winlx       = CURWIN.winlx;
-  text_win[window].winsy       = CURWIN.winsy;
-  text_win[window].winly       = CURWIN.winsy + xfont_y*lines;
-  text_win[window].fore        = CURWIN.fore;
-  text_win[window].back        = CURWIN.back;
-  text_win[window].text_amount = 0;
-  text_win[window].no_more     = 1;
-  text_win[window].xpos        = CURWIN.winsx;
-  text_win[window].ypos        = CURWIN.winsy;
-  text_win[window].force_fixed = 0;
-  text_win[window].no_scroll   = 0;
-  text_win[window].line_height = xfont_y;
-
-#ifdef DEBUG
-  printf("Bottom of window is now %i\n", text_win[window].winly);
-#endif
-  
-  CURWIN.winsy += xfont_y*lines;
-  if (CURWIN.ypos < CURWIN.winsy)
-    CURWIN.ypos = CURWIN.winsy;
-}
-
-/*
- * Joins two windows that were previously split
- */
-void display_join(int window1, int window2)
-{
-  if (text_win[window1].winsy != text_win[window2].winly)
-    return; /* Windows can't be joined */
-  text_win[window1].winsy = text_win[window2].winsy;
-  text_win[window2].winly = text_win[window2].winsy;
-}
-
-/*
- * Sets the current window
- */
-void display_set_window(int window)
-{
-  if (window < 0)
-    zmachine_fatal("Can't set window to %i", window);
-  text_win[window].fore = CURWIN.fore;
-  text_win[window].back = CURWIN.back;
-  cur_win = window;
-}
-
-/*
- * Gets the current window number
- */
-int display_get_window(void)
-{
-  return cur_win;
-}
-
-/*
- * Clears the current window
- */
-void display_erase_window(void)
-{
-  int height;
-
-  if (font_num >= 0)
-    height = xfont_get_height(x_fonts[font_num]);
-  else
-    height = xfont_y;
-  
-  XSetForeground(x_display, x_pixgc, x_colour[FIRST_ZCOLOUR+CURWIN.back].pixel);
-
-  XFillRectangle(x_display, x_pix, x_pixgc,
-		 CURWIN.winsx, CURWIN.winsy,
-		 CURWIN.winlx-CURWIN.winsx,
-		 CURWIN.winly-CURWIN.winsy);
-  CURWIN.xpos = CURWIN.winsx + CURWIN.lmargin;
-  CURWIN.ypos = CURWIN.winlx - height;
-  CURWIN.line_height = height;
-
-  redraw_area(win_left+CURWIN.winsx, win_left+CURWIN.winsy,
-	      CURWIN.winlx-CURWIN.winsx,
-	      CURWIN.winly-CURWIN.winsy);
-}
-
-/*
- * Erases the current line in the current window
- */
-void display_erase_line(int val)
-{
-  XSetForeground(x_display, x_pixgc, x_colour[FIRST_ZCOLOUR+CURWIN.back].pixel);
-  if (val == 1)
-    {
-      XFillRectangle(x_display, x_pix, x_pixgc,
-		     CURWIN.xpos, CURWIN.ypos,
-		     CURWIN.winlx-CURWIN.xpos,
-		     CURWIN.line_height);
-
-      redraw_area(CURWIN.xpos+win_left, CURWIN.ypos+win_top,
-		  CURWIN.winlx-CURWIN.xpos,
-		  CURWIN.line_height);
-   }
-  else
-    {
-      if (CURWIN.xpos + val > CURWIN.winlx)
-	val = CURWIN.winlx-CURWIN.xpos+1;
-      XFillRectangle(x_display, x_pix, x_pixgc,
-		     CURWIN.xpos, CURWIN.ypos,
-		     val-1,
-		     CURWIN.line_height);
-      redraw_area(CURWIN.xpos+win_left, CURWIN.ypos+win_top,
-		  val-1,
-		  CURWIN.line_height);
-    }
-}
-
-/*
- * Sets the cursor position in the current window. x and y are
- * character coordinates
- */
-void display_set_cursor(int x, int y)
-{
-  CURWIN.xpos = CURWIN.winsx+x*xfont_x;
-  CURWIN.ypos = y*xfont_y;
-  
-  if (CURWIN.xpos > CURWIN.winlx)
-    CURWIN.xpos = CURWIN.winlx;
-  if (CURWIN.xpos < CURWIN.winsx)
-    CURWIN.xpos = CURWIN.winsx;
-  
-  /*
-  if (CURWIN.ypos > CURWIN.winly)
-    {
-      CURWIN.ypos = CURWIN.winly;
-#ifdef DEBUG
-      printf("(Cursor ypos clipped to bottom)\n");
-#endif
-    }
-  if (CURWIN.ypos < CURWIN.winsy)
-    {
-#ifdef DEBUG
-      printf("(Cursor ypos clipped to top)\n");
-#endif
-      CURWIN.ypos = CURWIN.winsy;
-    }
-  */
-
-#ifdef DEBUG
-  printf("(text-set) Cursor position now %i, %i\n", CURWIN.xpos, CURWIN.ypos);
-#endif
-}
-
-/*
- * Sets the graphics cursor position in the current window
- */
-void display_set_gcursor(int x, int y)
-{
-  CURWIN.xpos = x;
-  CURWIN.ypos = y;
-  
-  if (CURWIN.xpos > CURWIN.winlx)
-    CURWIN.xpos = CURWIN.winlx;
-  if (CURWIN.xpos < CURWIN.winsx)
-    CURWIN.xpos = CURWIN.winsx;
-
-  /*
-  if (CURWIN.ypos > CURWIN.winly)
-    CURWIN.ypos = CURWIN.winly;
-  if (CURWIN.ypos < CURWIN.winsy)
-    CURWIN.ypos = CURWIN.winsy;
-  */
-    
-#ifdef DEBUG
-  printf("(graph-set) Cursor position now %i, %i\n", CURWIN.xpos, CURWIN.ypos);
-#endif
-}
-
-/*
- * Gets the graphics cursor X position
- */
-int display_get_gcur_x(void)
-{
-  return CURWIN.xpos;
-}
-
-/*
- * Gets the graphics cursor Y position
- */
-int display_get_gcur_y(void)
-{
-  return CURWIN.ypos;
-}
-
-/*
- * Gets the text cursor X position
- */
-int display_get_cur_x(void)
-{
-  return (CURWIN.xpos-CURWIN.winsx)/xfont_x;
-}
-
-/*
- * Gets the text cursor Y position
- */
-int display_get_cur_y(void)
-{
-  return (CURWIN.ypos-CURWIN.winsy)/xfont_y;
-}
-
-/*
- * Sets whether or not a window should display 'More' or not
- */
-void display_set_more(int window, int more)
-{
-  text_win[window].no_more = !more;
-}
-
-/*
- * Force a window to use a fixed pitch font regardless of style or
- * font settings
- */
-extern void display_force_fixed (int window, int val)
-{
-  text_win[window].force_fixed = val;
-}
-
-/***                           ----// 888 \\----                           ***/
-
-/*
- * Defines a window for v6
- */
-void display_window_define(int window,
-			   int x, int y,
-			   int lmargin, int rmargin,
-			   int width, int height)
-{
-  text_win[window].winsx   = x;
-  text_win[window].winsy   = y;
-  text_win[window].lmargin = lmargin;
-  text_win[window].rmargin = rmargin;
-  text_win[window].winlx   = x + width;
-  text_win[window].winly   = y + height;
-
-  if (text_win[window].winly > win_y)
-    text_win[window].winly = win_y;
-
-  /* if (text_win[window].xpos < x || text_win[window].xpos > x+width ||
-      text_win[window].ypos < y || text_win[window].ypos > y+height)
-    {
-      text_win[window].xpos = x;
-      text_win[window].ypos = y;
-      } */
-}
-
-/*
- * Sets the function that should be called just before a newline is
- * printed (this function can return -1 for proceed as normal, 0 for
- * do not display [MORE], 1 for display [MORE] now, or 2 for abort
- * display (the function must set things up so that the remainder of
- * the line is displayed at some point)
- */
-void display_set_newline_function(int (*func)(const int* remaining,
-					      int rem_len))
-{
-  newline_func = func;
-}
-
-/*
- * Gets the font height in pixels
- */
-int display_get_font_height(void)
-{
-  return xfont_get_height(x_fonts[font_num]);
-}
-
-/*
- * Gets the width of a character '0' in the current font
- */
-int display_get_font_width(void)
-{
-  static int zero[] = { 48, 0 };
-  return xfont_get_text_width(x_fonts[font_num], zero, 1);
-}
-
-/*
- * Resets window positions to the defaults
- */
-void display_reset_windows(void)
-{
-  cur_win = 0;
-  text_win[0].xpos = 0;
-  text_win[0].ypos = 0;
-  text_win[0].line_height = xfont_y;
-  text_win[0].winsx = text_win[0].winsy = 0;
-  text_win[0].lmargin = text_win[0].rmargin = 0;
-  text_win[0].winlx = win_x;
-  text_win[0].winly = win_y;
-  text_win[0].text_amount = 0;
-  text_win[0].no_more = 0;
-  text_win[0].force_fixed = 0;
-  text_win[0].no_scroll = 0;  
-}
-
-/***                           ----// 888 \\----                           ***/
-
-extern int zoom_main(int, char**);
-
-int main(int argc, char** argv)
-{
-  return zoom_main(argc, argv);
-}
-
-void display_exit(int status)
-{
-  exit(status);
-}
+/* Debug/error functions */
 
 void printf_debug(char* format, ...)
 {
@@ -2405,5 +1669,459 @@ void printf_info(char* format, ...)
 
 void printf_info_done(void) { }
 void printf_error_done(void) { }
+
+/* Output functions */
+
+int display_check_char(int chr)
+{
+  return 1;
+}
+
+/* Input functions */
+
+int display_readline(int* buf, int buflen, long int timeout)
+{
+  int result;
+
+  displayed_text = 0;
+  result = process_events(timeout, buf, buflen);
+  display_prints(buf);
+  display_printc(10);
+
+  return result;
+}
+
+int display_readchar(long int timeout)
+{
+  int result;
+
+  displayed_text = 0;
+  result = process_events(timeout, NULL, 0);
+
+  return result;
+}
+
+/* Display window management functions */
+
+void display_update(void)
+{
+  display_update_region(0, 0, win_x, win_y);
+}
+
+void display_update_region(XFONT_MEASURE left,
+			   XFONT_MEASURE top,
+			   XFONT_MEASURE right,
+			   XFONT_MEASURE bottom)
+{
+  XRectangle clip;
+
+  if (dregion == None)
+    dregion = XCreateRegion();
+
+  clip.x = left + BORDER_SIZE; clip.y = top + BORDER_SIZE;
+  clip.width = right - left; clip.height = bottom - top;
+  XUnionRectWithRegion(&clip, dregion, dregion);
+}
+
+void display_set_scroll_range(XFONT_MEASURE top,
+			      XFONT_MEASURE bottom)
+{
+  if (scroll_range == bottom-top && scroll_top == top)
+    return;
+
+  scroll_range = bottom-top;
+  if (top != scroll_top)
+    {
+      scroll_pos += (scroll_top - top);
+    }
+  scroll_top = top;
+  
+  invalidate_scrollbar();
+}
+
+void display_set_scroll_region(XFONT_MEASURE size)
+{
+  if (scroll_height == size)
+    return;
+
+  scroll_height = size;
+
+  invalidate_scrollbar();
+}
+
+void display_set_scroll_position(XFONT_MEASURE pos)
+{
+  int oldpos;
+
+  oldpos = scroll_pos;
+  scroll_pos = pos - scroll_top;
+
+  if (scroll_pos+scroll_height > scroll_range)
+    {
+      scroll_pos = scroll_range - scroll_height;
+    }
+  if (scroll_pos < 0)
+    scroll_pos = 0;
+
+  if (scroll_pos == oldpos)
+    return;
+
+  invalidate_scrollbar();
+
+  scrollpos = scroll_pos + scroll_top;
+  display_update();
+}
+
+void display_set_title(const char* title)
+{
+}
+
+void display_terminating(unsigned char* table)
+{
+  int x;
+
+  for (x=0; x<256; x++)
+    terminating[x] = 0;
+
+  if (table != NULL)
+    {
+      for (x=0; table[x] != 0; x++)
+	{
+	  terminating[table[x]] = 1;
+
+	  if (table[x] == 255)
+	    {
+	      int y;
+
+	      for (y=129; y<=154; y++)
+		terminating[y] = 1;
+	      for (y=252; y<255; y++)
+		terminating[y] = 1;
+	    }
+	}
+    }
+}
+
+int display_get_mouse_x(void)
+{
+  return click_x/xfont_x;
+}
+
+int display_get_mouse_y(void)
+{
+  return click_y/xfont_y;
+}
+
+void display_set_more(int window, int more)
+{
+}
+
+void display_beep(void)
+{
+}
+
+void display_set_scroll(int scroll)
+{
+}
+
+/* Initialisation */
+
+void display_initialise(void)
+{
+  XSetWindowAttributes win_attr;
+  XWindowAttributes    attr;
+  rc_font*             fonts;
+  rc_colour*           cols;
+  int                  num;
+  
+  int x,y;
+
+  x_display = XOpenDisplay(NULL);
+  x_screen  = DefaultScreen(x_display);
+
+  fonts = rc_get_fonts(&num);
+  n_fonts = 0;
+
+  /* Start up the font system */
+  xfont_initialise();
+
+  /* Allocate fonts */
+  for (x=0; x<num; x++)
+    {
+      if (fonts[x].num <= 0)
+	zmachine_fatal("Font numbers must be positive integers");
+      if (fonts[x].num > n_fonts)
+	{
+	  n_fonts = fonts[x].num;
+	  font = realloc(font, sizeof(xfont*)*n_fonts);
+	}
+
+      font[fonts[x].num-1] = xfont_load_font(fonts[x].name);
+
+      for (y=0; y<fonts[x].n_attr; y++)
+	{
+	  style_font[fonts[x].attributes[y]] = fonts[x].num-1;
+	}
+    }
+  
+  for (y=0; y<16; y++)
+    {
+      if (style_font[y] == -1)
+	{
+	  style_font[y] = style_font[8];
+	}
+    }
+    
+  xfont_x = xfont_get_width(font[3]);
+  xfont_y = xfont_get_height(font[3]);;
+
+  cols = rc_get_colours(&num);
+  if (num > 11)
+    {
+      num = 11;
+      zmachine_warning("Maximum of 11 colours");
+    }
+  if (num < 8)
+    zmachine_warning("Supplied colourmap doesn't defined all 8 'standard' colours");
+
+  for (x=0; x<num; x++)
+    {
+      x_colour[x+FIRST_ZCOLOUR].red   = cols[x].r<<8;
+      x_colour[x+FIRST_ZCOLOUR].green = cols[x].g<<8;
+      x_colour[x+FIRST_ZCOLOUR].blue  = cols[x].b<<8;
+    }
+  
+  win_attr.event_mask = ExposureMask|KeyPressMask|KeyReleaseMask|StructureNotifyMask|ButtonPressMask|ButtonReleaseMask|ButtonMotionMask;
+  win_attr.background_pixel = None;
+
+  /* Create the main window */
+  x_mainwin = XCreateWindow(x_display,
+			    RootWindow(x_display, x_screen),
+			    100,100, 
+			    total_x= ((win_x=(xfont_x*rc_get_xsize())) + BORDER_SIZE*2+SCROLLBAR_SIZE),
+			    total_y=((win_y=(xfont_y*rc_get_ysize())) + BORDER_SIZE*2),
+			    1, DefaultDepth(x_display, x_screen), InputOutput,
+			    CopyFromParent,
+			    CWEventMask|CWBackPixel,
+			    &win_attr);
+  
+  XMapWindow(x_display, x_mainwin);
+
+#ifdef HAVE_XFT
+  xft_drawable = XftDrawCreate(x_display, x_mainwin,
+			       DefaultVisual(x_display, x_screen), 
+			       DefaultColormap(x_display, x_screen));
+#endif
+
+  max_x = size_x = rc_get_xsize();
+  max_y = size_y = rc_get_ysize();
+  size_window();
+
+  /* Window properties */
+  {
+    XTextProperty tprop;
+    XSizeHints*   hints;
+    XWMHints*     wmhints;
+    char*         title = "Zoom " VERSION;
+    char*         icon  = "Zoom";
+    
+    XStringListToTextProperty(&title, 1, &tprop);
+    XSetWMName(x_display, x_mainwin, &tprop);
+    XFree(tprop.value);
+    
+    XStringListToTextProperty(&icon, 1, &tprop);
+    XSetWMIconName(x_display, x_mainwin, &tprop);
+    XFree(tprop.value);
+
+    hints = XAllocSizeHints();
+    hints->min_width  = 200;
+    hints->min_height = 100;
+    hints->width      = total_x;
+    hints->height     = total_y;
+    hints->width_inc  = 2;
+    hints->height_inc = 2;
+    hints->flags      = PSize|PMinSize|PResizeInc;
+
+    XSetWMNormalHints(x_display, x_mainwin, hints);
+    XFree(hints);
+
+    wmhints = XAllocWMHints();
+    wmhints->input = True;
+    wmhints->flags = InputHint;
+    
+    XSetWMHints(x_display, x_mainwin, wmhints);
+    XFree(wmhints);
+
+    x_prot[0] = XInternAtom(x_display, "WM_DELETE_WINDOW", False);
+    XSetWMProtocols(x_display, x_mainwin, x_prot, 1);
+    wmprots = XInternAtom(x_display, "WM_PROTOCOLS", False);
+  }
+  
+  /* Allocate colours */
+  XGetWindowAttributes(x_display, x_mainwin, &attr);
+  for (x=0; x<N_COLS; x++)
+    {
+      if (!XAllocColor(x_display,
+		       DefaultColormap(x_display, x_screen),
+		       &x_colour[x]))
+	{
+	  fprintf(stderr, "Warning: couldn't allocate colour #%i\n", x);
+	  x_colour[x].pixel = BlackPixel(x_display, x_screen);
+	}
+    }
+
+#ifdef HAVE_XFT
+  alloc_xft_colours();
+#endif
+
+  /* Create the display pixmap */
+  x_wingc   = XCreateGC(x_display, x_mainwin, 0, NULL);
+  x_caretgc = XCreateGC(x_display, x_mainwin, 0, NULL);
+
+  XSetForeground(x_display, x_caretgc,
+		 x_colour[FIRST_ZCOLOUR+DEFAULT_FORE].pixel);
+  XSetFunction(x_display, x_caretgc, GXxor);
+  XSetLineAttributes(x_display, x_caretgc, 2, LineSolid, CapButt, JoinBevel);
+  
+  display_clear();
+}
+
+void display_reinitialise(void)
+{
+  rc_font*    fonts;
+  rc_colour*  cols;
+  int         num,x,y;
+
+  /* Deallocate resources */
+  for (x=0; x<n_fonts; x++)
+    {
+      xfont_release_font(font[x]);
+    }
+  for (x=0; x<N_COLS; x++)
+    {
+      XFreeColors(x_display, DefaultColormap(x_display, x_screen),
+		  &x_colour[x].pixel, 1, 0);
+    }
+
+  xfont_shutdown();
+
+  /* Reallocate fonts */
+  xfont_initialise();
+  
+  fonts = rc_get_fonts(&num);
+  n_fonts = 0;
+
+  for (x=0; x<num; x++)
+    {
+      if (fonts[x].num <= 0)
+	zmachine_fatal("Font numbers must be positive integers");
+      if (fonts[x].num > n_fonts)
+	{
+	  n_fonts = fonts[x].num;
+	  font = realloc(font, sizeof(xfont*)*n_fonts);
+	}
+
+      font[fonts[x].num-1] = xfont_load_font(fonts[x].name);
+
+      for (y=0; y<fonts[x].n_attr; y++)
+	{
+	  style_font[fonts[x].attributes[y]] = fonts[x].num-1;
+	}
+    }
+  
+  for (y=0; y<16; y++)
+    {
+      if (style_font[y] == -1)
+	{
+	  style_font[y] = style_font[8];
+	}
+    }
+	  
+  xfont_x = xfont_get_width(font[3]);
+  xfont_y = xfont_get_height(font[3]);
+
+  max_x = size_x = rc_get_xsize();
+  max_y = size_y = rc_get_ysize();
+
+  /* Reallocate colours */
+  cols = rc_get_colours(&num);
+  if (num > 11)
+    {
+      num = 11;
+      zmachine_warning("Maximum of 11 colours");
+    }
+
+  for (x=0; x<num; x++)
+    {
+      x_colour[x+FIRST_ZCOLOUR].red   = cols[x].r<<8;
+      x_colour[x+FIRST_ZCOLOUR].green = cols[x].g<<8;
+      x_colour[x+FIRST_ZCOLOUR].blue  = cols[x].b<<8;
+    }
+  for (x=0; x<N_COLS; x++)
+    {
+      if (!XAllocColor(x_display,
+		       DefaultColormap(x_display, x_screen),
+		       &x_colour[x]))
+	{
+	  fprintf(stderr, "Warning: couldn't allocate colour #%i\n", x);
+	  x_colour[x].pixel = BlackPixel(x_display, x_screen);
+	}
+    }
+  
+  size_window();
+
+  display_clear();
+}
+
+void display_finalise(void)
+{
+  /* Shut everything down */
+  XDestroyWindow(x_display, x_mainwin);
+  XCloseDisplay(x_display);
+}
+
+extern int zoom_main(int, char**);
+
+int main(int argc, char** argv)
+{
+  /* Start everything rolling */
+  return zoom_main(argc, argv);
+}
+
+void display_exit(int code)
+{
+  /* Die */
+  exit(code);
+}
+
+ZDisplay* display_get_info(void)
+{
+  static ZDisplay dis;
+
+  /* Return display capabilities */
+
+  dis.status_line   = 1;
+  dis.can_split     = 1;
+  dis.variable_font = 1;
+  dis.colours       = 1;
+  dis.boldface      = 1;
+  dis.italic        = 1;
+  dis.fixed_space   = 1;
+  dis.sound_effects = 0;
+  dis.timed_input   = 1;
+  dis.mouse         = 0;
+  
+  dis.lines         = size_y;
+  dis.columns       = size_x;
+  dis.width         = size_x;
+  dis.height        = size_y;
+  dis.font_width    = 1;
+  dis.font_height   = 1;
+  dis.pictures      = 0;
+  dis.fore          = DEFAULT_FORE;
+  dis.back          = DEFAULT_BACK;
+
+  return &dis;
+}
 
 #endif

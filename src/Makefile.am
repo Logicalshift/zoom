@@ -9,10 +9,11 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	macos/zoom.nib/objects.xib macos/macreadme.rtf macos/zoomrc
 
 zoom_SOURCES = \
-	main.c interp.c file.c options.c zmachine.c zscii.c xdisplay.c \
-	hash.c tokenise.c stream.c font3.c state.c pix.c rc.c rc_parse.y \
-	rc_lex.l menu.c xfont.c windisplay.c winfont.c random.c format.c \
-	layout.c carbondisplay.c carbonfont.c carbonsupport.c carbonprefs.c\
+	main.c interp.c file.c options.c zmachine.c zscii.c display.c \
+	xdisplay.c hash.c tokenise.c stream.c font3.c state.c pix.c rc.c \
+	rc_parse.y rc_lex.l menu.c xfont.c windisplay.c winfont.c random.c \
+	format.c layout.c carbondisplay.c carbonfont.c carbonsupport.c \
+	carbonprefs.c \
 	\
 	file.h zmachine.h options.h interp.h zscii.h display.h hash.h \
 	tokenise.h stream.h font3.h state.h pix.h rc.h rcp.h rc_parse.h \

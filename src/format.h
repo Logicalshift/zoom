@@ -133,7 +133,7 @@ extern int scroll_overlays;
 
 #define DEFAULT_FORE 0
 #define DEFAULT_BACK 7
-#define FIRST_ZCOLOUR 3
+//#define FIRST_ZCOLOUR 3
 
 extern int more_on;
 extern int displayed_text;
