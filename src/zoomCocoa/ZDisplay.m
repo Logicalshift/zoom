@@ -305,8 +305,8 @@ int display_readline(int* buf, int len, long int timeout) {
     // Request input
     [[mainMachine inputBuffer] setString: @""];
     
-    [display shouldReceiveText: len];
     [[mainMachine windowNumber: zDisplayCurrentWindow] setFocus];
+    [display shouldReceiveText: len];
 
     NSDate* when;
 
@@ -396,8 +396,8 @@ int display_readchar(long int timeout) {
     // Request input
     [[mainMachine inputBuffer] setString: @""];
 
-    [display shouldReceiveCharacters];
     [[mainMachine windowNumber: zDisplayCurrentWindow] setFocus];
+    [display shouldReceiveCharacters];
 
     NSDate* when;
 

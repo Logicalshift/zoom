@@ -394,6 +394,15 @@ static void finalizeViews(void) {
     receivingCharacters = YES;
 	[self orWaitingForInput];
 	
+	// Become the first responder
+	if (pixmapWindow != nil) {
+		[[self window] makeFirstResponder: self];
+	} else if ([focusedView isKindOfClass: [ZoomUpperWindow class]]) {
+		[[self window] makeFirstResponder: [textScroller upperWindowView]];
+	} else {
+		[[self window] makeFirstResponder: textView];
+	}
+	
 	// Deal with the input source
 	if (inputSource != nil && [inputSource respondsToSelector: @selector(nextCommand)]) {
 		NSString* nextInput = [inputSource nextCommand];
@@ -469,10 +478,18 @@ static void finalizeViews(void) {
 		[self setInputLine: [[[ZoomInputLine alloc] initWithCursor: pixmapCursor
 														attributes: [self attributesForStyle: [pixmapWindow inputStyle]]]
 			autorelease]];
-		
-		// Make ourselves the first responder
-		[[self window] makeFirstResponder: self];
 	}
+	
+	// Set the first responder appropriately
+	if (pixmapWindow != nil) {
+		[[self window] makeFirstResponder: self];
+	} else if ([focusedView isKindOfClass: [ZoomUpperWindow class]]) {
+		[[self window] makeFirstResponder: [textScroller upperWindowView]];
+	} else {
+		[[self window] makeFirstResponder: textView];
+		[textView scrollRangeToVisible: NSMakeRange([[textView string] length], 0)];
+		[textView setSelectedRange: NSMakeRange([[textView string] length], 0)];
+	}	
 	
     receiving = YES;
 	[self orWaitingForInput];
