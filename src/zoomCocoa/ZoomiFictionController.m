@@ -230,6 +230,8 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	teaserView = [[NSTextView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
 	previewView = [[ZoomSavePreviewView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
 	resourceDrop = [[ZoomResourceDrop alloc] initWithFrame: NSMakeRect(0, 0, 100, 100)];
+
+	[resourceDrop setDelegate: self];
 	[previewView setMenu: saveMenu];
 	
 	[teaserView setMaxSize: NSMakeSize(1e8, 1e8)];
@@ -945,6 +947,9 @@ int tableSorter(id a, id b, void* context) {
 		NSString* dir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: ident 
 																			  create: NO];
 		[previewView setDirectoryToUse: [dir stringByAppendingPathComponent: @"Saves"]];
+
+		[resourceDrop setDroppedFilename: [org resourcesForIdent: ident]];
+		[resourceDrop setEnabled: YES];
 	} else {
 		if ([[self window] isMainWindow]) {
 			[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
@@ -955,6 +960,9 @@ int tableSorter(id a, id b, void* context) {
 
 //		[drawerButton setEnabled: NO];
 		[previewView setDirectoryToUse: nil];
+		
+		[resourceDrop setDroppedFilename: nil];
+		[resourceDrop setEnabled: NO];
 	}
 	
 	if (comment == nil) comment = @"";
@@ -977,7 +985,7 @@ int tableSorter(id a, id b, void* context) {
 
 		[teaserView setString: teaser];
 	}
-	
+		
 	[collapseView finishRearranging];
 #if 0	
 	if ([comment length] == 0 && [teaser length] == 0) {
@@ -1609,5 +1617,18 @@ int tableSorter(id a, id b, void* context) {
 	[[NSUserDefaults standardUserDefaults] setObject: [panel directory]
                                               forKey: @"ZoomiFictionSavePath"];
 }	
+
+// ResourceDrop delegate
+
+- (void) resourceDropFilenameChanged: (ZoomResourceDrop*) drop {
+	ZoomStoryOrganiser* org = [ZoomStoryOrganiser sharedStoryOrganiser];
+	ZoomStoryID* selectedID = [self selectedStoryID];
+	
+	if (selectedID != nil) {
+		[org addResource: [drop droppedFilename]
+			   withIdent: selectedID
+				organise: [[ZoomPreferences globalPreferences] keepGamesOrganised]];
+	}
+}
 
 @end

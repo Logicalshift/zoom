@@ -15,12 +15,29 @@
 	
 	int willOrganise;
 	BOOL enabled;
+	
+	IBOutlet id delegate;
 }
 
+// Flags
 - (void) setWillOrganise: (BOOL) willOrganise;
 - (BOOL) willOrganise;
 
 - (void) setEnabled: (BOOL) enabled;
 - (BOOL) enabled;
+
+- (void) setDroppedFilename: (NSString*) filename;
+- (NSString*) droppedFilename;
+
+// Delegate
+- (void) setDelegate: (id) delegate;
+
+@end
+
+// Delegate methods
+@interface NSObject(ZoomResourceDropDelegate)
+
+- (void) resourceDropFilenameChanged: (ZoomResourceDrop*) drop;
+- (void) resourceDropDataChanged: (ZoomResourceDrop*) drop;
 
 @end

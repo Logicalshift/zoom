@@ -13,6 +13,7 @@
 
 NSString* ZoomStoryOrganiserChangedNotification = @"ZoomStoryOrganiserChangedNotification";
 static NSString* defaultName = @"ZoomStoryOrganiser";
+static NSString* extraDefaultsName = @"ZoomStoryOrganiserExtra";
 static NSString* ZoomGameDirectories = @"ZoomGameDirectories";
 static NSString* ZoomGameStorageDirectory = @"ZoomGameStorageDirectory";
 static NSString* ZoomIdentityFilename = @".zoomIdentity";
@@ -36,14 +37,24 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 	return defaultDictionary;
 }
 
+- (NSDictionary*) extraDictionary {
+	NSData* resourceData = [NSArchiver archivedDataWithRootObject: identsToResources];
+	
+	return [NSDictionary dictionaryWithObjectsAndKeys: 
+		resourceData, @"identsToResources", nil];
+}
+
 - (void) storePreferences {
 	[[NSUserDefaults standardUserDefaults] setObject:[self dictionary] 
 											  forKey:defaultName];
+	[[NSUserDefaults standardUserDefaults] setObject:[self extraDictionary] 
+											  forKey:extraDefaultsName];
 }
 
 - (void) preferenceThread: (NSDictionary*) threadDictionary {
 	NSAutoreleasePool* p = [[NSAutoreleasePool alloc] init];
 	NSDictionary* prefs = [threadDictionary objectForKey: @"preferences"];
+	NSDictionary* prefs2 = [threadDictionary objectForKey: @"extraPreferences"];
 	
 	int counter = 0;
 	
@@ -54,6 +65,24 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
         initWithReceivePort: port2
                    sendPort: port1];
 	[subThread setRootObject: self];
+	
+	// Resources
+	NSData* idToRes = [prefs2 objectForKey: @"identsToResources"];
+	
+	if (idToRes != nil && [idToRes isKindOfClass: [NSData class]]) {
+		[storyLock lock];
+		if (identsToResources != nil) {
+			[identsToResources release];
+		}
+		
+		identsToResources = [[NSUnarchiver unarchiveObjectWithData: idToRes] mutableCopy];
+		
+		if (identsToResources == nil || ![identsToResources isKindOfClass: [NSMutableDictionary class]]) {
+			[identsToResources release];
+			identsToResources = [[NSMutableDictionary alloc] init];
+		}
+		[storyLock unlock];
+	}
 		
 	// Function called from a seperate thread
 	NSEnumerator* filenameEnum = [prefs keyEnumerator];
@@ -132,11 +161,13 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 
 - (void) loadPreferences {
 	NSDictionary* prefs = [[NSUserDefaults standardUserDefaults] objectForKey: defaultName];
+	NSDictionary* extraPrefs = [[NSUserDefaults standardUserDefaults] objectForKey: defaultName];
 	
 	// Detach a thread to decode the dictionary
 	NSDictionary* threadDictionary =
 		[[NSDictionary dictionaryWithObjectsAndKeys:
 			prefs, @"preferences",
+			extraPrefs, @"extraPreferences",
 			nil] retain];
 	
 	// Create a connection so the threads can communicate
@@ -186,6 +217,7 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 		
 		filenamesToIdents = [[NSMutableDictionary alloc] init];
 		identsToFilenames = [[NSMutableDictionary alloc] init];
+		identsToResources = [[NSMutableDictionary alloc] init];
 		
 		storyLock = [[NSLock alloc] init];
 		port1 = nil;
@@ -248,6 +280,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	if (filename != nil) {
 		[filenamesToIdents removeObjectForKey: filename];
 		[identsToFilenames removeObjectForKey: ident];
+		[identsToResources removeObjectForKey: ident];
 		[storyIdents removeObjectIdenticalTo: ident];
 		[storyFilenames removeObject: filename];
 	}
@@ -611,7 +644,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	
 	// See if they already match
 	if ([idealDir isEqualToString: currentDir]) 
-		return;
+		return YES;
 	
 	// If they don't match, then idealDir should be new (or something weird has just occured)
 	if ([[NSFileManager defaultManager] fileExistsAtPath: idealDir]) {
@@ -717,6 +750,93 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	
 	if (changed)
 		[self organiserChanged];
+}
+
+// Blorb resources
+
+- (BOOL) addResource: (NSString*) blorbFile
+		   withIdent: (ZoomStoryID*) ident
+			organise: (BOOL) organise {
+	NSFileManager* fm = [NSFileManager defaultManager];
+	
+	if (blorbFile == nil || [blorbFile length] == 0) {
+		// Delete the file if required
+		if (organise) {
+			NSString* dir = [self directoryForIdent: ident
+											 create: NO];
+			NSString* newFile = [dir stringByAppendingPathComponent: @"resource.blb"];
+			
+			if (dir != nil && [fm fileExistsAtPath: newFile]) {
+				[fm removeFileAtPath: newFile
+							 handler: nil];
+			}
+		}
+		
+		[identsToResources removeObjectForKey: ident];
+		
+		return YES;
+	}
+	
+	// Check that the file exists and is not a directory
+	BOOL isDir;
+	BOOL exists = [fm fileExistsAtPath: blorbFile
+						   isDirectory: &isDir];
+	
+	if (!exists) {
+		NSLog(@"Resource file \"%@\" does not exist", blorbFile);
+		return NO;
+	}
+	if (isDir) {
+		NSLog(@"Resource file \"%@\" is a directory", blorbFile);
+		return NO;
+	}
+	
+	// Organise if required
+	if (organise) {
+		NSString* dir = [self directoryForIdent: ident
+										 create: NO];
+		
+		if (dir == nil) {
+			NSLog(@"No organised directory for game: cannot store resources");
+			return NO;
+		}
+		
+		exists = [fm fileExistsAtPath: dir
+						  isDirectory: &isDir];
+		if (!exists || !isDir) {
+			NSLog(@"Organised directory for game does not exist");
+			return NO;
+		}
+		
+		NSString* newFile = [dir stringByAppendingPathComponent: @"resource.blb"];
+		
+		if (![fm copyPath: blorbFile
+				   toPath: newFile
+				  handler: nil]) {
+			NSLog(@"Unable to copy resource file to new location");
+			return NO;
+		}
+		
+		blorbFile = newFile;
+	}
+	
+	// Add to our database
+	[storyLock lock];
+	[identsToResources setObject: [[blorbFile copy] autorelease]
+						  forKey: ident];
+	[storyLock unlock];
+	[self organiserChanged];
+	
+	// Done
+	return YES;
+}
+
+- (NSString*) resourcesForIdent: (ZoomStoryID*) ident {
+	[storyLock lock];
+	NSString* res = [[[identsToResources objectForKey: ident] copy] autorelease];
+	[storyLock unlock];
+	
+	return res;
 }
 
 @end

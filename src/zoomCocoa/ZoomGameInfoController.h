@@ -4,6 +4,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "ZoomStory.h"
+#import "ZoomResourceDrop.h"
 
 @interface ZoomGameInfoController : NSWindowController {
 	IBOutlet NSMenu*      genreMenu;
@@ -22,6 +23,10 @@
 	IBOutlet NSSlider*      rating;
 	IBOutlet NSButton*      ratingOn;
 	
+	IBOutlet ZoomResourceDrop* resourceDrop;
+	IBOutlet NSTextField*      resourceFilename;
+	IBOutlet NSButton*         chooseResourceButton;
+	
 	IBOutlet NSTabView*     tabs;
 	
 	ZoomStory* gameInfo;
@@ -33,6 +38,7 @@
 - (IBAction)selectGenre:(id)sender;
 - (IBAction)showGenreMenu:(id)sender;
 - (IBAction)activateRating:(id)sender;
+- (IBAction)chooseResourceFile:(id)sender;
 
 // Setting up the game info window
 - (void) setGameInfo: (ZoomStory*) info;

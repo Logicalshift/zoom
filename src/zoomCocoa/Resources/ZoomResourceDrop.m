@@ -113,6 +113,15 @@ static NSImage* blorbImage;
 	return enabled;
 }
 
+- (void) setDroppedFilename: (NSString*) filename {
+	if (droppedFilename) [droppedFilename release];
+	droppedFilename = [filename copy];
+}
+
+- (NSString*) droppedFilename {
+	return droppedFilename;
+}
+
 // = NSDraggingDestination methods =
 
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender {
@@ -181,7 +190,14 @@ notAFilename:
 			return NO;
 		}
 		
+		if (droppedData != nil) {
+			[droppedData release];
+			droppedData = nil;
+			[self resourceDropDataChanged: self];
+		}
+		
 		droppedFilename = [filename copy];
+		[self resourceDropFilenameChanged: self];
 		[self setNeedsDisplay: YES];
 		
 		return YES;
@@ -193,6 +209,24 @@ notAFilename:
 	}
 	
 	return NO;
+}
+
+// Delegate
+
+- (void) setDelegate: (id) dg {
+	delegate = dg;
+}
+
+- (void) resourceDropFilenameChanged: (ZoomResourceDrop*) drop {
+	if ([delegate respondsToSelector: @selector(resourceDropFilenameChanged:)]) {
+		[delegate resourceDropFilenameChanged: drop];
+	}
+}
+
+- (void) resourceDropDataChanged: (ZoomResourceDrop*) drop {
+	if ([delegate respondsToSelector: @selector(resourceDropDataChanged:)]) {
+		[delegate resourceDropDataChanged: drop];
+	}
 }
 
 @end

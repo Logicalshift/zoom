@@ -17,12 +17,19 @@
             LANGUAGE = ObjC; 
             SUPERCLASS = NSObject; 
         }, 
+        {CLASS = NSObject; LANGUAGE = ObjC; }, 
         {
-            ACTIONS = {activateRating = id; selectGenre = id; showGenreMenu = id; }; 
+            ACTIONS = {
+                activateRating = id; 
+                chooseResourceFile = id; 
+                selectGenre = id; 
+                showGenreMenu = id; 
+            }; 
             CLASS = ZoomGameInfoController; 
             LANGUAGE = ObjC; 
             OUTLETS = {
                 author = NSTextField; 
+                chooseResourceButton = NSButton; 
                 comments = NSTextView; 
                 gameName = NSTextField; 
                 genre = NSTextField; 
@@ -31,6 +38,8 @@
                 headline = NSTextField; 
                 rating = NSSlider; 
                 ratingOn = NSButton; 
+                resourceDrop = ZoomResourceDrop; 
+                resourceFilename = NSTextField; 
                 tabs = NSTabView; 
                 teaser = NSTextView; 
                 year = NSTextField; 
@@ -38,7 +47,12 @@
             }; 
             SUPERCLASS = NSWindowController; 
         }, 
-        {CLASS = ZoomResourceDrop; LANGUAGE = ObjC; SUPERCLASS = NSView; }
+        {
+            CLASS = ZoomResourceDrop; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {delegate = id; }; 
+            SUPERCLASS = NSView; 
+        }
     ); 
     IBVersion = 1; 
 }

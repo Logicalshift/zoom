@@ -100,6 +100,8 @@
 		[zarfRating setEnabled: NO];	[zarfRating selectItemAtIndex: 0];
 		[rating setEnabled: NO];		[rating setIntValue: 5.0];
 		[ratingOn setEnabled: NO];		[ratingOn setState: NSOffState];
+		
+		[resourceDrop setEnabled: NO]; [chooseResourceButton setEnabled: NO];
 	} else {		
 		if (gameInfo) [gameInfo release];
 		gameInfo = [info retain];
@@ -132,6 +134,9 @@
 			[rating setEnabled: NO];		[rating setIntValue: 5.0];
 			[ratingOn setEnabled: YES];		[ratingOn setState: NSOffState];
 		}
+		
+		// FIXME: need improved metadata handling to implement this properly
+		[resourceDrop setEnabled: NO]; [chooseResourceButton setEnabled: NO];
 	}
 }
 
@@ -200,6 +205,7 @@
 }
 
 // = NSText delegate =
+
 - (void)textDidEndEditing:(NSNotification *)aNotification {
 	NSTextView* textView = [aNotification object];
 	
@@ -214,6 +220,14 @@
 	} else {
 		NSLog(@"Unknown text view");
 	}
+}
+
+// = Resource files =
+
+- (IBAction)chooseResourceFile:(id)sender {
+}
+
+- (void) resourceDropFilenameChanged: (ZoomResourceDrop*) drop {
 }
 
 @end

@@ -26,6 +26,8 @@ extern NSString* ZoomStoryOrganiserChangedNotification;
 	NSMutableDictionary* filenamesToIdents;
 	NSMutableDictionary* identsToFilenames;
 	
+	NSMutableDictionary* identsToResources;
+	
 	// Preference loading/checking thread
 	NSPort* port1;
 	NSPort* port2;
@@ -45,6 +47,10 @@ extern NSString* ZoomStoryOrganiserChangedNotification;
 		withIdent: (ZoomStoryID*) ident
 		 organise: (BOOL) organise;
 
+- (BOOL) addResource: (NSString*) blorbFile
+		   withIdent: (ZoomStoryID*) ident
+			organise: (BOOL) organise;
+
 - (void) removeStoryWithIdent: (ZoomStoryID*) ident;
 
 // Sending notifications
@@ -56,6 +62,8 @@ extern NSString* ZoomStoryOrganiserChangedNotification;
 
 - (NSArray*) storyFilenames;
 - (NSArray*) storyIdents;
+
+- (NSString*) resourcesForIdent: (ZoomStoryID*) ident;
 
 // Story-specific data
 - (NSString*) directoryForIdent: (ZoomStoryID*) ident
