@@ -734,20 +734,6 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	[NSArchiver archiveRootObject: ident
 						   toFile: identityFile];
 	
-	/* -- Not used here
-	// Store this directory as the dir for this game
-	NSMutableDictionary* newGameDirs = [gameDirs mutableCopy];
-	
-	if (newGameDirs == nil) {
-		newGameDirs = [[NSMutableDictionary alloc] init];
-	}
-	
-	[newGameDirs setObject: gameDir
-					forKey: [ident description]];
-	[defaults setObject: [newGameDirs autorelease]
-				 forKey: ZoomGameDirectories];
-	 */
-	
 	return gameDir;
 }
 
@@ -944,6 +930,8 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	destFile = [destFile stringByStandardizingPath];
 		
 	if (![filename isEqualToString: destFile]) {
+		BOOL moved = NO;
+		
 		if ([[filename lowercaseString] isEqualToString: [destFile lowercaseString]]) {
 			// *LIKELY* that these are in fact the same file with different case names
 			// Cocoa doesn't seem to provide a good way to see if too paths are actually the same:
@@ -952,7 +940,55 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 			[[NSFileManager defaultManager] movePath: filename
 											  toPath: destFile
 											 handler: nil];
-		} else {
+			
+			moved = YES;
+		}
+		
+		// The file might already be organised, but in the wrong directory
+		NSString* gameStorageDirectory = [[NSUserDefaults standardUserDefaults] objectForKey: ZoomGameStorageDirectory];
+		NSArray* storageComponents = [gameStorageDirectory pathComponents];
+
+		NSArray* filenameComponents = [filename pathComponents];
+		BOOL outsideOrganisation = YES;
+		
+		if ([filenameComponents count] == [storageComponents count]+3) {
+			// filenameComponents should have 3 components extra over the storage directory: group/title/game.z5
+			
+			// Compare the components
+			int x;
+			outsideOrganisation = NO;
+			for (x=0; x<[storageComponents count]; x++) {
+				// Note, there's no way to see if we're using a case-sensitive file system or not. We assume
+				// we are, as that's the default. People running with HFSX or UFS can just put up with the
+				// odd weirdness occuring due to this.
+				NSString* c1 = [[filenameComponents objectAtIndex: x] lowercaseString];
+				NSString* c2 = [[storageComponents objectAtIndex: x] lowercaseString];
+				
+				if (![c1 isEqualToString: c2]) {
+					outsideOrganisation = YES;
+					break;
+				}
+			}
+		}
+		
+		if (!outsideOrganisation) {
+			// Have to move the file from the directory it's in to the new directory
+			// Really want to move resources and savegames too... Hmm
+			NSString* oldDir = [filename stringByDeletingLastPathComponent];
+			NSEnumerator* dirEnum = [[[NSFileManager defaultManager] directoryContentsAtPath: oldDir] objectEnumerator];
+			
+			NSString* fileToMove;
+			while (fileToMove = [dirEnum nextObject]) {
+				[[NSFileManager defaultManager] movePath: [oldDir stringByAppendingPathComponent: fileToMove]
+												  toPath: [fileDir stringByAppendingPathComponent: fileToMove]
+												 handler: nil];
+			}
+			
+			moved = YES;
+		}
+		
+		// If we haven't already moved the file, then
+		if (!moved) {
 			[[NSFileManager defaultManager] removeFileAtPath: destFile handler: nil];
 			if ([[NSFileManager defaultManager] copyPath: filename
 												  toPath: destFile
@@ -1076,28 +1112,6 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	// Changes the story organisation directory
 	// Meh. Can just rename the directory, perhaps?
 }
-
-#if 0
-- (void) reorganiseStoryWithFilename: (NSString*) filename {
-	// BORKED
-	ZoomStoryID* ident = [filenamesToIdents objectForKey: filename];
-	ZoomStory*   story = [[NSApp delegate] findStory: ident];
-	
-	if (ident == nil) {
-		// Story has disappeared in the meantime
-		return;
-	}
-	
-	if (story == nil) {
-		// Uh, something weird has happened... The story is missing from the metadata database
-		NSLog(@"Unable to find metadata for %@", filename);
-		return;
-	}
-	
-	[self organiseStory: story
-			  withIdent: ident];
-}
-#endif
 
 // = Reorganising story files =
 
