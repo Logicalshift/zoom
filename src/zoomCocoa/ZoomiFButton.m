@@ -94,6 +94,7 @@ static NSImage* disabledImage;
 		if (unpushedImage) {
 			[self setImage: unpushedImage];
 			[unpushedImage release];
+			unpushedImage = nil;
 		}
 	}
 	

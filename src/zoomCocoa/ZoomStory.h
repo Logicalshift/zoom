@@ -33,6 +33,8 @@
 - (NSString*) comment;
 - (float)     rating;
 
+- (id) objectForKey: (NSString*) key; // Always returns an NSString
+
 // Setting data
 - (void) setTitle:    (NSString*) newTitle;
 - (void) setHeadline: (NSString*) newHeadline;
@@ -44,5 +46,8 @@
 - (void) setTeaser:   (NSString*) teaser;
 - (void) setComment:  (NSString*) comment;
 - (void) setRating:   (float) rating;
+
+- (void) setObject: (id) value
+			forKey: (NSString*) key;
 
 @end

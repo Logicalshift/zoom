@@ -249,4 +249,84 @@
 	return res;
 }
 
+// = Story pseudo-dictionary methods =
+- (id) objectForKey: (id) key {
+	if (![key isKindOfClass: [NSString class]]) {
+		[NSException raise: @"ZoomKeyNotString" format: @"Metadata key is not a string"];
+		return nil;
+	}
+	
+	if ([key isEqualToString: @"title"]) {
+		return [self title];
+	} else if ([key isEqualToString: @"headline"])  {
+		return [self headline];
+	} else if ([key isEqualToString: @"author"]) {
+		return [self author];
+	} else if ([key isEqualToString: @"genre"]) {
+		return [self genre];
+	} else if ([key isEqualToString: @"group"]) {
+		return [self group];
+	} else if ([key isEqualToString: @"year"]) {
+		int year = [self year];
+		
+		if (year <= 0) return nil;
+		
+		return [NSString stringWithFormat: @"%i", year];
+	} else if ([key isEqualToString: @"zarfian"]) {
+		//return [self zarfian];
+		return @"IMPLEMENT ME";
+	} else if ([key isEqualToString: @"teaser"]) {
+		return [self teaser];
+	} else if ([key isEqualToString: @"comment"]) {
+		return [self comment];
+	} else if ([key isEqualToString: @"rating"]) {
+		float rating = [self rating];
+		
+		if (rating < 0) return nil;
+		
+		return [NSString stringWithFormat: @"%.2f", rating];
+	} else {
+		[NSException raise: @"ZoomKeyNotKnown" format: @"Metadata key '%@' is not known", key];
+		return nil;
+	}
+}
+
+- (void) setObject: (id) value
+			forKey: (id) key {
+	if (![value isKindOfClass: [NSString class]]) {
+		[NSException raise: @"ZoomBadValue" format: @"Metadata value is not a string"];
+		return;
+	}
+	if (![key isKindOfClass: [NSString class]]) {
+		[NSException raise: @"ZoomKeyNotString" format: @"Metadata key is not a string"];
+		return;
+	}
+
+	if ([key isEqualToString: @"title"]) {
+		[self setTitle: value];
+	} else if ([key isEqualToString: @"headline"])  {
+		[self setHeadline: value];
+	} else if ([key isEqualToString: @"author"]) {
+		[self setAuthor: value];
+	} else if ([key isEqualToString: @"genre"]) {
+		[self setGenre: value];
+	} else if ([key isEqualToString: @"group"]) {
+		[self setGroup: value];
+	} else if ([key isEqualToString: @"year"]) {
+		if (value == nil || [value length] == 0) [self setYear: 0];
+		else [self setYear: atoi([value cString])];
+	} else if ([key isEqualToString: @"zarfian"]) {
+		// IMPLEMENT ME
+	} else if ([key isEqualToString: @"teaser"]) {
+		[self setTeaser: value];
+	} else if ([key isEqualToString: @"comment"]) {
+		[self setComment: value];
+	} else if ([key isEqualToString: @"rating"]) {
+		if (value == nil || [value length] == 0) [self setRating: -1];
+		else [self setRating: atof([value cString])];
+	} else {
+		[NSException raise: @"ZoomKeyNotKnown" format: @"Metadata key '%@' is not known", key];
+	}
+}
+
 @end

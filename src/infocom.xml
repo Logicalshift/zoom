@@ -24,6 +24,7 @@
     <teaser>
       As you trudge along in the wake of the outflowing crowd, you thumb through your memories of this evening. Your experience of the circus, with its ballyhooed promises of wonderment and its ultimate disappointment, has been to sink your teeth into a candy apple whose fruit is rotten.
     </teaser>
+	<group>Infocom</group>
   </story>
 
   <story>
@@ -49,6 +50,7 @@ You put the book in your dresser and think about following Hevlin. Then you hear
 <br/>
 It isn't long before the police arrive to tell you that Hevlin's been murdered. You don't mention the book, and hours later, as you lie awake in your bed, you wonder if the book could really be what it seems.
     </teaser>
+	<group>Infocom</group>
   </story>
 
   <story>
@@ -91,6 +93,7 @@ It isn't long before the police arrive to tell you that Hevlin's been murdered. 
     <title>Deadline</title>
     <headline></headline>
     <teaser></teaser>
+	<group>Infocom</group>
   </story>
 
   <story>
@@ -131,7 +134,8 @@ It isn't long before the police arrive to tell you that Hevlin's been murdered. 
     </identification>
 
     <title>Enchanter</title>
-    <headline>DEADLINE: An INTERLOGIC Mystery</headline>
+    <headline>Infocom interactive fiction - a fantasy story</headline>
+	<group>Infocom</group>
   </story>
 
   <story>
@@ -167,6 +171,7 @@ It isn't long before the police arrive to tell you that Hevlin's been murdered. 
     <title>The Hitch Hiker's Guide To The Galaxy</title>
     <headline></headline>
     <teaser></teaser>
+	<group>Infocom</group>
   </story>
 
   <story>
@@ -183,6 +188,7 @@ It isn't long before the police arrive to tell you that Hevlin's been murdered. 
     <teaser>
       You wake up. The room is spinning very gently round your head. Or at least it would be if you could see it which you can't.
     </teaser>
+	<group>Infocom</group>
   </story>
 
   <story>
@@ -195,8 +201,7 @@ It isn't long before the police arrive to tell you that Hevlin's been murdered. 
     </identification>
 
     <title>Infidel</title>
-    <headline></headline>
-    <teaser></teaser>
+	<group>Infocom</group>
   </story>
 
   <story>
@@ -220,6 +225,7 @@ It isn't long before the police arrive to tell you that Hevlin's been murdered. 
     <teaser>
       The place: Upper Sandusky, Ohio. The time: 1936. The beer: at a nickel a mug, you don't ask for brand names. All you know is that your fifth one tasted as bad as the first.
     </teaser>
+	<group>Infocom</group>
   </story>
 
   <story>
@@ -246,6 +252,7 @@ It isn't long before the police arrive to tell you that Hevlin's been murdered. 
     </identification>
 
     <title>Lurking Horror</title>
+	<group>Infocom</group>
   </story>
 
   <story>
@@ -258,6 +265,7 @@ It isn't long before the police arrive to tell you that Hevlin's been murdered. 
     </identification>
 
     <title>Mini-Zork I</title>
+	<group>Infocom</group>
   </story>
 
   <story>
@@ -281,6 +289,7 @@ It isn't long before the police arrive to tell you that Hevlin's been murdered. 
     <teaser>
       You drove west from London all day in your new little British sports car. Now at last you've arrived in the storied land of Cornwall.
     </teaser>
+	<group>Infocom</group>
   </story>
 
   <story>
@@ -301,6 +310,7 @@ LATE ONE SPRING NIGHT IN THE WEST INDIES...<br/>
    "Good, you brought the girl," Davis smirks. "She'll keep the pirates busy. She was only a tool of Lafond's, anyway. Let me just find that cof--" A man on deck screams in agony and Davis starts. "Let's go." The captain thrusts you on the bed and walks out, locking the door.<br/>
    His laugh echoes. "Best get comfortable, girl. You're likely to be there for the rest of your life."
     </teaser>
+	<group>Infocom</group>
   </story>
 
   <story>
@@ -331,6 +341,7 @@ LATE ONE SPRING NIGHT IN THE WEST INDIES...<br/>
     <teaser>
       Another routine day of drudgery aboard the Stellar Patrol Ship Feinstein. This morning's assignment for a certain lowly Ensign Seventh Class: scrubbing the filthy metal deck at the port end of Level Nine. With your Patrol-issue self-contained multi-purpose all-weather scrub brush you shine the floor with a diligence born of the knowledge that at any moment dreaded Ensign First Class Blather, the bane of your shipboard existence, could appear.
     </teaser>
+	<group>Infocom</group>
   </story>
 
   <story>
@@ -369,6 +380,7 @@ LATE ONE SPRING NIGHT IN THE WEST INDIES...<br/>
       "Bob, snap out of it!" cries Tip Randall, bursting into your laboratory. "The alert signal is on!"
 You look up from your plans for the SCIMITAR, a top-secret submarine that's still being tested. It's designed for capturing marine life on the ocean floor. You notice the alarm bell on the videophone ringing. Someone's trying to reach you over the private videophone network of Inventions Unlimited!
     </teaser>
+	<group>Infocom</group>
   </story>
 
   <story>
@@ -413,6 +425,7 @@ You look up from your plans for the SCIMITAR, a top-secret submarine that's stil
     <teaser>
       You are in a strange location, but you cannot remember how you got here. Everything is hazy, as though viewed through a gauze...
     </teaser>
+	<group>Infocom</group>
   </story>
 
   <story>
@@ -433,6 +446,7 @@ You look up from your plans for the SCIMITAR, a top-secret submarine that's stil
 
     <title>Spellbreaker</title>
     <headline>An Interactive Fantasy</headline>
+	<group>Infocom</group>
   </story>
 
   <story>
@@ -456,6 +470,7 @@ You look up from your plans for the SCIMITAR, a top-secret submarine that's stil
     <teaser>
       You are sound asleep in your bunk aboard the deep-space black hole prospecting ship "Starcross," operating out of Ceres. Just as your sleep becomes deep and comfortable, an alarm bell begins ringing! It's the mass detector! Instantly you awake. This hasn't been a profitable trip so far, and you don't even have the cash for repairs. This could be the break you've been waiting for.
     </teaser>
+	<group>Infocom</group>
   </story>
 
   <story>
@@ -472,6 +487,7 @@ You look up from your plans for the SCIMITAR, a top-secret submarine that's stil
     <teaser>
       It's been five years since your planetfall on Resida. Your heroics in saving that doomed world resulted in a big promotion, but your life of dull scrubwork has been replaced by a life of dull paperwork. Today you find yourself amidst the administrative maze of Deck Twelve on a typically exciting task: an emergency mission to Space Station Gamma Delta Gamma 777-G 59/59 Sector Alpha-Mu-79 to pick up a supply of Request for Stellar Patrol Issue Regulation Black Form Binders Request Form Forms...
     </teaser>
+	<group>Infocom</group>
   </story>
 
   <story>
@@ -488,6 +504,7 @@ You look up from your plans for the SCIMITAR, a top-secret submarine that's stil
     <teaser>
       It's Halloween night. Veronica Ashcroft and her mania for Halloween parties are putting new twists on a 110-year-old tradition. It isn't a very nice night for a party. The rain has been pelting down since early morning, but the weather hasn't deterred many guests. The ballroom at Ashcroft Farm is filled with oddly costumed visitors. The rather ridiculous western outfit you are wearing was the only thing you could find at the costumer's on such short notice, but it's out of place only for its relative sobriety and taste in this crowd.
     </teaser>
+	<group>Infocom</group>
   </story>
 
   <story>
@@ -527,6 +544,7 @@ FC ALERT! Planetside systems are deteriorating. FC imbalance detected. Emergency
 <br/>
 SENSA INTERRUPT: Seismic aftershock detected ten meters north of Beta FC. Tremor intensity 9.7. Projected damage: connecting cables in Primary and Secondary Channels.
     </teaser>
+	<group>Infocom</group>
   </story>
 
   <story>
@@ -556,6 +574,7 @@ Only your Magick sword can save you now. You swing it high, speak the Word and s
 <br/>
 The reptile bellows with rage and flaps its wings to fan the fire in its belly. You are advancing, sword poised to strike, when a familiar voice shatters the daydream and stays your mighty hand...
     </teaser>
+	<group>Infocom</group>
   </story>
 
   <story>
@@ -602,6 +621,7 @@ Somewhere near Los Angeles. A cold Friday evening in February 1938. In this clim
 <br/>
 The taxi has just dropped you off at the entrance to the Linders' driveway. The driver didn't seem to like venturing into this maze of twisty streets any more than you did. But the house windows are full of light, and radio music drifts toward you. Your favorite pistol, a snub-nosed Colt .32, is snug in its holster. You just picked up a match book off the curb. It might come in handy. Good thing you looked up the police file on Mrs. Linder's death. Her suicide note and the newspaper story told you all you know about the family. The long week is finished, except for this appointment. But why does an ominous feeling grip you?
     </teaser>
+	<group>Infocom</group>
   </story>
 
 <!--
@@ -661,6 +681,7 @@ The taxi has just dropped you off at the entrance to the Linders' driveway. The 
 	</identification>
 	<title>German Zork</title>
 	<headline>ZORK I: Das Große Unterweltreich</headline>
+	<group>Infocom</group>
   </story>
   
   <!-- Version 6 -->

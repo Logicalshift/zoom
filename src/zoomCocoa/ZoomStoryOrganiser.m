@@ -158,11 +158,11 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 
 // = Retrieving story information =
 - (NSString*) filenameForIdent: (ZoomStoryID*) ident {
-	return [filenamesToIdents objectForKey: ident];
+	return [identsToFilenames objectForKey: ident];
 }
 
 - (ZoomStoryID*) identForFilename: (NSString*) filename {
-	return [identsToFilenames objectForKey: filename];
+	return [filenamesToIdents objectForKey: filename];
 }
 
 - (NSArray*) storyFilenames {
