@@ -1,0 +1,667 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ifindex version="0.9">
+
+<!--
+      INFOCOM games
+    
+      This file contains metadata for all the released infocom games
+      Written by Andrew Hunter
+  -->
+
+  <!-- VERSION 3 games -->
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>851218</serial>
+         <release>97</release>
+       </zcode>
+    </identification>
+
+    <title>Ballyhoo</title>
+    <headline>Infocom interactive fiction</headline>
+    <teaser>
+      As you trudge along in the wake of the outflowing crowd, you thumb through your memories of this evening. Your experience of the circus, with its ballyhooed promises of wonderment and its ultimate disappointment, has been to sink your teeth into a candy apple whose fruit is rotten.
+    </teaser>
+  </story>
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>840809</serial>
+         <release>23</release>
+       </zcode>
+    </identification>
+
+    <title>Cutthroats</title>
+    <teaser>
+      Nights on Hardscrabble Island are lonely and cold when the lighthouse barely pierces the gloom. You sit on your bed, thinking of better times and far-off places. A knock on your door stirs you, and Hevlin, a shipmate you haven't seen for years, staggers in.<br/>
+<br/>
+"I'm in trouble," he says. "I had a few too many at The Shanty. I was looking for Red, but he wasn't around, and I started talking about ... here," he says, handing you a slim volume that you recognize as a shipwreck book written years ago by the Historical Society.<br/>
+<br/>
+You smile. Every diver on the island has looked for those wrecks, without even an old boot to show for it. You open the door, hoping the drunken fool will leave. "I know what you're thinkin'," Hevlin scowls, "but look!" He points to the familiar map, and you see new locations marked for two of the wrecks.<br/>
+<br/>
+"Keep it for me," he says. "Just for tonight. It'll be safe here with you. Don't let -- " He stops and broods for a moment. "I've got to go find Red!" And with that, Hevlin leaves.<br/>
+<br/>
+You put the book in your dresser and think about following Hevlin. Then you hear a scuffle outside. You look through your window and see two men struggling. One falls to the ground in a heap. The other man bends down beside him, then turns as if startled and runs away. Another man then approaches the wounded figure. He kneels beside him for a long moment, then takes off after the other man.<br/>
+<br/>
+It isn't long before the police arrive to tell you that Hevlin's been murdered. You don't mention the book, and hours later, as you lie awake in your bed, you wonder if the book could really be what it seems.
+    </teaser>
+  </story>
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>820311</serial>
+         <release>18</release>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>820427</serial>
+         <release>19</release>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>820512</serial>
+         <release>21</release>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>821108</serial>
+         <release>26</release>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>831005</serial>
+         <release>27</release>
+       </zcode>
+    </identification>
+
+    <title>Deadline</title>
+    <headline></headline>
+    <teaser></teaser>
+  </story>
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>830810</serial>
+         <release>10</release>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>831107</serial>
+         <release>15</release>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>831118</serial>
+         <release>16</release>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>851118</serial>
+         <release>24</release>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>860820</serial>
+         <release>29</release>
+       </zcode>
+    </identification>
+
+    <title>Enchanter</title>
+    <headline>DEADLINE: An INTERLOGIC Mystery</headline>
+  </story>
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>840914</serial>
+         <release>47</release>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>841221</serial>
+         <release>56</release>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>851002</serial>
+         <release>58</release>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>851108</serial>
+         <release>59</release>
+       </zcode>
+    </identification>
+
+    <title>The Hitch Hiker's Guide To The Galaxy</title>
+    <headline></headline>
+    <teaser></teaser>
+  </story>
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>861215</serial>
+         <release>37</release>
+       </zcode>
+    </identification>
+
+    <title>Hollywood Hijinx</title>
+    <headline>Infocom interactive fiction - a science fiction story</headline>
+    <teaser>
+      You wake up. The room is spinning very gently round your head. Or at least it would be if you could see it which you can't.
+    </teaser>
+  </story>
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>830916</serial>
+         <release>22</release>
+       </zcode>
+    </identification>
+
+    <title>Infidel</title>
+    <headline></headline>
+    <teaser></teaser>
+  </story>
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>860730</serial>
+         <release>59</release>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>861114</serial>
+         <release>59</release>
+       </zcode>
+    </identification>
+
+    <title>Leather Goddesses of Phobos</title>
+    <headline>Infocom interactive fiction -- a racy space-age spoof</headline>
+    <teaser>
+      The place: Upper Sandusky, Ohio. The time: 1936. The beer: at a nickel a mug, you don't ask for brand names. All you know is that your fifth one tasted as bad as the first.
+    </teaser>
+  </story>
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>870506</serial>
+         <release>203</release>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>870912</serial>
+         <release>219</release>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>870918</serial>
+         <release>221</release>
+       </zcode>
+    </identification>
+
+    <title>Lurking Horror</title>
+  </story>
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>871124</serial>
+         <release>34</release>
+       </zcode>
+    </identification>
+
+    <title>Mini-Zork I</title>
+  </story>
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>860918</serial>
+         <release>4</release>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>861022</serial>
+         <release>9</release>
+       </zcode>
+    </identification>
+
+    <title>Moonmist</title>
+    <headline>Infocom interactive fiction - a mystery story</headline>
+    <teaser>
+      You drove west from London all day in your new little British sports car. Now at last you've arrived in the storied land of Cornwall.
+    </teaser>
+  </story>
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>870730</serial>
+         <release>26</release>
+       </zcode>
+    </identification>
+
+    <title>Plundered Hearts</title>
+    <headline>Infocom interactive fiction</headline>
+    <teaser>
+LATE ONE SPRING NIGHT IN THE WEST INDIES...<br/>
+<br/>
+  A crash overhead! Pirates are boarding the Lafond Deux! The first mate hurries you into Captain Davis's cabin.<br/>
+   "Good, you brought the girl," Davis smirks. "She'll keep the pirates busy. She was only a tool of Lafond's, anyway. Let me just find that cof--" A man on deck screams in agony and Davis starts. "Let's go." The captain thrusts you on the bed and walks out, locking the door.<br/>
+   His laugh echoes. "Best get comfortable, girl. You're likely to be there for the rest of your life."
+    </teaser>
+  </story>
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>830708</serial>
+         <release>20</release>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>840118</serial>
+         <release>29</release>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>851003</serial>
+         <release>37</release>
+       </zcode>
+    </identification>
+
+    <title>Planetfall</title>
+    <headline>Infocom interactive fiction - a science fiction story</headline>
+    <teaser>
+      Another routine day of drudgery aboard the Stellar Patrol Ship Feinstein. This morning's assignment for a certain lowly Ensign Seventh Class: scrubbing the filthy metal deck at the port end of Level Nine. With your Patrol-issue self-contained multi-purpose all-weather scrub brush you shine the floor with a diligence born of the knowledge that at any moment dreaded Ensign First Class Blather, the bane of your shipboard existence, could appear.
+    </teaser>
+  </story>
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>15</release>
+         <serial>840501</serial>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>15</release>
+         <serial>840522</serial>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>16</release>
+         <serial>850515</serial>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>16</release>
+         <serial>850603</serial>
+       </zcode>
+    </identification>
+
+    <title>Seastalker</title>
+    <headline></headline>
+    <teaser>
+      "Bob, snap out of it!" cries Tip Randall, bursting into your laboratory. "The alert signal is on!"
+You look up from your plans for the SCIMITAR, a top-secret submarine that's still being tested. It's designed for capturing marine life on the ocean floor. You notice the alarm bell on the videophone ringing. Someone's trying to reach you over the private videophone network of Inventions Unlimited!
+    </teaser>
+  </story>
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>4</release>
+         <serial>840501</serial>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>6</release>
+         <serial>840508</serial>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>13</release>
+         <serial>851021</serial>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>15</release>
+         <serial>851108</serial>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>18</release>
+         <serial>860904</serial>
+       </zcode>
+    </identification>
+
+    <title>Sorcerer</title>
+    <headline>Infocom interactive fiction - a fantasy story</headline>
+    <teaser>
+      You are in a strange location, but you cannot remember how you got here. Everything is hazy, as though viewed through a gauze...
+    </teaser>
+  </story>
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>63</release>
+         <serial>850916</serial>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>87</release>
+         <serial>860904</serial>
+       </zcode>
+    </identification>
+
+    <title>Spellbreaker</title>
+    <headline>An Interactive Fantasy</headline>
+  </story>
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>15</release>
+         <serial>820901</serial>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>17</release>
+         <serial>821021</serial>
+       </zcode>
+    </identification>
+
+    <title>Starcross</title>
+    <headline>STARCROSS: INTERLOGIC Science Fiction</headline>
+    <teaser>
+      You are sound asleep in your bunk aboard the deep-space black hole prospecting ship "Starcross," operating out of Ceres. Just as your sleep becomes deep and comfortable, an alarm bell begins ringing! It's the mass detector! Instantly you awake. This hasn't been a profitable trip so far, and you don't even have the cash for repairs. This could be the break you've been waiting for.
+    </teaser>
+  </story>
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>107</release>
+         <serial>870430</serial>
+       </zcode>
+    </identification>
+
+    <title>Stationfall</title>
+    <headline>Infocom interactive fiction -- a science fiction story</headline>
+    <teaser>
+      It's been five years since your planetfall on Resida. Your heroics in saving that doomed world resulted in a big promotion, but your life of dull scrubwork has been replaced by a life of dull paperwork. Today you find yourself amidst the administrative maze of Deck Twelve on a typically exciting task: an emergency mission to Space Station Gamma Delta Gamma 777-G 59/59 Sector Alpha-Mu-79 to pick up a supply of Request for Stellar Patrol Issue Regulation Black Form Binders Request Form Forms...
+    </teaser>
+  </story>
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>841005</serial>
+         <release>14</release>
+       </zcode>
+    </identification>
+
+    <title>Suspect</title>
+    <headline>SUSPECT: An Interactive Mystery</headline>
+    <teaser>
+      It's Halloween night. Veronica Ashcroft and her mania for Halloween parties are putting new twists on a 110-year-old tradition. It isn't a very nice night for a party. The rain has been pelting down since early morning, but the weather hasn't deterred many guests. The ballroom at Ashcroft Farm is filled with oddly costumed visitors. The rather ridiculous western outfit you are wearing was the only thing you could find at the costumer's on such short notice, but it's out of place only for its relative sobriety and taste in this crowd.
+    </teaser>
+  </story>
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>5</release>
+         <serial>830222</serial>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>7</release>
+         <serial>830419</serial>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>8</release>
+         <serial>830521</serial>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>8</release>
+         <serial>840521</serial>
+       </zcode>
+    </identification>
+
+    <title>Suspended</title>
+    <headline>SUSPENDED: INTERLOGIC Science Fiction</headline>
+    <teaser>
+FC ALERT! Planetside systems are deteriorating. FC imbalance detected. Emergency reviving systems completed. You are now in control of the complex.<br/>
+<br/>
+SENSA INTERRUPT: Seismic aftershock detected ten meters north of Beta FC. Tremor intensity 9.7. Projected damage: connecting cables in Primary and Secondary Channels.
+    </teaser>
+  </story>
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>68</release>
+         <serial>850501</serial>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>69</release>
+         <serial>850920</serial>
+       </zcode>
+    </identification>
+
+    <title>Wishbringer</title>
+    <headline>The Magick Stone of Dreams</headline>
+    <teaser>
+"Behind you!" cries the Princess. "It's a trap!"<br/>
+<br/>
+Too late. The drawbridge crashes shut against the tower wall. You turn to face your enemy, and find yourself staring into the open maw of Thermofax.<br/>
+<br/>
+Only your Magick sword can save you now. You swing it high, speak the Word and stand unhurt as the blade absorbs the searing dragon-breath.<br/>
+<br/>
+The reptile bellows with rage and flaps its wings to fan the fire in its belly. You are advancing, sword poised to strike, when a familiar voice shatters the daydream and stays your mighty hand...
+    </teaser>
+  </story>
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>13</release>
+         <serial>830524</serial>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>18</release>
+         <serial>830910</serial>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>20</release>
+         <serial>831119</serial>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>21</release>
+         <serial>831208</serial>
+       </zcode>
+    </identification>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>22</release>
+         <serial>840924</serial>
+       </zcode>
+    </identification>
+
+    <title>Witness</title>
+    <headline>The WITNESS: An INTERLOGIC Mystery</headline>
+    <teaser>
+Somewhere near Los Angeles. A cold Friday evening in February 1938. In this climate, cold is anywhere below about fifty degrees. Storm clouds are swimming across the sky, their bottoms glowing faintly from the city lights in the distance. A search light pans slowly under the clouds, heralding another film premiere. The air seems expectant, waiting for the rain to begin, like a cat waiting for the ineffable moment to ambush.<br/>
+<br/>
+The taxi has just dropped you off at the entrance to the Linders' driveway. The driver didn't seem to like venturing into this maze of twisty streets any more than you did. But the house windows are full of light, and radio music drifts toward you. Your favorite pistol, a snub-nosed Colt .32, is snug in its holster. You just picked up a match book off the curb. It might come in handy. Good thing you looked up the police file on Mrs. Linder's death. Her suicide note and the newspaper story told you all you know about the family. The long week is finished, except for this appointment. But why does an ominous feeling grip you?
+    </teaser>
+  </story>
+
+<!--
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>851218</serial>
+         <release>97</release>
+       </zcode>
+    </identification>
+
+    <title>Ballyhoo</title>
+    <headline></headline>
+    <teaser></teaser>
+  </story>
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>851218</serial>
+         <release>97</release>
+       </zcode>
+    </identification>
+
+    <title>Ballyhoo</title>
+    <headline></headline>
+    <teaser></teaser>
+  </story>
+
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <serial>851218</serial>
+         <release>97</release>
+       </zcode>
+    </identification>
+
+    <title>Ballyhoo</title>
+    <headline></headline>
+    <teaser></teaser>
+  </story>
+-->
+
+  <!-- Version 4 -->
+
+  <!-- Version 5 -->
+  <story>
+    <identification>
+       <format>zcode</format>
+       <zcode>
+         <release>1</release>
+         <serial>880113</serial>
+       </zcode>
+	</identification>
+	<title>German Zork</title>
+	<headline>ZORK I: Das Große Unterweltreich</headline>
+  </story>
+  
+  <!-- Version 6 -->
+</ifindex>

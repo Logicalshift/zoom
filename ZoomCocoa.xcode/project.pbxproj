@@ -14,12 +14,12 @@
 				4B1E3FD6050F7E3100A8E303,
 				4B1E3FD7050F7E3100A8E303,
 				4B1E3FD9050F7E4300A8E303,
+				4BACE9FA05B428C700A9B6DC,
 				4B1E3F7F050F7C9500A8E303,
 				4B1E3F5E050F7B2C00A8E303,
 				4BCF3F41050FB1C300A8E303,
 				4BCF3F42050FB1D800A8E303,
 				4B1E3F5F050F7B8100A8E303,
-				4BECA7F705B194AA006840BA,
 				4B1E3F55050F7B0E00A8E303,
 			);
 			isa = PBXGroup;
@@ -219,6 +219,7 @@
 		4B1E3F5E050F7B2C00A8E303 = {
 			children = (
 				4B1E3FDB050F7E6F00A8E303,
+				4BECA7FF05B19B98006840BA,
 				4B1E3F88050F7CF100A8E303,
 				4B1E3FAF050F7D8900A8E303,
 			);
@@ -230,6 +231,7 @@
 		};
 		4B1E3F5F050F7B8100A8E303 = {
 			children = (
+				4BECA7F705B194AA006840BA,
 				4BDFA4BA0535E64900A8E303,
 				4B1E3F60050F7BA000A8E303,
 				4BCF3F2B050F8E2400A8E303,
@@ -1488,6 +1490,7 @@
 			dstSubfolderSpec = 7;
 			files = (
 				4B4EF61D050FCEAE00A8E303,
+				4BACEA6605B43C1E00A9B6DC,
 			);
 			isa = PBXCopyFilesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1543,6 +1546,27 @@
 			path = ZoomLowerWindow.m;
 			refType = 4;
 			sourceTree = "<group>";
+		};
+		4BACE9FA05B428C700A9B6DC = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = text.plist.xml;
+			name = infocom.xml;
+			path = src/infocom.xml;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		4BACE9FB05B428C700A9B6DC = {
+			fileRef = 4BACE9FA05B428C700A9B6DC;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BACEA6605B43C1E00A9B6DC = {
+			fileRef = 4BACE9FA05B428C700A9B6DC;
+			isa = PBXBuildFile;
+			settings = {
+			};
 		};
 		4BCF3F27050F8BB200A8E303 = {
 			fileEncoding = 4;
@@ -1674,6 +1698,7 @@
 				4B418DC50594FB97009C44DE,
 				4B418EDF05961E4B009C44DE,
 				4B2EAFAF05B08D1E0021A5E6,
+				4BECA81C05B19CFB006840BA,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1693,6 +1718,7 @@
 				4B418DEB0594FC3B009C44DE,
 				4B418E150594FCDB009C44DE,
 				4B2EAF9A05B056EC0021A5E6,
+				4BACE9FB05B428C700A9B6DC,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1706,6 +1732,7 @@
 				4B23C651053C9C8C00A8E303,
 				4B418DC60594FB97009C44DE,
 				4B2EAFB005B08D1E0021A5E6,
+				4BECA80105B19BE1006840BA,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1740,7 +1767,7 @@
 			);
 			buildSettings = {
 				OPTIMIZATION_CFLAGS = "-O0";
-				OTHER_CFLAGS = " -I/usr/local/include";
+				OTHER_CFLAGS = " -I/usr/local/include -DXMLCALL=\\\"\\\" -DHAVE_COREFOUNDATION";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = Zoom;
@@ -2506,6 +2533,45 @@
 		};
 		4BECA7FA05B194AF006840BA = {
 			fileRef = 4BECA7F705B194AA006840BA;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BECA7FF05B19B98006840BA = {
+			children = (
+				4BECA81B05B19CFB006840BA,
+				4BECA80005B19BE1006840BA,
+			);
+			isa = PBXGroup;
+			name = Metadata;
+			path = "";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BECA80005B19BE1006840BA = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			path = ifmetadata.c;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BECA80105B19BE1006840BA = {
+			fileRef = 4BECA80005B19BE1006840BA;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BECA81B05B19CFB006840BA = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = ifmetadata.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BECA81C05B19CFB006840BA = {
+			fileRef = 4BECA81B05B19CFB006840BA;
 			isa = PBXBuildFile;
 			settings = {
 			};
