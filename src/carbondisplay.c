@@ -1713,7 +1713,16 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 	    HIPoint   argh;
 	    Point     point;
 	    Rect      bound;
-	    
+	    UInt32    count;
+	    int key;
+
+	    GetEventParameter(event, kEventParamClickCount,
+			      typeUInt32, NULL, sizeof(UInt32),
+			      NULL, &count);
+	    key = 254;
+	    if (count == 2)
+	      key = 253;
+ 
 	    GetEventParameter(event, kEventParamMouseLocation,
 			      typeHIPoint, NULL, sizeof(HIPoint),
 			      NULL, &argh);
@@ -1722,7 +1731,7 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 	    part = FindWindow(point, &ourwindow);
 	    
 	    if (part == inContent && 
-		(terminating[254] || text_buf == NULL))
+		(terminating[key] || text_buf == NULL))
 	      {
 		int xp, yp;
 
@@ -1735,10 +1744,11 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 		yp = click_y - (win_y/2-pix_h/2);
 
 		if (pixmap == NULL ||
+		    mousew_h == -1 ||
 		    (xp > mousew_x          && yp > mousew_y &&
 		     xp < mousew_x+mousew_w && yp < mousew_y+mousew_h))
 		  {
-		    read_key = 254;
+		    read_key = key;
 		    return noErr;
 		  }
 	      }

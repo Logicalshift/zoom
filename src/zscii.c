@@ -54,7 +54,7 @@ static unsigned int** convert = convert_table;
 int  zscii_unicode_table[256] =
 {
   0x3f,0x3f,0x3f,0x3f, 0x3f,0x3f,0x3f,0x3f, /* 000-007 */
-  0x3f,0x3f,0x0a,0x3f, 0x3f,0x0a,0x3f,0x3f, /* 008-015 */
+  0x3f,0x09,0x0a,0x20, 0x3f,0x0a,0x3f,0x3f, /* 008-015 */
   0x3f,0x3f,0x3f,0x3f, 0x3f,0x3f,0x3f,0x3f, /* 016-023 */
   0x3f,0x3f,0x3f,0x3f, 0x3f,0x3f,0x3f,0x3f, /* 024-031 */
   0x20,0x21,0x22,0x23, 0x24,0x25,0x26,0x27, /* 032-039 */
@@ -143,7 +143,7 @@ int* zscii_to_unicode(ZByte* string, int* len)
 
 	  c = (word&0x7c00)>>10;
 	  
-	  if ((y+2) > maxlen)
+	  if ((y+8) > maxlen)
 	    {
 	      maxlen += 1024;
 	      buf = realloc(buf, sizeof(int)*maxlen);
@@ -163,7 +163,18 @@ int* zscii_to_unicode(ZByte* string, int* len)
 	    case 0:
 	      if (c >= 6)
 		{
-		  buf[y++] = convert[abet][c];
+		  if (convert[abet][c] < 256)
+		    buf[y++] = zscii_unicode[convert[abet][c]];
+		  else
+		    buf[y++] = convert[abet][c];
+
+		  if (buf[y-1] == 9)
+		    {
+		      y--;
+		      buf[y++] = ' ';
+		      buf[y++] = ' ';
+		      buf[y++] = ' ';
+		    }
 		  abet=0;
 		}
 	      else
@@ -288,6 +299,14 @@ int* zscii_to_unicode(ZByte* string, int* len)
 		  {
 		  default:
 		    buf[y++] = zscii_unicode[zchar];
+		    
+		    if (buf[y-1] == 9)
+		      {
+			y--;
+			buf[y++] = ' ';
+			buf[y++] = ' ';
+			buf[y++] = ' ';
+		      }
 		  }
 	      else
 		{
