@@ -382,6 +382,8 @@ static int currentScore = 1;
 		while (child = [childEnum nextObject]) {
 			child->parent = self;
 		}
+
+		annotationSizeDidChange = commandSizeDidChange = YES;
 	}
 	
 	return self;
@@ -429,7 +431,7 @@ static NSDictionary* labelTextAttributes = nil;
 	}
 	
 	if (annotationSizeDidChange) {
-		annotationSize = annotation?[annotation sizeWithAttributes: itemTextAttributes]:NSMakeSize(0,0);
+		annotationSize = annotation?[annotation sizeWithAttributes: labelTextAttributes]:NSMakeSize(0,0);
 	}
 	
 	annotationSizeDidChange = NO;
