@@ -1956,10 +1956,11 @@ OPCODE "print_table"    VAR:0x1e                      VERSION 5,7,8
 %{
   ZByte* table;
   int x,y;
-  int xpos;
+  int xpos, ypos;
 
   stream_flush_buffer();
   xpos = display_get_cur_x();
+  ypos = display_get_cur_y();
 
   if (argblock.arg[2] == 0)
     argblock.arg[2] = 1;
@@ -1974,10 +1975,9 @@ OPCODE "print_table"    VAR:0x1e                      VERSION 5,7,8
     {
       if (y != 0)
 	{
-	  stream_printf("\n");
 	  stream_flush_buffer();
 	  if (machine.screen_on)
-	    display_set_cursor(xpos, display_get_cur_y());
+            display_set_cursor(xpos, ypos+y);
 	}
 
       for (x=0; x<argblock.arg[1]; x++)

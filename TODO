@@ -16,7 +16,6 @@ GENERAL:
  * '>>' '<<' bug? again?
  
  COCOA:
- * Problem with overwriting things in the upper window? (Beyond Zork)
  * upper window behaviour really needs to change:
     - slowdown when the lower window gets full? (FIXED, I think)
     - Really, upper window things pasted onto the lower window need to have an

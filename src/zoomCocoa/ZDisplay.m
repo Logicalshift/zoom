@@ -465,6 +465,8 @@ int display_get_cur_x(void) {
         NSLog(@"Get_cur_x called for lower window");
         return -1; // No cursor position for the lower window
     }
+
+    [mainMachine flushBuffers];
     
     NSPoint pos = [(NSObject<ZUpperWindow>*)[mainMachine windowNumber: currentWindow]
         cursorPosition];
@@ -476,6 +478,8 @@ int display_get_cur_y(void) {
         NSLog(@"Get_cur_y called for lower window");
         return -1; // No cursor position for the lower window
     }
+
+    [mainMachine flushBuffers];
 
     NSPoint pos = [(NSObject<ZUpperWindow>*)[mainMachine windowNumber: currentWindow]
         cursorPosition];
