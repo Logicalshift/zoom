@@ -50,8 +50,8 @@ rc_game*        rc_defgame = NULL;
 
 void rc_error(char* erm)
 {
-  zmachine_fatal("Error while parsing .zoomrc (line %i): %s",
-		 _rc_line, erm);
+  zmachine_warning("Error while parsing .zoomrc (line %i): %s",
+		   _rc_line, erm);
 }
 
 void rc_load(void)
@@ -95,12 +95,17 @@ void rc_load(void)
 #endif
 
   _rc_line = 1;
-  rc_parse();
+  if (rc_parse() != 0)
+    {
+      zmachine_fatal("Unable to recover from errors found in '.zoomrc'");
+    }
   fclose(yyin);
 
 #if WINDOW_SYSTEM == 1
   if (domerge)
-    rc_merge(ZOOMRC);
+    {
+      rc_merge(ZOOMRC);
+    }
 #endif
 }
 
@@ -113,7 +118,7 @@ void rc_merge(char* filename)
   yyin = fopen(filename, "r");
   if (yyin == NULL)
     {
-      zmachine_warning("Unable to open resource file '%s'");
+      zmachine_warning("Unable to open resource file '%s'", filename);
       return;
     }
   _rc_line = 1;

@@ -9,7 +9,8 @@
 #include "rcp.h"
 #include "hash.h"
 
-#define YYERROR_VERBOSE
+#define YYERROR_VERBOSE 1
+#define YYDEBUG 1
 
 extern int _rc_line;
 extern hash rc_hash;
@@ -172,7 +173,7 @@ static int check_collision(char* ourid, char* name)
   if (game != NULL && strcmp(name, game->name) != 0)
     {
       if (!rc_merging)
-	zmachine_warning("Namespace collision: identifier '%s' (for game '%s') already used for game '%s'", ourid, name, game->name);
+	zmachine_info("Namespace collision: identifier '%s' (for game '%s') already used for game '%s'", ourid, name, game->name);
       return 0;
     }
 
@@ -200,7 +201,6 @@ RCDefn:		  DEFAULT STRING RCBlock
 				     7,
 				     game);
 			}
-
 		    }
 		| DEFAULT RCBlock
 		    {
@@ -220,47 +220,61 @@ RCDefn:		  DEFAULT STRING RCBlock
 		    }
 		| GAME STRING RevisionList
 		    {
-		      rc_game* game;
-		      stringlist* next;
-
-		      game = malloc(sizeof(rc_game));
-		      EMPTY_GAME((*game));
-		      game->name = $2;
-
-		      next = $3;
-		      while (next != NULL)
+		      if ($3 != NULL)
 		        {
-			  if (check_collision(next->string, game->name))
-			    {
-			      hash_store(rc_hash,
-					 next->string,
-					 strlen(next->string),
-					 game);
-			    }
-			  next = next->next;
-	                }
+		          rc_game* game;
+		          stringlist* next;
+
+		          game = malloc(sizeof(rc_game));
+		          EMPTY_GAME((*game));
+		          game->name = $2;
+
+		          next = $3;
+		          while (next != NULL)
+		            {
+			      if (check_collision(next->string, game->name))
+			        {
+			          hash_store(rc_hash,
+					     next->string,
+					     strlen(next->string),
+					     game);
+			        }
+			      next = next->next;
+	                    }
+			}
+		      else
+		        {
+		          zmachine_info("Erroneous entry for game '%s' skipped", $2);
+			}
 		    }
 		| GAME STRING RevisionList RCBlock
 		    {
-		      rc_game* game;
-		      stringlist* next;
-
-		      game = malloc(sizeof(rc_game));
-		      *game = $4;
-		      game->name = $2;
-
-		      next = $3;
-		      while (next != NULL)
+		      if ($3 != NULL)
 		        {
-			  if (check_collision(next->string, game->name))
-			    {
-			      hash_store(rc_hash,
-					 next->string,
-					 strlen(next->string),
-					 game);
-			    }
-			  next = next->next;
-	                }
+		          rc_game* game;
+		          stringlist* next;
+
+		          game = malloc(sizeof(rc_game));
+		          *game = $4;
+		          game->name = $2;
+
+		          next = $3;
+		          while (next != NULL)
+		            {
+			      if (check_collision(next->string, game->name))
+			        {
+			          hash_store(rc_hash,
+					     next->string,
+					     strlen(next->string),
+					     game);
+			        }
+			      next = next->next;
+	                    }
+		        }
+		      else
+		        {
+		          zmachine_info("Erroneous entry for game '%s' skipped", $2);
+			}
 		    }
 		;
 
@@ -272,6 +286,24 @@ RCBlock:	  '{' RCOptionList '}'
                     {
 		      EMPTY_GAME($$);
                     }
+		| '{' error '}'
+		    {
+		      yyerrok;
+		      zmachine_info(".zoomrc options block ending at line %i makes no sense", _rc_line);
+		      EMPTY_GAME($$);
+		    }
+		| '{' RCOptionList error { zmachine_info(".zoomrc syntax error at line %i", _rc_line); } RCOptionList '}'
+		    {
+		      yyerrok;
+		      $$ = merge_games(&$2, &$5);
+		    }
+		| '{' RCOptionList error '}'
+		    {
+		      yyerrok;
+		      $$ = $2;
+
+		      zmachine_info(".zoomrc options block at line %i has syntax errors", _rc_line);
+		    }
 		;
 
 RCOptionList:	  RCOption
@@ -407,9 +439,16 @@ RevisionList:	  GAMEID
 		    }
 		| RevisionList ',' GAMEID
 		    {
-		      $$ = malloc(sizeof(stringlist));
-		      $$->next = $1;
-		      $$->string = $3;
+		      if ($1 == NULL)
+		        {
+		          $$ = NULL;
+			}
+	              else
+		        {
+		          $$ = malloc(sizeof(stringlist));
+		          $$->next = $1;
+		          $$->string = $3;
+			}
 		    }
 		;
 

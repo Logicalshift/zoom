@@ -346,6 +346,112 @@ void zmachine_fatal(char* format, ...)
     }
 }
 
+void zmachine_info(char* format, ...)
+{
+  va_list  ap;
+  char     string[256];
+
+  va_start(ap, format);
+  vsprintf(string, format, ap);
+  va_end(ap);
+
+#if WINDOW_SYSTEM != 3
+  if (machine.display_active)
+    {
+      machine.display_active = 0;
+
+      display_sanitise();
+
+      display_set_style(0);
+      display_set_style(2);
+      display_set_colour(7, 0);
+      display_prints_c("\n\n");
+      display_set_colour(3, 1);
+      display_printf("[ NOTE: %s", string);
+#ifdef GLOBAL_PC
+      display_printf(" (PC = #%x) ]", machine.zpc);
+#endif
+      display_set_colour(7, 0);
+      display_set_style(0);
+      display_prints_c("\n\n[Press any key to exit]\n");
+      display_readchar(0);
+    }
+  else
+#endif
+    {
+#if WINDOW_SYSTEM == 2
+      char erm[512];
+
+# ifdef GLOBAL_PC
+      sprintf(erm, "INTERPRETER NOTE - %s (PC = #%x)", string, machine.zpc);
+# else
+      sprintf(erm, "INTERPRETER NOTE - %s", string);
+# endif
+      MessageBox(NULL, erm, "Zoom " VERSION " - fatal error",
+		 MB_OK|MB_ICONSTOP|MB_TASKMODAL);
+#elif WINDOW_SYSTEM == 3
+      Str255 erm;
+      Str255 title;
+      SInt16 item;
+
+      title[0] = strlen("Zoom " VERSION " - note");
+      strcpy(title+1, "Zoom " VERSION " - note");
+      sprintf(erm + 1, "(PC = #%x) %s", machine.zpc, string);
+      erm[0] = strlen(erm+1);
+      if (window_available == 0)
+	{
+	  AlertStdAlertParamRec par;
+
+	  par.movable = false;
+	  par.helpButton = false;
+	  par.filterProc = nil;
+	  par.defaultText = "\004Quit";
+	  par.cancelText = nil;
+	  par.otherText = nil;
+	  par.defaultButton = kAlertStdAlertOKButton;
+	  par.cancelButton = 0;
+	  par.position = 0;
+
+	  StandardAlert(kAlertStopAlert, title, erm, &par, &item);
+	}
+      else
+	{
+	  AlertStdCFStringAlertParamRec par;
+	  OSStatus res;
+
+	  par.version       = kStdCFStringAlertVersionOne;
+	  par.movable       = false;
+	  par.helpButton    = false;
+	  par.defaultText   = CFSTR("OK");
+	  par.cancelText    = nil;
+	  par.otherText     = nil;
+	  par.defaultButton = kAlertStdAlertOKButton;
+	  par.cancelButton  = 0;
+	  par.position      = kWindowDefaultPosition;
+	  par.flags         = 0;
+	  
+	  res = CreateStandardSheet(kAlertStopAlert, 
+				    CFStringCreateWithPascalString(NULL, title, kCFStringEncodingMacRoman),
+				    CFStringCreateWithPascalString(NULL, erm, kCFStringEncodingMacRoman),
+				    &par,
+				    GetWindowEventTarget(zoomWindow),
+				    &fataldlog);
+	  if (res == noErr)
+	    ShowSheetWindow(GetDialogWindow(fataldlog), zoomWindow);
+	  else
+	    {
+	      StandardAlert(kAlertStopAlert, title, erm, NULL, &item);
+	    }
+	}
+#else
+      fprintf(stderr, "[ %s", string);
+#ifdef GLOBAL_PC
+      fprintf(stderr, " (PC = #%x) ]\n", machine.zpc);
+#endif
+#endif
+    }
+}
+
 void zmachine_warning(char* format, ...)
 {
   va_list  ap;

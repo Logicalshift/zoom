@@ -295,6 +295,7 @@ extern void  zmachine_setup_header  (void);
 extern void  zmachine_resize_display(ZDisplay* dis);
 extern void  zmachine_fatal         (char* format, ...);
 extern void  zmachine_warning       (char* format, ...);
+extern void  zmachine_info          (char* format, ...);
 extern void  zmachine_mark_statusbar(void);
 extern char* zmachine_get_serial    (void);
 
