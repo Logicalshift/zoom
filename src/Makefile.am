@@ -62,6 +62,7 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/generalSettings.png 	zoomCocoa/information-in.png \
 	zoomCocoa/information-out.png	zoomCocoa/newgame-in.png \
 	zoomCocoa/newgame-out.png	zoomCocoa/Z-Decal.png  \
+	zoomCocoa/Metal-Title.png \
 	zoomCocoa/English.lproj/Credits.rtf
 
 zoom_SOURCES = \
