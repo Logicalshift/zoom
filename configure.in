@@ -2,7 +2,7 @@
 AC_PREREQ(2.13)
 AC_INIT()
 
-VERSION=1.0.1a
+VERSION=1.0.2dev1
 PACKAGE=zoom
 
 UTIL_DISPLAY_INIT()
@@ -365,25 +365,7 @@ if test "$WINDOW_SYSTEM" = "1"; then
         AC_MSG_RESULT(no)
       ])
 
-    AC_CHECK_LIB(Xft, XftInit,
-      [
-        LIBS="$LIBS -lXft"
-	HAVE_XFT=1
-      ])
-    if test "$HAVE_XFT" = "1"; then
-      AC_MSG_CHECKING([that we can compile an Xft program])
-      AC_TRY_LINK(
-        [ #include <X11/Xft/Xft.h> ],
-	[ XftDrawCreate(NULL, 0, NULL, 0); ],
-	[ 
-	  AC_MSG_RESULT(yes)
-	  AC_DEFINE(HAVE_XFT)
-	],
-	[
-	  AC_MSG_RESULT(no)
-	])
-    fi
-
+    # Had to move this, Xft 2 again
     AC_CHECK_LIB(Xrender, XRenderQueryExtension,
       [
         LIBS="$LIBS -lXrender"
@@ -397,6 +379,29 @@ if test "$WINDOW_SYSTEM" = "1"; then
 	[ 
 	  AC_MSG_RESULT(yes)
 	  AC_DEFINE(HAVE_XRENDER)
+	],
+	[
+	  AC_MSG_RESULT(no)
+	])
+    fi
+
+    # Xft 2 requires that we link to fontconfig, too
+    # Grr, I thought dependency hell was supposed to be a Windows thing.
+    AC_CHECK_LIB(fontconfig, FcPatternAddInteger)
+
+    AC_CHECK_LIB(Xft, XftInit,
+      [
+        LIBS="$LIBS -lXft"
+	HAVE_XFT=1
+      ])
+    if test "$HAVE_XFT" = "1"; then
+      AC_MSG_CHECKING([that we can compile an Xft program])
+      AC_TRY_LINK(
+        [ #include <X11/Xft/Xft.h> ],
+	[ XftDrawCreate(NULL, 0, NULL, 0); ],
+	[ 
+	  AC_MSG_RESULT(yes)
+	  AC_DEFINE(HAVE_XFT)
 	],
 	[
 	  AC_MSG_RESULT(no)

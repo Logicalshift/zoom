@@ -30,6 +30,9 @@
 /* Define if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
+/* Define if you have the `fontconfig' library (-lfontconfig). */
+#undef HAVE_LIBFONTCONFIG
+
 /* Define if you have the `m' library (-lm). */
 #undef HAVE_LIBM
 

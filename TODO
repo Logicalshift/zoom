@@ -21,6 +21,10 @@ Hmm, this file was a bit out of date.
  X .ZX file recognition bug under Mac OS X
  X varicella/oad colour display bug - Not My Fault (TM)
  X Comp2002 games need adding to database2
+ * Crash with graphics set to a directory?
+ * Allow for graphics directories
+ * Hang with Xft2
+ * Extra Zork II / Plundered Hearts definitions
  * taipan.z5 text display underneath upper window bug
  * [More] and recorded scripts broken?
  * Option to turn on debugging mode for Mac OS X
