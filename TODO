@@ -1,5 +1,9 @@
 Hmm, this file was a bit out of date.
 
- * Header extension word for Spec 1.1
+ X Header extension word for Spec 1.1
  X @sound_data, such as it can be
  X @save/@restore prompt thing
+ X Blinking cursor
+ * Investigate 'files nested too deeply' error
+ * Implement 'APal' chunk...
+ * CREDITS file :-)
