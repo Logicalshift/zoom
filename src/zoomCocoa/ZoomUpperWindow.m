@@ -262,12 +262,12 @@ static NSString* blankLine(int length) {
 
 // = Input styles =
 
-- (oneway void) setInputStyle: (ZStyle*) newInputStyle {
+- (void) setInputStyle: (ZStyle*) newInputStyle {
 	if (inputStyle) [inputStyle release];
 	inputStyle = [newInputStyle copy];
 }
 
-- (out bycopy ZStyle*) inputStyle {
+- (ZStyle*) inputStyle {
 	return inputStyle;
 }
 
