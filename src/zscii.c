@@ -99,6 +99,7 @@ char* zscii_to_ascii(ZByte* string, int* len)
 
   zscii_to_unicode(string, len);
 
+  cbuf = realloc(cbuf, 2);
   for (x=0; buf[x] != 0; x++)
     {
       cbuf = realloc(cbuf, (x+2));
