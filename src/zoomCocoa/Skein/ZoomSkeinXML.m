@@ -318,7 +318,27 @@ static NSString* xmlEncode(NSString* str) {
 		[newItem setChanged: changed];
 		[newItem setTemporary: temporary];
 		[newItem setTemporaryScore: tempVal];
+	}
 		
+	// Item dictionary III: fill in the item children
+	itemEnum = [items objectEnumerator];
+	
+	while (item = [itemEnum nextObject]) {		
+		NSString* itemNodeId = [inputParser attributeValueForElement: item
+															withName: @"nodeId"];
+		
+		if (itemNodeId == nil) {
+			continue;
+		}
+		
+		ZoomSkeinItem* newItem = [itemDictionary objectForKey: itemNodeId];
+		if (newItem == nil) {
+			// Should never happen
+			// (Hahaha)
+			NSLog(@"ZoomSkein: Programmer is a spoon (item ID: %@)", itemNodeId);
+			return NO;
+		}
+
 		// Item children
 		NSArray* itemKids =[inputParser childrenForElement: [inputParser childForElement: item
 																				withName: @"children"]
@@ -336,12 +356,15 @@ static NSString* xmlEncode(NSString* str) {
 			
 			ZoomSkeinItem* kidItem = [itemDictionary objectForKey: kidNodeId];
 			
-			if (item == nil) {
+			if (kidItem == nil) {
 				NSLog(@"ZoomSkein: Warning: unable to find node %@", kidNodeId);
 				continue;
 			}
 			
-			[newItem addChild: kidItem];
+			ZoomSkeinItem* newKid = [newItem addChild: kidItem];
+			[itemDictionary setObject: newKid
+							   forKey: kidNodeId];
+			kidItem = newKid;
 		}
 	}
 	
@@ -473,7 +496,7 @@ static XMLCALL void charData    (void *userData,
 		}
 	}
 	
-	return res;
+	return [res autorelease];
 }
 
 - (NSDictionary*) childForElement: (NSDictionary*) element

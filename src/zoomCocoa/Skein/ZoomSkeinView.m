@@ -1195,7 +1195,7 @@ enum ZSVbutton
 }
 
 - (void) cancelEditing: (id) sender {
-	if ([[self window] firstResponder] == itemToEdit) {
+	if (itemToEdit != nil && [[self window] firstResponder] == itemToEdit) {
 		NSLog(@"Killing first responder");
 		[[self window] makeFirstResponder: self];
 	}
