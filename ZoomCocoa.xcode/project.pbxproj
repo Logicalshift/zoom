@@ -2044,6 +2044,12 @@
 			settings = {
 			};
 		};
+		4BB2CCD70632F01600542A81 = {
+			fileRef = 4BCF3F5A050FB57A00A8E303;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		4BB515B405BC615F00D00C96 = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.nib;
@@ -2396,6 +2402,7 @@
 				4B13ECD5060F93F200021429,
 				4BCB09650615D0D800CDFB98,
 				4BBC1F79062F43BB00FE547F,
+				4BB2CCD70632F01600542A81,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

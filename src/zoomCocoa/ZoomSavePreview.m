@@ -77,10 +77,10 @@ static NSImage* saveBackground;
 	if (highlighted) {
 		if (saveHighlightActive) {
 			backgroundColour = [NSColor colorWithPatternImage: saveHighlightActive];
-			[[NSColor clearColor] setStroke];
+			[[NSColor clearColor] set];
 		} else {
 			backgroundColour = [NSColor highlightColor];
-			[[NSColor colorWithDeviceRed: .02 green: .39 blue: .80 alpha: 1.0] setStroke];
+			[[NSColor colorWithDeviceRed: .02 green: .39 blue: .80 alpha: 1.0] set];
 		}
 		
 		textColour = [NSColor whiteColor];
@@ -91,14 +91,14 @@ static NSImage* saveBackground;
 			backgroundColour = [NSColor whiteColor];
 		}
 		
-		[[NSColor colorWithDeviceRed: .76 green: .76 blue: .76 alpha:1.0] setStroke];
+		[[NSColor colorWithDeviceRed: .76 green: .76 blue: .76 alpha:1.0] set];
 		textColour = [NSColor blackColor];
 	}
 
 	[[NSGraphicsContext currentContext] setPatternPhase: [self convertPoint: NSMakePoint(0,0)
 																	 toView: nil]];
 	
-	[backgroundColour setFill];
+	[backgroundColour set];
 	NSRectFill(rect);
 	[NSBezierPath setDefaultLineWidth: 1.0];
 	[NSBezierPath strokeRect: NSMakeRect(ourBounds.origin.x+0.5, ourBounds.origin.y+0.5, ourBounds.size.width-1.0, ourBounds.size.height-1.0)];

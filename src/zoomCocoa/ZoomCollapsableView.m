@@ -57,7 +57,7 @@
 			backgroundColour, NSBackgroundColorAttributeName,
 			nil];
 	
-	[backgroundColour setFill];
+	[backgroundColour set];
 	NSRectFill(rect);
 	
 	NSRect bounds = [self bounds];
@@ -83,7 +83,7 @@
 		// Draw the border rect
 		NSRect borderRect = NSMakeRect(floor(BORDER)+0.5, floor(ypos)+0.5, 
 									   bounds.size.width-(BORDER*2), thisFrame.size.height + (titleSize.height * 1.2) + (BORDER));
-		[frameColour setStroke];
+		[frameColour set];
 		[NSBezierPath strokeRect: borderRect];
 		
 		// IMPLEMENT ME: draw the show/hide triangle (or maybe add this as a view?)

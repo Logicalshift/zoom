@@ -59,6 +59,9 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	[super dealloc];
 }
 
+// Bug in weak linking? Can't use NSShadowAttributeName... Hmph
+static NSString* ZoomNSShadowAttributeName = @"NSShadow";
+
 - (NSView*) createMetalTitleForTable: (NSTableView*) theTable {
 	// Jeremy Dronfield suggested this on Cocoa-dev
 	
@@ -74,12 +77,12 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	[shadow setShadowOffset:NSMakeSize(1.1, -1.5)];
 	[shadow setShadowBlurRadius:0.2];
 	[shadow setShadowColor:[NSColor colorWithCalibratedWhite:1.0 alpha:0.6]];
-	
+		
 	// The title text
 	NSMutableAttributedString *headerString = [[NSMutableAttributedString alloc] initWithString:@"Title"];
 	NSRange range = NSMakeRange(0, [headerString length]);
 	[headerString addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:11.0] range:range];
-	[headerString addAttribute:NSShadowAttributeName value:shadow range:range];
+	[headerString addAttribute:ZoomNSShadowAttributeName value:shadow range:range];
 	[headerString setAlignment:NSCenterTextAlignment range:range];
 	
 	// The background image
@@ -143,7 +146,7 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 		NSMutableAttributedString *headerString = [[NSMutableAttributedString alloc] initWithString: title];
 		NSRange range = NSMakeRange(0, [headerString length]);
 		[headerString addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:11.0] range:range];
-		[headerString addAttribute:NSShadowAttributeName value:shadow range:range];
+		[headerString addAttribute:ZoomNSShadowAttributeName value:shadow range:range];
 		[headerString setAlignment:NSCenterTextAlignment range:range];
 		
 		while (titleView = [viewEnum nextObject]) {
