@@ -254,12 +254,23 @@ int tableSorter(id a, id b, void* context) {
 
 - (void) reloadTableData {
 	ZoomStoryOrganiser* org = [ZoomStoryOrganiser sharedStoryOrganiser];
+	
+	// Store the previous list of selected IDs
+	NSMutableArray* previousIDs = [NSMutableArray array];
+	NSEnumerator* selEnum = [mainTableView selectedRowEnumerator];
+	NSNumber* selRow;
+	
+	while (selRow = [selEnum nextObject]) {
+		[previousIDs addObject: [storyList objectAtIndex: [selRow intValue]]];
+	}
 
+	// Free up the previous table data
 	[storyList release];
 	storyList = [[NSMutableArray alloc] init];
 	
 	[filterSet1 release]; [filterSet2 release];
 	
+	// Repopulate the table
 	NSEnumerator* identEnum = [[org storyIdents] objectEnumerator];
 	ZoomStoryID* ident;
 	
@@ -269,7 +280,23 @@ int tableSorter(id a, id b, void* context) {
 		// IMPLEMENT ME: add to the filterSets
 	}
 	
+	// Sort the table as required
 	[self sortTableData];
+	
+	// Joogle the selection
+	[mainTableView deselectAll: self];
+	selEnum = [previousIDs objectEnumerator];
+	
+	ZoomStoryID* selID;
+	
+	while (selID = [selEnum nextObject]) {
+		unsigned index = [storyList indexOfObject: selID];
+		
+		if (index != NSNotFound) {
+			[mainTableView selectRow: index
+				byExtendingSelection: YES];
+		}
+	}
 	
 	needsUpdating = NO;
 }
@@ -313,7 +340,8 @@ int tableSorter(id a, id b, void* context) {
 			[sortColumn release];
 			sortColumn = [columnID copy];
 			
-			[self sortTableData];
+			//[self sortTableData];
+			[self reloadTableData];
 			[mainTableView reloadData];
 		}
 	}
