@@ -885,7 +885,7 @@ static XMLCALL void endElement(void *userData,
 		return;
 	}
 	
-	if (XCstrcmp(current, "identification") == 0 || XCstrcmp(parent, "id") == 0) {
+	if (XCstrcmp(current, "identification") == 0 || XCstrcmp(current, "id") == 0) {
 		/* Verify the identification for errors */
 		if (state->ident->dataFormat != IFFormat_Unknown &&
 			state->ident->dataFormat != state->ident->format) {
