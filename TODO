@@ -18,7 +18,7 @@ Hmm, this file was a bit out of date.
  * heirarchical fonts
  * warning for non-fixed font set as fixed font
  * reset pixmap display on restart under v6
- * drag and drop support for file loading
+ X drag and drop support for file loading
 
  * Sound
  * Internationalisation support

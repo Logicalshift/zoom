@@ -43,6 +43,15 @@
 
 #define SIGNATURE 'YZZY'
 
+enum carbon_file_type
+  {
+    TYPE_ZCOD,
+    TYPE_IFZS,
+    TYPE_IFRS,
+    TYPE_BINA,
+    TYPE_BORING
+  };
+
 extern WindowRef zoomWindow;
 extern WindowRef carbon_message_win;
 extern RGBColor  maccolour[17];
@@ -101,6 +110,8 @@ extern void carbon_prefs_set_resources(char* path);
 extern int  carbon_ask_question       (char* title, char* message,
 				       char* OK, char* cancel, int def);
 extern void carbon_display_about      (void);
+
+extern enum carbon_file_type carbon_type_fsref(FSRef* file);
 
 /* image_ routines have their own naming convention, which we preserve */
 extern void image_draw_carbon(image_data* img, 

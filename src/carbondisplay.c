@@ -279,6 +279,8 @@ Boolean display_force_input(char* text)
   strcpy(buf, text);
   force_text = buf;
 
+  QuitEventLoop(GetMainEventLoop()); /* Give it a poke */
+
   return true;
 }
 
@@ -2313,11 +2315,94 @@ void display_exit(int code)
 
   exit(code);
 }
+
 static pascal OSErr drag_track(short message, 
 			       WindowPtr pWindow, 
 			       void *handlerRefCon, 
-			       DragReference theDragRef)
+			       DragReference drag)
 {
+  UInt16 nitems;
+  UInt16 nflavs;
+  DragItemRef item;
+  OSErr erm;
+
+  int x;
+
+  /* We only accept one item, which must have an HFS flavour... */
+  erm = CountDragItems(drag, &nitems);
+  if (erm != noErr || nitems != 1)
+    return noErr;
+
+  erm = GetDragItemReferenceNumber(drag, 1, &item);
+  if (erm != noErr)
+    return noErr;
+
+  erm = CountDragItemFlavors(drag, item, &nflavs);
+  if (erm != noErr)
+    return noErr;
+
+  for (x=0; x<nflavs; x++)
+    {
+      FlavorType t;
+
+      GetFlavorType(drag, item, x+1, &t);
+
+      if (t == kDragFlavorTypeHFS)
+	{
+	  HFSFlavor hfs;
+	  Size sz;
+	  FSRef ref;
+	  
+	  enum carbon_file_type type;
+	  Rect r;
+	  RgnHandle rgn;
+
+	  /* Highlight the window if we can load this type of file */
+	  sz = sizeof(HFSFlavor);
+	  erm = GetFlavorData(drag, item, kDragFlavorTypeHFS,
+			      &hfs, &sz,
+			      NULL);
+	  if (erm != noErr)
+	    {
+	      return noErr;
+	    }
+
+	  erm = FSpMakeFSRef(&hfs.fileSpec,
+			     &ref);
+	  if (erm != noErr)
+	    {
+	      return noErr;
+	    }
+
+	  type = carbon_type_fsref(&ref);
+	  if (type != TYPE_IFZS && type != TYPE_IFRS)
+	    return noErr;
+
+	  switch (message)
+	    {
+	    case kDragTrackingInWindow:
+	      GetWindowBounds(pWindow, kWindowContentRgn, &r);
+	      r.bottom -= r.top;
+	      r.top    -= r.top;
+	      r.right  -= r.left;
+	      r.left   -= r.left;
+	      
+	      if (pWindow == zoomWindow)
+		r.right -= 15;
+	      
+	      rgn = NewRgn();
+	      RectRgn(rgn, &r);
+	      ShowDragHilite(drag, rgn, true);
+	      DisposeRgn(rgn);
+	      break;
+
+	    case kDragTrackingLeaveWindow:
+	      HideDragHilite(drag);	      
+	      break;
+	    }
+	}
+    }
+
   return noErr;
 }
 
@@ -2378,6 +2463,16 @@ static pascal OSErr drag_receive(WindowRef win, void* data, DragRef drag)
 	  if (FSRefMakePath(&ref, path, 512) != noErr)
 	    {
 	      return dragNotAcceptedErr;
+	    }
+
+	  if (carbon_type_fsref(&ref) == TYPE_IFZS)
+	    {
+	      display_force_restore(&ref);
+	      if (!display_force_input("restore"))
+		{
+		  return dragNotAcceptedErr;
+		}
+	      return noErr;
 	    }
 
 	  f = open_file(path);
@@ -3092,6 +3187,10 @@ int display_init_pixmap(int width, int height)
 void display_plot_rect(int x, int y, int width, int height)
 {
   Rect r;
+  int xp, yp;
+
+  xp = win_x/2-pix_w/2;
+  yp = win_y/2-pix_h/2;
 
   if (!LockPixels(GetGWorldPixMap(pixmap)))
     zmachine_fatal("Unable to lock pixmap");
@@ -3106,6 +3205,9 @@ void display_plot_rect(int x, int y, int width, int height)
   PaintRect(&r);
   
   UnlockPixels(GetGWorldPixMap(pixmap));
+
+  display_update_region(xp+r.left, yp+r.top,
+			xp+r.right, yp+r.bottom);
 }
 
 void display_scroll_region(int x, int y, int width, int height, int xoff, int yoff)
@@ -3174,6 +3276,10 @@ void display_plot_gtext(const int* text, int len,
   int fg, bg;
 
   float width, height;
+  int xp, yp;
+  
+  xp = win_x/2-pix_w/2;
+  yp = win_y/2-pix_h/2;
 
   if (len == 0)
     return;
@@ -3237,6 +3343,9 @@ void display_plot_gtext(const int* text, int len,
 		    text, len);
   
   UnlockPixels(GetGWorldPixMap(pixmap));
+
+  display_update_region(xp+x, yp+y - xfont_get_ascent(font[ft]),
+			xp+x+width, yp+y + xfont_get_descent(font[ft]));
 }
 
 float display_measure_text(const int* text, int len, int style)
@@ -3298,12 +3407,20 @@ void display_plot_image(BlorbImage* img, int x, int y)
 
   if (img->loaded != NULL)
     {
+      int xp, yp;
+      
+      xp = win_x/2-pix_w/2;
+      yp = win_y/2-pix_h/2;
+
       if (!LockPixels(GetGWorldPixMap(pixmap)))
 	zmachine_fatal("Unable to lock pixmap");
       SetGWorld(pixmap, nil);
       image_draw_carbon(img->loaded, pixmap, x, y, sc_n, sc_d);
 
       UnlockPixels(GetGWorldPixMap(pixmap));
+
+      display_update_region(xp+x, yp+y,
+			    xp+x+image_width(img->loaded), yp+y+image_height(img->loaded));
     }
 }
 

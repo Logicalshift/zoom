@@ -43,15 +43,6 @@
 #include "stream.h"
 #include "carbondisplay.h"
 
-enum zcode_type
-  {
-    TYPE_ZCOD,
-    TYPE_IFZS,
-    TYPE_IFRS,
-    TYPE_BINA,
-    TYPE_BORING
-  };
-
 NavDialogRef thedialog;
 static FSRef* fileref = NULL;
 static FSRef* startref = NULL;
@@ -323,7 +314,7 @@ int carbon_ask_question(char* title, char* message,
 }
 
 /* A utility function for getting the type of a file */
-static enum zcode_type type_fsref(FSRef* file)
+enum carbon_file_type carbon_type_fsref(FSRef* file)
 {
   FSSpec spec;
   HFSUniStr255 outname;
@@ -427,7 +418,7 @@ OSErr ae_opendocs_handler(const AppleEvent* evt,
   SInt32     numdocs;
 
   FSRef           thefile;
-  enum zcode_type thetype;
+  enum carbon_file_type thetype;
 
   AEKeyword key;
   DescType  actualtype;
@@ -458,7 +449,7 @@ OSErr ae_opendocs_handler(const AppleEvent* evt,
   /* 
    * Work out the type of the file that's being opened
    */
-  thetype = type_fsref(&thefile);
+  thetype = carbon_type_fsref(&thefile);
  
   /*
    * Might happen if the application is running (in which case we might try
