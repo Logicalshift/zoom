@@ -361,6 +361,11 @@ void v6_set_caret(void)
 {
   display_set_input_pos(ACTWIN.style, ACTWIN.curx, ACTWIN.cury,
 			(ACTWIN.xpos+ACTWIN.width)-ACTWIN.curx);
+  if (ACTWIN.style&1)
+    display_pixmap_cols(ACTWIN.back, ACTWIN.fore);
+  else
+    display_pixmap_cols(ACTWIN.fore, ACTWIN.back);    
+
   ACTWIN.text_amount = 0;
 }
 
@@ -597,7 +602,7 @@ int v6_split_point(int* text,
 		   int* width_out)
 {
   float cwidth;
-  int breakpoint, text_pos;
+  int text_pos;
   int this_word, last_word;
 
   this_word = last_word = text_pos = 0;

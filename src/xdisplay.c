@@ -72,6 +72,8 @@ Pixmap       x_pixmap = None;
 GC           x_pixgc;
 
 static int pix_w, pix_h;
+static int pix_fore;
+static int pix_back;
 
 #ifdef HAVE_XRENDER
 XRenderPictFormat* x_picformat = NULL;
@@ -392,6 +394,11 @@ static void draw_input_text(void)
 
   if (x_pixmap != None)
     {
+      int xp, yp;
+
+      xp = win_x/2-pix_w/2;
+      yp = win_y/2-pix_h/2;
+
       style = pix_cstyle;
 
       input_x = caret_x = pix_cx;
@@ -399,6 +406,12 @@ static void draw_input_text(void)
       input_y += xfont_get_ascent(font[style_font[(pix_cstyle>>1)&15]]);
       input_width = pix_cw;
       caret_height = xfont_get_height(font[style_font[(pix_cstyle>>1)&15]])-1;
+
+      input_x += xp; input_y += yp;
+      caret_x += xp; caret_y += yp;
+
+      fg = pix_fore - FIRST_ZCOLOUR;
+      bg = pix_back - FIRST_ZCOLOUR;
     }
   else
     {
@@ -1106,6 +1119,8 @@ static void draw_window()
 #ifdef HAVE_XFT
       if (xft_drawable != NULL && xft_maindraw != NULL)
 	{
+	  XftDrawSetClip(xft_drawable, None);
+
 	  xft_drawable = lastdraw;
 	}
 #endif
@@ -1123,6 +1138,9 @@ static void resize_window()
 {
   int owin;
   int x,y,z;
+
+  if (x_pixmap != None)
+    return;
 
   owin = cur_win;
 
@@ -2524,9 +2542,6 @@ ZDisplay* display_get_info(void)
 
 /***                           ----// 888 \\----                           ***/
 /* Pixmap display */
-
-static int pix_fore;
-static int pix_back;
 
 static void pixmap_update(int left, int top, int right, int bottom)
 {
