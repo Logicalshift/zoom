@@ -23,7 +23,7 @@
         <key>CFBundleDevelopmentRegion</key>
         <string>English</string>
         <key>CFBundleExecutable</key>
-        <string>Zoom</string>
+        <string>zoom</string>
         <key>CFBundleInfoDictionaryVersion</key>
         <string>6.0</string>
         <key>CFBundlePackageType</key>
@@ -32,9 +32,5 @@
         <string>????</string>
         <key>CFBundleVersion</key>
         <string>0.99.9dev10</string>
-        <key>NSMainNibFile</key>
-        <string>zoom</string>
-        <key>NSPrincipalClass</key>
-        <string>NSApplication</string>
 </dict>
 </plist>
