@@ -6,6 +6,7 @@
             LANGUAGE = ObjC; 
             SUPERCLASS = NSObject; 
         }, 
+        {CLASS = ZoomCollapsableView; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
         {
             CLASS = ZoomiFButton; 
             LANGUAGE = ObjC; 
@@ -15,7 +16,6 @@
         {
             ACTIONS = {
                 addButtonPressed = id; 
-                changeFilter = id; 
                 changeFilter1 = id; 
                 changeFilter2 = id; 
                 drawerButtonPressed = id; 
@@ -27,7 +27,7 @@
             LANGUAGE = ObjC; 
             OUTLETS = {
                 addButton = ZoomiFButton; 
-                commentView = NSTextView; 
+                collapseView = ZoomCollapsableView; 
                 continueButton = ZoomiFButton; 
                 drawer = NSDrawer; 
                 drawerButton = ZoomiFButton; 
@@ -38,7 +38,6 @@
                 mainTableView = NSTableView; 
                 newgameButton = ZoomiFButton; 
                 searchField = NSTextField; 
-                teaserView = NSTextView; 
             }; 
             SUPERCLASS = NSWindowController; 
         }

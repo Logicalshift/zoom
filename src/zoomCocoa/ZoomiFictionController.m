@@ -54,6 +54,100 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	[super dealloc];
 }
 
+- (NSView*) createMetalTitleForTable: (NSTableView*) theTable {
+	// Jeremy Dronfield suggested this on Cocoa-dev
+	
+	NSRect superRect = [[theTable headerView] frame];
+	NSRect cornerRect = [[theTable cornerView] frame];
+	
+	// Allocate the header view
+	NSTableHeaderView* myHeader = [[NSTableHeaderView alloc] initWithFrame:superRect];
+	[myHeader setAutoresizesSubviews:YES];
+	
+	// Shadow creates an engraved look
+	NSShadow *shadow = [[NSShadow alloc] init];
+	[shadow setShadowOffset:NSMakeSize(1.1, -1.5)];
+	[shadow setShadowBlurRadius:0.2];
+	[shadow setShadowColor:[NSColor colorWithCalibratedWhite:1.0 alpha:0.6]];
+	
+	// The title text
+	NSMutableAttributedString *headerString = [[NSMutableAttributedString alloc] initWithString:@"Title"];
+	NSRange range = NSMakeRange(0, [headerString length]);
+	[headerString addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:11.0] range:range];
+	[headerString addAttribute:NSShadowAttributeName value:shadow range:range];
+	[headerString setAlignment:NSCenterTextAlignment range:range];
+	
+	// The background image
+	NSImageView *imageView = [[NSImageView alloc] initWithFrame:superRect];
+	[imageView setImageFrameStyle:NSImageFrameNone];
+	[imageView setImageAlignment:NSImageAlignCenter];
+	[imageView setImageScaling:NSScaleToFit];
+	[imageView setImage:[NSImage imageNamed:@"Metal-Title"]];
+	[imageView setAutoresizingMask:NSViewWidthSizable];
+	
+	// Set the corner view image
+	NSImageView *cornerImage = [[NSImageView alloc] initWithFrame:cornerRect];
+	[cornerImage setImageFrameStyle:NSImageFrameNone];
+	[cornerImage setImageAlignment:NSImageAlignCenter];
+	[cornerImage setImageScaling:NSScaleToFit];
+	[cornerImage setImage:[NSImage imageNamed:@"Groovy Metal Hump"]];
+	
+	// The header label
+	NSTextField *headerText = [[NSTextField alloc] initWithFrame:superRect];
+	[headerText setAutoresizingMask:NSViewWidthSizable];
+	[headerText setDrawsBackground:NO];
+	[headerText setBordered:NO];
+	[headerText setEditable:NO];
+	[headerText setAttributedStringValue:headerString];
+	
+	[myHeader addSubview:imageView];
+	[myHeader addSubview:headerText];
+	[theTable setHeaderView:myHeader];
+	[theTable setCornerView:cornerImage];
+	
+	[headerText release];
+	[imageView release];
+	[cornerImage release];
+	[headerString release];
+	[shadow release];
+	
+	return myHeader;
+}
+
+- (void) setTitle: (NSString*) title
+		 forTable: (NSTableView*) table {
+	// Can't use the traditional methods, as our table header view draws all over the normal
+	// column header
+	if (objc_lookUpClass("NSShadow") != nil) {
+		NSTableHeaderView* theHeader = [table headerView];
+		NSEnumerator* viewEnum = [[theHeader subviews] objectEnumerator];
+		NSTextField* titleView;
+
+		// Shadow creates an engraved look
+		NSShadow *shadow = [[NSShadow alloc] init];
+		[shadow setShadowOffset:NSMakeSize(1.1, -1.5)];
+		[shadow setShadowBlurRadius:0.2];
+		[shadow setShadowColor:[NSColor colorWithCalibratedWhite:1.0 alpha:0.6]];
+		
+		// The title text
+		NSMutableAttributedString *headerString = [[NSMutableAttributedString alloc] initWithString: title];
+		NSRange range = NSMakeRange(0, [headerString length]);
+		[headerString addAttribute:NSFontAttributeName value:[NSFont systemFontOfSize:11.0] range:range];
+		[headerString addAttribute:NSShadowAttributeName value:shadow range:range];
+		[headerString setAlignment:NSCenterTextAlignment range:range];
+		
+		while (titleView = [viewEnum nextObject]) {
+			if ([titleView isKindOfClass: [NSTextField class]]) {
+				[titleView setAttributedStringValue: headerString];
+			}
+		}
+	} else {
+		NSTableColumn* filterColumn = [[table tableColumns] objectAtIndex: 0];
+		
+		[[filterColumn headerCell] setStringValue: title];		
+	}
+}
+
 - (void) windowDidLoad {
 	[addButton setPushedImage: [NSImage imageNamed: @"add-in"]];
 	[newgameButton setPushedImage: [NSImage imageNamed: @"newgame-in"]];
@@ -67,6 +161,22 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	[[self window] setFrameUsingName: @"iFiction"];
 	[[self window] setExcludedFromWindowsMenu: YES];
 	
+	// Set up the filter table headers (panther only)
+	if (objc_lookUpClass("NSShadow") != nil) {
+		// We have NSShadow - go ahead
+		
+		// Note (and FIXME): a retained view is not released here
+		// (Being lazy: this doesn't matter, as the iFiction window is persistent)
+		[self createMetalTitleForTable: filterTable1];
+		[self createMetalTitleForTable: filterTable2];
+		
+		[self setTitle: @"Group"
+			  forTable: filterTable1];
+		[self setTitle: @"Author"
+			  forTable: filterTable2];
+	}
+
+
 	showDrawer = YES;
 	needsUpdating = YES;
 	
@@ -344,7 +454,9 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	NSTableColumn* filterColumn = [[filterTable1 tableColumns] objectAtIndex: 0];
 
 	[filterColumn setIdentifier: filterName];
-	[[filterColumn headerCell] setStringValue: filterTitle];
+	[self setTitle: filterTitle
+		  forTable: filterTable1];
+	//[[filterColumn headerCell] setStringValue: filterTitle];
 	
 	[filterTable1 selectRow: 0 byExtendingSelection: NO];
 	[filterTable2 selectRow: 0 byExtendingSelection: NO];
@@ -364,7 +476,9 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	NSTableColumn* filterColumn = [[filterTable2 tableColumns] objectAtIndex: 0];
 	
 	[filterColumn setIdentifier: filterName];
-	[[filterColumn headerCell] setStringValue: filterTitle];
+	[self setTitle: filterTitle
+		  forTable: filterTable1];
+	//[[filterColumn headerCell] setStringValue: filterTitle];
 	
 	[filterTable2 selectRow: 0 byExtendingSelection: NO];
 	
