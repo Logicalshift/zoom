@@ -341,6 +341,14 @@ if test "$WINDOW_SYSTEM" = "1"; then
 	[
 	  AC_MSG_RESULT(no)
 	])
+
+      AC_CHECK_LIB(png, png_get_IHDR,
+        [
+	  AC_DEFINE(HAVE_LIBPNG)
+	],
+	[
+	  AC_MSG_WARN([libpng not detected: image support will be disabled])
+	])
     fi
 fi
 

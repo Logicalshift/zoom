@@ -15,3 +15,6 @@
 
 /* XDBE available? */
 #undef HAVE_XDBE
+
+/* libpng available? */
+#undef HAVE_LIBPNG

@@ -17,6 +17,9 @@
 /* XDBE available? */
 #undef HAVE_XDBE
 
+/* libpng available? */
+#undef HAVE_LIBPNG
+
 /* Define if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
