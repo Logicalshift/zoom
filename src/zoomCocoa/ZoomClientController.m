@@ -22,6 +22,7 @@
 }
 
 - (void) dealloc {
+    if (zoomView) [zoomView setDelegate: nil];
     if (zoomView) [zoomView killTask];
     
     [super dealloc];

@@ -663,8 +663,6 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     // Update the upper window buffer
     NSSize contentSize = [textScroller contentSize];
     [upperWindowBuffer setContainerSize: NSMakeSize(contentSize.width, bufHeight)];
-
-    [self padToLowerWindow];
 }
 
 - (double) upperBufferHeight {
@@ -676,6 +674,42 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     if (newSize != lastUpperWindowSize) {
         // Lay things out
         lastUpperWindowSize = newSize;
+
+        // Force text display onto lower window (or where the lower window will be)
+        NSDictionary* fixedAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+            [self fontWithStyle:ZFixedStyle], NSFontAttributeName, nil];
+        NSSize fixedSize = [@"M" sizeWithAttributes: fixedAttributes];
+
+        NSAttributedString* newLine = [[[NSAttributedString alloc] initWithString: @"\n"
+                                                                       attributes: fixedAttributes]
+            autorelease];
+
+        NSTextContainer* theContainer;
+
+        double sepHeight = fixedSize.height * (double)newSize;
+        sepHeight -= [upperWindowBuffer containerSize].height;
+
+        if ([[textView textStorage] length] == 0) {
+            [[[textView textStorage] mutableString] appendString: @"\n"];
+        }
+
+        do {
+            NSRange endGlyph = [textView selectionRangeForProposedRange:
+                NSMakeRange([[textView textStorage] length]-1, 1)
+                                                            granularity: NSSelectByCharacter];
+            if (endGlyph.location > 0xf0000000) {
+                return; // Doesn't exist
+            }
+
+            NSRect endRect = [[textView layoutManager] boundingRectForGlyphRange: endGlyph
+                                                                 inTextContainer: [textView textContainer]];
+
+            if (NSMaxY(endRect) < sepHeight) {
+                [[textView textStorage] appendAttributedString: newLine];
+            } else {
+                break;
+            }
+        } while (1);
 
         // The place where we need to put the more prompt may have changed
         [self updateMorePrompt];
@@ -830,6 +864,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     int currentSize = [self upperWindowSize];
     if (currentSize != lastTileSize) {
         [textScroller tile];
+        [self padToLowerWindow];
         [self updateMorePrompt];
         lastTileSize = currentSize;
     }

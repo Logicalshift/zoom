@@ -55,7 +55,7 @@
 - (oneway void) inputMouseAtPositionX: (int) x
                                     Y: (int) y;
 
-- (oneway void) displaySizeHasChanged;
+- (void) displaySizeHasChanged;
 @end
 
 // == Client-side objects ==
