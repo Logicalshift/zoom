@@ -406,7 +406,7 @@ void zmachine_resize_display(ZDisplay* dis)
 	  machine.memory[ZH_fontwidth]  = 1;
 	  machine.memory[ZH_fontheight] = 1;
 
-	  Flag(11, 3, 0);
+	  Flag(ZH_flags2+1, 3, 0);
 	}
       else
 	{

@@ -133,7 +133,7 @@ if test "$CYGWIN" != "yes"; then
     UTIL_CHECK_LDFLAG(mwindows)
     UTIL_CHECK_CFLAG(mno-cygwin)
     UTIL_CHECK_LDFLAG(mno-cygwin)  
-    AC_PATH_PROG(WINDRES, mingw32-windres)
+    AC_PATH_PROG(WINDRES, "$mingw_prefix"windres)
 
     RESEXTN=o
     AC_SUBST(RESEXTN)
