@@ -11,11 +11,14 @@
 #import "ZoomMoreView.h"
 #import "ZoomTextView.h"
 #import "ZoomScrollView.h"
+#import "ZoomPreferences.h"
 
 #define ZBoldStyle 1
 #define ZUnderlineStyle 2
 #define ZFixedStyle 4
 #define ZSymbolicStyle 8
+
+extern NSString* ZoomStyleAttributeName;
 
 @class ZoomScrollView;
 @class ZoomTextView;
@@ -59,6 +62,9 @@
     // Details about the file we're currently saving
     long creatorCode; // 'YZZY' for Zoom
     long typeCode;
+	
+	// Preferences
+	ZoomPreferences* viewPrefs;
 }
 
 // The delegate
@@ -82,6 +88,7 @@
 - (void) page;
 
 // Formatting a string
+- (NSDictionary*) attributesForStyle: (ZStyle*) style;
 - (NSAttributedString*) formatZString: (NSString*) zString
                             withStyle: (ZStyle*) style;
 
@@ -111,6 +118,12 @@
 
 // Event handling
 - (BOOL) handleKeyDown:(NSEvent*) theEvent;
+
+// Setting/updating preferences
+- (void) setPreferences: (ZoomPreferences*) prefs;
+- (void) preferencesHaveChanged: (NSNotification*)not;
+
+- (void) reformatWindow;
 
 @end
 

@@ -31,6 +31,9 @@
 	
 	// The toolbar
 	NSToolbar* toolbar;
+	
+	// The preferences that we're editing
+	ZoomPreferences* prefs;
 }
 
 - (void) setPreferences: (ZoomPreferences*) prefs;

@@ -16,6 +16,7 @@
 
     if (self) {
         zoomView = zV; // In Soviet Russia, zoomView retains us. 
+		backgroundStyle = [[ZStyle alloc] init];
     }
 
     return self;
@@ -23,6 +24,7 @@
 
 - (void) dealloc {
     // [zoomView release];
+	[backgroundStyle release];
     [super dealloc];
 }
 
@@ -40,6 +42,13 @@
     [[zoomView textView] clearPastedLines]; 
     [zoomView scrollToEnd];
     [zoomView resetMorePrompt];
+	
+	[backgroundStyle release];
+	backgroundStyle = [style copy];
+}
+
+- (ZStyle*) backgroundStyle {
+	return backgroundStyle;
 }
 
 // Sets the input focus to this window

@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
+extern NSString* ZoomPreferencesHaveChangedNotification;
 
 @interface ZoomPreferences : NSObject {
 	NSMutableDictionary* prefs;
@@ -42,5 +43,8 @@
 
 - (void) setFonts: (NSArray*) fonts;
 - (void) setColours: (NSArray*) colours;
+
+// Notifications
+- (void) preferencesHaveChanged;
 
 @end

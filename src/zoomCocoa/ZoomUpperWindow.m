@@ -156,4 +156,37 @@
                                              [lines count] - [self length])];
 }
 
+- (void) reformatLines {
+	NSEnumerator* lineEnum = [lines objectEnumerator];
+	NSMutableAttributedString* string;
+	
+	while (string = [lineEnum nextObject]) {
+		NSRange attributedRange;
+		NSDictionary* attr;
+		int len = [string length];
+				
+		attributedRange.location = 0;
+		
+		 while (attributedRange.location < len) {
+			attr = [string attributesAtIndex: attributedRange.location
+							  effectiveRange: &attributedRange];
+			
+			if (attributedRange.location == NSNotFound) break;
+			if (attributedRange.length == 0) break;
+			
+			// Re-apply the style associated with this block of text
+			ZStyle* sty = [attr objectForKey: ZoomStyleAttributeName];
+			
+			if (sty) {
+				NSDictionary* newAttr = [theView attributesForStyle: sty];
+				
+				[string setAttributes: newAttr
+								range: attributedRange];
+			}
+			
+			attributedRange.location += attributedRange.length;
+		}
+	}
+}
+
 @end

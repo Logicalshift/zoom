@@ -29,4 +29,6 @@
 - (NSColor*) backgroundColour;
 - (void)     cutLines;
 
+- (void) reformatLines;
+
 @end

@@ -13,8 +13,12 @@
 
 @interface ZoomLowerWindow : NSObject<ZLowerWindow> {
     ZoomView* zoomView;
+	
+	ZStyle* backgroundStyle;
 }
 
 - (id) initWithZoomView: (ZoomView*) zoomView;
+
+- (ZStyle*) backgroundStyle;
 
 @end

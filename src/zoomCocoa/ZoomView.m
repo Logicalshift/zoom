@@ -14,65 +14,14 @@
 
 @implementation ZoomView
 
-static NSMutableArray* defaultFonts = nil;
-static NSArray* defaultColours = nil;
-
 static ZoomView** allocatedViews = nil;
 static int        nAllocatedViews = 0;
+
+NSString* ZoomStyleAttributeName = @"ZoomStyleAttributeName";
 
 static void finalizeViews(void);
 
 + (void) initialize {
-    // Default settings
-    NSString* defaultFont = @"Gill Sans";
-    NSString* fixedFont = @"Courier";
-    NSFontManager* mgr = [NSFontManager sharedFontManager];
-
-    defaultFonts = [[NSMutableArray alloc] init];
-
-    int x;
-    for (x=0; x<16; x++) {
-        NSFont* thisFont = [NSFont fontWithName: defaultFont
-                                           size: 12];
-        NSFontTraitMask mask = 0;
-        if ((x&4)) thisFont = [NSFont fontWithName: fixedFont
-                                              size: 12];
-
-        if ((x&1)) mask|=NSBoldFontMask;
-        if ((x&2)) mask|=NSItalicFontMask;
-        if ((x&4)) mask|=NSFixedPitchFontMask;
-
-        if (mask != 0)
-            thisFont = [mgr convertFont: thisFont
-                            toHaveTrait: mask];
-
-        [defaultFonts addObject: thisFont];
-    }
-
-    defaultColours = [[NSArray arrayWithObjects:
-        [NSColor colorWithDeviceRed: 0 green: 0 blue: 0 alpha: 1],
-        [NSColor colorWithDeviceRed: 1 green: 0 blue: 0 alpha: 1],
-        [NSColor colorWithDeviceRed: 0 green: 1 blue: 0 alpha: 1],
-        [NSColor colorWithDeviceRed: 1 green: 1 blue: 0 alpha: 1],
-        [NSColor colorWithDeviceRed: 0 green: 0 blue: 1 alpha: 1],
-        [NSColor colorWithDeviceRed: 1 green: 0 blue: 1 alpha: 1],
-        [NSColor colorWithDeviceRed: 0 green: 1 blue: 1 alpha: 1],
-        [NSColor colorWithDeviceRed: 1 green: 1 blue: .8 alpha: 1],
-        
-        [NSColor colorWithDeviceRed: .73 green: .73 blue: .73 alpha: 1],
-        [NSColor colorWithDeviceRed: .53 green: .53 blue: .53 alpha: 1],
-        [NSColor colorWithDeviceRed: .26 green: .26 blue: .26 alpha: 1],
-        nil] retain];
-    
-    // Preferences
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSDictionary *appDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
-        [@"~/Documents" stringByStandardizingPath], @"ZoomSavePath",
-        [NSNumber numberWithBool: YES], @"ZoomHiddenExtension",
-        nil];
-    
-    [defaults registerDefaults:appDefaults];
-    
     atexit(finalizeViews);
 }
 
@@ -90,6 +39,7 @@ static void finalizeViews(void) {
 
 - (id)initWithFrame:(NSRect)frame {
     self = [super initWithFrame:frame];
+	
     if (self) {
         // Mark views as allocated
         allocatedViews = realloc(allocatedViews, sizeof(ZoomView*) * (nAllocatedViews+1));
@@ -134,6 +84,9 @@ static void finalizeViews(void) {
         [textView setHorizontallyResizable:NO];
         [textView setAutoresizingMask:NSViewWidthSizable];
         [textView setEditable: NO];
+		[textView setAllowsUndo: NO];
+		[textView setUsesFontPanel: NO];
+		
         receiving = NO;
         receivingCharacters = NO;
         moreOn    = NO;
@@ -163,8 +116,9 @@ static void finalizeViews(void) {
         [moreView setAutoresizingMask: NSViewMinXMargin|NSViewMinYMargin];
 
         // Styles, fonts, etc
-        fonts = [defaultFonts retain];
-        colours = [defaultColours retain];
+		viewPrefs = [[ZoomPreferences globalPreferences] retain];
+		fonts = [[viewPrefs fonts] retain];
+		colours = [[viewPrefs colours] retain];
 
         // Get notifications
         [[NSNotificationCenter defaultCenter] addObserver: self
@@ -177,7 +131,13 @@ static void finalizeViews(void) {
                                                    object: self];
         [self setPostsBoundsChangedNotifications: YES];
         [self setPostsFrameChangedNotifications: YES];
+		
+		[[NSNotificationCenter defaultCenter] addObserver: self
+												 selector: @selector(preferencesHaveChanged:)
+													 name: ZoomPreferencesHaveChangedNotification
+												   object: viewPrefs];		
     }
+	
     return self;
 }
 
@@ -216,6 +176,7 @@ static void finalizeViews(void) {
     [fonts release];
     [colours release];
     [upperWindowBuffer release];
+	[viewPrefs release];
 
     [super dealloc];
 }
@@ -609,6 +570,52 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 
 // = Formatting, fonts, colours, etc =
 
+- (NSDictionary*) attributesForStyle: (ZStyle*) style {
+    // Strings come from Zoom's server formatted with ZStyles rather than
+    // actual styles (so that the interface can choose it's own formatting).
+    // So we need this to translate those styles into 'real' ones.
+	
+    // Font
+    NSFont* fontToUse = nil;
+    int fontnum;
+	
+    fontnum =
+        ([style bold]?1:0)|
+        ([style underline]?2:0)|
+        ([style fixed]?4:0)|
+        ([style symbolic]?8:0);
+	
+    fontToUse = [fonts objectAtIndex: fontnum];
+	
+    // Colour
+    NSColor* foregroundColour = [style foregroundTrue];
+    NSColor* backgroundColour = [style backgroundTrue];
+	
+    if (foregroundColour == nil) {
+        foregroundColour = [colours objectAtIndex: [style foregroundColour]];
+    }
+    if (backgroundColour == nil) {
+        backgroundColour = [colours objectAtIndex: [style backgroundColour]];
+    }
+	
+    if ([style reversed]) {
+        NSColor* tmp = foregroundColour;
+		
+        foregroundColour = backgroundColour;
+        backgroundColour = tmp;
+    }
+	
+    // Generate the new attributes
+    NSDictionary* newAttr = [NSDictionary dictionaryWithObjectsAndKeys:
+        fontToUse, NSFontAttributeName,
+        foregroundColour, NSForegroundColorAttributeName,
+        backgroundColour, NSBackgroundColorAttributeName,
+		[[style copy] autorelease], ZoomStyleAttributeName,
+        nil];
+	
+	return newAttr;
+}
+
 - (NSAttributedString*) formatZString: (NSString*) zString
                             withStyle: (ZStyle*) style {
     // Strings come from Zoom's server formatted with ZStyles rather than
@@ -652,6 +659,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         fontToUse, NSFontAttributeName,
         foregroundColour, NSForegroundColorAttributeName,
         backgroundColour, NSBackgroundColorAttributeName,
+		[[style copy] autorelease], ZoomStyleAttributeName,
         nil];
 
     // Create + append the newly attributed string
@@ -1197,6 +1205,85 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 
 - (void) killTask {
     if (zoomTask) [zoomTask terminate];
+}
+
+// = Setting/updating preferences =
+- (void) setPreferences: (ZoomPreferences*) prefs {
+	[[NSNotificationCenter defaultCenter] removeObserver: self
+													name: ZoomPreferencesHaveChangedNotification
+												  object: viewPrefs];
+	[viewPrefs release];
+	
+	viewPrefs = [prefs retain];
+	
+	[self preferencesHaveChanged: [NSNotification notificationWithName: ZoomPreferencesHaveChangedNotification
+																object: viewPrefs]];
+	[[NSNotificationCenter defaultCenter] addObserver: self
+											 selector: @selector(preferencesHaveChanged:)
+												 name: ZoomPreferencesHaveChangedNotification
+											   object: viewPrefs];
+}
+
+- (void) preferencesHaveChanged: (NSNotification*)not {
+	// Usually called by the notification manager
+	if ([not object] != viewPrefs) {
+		NSLog(@"(BUG?) notification recieved for preferences that do not belong to us");
+		return;
+	}
+	
+	// Update fonts, colours according to specification
+	[fonts release];
+	[colours release];
+	
+	fonts = [[viewPrefs fonts] retain];
+	colours = [[viewPrefs colours] retain];
+	
+	[self reformatWindow];
+}
+
+- (void) reformatWindow {
+	// Reformats the entire window according to currently set fonts/colours
+	NSMutableAttributedString* storage = [textView textStorage];
+	NSRange attributedRange;
+	NSDictionary* attr;
+	int len = [storage length];
+	
+	attributedRange.location = 0;
+	
+	while (attributedRange.location < len) {
+		attr = [storage attributesAtIndex: attributedRange.location
+						   effectiveRange: &attributedRange];
+
+		if (attributedRange.location == NSNotFound) break;
+		if (attributedRange.length == 0) break;
+		
+		// Re-apply the style associated with this block of text
+		ZStyle* sty = [attr objectForKey: ZoomStyleAttributeName];
+		
+		if (sty) {
+			NSDictionary* newAttr = [self attributesForStyle: sty];
+			
+			[storage setAttributes: newAttr
+							 range: attributedRange];
+		}
+		
+		attributedRange.location += attributedRange.length;
+	}
+	
+	// Reset the background colour of the lower window
+	[textView setBackgroundColor: [self backgroundColourForStyle: [[lowerWindows objectAtIndex: 0] backgroundStyle]]];
+	
+	// Reformat the upper window(s) as necessary
+	[textScroller tile];
+	
+	NSEnumerator* upperWindowEnum = [upperWindows objectEnumerator];
+	ZoomUpperWindow* upperWin;
+	
+	while (upperWin = [upperWindowEnum nextObject]) {
+		[upperWin reformatLines];
+	}
+	
+	[textScroller updateUpperWindows];
 }
 
 @end
