@@ -18,26 +18,11 @@
  */
 
 /*
- * A vector version of font 3
- *
- * (We do things this way so that we can scale the font to be the same 
- * size as the fixed width font...)
+ * Routines for creating a blorb file
  */
 
-#ifndef __FONT3_H
-#define __FONT3_H
+#include <stdio.h>
+#include <stdlib.h>
 
-typedef struct
-{
-  int num_coords;
-  int coords[48];
-} font_char;
+#include "libblorb/blorb.h"
 
-typedef struct
-{
-  font_char chr[96];
-} font;
-
-extern font font_3;
-
-#endif

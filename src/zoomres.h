@@ -37,7 +37,6 @@
 #define IDM_INTERPRETER 306
 #define IDM_SAVEOPTS    307
 #define IDM_ABOUT       308
-#define IDM_LOCALCHANGE 309
 
 #define IDM_FONTS       350
 
@@ -53,5 +52,9 @@
 #define IDC_INBASE      510
 #define IDC_SERIAL      511
 #define IDC_TITLE       512
+#define IDC_LOCALFONTS  513
+#define IDC_LOCALINTERP 514
+#define IDC_LOCALCOLS   515
+#define IDC_LOCALLAYOUT 516
 
 #endif

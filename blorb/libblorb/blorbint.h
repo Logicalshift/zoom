@@ -18,26 +18,32 @@
  */
 
 /*
- * A vector version of font 3
- *
- * (We do things this way so that we can scale the font to be the same 
- * size as the fixed width font...)
+ * Internal data structures used by libblorb
  */
 
-#ifndef __FONT3_H
-#define __FONT3_H
+#ifndef __BLORBINT_H
+#define __BLORBINT_H
 
-typedef struct
+#include <stdio.h>
+
+#include "libblorb/blorb.h"
+
+struct blorb
 {
-  int num_coords;
-  int coords[48];
-} font_char;
+  int   creating;
+  FILE* fh;
 
-typedef struct
-{
-  font_char chr[96];
-} font;
+  int         n_sfx;      /* Number of sound effects in this file */
+  int*        sfx_block;  /* The file offset of the beginning of each sfx */
+  blorb_sfx*  sfx;        /* The data for each sfx */
 
-extern font font_3;
+  int         n_picts;    /* Number of pictures in this file */
+  int*        pict_block; /* The file offset of the beginning of each pict */
+  blorb_pict* pict;       /* The data for each picture */
+
+  char*       zcode;
+
+  int         release_num;
+};
 
 #endif

@@ -110,6 +110,9 @@ struct text
   int fg, bg;
   int font;
 
+  int spacer;
+  int space;
+  
   int len;
   int* text;
   
@@ -167,7 +170,6 @@ struct window
 int cur_win;
 struct window text_win[3];
 static int    nShow;
-static int    localchange = 0;
 
 #define CURWIN text_win[cur_win]
 #define CURSTYLE (text_win[cur_win].style|(text_win[cur_win].force_fixed<<8))
@@ -711,141 +713,157 @@ static void format_last_text(int more)
       new_line(more);
     }
 
-  word_start = 0;
-  word_len   = 0;
-  total_len  = 0;
-  xpos       = CURWIN.xpos;
-  line       = CURWIN.lastline;
-
-  /*
-   * Move the other lines to make room if this font is bigger than
-   * ones previously used on this line
-   */
-  if (CURWIN.lastline->ascent < xfont_get_ascent(font[text->font]))
+  if (text->spacer)
     {
-      int toscroll;
-      struct line* l;
-
-      toscroll = xfont_get_ascent(font[text->font]) - CURWIN.lastline->ascent;
+      line = CURWIN.lastline;
       
-      l = CURWIN.line;
-      while (l != CURWIN.lastline)
-	{
-	  if (l == NULL)
-	    zmachine_fatal("Programmer is a spoon");
+      new_line(more);
 
-	  l->baseline -= toscroll;
-	  l = l->next;
-	}
-      if (more != 0)
-	displayed_text += toscroll;
-      CURWIN.lastline->ascent = xfont_get_ascent(font[text->font]);
-      display_update();
+      CURWIN.lastline->descent = 0;
+      CURWIN.lastline->baseline =
+	line->baseline+line->descent+text->space;
+      CURWIN.lastline->ascent = text->space;
+
+      new_line(more);
     }
-
-  /*
-   * Ditto
-   */
-  if (CURWIN.lastline->descent < xfont_get_descent(font[text->font]))
+  else
     {
-      int toscroll;
+      word_start = 0;
+      word_len   = 0;
+      total_len  = 0;
+      xpos       = CURWIN.xpos;
+      line       = CURWIN.lastline;
       
-      toscroll = xfont_get_descent(font[text->font]) -
-	CURWIN.lastline->descent;
-      if (CURWIN.lastline->baseline+xfont_get_descent(font[text->font]) 
-	  > CURWIN.winly)
+      /*
+       * Move the other lines to make room if this font is bigger than
+       * ones previously used on this line
+       */
+      if (CURWIN.lastline->ascent < xfont_get_ascent(font[text->font]))
 	{
+	  int toscroll;
 	  struct line* l;
-
+	  
+	  toscroll = xfont_get_ascent(font[text->font]) - CURWIN.lastline->ascent;
+	  
 	  l = CURWIN.line;
-
-	  while (l != NULL)
+	  while (l != CURWIN.lastline)
 	    {
+	      if (l == NULL)
+		zmachine_fatal("Programmer is a spoon");
+	      
 	      l->baseline -= toscroll;
 	      l = l->next;
 	    }
-
+	  if (more != 0)
+	    displayed_text += toscroll;
+	  CURWIN.lastline->ascent = xfont_get_ascent(font[text->font]);
 	  display_update();
 	}
       
-      if (more != 0)
-	displayed_text += toscroll;
-      CURWIN.lastline->descent = xfont_get_descent(font[text->font]);
+      /*
+       * Ditto
+       */
+      if (CURWIN.lastline->descent < xfont_get_descent(font[text->font]))
+	{
+	  int toscroll;
+	  
+	  toscroll = xfont_get_descent(font[text->font]) -
+	    CURWIN.lastline->descent;
+	  if (CURWIN.lastline->baseline+xfont_get_descent(font[text->font]) 
+	      > CURWIN.winly)
+	    {
+	      struct line* l;
+	      
+	      l = CURWIN.line;
+	      
+	      while (l != NULL)
+		{
+		  l->baseline -= toscroll;
+		  l = l->next;
+		}
+	      
+	      display_update();
+	    }
+	  
+	  if (more != 0)
+	    displayed_text += toscroll;
+	  CURWIN.lastline->descent = xfont_get_descent(font[text->font]);
+	}
+      
+      for (x=0; x<text->len;)
+	{
+	  if (text->text[x] == ' '  ||
+	      text->text[x] == '\n' ||
+	      x == (text->len-1))
+	    {
+	      int w;
+	      int nl;
+
+	      nl = 0;
+	      do
+		{
+		  if (text->text[x] == '\n')
+		    {
+		      nl = 1;
+		      break;
+		    }
+		  x++;
+		  word_len++;
+		}
+	      while (!nl &&
+		     (x < text->len &&
+		      (text->text[x] == ' ' ||
+		       text->text[x] == '\n')));
+	      
+	      w = xfont_get_text_width(fn,
+				       text->text + word_start,
+				       word_len);
+	      
+	      /* We've got a word */
+	      xpos += w;
+	      
+	      if (xpos > CURWIN.winlx)
+		{
+		  /* Put this word on the next line */
+		  new_line(more);
+		  
+		  xpos = CURWIN.xpos + w;
+		  line = CURWIN.lastline;
+		}
+	      
+	      if (line->start == NULL)
+		{
+		  line->offset = word_start;
+		  line->start = text;
+		}
+	      line->n_chars += word_len;
+	      
+	      word_start += word_len;
+	      total_len  += word_len;
+	      word_len    = 0;
+	      
+	      if (nl)
+		{
+		  new_line(more);
+		  
+		  x++;
+		  total_len++;
+		  word_start++;
+		  
+		  xpos = CURWIN.xpos;
+		  line = CURWIN.lastline;
+		}
+	    }
+	  else
+	    {
+	      word_len++;
+	      x++;
+	    }
+	}
+      
+      CURWIN.xpos = xpos;
     }
   
-  for (x=0; x<text->len;)
-    {
-      if (text->text[x] == ' '  ||
-	  text->text[x] == '\n' ||
-	  x == (text->len-1))
-	{
-	  int w;
-	  int nl;
-
-	  nl = 0;
-	  do
-	    {
-	      if (text->text[x] == '\n')
-		{
-		  nl = 1;
-		  break;
-		}
-	      x++;
-	      word_len++;
-	    }
-	  while (!nl &&
-		 (x < text->len &&
-		  (text->text[x] == ' ' ||
-		   text->text[x] == '\n')));
-
-	  w = xfont_get_text_width(fn,
-				   text->text + word_start,
-				   word_len);
-	  
-	  /* We've got a word */
-	  xpos += w;
-
-	  if (xpos > CURWIN.winlx)
-	    {
-	      /* Put this word on the next line */
-	      new_line(more);
-
-	      xpos = CURWIN.xpos + w;
-	      line = CURWIN.lastline;
-	    }
-
-	  if (line->start == NULL)
-	    {
-	      line->offset = word_start;
-	      line->start = text;
-	    }
-	  line->n_chars += word_len;
-
-	  word_start += word_len;
-	  total_len  += word_len;
-	  word_len    = 0;
-
-	  if (nl)
-	    {
-	      new_line(more);
-
-	      x++;
-	      total_len++;
-	      word_start++;
-
-	      xpos = CURWIN.xpos;
-	      line = CURWIN.lastline;
-	    }
-	}
-      else
-	{
-	  word_len++;
-	  x++;
-	}
-    }
-
-  CURWIN.xpos = xpos;
-
   rct.top    = CURWIN.lastline->baseline - CURWIN.lastline->ascent+4;
   rct.bottom = CURWIN.lastline->baseline + CURWIN.lastline->descent+4;
   rct.left   = 4;
@@ -960,10 +978,11 @@ void display_prints(const int* str)
 	  text->fg   = CURWIN.fore;
 	  text->bg   = CURWIN.back;
 	}
-      text->font = style_font[(CURSTYLE>>1)&15];
-      text->len  = istrlen(str);
-      text->text = malloc(sizeof(int)*text->len);
-      text->next = NULL;
+      text->spacer = 0;
+      text->font   = style_font[(CURSTYLE>>1)&15];
+      text->len    = istrlen(str);
+      text->text   = malloc(sizeof(int)*text->len);
+      text->next   = NULL;
       memcpy(text->text, str, sizeof(int)*text->len);
 
       if (CURWIN.lasttext == NULL)
@@ -1281,6 +1300,30 @@ void display_split(int lines, int window)
     {
       if (CURWIN.line == NULL)
 	start_y = CURWIN.winsy;
+      else
+	{
+	  CURWIN.lasttext->next   = malloc(sizeof(struct text));
+	  CURWIN.lasttext         = CURWIN.lasttext->next;
+	  CURWIN.lasttext->spacer = 1;
+	  CURWIN.lasttext->space  = CURWIN.winsy -
+	    (CURWIN.lastline->baseline + CURWIN.lastline->descent);
+	  CURWIN.lasttext->len    = 0;
+	  CURWIN.lasttext->text   = NULL;
+	  CURWIN.lasttext->font   = style_font[CURSTYLE];
+
+	  if (CURWIN.style&1)
+	    {
+	      CURWIN.lasttext->fg   = CURWIN.back;
+	      CURWIN.lasttext->bg   = CURWIN.fore;
+	    }
+	  else
+	    {
+	      CURWIN.lasttext->fg   = CURWIN.fore;
+	      CURWIN.lasttext->bg   = CURWIN.back;
+	    }
+
+	  format_last_text(0);
+	}
       CURWIN.ypos = CURWIN.winsy;
     }
 }
@@ -2415,28 +2458,6 @@ static LRESULT CALLBACK display_winproc(HWND hwnd,
 		    mainwin, game_dlg);
 	  break;
 
-	case IDM_LOCALCHANGE:
-	  {
-	    char hash[20];
-	    
-	    sprintf(hash, "%i.%.6s", Word(ZH_release), Address(ZH_serial));
-	    if (hash_get(rc_hash, hash, strlen(hash)) == NULL)
-	      {
-		MessageBox(mainwin,
-			   "You must add the game to the database to enable this option",
-			   "Zoom", MB_OK|MB_ICONEXCLAMATION);
-	      }
-	    else
-	      {
-		localchange = !localchange;
-		ModifyMenu(optionmenu, IDM_LOCALCHANGE,
-			   MF_BYCOMMAND|(localchange?MF_CHECKED:MF_UNCHECKED),
-			   IDM_LOCALCHANGE,
-			   "&Local changes");
-	      }
-	  }
-	  break;
-
 	case IDM_ABOUT:
 	  DialogBox(inst, MAKEINTRESOURCE(ID_ABOUT),
 		    mainwin, about_dlg);
@@ -2568,8 +2589,6 @@ int WINAPI WinMain(HINSTANCE hInst,
 
   AppendMenu(filemenu, 0, IDM_EXIT, "E&xit");
 
-  AppendMenu(optionmenu, MF_UNCHECKED, IDM_LOCALCHANGE, "&Local changes...");
-  AppendMenu(optionmenu, MF_SEPARATOR, 0, NULL);
   AppendMenu(optionmenu, 0, IDM_GAME, "&Game...");
   AppendMenu(optionmenu, MF_POPUP, (UINT) screenmenu, "&Screen");
   AppendMenu(optionmenu, 0, IDM_INTERPRETER, "&Interpreter...");

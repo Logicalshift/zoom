@@ -15,6 +15,7 @@ AM_CONFIG_HEADER(config.h)
 UTIL_DISPLAY_SECTION(compilers)
 AC_PROG_CC
 AC_PROG_CPP
+AC_PROG_RANLIB
 AM_PROG_LEX
 AC_PROG_YACC
 AC_PATH_PROG(PERL, perl, noperl)
@@ -274,5 +275,7 @@ AC_OUTPUT([
   src/Makefile
   src/ztypes.h
   src/zoom.rc
+  blorb/Makefile
+  blorb/libblorb/Makefile
   builder/Makefile
   bonus/Makefile])
