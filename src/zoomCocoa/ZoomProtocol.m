@@ -355,7 +355,7 @@ NSString* ZStyleAttributeName = @"ZStyleAttribute";
 
 - (id) copyWithZone: (NSZone*) zone {
     ZStyle* style;
-    style = [[[self class] alloc] init];
+    style = [[[self class] allocWithZone: zone] init];
 
     [style setForegroundColour: foregroundColour];
     [style setBackgroundColour: backgroundColour];
@@ -442,3 +442,196 @@ NSString* ZStyleAttributeName = @"ZStyleAttribute";
 }
 
 @end
+
+// == ZBuffer ==
+
+// Buffer type strings
+NSString* ZBufferWriteString = @"ZBWS";
+NSString* ZBufferClearWindow = @"ZBCW";
+NSString* ZBufferMoveTo      = @"ZBMT";
+NSString* ZBufferEraseLine   = @"ZBEL";
+NSString* ZBufferSetWindow   = @"ZBSW";
+
+@implementation ZBuffer
+
+// Initialisation
+- (id) init {
+    self = [super init];
+    if (self) {
+        buffer = [[NSMutableArray allocWithZone: [self zone]] init];
+    }
+    return self;
+}
+
+- (void) dealloc {
+    [buffer release];
+    [super dealloc];
+}
+
+// NSCopying
+
+- (id) copyWithZone: (NSZone*) zone {
+    ZBuffer* buf;
+    buf = [[[self class] allocWithZone: zone] init];
+
+    [buf->buffer release];
+    buf->buffer = [buffer mutableCopyWithZone: zone];
+
+    return buf;
+}
+
+// NSCoding
+
+- (id)replacementObjectForPortCoder:(NSPortCoder *)encoder
+{
+    // Allow bycopying
+    if ([encoder isBycopy]) return self;
+    return [super replacementObjectForPortCoder:encoder];
+}
+
+- (void) encodeWithCoder: (NSCoder*) coder {
+    [coder encodeObject: buffer];
+}
+
+- (id) initWithCoder: (NSCoder*) coder {
+    self = [super init];
+    if (self) {
+        [buffer release];
+        buffer = [[coder decodeObject] retain];
+    }
+    return self;
+}
+
+// Buffering
+
+// General window routines
+- (void) writeString: (NSString*)          string
+           withStyle: (ZStyle*)            style
+            toWindow: (NSObject<ZWindow>*) window {
+    NSArray* lastTime;
+
+    // If we can, merge this write with the preceding one
+    lastTime = [buffer lastObject];
+    if (lastTime) {
+        if ([[lastTime objectAtIndex: 0] isEqualToString: ZBufferWriteString]) {
+            ZStyle* lastStyle             = [lastTime objectAtIndex: 2];
+
+            if (lastStyle == style ||
+                [lastStyle isEqual: style]) {
+                NSObject<ZWindow>* lastWindow = [lastTime objectAtIndex: 3];
+                if (lastWindow == window) {
+                    NSMutableString* lastString   = [lastTime objectAtIndex: 1];
+
+                    [lastString appendString: string];
+                    return;
+                }
+            }
+        }
+    }
+
+    // Create a new write
+    [buffer addObject:
+        [NSArray arrayWithObjects:
+            ZBufferWriteString,
+            [NSMutableString stringWithString: string],
+            style,
+            window,
+            nil]];
+}
+
+- (void) clearWindow: (NSObject<ZWindow>*) window
+           withStyle: (ZStyle*) style {
+    [buffer addObject:
+        [NSArray arrayWithObjects:
+            ZBufferClearWindow,
+            style,
+            window,
+            nil]];
+}
+
+// Upper window routines
+- (void) moveTo: (NSPoint) newCursorPos
+       inWindow: (NSObject<ZUpperWindow>*) window {
+    [buffer addObject:
+        [NSArray arrayWithObjects:
+            ZBufferMoveTo,
+            [NSValue valueWithPoint: newCursorPos],
+            window,
+            nil]];
+}
+
+- (void) eraseLineInWindow: (NSObject<ZUpperWindow>*) window
+                 withStyle: (ZStyle*) style {
+    [buffer addObject:
+        [NSArray arrayWithObjects:
+            ZBufferEraseLine,
+            style,
+            window,
+            nil]];    
+}
+
+- (void) setWindow: (NSObject<ZUpperWindow>*) window
+         startLine: (int) startLine
+           endLine: (int) endLine {
+    [buffer addObject:
+        [NSArray arrayWithObjects:
+            ZBufferSetWindow,
+            [NSNumber numberWithInt: startLine],
+            [NSNumber numberWithInt: endLine],
+            window,
+            nil]];
+}
+
+// Unbuffering
+- (BOOL) empty {
+    if ([buffer count] < 1)
+        return YES;
+    else
+        return NO;
+}
+
+- (void) blat {
+    NSEnumerator* bufEnum = [buffer objectEnumerator];
+    NSArray*      entry;
+
+    while (entry = [bufEnum nextObject]) {
+        NSString* entryType = [entry objectAtIndex: 0];
+
+        if ([entryType isEqualToString: ZBufferWriteString]) {
+            NSString* str = [entry objectAtIndex: 1];
+            ZStyle*   sty = [entry objectAtIndex: 2];
+            NSObject<ZWindow>* win = [entry objectAtIndex: 3];
+
+            [win writeString: str
+                   withStyle: sty];
+        } else if ([entryType isEqualToString: ZBufferClearWindow]) {
+            ZStyle* sty = [entry objectAtIndex: 1];
+            NSObject<ZWindow>* win = [entry objectAtIndex: 2];
+
+            [win clearWithStyle: sty];
+        } else if ([entryType isEqualToString: ZBufferMoveTo]) {
+            NSPoint whereTo = [[entry objectAtIndex: 1] pointValue];
+            NSObject<ZUpperWindow>* win = [entry objectAtIndex: 2];
+
+            [win setCursorPositionX: whereTo.x
+                                  Y: whereTo.y];
+        } else if ([entryType isEqualToString: ZBufferEraseLine]) {
+            ZStyle* sty = [entry objectAtIndex: 1];
+            NSObject<ZUpperWindow>* win = [entry objectAtIndex: 2];
+
+            [win eraseLine];
+        } else if ([entryType isEqualToString: ZBufferSetWindow]) {
+            int startLine = [[entry objectAtIndex: 1] intValue];
+            int endLine   = [[entry objectAtIndex: 2] intValue];
+            NSObject<ZUpperWindow>* win = [entry objectAtIndex: 3];
+
+            [win startAtLine: startLine];
+            [win endAtLine: endLine];
+        } else {
+            NSLog(@"Unknown buffer type: %@", entryType);
+        }
+    }
+}
+
+@end
+

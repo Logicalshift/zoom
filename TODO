@@ -17,6 +17,7 @@ Hmm, this file was a bit out of date.
  
  * Cocoa version 'bounces' around when 
  * Really need to just send the entire buffer rather than individual commands
+ * Cocoa version has the restart bug again (erg)
 
  * Sound
  * Internationalisation support

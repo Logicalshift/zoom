@@ -23,23 +23,14 @@ extern NSAutoreleasePool* displayPool;
 
     // Some pieces of state information
     NSMutableString* inputBuffer;
-    NSMutableArray*  outputBuffer;
+    ZBuffer*         outputBuffer;
 }
 
 - (NSObject<ZDisplay>*) display;
 - (NSObject<ZWindow>*)  windowNumber: (int) num;
 - (NSMutableString*)    inputBuffer;
 
-- (void) bufferString: (NSString*) string
-            forWindow: (int) windowNumber
-            withStyle: (ZStyle*) style;
-- (void) bufferMovement: (NSPoint) point
-              forWindow: (int) windowNumber;
-- (void) bufferEraseLine: (int) windowNumber;
-- (void) bufferSetWindow: (int) windowNumber
-               startLine: (int) startline;
-- (void) bufferSetWindow: (int) windowNumber
-                 endLine: (int) endline;
+- (ZBuffer*) buffer;
 - (void) flushBuffers;
 
 @end

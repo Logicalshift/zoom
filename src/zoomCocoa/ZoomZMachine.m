@@ -13,6 +13,7 @@
 
 
 #include "zmachine.h"
+#include "interp.h"
 #include "random.h"
 #include "file.h"
 #include "zscii.h"
@@ -23,12 +24,6 @@
 #include "v6display.h"
 
 #define DEBUG
-
-static NSString* bufferedString = @"bufferedString";
-static NSString* bufferedMovement = @"bufferedMovement";
-static NSString* bufferedEraseLine = @"bufferedEraseLine";
-static NSString* bufferedStartLine = @"bufferedStartLine";
-static NSString* bufferedEndLine = @"bufferedEndLine";
 
 @implementation ZoomZMachine
 
@@ -43,7 +38,8 @@ static NSString* bufferedEndLine = @"bufferedEndLine";
         machineFile = NULL;
 
         inputBuffer = [[NSMutableString allocWithZone: [self zone]] init];
-        outputBuffer = [[NSMutableArray allocWithZone: [self zone]] init];
+        outputBuffer = [[ZBuffer allocWithZone: [self zone]] init];
+        //outputBuffer = [[NSMutableArray allocWithZone: [self zone]] init];
 
         windows[0] = windows[1] = windows[2] = nil;
 
@@ -102,12 +98,15 @@ static NSString* bufferedEndLine = @"bufferedEndLine";
 }
 
 - (BOOL) loadResourcesFromData: (in bycopy NSData*) resources {
+    return NO; // IMPLEMENT ME
 }
 
 - (BOOL) loadResourcesFromFile: (in bycopy NSFileHandle*) file {
+    return NO; // IMPLEMENT ME
 }
 
 - (BOOL) loadResourcesFromZFile: (in byref NSObject<ZFile>) file {
+    return NO; // IMPLEMENT ME
 }
 
 // = Running =
@@ -116,6 +115,7 @@ static NSString* bufferedEndLine = @"bufferedEndLine";
 #ifdef DEBUG
     NSLog(@"Started running");
 #endif
+
     /*
     {
         int x;
@@ -185,8 +185,6 @@ static NSString* bufferedEndLine = @"bufferedEndLine";
     display_initialise();
 
     // Start running the machine
-    int version = 0;
-    
     switch (machine.header[0])
     {
 #ifdef SUPPORT_VERSION_3
@@ -262,146 +260,14 @@ static NSString* bufferedEndLine = @"bufferedEndLine";
 
 // = Buffering =
 
-- (void) bufferEraseLine: (int) windowNumber {
-    [outputBuffer addObject: [NSArray arrayWithObjects:
-        bufferedEraseLine,
-        [NSNumber numberWithInt: windowNumber],
-        nil]];
-}
-
-- (void) bufferString: (NSString*) string
-            forWindow: (int) windowNumber
-            withStyle: (ZStyle*) style {
-    if ([string isEqualTo: @""]) return; // Nothing to do
-    
-    NSArray* lastTime = [outputBuffer lastObject];
-
-    if (lastTime) {
-        NSString* lastType = [lastTime objectAtIndex: 0];
-
-        if ([lastType isEqualToString: bufferedString]) {
-            // Extend the last string if it's in the same window and of
-            // the same style
-            NSMutableString* lastString = [lastTime objectAtIndex: 1];
-            NSNumber* lastWindow = [lastTime objectAtIndex: 2];
-            ZStyle* lastStyle = [lastTime objectAtIndex: 3];
-
-            if ([lastWindow intValue] == windowNumber &&
-                [lastStyle isEqual: style]) {
-                [lastString appendString: string];
-                return;
-            }
-        }
-    }
-
-    [outputBuffer addObject: [NSArray arrayWithObjects:
-        bufferedString,
-        [NSMutableString stringWithString: string],
-        [NSNumber numberWithInt: windowNumber],
-        style,
-        nil]];
-}
-
-- (void) bufferMovement: (NSPoint) point
-              forWindow: (int) windowNumber {
-    NSArray* lastTime = [outputBuffer lastObject];
-
-    if (lastTime) {
-        NSString* lastType = [lastTime objectAtIndex: 0];
-
-        if ([lastType isEqualToString: bufferedMovement]) {
-            NSValue* lastPoint = [lastTime objectAtIndex: 1];
-            NSNumber* lastWindow = [lastTime objectAtIndex: 2];
-
-            // Combine with the last movement if necessary
-            // (Technically speaking, this should never happen in a well-written
-            // game. But I think it may happen several times in other games.
-            // NSDistantObject calls are sufficiently slow that this can make
-            // a big difference to execution speed)
-            if ([lastWindow intValue] == windowNumber) {
-                [outputBuffer removeLastObject]; // Toodles
-            }
-        }
-    }
-
-    [outputBuffer addObject: [NSArray arrayWithObjects:
-        bufferedMovement,
-        [NSValue valueWithPoint: point],
-        [NSNumber numberWithInt: windowNumber],
-        nil]];
-}
-
-- (void) bufferSetWindow: (int) windowNumber
-               startLine: (int) startline {
-    [outputBuffer addObject: [NSArray arrayWithObjects:
-        bufferedStartLine,
-        [NSNumber numberWithInt: startline],
-        [NSNumber numberWithInt: windowNumber],
-        nil]];
-}
-
-- (void) bufferSetWindow: (int) windowNumber
-                 endLine: (int) endline {
-    [outputBuffer addObject: [NSArray arrayWithObjects:
-        bufferedEndLine,
-        [NSNumber numberWithInt: endline],
-        [NSNumber numberWithInt: windowNumber],
-        nil]];
+- (ZBuffer*) buffer {
+    return outputBuffer;
 }
 
 - (void) flushBuffers {
-    NSEnumerator* bufEnum;
-
-    if ([outputBuffer count] < 1) return;
-
-    [display startExclusive];
-    
-    bufEnum = [outputBuffer objectEnumerator];
-
-    NSArray* bufEntry;
-    while (bufEntry = [bufEnum nextObject]) {
-        NSString* bufType = [bufEntry objectAtIndex: 0];
-
-        if ([bufType isEqualToString: bufferedString]) {
-            NSMutableString* lastString = [bufEntry objectAtIndex: 1];
-            NSNumber* lastWindow = [bufEntry objectAtIndex: 2];
-            ZStyle* lastStyle = [bufEntry objectAtIndex: 3];
-
-            [[self windowNumber: [lastWindow intValue]] writeString: lastString
-                                                          withStyle: lastStyle];
-        } else if ([bufType isEqualToString: bufferedMovement]) {
-            NSValue* lastPoint = [bufEntry objectAtIndex: 1];
-            NSNumber* lastWindow = [bufEntry objectAtIndex: 2];
-
-            NSPoint pos = [lastPoint pointValue];
-
-            [(NSObject<ZUpperWindow>*)[self windowNumber:
-                [lastWindow intValue]] setCursorPositionX: (int)pos.x
-                                                        Y: (int)pos.y];
-        } else if ([bufType isEqualToString: bufferedEraseLine]) {
-            NSNumber* lastWindow = [bufEntry objectAtIndex: 1];
-            
-            [(NSObject<ZUpperWindow>*)[self windowNumber:
-                [lastWindow intValue]] eraseLine];
-        } else if ([bufType isEqualToString: bufferedStartLine]) {
-            NSNumber* lastWindow = [bufEntry objectAtIndex: 2];
-            int line = [[bufEntry objectAtIndex: 1] intValue];
-
-            [(NSObject<ZUpperWindow>*)[self windowNumber:
-                [lastWindow intValue]] startAtLine: line];
-        } else if ([bufType isEqualToString: bufferedEndLine]) {
-            NSNumber* lastWindow = [bufEntry objectAtIndex: 2];
-            int line = [[bufEntry objectAtIndex: 1] intValue];
-
-            [(NSObject<ZUpperWindow>*)[self windowNumber:
-                [lastWindow intValue]] endAtLine: line];
-        }
-    }
-
+    [display flushBuffer: outputBuffer];
     [outputBuffer release];
-    outputBuffer = [[NSMutableArray allocWithZone: [self zone]] init];
-
-    [display stopExclusive];
+    outputBuffer = [[ZBuffer allocWithZone: [self zone]] init];
 }
 
 @end

@@ -29,6 +29,7 @@
 @protocol ZDisplay;
 @protocol ZFile;
 @class ZStyle;
+@class ZBuffer;
 
 // == Server-side objects ==
 @protocol ZVendor
@@ -134,6 +135,7 @@
 // large blocks of varied text
 - (oneway void) startExclusive;
 - (oneway void) stopExclusive;
+- (oneway void) flushBuffer: (in bycopy ZBuffer*) toFlush;
 @end
 
 // Some useful standard classes
@@ -188,5 +190,34 @@ extern NSString* ZStyleAttributeName;
 - (BOOL)     bold;
 - (BOOL)     underline;
 - (BOOL)     symbolic;
+
+@end
+
+// Buffering
+@interface ZBuffer : NSObject<NSCopying,NSCoding> {
+    NSMutableArray* buffer;
+}
+
+// Buffering
+
+// General window routines
+- (void) writeString: (NSString*) string
+           withStyle: (ZStyle*) style
+            toWindow: (NSObject<ZWindow>*) window;
+- (void) clearWindow: (NSObject<ZWindow>*) window
+           withStyle: (ZStyle*) style;
+
+// Upper window routines
+- (void) moveTo: (NSPoint) newCursorPos
+       inWindow: (NSObject<ZUpperWindow>*) window;
+- (void) eraseLineInWindow: (NSObject<ZUpperWindow>*) window
+                 withStyle: (ZStyle*) style;
+- (void) setWindow: (NSObject<ZUpperWindow>*) window
+         startLine: (int) startLine
+           endLine: (int) endLine;
+
+// Unbuffering
+- (BOOL) empty; // YES if the buffer has no data
+- (void) blat; // Like blitting, only messier
 
 @end

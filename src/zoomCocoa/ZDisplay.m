@@ -131,12 +131,15 @@ void display_clear(void) {
 }
 
 void display_erase_window(void) {
-    [mainMachine flushBuffers];
-    [[mainMachine windowNumber: currentWindow] clearWithStyle: currentStyle];
+    [[mainMachine buffer] clearWindow: [mainMachine windowNumber: currentWindow]
+                            withStyle: currentStyle];
+    //[mainMachine flushBuffers];
+    //[[mainMachine windowNumber: currentWindow] clearWithStyle: currentStyle];
 }
 
 void display_erase_line(int val) {
-    [mainMachine bufferEraseLine: currentWindow];
+    [[mainMachine buffer] eraseLineInWindow: [mainMachine windowNumber: currentWindow]
+                                  withStyle: currentStyle];
 }
 
 // Display functions
@@ -156,9 +159,9 @@ void display_prints(const int* buf) {
                                             length: length];
 
     // Send to the window
-    [mainMachine bufferString: str
-                    forWindow: currentWindow
-                    withStyle: currentStyle];
+    [[mainMachine buffer] writeString: str
+                            withStyle: currentStyle
+                             toWindow: [mainMachine windowNumber: currentWindow]];
     /*
     [[mainMachine windowNumber: currentWindow] writeString: str
                                                  withStyle: currentStyle];
@@ -167,9 +170,9 @@ void display_prints(const int* buf) {
 
 void display_prints_c(const char* buf) {
     NSString* str = [NSString stringWithCString: buf];
-    [mainMachine bufferString: str
-                    forWindow: currentWindow
-                    withStyle: currentStyle];
+    [[mainMachine buffer] writeString: str
+                            withStyle: currentStyle
+                             toWindow: [mainMachine windowNumber: currentWindow]];
 }
 
 void display_printc(int chr) {
@@ -179,9 +182,9 @@ void display_printc(int chr) {
 
     NSString* str = [NSString stringWithCharacters: bufU
                                             length: 1];
-    [mainMachine bufferString: str
-                    forWindow: currentWindow
-                    withStyle: currentStyle];
+    [[mainMachine buffer] writeString: str
+                            withStyle: currentStyle
+                             toWindow: [mainMachine windowNumber: currentWindow]];
 }
 
 void display_printf(const char* format, ...) {
@@ -419,18 +422,16 @@ void display_set_colour(int fore, int back) {
 
 void display_split(int lines, int window) {
     // IMPLEMENT ME: window 2
-    [mainMachine bufferSetWindow: window
-                       startLine: 0];
-    [mainMachine bufferSetWindow: window
-                         endLine: lines];
+    [[mainMachine buffer] setWindow: [mainMachine windowNumber: window]
+                          startLine: 0
+                            endLine: lines];
 }
 
 void display_join(int win1, int win2) {
     // IMPLEMENT ME: window 2
-    [mainMachine bufferSetWindow: win2
-                       startLine: 0];
-    [mainMachine bufferSetWindow: win2
-                         endLine: 0];
+    [[mainMachine buffer] setWindow: [mainMachine windowNumber: win2]
+                          startLine: 0
+                            endLine: 0];
 
     /*
     [mainMachine flushBuffers];
@@ -448,8 +449,8 @@ int  display_get_window(void) {
 
 void display_set_cursor(int x, int y) {
     if (currentWindow > 0) {
-        [mainMachine bufferMovement: NSMakePoint(x,y)
-                          forWindow: currentWindow];
+        [[mainMachine buffer] moveTo: NSMakePoint(x,y)
+                            inWindow: [mainMachine windowNumber: currentWindow]];
     }
 }
 

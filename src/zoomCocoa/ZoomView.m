@@ -188,6 +188,10 @@ static NSArray* defaultColours = nil;
     exclusiveMode = NO;
 }
 
+- (void) flushBuffer: (ZBuffer*) toFlush {
+    [toFlush blat];
+}
+
 // Set whether or not we recieve certain types of data
 - (void) shouldReceiveCharacters {
     [self rearrangeUpperWindows];
