@@ -7,10 +7,29 @@ by Andrew Hunter
    written by me to investigate the effects of specialisation on
    bytecode languages similar to ZCode. It's a bit rough around the
    edges, as most of the interpreter was written in a single weekend.
+   (Ahem, this is out of date. The interpreter might have been written
+   in a weekend, but it's less than 1/10th of the total code for Zoom...
+   2/3rds is the display drivers ;-)
 
    Send any bug reports to bugs@logicalshift.demon.co.uk, and anything
    else to andrew@logicalshift.demon.co.uk. Zoom's homepage can be
    located at http://www.logicalshift.demon.co.uk/unix/zoom/
+
+Compiling Zoom
+==============
+
+   To get a full-featured interpreter, you'll want to have at least
+   libpng installed. The Mac OS X port will fall back to using
+   QuickTime for PNG rendering if necessary, but that code is full
+   of bugs and looks awful anyway. For X, having an X server with
+   Xrender and Xft is a good idea. T1Lib is optional, but appears
+   to provide improved rendering quality over Xft (which seems to
+   have great difficulties with hinting).
+
+   With all the libraries installed, ./configure && make should be
+   all that's required to build Zoom for either X or Mac OS X.
+   Please report any build problems to the bugs address listed 
+   above: Zoom should work on a reasonably wide variety of systems.
 
 Using Zoom
 ==========
@@ -21,8 +40,9 @@ Using Zoom
    tend to have a .dat or .zip filename - note that the .zip stands
    for 'Z-Code Interpreter', not PKZip as you might think). Assuming
    you haven't tinkered with zmachine.h, Zoom will support Z-Code
-   versions 3, 4, 5, 7 and 8. You can compile version 6 support in,
-   but the display doesn't look even remotely right.
+   versions 3, 4, 5, 6, 7 and 8. As of version 1.0.1beta1, version
+   6 is fully supported, as is the Standard v1.1draft6. Unicode
+   support is also much improved from this release.
 
    Zoom needs a configuration file called '.zoomrc' in your home
    directory. This file tells Zoom about the colours and fonts it
@@ -110,15 +130,14 @@ Using Zoom
    (font 4). For a version 6 game, the graphics file can be specified
    using a command like
 
-      graphics "/home/me/infocom/zorkzero/ZORK0/ZORK0.EG1"
+      resources "/home/me/infocom/zorkzero/ZORK0/ZORK0.blb"
 
-   Presently only .eg1 and .mg1 graphics files are supported. for all
-   versions, a sound ZIP file may be specified with a command like
+   Presently only Blorb graphics files are supported. While I'm aware
+   of Blorb 1.1, I am somewhat hesitant to include JPEG support until 
+   the current patent unpleasentness is resolved.
 
-      sounds "/home/me/infocom/lurking_sounds.zip"
-
-   Although I haven't got round to implementing sound effects as of
-   the time of writing of this file.
+   Zoom will load sound effects, but won't really do anything with them
+   at the moment.
 
    If Zoom is run without a game specified, it will try to look in the
    directory specified by 'gamedir', and list all of the games it finds
@@ -155,6 +174,10 @@ Using Zoom
 
 Zoom and Windows
 ================
+
+  *** THE WINDOWS DRIVER IS DEAD ***
+
+  Feel free to volunteer to resurrect it...
 
   This version of Zoom now supports windows through the mingw32 library
   (and to a lesser extent with Borland's C compiler). The windows display
@@ -199,42 +222,11 @@ Zoom and Windows
 Zoom and Mac OS X
 =================
 
-  This version of Zoom also features a port to Mac OS X. It should
-  compile 'out of the box' if you have the Apple development kit. This
-  port is somewhat more mature than the Windows one, but may still
-  have a few oddities. interp.c will take an age to compile on any
-  machine with less than 128Mb of memory (256Mb is recommended if
-  you want to compile Zoom)
-
-  By default, Zoom uses the ATSUI font rendering interface - while
-  this provides good support for Unicode, the rendering quality is,
-  frankly, crap. There is a Quartz renderer available, which looks
-  gorgeous, but is incredibly slow (and leaks memory all over the
-  place, most days). To enable this, edit carbondisplay.h, #undef
-  USE_ATS and then #define USE_QUARTZ. (You can also #undef both
-  if you want to use the standard Quickdraw rendering interface)
-
-  (If anyone knows how to get CGContextSetFont to do something useful,
-  or a better way of measuring a string of text under Quartz, I'd be
-  interested to hear from you...)
-
-Extensions and oddities
-=======================
-
-  Zoom supports graphical version 5 games. To enable this feature, you
-  must pass the '-g' option on the command line. Most Inform games do not
-  support this feature, but most of 'em don't set the 'pictures' flag in the
-  header either, so it should be no big deal. (This function is added because
-  there are more interesting ways to abuse the Z-Machine when @set_cursor is
-  graphical ;-). In fact, the only reason it's optional is because the
-  standard suggests that it should be so; with this flag enabled, Zoom behaves
-  like Infocom's Beyond Zork interpreter. This could probably be enabled
-  by default, as even though the german version of Zork I contains duff
-  calculation code, it also doesn't set the pictures flag.
-
-  Zoom supports Unicode, but it requires that you use a font that contains
-  Unicode characters - most X fonts don't, unfortunately, and the Impulse
-  font system isn't near finished yet.
+   This has been variously fixed and updated, along with everything else.
+   The Quartz renderer is to be preferred, for the higher-quality
+   rendering and best support for Unicode. Version 6 games (and blorb)
+   are supported in this port: images are *always* rendered using
+   Quartz.
 
 Why it goes fast
 ================
