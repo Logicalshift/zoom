@@ -9,6 +9,9 @@
 #import "ZoomServer.h"
 #import "ZoomZMachine.h"
 
+#include <sys/types.h>
+#include <unistd.h>
+
 NSAutoreleasePool* mainPool = nil;
 NSRunLoop*         mainLoop = nil;
 
