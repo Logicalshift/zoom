@@ -65,6 +65,8 @@ extern NSString* ZoomStyleAttributeName;
 	
 	// Preferences
 	ZoomPreferences* viewPrefs;
+	
+	float scaleFactor;
 }
 
 // The delegate
@@ -72,6 +74,8 @@ extern NSString* ZoomStyleAttributeName;
 - (id)   delegate;
 
 - (void) killTask;
+
+- (void) setScaleFactor: (float) scaling;
 
 // Specifying what to run
 - (void) setZMachine: (NSObject<ZMachine>*) machine;

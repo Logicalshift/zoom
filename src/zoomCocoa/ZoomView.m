@@ -57,6 +57,9 @@ static void finalizeViews(void) {
 
         // Yep, we autoresize our subviews
         [self setAutoresizesSubviews: YES];
+
+		// Default scale factor
+		scaleFactor = 1.0;
         
         // Default creator code is YZZY (Zoom's creator code)
         creatorCode = 'YZZY';
@@ -181,8 +184,21 @@ static void finalizeViews(void) {
     [super dealloc];
 }
 
-- (void)drawRect:(NSRect)rect {
-    // Drawing code here.
+- (void) setScaleFactor: (float) scaling {
+	scaleFactor = scaling;
+	[textScroller setScaleFactor: scaling];
+		
+	NSRect tVF = [textView frame];
+	NSRect tVB = tVF;
+	tVB.origin.x = tVB.origin.y = 0;
+	tVB.size.width *= scaling;
+	tVB.size.height *= scaling;
+	
+	[textView setBounds: tVB];
+	
+	if (zMachine) {
+		[zMachine displaySizeHasChanged];
+	}
 }
 
 - (void) setZMachine: (NSObject<ZMachine>*) machine {
@@ -323,7 +339,7 @@ static void finalizeViews(void) {
 
 - (void) scrollToEnd {
     NSLayoutManager* mgr = [textView layoutManager];
-
+	
     NSRange endGlyph = [textView selectionRangeForProposedRange:
         NSMakeRange([[textView textStorage] length]-1, 1)
                                                            granularity: NSSelectByCharacter];
@@ -333,10 +349,11 @@ static void finalizeViews(void) {
     
     NSRect endRect = [mgr boundingRectForGlyphRange: endGlyph
                                     inTextContainer: [textView textContainer]];
+	NSRect frame = [textView convertRect: [[textScroller contentView] frame]
+								fromView: textScroller];
 
-    [textView scrollPoint:
-        NSMakePoint(0,
-                    NSMaxY(endRect))];
+    [textView scrollPoint: NSMakePoint(0,
+									   NSMaxY(endRect) - frame.size.height)];
 }
 
 - (void) displayMoreIfNecessary {
@@ -396,7 +413,11 @@ static void finalizeViews(void) {
 
 - (void) updateMorePrompt {
     // Updates the more prompt to represent the new height of the window
-    double maxHeight = moreReferencePoint + [textScroller contentSize].height;
+	NSSize contentSize = [textScroller contentSize];
+	contentSize = [textView convertSize: contentSize
+							   fromView: textScroller];
+	
+    double maxHeight = moreReferencePoint + contentSize.height;
 
     [textView setMaxSize: NSMakeSize(1e8, maxHeight)];
     [textView sizeToFit];
@@ -431,7 +452,7 @@ static void finalizeViews(void) {
         // that it always appears at the bottom of the text.
         // This technique has one failure, though: when the more prompt moves,
         // bits may get left on the screen as a result of scrolling
-        NSRect content = [textView frame];
+        NSRect content = [textView bounds];
         
         [moreView setSize];
         NSSize moreSize = [moreView frame].size;
@@ -756,7 +777,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 - (void) setUpperBuffer: (double) bufHeight {
     // Update the upper window buffer
     NSSize contentSize = [textScroller contentSize];
-    [upperWindowBuffer setContainerSize: NSMakeSize(contentSize.width, bufHeight)];
+    [upperWindowBuffer setContainerSize: NSMakeSize(contentSize.width*scaleFactor, bufHeight)];
 }
 
 - (double) upperBufferHeight {
@@ -920,9 +941,15 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     // Light the blue touch paper
     [zoomTask launch];
 
-    // ***FOOOM***
-}
-
+	//    \||/
+    // ***FOOM***
+}//        ||
+//		   ||
+//		   ||
+//		   ||
+//		  \||/
+//         \/
+//	     (phut)
 - (void) _zoomTaskFinished: (NSNotification*) not {
     // The task has finished
     if (zMachine) {
@@ -960,6 +987,8 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         [self updateMorePrompt];
         lastTileSize = currentSize;
     }
+	
+	[self scrollToEnd];
 
     // Paste stuff
     NSEnumerator* upperEnum = [upperWindows objectEnumerator];

@@ -42,6 +42,9 @@
 
     NSRect ourBounds = [self bounds];
     NSRect superBounds = [[self superview] frame];
+	
+	superBounds = [self convertRect: superBounds
+						   fromView: [self superview]];
 
     // The enclosing ZoomView
     NSView* superview = [self superview];
@@ -84,6 +87,17 @@
                 [str drawAtPoint: NSMakePoint(0,0)];
                 [fadeImage unlockFocus];
 
+				[fadeImage setFlipped: [self isFlipped]];
+				[fadeImage drawInRect:NSMakeRect(lineRect.origin.x,
+												 lineRect.origin.y+lineRect.size.height,
+												 lineRect.size.width,
+												 -lineRect.size.height)
+							 fromRect:NSMakeRect(0,0,
+												 lineRect.size.width,
+												 lineRect.size.height)
+							operation:NSCompositeSourceOver
+							 fraction:fadeAmount];
+				/*
                 [fadeImage compositeToPoint:NSMakePoint(lineRect.origin.x,
                                                         lineRect.origin.y+lineRect.size.height)
                                    fromRect:NSMakeRect(0,0,
@@ -91,6 +105,7 @@
                                                        lineRect.size.height)
                                   operation:NSCompositeSourceOver
                                    fraction:fadeAmount];
+				 */
 
                 [fadeImage release];
             } else {
@@ -134,6 +149,9 @@
     
     NSRect ourBounds = [self bounds];
     NSRect containerBounds = [container bounds];
+	
+	//ourBounds = [self convertRect: ourBounds toView: container];
+	containerBounds = [self convertRect: containerBounds fromView: container];
 
     double offset = [zoomView upperBufferHeight];
 

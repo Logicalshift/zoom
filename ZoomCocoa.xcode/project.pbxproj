@@ -83,6 +83,29 @@
 			settings = {
 			};
 		};
+		4B1C13F905C5A94300E5796D = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.rtf;
+			name = English;
+			path = English.lproj/Credits.rtf;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B1C13FD05C5A94B00E5796D = {
+			children = (
+				4B1C13F905C5A94300E5796D,
+			);
+			isa = PBXVariantGroup;
+			name = Credits.rtf;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B1C13FE05C5A94B00E5796D = {
+			fileRef = 4B1C13FD05C5A94B00E5796D;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		4B1E3F47050F7AD000A8E303 = {
 			children = (
 				4B1E3FD2050F7DFD00A8E303,
@@ -2095,6 +2118,7 @@
 				4B0DC67C05C0A61D000B96A3,
 				4B61963205C1AD170019AFF7,
 				4B61963305C1AD170019AFF7,
+				4B1C13FE05C5A94B00E5796D,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2319,6 +2343,7 @@
 		};
 		4BCF3F42050FB1D800A8E303 = {
 			children = (
+				4B1C13FD05C5A94B00E5796D,
 				4BCF3F43050FB21C00A8E303,
 				4BCF3F44050FB21C00A8E303,
 				4BCF3F45050FB21C00A8E303,

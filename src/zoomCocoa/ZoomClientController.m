@@ -19,6 +19,7 @@
 
     if (self) {
         [self setShouldCloseDocument: YES];
+		isFullscreen = NO;
     }
 
     return self;
@@ -38,6 +39,12 @@
 
 - (void) zMachineStarted: (id) sender {
     [[zoomView zMachine] loadStoryFile: [[self document] gameData]];
+}
+
+- (void) zMachineFinished: (id) sender {
+	[[self window] setTitle: [NSString stringWithFormat: @"%@ (finished)", [[self window] title]]];
+	
+	if (isFullscreen) [self playInFullScreen: self];
 }
 
 - (void) showGamePreferences: (id) sender {
@@ -85,6 +92,10 @@
 }
 
 - (void)windowDidResignMain:(NSNotification *)aNotification {
+	if (isFullscreen) {
+		[self playInFullScreen: self];
+	}
+	
 	[self recordGameInfo: self];
 	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
 }
@@ -138,6 +149,70 @@
 
 - (IBAction) infoMyRatingChanged: (id) sender {
 	[[[self document] storyInfo] setRating: [[ZoomGameInfoController sharedGameInfoController] rating]];
+}
+
+// = Various IB actions =
+
+- (IBAction) playInFullScreen: (id) sender {
+	if (isFullscreen) {
+		// Show the menubar
+		[NSMenu setMenuBarVisible: YES];
+
+		// Stop being fullscreen
+		[zoomView retain];
+		[zoomView removeFromSuperview];
+		
+		[[self window] setFrame: oldWindowFrame
+						display: YES
+						animate: YES];
+		[[self window] setShowsResizeIndicator: YES];
+		
+		[zoomView setScaleFactor: 1.0];
+		[zoomView setFrame: [[[self window] contentView] bounds]];
+		[[[self window] contentView] addSubview: zoomView];
+		[zoomView release];
+		
+		isFullscreen = NO;
+	} else {
+		// Start being fullscreen
+		[[self window] makeKeyAndOrderFront: self];
+		oldWindowFrame = [[self window] frame];
+		
+		// Finish off zoomView
+		NSSize oldZoomViewSize = [zoomView frame].size;
+		
+		[zoomView retain];
+		[zoomView removeFromSuperviewWithoutNeedingDisplay];
+		
+		// Resize the window
+		NSRect frame = [[[self window] screen] frame];
+		[[self window] setShowsResizeIndicator: NO];
+		frame = [NSWindow frameRectForContentRect: frame
+										styleMask: [[self window] styleMask]];
+		[[self window] setFrame: frame
+						display: YES
+						animate: YES];
+		
+		// Hide the menubar
+		[NSMenu setMenuBarVisible: NO];
+		
+		// Resize, reposition the zoomView
+		NSRect newZoomViewFrame = [[[self window] contentView] bounds];
+		NSRect newZoomViewBounds;
+		
+		newZoomViewBounds.origin = NSMakePoint(0,0);
+		newZoomViewBounds.size   = newZoomViewFrame.size;
+		
+		double ratio = oldZoomViewSize.width/newZoomViewFrame.size.width;
+		[zoomView setFrame: newZoomViewFrame];
+		[zoomView setScaleFactor: ratio];
+		
+		// Add it back in again
+		[[[self window] contentView] addSubview: zoomView];
+		[zoomView release];
+		
+		isFullscreen = YES;
+	}
 }
 
 @end

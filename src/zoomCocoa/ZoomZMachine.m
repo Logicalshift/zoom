@@ -206,6 +206,8 @@
 
     display_finalise();
     [mainPool release];
+	
+	display_exit(0);
 }
 
 // = Debugging =

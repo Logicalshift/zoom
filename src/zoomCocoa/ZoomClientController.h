@@ -13,9 +13,14 @@
 
 @interface ZoomClientController : NSWindowController {
     IBOutlet ZoomView* zoomView;
+	BOOL isFullscreen;
+	
+	NSRect oldWindowFrame;
 }
 
 - (IBAction) recordGameInfo: (id) sender;
 - (IBAction) updateGameInfo: (id) sender;
+
+- (IBAction) playInFullScreen: (id) sender;
 
 @end

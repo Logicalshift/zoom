@@ -18,11 +18,14 @@
     ZoomUpperWindowView* upperView;
         
     NSBox* upperDivider;
+	
+	float scaleFactor;
 }
 
 - (id) initWithFrame: (NSRect) frame
             zoomView: (ZoomView*) zView;
 
+- (void) setScaleFactor: (float) factor;
 - (void) updateUpperWindows;
 
 @end

@@ -28,6 +28,7 @@
     self = [self initWithFrame:frame];
     if (self) {
         zoomView = zView; // Not retained, as this is a component of a ZoomView
+		scaleFactor = 1.0;
         
         upperView = [[ZoomUpperWindowView allocWithZone: [self zone]] initWithFrame: frame
                                                                            zoomView: zView];
@@ -49,12 +50,14 @@
         [NSDictionary dictionaryWithObjectsAndKeys:
             [zoomView fontWithStyle:ZFixedStyle], NSFontAttributeName, nil]];
 
-    double upperMargin = upperHeight * fixedSize.height;
+    double upperMargin = (upperHeight * fixedSize.height) / scaleFactor;
 
     // Resize the content frame so that it doesn't cover the upper window
     NSClipView* contentView = [self contentView];
     NSRect contentFrame = [contentView frame];
     NSRect upperFrame, sepFrame;
+	
+	contentFrame.size = [self contentSize];
 
     contentFrame.size.height -= upperMargin;
     contentFrame.origin.y    += upperMargin;
@@ -70,6 +73,15 @@
     contentFrame.origin.y    += sepHeight;
     contentFrame.size.height -= sepHeight;
         
+	// Content view scaling
+	/* -- BLECH, darn cocoa. This doesn't work, as Cocoa is too thick to deal with a scaled NSClipView.
+	NSRect contentBounds;
+	contentBounds.origin = NSMakePoint(0,0);
+	contentBounds.size   = NSMakeSize(floor(contentFrame.size.width * scaleFactor),
+									  floor(contentFrame.size.height * scaleFactor));
+	
+	 [contentView setBounds: contentBounds];
+	*/
     [contentView setFrame: contentFrame];
 
     // The upper/lower view seperator
@@ -82,11 +94,20 @@
     [upperDivider setNeedsDisplay: YES];
 
     // The upper window view
-    [zoomView setUpperBuffer: upperMargin + sepHeight];
+    [zoomView setUpperBuffer: (upperMargin*scaleFactor) + sepHeight];
     
     if (upperMargin > 0) {
         // Resize the upper window
         [upperView setFrame: upperFrame];
+		
+		// Scale it
+		NSRect upperBounds;
+		upperBounds.origin = NSMakePoint(0,0);
+		upperBounds.size = NSMakeSize(floor(upperFrame.size.width * scaleFactor),
+									  floor(upperFrame.size.height * scaleFactor));
+		[upperView setBounds: upperBounds];
+		
+		// Add it to our view
         if ([upperView superview] == nil) {
             [self addSubview: upperView];
             [upperView setNeedsDisplay: YES];
@@ -99,6 +120,11 @@
 - (void) updateUpperWindows {
     // Force a refresh of the upper window views
     [upperView setNeedsDisplay: YES];
+}
+
+- (void) setScaleFactor: (float) factor {
+	scaleFactor = factor;
+	[self tile];
 }
 
 @end
