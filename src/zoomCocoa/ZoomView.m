@@ -13,9 +13,9 @@
 #import "ZoomLowerWindow.h"
 #import "ZoomUpperWindow.h"
 #import "ZoomPixmapWindow.h"
-#import "ZoomAppDelegate.h"
 
 #import "ZoomScrollView.h"
+#import "ZoomConnector.h"
 
 @implementation ZoomView
 
@@ -1383,8 +1383,8 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
                                                  name: NSTaskDidTerminateNotification
                                                object: zoomTask];
 	
-	// Notify the NSApp delegate that we're waiting for a Z-Machine to arrive
-	[[NSApp delegate] addViewWaitingForServer: self];
+	// Notify the connector that we're waiting for a Z-Machine to arrive on the scene
+	[[ZoomConnector sharedConnector] addViewWaitingForServer: self];
     
     // Light the blue touch paper
     [zoomTask launch];
@@ -1401,7 +1401,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 - (void) zoomTaskFinished: (NSNotification*) not {
 	if ([not object] != zoomTask) return; // Not our task
 
-	[[NSApp delegate] removeView: self];
+	[[ZoomConnector sharedConnector] removeView: self];
 
     // The task has finished
     if (zMachine) {

@@ -15,13 +15,10 @@
 #import "ZoomiFictionController.h"
 #import "ZoomView.h"
 
-@interface ZoomAppDelegate : NSObject<ZClient> {
+@interface ZoomAppDelegate : NSObject {
 	ZoomPreferenceWindow* preferencePanel;
 	
 	NSMutableArray* gameIndices;
-	
-	NSConnection* connection;
-	NSMutableArray* waitingViews;
 }
 
 - (NSArray*) gameIndices;
@@ -29,8 +26,5 @@
 - (ZoomMetadata*) userMetadata;
 
 - (NSString*) zoomConfigDirectory;
-
-- (void) addViewWaitingForServer: (ZoomView*) view;
-- (void) removeView: (ZoomView*) view;
 
 @end

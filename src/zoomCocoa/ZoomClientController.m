@@ -13,8 +13,7 @@
 #import "ZoomGameInfoController.h"
 #import "ZoomStoryOrganiser.h"
 #import "ZoomSkeinController.h"
-
-#import "ZoomAppDelegate.h"
+#import "ZoomConnector.h"
 
 @implementation ZoomClientController
 
@@ -306,7 +305,7 @@
 		[[ZoomGameInfoController sharedGameInfoController] setInfoOwner: nil];
 	}
 	
-	[[NSApp delegate] removeView: zoomView];
+	[[ZoomConnector sharedConnector] removeView: zoomView];
 }
 
 - (void)windowDidBecomeMain:(NSNotification *)aNotification {
