@@ -108,15 +108,17 @@ static image_data* iload(image_data* resin, ZFile* file, int offset, int realrea
   png_set_read_fn(png, &fl, image_read);
 
   if (res == NULL)
-    res = malloc(sizeof(image_data));
+    {
+      res = malloc(sizeof(image_data));
 
-  res->file   = file;
-  res->offset = offset;
-  res->row    = NULL;
-  res->image  = NULL;
-
-  res->data          = NULL;
-  res->data_destruct = NULL;
+      res->file   = file;
+      res->offset = offset;
+      res->row    = NULL;
+      res->image  = NULL;
+      
+      res->data          = NULL;
+      res->data_destruct = NULL;
+    }
 
   png_read_info(png, png_info);
   png_get_IHDR(png, png_info,
@@ -293,22 +295,24 @@ void image_resample(image_data* data, int n, int d)
 
   if (n >= d) /* Far more likely to happen... */
     {
-      int dfx, dfy, E, NE;
+      int dfx, dfy, Ex, NEx, Ey, NEy;
       unsigned char* xp[3];
       int yp, dstx, dsty;
 
       int i;
 
-      /* Minor adjustment (ensures we don't overrun) */
       if (newwidth < newheight)
 	{ n = newwidth*3; d = data->width-1; }
       else
 	{ n = newheight*3; d = data->height-1; }
 
       /* Set up for bresenham */
-      dfx = dfy = 2*d-n;
-      E = 2*d;
-      NE = 2*(d-n);
+      dfx = 2*(data->width-1)-newwidth*3;
+      dfy = 2*(data->height-1)-newheight*3;
+      Ex = 2*(data->width-1);
+      Ey = 2*(data->height-1);
+      NEx = 2*((data->width-1)-newwidth*3);
+      NEy = 2*((data->height-1)-newheight*3);
 
       /* Calculate our 3 initial y positions */
       yp = 0;
@@ -319,11 +323,11 @@ void image_resample(image_data* data, int n, int d)
 	  /* Next position */
 	  if (dfy <= 0)
 	    {
-	      dfy += E;
+	      dfy += Ey;
 	    }
 	  else
 	    {
-	      dfy += NE;
+	      dfy += NEy;
 	      yp++;
 	    }
 	}
@@ -354,13 +358,13 @@ void image_resample(image_data* data, int n, int d)
 		  /* Next X */
 		  if (dfx <= 0)
 		    {
-		      dfx += E;
+		      dfx += Ex;
 		    }
 		  else
 		    {
 		      for (j=0; j<3; j++)
 			xp[j] += 4;
-		      dfx += NE;
+		      dfx += NEx;
 		    }
 		}
 
@@ -382,16 +386,16 @@ void image_resample(image_data* data, int n, int d)
 	      /* Next position */
 	      if (dfy <= 0)
 		{
-		  dfy += E;
+		  dfy += Ey;
 		}
 	      else
 		{
-		  dfy += NE;
+		  dfy += NEy;
 		  yp++;
 		}
 	    }
 
-	  dfx = 2*d-n;
+	  dfx = 2*(data->width)-newwidth*3;
 	}
     }
   else
