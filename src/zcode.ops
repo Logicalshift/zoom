@@ -2165,7 +2165,8 @@ OPCODE "restart"     0OP:0x07 CANJUMP VERSION 6
 
 OPCODE "set_colour"    2OP:0x1b REALLYVAR     VERSION 6
 %{
-  int win, working;
+  int win = 0;
+  int working;
 
   working = display_get_window();
   if (argblock.n_args > 2)

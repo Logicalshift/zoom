@@ -55,11 +55,17 @@ struct picture
   ZByte* data;
 };
 
-static struct picture* pix_dir;
+static struct picture* pix_dir = NULL;
 
 void pix_open_file(char* filename)
 {
   int x;
+
+  if (filename == NULL)
+    {
+      zmachine_warning("PIX: no graphics file supplied for v6 game");
+      return;
+    }
   
   pix_file = open_file(filename);
   if (pix_file == NULL)
@@ -105,10 +111,16 @@ void pix_open_file(char* filename)
 
 ZUWord pix_width(ZUWord picture)
 {
+  if (!pix_dir)
+    return 1;
+  
   return pix_dir[picture-1].width;
 }
 
 ZUWord pix_height(ZUWord picture)
 {
+  if (!pix_dir)
+    return 1;
+  
   return pix_dir[picture-1].height*2;
 }

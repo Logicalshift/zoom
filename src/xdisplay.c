@@ -135,9 +135,6 @@ static history_item* last_string = NULL;
 
 /* Variables relating to the display itself */
 
-#define DISPLAY_X 80
-#define DISPLAY_Y 30
-
 struct window
 {
   int xpos, ypos;
@@ -280,8 +277,8 @@ void display_initialise(void)
   x_mainwin = XCreateWindow(x_display,
 			    RootWindow(x_display, x_screen),
 			    100,100, 
-			    win_width=((win_x=(font_x*DISPLAY_X)) + 16),
-			    win_height=((win_y=(font_y*DISPLAY_Y)) + 16),
+			    win_width=((win_x=(font_x*rc_get_xsize())) + 16),
+			    win_height=((win_y=(font_y*rc_get_ysize())) + 16),
 			    1, DefaultDepth(x_display, x_screen), InputOutput,
 			    CopyFromParent,
 			    CWEventMask|CWBackPixel,
@@ -345,8 +342,8 @@ void display_initialise(void)
   /* Create the display pixmap */
   x_pix = XCreatePixmap(x_display,
 			x_mainwin,
-			font_x*DISPLAY_X,
-			font_y*DISPLAY_Y,
+			font_x*rc_get_xsize(),
+			font_y*rc_get_ysize(),
 			DefaultDepth(x_display, x_screen));
 
   x_wingc   = XCreateGC(x_display, x_mainwin, 0, NULL);
@@ -447,15 +444,15 @@ void display_reinitialise(void)
 	}
     }
   
-  win_x=(font_x*DISPLAY_X);
-  win_y=(font_y*DISPLAY_Y);
+  win_x=(font_x*rc_get_xsize());
+  win_y=(font_y*rc_get_ysize());
   
   /* Recreate pixmap */
   XFreePixmap(x_display, x_pix);
   x_pix = XCreatePixmap(x_display,
 			x_mainwin,
-			font_x*DISPLAY_X,
-			font_y*DISPLAY_Y,
+			font_x*rc_get_xsize(),
+			font_y*rc_get_ysize(),
 			DefaultDepth(x_display, x_screen));
 
   x_pixgc   = XCreateGC(x_display, x_pix, 0, NULL);
@@ -1517,8 +1514,8 @@ ZDisplay* display_get_info(void)
   info.fixed_space = 1;
   info.sound_effects = 0;
   info.timed_input = 0;
-  info.lines = DISPLAY_Y;
-  info.columns = DISPLAY_X;
+  info.lines = rc_get_ysize();
+  info.columns = rc_get_xsize();
   info.width = win_x;
   info.height = win_y;
   info.font_width  = font_x;

@@ -196,3 +196,39 @@ char* rc_get_savedir(void)
     }
   return game->savedir;
 }
+
+char* rc_get_graphics(void)
+{
+  if (game->graphics == NULL)
+    return defgame->graphics;
+  return game->graphics;
+}
+
+char* rc_get_sounds(void)
+{
+  if (game->sounds == NULL)
+    return defgame->sounds;
+  return game->sounds;
+}
+
+int rc_get_xsize(void)
+{
+  if (game->xsize == -1)
+    {
+      if (defgame->xsize == -1)
+	return 80;
+      return defgame->xsize;
+    }
+  return game->xsize;
+}
+
+int rc_get_ysize(void)
+{
+  if (game->ysize == -1)
+    {
+      if (defgame->ysize == -1)
+	return 30;
+      return defgame->ysize;
+    }
+  return game->ysize;
+}

@@ -1012,16 +1012,16 @@ void zcode_v6_initialise(void)
 
   display_set_newline_function(newline_function);
 
-  pix_open_file("/mnt/cdrw/pc/arthur/arthur.eg1");
+  pix_open_file(rc_get_graphics());
 }
 
 static char* pending_text = NULL;
 static int   pending_len;
 
-static void newline_return(ZDWord* pc,
-			   ZStack* stack,
-			   ZArgblock args,
-			   int st)
+static void newline_return(ZDWord*    pc,
+			   ZStack*    stack,
+			   ZArgblock* args,
+			   int        st)
 {
   printf("-- Newline return\n");
   if (pending_text != NULL)
@@ -1213,11 +1213,11 @@ void zmachine_run(const int version,
   ZDWord         pc;
 #endif
   int            padding;
-  int            st;
+  int            st     = 0;
   int            tmp;
-  int            negate;
-  int            result;
-  ZDWord         branch;
+  int            negate = 0;
+  int            result = 0;
+  ZDWord         branch = 0;
   /* Historical reasons */
 #define arg1 argblock.arg[0]
 #define arg2 argblock.arg[1]

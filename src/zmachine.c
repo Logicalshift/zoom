@@ -145,9 +145,9 @@ void zmachine_fatal(char* format, ...)
     }
   else
     {
-      fprintf(stderr, "\nINTERPRETER PANIC - %s\n\n", string);
+      fprintf(stderr, "\nINTERPRETER PANIC - %s", string);
 #ifdef GLOBAL_PC
-      fprintf(stderr, " (PC = #%x)", machine.pc);
+      fprintf(stderr, " (PC = #%x)\n\n", machine.pc);
 #endif
     }
   
@@ -234,13 +234,13 @@ void zmachine_setup_header(void)
     case 7:
     case 5:
       Flag(1, 0, machine.dinfo->colours);
-      machine.memory[ZH_deffore] = machine.dinfo->fore;
-      machine.memory[ZH_defback] = machine.dinfo->back;
-      machine.memory[ZH_width] = machine.dinfo->columns>>8;
-      machine.memory[ZH_width+1] = machine.dinfo->columns;
-      machine.memory[ZH_height] = machine.dinfo->lines>>8;
-      machine.memory[ZH_height+1] = machine.dinfo->lines;
-      machine.memory[ZH_fontwidth] = 1;
+      machine.memory[ZH_deffore]    = machine.dinfo->fore;
+      machine.memory[ZH_defback]    = machine.dinfo->back;
+      machine.memory[ZH_width]      = machine.dinfo->columns>>8;
+      machine.memory[ZH_width+1]    = machine.dinfo->columns;
+      machine.memory[ZH_height]     = machine.dinfo->lines>>8;
+      machine.memory[ZH_height+1]   = machine.dinfo->lines;
+      machine.memory[ZH_fontwidth]  = 1;
       machine.memory[ZH_fontheight] = 1;
     case 4:
       Flag(1, 2, machine.dinfo->boldface);
@@ -248,11 +248,11 @@ void zmachine_setup_header(void)
       Flag(1, 4, machine.dinfo->fixed_space);
       Flag(1, 4, machine.dinfo->timed_input);
 
-      machine.memory[ZH_lines] = machine.dinfo->lines;
-      machine.memory[ZH_columns] = machine.dinfo->columns;
+      machine.memory[ZH_lines]     = machine.dinfo->lines;
+      machine.memory[ZH_columns]   = machine.dinfo->columns;
 
       machine.memory[ZH_intnumber] = rc_get_interpreter();
-      machine.memory[ZH_intvers] = rc_get_revision();
+      machine.memory[ZH_intvers]   = rc_get_revision();
       break;
 
     case 3:
@@ -269,5 +269,4 @@ extern ZWord debug_print_var(ZWord val, int var)
   printf("Read variable #%x (value %i)\n", var, val);
   return val;
 }
-
 #endif

@@ -67,5 +67,9 @@ extern int        rc_get_interpreter(void);
 extern int        rc_get_revision   (void);
 extern char*      rc_get_gamedir    (void);
 extern char*      rc_get_savedir    (void);
+extern int        rc_get_xsize      (void);
+extern int        rc_get_ysize      (void);
+extern char*      rc_get_graphics   (void);
+extern char*      rc_get_sounds     (void);
 
 #endif
