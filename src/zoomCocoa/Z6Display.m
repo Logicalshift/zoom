@@ -253,11 +253,11 @@ int display_get_pix_colour(int x, int y) {
 	
 	NSColor* pixColour = [(NSObject<ZPixmapWindow>*)[mainMachine windowNumber: 0] colourAtPixel: NSMakePoint(x, y)];
 	
-	int redComponent = [pixColour redComponent] * 31.0;
-	int greenComponent = [pixColour greenComponent] * 31.0;
-	int blueComponent = [pixColour blueComponent] * 31.0;
+	int redComponent = floorf([pixColour redComponent] * 31.0);
+	int greenComponent = floorf([pixColour greenComponent] * 31.0);
+	int blueComponent = floorf([pixColour blueComponent] * 31.0);
 	
-	return (redComponent)|(greenComponent<<5)|(blueComponent<<10);
+	return ((redComponent)|(greenComponent<<5)|(blueComponent<<10)) + 16;
 }
 
 // Input

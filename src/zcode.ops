@@ -2524,17 +2524,27 @@ OPCODE "set_colour"    2OP:0x1b REALLYVAR     VERSION 6
   bg = convert_colour(arg2);
 
   v6_set_colours(fg, bg);
+
+  fg = v6_get_fg_colour();
+  bg = v6_get_bg_colour();
+  
   if (fg >= 0)
     {
-      windows[working].colour = (windows[working].colour&~0xff)|(fg+2);
-      windows[working].fg_true = true_colour(fg);
+      windows[working].colour = (windows[working].colour&~0xff)|((fg+2)&0xff);
+      if (fg <= 16) 
+	    windows[working].fg_true = true_colour(fg);
+	  else
+	    windows[working].fg_true = fg - 16;
     }
   if (bg >= 0)
     {
-      windows[working].colour = (windows[working].colour&~0xff00)|((bg+2)<<8);
-      windows[working].bg_true = true_colour(bg);
+      windows[working].colour = (windows[working].colour&~0xff00)|(((bg+2)&0xff)<<8);
+      if (bg <= 16) 
+	    windows[working].bg_true = true_colour(bg);
+	  else
+	    windows[working].bg_true = bg - 16;
     }
-  
+	  
   v6_set_window(win);
 %}
 

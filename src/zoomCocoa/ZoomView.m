@@ -447,6 +447,7 @@ static void finalizeViews(void) {
 			
 			[zMachine inputText: nextInput];
 			[self orInputCharacter: nextInput];
+			historyPos = [commandHistory count];
 		}
 	}	
 }
@@ -502,13 +503,16 @@ static void finalizeViews(void) {
 		[pixmapCursor setShown: YES];
 		
 		// Setup the command history
-		historyPos = [commandHistory count];
+		// historyPos = [commandHistory count];
 		
 		// Setup the input line
+		if (inputLine == nil) {
+			[self setInputLine: [[[ZoomInputLine alloc] initWithCursor: pixmapCursor
+																			  attributes: [self attributesForStyle: [pixmapWindow inputStyle]]]
+				autorelease]];
+		}
 		[self setInputLinePos: [pixmapWindow inputPos]];
-		[self setInputLine: [[[ZoomInputLine alloc] initWithCursor: pixmapCursor
-														attributes: [self attributesForStyle: [pixmapWindow inputStyle]]]
-			autorelease]];
+		[inputLine updateCursor];
 	}
 	
 	// Set the first responder appropriately
@@ -556,6 +560,7 @@ static void finalizeViews(void) {
 			
 			[zMachine inputText: nextInput];
 			[self orInputCommand: nextInput];
+			historyPos = [commandHistory count];
 		}
 	}
 }
@@ -812,6 +817,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 																			newlinePos-inputPos)]];
             [zMachine inputText: inputText];
 			[self orInputCommand: inputText];
+			historyPos = [commandHistory count];
 
             inputPos = newlinePos + 1;
         }
@@ -857,7 +863,8 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 			inputPos = [str length];
 			
 			[zMachine inputText: inputText];
-						
+			historyPos = [commandHistory count];
+			
 			return YES;
 		}
 	}
@@ -872,6 +879,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         
         [zMachine inputText: chars];
 		[self orInputCharacter: chars];
+		historyPos = [commandHistory count];
         
         return YES;
     }
@@ -2222,6 +2230,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		
 		[zMachine inputText: inputText];
 		[self orInputCommand: inputText];		
+		historyPos = [commandHistory count];
 	}
 	
 	[inputLine release];
@@ -2337,6 +2346,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 			
 			[zMachine inputText: nextInput];
 			[self orInputCharacter: nextInput];
+			historyPos = [commandHistory count];
 		}
 	} else if (receiving && [inputSource respondsToSelector: @selector(nextCommand)]) {
 		NSString* nextInput = [inputSource nextCommand];
@@ -2365,6 +2375,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 			
 			[zMachine inputText: nextInput];
 			[self orInputCommand: nextInput];
+			historyPos = [commandHistory count];
 		}
 	}
 }

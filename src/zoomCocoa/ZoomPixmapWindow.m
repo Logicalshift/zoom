@@ -175,8 +175,6 @@
 }
 
 - (NSColor*) colourAtPixel: (NSPoint) point {
-	NSLog(@"Retrieving colour at %g %g", point.x, point.y);
-	
 	[pixmap lockFocus];
 	
 	if (point.x <= 0) point.x = 1;

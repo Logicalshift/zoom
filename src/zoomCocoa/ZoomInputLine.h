@@ -37,6 +37,8 @@
 - (NSString*) lastHistoryItem;
 - (NSString*) nextHistoryItem;
 
+- (void) updateCursor;
+
 @end
 
 @interface NSObject(ZoomInputLineDelegate)
