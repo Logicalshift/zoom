@@ -1179,7 +1179,6 @@ OPCODE "quit"        0OP:0x0a CANJUMP VERSION all
 OPCODE "new_line"    0OP:0x0b         VERSION all
 %{
   stream_printf("\n");
-  stream_flush_buffer();  
 %}
 
 OPCODE "show_status" 0OP:0x0c         VERSION 3

@@ -220,6 +220,15 @@ static void prints(const int* const s)
 void stream_prints(const unsigned int* s)
 {
   int len, x;
+
+#ifdef DEBUG
+  printf_debug("Stream: received string >");
+  for (x=0; s[x] != 0; x++)
+    {
+      printf_debug("%c", s[x]);
+    }
+  printf_debug("<\n");
+#endif
   
   if (!buffering)
     {
