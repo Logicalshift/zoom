@@ -6,31 +6,6 @@
 logo ICON "@srcdir@/zoom.ico"
 ID_SMICON ICON "@srcdir@/zoomsmall.ico"
 
-ID_MENU MENU
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "E&xit", IDM_EXIT
-    END
-    POPUP "&Options"
-    BEGIN
-        MENUITEM "&Game...", IDM_GAME
-	POPUP "&Screen"
-	BEGIN
-	    MENUITEM "&Colours...", IDM_COLOURS
-	    MENUITEM "&Layout...", IDM_LAYOUT
-            MENUITEM "&Fonts", IDM_FONTS, GRAYED
-	END
-	MENUITEM "&Interpreter...", IDM_INTERPRETER
-	MENUITEM SEPARATOR
-	MENUITEM "&Save options", IDM_SAVEOPTS
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&About...", IDM_ABOUT
-    END
-END
-
 ID_ABOUT DIALOG 0, 0, 200, 56
     CAPTION "About Zoom"
     STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | DS_CENTERMOUSE

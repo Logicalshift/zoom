@@ -79,7 +79,8 @@ HPEN   winpen  [14];
 HWND   mainwin, mainwinstat;
 HDC    mainwindc;
 HMENU  mainwinmenu;
-HMENU  fontmenu = NULL;
+
+HMENU  filemenu, optionmenu, helpmenu, screenmenu, fontmenu;
 
 static xfont** font = NULL;
 static int     n_fonts = 9;
@@ -236,9 +237,37 @@ static void size_window(void)
 
 static void rejig_fonts(void)
 {
-  int x;
-  struct rc_font* fonts;
-  uInt mid;
+  int x, y;
+  rc_font* fonts;
+
+  fonts = rc_get_fonts(&n_fonts);
+ 
+  /* Allocate fonts */
+  if (fonts == NULL)
+    {
+      font = realloc(font, sizeof(xfont*)*9);
+      for (x=0; x<9; x++)
+	{
+	  font[x] = xfont_load_font(fontlist[x]);
+	}
+      n_fonts = 9;
+    }
+  else
+    {
+      int y;
+      
+      for (x=0; x<16; x++)
+	style_font[x] = -1;
+      
+      font = realloc(font, sizeof(xfont*)*n_fonts);
+      for (x=0; x<n_fonts; x++)
+	{
+	  font[x] = xfont_load_font(fonts[x].name);
+
+	  for (y=0; y<fonts[x].n_attr; y++)
+	    style_font[fonts[x].attributes[y]] = x;
+	}
+    }
 
   for (x=0; x<16; x++)
     {
@@ -260,29 +289,45 @@ static void rejig_fonts(void)
 	}
     }
 
-  if (fontmenu != NULL)
-    DestroyMenu(fontmenu);
+  while (DeleteMenu(fontmenu, 0, MF_BYPOSITION));
   
-  fontmenu = CreateMenu();
-  fonts = rc_get_fonts();
   for (x=0; x<n_fonts; x++)
     {
       char f[256];
 
-      sprintf(f, "Font %i", x);
+      sprintf(f, "Font %i (", x);
+
+      for (y=0; y<fonts[x].n_attr; y++)
+	{
+	  int a;
+	  a = fonts[x].attributes[y];
+
+	  if (a==0)
+	    strcat(f, "roman-");
+	  if (a&1)
+	    strcat(f, "bold-");
+	  if (a&2)
+	    strcat(f, "italic-");
+	  if (a&4)
+	    strcat(f, "fixed-");
+	  if (a&8)
+	    strcat(f, "symbolic-");
+
+	  f[strlen(f)-1] = 0;
+
+	  if (y+1 < fonts[x].n_attr)
+	    strcat(f, ", ");
+	}
+      strcat(f, ")");
+      
       AppendMenu(fontmenu, 0, IDM_FONTS+x, f);
     }
-
-  mid = GetMenuItemID(mainwinmenu, 1);
-  mid = GetMenuItemID(mid, 2);
-  ModifyMenu(mid, MF_BYPOSITION|MF_POPUP, fontmenu, "Font");
 }
 
 void display_initialise(void)
 {
   int x;
   int n_cols;
-  rc_font* fonts;
   rc_colour* colours;
 
   for (x=0; x<3; x++)
@@ -295,7 +340,6 @@ void display_initialise(void)
       text_win[x].cline       = NULL;
     }
   
-  fonts = rc_get_fonts(&n_fonts);
   colours = rc_get_colours(&n_cols);
   
   /* Allocate colours */
@@ -328,33 +372,6 @@ void display_initialise(void)
 	      winbrush[x] = CreateSolidBrush(wincolour[x]);
 	      winpen[x]   = CreatePen(PS_SOLID, 1, wincolour[x]);
 	    }
-	}
-    }
-  
-  /* Allocate fonts */
-  if (fonts == NULL)
-    {
-      font = realloc(font, sizeof(xfont*)*9);
-      for (x=0; x<9; x++)
-	{
-	  font[x] = xfont_load_font(fontlist[x]);
-	}
-      n_fonts = 9;
-    }
-  else
-    {
-      int y;
-      
-      for (x=0; x<16; x++)
-	style_font[x] = -1;
-      
-      font = realloc(font, sizeof(xfont*)*n_fonts);
-      for (x=0; x<n_fonts; x++)
-	{
-	  font[x] = xfont_load_font(fonts[x].name);
-
-	  for (y=0; y<fonts[x].n_attr; y++)
-	    style_font[fonts[x].attributes[y]] = x;
 	}
     }
 
@@ -377,7 +394,6 @@ void display_reinitialise(void)
 {
   int x;
   int n_cols;
-  rc_font* fonts;
   rc_colour* colours;
   
   /* Deallocate colours */
@@ -391,7 +407,6 @@ void display_reinitialise(void)
   for (x=0; x<5; x++)
     xfont_release_font(font[x]);
   
-  fonts = rc_get_fonts(&n_fonts);
   colours = rc_get_colours(&n_cols);
   
   /* Allocate colours */
@@ -424,33 +439,6 @@ void display_reinitialise(void)
 	      winbrush[x] = CreateSolidBrush(wincolour[x]);
 	      winpen[x]   = CreatePen(PS_SOLID, 1, wincolour[x]);
 	    }
-	}
-    }
-  
-  /* Allocate fonts */
-  if (fonts == NULL)
-    {
-      font = realloc(font, sizeof(xfont*)*9);
-      for (x=0; x<9; x++)
-	{
-	  font[x] = xfont_load_font(fontlist[x]);
-	}
-      n_fonts = 9;
-    }
-  else
-    {
-      int y;
-      
-      for (x=0; x<16; x++)
-	style_font[x] = -1;
-      
-      font = realloc(font, sizeof(xfont*)*n_fonts);
-      for (x=0; x<n_fonts; x++)
-	{
-	  font[x] = xfont_load_font(fonts[x].name);
-
-	  for (y=0; y<fonts[x].n_attr; y++)
-	    style_font[fonts[x].attributes[y]] = x;
 	}
     }
 
@@ -2249,7 +2237,34 @@ int WINAPI WinMain(HINSTANCE hInst,
 		 MB_ICONEXCLAMATION | MB_OK | MB_SYSTEMMODAL);
       return 0;
     }
-  
+
+  /* Create the menus that go with the Zoom window */
+  filemenu    = CreatePopupMenu();
+  optionmenu  = CreatePopupMenu();
+  helpmenu    = CreatePopupMenu();
+  screenmenu  = CreatePopupMenu();
+  fontmenu    = CreatePopupMenu();
+  mainwinmenu = CreateMenu();
+
+  AppendMenu(filemenu, 0, IDM_EXIT, "E&xit");
+
+  AppendMenu(optionmenu, 0, IDM_GAME, "&Game...");
+  AppendMenu(optionmenu, MF_POPUP, (UINT) screenmenu, "&Screen");
+  AppendMenu(optionmenu, 0, IDM_INTERPRETER, "&Interpreter...");
+  AppendMenu(optionmenu, MF_SEPARATOR, 0, NULL);
+  AppendMenu(optionmenu, 0, IDM_SAVEOPTS, "&Save options");
+
+  AppendMenu(screenmenu, 0, IDM_COLOURS, "&Colours...");
+  AppendMenu(screenmenu, 0, IDM_LAYOUT, "&Layout...");
+  AppendMenu(screenmenu, MF_POPUP, (UINT) fontmenu, "&Fonts");
+
+  AppendMenu(helpmenu, 0, IDM_ABOUT, "&About...");
+
+  AppendMenu(mainwinmenu, MF_POPUP, (UINT) filemenu, "&File");
+  AppendMenu(mainwinmenu, MF_POPUP, (UINT) optionmenu, "&Options");
+  AppendMenu(mainwinmenu, MF_POPUP, (UINT) helpmenu, "&Help");
+
+  /* Actually create the window */
   mainwin = CreateWindowEx(0,
 			   zoomClass,
 			   "Zoom " VERSION,
@@ -2260,7 +2275,6 @@ int WINAPI WinMain(HINSTANCE hInst,
 			   inst, NULL);
   mainwindc = GetDC(mainwin);
 
-  mainwinmenu = LoadMenu(hInst, MAKEINTRESOURCE(ID_MENU));
   SetMenu(mainwin, mainwinmenu);
 
   mainwinstat = CreateStatusWindow(WS_CHILD|WS_VISIBLE,

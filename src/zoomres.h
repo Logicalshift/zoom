@@ -31,7 +31,6 @@
 #define ID_ABOUT   400
 
 #define IDM_EXIT        300
-#define IDM_FONTS       301
 #define IDM_GAME        302
 #define IDM_SCREEN      303
 #define IDM_LAYOUT      304
