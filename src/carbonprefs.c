@@ -1776,6 +1776,29 @@ static void pref_setup(void)
       colour_copy[x] = maccolour[x+3];
     }
   AddDataBrowserItems(cntl, kDataBrowserNoItem, 11, items, 0);
+  
+  cid.signature = CARBON_COLLOC;
+  cid.id        = CARBON_COLLOCID;
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
+ 
+  if (game->colours != NULL)
+    {
+      SetControlValue(cntl, kControlCheckBoxCheckedValue);
+
+      cid.signature = CARBON_RESCOLS;
+      cid.id        = CARBON_RESCOLSID;
+      GetControlByID(carbon_prefdlog, &cid, &cntl);
+      ActivateControl(cntl);
+    }
+  else
+    {
+      SetControlValue(cntl, kControlCheckBoxUncheckedValue);
+
+      cid.signature = CARBON_RESCOLS;
+      cid.id        = CARBON_RESCOLSID;
+      GetControlByID(carbon_prefdlog, &cid, &cntl);
+      DeactivateControl(cntl);
+    }
 
   /* Set up the resource file field */
   cid.signature = CARBON_RESFILE;
