@@ -184,8 +184,6 @@ static ZoomiFictionController* sharedController = nil;
 	needsUpdating = YES;
 	
 	[mainTableView reloadData];
-	[filterTable1 reloadData];
-	[filterTable2 reloadData];	
 }
 
 - (void)windowDidBecomeMain:(NSNotification *)aNotification {
@@ -248,8 +246,79 @@ int tableSorter(id a, id b, void* context) {
 	}
 }
 
+- (void) filterTableDataPass1 {
+	// Filter using the selection from the first filter table
+	NSString* filterKey = [[[filterTable1 tableColumns] objectAtIndex: 0] identifier];
+	
+	// Get the selected items from the first filter table
+	NSMutableSet* filterFor = [NSMutableSet set];
+	NSEnumerator* selEnum = [filterTable1 selectedRowEnumerator];
+	NSNumber* selRow;
+	
+	while (selRow = [selEnum nextObject]) {
+		if ([selRow intValue] == 0) {
+			// All selected - no filtering
+			[filterTable1 selectRow: 0 byExtendingSelection: NO];
+			return;
+		}
+		
+		[filterFor addObject: [filterSet1 objectAtIndex: [selRow intValue]-1]];
+	}
+	
+	// Remove anything that doesn't match the filter
+	int num;
+	
+	for (num = 0; num < [storyList count]; num++) {
+		ZoomStoryID* ident = [storyList objectAtIndex: num];
+		
+		ZoomStory* thisStory = [self storyForID: ident];
+		NSString* storyKey = [thisStory objectForKey: filterKey];
+		
+		if (![filterFor containsObject: storyKey]) {
+			[storyList removeObjectAtIndex: num];
+			num--;
+		}
+	}
+}
+
+- (void) filterTableDataPass2 {
+	// Filter using the selection from the second filter table
+	NSString* filterKey = [[[filterTable2 tableColumns] objectAtIndex: 0] identifier];
+	
+	// Get the selected items from the first filter table
+	NSMutableSet* filterFor = [NSMutableSet set];
+	NSEnumerator* selEnum = [filterTable2 selectedRowEnumerator];
+	NSNumber* selRow;
+	
+	while (selRow = [selEnum nextObject]) {
+		if ([selRow intValue] == 0) {
+			// All selected - no filtering
+			[filterTable2 selectRow: 0 byExtendingSelection: NO];
+			return;
+		}
+		
+		[filterFor addObject: [filterSet2 objectAtIndex: [selRow intValue]-1]];
+	}
+	
+	// Remove anything that doesn't match the filter
+	int num;
+	
+	for (num = 0; num < [storyList count]; num++) {
+		ZoomStoryID* ident = [storyList objectAtIndex: num];
+		
+		ZoomStory* thisStory = [self storyForID: ident];
+		NSString* storyKey = [thisStory objectForKey: filterKey];
+		
+		if (![filterFor containsObject: storyKey]) {
+			[storyList removeObjectAtIndex: num];
+			num--;
+		}
+	}
+}
+
 - (void) filterTableData {
-	// IMPLEMENT ME
+	[self filterTableDataPass1];
+	[self filterTableDataPass2];
 }
 
 - (void) reloadTableData {
@@ -270,19 +339,51 @@ int tableSorter(id a, id b, void* context) {
 	
 	[filterSet1 release]; [filterSet2 release];
 	
+	filterSet1 = [[NSMutableArray alloc] init];
+	filterSet2 = [[NSMutableArray alloc] init];
+	
 	// Repopulate the table
 	NSEnumerator* identEnum = [[org storyIdents] objectEnumerator];
 	ZoomStoryID* ident;
 	
+	NSString* filterKey1 = [[[filterTable1 tableColumns] objectAtIndex: 0] identifier];
+	NSString* filterKey2 = [[[filterTable2 tableColumns] objectAtIndex: 0] identifier];
+	
 	while (ident = [identEnum nextObject]) {
+		ZoomStory* thisStory = [self storyForID: ident];
+		
 		[storyList addObject: ident];
 		
-		// IMPLEMENT ME: add to the filterSets
+		NSString* filterItem1 = [thisStory objectForKey: filterKey1];
+		
+		if ([filterItem1 length] != 0 && [filterSet1 indexOfObject: filterItem1] == NSNotFound) [filterSet1 addObject: filterItem1];
 	}
 	
+	// Sort the first filter set
+	[filterSet1 sortUsingSelector: @selector(caseInsensitiveCompare:)];
+	[filterTable1 reloadData];
+	
+	// Filter the table as required
+	[self filterTableDataPass1];
+	
+	// Generate + sort the second filter set
+	identEnum = [storyList objectEnumerator];
+	
+	while (ident = [identEnum nextObject]) {
+		ZoomStory* thisStory = [self storyForID: ident];
+		NSString* filterItem2 = [thisStory objectForKey: filterKey2];		
+		if ([filterItem2 length] != 0 && [filterSet2 indexOfObject: filterItem2] == NSNotFound) [filterSet2 addObject: filterItem2];
+	}
+	
+	[filterSet2 sortUsingSelector: @selector(caseInsensitiveCompare:)];
+	[filterTable2 reloadData];	
+
+	// Continue filtering
+	[self filterTableDataPass2];
+
 	// Sort the table as required
 	[self sortTableData];
-	
+
 	// Joogle the selection
 	[mainTableView deselectAll: self];
 	selEnum = [previousIDs objectEnumerator];
@@ -306,6 +407,10 @@ int tableSorter(id a, id b, void* context) {
 	
 	if (aTableView == mainTableView) {
 		return [storyList count];
+	} else if (aTableView == filterTable1) {
+		return [filterSet1 count]+1;
+	} else if (aTableView == filterTable2) {
+		return [filterSet2 count]+1;
 	} else {
 		return 0; // Unknown table view
 	}
@@ -325,6 +430,12 @@ int tableSorter(id a, id b, void* context) {
 		
 		// Return the value of the appropriate field
 		return [story objectForKey: rowID];
+	} else if (aTableView == filterTable1) {
+		if (rowIndex == 0) return [NSString stringWithFormat: @"All (%i items)", [filterSet1 count]];
+		return [filterSet1 objectAtIndex: rowIndex-1];
+	} else if (aTableView == filterTable2) {
+		if (rowIndex == 0) return [NSString stringWithFormat: @"All (%i items)", [filterSet2 count]];
+		return [filterSet2 objectAtIndex: rowIndex-1];
 	} else {
 		return nil; // Unknown table view
 	}
@@ -414,8 +525,14 @@ int tableSorter(id a, id b, void* context) {
 	
 	if (tableView == mainTableView) {
 		[self configureFromMainTableSelection];
+	} else if (tableView == filterTable1 || tableView == filterTable2) {
+		if (tableView == filterTable1) {
+			[filterTable2 selectRow: 0 byExtendingSelection: NO];
+		}
+		
+		[self reloadTableData]; [mainTableView reloadData];
 	} else {
-		// IMPLEMENT ME: the filtering tables
+		// Zzzz
 	}
 }
 

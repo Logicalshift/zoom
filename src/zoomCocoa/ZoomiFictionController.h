@@ -32,8 +32,8 @@
 	BOOL needsUpdating;
 	
 	// Data source information
-	NSSet* filterSet1;
-	NSSet* filterSet2;
+	NSMutableArray* filterSet1;
+	NSMutableArray* filterSet2;
 	
 	NSMutableArray* storyList;
 	NSString*       sortColumn;
