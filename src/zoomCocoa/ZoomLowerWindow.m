@@ -69,6 +69,7 @@
     //    [zoomView formatZString: string
     //                  withStyle: style]];
     
+	[zoomView orOutputText: string];
     [zoomView scrollToEnd];
     [zoomView displayMoreIfNecessary];
 }

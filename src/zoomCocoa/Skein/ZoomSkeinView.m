@@ -356,7 +356,7 @@ enum ZSVbutton
 			if (![skeinItem played]) background = unplayed;
 			if ([skeinItem changed]) background = changed;
 			if (skeinItem == [skein activeItem]) background = active;
-			if ([skeinItem parent] == [skein activeItem]) background = changed;
+			if ([skeinItem parent] == [skein activeItem]) background = active;
 			if (skeinItem == selectedItem) background = selected;
 			
 			[ZoomSkeinView drawImage: background
