@@ -6,9 +6,17 @@
             LANGUAGE = ObjC; 
             OUTLETS = {
                 colourSettingsView = NSView; 
+                colours = NSTableView; 
+                displayWarnings = NSButton; 
+                fatalWarnings = NSButton; 
                 fontSettingsView = NSView; 
+                fonts = NSTableView; 
                 gameSettingsView = NSView; 
+                gameTitle = NSTextField; 
                 generalSettingsView = NSView; 
+                interpreter = NSPopUpButton; 
+                revision = NSTextField; 
+                speakGameText = NSButton; 
             }; 
             SUPERCLASS = NSWindowController; 
         }
