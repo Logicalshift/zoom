@@ -488,7 +488,10 @@ xfont* xfont_load_font(char* font)
 
     ATSUTextMeasurement before, after, ascent, descent;
 
-    /* (Sigh, there has to be a better way of doing things) */
+    /* 
+     * (Sigh, there has to be a better way of doing things... We really just 
+     * want the metrics)
+     */
 
     ATSUCreateTextLayout(&lo);
     ATSUSetTextPointerLocation(lo, text, 0, 1, 1);
@@ -749,10 +752,34 @@ static char* convert_text(xfont* font,
  * CGContextSelectFont() is slow. So we want to use CGContextSetFont,
  * which is reasonably fast. However, that doesn't support *any* encoding
  * conversions, so we need to use ATSU to get the glyph details of the
- * text we're about to plot. Of course, it would be too simple to provide
- * a function that just produces glyph values, so we have to arse around
- * with layouts and so on.
+ * text we're about to plot.
  */
+static ATSUTextLayout make_atsu_layout(xfont* font,
+					const int* string,
+					int length)
+{
+  ATSUTextLayout lay;
+
+  static UniChar* str = NULL;
+  UniCharCount runlength[1];
+  ATSUStyle    style[1];
+
+  int x;
+
+  str = realloc(str, sizeof(UniChar)*length);
+  for (x=0; x<length; x++)
+    {
+      str[x] = string[x];
+    }
+
+  runlength[0] = length;
+  style[0] = font->data.mac.style;
+  ATSUCreateTextLayoutWithTextPtr(str, 0, length, length, 1, runlength, style,
+				  &lay);
+
+  return lay;
+}
+
 static CGGlyph* convert_glyphs(xfont* font,
 			       const int* string,
 			       int length,
@@ -765,10 +792,6 @@ static CGGlyph* convert_glyphs(xfont* font,
 
   int x;
 
-  static UniChar* str = NULL;
-  UniCharCount runlength[1];
-  ATSUStyle    style[1];
-
   ByteCount    bufsize;
   
   if (length <= 0)
@@ -777,14 +800,7 @@ static CGGlyph* convert_glyphs(xfont* font,
       return NULL;
     }
 
-  str = realloc(str, sizeof(UniChar)*length);
-  for (x=0; x<length; x++)
-    str[x] = string[x];
-
-  runlength[0] = length;
-  style[0] = font->data.mac.style;
-  ATSUCreateTextLayoutWithTextPtr(str, 0, length, length, 1, runlength, style,
-				  &lay);
+  lay = make_atsu_layout(font, string, length);
   
   if (ATSUGetGlyphInfo(lay, 0, length, &bufsize, NULL) != noErr)
     {
@@ -796,12 +812,13 @@ static CGGlyph* convert_glyphs(xfont* font,
 
   ATSUDisposeTextLayout(lay);
   
-  *olen = res->numGlyphs;
+  *olen = 0;
   
   out = realloc(out, sizeof(CGGlyph)*res->numGlyphs);
   for (x=0; x<res->numGlyphs; x++)
     {
-      out[x] = res->glyphs[x].glyphID;
+      if (res->glyphs[x].glyphID != 0xffff)
+	out[(*olen)++] = res->glyphs[x].glyphID;
     }
 
   return out;
@@ -897,9 +914,6 @@ XFONT_MEASURE xfont_get_text_width(xfont* xf,
 
       if (winlastfont != xf)
 	{
-	  /* CGContextSelectFont(carbon_quartz_context, xf->data.mac.psname, 
-			      xf->data.mac.size,
-			      kCGEncodingMacRoman); */
 	  CGContextSetFont(carbon_quartz_context, xf->data.mac.cgfont);
 	  CGContextSetFontSize(carbon_quartz_context, xf->data.mac.size);
 	  winlastfont = xf;
@@ -1090,6 +1104,9 @@ void xfont_plot_string(xfont* font,
       //outbuf = convert_text(font, string, length, &outlen);
       
       glyph = convert_glyphs(font, string, length, &outlen);
+
+      if (outlen <= 0)
+	return;
       
       /*
        * There is always CGContextSetFont, but while I'm able to create
@@ -1097,11 +1114,6 @@ void xfont_plot_string(xfont* font,
        */
       if (winlastfont != font)
 	{
-	  /*
-	  CGContextSelectFont(carbon_quartz_context, font->data.mac.psname, 
-			      font->data.mac.size,
-			      kCGEncodingMacRoman);
-	  */
 	  CGContextSetFont(carbon_quartz_context, font->data.mac.cgfont);
 	  CGContextSetFontSize(carbon_quartz_context, font->data.mac.size);
 	  winlastfont = font;
@@ -1110,8 +1122,6 @@ void xfont_plot_string(xfont* font,
       /* Blank out the background */
       CGContextSetTextDrawingMode(carbon_quartz_context, kCGTextInvisible);
       CGContextSetTextPosition(carbon_quartz_context, 0, 0);
-      //CGContextShowText(carbon_quartz_context,
-      //		outbuf, outlen);
       CGContextShowGlyphs(carbon_quartz_context, glyph, outlen);
       pt = CGContextGetTextPosition(carbon_quartz_context);
       
@@ -1127,8 +1137,6 @@ void xfont_plot_string(xfont* font,
       CGContextSetTextPosition(carbon_quartz_context,
 			       portRect.left + x, 
 			       (portRect.bottom-portRect.top)+y);
-      //CGContextShowText(carbon_quartz_context,
-      //			outbuf, outlen);
       CGContextShowGlyphsAtPoint(carbon_quartz_context, 
 				 portRect.left + x, 
 				 (portRect.bottom-portRect.top)+y,
