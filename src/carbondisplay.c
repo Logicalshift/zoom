@@ -2296,10 +2296,12 @@ void display_initialise(void)
   max_x = size_x = rc_get_xsize();
   max_y = size_y = rc_get_ysize();
 
-  size_window();
+  xfont_x = xfont_get_width(font[style_font[4]]);
+  xfont_y = xfont_get_height(font[style_font[4]]);
 
   /* Setup the display */
   display_clear();
+  size_window();
 
   /* Install a timer to flash the caret */
   mainLoop = GetMainEventLoop();
