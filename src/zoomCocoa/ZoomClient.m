@@ -207,36 +207,39 @@
 	return YES;
 }
 
-- (BOOL)loadFileWrapperRepresentation:(NSFileWrapper *)wrapper 
-							   ofType:(NSString *)docType {
-	if (![wrapper isDirectory]) {
-		// If we're loading a .zX game, then look for resources
-		// If we're foo.zX, look in:
-		//   foo.blb
-		//   foo.zlb
-		//   resources.blb
-		// for the resources
+- (void) findResourcesForFile: (NSString*) resFilename {
+	// If we're loading a .zX game, then look for resources
+	// If we're foo.zX, look in:
+	//   foo.blb
+	//   foo.zlb
+	//   resources.blb
+	// for the resources
+
+	if (resFilename != nil) {
+		NSString* resPath = [resFilename stringByDeletingLastPathComponent];
+		NSString* resPrefix = [[resFilename lastPathComponent] stringByDeletingPathExtension];
 		
-		// Note that resources might come from elsewhere later on in the load process, too
-		NSString* resFilename = [self fileName];
-		if (resFilename != nil) {
-			NSString* resPath = [resFilename stringByDeletingLastPathComponent];
-			NSString* resPrefix = [[resFilename lastPathComponent] stringByDeletingPathExtension];
-			
-			NSString* fileToCheck;
-			
-			// foo.blb
-			fileToCheck = [[resPath stringByAppendingPathComponent: resPrefix] stringByAppendingPathExtension: @"blb"];
+		NSString* fileToCheck;
+		
+		// foo.blb
+		fileToCheck = [[resPath stringByAppendingPathComponent: resPrefix] stringByAppendingPathExtension: @"blb"];
+		if (![self checkResourceFile: fileToCheck]) {
+			// foo.zlb
+			fileToCheck = [[resPath stringByAppendingPathComponent: resPrefix] stringByAppendingPathExtension: @"zlb"];
 			if (![self checkResourceFile: fileToCheck]) {
-				// foo.zlb
-				fileToCheck = [[resPath stringByAppendingPathComponent: resPrefix] stringByAppendingPathExtension: @"zlb"];
-				if (![self checkResourceFile: fileToCheck]) {
-					// resources.blb
-					fileToCheck = [resPath stringByAppendingPathComponent: @"resources.blb"];
-					[self checkResourceFile: fileToCheck];
-				}
+				// resources.blb
+				fileToCheck = [resPath stringByAppendingPathComponent: @"resources.blb"];
+				[self checkResourceFile: fileToCheck];
 			}
 		}
+	}
+}
+
+- (BOOL)loadFileWrapperRepresentation:(NSFileWrapper *)wrapper 
+							   ofType:(NSString *)docType {
+	if (![wrapper isDirectory]) {		
+		// Note that resources might come from elsewhere later on in the load process, too
+		[self findResourcesForFile: [self fileName]];
 		
 		// Pass files onto the data loader
 		return [self loadDataRepresentation: [wrapper regularFileContents] 
@@ -308,6 +311,7 @@
 	
 	// Get the game file for this save from the story organiser
 	NSString* gameFile = [[ZoomStoryOrganiser sharedStoryOrganiser] filenameForIdent: storyID];
+	[self findResourcesForFile: gameFile];
 	
 	if (gameFile == nil) {
 		// Couldn't find a story for this savegame
