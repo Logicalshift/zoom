@@ -42,6 +42,8 @@ static int active_win;
 
 static int erf_n, erf_d;
 
+static int mouse_win;
+
 struct v6window
 {
   float curx, cury;
@@ -135,7 +137,7 @@ void v6_reset_windows(void)
       win[x].fore        = DEFAULT_FORE;
       win[x].back        = DEFAULT_BACK;
       win[x].style       = 0;
-      win[x].line_height = display_get_font_height(0)+0.5;
+      win[x].line_height = display_get_font_height(0);
       win[x].force_fixed = 0;
       win[x].text_amount = 0;
       win[x].no_scroll   = 0;
@@ -286,7 +288,7 @@ void v6_prints(const int* text)
       /* Work out the new height of this line... */
       if (text_pos != start_pos ||
 	  (text_pos == start_pos && text[text_pos] == 10))
-	height = display_get_font_height(ACTWIN.style)+0.5;
+	height = display_get_font_height(ACTWIN.style);
       else
 	height = ACTWIN.line_height;
 
@@ -338,7 +340,7 @@ void v6_prints(const int* text)
 	    }
 	  ACTWIN.want_more = 0;
 	  
-	  scroll_to_height(display_get_font_height(ACTWIN.style)+0.5, 0);
+	  scroll_to_height(display_get_font_height(ACTWIN.style), 0);
 
 	  if (more == 2)
 	    return;
@@ -364,7 +366,17 @@ void v6_set_caret(void)
   if (ACTWIN.style&1)
     display_pixmap_cols(ACTWIN.back, ACTWIN.fore);
   else
-    display_pixmap_cols(ACTWIN.fore, ACTWIN.back);    
+    display_pixmap_cols(ACTWIN.fore, ACTWIN.back);
+
+  if (mouse_win >= 0)
+    {
+      display_set_mouse_win(win[mouse_win].xpos, win[mouse_win].ypos,
+			    win[mouse_win].width, win[mouse_win].height);
+    }
+  else
+    {
+      display_set_mouse_win(-1, -1, -1, -1);
+    }
 
   ACTWIN.text_amount = 0;
 }
@@ -385,7 +397,7 @@ void v6_erase_window(void)
 
   ACTWIN.cury = ACTWIN.ypos;
   ACTWIN.curx = ACTWIN.xpos + ACTWIN.lmargin;
-  ACTWIN.line_height = ACTWIN.text_amount = display_get_font_height(ACTWIN.style)+0.5;
+  ACTWIN.line_height = ACTWIN.text_amount = display_get_font_height(ACTWIN.style);
   ACTWIN.text_amount *= 2;
 }
 
@@ -393,8 +405,8 @@ void v6_erase_line(int val)
 {
   if (ACTWIN.line_height == 0)
     {
-      scroll_to_height(display_get_font_height(ACTWIN.style)+0.5, 1);
-      ACTWIN.line_height = display_get_font_height(ACTWIN.style)+0.5;
+      scroll_to_height(display_get_font_height(ACTWIN.style), 1);
+      ACTWIN.line_height = display_get_font_height(ACTWIN.style);
     }
 
   if (ACTWIN.style&1)
@@ -511,11 +523,11 @@ void v6_define_window(int window,
 
   if (win[window].cury+win[window].line_height > win[window].ypos + win[window].height)
     {
-      win[window].line_height = display_get_font_height(win[window].style)+0.5;
+      win[window].line_height = display_get_font_height(win[window].style);
       win[window].cury = win[window].ypos + win[window].height - win[window].line_height;
       
       if (!ACTWIN.no_scroll)
-	scroll_to_height(display_get_font_height(ACTWIN.style)+0.5, 0);
+	scroll_to_height(display_get_font_height(ACTWIN.style), 0);
     }
 
   win[window].text_amount = win[window].line_height*2;
@@ -546,7 +558,7 @@ void v6_set_cursor(int x, int y)
   ACTWIN.cury = ACTWIN.ypos + y;
 
   if (ly != ACTWIN.cury)
-    ACTWIN.line_height = display_get_font_height(ACTWIN.style)+0.5;
+    ACTWIN.line_height = display_get_font_height(ACTWIN.style);
 
   ACTWIN.text_amount = 0;
 }
@@ -648,4 +660,9 @@ int v6_measure_text(int* text,
   return display_measure_text(text,
 			      len,
 			      ACTWIN.style);
+}
+
+void v6_set_mouse_win(int win)
+{
+  mouse_win = win;
 }

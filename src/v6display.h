@@ -69,6 +69,7 @@ extern int  v6_get_cursor_x (void);
 extern int  v6_get_cursor_y (void);
 
 extern void v6_set_caret    (void);
+extern void v6_set_mouse_win(int win);
 
 extern void v6_set_newline_function(int (*func)(const int * remaining,
 						int rem_len));

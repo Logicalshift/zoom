@@ -36,6 +36,8 @@
 #include "xdisplay.h"
 #include "xfont.h"
 
+#include <X11/cursorfont.h>
+
 #include "zmachine.h"
 #include "display.h"
 #include "v6display.h"
@@ -74,6 +76,13 @@ GC           x_pixgc;
 static int pix_w, pix_h;
 static int pix_fore;
 static int pix_back;
+
+static int mousew_x, mousew_y, mousew_w, mousew_h = -1;
+
+static Cursor scrollCursor;
+static Cursor noClickHere;
+static Cursor arrowCursor;
+static Cursor clickCursor;
 
 #ifdef HAVE_XRENDER
 XRenderPictFormat* x_picformat = NULL;
@@ -587,7 +596,7 @@ static void draw_input_text(void)
 
       input_x = caret_x = pix_cx;
       input_y = caret_y = pix_cy;
-      input_y += xfont_get_ascent(font[style_font[(pix_cstyle>>1)&15]])+0.5;
+      input_y += xfont_get_ascent(font[style_font[(pix_cstyle>>1)&15]]);
       input_width = pix_cw;
       caret_height = xfont_get_height(font[style_font[(pix_cstyle>>1)&15]])-1;
 
@@ -636,7 +645,7 @@ static void draw_input_text(void)
 		     input_x + BORDER_SIZE,
 		     caret_y + BORDER_SIZE,
 		     input_width,
-		     xfont_get_height(font[style_font[(style>>1)&15]]));
+		     xfont_get_height(font[style_font[(style>>1)&15]])+0.5);
 
       caret_x += xfont_get_text_width(font[style_font[(style>>1)&15]],
 				      text_buf,
@@ -2031,15 +2040,30 @@ static int process_events(long int to, int* buf, int buflen)
 		      
 		      /* Turn on motion events */
 		      scrolling = 1;
+
+		      /* Set the cursor */
+		      XDefineCursor(x_display, x_mainwin, scrollCursor);
 		    }
 		}
 	      else if (terminating[254] || buf == NULL)
 		{
-		  return 254;
+		  if (mousew_h < 0 ||
+		      (click_x > mousew_x && click_y > mousew_y &&
+		       click_x < mousew_x+mousew_w && 
+		       click_y < mousew_y+mousew_h))
+		    {
+		      XDefineCursor(x_display, x_mainwin, clickCursor);
+		      return 254;
+		    }
+		  else
+		    {
+		      XDefineCursor(x_display, x_mainwin, noClickHere);
+		    }
 		}
 	      break;
 
 	    case ButtonRelease:
+	      XDefineCursor(x_display, x_mainwin, arrowCursor);
 	      if (scrolling)
 		{
 		  scroll_state = 0;
@@ -2336,12 +2360,12 @@ void display_terminating(unsigned char* table)
 
 int display_get_mouse_x(void)
 {
-  return click_x/xfont_x;
+  return (click_x/xfont_x)+1;
 }
 
 int display_get_mouse_y(void)
 {
-  return click_y/xfont_y;
+  return (click_y/xfont_y)+1;
 }
 
 int display_get_pix_mouse_x(void)
@@ -2384,6 +2408,12 @@ void display_initialise(void)
   fonts = rc_get_fonts(&num);
   n_fonts = 0;
 
+  /* Load some cursors */
+  scrollCursor = XCreateFontCursor(x_display, XC_double_arrow);
+  noClickHere  = XCreateFontCursor(x_display, XC_X_cursor);
+  arrowCursor  = XCreateFontCursor(x_display, XC_left_ptr);
+  clickCursor  = XCreateFontCursor(x_display, XC_hand2);
+
   /* Start up the font system */
   xfont_initialise();
   
@@ -2400,6 +2430,8 @@ void display_initialise(void)
 			    CopyFromParent,
 			    CWEventMask|CWBackPixel,
 			    &win_attr);
+
+  XDefineCursor(x_display, x_mainwin, arrowCursor);
 
   /* Give it a back buffer, if the extension is available */
   x_drawable = x_mainwin;
@@ -2482,7 +2514,7 @@ void display_initialise(void)
     }
     
   xfont_x = xfont_get_width(font[3]);
-  xfont_y = xfont_get_height(font[3]);;
+  xfont_y = xfont_get_height(font[3]);
 
   cols = rc_get_colours(&num);
   if (num > 11)
@@ -2632,7 +2664,7 @@ void display_reinitialise(void)
     }
 	  
   xfont_x = xfont_get_width(font[3]);
-  xfont_y = xfont_get_height(font[3]);
+  xfont_y = xfont_get_height(font[3])+0.5;
 
   max_x = size_x = rc_get_xsize();
   max_y = size_y = rc_get_ysize();
@@ -2863,7 +2895,7 @@ void display_plot_gtext(const int* text,
 
   width = xfont_get_text_width(font[ft],
 			       text, len);
-  height = xfont_get_height(font[ft]);
+  height = xfont_get_height(font[ft])+0.5;
 
   if (bg >= 0)
     {
@@ -2879,7 +2911,7 @@ void display_plot_gtext(const int* text,
 		    text, len);
 
   y -= xfont_get_ascent(font[ft]);
-  pixmap_update(x, y, x+width, y+height);
+  pixmap_update(x, y, x+width, y+height+0.5);
 }
 
 void display_plot_rect(int x, int y,
@@ -2944,7 +2976,7 @@ float display_get_font_height(int style)
 
   ft = style_font[(style>>1)&15];
 
-  return xfont_get_height(font[ft])+0.5;
+  return xfont_get_height(font[ft]);
 }
 
 float display_get_font_ascent(int style)
@@ -3002,6 +3034,14 @@ void display_wait_for_more(void)
   more_on = 1;
   display_readchar(0);
   more_on = 0;
+}
+
+void display_set_mouse_win(int x, int y, int w, int h)
+{
+  mousew_x = x;
+  mousew_y = y;
+  mousew_w = w;
+  mousew_h = h;
 }
 
 #endif

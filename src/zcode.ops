@@ -2835,7 +2835,6 @@ OPCODE "get_wind_prop" EXT:0x13        STORE  VERSION 6
       break;
     case 11:
       store(stack, st, windows[argblock.arg[0]].colour);
-	printf("Foop\n");
       break;
     case 12:
       store(stack, st, windows[argblock.arg[0]].font_num);
@@ -2903,7 +2902,7 @@ OPCODE "read_mouse"    EXT:0x16               VERSION 6
 
 OPCODE "mouse_window"  EXT:0x17               VERSION 6
 %{
-  printf_debug("mouse_window not implemented\n");
+  v6_set_mouse_win(WinNum(argblock.arg[0]));
 %}
 
 OPCODE "push_stack"    EXT:0x18        BRANCH VERSION 6

@@ -1054,6 +1054,30 @@ static void zcode_op_aread_5678(ZDWord* pc,
       res = stream_readline(buf, mem[0], 0);
       display_terminating(NULL);
 
+      if (res == 254 || res == 253)
+	{
+	  if (machine.heb != NULL && machine.heblen >= 2)
+	    {
+	      int x,y;
+	      
+	      if (machine.version != 6)
+		{
+		  x = display_get_mouse_x();
+		  y = display_get_mouse_y();
+		}
+	      else
+		{
+		  x = display_get_pix_mouse_x();
+		  y = display_get_pix_mouse_y();
+		}
+	      
+	      machine.heb[ZHEB_xmouse]   = x>>8;
+	      machine.heb[ZHEB_xmouse+1] = x;
+	      machine.heb[ZHEB_ymouse]   = y>>8;
+	      machine.heb[ZHEB_ymouse+1] = y;
+	    }
+	}
+
       store(stack, st, res);
     }
   else
@@ -1086,6 +1110,34 @@ static void zcode_op_aread_5678(ZDWord* pc,
 	  newframe->v5read    = zcode_op_aread_5678;
 	  free(buf);
 	  return;
+	}
+      else
+	{
+	  if (res == 254 || res == 253)
+	    {
+	      if (machine.heb != NULL && machine.heblen >= 3)
+		{
+		  int x,y;
+
+		  if (machine.version != 6)
+		    {
+		      x = display_get_mouse_x();
+		      y = display_get_mouse_y();
+		    }
+		  else
+		    {
+		      x = display_get_pix_mouse_x();
+		      y = display_get_pix_mouse_y();
+		    }
+		  
+		  machine.heb[ZHEB_xmouse]   = x>>8;
+		  machine.heb[ZHEB_xmouse+1] = x;
+		  machine.heb[ZHEB_ymouse]   = y>>8;
+		  machine.heb[ZHEB_ymouse+1] = y;
+
+		  printf("Yeep! - %i, %i\n", x, y);
+		}
+	    }
 	}
     }
 
