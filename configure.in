@@ -167,7 +167,6 @@ if test "$CYGWIN" != "yes"; then
     AC_SUBST(RESEXTN)
 
     AM_CONDITIONAL(WINDOWS_VERSION, true)
-    AM_CONDITIONAL(BORLAND_VERSION, false)
     AM_CONDITIONAL(CREATE_EXE, true)
     AM_CONDITIONAL(CARBON_VERSION, false)
 
@@ -190,7 +189,6 @@ if test "$CYGWIN" = "yes"; then
   AC_SUBST(RESEXTN)
 
   AM_CONDITIONAL(WINDOWS_VERSION, true)
-  AM_CONDITIONAL(BORLAND_VERSION, false)
   AM_CONDITIONAL(CARBON_VERSION, false)
 
   WINDOW_SYSTEM=2
@@ -201,35 +199,18 @@ if test "$MINGW32" != "yes"; then
   if test "$carbon_present" = "no"; then
     AC_PATH_XTRA
     if test "$no_x" = "yes"; then
-      AC_MSG_CHECKING([for Windows headers & libraries])
-      AC_TRY_LINK([#include <windows.h>],
-                  [ { MessageBox(NULL, "Arg", "Whoops", MB_OK | MB_SYSTEMMODAL); } ],
-	    	  AC_MSG_RESULT(yes),
-		  AC_MSG_RESULT(no)
-		  AC_MSG_ERROR([No supported display interfaces found]))
-      AC_PATH_PROG(WINDRES, brcc32)
-      RESEXTN=res
-      AC_SUBST(RESEXTN)
-
-      AM_CONDITIONAL(WINDOWS_VERSION, true)
-      AM_CONDITIONAL(BORLAND_VERSION, true)
-      AM_CONDITIONAL(CARBON_VERSION, false)
-
-      WINDOW_SYSTEM=2
-      AC_DEFINE(WINDOW_SYSTEM, 2)
+      AC_MSG_ERROR([No supported configurations found])
     else
       WINDOW_SYSTEM=1
       AC_DEFINE(WINDOW_SYSTEM, 1)
 
       AM_CONDITIONAL(WINDOWS_VERSION, false)
-      AM_CONDITIONAL(BORLAND_VERSION, false)
       AM_CONDITIONAL(CARBON_VERSION, false)
     fi
   else
     WINDOW_SYSTEM=3
     AC_DEFINE(WINDOW_SYSTEM, 3)
     AM_CONDITIONAL(WINDOWS_VERSION, false)
-    AM_CONDITIONAL(BORLAND_VERSION, false)
     AM_CONDITIONAL(CARBON_VERSION, true)
 
     QUICKTIME_DETECT
@@ -311,6 +292,9 @@ AC_TRY_LINK([
     AC_DEFINE(OPT_TYPE, 200)
   ])
 )
+
+AC_CHECK_HEADERS([expat.h],,AC_MSG_ERROR([expat is required to compile Zoom]))
+AC_CHECK_LIB(expat, XML_ParserReset,,AC_MSG_ERROR([expat is required to compile Zoom]))
 
 if test "$cross_compiling" = "yes"; then
   UTIL_DISPLAY_SECTION([native gcc (as we're X-compiling)])

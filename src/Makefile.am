@@ -49,29 +49,12 @@ $(srcdir)/interp.c: interp_gen.h interp_z3.h interp_z4.h interp_z5.h interp_z6.h
 WINDRES = @WINDRES@
 
 if WINDOWS_VERSION
-if BORLAND_VERSION
-zoom$(EXEEXT): zoom.res $(zoom_OBJECTS)
-	$(LINK) -aa c0w32 $(zoom_OBJECTS),zoom,,import32 cw32,,zoom.res
-#LDFLAGS=@LDFLAGS@ -link
-else
-#LDFLAGS=@LDFLAGS@
-zoom$(EXEEXT): zoom.o $(zoom_OBJECTS) $(zoom_DEPENDENCIES)
-	@rm -f zoom
-	$(LINK) $(zoom_LDFLAGS) $(zoom_OBJECTS) zoom.o $(zoom_LDADD) $(LIBS)
-#if CREATE_EXE
-#	mv zoom zoom.exe
-#	ln -s zoom.exe zoom
-#endif
-endif
-
 %.o: %.rc
 	$(WINDRES) -i $< -o $@
 
 %.res: %.rc
 	$(WINDRES) -fo$@ $<
 else
-#LDFLAGS=@LDFLAGS@
-
 zoom$(EXEEXT): $(zoom_OBJECTS) $(zoom_DEPENDENCIES)
 	@rm -f zoom
 	$(LINK) $(zoom_LDFLAGS) $(zoom_OBJECTS) $(zoom_LDADD) $(LIBS)

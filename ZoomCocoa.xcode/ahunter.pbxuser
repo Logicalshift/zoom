@@ -119,10 +119,10 @@
 				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
-					364,
-					80,
+					389,
+					85,
 					20,
-					80,
+					85,
 					43,
 					43,
 				);
@@ -637,7 +637,7 @@
 					PBXProjectWorkspaceModule_EmbeddedNavigatorGroup = {
 						PBXSplitModuleInNavigatorKey = {
 							Split0 = {
-								bookmark = 4BECA7D105B17041006840BA;
+								bookmark = 4BECA7F905B194AD006840BA;
 								history = (
 									4B1DE7D905947BE5009B2DE0,
 									4B418DCE0594FC0B009C44DE,
@@ -691,17 +691,19 @@
 									4BECA76305B0AE0C006840BA,
 									4BECA77705B16D72006840BA,
 									4BECA77B05B16D72006840BA,
-									4BECA78C05B16EC5006840BA,
 									4BECA78D05B16EC5006840BA,
 									4BECA78E05B16EC5006840BA,
-									4BECA7A205B16F3D006840BA,
 									4BECA7A305B16F3D006840BA,
 									4BECA7B505B16F5C006840BA,
 									4BECA7B605B16F5C006840BA,
 									4BECA7C605B17041006840BA,
-									4BECA7C705B17041006840BA,
-									4BECA7C805B17041006840BA,
-									4BECA7C905B17041006840BA,
+									4BECA7D805B178F0006840BA,
+									4BECA7D905B178F0006840BA,
+									4BECA7DA05B178F0006840BA,
+									4BECA7DB05B178F0006840BA,
+									4BECA7F005B19491006840BA,
+									4BECA7F105B19491006840BA,
+									4BECA7F205B19491006840BA,
 								);
 								prevStack = (
 									4B1DE7DB05947BE5009B2DE0,
@@ -821,6 +823,13 @@
 									4BECA7CE05B17041006840BA,
 									4BECA7CF05B17041006840BA,
 									4BECA7D005B17041006840BA,
+									4BECA7DD05B178F0006840BA,
+									4BECA7DE05B178F0006840BA,
+									4BECA7DF05B178F0006840BA,
+									4BECA7E005B178F0006840BA,
+									4BECA7E105B178F0006840BA,
+									4BECA7F305B19491006840BA,
+									4BECA7F405B19491006840BA,
 								);
 							};
 							SplitCount = 1;
@@ -868,19 +877,13 @@
 							PBXSmartGroupTreeModuleOutlineStateExpansionKey = (
 								4B1E3F47050F7AD000A8E303,
 								4B1E3F5E050F7B2C00A8E303,
-								4BCF3F41050FB1C300A8E303,
-								4B2EAFB105B08D2F0021A5E6,
-								4BDFA4E80535E9DE00A8E303,
-								4BCF3F42050FB1D800A8E303,
 								4B1E3F5F050F7B8100A8E303,
 								1C37FBAC04509CD000000102,
 								1C37FABC05509CD000000102,
 							);
 							PBXSmartGroupTreeModuleOutlineStateSelectionKey = (
 								(
-									25,
-									23,
-									13,
+									19,
 									0,
 								),
 							);
@@ -936,7 +939,7 @@
 			};
 			"PBXWorkspaceGeometries:PBXConfiguration.PBXModule.PBXCVSModule" = {
 				Frame = "{{0, 0}, {482, 276}}";
-				RubberWindowFrame = "419 400 482 318 0 0 1280 1002 ";
+				RubberWindowFrame = "393 411 482 318 0 0 1280 1002 ";
 			};
 			"PBXWorkspaceGeometries:PBXConfiguration.PBXModule.PBXClassBrowserModule" = {
 				ClassesFrame = "{{0, 0}, {408, 92}}";
@@ -997,7 +1000,7 @@
 				Frame = "{{0, 0}, {924, 712}}";
 				PBXProjectWorkspaceModule_GeometryKey_Rev15 = {
 				};
-				RubberWindowFrame = "184 198 924 754 0 0 1280 1002 ";
+				RubberWindowFrame = "282 103 924 754 0 0 1280 1002 ";
 			};
 			"PBXWorkspaceGeometries:PBXConfiguration.PBXModule.PBXRunSessionModule" = {
 				Frame = "{{0, 0}, {745, 387}}";
@@ -1267,6 +1270,29 @@
 			4BECA7CF05B17041006840BA = 4BECA7CF05B17041006840BA;
 			4BECA7D005B17041006840BA = 4BECA7D005B17041006840BA;
 			4BECA7D105B17041006840BA = 4BECA7D105B17041006840BA;
+			4BECA7D805B178F0006840BA = 4BECA7D805B178F0006840BA;
+			4BECA7D905B178F0006840BA = 4BECA7D905B178F0006840BA;
+			4BECA7DA05B178F0006840BA = 4BECA7DA05B178F0006840BA;
+			4BECA7DB05B178F0006840BA = 4BECA7DB05B178F0006840BA;
+			4BECA7DC05B178F0006840BA = 4BECA7DC05B178F0006840BA;
+			4BECA7DD05B178F0006840BA = 4BECA7DD05B178F0006840BA;
+			4BECA7DE05B178F0006840BA = 4BECA7DE05B178F0006840BA;
+			4BECA7DF05B178F0006840BA = 4BECA7DF05B178F0006840BA;
+			4BECA7E005B178F0006840BA = 4BECA7E005B178F0006840BA;
+			4BECA7E105B178F0006840BA = 4BECA7E105B178F0006840BA;
+			4BECA7E205B178F0006840BA = 4BECA7E205B178F0006840BA;
+			4BECA7E505B19390006840BA = 4BECA7E505B19390006840BA;
+			4BECA7ED05B19397006840BA = 4BECA7ED05B19397006840BA;
+			4BECA7EE05B19397006840BA = 4BECA7EE05B19397006840BA;
+			4BECA7EF05B19398006840BA = 4BECA7EF05B19398006840BA;
+			4BECA7F005B19491006840BA = 4BECA7F005B19491006840BA;
+			4BECA7F105B19491006840BA = 4BECA7F105B19491006840BA;
+			4BECA7F205B19491006840BA = 4BECA7F205B19491006840BA;
+			4BECA7F305B19491006840BA = 4BECA7F305B19491006840BA;
+			4BECA7F405B19491006840BA = 4BECA7F405B19491006840BA;
+			4BECA7F505B19491006840BA = 4BECA7F505B19491006840BA;
+			4BECA7F605B194A4006840BA = 4BECA7F605B194A4006840BA;
+			4BECA7F905B194AD006840BA = 4BECA7F905B194AD006840BA;
 			4BFE726905AD85CE00716D5A = 4BFE726905AD85CE00716D5A;
 			4BFE726D05AD85CE00716D5A = 4BFE726D05AD85CE00716D5A;
 			4BFE728A05AD977E00716D5A = 4BFE728A05AD977E00716D5A;
@@ -2043,8 +2069,8 @@
 	4B2EAFAE05B08D1E0021A5E6 = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {689, 1357}}";
-			sepNavSelRange = "{1305, 0}";
-			sepNavVisRect = "{{0, 557}, {689, 544}}";
+			sepNavSelRange = "{1610, 0}";
+			sepNavVisRect = "{{0, 813}, {689, 544}}";
 		};
 	};
 	4B2EAFB205B0A47E0021A5E6 = {
@@ -2982,7 +3008,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: 1008";
 		rLen = 0;
-		rLoc = 34068;
+		rLoc = 34128;
 		rType = 0;
 		vrLen = 1187;
 		vrLoc = 31544;
@@ -3104,9 +3130,9 @@
 	};
 	4B4EF624050FDC6800A8E303 = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {764, 18549}}";
-			sepNavSelRange = "{39468, 0}";
-			sepNavVisRect = "{{0, 16959}, {689, 544}}";
+			sepNavIntBoundsRect = "{{0, 0}, {764, 18605}}";
+			sepNavSelRange = "{20862, 0}";
+			sepNavVisRect = "{{0, 9199}, {689, 544}}";
 			sepNavWindowFrame = "{{131, 222}, {750, 558}}";
 		};
 	};
@@ -3865,7 +3891,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: 1217";
 		rLen = 0;
-		rLoc = 39676;
+		rLoc = 39736;
 		rType = 0;
 		vrLen = 1091;
 		vrLoc = 38437;
@@ -3875,7 +3901,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: 1213";
 		rLen = 0;
-		rLoc = 39412;
+		rLoc = 39472;
 		rType = 0;
 		vrLen = 1208;
 		vrLoc = 38437;
@@ -3945,7 +3971,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: displayWarning:";
 		rLen = 0;
-		rLoc = 38897;
+		rLoc = 38957;
 		rType = 0;
 		vrLen = 974;
 		vrLoc = 38437;
@@ -3955,7 +3981,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: 1214";
 		rLen = 0;
-		rLoc = 39490;
+		rLoc = 39550;
 		rType = 0;
 		vrLen = 1210;
 		vrLoc = 38437;
@@ -3975,7 +4001,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: 1213";
 		rLen = 0;
-		rLoc = 39315;
+		rLoc = 39375;
 		rType = 0;
 		vrLen = 1213;
 		vrLoc = 38437;
@@ -3995,7 +4021,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: displayWarning:";
 		rLen = 0;
-		rLoc = 38897;
+		rLoc = 38957;
 		rType = 0;
 		vrLen = 974;
 		vrLoc = 38437;
@@ -4035,7 +4061,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: displayWarning:";
 		rLen = 0;
-		rLoc = 38897;
+		rLoc = 38957;
 		rType = 0;
 		vrLen = 974;
 		vrLoc = 38437;
@@ -4075,7 +4101,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: 1232";
 		rLen = 0;
-		rLoc = 39388;
+		rLoc = 39448;
 		rType = 0;
 		vrLen = 991;
 		vrLoc = 38437;
@@ -4085,7 +4111,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: 1232";
 		rLen = 0;
-		rLoc = 39388;
+		rLoc = 39448;
 		rType = 0;
 		vrLen = 991;
 		vrLoc = 38437;
@@ -4095,7 +4121,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: 1215";
 		rLen = 0;
-		rLoc = 38799;
+		rLoc = 38859;
 		rType = 0;
 		vrLen = 1001;
 		vrLoc = 38437;
@@ -4135,7 +4161,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: 1217";
 		rLen = 0;
-		rLoc = 38829;
+		rLoc = 38889;
 		rType = 0;
 		vrLen = 1253;
 		vrLoc = 38688;
@@ -4145,7 +4171,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: 1215";
 		rLen = 0;
-		rLoc = 38799;
+		rLoc = 38859;
 		rType = 0;
 		vrLen = 1001;
 		vrLoc = 38437;
@@ -4165,7 +4191,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: 1217";
 		rLen = 0;
-		rLoc = 38829;
+		rLoc = 38889;
 		rType = 0;
 		vrLen = 1253;
 		vrLoc = 38688;
@@ -4195,7 +4221,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: 1224";
 		rLen = 0;
-		rLoc = 39079;
+		rLoc = 39139;
 		rType = 0;
 		vrLen = 1325;
 		vrLoc = 38688;
@@ -4205,7 +4231,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: 1239";
 		rLen = 0;
-		rLoc = 39468;
+		rLoc = 39528;
 		rType = 0;
 		vrLen = 1211;
 		vrLoc = 38688;
@@ -4235,7 +4261,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: 1239";
 		rLen = 0;
-		rLoc = 39468;
+		rLoc = 39528;
 		rType = 0;
 		vrLen = 1211;
 		vrLoc = 38688;
@@ -4534,6 +4560,262 @@
 		refType = 0;
 		sourceTree = "<absolute>";
 	};
+	4BECA7D805B178F0006840BA = {
+		fRef = 4BECA7E405B178F1006840BA;
+		isa = PBXTextBookmark;
+		name = "(null): 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 858;
+		vrLoc = 0;
+	};
+	4BECA7D905B178F0006840BA = {
+		fRef = 4B2EAFAD05B08D1E0021A5E6;
+		isa = PBXTextBookmark;
+		name = "ZoomGameInfoController.h: 20";
+		rLen = 0;
+		rLoc = 462;
+		rType = 0;
+		vrLen = 784;
+		vrLoc = 0;
+	};
+	4BECA7DA05B178F0006840BA = {
+		fRef = 4B2EAFAE05B08D1E0021A5E6;
+		isa = PBXTextBookmark;
+		name = "ZoomGameInfoController.m: 68";
+		rLen = 0;
+		rLoc = 1610;
+		rType = 0;
+		vrLen = 1536;
+		vrLoc = 1259;
+	};
+	4BECA7DB05B178F0006840BA = {
+		fRef = 4B4EF623050FDC6800A8E303;
+		isa = PBXTextBookmark;
+		name = "ZoomView.h: exclusiveMode";
+		rLen = 0;
+		rLoc = 1189;
+		rType = 0;
+		vrLen = 917;
+		vrLoc = 889;
+	};
+	4BECA7DC05B178F0006840BA = {
+		fRef = 4B4EF624050FDC6800A8E303;
+		isa = PBXTextBookmark;
+		name = "ZoomView.m: 680";
+		rLen = 0;
+		rLoc = 20643;
+		rType = 0;
+		vrLen = 1365;
+		vrLoc = 19655;
+	};
+	4BECA7DD05B178F0006840BA = {
+		fRef = 4BECA7E305B178F1006840BA;
+		isa = PBXTextBookmark;
+		name = "(null): 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 858;
+		vrLoc = 0;
+	};
+	4BECA7DE05B178F0006840BA = {
+		fRef = 4B2EAFAD05B08D1E0021A5E6;
+		isa = PBXTextBookmark;
+		name = "ZoomGameInfoController.h: 20";
+		rLen = 0;
+		rLoc = 462;
+		rType = 0;
+		vrLen = 784;
+		vrLoc = 0;
+	};
+	4BECA7DF05B178F0006840BA = {
+		fRef = 4B2EAFAE05B08D1E0021A5E6;
+		isa = PBXTextBookmark;
+		name = "ZoomGameInfoController.m: 68";
+		rLen = 0;
+		rLoc = 1610;
+		rType = 0;
+		vrLen = 1536;
+		vrLoc = 1259;
+	};
+	4BECA7E005B178F0006840BA = {
+		fRef = 4B4EF624050FDC6800A8E303;
+		isa = PBXTextBookmark;
+		name = "ZoomView.m: 680";
+		rLen = 0;
+		rLoc = 20643;
+		rType = 0;
+		vrLen = 1365;
+		vrLoc = 19655;
+	};
+	4BECA7E105B178F0006840BA = {
+		fRef = 4B4EF623050FDC6800A8E303;
+		isa = PBXTextBookmark;
+		name = "ZoomView.h: exclusiveMode";
+		rLen = 0;
+		rLoc = 1189;
+		rType = 0;
+		vrLen = 917;
+		vrLoc = 889;
+	};
+	4BECA7E205B178F0006840BA = {
+		fRef = 4B4EF624050FDC6800A8E303;
+		isa = PBXTextBookmark;
+		name = "ZoomView.m: 686";
+		rLen = 0;
+		rLoc = 20862;
+		rType = 0;
+		vrLen = 1301;
+		vrLoc = 19774;
+	};
+	4BECA7E305B178F1006840BA = {
+		isa = PBXFileReference;
+		name = ahunter.pbxuser;
+		path = /Users/ahunter/prog/zoom/ZoomCocoa.xcode/ahunter.pbxuser;
+		refType = 0;
+		sourceTree = "<absolute>";
+	};
+	4BECA7E405B178F1006840BA = {
+		isa = PBXFileReference;
+		name = ahunter.pbxuser;
+		path = /Users/ahunter/prog/zoom/ZoomCocoa.xcode/ahunter.pbxuser;
+		refType = 0;
+		sourceTree = "<absolute>";
+	};
+	4BECA7E505B19390006840BA = {
+		fRef = 4B4EF624050FDC6800A8E303;
+		isa = PBXTextBookmark;
+		name = "ZoomView.m: 686";
+		rLen = 0;
+		rLoc = 20862;
+		rType = 0;
+		vrLen = 1301;
+		vrLoc = 19774;
+	};
+	4BECA7ED05B19397006840BA = {
+		fRef = 4B4EF624050FDC6800A8E303;
+		isa = PBXTextBookmark;
+		name = "ZoomView.m: 686";
+		rLen = 0;
+		rLoc = 20862;
+		rType = 0;
+		vrLen = 1301;
+		vrLoc = 19774;
+	};
+	4BECA7EE05B19397006840BA = {
+		fRef = 4B4EF624050FDC6800A8E303;
+		isa = PBXTextBookmark;
+		name = "ZoomView.m: 686";
+		rLen = 0;
+		rLoc = 20862;
+		rType = 0;
+		vrLen = 1301;
+		vrLoc = 19774;
+	};
+	4BECA7EF05B19398006840BA = {
+		fRef = 4B4EF624050FDC6800A8E303;
+		isa = PBXTextBookmark;
+		name = "ZoomView.m: 686";
+		rLen = 0;
+		rLoc = 20862;
+		rType = 0;
+		vrLen = 1301;
+		vrLoc = 19774;
+	};
+	4BECA7F005B19491006840BA = {
+		fRef = 4B4EF624050FDC6800A8E303;
+		isa = PBXTextBookmark;
+		name = "ZoomView.m: 686";
+		rLen = 0;
+		rLoc = 20862;
+		rType = 0;
+		vrLen = 1301;
+		vrLoc = 19774;
+	};
+	4BECA7F105B19491006840BA = {
+		fRef = 4B1E3FD4050F7E1000A8E303;
+		isa = PBXTextBookmark;
+		name = "README: 73";
+		rLen = 0;
+		rLoc = 3614;
+		rType = 0;
+		vrLen = 2012;
+		vrLoc = 2544;
+	};
+	4BECA7F205B19491006840BA = {
+		isa = PBXTargetBookmark;
+		trg = 4B1E3F5B050F7B2500A8E303;
+	};
+	4BECA7F305B19491006840BA = {
+		fRef = 4B4EF624050FDC6800A8E303;
+		isa = PBXTextBookmark;
+		name = "ZoomView.m: 686";
+		rLen = 0;
+		rLoc = 20862;
+		rType = 0;
+		vrLen = 1301;
+		vrLoc = 19774;
+	};
+	4BECA7F405B19491006840BA = {
+		fRef = 4B1E3FD4050F7E1000A8E303;
+		isa = PBXTextBookmark;
+		name = "README: 73";
+		rLen = 0;
+		rLoc = 3614;
+		rType = 0;
+		vrLen = 2012;
+		vrLoc = 2544;
+	};
+	4BECA7F505B19491006840BA = {
+		isa = PBXTargetBookmark;
+		trg = 4B1E3F5B050F7B2500A8E303;
+		uiCtxt = {
+			TOCViewDetailVisibleRect = "{{0, 0}, {494, 86}}";
+			TOCViewExpandedItems = (
+				"com.apple.target-editor-pane.settings",
+				"com.apple.target-editor-pane.settings.simple",
+				"com.apple.target-editor-pane.buildphases",
+			);
+			TOCViewMasterVisibleRect = "{{0, 0}, {195, 527}}";
+			TOCViewSelectedItems = (
+				4B1E3F59050F7B2500A8E303,
+			);
+		};
+	};
+	4BECA7F605B194A4006840BA = {
+		isa = PBXTargetBookmark;
+		trg = 4B1E3F5B050F7B2500A8E303;
+		uiCtxt = {
+			TOCViewDetailVisibleRect = "{{0, 0}, {494, 86}}";
+			TOCViewExpandedItems = (
+				"com.apple.target-editor-pane.settings",
+				"com.apple.target-editor-pane.settings.simple",
+				"com.apple.target-editor-pane.buildphases",
+			);
+			TOCViewMasterVisibleRect = "{{0, 0}, {195, 527}}";
+			TOCViewSelectedItems = (
+				4B1E3F59050F7B2500A8E303,
+			);
+		};
+	};
+	4BECA7F905B194AD006840BA = {
+		isa = PBXTargetBookmark;
+		trg = 4B1E3F5B050F7B2500A8E303;
+		uiCtxt = {
+			TOCViewDetailVisibleRect = "{{0, 0}, {494, 86}}";
+			TOCViewExpandedItems = (
+				"com.apple.target-editor-pane.settings",
+				"com.apple.target-editor-pane.settings.simple",
+				"com.apple.target-editor-pane.buildphases",
+			);
+			TOCViewMasterVisibleRect = "{{0, 0}, {195, 527}}";
+			TOCViewSelectedItems = (
+				4B1E3F59050F7B2500A8E303,
+			);
+		};
+	};
 	4BFE726905AD85CE00716D5A = {
 		fRef = 4BFE727105AD85CF00716D5A;
 		glyphRangeLength = 0;
@@ -4794,7 +5076,7 @@
 		isa = PBXTextBookmark;
 		name = "ZoomView.m: 1253";
 		rLen = 0;
-		rLoc = 41026;
+		rLoc = 41086;
 		rType = 0;
 		vrLen = 931;
 		vrLoc = 39863;

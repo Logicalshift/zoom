@@ -19,6 +19,7 @@
 				4BCF3F41050FB1C300A8E303,
 				4BCF3F42050FB1D800A8E303,
 				4B1E3F5F050F7B8100A8E303,
+				4BECA7F705B194AA006840BA,
 				4B1E3F55050F7B0E00A8E303,
 			);
 			isa = PBXGroup;
@@ -168,6 +169,7 @@
 			files = (
 				4B1E3F61050F7BA000A8E303,
 				4BCF3F2C050F8E2400A8E303,
+				4BECA7FA05B194AF006840BA,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -188,7 +190,7 @@
 			);
 			buildSettings = {
 				OPTIMIZATION_CFLAGS = "-O3";
-				OTHER_CFLAGS = "-I\"ProjectBuilder/etc\" -Ibuild -DWINDOW_SYSTEM=4";
+				OTHER_CFLAGS = "-I\"ProjectBuilder/etc\" -Ibuild -DWINDOW_SYSTEM=4 -I/usr/local/include";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = ZoomServer;
@@ -1714,6 +1716,7 @@
 				4BCF3F4F050FB30100A8E303,
 				4BCF3F50050FB30100A8E303,
 				4BDFA4DF0535E72C00A8E303,
+				4BECA7F805B194AA006840BA,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1737,7 +1740,7 @@
 			);
 			buildSettings = {
 				OPTIMIZATION_CFLAGS = "-O0";
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = " -I/usr/local/include";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = Zoom;
@@ -2486,6 +2489,26 @@
 			path = display.c;
 			refType = 4;
 			sourceTree = "<group>";
+		};
+		4BECA7F705B194AA006840BA = {
+			isa = PBXFileReference;
+			lastKnownFileType = archive.ar;
+			name = libexpat.a;
+			path = /usr/local/lib/libexpat.a;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		4BECA7F805B194AA006840BA = {
+			fileRef = 4BECA7F705B194AA006840BA;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BECA7FA05B194AF006840BA = {
+			fileRef = 4BECA7F705B194AA006840BA;
+			isa = PBXBuildFile;
+			settings = {
+			};
 		};
 		4BFD6B3C0538A71700A8E303 = {
 			fileRef = 4B4EF623050FDC6800A8E303;
