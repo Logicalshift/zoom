@@ -62,6 +62,16 @@ Compiling Zoom
 Compiling Zoom (Cocoa)
 ======================
 
+   Before compiling, you will need a copy of the expat library
+   installed in /usr/local (Zoom will link against 
+   /usr/local/lib/libexpat.a and expects to find headers in 
+   /usr/local/include). If expat is not installed, download it from
+   expat.sourceforge.net, then run './configure', 'make' and 'sudo
+   make install' to install it. Zoom was developed using expat 
+   1.95.7: any later version should be suitable. (libexpat.a should
+   not appear as red in the Frameworks group under XCode if it is
+   installed correctly)
+
    Rather than use the configure/automake process for this, I have
    elected to use Xcode: to compile the new version of Zoom, load the
    ZoomCocoa.xcode project into Xcode and hit build. Note that Xcode
