@@ -314,6 +314,7 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 											  forKey: addDirectory];
 	
 	// Add all the files we can
+	NSMutableArray* extraFiles = [NSMutableArray array];
 	NSMutableArray* selectedFiles = [[sheet filenames] mutableCopy];
 	NSEnumerator* selFileEnum = [selectedFiles objectEnumerator];
 	NSString* filename;
@@ -328,7 +329,7 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 		
 		NSString* fileType = [filename pathExtension];
 		
-		if (isDir) { // FIXME
+		if (isDir) {
 			NSArray* dirContents = [[NSFileManager defaultManager] directoryContentsAtPath: filename];
 			
 			NSEnumerator* dirContentsEnum = [dirContents objectEnumerator];
@@ -336,10 +337,38 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 			
 			while (dirComponent = [dirContentsEnum nextObject]) {
 				if ([fileTypes containsObject: [dirComponent pathExtension]]) {
-					[selectedFiles addObject: [filename stringByAppendingPathComponent: dirComponent]];
+					[extraFiles addObject: [filename stringByAppendingPathComponent: dirComponent]];
 				}
 			}
 		} else if ([fileTypes containsObject: fileType]) {
+			ZoomStoryID* fileID = [[ZoomStoryID alloc] initWithZCodeFile: filename];
+			
+			if (fileID != nil) {
+				[[ZoomStoryOrganiser sharedStoryOrganiser] addStory: filename
+														  withIdent: fileID
+														   organise: [[ZoomPreferences globalPreferences] keepGamesOrganised]];
+				
+				[fileID release];
+			}
+		}
+		
+		[p release];
+	}
+	
+	// Add any extra files we got from selected directories
+	selFileEnum = [extraFiles objectEnumerator];
+	
+	while (filename = [selFileEnum nextObject]) {
+		NSAutoreleasePool* p = [[NSAutoreleasePool alloc] init];
+		BOOL isDir;
+		
+		isDir = NO;
+		[[NSFileManager defaultManager] fileExistsAtPath: filename
+											 isDirectory: &isDir];
+		
+		NSString* fileType = [filename pathExtension];
+		
+		if (!isDir && [fileTypes containsObject: fileType]) {
 			ZoomStoryID* fileID = [[ZoomStoryID alloc] initWithZCodeFile: filename];
 			
 			if (fileID != nil) {
