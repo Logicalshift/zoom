@@ -1236,8 +1236,6 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		[[lowerWindows objectAtIndex: 0] writeString: warningString
 										   withStyle: warningStyle];
 	}
-	//NSBeginAlertSheet(@"Warning", @"OK", nil, nil, [self window], nil, nil, nil, NULL, @"%@", warning);
-	//NSLog(@"Warning: %@", warning);
 }
 
 - (void) displayFatalError: (NSString*) error {
