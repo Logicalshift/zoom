@@ -24,6 +24,9 @@
 
 #define DEBUG
 
+static NSString* bufferedString = @"bufferedString";
+static NSString* bufferedMovement = @"bufferedMovement";
+
 @implementation ZoomZMachine
 
 - (id) init {
@@ -262,21 +265,57 @@
     NSArray* lastTime = [outputBuffer lastObject];
 
     if (lastTime) {
-        NSMutableString* lastString = [lastTime objectAtIndex: 0];
-        NSNumber* lastWindow = [lastTime objectAtIndex: 1];
-        ZStyle* lastStyle = [lastTime objectAtIndex: 2];
+        NSString* lastType = [lastTime objectAtIndex: 0];
 
-        if ([lastWindow intValue] == windowNumber &&
-            [lastStyle isEqual: style]) {
-            [lastString appendString: string];
-            return;
+        if ([lastType isEqualToString: bufferedString]) {
+            // Extend the last string if it's in the same window and of
+            // the same style
+            NSMutableString* lastString = [lastTime objectAtIndex: 1];
+            NSNumber* lastWindow = [lastTime objectAtIndex: 2];
+            ZStyle* lastStyle = [lastTime objectAtIndex: 3];
+
+            if ([lastWindow intValue] == windowNumber &&
+                [lastStyle isEqual: style]) {
+                [lastString appendString: string];
+                return;
+            }
         }
     }
 
     [outputBuffer addObject: [NSArray arrayWithObjects:
+        bufferedString,
         [NSMutableString stringWithString: string],
         [NSNumber numberWithInt: windowNumber],
         style,
+        nil]];
+}
+
+- (void) bufferMovement: (NSPoint) point
+              forWindow: (int) windowNumber {
+    NSArray* lastTime = [outputBuffer lastObject];
+
+    if (lastTime) {
+        NSString* lastType = [lastTime objectAtIndex: 0];
+
+        if ([lastType isEqualToString: bufferedMovement]) {
+            NSValue* lastPoint = [lastTime objectAtIndex: 1];
+            NSNumber* lastWindow = [lastTime objectAtIndex: 2];
+
+            // Combine with the last movement if necessary
+            // (Technically speaking, this should never happen in a well-written
+            // game. But I think it may happen several times in other games.
+            // NSDistantObject calls are sufficiently slow that this can make
+            // a big difference to execution speed)
+            if ([lastWindow intValue] == windowNumber) {
+                [outputBuffer removeLastObject]; // Toodles
+            }
+        }
+    }
+
+    [outputBuffer addObject: [NSArray arrayWithObjects:
+        bufferedMovement,
+        [NSValue valueWithPoint: point],
+        [NSNumber numberWithInt: windowNumber],
         nil]];
 }
 
@@ -291,13 +330,25 @@
 
     NSArray* bufEntry;
     while (bufEntry = [bufEnum nextObject]) {
-        NSMutableString* lastString = [bufEntry objectAtIndex: 0];
-        NSNumber* lastWindow = [bufEntry objectAtIndex: 1];
-        ZStyle* lastStyle = [bufEntry objectAtIndex: 2];
+        NSString* bufType = [bufEntry objectAtIndex: 0];
 
-        [[self windowNumber: [lastWindow intValue]]
-            writeString: lastString
-              withStyle: lastStyle];
+        if ([bufType isEqualToString: bufferedString]) {
+            NSMutableString* lastString = [bufEntry objectAtIndex: 1];
+            NSNumber* lastWindow = [bufEntry objectAtIndex: 2];
+            ZStyle* lastStyle = [bufEntry objectAtIndex: 3];
+
+            [[self windowNumber: [lastWindow intValue]] writeString: lastString
+                                                          withStyle: lastStyle];
+        } else if ([bufType isEqualToString: bufferedMovement]) {
+            NSValue* lastPoint = [bufEntry objectAtIndex: 1];
+            NSNumber* lastWindow = [bufEntry objectAtIndex: 2];
+
+            NSPoint pos = [lastPoint pointValue];
+
+            [(NSObject<ZUpperWindow>*)[self windowNumber:
+                [lastWindow intValue]] setCursorPositionX: (int)pos.x
+                                                        Y: (int)pos.y];
+        }
     }
 
     [outputBuffer release];

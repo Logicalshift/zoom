@@ -33,6 +33,8 @@ extern NSAutoreleasePool* displayPool;
 - (void) bufferString: (NSString*) string
             forWindow: (int) windowNumber
             withStyle: (ZStyle*) style;
+- (void) bufferMovement: (NSPoint) point
+              forWindow: (int) windowNumber;
 - (void) flushBuffers;
 
 @end

@@ -341,7 +341,6 @@ void display_join(int win1, int win2) {
 
 void display_set_window(int window) {
     currentWindow = window;
-    //[[mainMachine windowNumber: window] setFocus];
 }
 
 int  display_get_window(void) {
@@ -350,9 +349,13 @@ int  display_get_window(void) {
 
 void display_set_cursor(int x, int y) {
     if (currentWindow > 0) {
+        [mainMachine bufferMovement: NSMakePoint(x,y)
+                          forWindow: currentWindow];
+        /*
         [mainMachine flushBuffers];
         NSObject<ZUpperWindow>* win = [mainMachine windowNumber: currentWindow];
         [win setCursorPositionX: x Y: y];
+         */
     }
 }
 

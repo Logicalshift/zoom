@@ -158,6 +158,8 @@ static NSMutableArray* defaultFonts = nil;
 
         [pool release];
     }
+
+    [self rearrangeUpperWindows];
 }
 
 - (void) stopExclusive {
@@ -170,7 +172,7 @@ static NSMutableArray* defaultFonts = nil;
 
 - (void) shouldReceiveText: (int) maxLength {
     [self rearrangeUpperWindows];
-
+    
     // If the more prompt is off, then set up for editting
     if (!moreOn) {
         [textView setEditable: YES];
@@ -439,6 +441,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         lastUpperWindowSize = newSize;
     }
 
+    // Redraw the upper windows if necessary
     if (upperWindowNeedsRedrawing) {
         [textScroller updateUpperWindows];
         upperWindowNeedsRedrawing = NO;
