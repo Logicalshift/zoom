@@ -43,7 +43,7 @@ pdfstartview=FitH]{hyperref}
 \sst
 Interactive Fiction XML metadata format\rm\\
 \rule{16cm}{1.2mm}\\
-Version 0.9\\
+Version 1.0 (Draft)\\
 \today\\
 by Andrew Hunter
 \end{flushright}
@@ -63,9 +63,12 @@ was used in the interpreter's title bar, and also to provide a simple menu of st
 
 This format is intended to provide a more advanced indexing system for stories. It
 deals specifically with metadata aspects of stories, leaving interpreter configuration
-issues up to specific interpreters. This release (0.9) will be implemented in the 1.0.2
+issues up to specific interpreters. This release (1.0) will be implemented in the 1.0.2
 release of Zoom. The initial emphasis is on Z-Code stories, but the intention is to allow
 the indexing of stories in any of the formats currently in use.
+
+A simpler format (0.9) was originally used by Zoom. This new version is based on the
+results of a discussion on the Inform-developers mailing list.
 
 \subsection{Who should use this format?}
 
@@ -77,7 +80,9 @@ along with their stories.
 \section{The format}
 
 All metadata index files are in XML format, and so begin with a <?xml version="1.0"?>
-line. The namespace URI is http://www.logicalshift.org.uk/IF/metadata.
+line. The namespace URI is http://www.logicalshift.org.uk/IF/metadata. The metadata may
+be extended by additional modules, which must have their own unique namespace. Parsers
+must always identify namespaces by URI and not by prefix.
 
 \subsection{The root element: ifindex}
 
@@ -87,7 +92,7 @@ and XML schema location.
 
 \begin{example}
   \begin{verbatim}
-<ifindex version="0.9"
+<ifindex version="1.0"
   xmlns="http://www.logicalshift.org.uk/IF/metadata">
   \end{verbatim}
 \end{example}
@@ -99,6 +104,9 @@ The <ifindex> tag contains <story> tags, one for each story that is defined in t
 The <story> tag is used to specify the data associated with a particular story. It must contain
 at least one <identification> section, and may contain one or more metadata tags. It appears
 only as a child of the ifindex tag.
+
+The <identification> section may be omitted if the metadata is associated with a game in
+some other fashion (for example if it is contained in a Blorb file).
 
 \subsection{The story identification tag: identification}
 
@@ -196,23 +204,22 @@ tags are defined:
 
 \begin{description}
 \item[<title>] The title of the story (for example, Zork 1, Solid Gold Edition)
-\item[<headline>] The headline of the story (Infocom interactive fiction - a fantasy story)
 \item[<author>] The author of the story
 \item[<genre>] The genre of the story (Fantasy)
-\item[<year>] The year the story was first published (1981)
+\item[<published>] The date the story was first published in YYYYMMDD format (19810505)
+\\
+\item[<revision>] The revision number of the game
+\item[<headline>] The headline of the story (Infocom interactive fiction - a fantasy story)
 \item[<group>] The 'group' the story is in (for example, 'Infocom', 'Competition 1998', etc)
 \item[<zarfian>] The story's rating according to the 'Zarfian' scale ('Merciful', 'Polite', 
 'Tough', 'Nasty', 'Cruel')
 \item[<teaser>] The story's teaser text
-\\
-\item[<comment>] Any user comments on the story
-\item[<rating>] The user rating, a value between 0 and 10 where 0=worst and 10=best.
-\item[<feelies>] External files, images and data associated with the game
+\item[<series>] Specifies the series that a game is part of
+\item[<seriesnumber>] Specifies the number in the series the game is
+\item[<serieslength>] Specifies the length of the game series
 \end{description}
 
-The <comment> and <rating> values are intended to be set only by user interaction in an
-interpreter, and so shouldn't be added by story authors or index maintainers. The 'Zarfian'
-rating system is described by Andrew Plotkin as follows:
+The 'Zarfian' rating system is described by Andrew Plotkin as follows:
 
 \begin{description}
 \item[Merciful] cannot get stuck
@@ -243,12 +250,14 @@ but Zoom suggests the following list of 'standard' genres:
 \item Interpreter abuse
 \end{itemize}
 
-\subsection{The <feelies> tag}
+\section{Optional modules}
 
-This tag is used to associate files and other forms of data with the game. Usually this data is
-provided as URL references to files. Relative references are permissible, so a game author
-can provide a game file, feelies, and a .iFiction file all as part of one package. The following
-tags can be supplied in the feelies section:
+\subsection{The feelies module}
+
+This module can be used to specify 'feelies': additional media associated with a game. The namespace URI for this module is 
+http://www.logicalshift.org.uk/IF/metadata/feelies
+
+The tags supported by this module are:
 
 \begin{description}
 \item[icon] A miniature picture associated with the game. This should be a base 64 encoded 
@@ -256,12 +265,30 @@ PNG file of 128x128 size, and can be used by an interpreter to display an image 
 a game file.
 \item[image] A URL of an image associated with the game. Images should be of PNG or
 JPEG format.
-\item[pdf] A URL of a PDF document associated with the game
-\item[url] Specifies the URL of the game file. This can be used by archive or review sites to
-provide information on where to obtain a game.
+\item[pdf] A URL of a PDF document associated with the game. Can have an optional 'page' attribute to indicate that the
+pdf file should be opened to a particular page.
 \end{description}
 
 All of these tags should have a 'title' attribute, indicating a name that should be displayed
 in association with the feelie.
+
+\subsection{The comments module}
+
+This module is intended for data designed to be set by the user of a game, and should not appear in metadata files generated by
+game or interpreter authors. Its namespace URI is http://www.logicalshift.org.uk/IF/metadata/comments
+
+The tags supported by this module are:
+
+\begin{description}
+\item[<comment>] Any user comments on the story
+\item[<rating>] The user rating, a value between 0 and 10 where 0=worst and 10=best.
+\item[<feelies>] External files, images and data associated with the game
+\end{description}
+
+\subsection{The resources module}
+
+\subsection{The review module}
+
+\section{Parsing notes}
 
 \end{document}

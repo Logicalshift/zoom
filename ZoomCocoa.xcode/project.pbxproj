@@ -479,7 +479,6 @@
 				4B1E3FA6050F7D5200A8E303,
 				4B1E3FAA050F7D5200A8E303,
 				4B1E3FAB050F7D5200A8E303,
-				4B1E3FAC050F7D5200A8E303,
 				4B1E3FAD050F7D5200A8E303,
 				4B1E3FAE050F7D5200A8E303,
 				4B1E3FC1050F7DE200A8E303,
@@ -511,7 +510,6 @@
 				4B1E3FA1050F7D5200A8E303,
 				4B1E3FA2050F7D5200A8E303,
 				4B1E3FA3050F7D5200A8E303,
-				4B1E3FA4050F7D5200A8E303,
 				4B1E3FA5050F7D5200A8E303,
 				4B1E3FA7050F7D5200A8E303,
 				4B1E3FA8050F7D5200A8E303,
@@ -1115,12 +1113,6 @@
 			settings = {
 			};
 		};
-		4B1E3FA4050F7D5200A8E303 = {
-			fileRef = 4B1E3F91050F7D5200A8E303;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		4B1E3FA5050F7D5200A8E303 = {
 			fileRef = 4B1E3F92050F7D5200A8E303;
 			isa = PBXBuildFile;
@@ -1159,12 +1151,6 @@
 		};
 		4B1E3FAB050F7D5200A8E303 = {
 			fileRef = 4B1E3F98050F7D5200A8E303;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		4B1E3FAC050F7D5200A8E303 = {
-			fileRef = 4B1E3F99050F7D5200A8E303;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -2764,6 +2750,8 @@
 			children = (
 				4BC5562006B83F4600F0DD4A,
 				4BC5562106B83F4600F0DD4A,
+				4BF1576306BAD034001A3C27,
+				4BF1576406BAD034001A3C27,
 			);
 			isa = PBXGroup;
 			path = Resources;
@@ -3017,6 +3005,7 @@
 				4B5CBB7B069D656000C0AA88,
 				4BC3B03906AE8575008FCD35,
 				4BC5562206B83F4600F0DD4A,
+				4BF1576706BAD036001A3C27,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3647,6 +3636,7 @@
 				4B42478C0695E25600A3A1C0,
 				4B1884B106975647004D8501,
 				4BC3B03706AE8563008FCD35,
+				4BF1576506BAD034001A3C27,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3693,6 +3683,7 @@
 				4B0A32B606A596DB00BB8878,
 				4B0A32E506A59ADA00BB8878,
 				4BC3B03806AE8563008FCD35,
+				4BF1576606BAD034001A3C27,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3721,7 +3712,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_VERSION = A;
 				INSTALL_PATH = "@executable_path/../Frameworks";
-				OTHER_CFLAGS = "-seg1addr 0x2f000000";
+				OTHER_CFLAGS = "-seg1addr 0x2f000000 -I\"ProjectBuilder/etc\"";
 				OTHER_LDFLAGS = "-seg1addr 0x2f000000";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -4147,6 +4138,43 @@
 		};
 		4BECA81C05B19CFB006840BA = {
 			fileRef = 4BECA81B05B19CFB006840BA;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BF1576306BAD034001A3C27 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = ZoomBlorbFile.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BF1576406BAD034001A3C27 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = ZoomBlorbFile.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BF1576506BAD034001A3C27 = {
+			fileRef = 4BF1576306BAD034001A3C27;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
+		4BF1576606BAD034001A3C27 = {
+			fileRef = 4BF1576406BAD034001A3C27;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4BF1576706BAD036001A3C27 = {
+			fileRef = 4BF1576306BAD034001A3C27;
 			isa = PBXBuildFile;
 			settings = {
 			};
