@@ -544,7 +544,6 @@
 				4B4EF622050FD67C00A8E303,
 				4BE447B90510DE5900A8E303,
 				4BE621EC068C21E300369528,
-				4B5256E406C39EB60054D65B,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2001,12 +2000,6 @@
 			path = ZoomView.m;
 			refType = 4;
 			sourceTree = "<group>";
-		};
-		4B5256E406C39EB60054D65B = {
-			fileRef = 4B1E3F91050F7D5200A8E303;
-			isa = PBXBuildFile;
-			settings = {
-			};
 		};
 		4B5256E506C39EB70054D65B = {
 			fileRef = 4B1E3F99050F7D5200A8E303;

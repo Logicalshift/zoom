@@ -295,3 +295,41 @@ void           image_resample   (image_data* img, int n, int d) { NSLog(@"Functi
 void           image_set_data   (image_data* img, void* data,
                                  void (*destruct)(image_data*, void*)) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
 void*          image_get_data   (image_data* img) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
+
+// = Blorb =
+
+// We re-implement blorb here, mainly because images really should be on the other side of the connection
+// (plus, I want to use NSImages, avoid libpng, etc)
+// Ayup, we duplicate quite a lot of code here :-/
+
+int blorb_is_blorbfile(ZFile* file) {
+	if (file == NULL) return 1;
+	return 0;
+}
+
+BlorbFile* blorb_loadfile(ZFile* file) {
+	if (file == NULL) {
+		// Get file details from the remote process
+		BlorbFile* newFile = malloc(sizeof(BlorbFile));
+		
+		return newFile;
+	}
+	
+	return NULL;
+}
+
+void blorb_closefile(BlorbFile* file) {
+	free(file);
+}
+
+BlorbImage* blorb_findimage(BlorbFile* blorb, int num) {
+	// Get information on this image from the remote system
+	BlorbImage* res = malloc(sizeof(BlorbImage));
+	
+	return res;
+}
+
+BlorbSound* blorb_findsound(BlorbFile* blorb, int num) {
+	return NULL;
+}
+

@@ -69,6 +69,7 @@
 }
 
 - (void) zMachineStarted: (id) sender {
+	[zoomView setResources: [[self document] resources]];
     [[zoomView zMachine] loadStoryFile: [[self document] gameData]];
 	
 	if ([[self document] autosaveData] != nil) {
