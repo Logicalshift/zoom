@@ -365,11 +365,11 @@ void cocoa_debug_handler(ZDWord pc) {
 		if (isRoutine) mask |= ZValueRoutine;
 	}
 	
-	// Is value a valid string number
+	// Is value a valid string number?
 	if (region == 3) {
 		mask |= ZValueString;
 	}
-	
+		
 	return mask;
 }
 

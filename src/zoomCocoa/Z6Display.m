@@ -260,7 +260,7 @@ int display_get_pix_colour(int x, int y) {
 	return ((redComponent)|(greenComponent<<5)|(blueComponent<<10)) + 16;
 }
 
-// Input
+// = Input =
 
 void display_set_input_pos(int style, int x, int y, int width) { 
 	set_style(style);

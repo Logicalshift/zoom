@@ -625,7 +625,7 @@ void display_set_colour(int fore, int back) {
             [zDisplayCurrentStyle setForegroundColour: fore];
         }
     } else {
-        [zDisplayCurrentStyle setForegroundTrue: getTrue(fore)];
+        [zDisplayCurrentStyle setForegroundTrue: getTrue(fore-16)];
     }
 
     if (back < 16) {
@@ -634,7 +634,7 @@ void display_set_colour(int fore, int back) {
             [zDisplayCurrentStyle setBackgroundColour: back];
         }
     } else {
-        [zDisplayCurrentStyle setBackgroundTrue: getTrue(back)];
+        [zDisplayCurrentStyle setBackgroundTrue: getTrue(back-16)];
     }
 }
 
