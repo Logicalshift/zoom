@@ -150,6 +150,8 @@ extern NSString* ZoomStyleAttributeName;
 
 - (BOOL) isRunning;
 
+- (void) restoreSaveState: (NSData*) state;
+
 @end
 
 // ZoomView delegate methods

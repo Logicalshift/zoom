@@ -1144,7 +1144,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	
 	if ([[filename pathExtension] isEqualToString: [panel requiredFileType]]) return YES;
 	
-	if ([[panel requiredFileType] isEqualToString: @"zoomQuet"]) {
+	if ([[panel requiredFileType] isEqualToString: @"zoomSave"]) {
 		if ([[filename pathExtension] isEqualToString: @"qut"]) {
 			return YES;
 		}
@@ -1164,7 +1164,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	
 	if ([[filename pathExtension] isEqualToString: [panel requiredFileType]]) return YES;
 	
-	if ([[panel requiredFileType] isEqualToString: @"zoomQuet"]) {
+	if ([[panel requiredFileType] isEqualToString: @"zoomSave"]) {
 		if ([[filename pathExtension] isEqualToString: @"qut"]) {
 			return YES;
 		}
@@ -1202,14 +1202,14 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         default:
         case ZFileQuetzal:
 			if (usePackage) {
-				[panel setRequiredFileType: @"zoomQuet"];
+				[panel setRequiredFileType: @"zoomSave"];
 			} else {
 				[panel setRequiredFileType: @"qut"];
 			}
             typeCode = 'IFZS';
             if (supportsMessage) {
                 [panel setMessage: [NSString stringWithFormat: @"%@ savegame (quetzal) file", saveOpen]];
-                [panel setAllowedFileTypes: [NSArray arrayWithObjects: usePackage?@"zoomQuet":@"qut", nil]];
+                [panel setAllowedFileTypes: [NSArray arrayWithObjects: usePackage?@"zoomSave":@"qut", nil]];
             }
             break;
             
@@ -1388,7 +1388,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 
         [self storePanelPrefs: panel];
 		
-		if ([[fn pathExtension] isEqualToString: @"zoomQuet"]) {
+		if ([[fn pathExtension] isEqualToString: @"zoomSave"]) {
 			ZPackageFile* f;
 			
 			f = [[ZPackageFile alloc] initWithPath: fn
@@ -1698,6 +1698,15 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     }
 	
     return self;
+}
+
+- (void) restoreSaveState: (NSData*) state {
+	[zMachine restoreSaveState: state];
+	
+	[self reformatWindow];
+	[self resetMorePrompt];
+	[self scrollToEnd];
+	inputPos = [[textView textStorage] length];
 }
 
 @end

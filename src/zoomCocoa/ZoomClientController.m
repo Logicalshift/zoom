@@ -34,8 +34,22 @@
 }
 
 - (void) windowDidLoad {
-    [zoomView runNewServer: nil];
+	if ([[self document] defaultView] != nil) {
+		// Replace the view
+		NSRect viewFrame = [zoomView frame];
+		NSView* superview = [zoomView superview];
+		
+		[zoomView removeFromSuperview];
+		//[zoomView release];
+		zoomView = [[[self document] defaultView] retain];
+		
+		[superview addSubview: zoomView];
+		[zoomView setFrame: viewFrame];
+		[zoomView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+	}
+
     [zoomView setDelegate: self];
+    [zoomView runNewServer: nil];
 }
 
 - (void) zMachineStarted: (id) sender {
@@ -50,6 +64,11 @@
 		
 		[decoder release];
 		[[self document] setAutosaveData: nil];
+	}
+	
+	if ([[self document] defaultView] != nil && [[self document] saveData] != nil) {
+		// Restore the save data
+		[[[self document] defaultView] restoreSaveState: [[self document] saveData]];
 	}
 }
 

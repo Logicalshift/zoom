@@ -10,6 +10,7 @@
 #import "ZoomProtocol.h"
 #import "ZoomStory.h"
 
+@class ZoomView;
 @interface ZoomClient : NSDocument {
     NSData* gameData;
 	
@@ -17,14 +18,22 @@
 	ZoomStoryID* storyId;
 	
 	NSData* autosaveData;
+	
+	ZoomView* defaultView;
+	NSData*   saveData;
 }
 
 - (NSData*) gameData;
 - (ZoomStory*) storyInfo;
 - (ZoomStoryID*) storyId;
 
+// Restoring from an autosave
 - (void) loadDefaultAutosave;
 - (void) setAutosaveData: (NSData*) data;
 - (NSData*) autosaveData;
+
+// Loading a zoomSave file
+- (ZoomView*) defaultView;
+- (NSData*)   saveData;
 
 @end

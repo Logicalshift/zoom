@@ -6,7 +6,14 @@
 //  Copyright (c) 2004 Andrew Hunter. All rights reserved.
 //
 
+// Yeah, ZoomSavePreview and ZoomSavePreviewView are confusing. Bah. And humbug!
+// Maybe this would work better as a cell in an NSMatrix. But I suck at programming
+// cells, so I'm sticking with this for the moment.
+
+// (Does anyone but me read the source?)
+
 #import "ZoomSavePreview.h"
+#import "ZoomSavePreviewView.h"
 
 
 @implementation ZoomSavePreview
@@ -57,8 +64,8 @@ static NSImage* saveBackground;
 }
 
 - (void)drawRect:(NSRect)rect {
-	NSFont* lineFont = [NSFont userFixedPitchFontOfSize: 9];
-	NSFont* infoFont = [NSFont systemFontOfSize: 11];
+	NSFont* lineFont = [NSFont systemFontOfSize: 9];
+	NSFont* infoFont = [NSFont boldSystemFontOfSize: 11];
 	
 	NSRect ourBounds = [self bounds];
 	
@@ -192,11 +199,23 @@ static NSImage* saveBackground;
 }
 
 - (void) mouseUp: (NSEvent*) event {
-	[self setHighlighted: !highlighted];
+	ZoomSavePreviewView* superview = [self superview];
+	
+	if ([superview isKindOfClass: [ZoomSavePreviewView class]]) {
+		// The superview has priority
+		[superview previewMouseUp: event
+						   inView: self];
+	} else {
+		[self setHighlighted: !highlighted];
+	}
 }
 
 - (BOOL) isFlipped {
 	return YES;
+}
+
+- (NSString*) filename {
+	return filename;
 }
 
 @end

@@ -13,6 +13,8 @@
 
 #import "ZoomAppDelegate.h"
 
+#import "ifmetadata.h"
+
 // This deserves a note by itself: the autosave system is a bit weird. Strange bits are
 // handled by strange objects for strange reasons. This is because we have:
 //
@@ -72,6 +74,9 @@
     [gameData release];
 	if (story) [story release];
 	if (storyId) [storyId release];
+	
+	if (defaultView) [defaultView release];
+	if (saveData) [saveData release];
     
     [super dealloc];
 }
@@ -174,6 +179,135 @@
 	}
 	
 	autosaveData = [[NSData dataWithContentsOfFile: autosaveFile] retain];
+}
+
+- (BOOL)loadFileWrapperRepresentation:(NSFileWrapper *)wrapper 
+							   ofType:(NSString *)docType {
+	if (![wrapper isDirectory]) {
+		// Pass files onto the data loader
+		return [self loadDataRepresentation: [wrapper regularFileContents] 
+									 ofType: docType];
+	}
+
+	if (![[docType lowercaseString] isEqualToString: @"zoom savegame"]) {
+		// Process only zoomSave files
+		return NO;
+	}
+	
+	// NOTE: a future version of Zoom will add a story type identifier to the zoomSave file format, to
+	// support various types of Glk games.
+	
+	// Read the IFhd section of the save data to find the story identifier
+	NSData* quetzal = [[[wrapper fileWrappers] objectForKey: @"save.qut"] regularFileContents];
+	ZoomStoryID* storyID = nil;
+	
+	if (quetzal == nil) {
+		// Not a valid zoomSave file
+		 NSBeginAlertSheet(@"Not a valid Zoom savegame package", 
+						   @"Cancel", nil, nil, nil, nil, nil, nil, nil,
+						   @"%@ does not contain a valid 'save.qut' file", [[wrapper filename] lastPathComponent]);
+		
+		return NO;
+	}
+	
+	const unsigned char* bytes = [quetzal bytes];
+	unsigned int len = [quetzal length];
+	unsigned int pos = 16;
+	
+	while (pos < len) {
+		unsigned int blockLength = (bytes[pos]<<24)  | (bytes[pos+1]<<16) | (bytes[pos+2]<<8) | bytes[pos+3];
+		const unsigned char* header = (bytes + pos - 4);
+		
+		if (memcmp(header, "IFhd", 4) == 0) {
+			if (blockLength == 13 && pos + blockLength <= len) {
+				unsigned int release = (bytes[pos+4]<<8)|bytes[pos+5];
+				const unsigned char* serial = bytes + pos + 6;
+				unsigned int checksum = (bytes[pos+12]<<8)|bytes[pos+13];
+				
+				// Set up the ZoomStoryID object for this savegame
+				struct IFMDIdent ident;
+				
+				ident.format = IFFormat_ZCode;
+				ident.usesMd5 = 0;
+				ident.dataFormat = IFFormat_ZCode;
+				ident.data.zcode.release = release;
+				ident.data.zcode.checksum = checksum;
+				memcpy(ident.data.zcode.serial, serial, 6);
+				
+				storyID = [[ZoomStoryID alloc] initWithIdent: &ident];
+				[storyID autorelease];
+			}
+		}
+		
+		if ((blockLength&1) == 1) blockLength++;
+		pos += blockLength+8;
+	}
+	
+	if ((pos-4) > len) {
+		// Not a valid zoomSave file
+		NSBeginAlertSheet(@"Not a valid Zoom savegame package", 
+						  @"Cancel", nil, nil, nil, nil, nil, nil, nil,
+						  @"%@ does not contain a valid 'save.qut' file", [[wrapper filename] lastPathComponent]);
+		
+		return NO;
+	}
+	
+	// Get the game file for this save from the story organiser
+	NSString* gameFile = [[ZoomStoryOrganiser sharedStoryOrganiser] filenameForIdent: storyID];
+	
+	if (gameFile == nil) {
+		// Couldn't find a story for this savegame
+		NSBeginAlertSheet(@"Unable to find story file", 
+						  @"Cancel", nil, nil, nil, nil, nil, nil, nil,
+						  @"Zoom does not know where a valid story file for '%@' is and so is unable to load it", [[wrapper filename] lastPathComponent]);
+		
+		return NO;		
+	}
+	
+	NSData* data = [NSData dataWithContentsOfFile: gameFile];
+	if (data == nil) {
+		// Couldn't find the story data for this savegame
+		NSBeginAlertSheet(@"Unable to find story file", 
+						  @"Cancel", nil, nil, nil, nil, nil, nil, nil,
+						  @"Zoom does not know where a valid story file for '%@' is and so is unable to load it", [[wrapper filename] lastPathComponent]);
+		
+		return NO;		
+	}
+	
+	// Get the saved view state for this game
+	NSData* savedViewArchive = [[[wrapper fileWrappers] objectForKey: @"ZoomStatus.dat"] regularFileContents];
+	ZoomView* savedView = nil;
+	
+	if (savedViewArchive) 
+		savedView = [NSUnarchiver unarchiveObjectWithData: savedViewArchive];
+	
+	if (savedView == nil || ![savedView isKindOfClass: [ZoomView class]]) {
+		NSBeginAlertSheet(@"Unable to load saved screen state", 
+						  @"Cancel", nil, nil, nil, nil, nil, nil, nil,
+						  @"Zoom was unable to find the saved screen state for '%@', and so is unable to start it", [[wrapper filename] lastPathComponent]);
+		return NO;
+	}
+	
+	// OK, we're ready to roll!
+	if (defaultView) [defaultView release];
+	if (saveData) [saveData release];
+	
+	defaultView = [savedView retain];
+	saveData = [[NSData dataWithBytes: ((unsigned char*)[quetzal bytes])+12 length: [quetzal length]-12] retain];
+	
+	// NOTE: saveData is the data minus the 'FORM' chunk - that is, valid input for state_decompile()
+	// (which doesn't use this chunk)
+	
+	return [self loadDataRepresentation: data
+								 ofType: @"ZCode story"];
+}
+
+- (ZoomView*) defaultView {
+	return defaultView;
+}
+
+- (NSData*) saveData {
+	return saveData;
 }
 
 @end

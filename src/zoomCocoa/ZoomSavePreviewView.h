@@ -9,10 +9,14 @@
 #import <AppKit/AppKit.h>
 
 
+@class ZoomSavePreview;
 @interface ZoomSavePreviewView : NSView {
 	NSMutableArray* upperWindowViews;
+	int selected;
 }
 
 - (void) setDirectoryToUse: (NSString*) directory;
+- (void) previewMouseUp: (NSEvent*) evt
+				 inView: (ZoomSavePreview*) view;
 
 @end

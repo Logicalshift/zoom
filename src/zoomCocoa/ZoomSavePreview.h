@@ -20,5 +20,6 @@
 - (id) initWithPreview: (ZoomUpperWindow*) prev
 			  filename: (NSString*) filename;
 - (void) setHighlighted: (BOOL) value;
+- (NSString*) filename;
 
 @end

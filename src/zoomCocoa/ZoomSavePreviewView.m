@@ -9,6 +9,8 @@
 #import "ZoomSavePreviewView.h"
 #import "ZoomSavePreview.h"
 
+#import "ZoomClient.h"
+
 
 @implementation ZoomSavePreviewView
 
@@ -18,6 +20,7 @@
 		upperWindowViews = nil;
 		[self setAutoresizesSubviews: YES];
 		[self setAutoresizingMask: NSViewWidthSizable];
+		selected = NSNotFound;
     }
     return self;
 }
@@ -39,7 +42,8 @@
 		upperWindowViews = nil;
 	}
 	
-	upperWindowViews =  [[NSMutableArray alloc] init];
+	upperWindowViews = [[NSMutableArray alloc] init];
+	selected = NSNotFound;
 	
 	if (directory == nil || ![[NSFileManager defaultManager] fileExistsAtPath: directory]) {
 		NSRect ourFrame = [self frame];
@@ -53,20 +57,20 @@
 	NSRect ourFrame = [self frame];
 	ourFrame.size.height = 0;
 	
-	// Load all the zoomQuet files from the given directory
+	// Load all the zoomSave files from the given directory
 	NSArray* contents = [[NSFileManager defaultManager] directoryContentsAtPath: directory];
 	
 	if (contents == nil) {
 		return;
 	}
 	
-	// Read in the previews from any .zoomQuet packages
+	// Read in the previews from any .zoomSave packages
 	NSEnumerator* fileEnum = [contents objectEnumerator];
 	NSString* file;
 	
 	while (file = [fileEnum nextObject]) {
-		if ([[[file pathExtension] lowercaseString] isEqualToString: @"zoomquet"]) {
-			// This is a zoomQuet file - load the preview
+		if ([[[file pathExtension] lowercaseString] isEqualToString: @"zoomsave"]) {
+			// This is a zoomSave file - load the preview
 			NSString* previewFile = [directory stringByAppendingPathComponent: file];
 			previewFile = [previewFile stringByAppendingPathComponent: @"ZoomPreview.dat"];
 			
@@ -74,12 +78,12 @@
 			
 			if (![[NSFileManager defaultManager] fileExistsAtPath: previewFile
 													  isDirectory: &isDir]) {
-				// Can't be a valid zoomQuet file
+				// Can't be a valid zoomSave file
 				continue;
 			}
 			
 			if (isDir) {
-				// Also can't be a valid zoomQuet file
+				// Also can't be a valid zoomSave file
 				continue;
 			}
 			
@@ -120,5 +124,31 @@
 	[self setNeedsDisplay: YES];
 }
 
+- (void) previewMouseUp: (NSEvent*) evt
+				 inView: (ZoomSavePreview*) view {
+	int clicked = [upperWindowViews indexOfObjectIdenticalTo: view];
+	
+	if (clicked == NSNotFound) {
+		NSLog(@"BUG: save preview not found");
+		return;
+	}
+	
+	if ([evt clickCount] == 1) {
+		// Select a new view
+		if (selected != NSNotFound) {
+			[[upperWindowViews objectAtIndex: selected] setHighlighted: NO];
+		}
+		
+		[view setHighlighted: YES];
+		selected = clicked;
+	} else if ([evt clickCount] == 2) {
+		// Launch this game
+		NSString* filename = [view filename];
+		NSString* directory = [filename stringByDeletingLastPathComponent];
+		
+		ZoomClient* newDoc = [[NSDocumentController sharedDocumentController] openDocumentWithContentsOfFile: directory
+																									 display: YES];
+	}
+}
 
 @end
