@@ -1214,7 +1214,7 @@
 			isa = PBXBuildFile;
 			settings = {
 				ATTRIBUTES = (
-					Private,
+					Public,
 				);
 			};
 		};
@@ -1250,6 +1250,9 @@
 			fileRef = 4B2D95CE05372EF900A8E303;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		4B2D95D105372EF900A8E303 = {
@@ -1659,7 +1662,7 @@
 	<key>CFBundleSignature</key>
 	<string>YZZY</string>
 	<key>CFBundleVersion</key>
-	<string>1.0.2dev1</string>
+	<string>1.0.2alpha1</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu.nib</string>
 	<key>NSPrincipalClass</key>
@@ -2006,6 +2009,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_VERSION = A;
+				INSTALL_PATH = "@executable_path/../Frameworks";
 				OTHER_CFLAGS = "-seg1addr 0x2f000000";
 				OTHER_LDFLAGS = "-seg1addr 0x2f000000";
 				OTHER_LIBTOOL_FLAGS = "";
@@ -2013,6 +2017,7 @@
 				PRINCIPAL_CLASS = "";
 				PRODUCT_NAME = ZoomView;
 				SECTORDER_FLAGS = "";
+				SKIP_INSTALL = YES;
 				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
 				WRAPPER_EXTENSION = framework;
 			};
@@ -2020,7 +2025,7 @@
 			);
 			isa = PBXFrameworkTarget;
 			name = ZoomView;
-			productInstallPath = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+			productInstallPath = "@executable_path/../Frameworks";
 			productName = ZoomView;
 			productReference = 4BDFA4BA0535E64900A8E303;
 			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>

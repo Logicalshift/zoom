@@ -6,7 +6,29 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	macos/Info.plist macos/PkgInfo macos/zoom-app.icns \
 	macos/zoom-file.icns macos/zoom-game.icns \
 	macos/zoom.nib/classes.nib macos/zoom.nib/info.nib \
-	macos/zoom.nib/objects.xib macos/macreadme.rtf macos/zoomrc
+	macos/zoom.nib/objects.xib macos/macreadme.rtf macos/zoomrc \
+	zoomCocoa/ZDisplay.m              zoomCocoa/ZoomScrollView.m \
+	zoomCocoa/ZFiles.m                zoomCocoa/ZoomServer.h \
+	zoomCocoa/ZoomAppDelegate.h       zoomCocoa/ZoomServer.m \
+	zoomCocoa/ZoomAppDelegate.m       zoomCocoa/ZoomTextView.h \
+	zoomCocoa/ZoomClient.h            zoomCocoa/ZoomTextView.m \
+	zoomCocoa/ZoomClient.m            zoomCocoa/ZoomUpperWindow.h \
+	zoomCocoa/ZoomClientController.h  zoomCocoa/ZoomUpperWindow.m \
+	zoomCocoa/ZoomClientController.m  zoomCocoa/ZoomUpperWindowView.h \
+	zoomCocoa/ZoomLowerWindow.h       zoomCocoa/ZoomUpperWindowView.m \
+	zoomCocoa/ZoomLowerWindow.m       zoomCocoa/ZoomView.h \
+	zoomCocoa/ZoomMoreView.h          zoomCocoa/ZoomView.m \
+	zoomCocoa/ZoomMoreView.m          zoomCocoa/ZoomZMachine.h \
+	zoomCocoa/ZoomProtocol.h          zoomCocoa/ZoomZMachine.m \
+	zoomCocoa/ZoomProtocol.m          zoomCocoa/main.m \
+	zoomCocoa/ZoomScrollView.h \
+	zoomCocoa/MainMenu.nib/classes.nib zoomCocoa/MainMenu.nib/info.nib \
+	zoomCocoa/MainMenu.nib/keyedobjects.nib \
+	zoomCocoa/MainMenu.nib/objects.nib \
+	zoomCocoa/ZoomClient.nib/classes.nib zoomCocoa/ZoomClient.nib/info.nib \
+	zoomCocoa/ZoomClient.nib/keyedobjects.nib \
+	zoomCocoa/ZoomClient.nib/objects.nib
+
 
 zoom_SOURCES = \
 	main.c interp.c file.c options.c zmachine.c zscii.c display.c \
