@@ -675,11 +675,13 @@
 		};
 		4B1E3F89050F7D5200A8E303 = {
 			fileEncoding = 30;
+			indentWidth = 2;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			path = iff.c;
 			refType = 4;
 			sourceTree = "<group>";
+			tabWidth = 8;
 		};
 		4B1E3F8A050F7D5200A8E303 = {
 			fileEncoding = 30;
@@ -699,11 +701,13 @@
 		};
 		4B1E3F8C050F7D5200A8E303 = {
 			fileEncoding = 30;
+			indentWidth = 2;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			path = main.c;
 			refType = 4;
 			sourceTree = "<group>";
+			tabWidth = 8;
 		};
 		4B1E3F8D050F7D5200A8E303 = {
 			fileEncoding = 30;
@@ -715,43 +719,53 @@
 		};
 		4B1E3F8E050F7D5200A8E303 = {
 			fileEncoding = 30;
+			indentWidth = 2;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			path = options.c;
 			refType = 4;
 			sourceTree = "<group>";
+			tabWidth = 8;
 		};
 		4B1E3F8F050F7D5200A8E303 = {
 			fileEncoding = 30;
+			indentWidth = 2;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			path = file.c;
 			refType = 4;
 			sourceTree = "<group>";
+			tabWidth = 8;
 		};
 		4B1E3F90050F7D5200A8E303 = {
 			fileEncoding = 30;
+			indentWidth = 2;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			path = hash.c;
 			refType = 4;
 			sourceTree = "<group>";
+			tabWidth = 8;
 		};
 		4B1E3F91050F7D5200A8E303 = {
 			fileEncoding = 30;
+			indentWidth = 2;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			path = blorb.c;
 			refType = 4;
 			sourceTree = "<group>";
+			tabWidth = 8;
 		};
 		4B1E3F92050F7D5200A8E303 = {
 			fileEncoding = 30;
+			indentWidth = 2;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			path = rc.c;
 			refType = 4;
 			sourceTree = "<group>";
+			tabWidth = 8;
 		};
 		4B1E3F93050F7D5200A8E303 = {
 			fileEncoding = 30;
@@ -763,19 +777,23 @@
 		};
 		4B1E3F94050F7D5200A8E303 = {
 			fileEncoding = 30;
+			indentWidth = 2;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			path = font3.c;
 			refType = 4;
 			sourceTree = "<group>";
+			tabWidth = 8;
 		};
 		4B1E3F95050F7D5200A8E303 = {
 			fileEncoding = 30;
+			indentWidth = 2;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			path = menu.c;
 			refType = 4;
 			sourceTree = "<group>";
+			tabWidth = 8;
 		};
 		4B1E3F96050F7D5200A8E303 = {
 			fileEncoding = 30;
@@ -991,11 +1009,13 @@
 		};
 		4B1E3FB3050F7DE200A8E303 = {
 			fileEncoding = 30;
+			indentWidth = 2;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			path = state.c;
 			refType = 4;
 			sourceTree = "<group>";
+			tabWidth = 8;
 		};
 		4B1E3FB4050F7DE200A8E303 = {
 			fileEncoding = 30;
@@ -1007,11 +1027,13 @@
 		};
 		4B1E3FB5050F7DE200A8E303 = {
 			fileEncoding = 30;
+			indentWidth = 2;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			path = tokenise.c;
 			refType = 4;
 			sourceTree = "<group>";
+			tabWidth = 8;
 		};
 		4B1E3FB6050F7DE200A8E303 = {
 			fileEncoding = 30;
@@ -1023,11 +1045,13 @@
 		};
 		4B1E3FB7050F7DE200A8E303 = {
 			fileEncoding = 30;
+			indentWidth = 2;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			path = debug.c;
 			refType = 4;
 			sourceTree = "<group>";
+			tabWidth = 8;
 		};
 		4B1E3FB8050F7DE200A8E303 = {
 			fileEncoding = 30;
@@ -1039,19 +1063,23 @@
 		};
 		4B1E3FB9050F7DE200A8E303 = {
 			fileEncoding = 30;
+			indentWidth = 2;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			path = zmachine.c;
 			refType = 4;
 			sourceTree = "<group>";
+			tabWidth = 8;
 		};
 		4B1E3FBA050F7DE200A8E303 = {
 			fileEncoding = 30;
+			indentWidth = 2;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			path = zscii.c;
 			refType = 4;
 			sourceTree = "<group>";
+			tabWidth = 8;
 		};
 		4B1E3FBB050F7DE200A8E303 = {
 			fileEncoding = 30;
@@ -1063,19 +1091,23 @@
 		};
 		4B1E3FBC050F7DE200A8E303 = {
 			fileEncoding = 30;
+			indentWidth = 2;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			path = stream.c;
 			refType = 4;
 			sourceTree = "<group>";
+			tabWidth = 8;
 		};
 		4B1E3FBD050F7DE200A8E303 = {
 			fileEncoding = 30;
+			indentWidth = 2;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			path = random.c;
 			refType = 4;
 			sourceTree = "<group>";
+			tabWidth = 8;
 		};
 		4B1E3FBE050F7DE200A8E303 = {
 			fileEncoding = 30;
@@ -1095,11 +1127,13 @@
 		};
 		4B1E3FC0050F7DE200A8E303 = {
 			fileEncoding = 30;
+			indentWidth = 2;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			path = interp.c;
 			refType = 4;
 			sourceTree = "<group>";
+			tabWidth = 8;
 		};
 		4B1E3FC1050F7DE200A8E303 = {
 			fileRef = 4B1E3FB0050F7DE200A8E303;
@@ -2945,11 +2979,13 @@
 		};
 		4BCF3F5E050FBAAF00A8E303 = {
 			fileEncoding = 30;
+			indentWidth = 2;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			path = v6display.c;
 			refType = 4;
 			sourceTree = "<group>";
+			tabWidth = 8;
 		};
 		4BCF3F5F050FBAAF00A8E303 = {
 			fileEncoding = 30;
@@ -3375,11 +3411,13 @@
 		};
 		4BE447BA0510E0E000A8E303 = {
 			fileEncoding = 30;
+			indentWidth = 2;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			path = display.c;
 			refType = 4;
 			sourceTree = "<group>";
+			tabWidth = 8;
 		};
 		4BE621CF068C20D500369528 = {
 			fileEncoding = 4;
@@ -3502,11 +3540,14 @@
 		};
 		4BECA80005B19BE1006840BA = {
 			fileEncoding = 4;
+			indentWidth = 4;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.c;
 			path = ifmetadata.c;
 			refType = 4;
 			sourceTree = "<group>";
+			tabWidth = 4;
+			usesTabs = 0;
 		};
 		4BECA80105B19BE1006840BA = {
 			fileRef = 4BECA80005B19BE1006840BA;
