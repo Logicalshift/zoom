@@ -110,7 +110,8 @@ AC_CYGWIN
 
 if test "$CYGWIN" != "yes"; then
   MINGW32=yes
-  AC_PATH_PROG(MINGWWINDRES, mingw32-windres)
+  mingw_prefix=`echo $CC | sed "s/\(.*\)gcc/\1/"`
+  AC_PATH_PROG(MINGWWINDRES, "$mingw_prefix"windres)
   AC_MSG_CHECKING([if we're cross-compiling using mingw32])
 
   ac_OLD_CFLAGS="$CFLAGS"

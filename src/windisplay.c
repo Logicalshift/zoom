@@ -77,7 +77,10 @@ COLORREF wincolour[] =
 
 HBRUSH winbrush[14];
 HPEN   winpen  [14];
-HWND   mainwin, mainwinstat;
+HWND   mainwin;
+#ifndef NO_STATUS_BAR
+HWND   mainwinstat;
+#endif
 HDC    mainwindc;
 HMENU  mainwinmenu;
 
@@ -224,14 +227,18 @@ static void size_window(void)
 
   GetWindowRect(mainwin, &rct);
   GetClientRect(mainwin, &clrct);
+#ifndef NO_STATUS_BAR
   GetWindowRect(mainwinstat, &strct);
-
+#endif
+  
   SetWindowPos(mainwin, HWND_TOP,
 	       rct.top, rct.left,
 	       win_x+8 + ((rct.right-rct.left)-clrct.right),
-	       win_y+8 + ((rct.bottom-rct.top)-clrct.bottom) +
-	       (strct.bottom-strct.top),
-	       0);
+	       win_y+8 + ((rct.bottom-rct.top)-clrct.bottom)
+#ifndef NO_STATUS_BAR
+	       +(strct.bottom-strct.top)
+#endif
+	       , 0);
 
   total_x = win_x + 8;
   total_y = win_y + 8;
@@ -1704,20 +1711,18 @@ static void draw_caret(HDC dc)
   if ((caret_on^caret_shown))
     {
       HPEN tpen;
+      HGDIOBJ ob;
       
       SetROP2(dc, R2_XORPEN);
-
-      /* SelectObject(dc, caret_pen);
-      MoveToEx(dc, caret_x+1, caret_y, NULL);
-      LineTo(dc, caret_x+1, caret_y+caret_height); */
 
       if (insert)
 	tpen = CreatePen(PS_SOLID, 1, wincolour[CURWIN.back]);
       else
 	tpen = CreatePen(PS_SOLID, 2, wincolour[CURWIN.back]);
-      SelectObject(dc, tpen);
+      ob = SelectObject(dc, tpen);
       MoveToEx(dc, caret_x+5, caret_y+4, NULL);
       LineTo(dc, caret_x+5, caret_y+4+caret_height);
+      SelectObject(dc, ob);
       DeleteObject(tpen);
       
       SetROP2(dc, R2_COPYPEN);
@@ -1727,6 +1732,7 @@ static void draw_caret(HDC dc)
 
 static void update_status_text(void)
 {
+#ifndef NO_STATUS_BAR
   SendMessage(mainwinstat,
 	      SB_SETTEXT,
 	      1,
@@ -1735,6 +1741,7 @@ static void update_status_text(void)
 	      SB_SETTEXT,
 	      2,
 	      (LPARAM) (LPSTR) (more_on?"[ MORE ]":""));
+#endif
 }
 
 static void redraw_caret(void)
@@ -1800,55 +1807,25 @@ static void resize_window()
   cur_win = 0;
 
   GetClientRect(mainwin, &rct);
+#ifndef NO_STATUS_BAR
   GetWindowRect(mainwinstat, &srct);
+#endif
   
   if (rct.bottom <= CURWIN.winsy)
     rct.bottom = CURWIN.winsy + xfont_y;
   
   total_x = rct.right;
+#ifndef NO_STATUS_BAR
   total_y = rct.bottom - (srct.bottom - srct.top);
- 
+#else
+  total_y = rct.bottom;
+#endif
+  
   size_x = (total_x-8)/xfont_x;
   size_y = (total_y-8)/xfont_y;
 
   win_x = total_x-8;
   win_y = total_y-8;
-
-  CURWIN.winlx = win_x;
-  CURWIN.winly = win_y;
-  
-  /* Resize and reformat the text window */
-  if (CURWIN.line != NULL)
-    {
-      struct line* line;
-      struct line* next;
-
-      CURWIN.topline = NULL;
-      
-      CURWIN.ypos = CURWIN.line->baseline - CURWIN.line->ascent;
-      CURWIN.xpos = 0;
-
-      line = CURWIN.line;
-      while (line != NULL)
-	{
-	  next = line->next;
-	  free(line);
-	  line = next;
-	}
-
-      CURWIN.line = CURWIN.lastline = NULL;
-
-      if (CURWIN.text != NULL)
-	{
-	  CURWIN.lasttext = CURWIN.text;
-	  while (CURWIN.lasttext->next != NULL)
-	    {
-	      format_last_text(0);
-	      CURWIN.lasttext = CURWIN.lasttext->next;
-	    }
-	  format_last_text(0);
-	}
-    }
 
   /* Resize and reformat the overlay windows */
   for (x=1; x<=2; x++)
@@ -1905,7 +1882,45 @@ static void resize_window()
     max_x = size_x;
   if (size_y > max_y)
     max_y = size_y;
+  
+  /* Resize and reformat the text window */
+  cur_win = 0;
+  
+  CURWIN.winlx = win_x;
+  CURWIN.winly = win_y;
 
+  if (CURWIN.line != NULL)
+    {
+      struct line* line;
+      struct line* next;
+
+      CURWIN.topline = NULL;
+      
+      CURWIN.ypos = CURWIN.line->baseline - CURWIN.line->ascent;
+      CURWIN.xpos = 0;
+
+      line = CURWIN.line;
+      while (line != NULL)
+	{
+	  next = line->next;
+	  free(line);
+	  line = next;
+	}
+
+      CURWIN.line = CURWIN.lastline = NULL;
+
+      if (CURWIN.text != NULL)
+	{
+	  CURWIN.lasttext = CURWIN.text;
+	  while (CURWIN.lasttext->next != NULL)
+	    {
+	      format_last_text(0);
+	      CURWIN.lasttext = CURWIN.lasttext->next;
+	    }
+	  format_last_text(0);
+	}
+    }
+  
   /* Scroll more text onto the screen if we can */
   cur_win = 0;
   if (CURWIN.lastline != NULL)
@@ -2105,9 +2120,10 @@ static LRESULT CALLBACK display_winproc(HWND hwnd,
     {
     case WM_PAINT:
       {
-	PAINTSTRUCT paint;
 	RECT        rct;
-	
+	PAINTSTRUCT paint;
+	HGDIOBJ     ob;
+
 	BeginPaint(hwnd, &paint);
 	
 	draw_window(0, paint.hdc, &paint.rcPaint);
@@ -2148,28 +2164,31 @@ static LRESULT CALLBACK display_winproc(HWND hwnd,
 	rct.bottom = total_y+1;
 	FillRect(paint.hdc, &rct, winbrush[0]);
 	
-	SelectObject(paint.hdc, winpen[1]);
-	
+	ob = SelectObject(paint.hdc, winpen[1]);
 	MoveToEx(paint.hdc, 3, win_y+5, NULL);
 	LineTo(paint.hdc, 3, 3);
 	MoveToEx(paint.hdc, win_x+5, 3, NULL);
 	LineTo(paint.hdc, 3, 3);
+	SelectObject(paint.hdc, ob);
 
-	SelectObject(paint.hdc, winpen[2]);
+	ob = SelectObject(paint.hdc, winpen[2]);
 	MoveToEx(paint.hdc, win_x+5, win_y+5, NULL);
 	LineTo(paint.hdc, win_x+5, 3);
 	MoveToEx(paint.hdc, win_x+5, win_y+5, NULL);
 	LineTo(paint.hdc, 3, win_y+5);
+	SelectObject(paint.hdc, ob);
 
 	caret_shown = 0;
 	draw_caret(paint.hdc);
-	
+
 	EndPaint(hwnd, &paint);
       }
       break;
 
     case WM_SIZE:
+#ifndef NO_STATUS_BAR
       SendMessage(mainwinstat, WM_SIZE, 0, 0);
+#endif
       if (initialised)
 	resize_window();
       {
@@ -2182,8 +2201,10 @@ static LRESULT CALLBACK display_winproc(HWND hwnd,
 
 	for (x=0; x<n_parts; x++)
 	  parts[x] += rct.right - parts[n_parts-1];
-	
+
+#ifndef NO_STATUS_BAR
 	SendMessage(mainwinstat, SB_SETPARTS, n_parts, (LPARAM) (LPINT) parts);
+#endif
       }
       update_status_text();
       return DefWindowProc(hwnd, message, wparam, lparam);
@@ -2408,6 +2429,7 @@ int WINAPI WinMain(HINSTANCE hInst,
 
   SetMenu(mainwin, mainwinmenu);
 
+#ifndef NO_STATUS_BAR
   mainwinstat = CreateStatusWindow(WS_CHILD|WS_VISIBLE,
 				   "",
 				   mainwin,
@@ -2416,6 +2438,7 @@ int WINAPI WinMain(HINSTANCE hInst,
 	      SB_SETTEXT,
 	      0|SBT_NOBORDERS,
 	      (LPARAM) (LPSTR) "Zoom " VERSION);
+#endif
   
   SetTimer(mainwin, 1, FLASH_TIME, NULL);
   

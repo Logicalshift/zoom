@@ -75,6 +75,7 @@ static void create_font3_bitmaps(HDC dc)
   POINT point[32];
   int i;
   HDC bdc;
+  HGDIOBJ origbit, origbrush;
   
   bitmap_x = xfont_x;
   bitmap_y = xfont_y;
@@ -99,10 +100,10 @@ static void create_font3_bitmaps(HDC dc)
     {      
       f3mask[x] = CreateBitmap(xfont_x, xfont_y, 1, 1, NULL);
       
-      SelectObject(bdc, f3mask[x]);
+      origbit = SelectObject(bdc, f3mask[x]);
 
       FillRect(bdc, &rct, white);
-      SelectObject(bdc, black);
+      origbrush = SelectObject(bdc, black);
 
       for (i=0; i<font_3.chr[x].num_coords; i++)
 	{
@@ -117,6 +118,9 @@ static void create_font3_bitmaps(HDC dc)
       Polygon(bdc, point, font_3.chr[x].num_coords);
       EndPath(bdc);
       FillPath(bdc);
+
+      SelectObject(bdc, origbit);
+      SelectObject(bdc, origbrush);
     }
 
   DeleteObject(black);
@@ -129,6 +133,8 @@ static void create_font3_bitmaps(HDC dc)
 
 static void plot_font_3(HDC dc, int chr, int xpos, int ypos)
 {
+  HGDIOBJ origbit;
+  
   if (chr > 127 || chr < 32)
     chr = 32;
   chr-=32;
@@ -148,8 +154,9 @@ static void plot_font_3(HDC dc, int chr, int xpos, int ypos)
   if (compat_dc == NULL)
     compat_dc = CreateCompatibleDC(dc);
 
-  SelectObject(compat_dc, f3mask[chr]);
+  origbit = SelectObject(compat_dc, f3mask[chr]);
   BitBlt(dc, xpos, ypos, xfont_x, xfont_y, compat_dc, 0, 0, SRCCOPY);
+  SelectObject(compat_dc, origbit);
 }
 
 /***                           ----// 888 \\----                           ***/
@@ -378,9 +385,9 @@ int xfont_get_width(xfont* font)
 	TEXTMETRIC metric;
 
 	ob = SelectObject(mainwindc,
-			  font->data.win.handle);
-	
+			  font->data.win.handle);	
 	GetTextMetrics(mainwindc, &metric);
+	SelectObject(mainwindc, ob);
 
 	return metric.tmAveCharWidth;
       }
@@ -400,11 +407,12 @@ int xfont_get_height(xfont* font)
     case WINFONT_INTERNAL:
       {
 	TEXTMETRIC metric;
+	HGDIOBJ ob;
 	
-	SelectObject(mainwindc,
-		     font->data.win.handle);
-
+	ob = SelectObject(mainwindc,
+			  font->data.win.handle);
 	GetTextMetrics(mainwindc, &metric);
+	SelectObject(mainwindc, ob);
 
 	return metric.tmHeight;
       }
@@ -424,11 +432,12 @@ int xfont_get_ascent(xfont* font)
     case WINFONT_INTERNAL:
       {
 	TEXTMETRIC metric;
+	HGDIOBJ ob;
 	
-	SelectObject(mainwindc,
-		     font->data.win.handle);
-
+	ob = SelectObject(mainwindc,
+			  font->data.win.handle);
 	GetTextMetrics(mainwindc, &metric);
+	SelectObject(mainwindc, ob);
 
 	return metric.tmAscent;
       }
@@ -448,11 +457,12 @@ int xfont_get_descent(xfont* font)
     case WINFONT_INTERNAL:
       {
 	TEXTMETRIC metric;
+	HGDIOBJ ob;
 	
-	SelectObject(mainwindc,
-		     font->data.win.handle);
-
+	ob = SelectObject(mainwindc,
+			  font->data.win.handle);
 	GetTextMetrics(mainwindc, &metric);
+	SelectObject(mainwindc, ob);
 
 	return metric.tmDescent;
       }
@@ -476,9 +486,10 @@ int xfont_get_text_width(xfont*     font,
 	WCHAR* wide_str;
 	int    x;
 	SIZE   size;
+	HGDIOBJ ob;
 	
-	SelectObject(mainwindc,
-		     font->data.win.handle);
+	ob = SelectObject(mainwindc,
+			  font->data.win.handle);
 
 	wide_str = malloc(sizeof(WCHAR)*(len+1));
 
@@ -492,6 +503,8 @@ int xfont_get_text_width(xfont*     font,
 			      &size);
 
 	free(wide_str);
+
+	SelectObject(mainwindc, ob);
 	
 	return size.cx;
       }
@@ -519,9 +532,10 @@ void xfont_plot_string(xfont*     font,
 	int    x;
 	SIZE   size;
 	RECT   rct;
+	HGDIOBJ ob;
 	
-	SelectObject(dc,
-		     font->data.win.handle);
+	ob = SelectObject(dc,
+			  font->data.win.handle);
 
 	wide_str = malloc(sizeof(WCHAR)*(len+1));
 
@@ -556,6 +570,7 @@ void xfont_plot_string(xfont*     font,
 		    NULL);
 
 	free(wide_str);
+	SelectObject(mainwindc, ob);
       }
       break;
 
