@@ -1094,7 +1094,7 @@ OPCODE "restore"     0OP:0x06 STORE CANJUMP VERSION 4
   if (!restore_1234(&pc, stack))
     {
       store(stack, st, 0);
-    }  
+    }
 %}
 
 OPCODE "restart"     0OP:0x07 CANJUMP VERSION 3,4,5,7,8
@@ -1251,7 +1251,7 @@ OPCODE "storew"         VAR:0x01 ARGS:3               VERSION all
 	 ((ZUWord) argblock.arg[0] + (ZUWord) (argblock.arg[1]*2))&0xffff);
 #endif
 #ifdef SAFE
-  if (((ZUWord) argblock.arg[0] + ((ZUWord) argblock.arg[1]*2)) >
+  if (((ZUWord) argblock.arg[0] + ((ZUWord) argblock.arg[1]*2)+1) >
       machine.dynamic_ceiling)
     zmachine_fatal("Out of range storew (tried to store at $%x, but ceiling is at $%x)",
 		   ((ZUWord) argblock.arg[0] + ((ZUWord) argblock.arg[1]*2)),
@@ -1371,8 +1371,7 @@ OPCODE "sread"          VAR:0x04 ARGS:2               VERSION 1,2,3
   
   buf[0] = 0;
   draw_statusbar_123(stack);
-  display_readline(buf, mem[0], 0);
-  stream_input(buf);
+  stream_readline(buf, mem[0], 0);
   
   for (x=0; buf[x] != 0; x++)
     {
@@ -1634,6 +1633,37 @@ OPCODE "output_stream"  VAR:0x13 ARGS:2               VERSION 4,5,7,8
 %}
 
 OPCODE "input_stream"   VAR:0x14 ARGS:1               VERSION all # 3,4,5,6,7,8
+%{
+  switch (argblock.arg[0])
+    {
+    case 0:
+      display_set_more(0, 1);
+      machine.script_on = 0;
+      break;
+
+    case 1:
+      display_set_more(0, 0);
+
+      machine.script_on = 0;
+      if (!machine.script_file)
+        {
+	  stream_prints("\nPlease supply a file for input\nFile: ");
+	  stream_readline(script_fname, 256, 0);
+
+	  machine.script_file = fopen(script_fname, "r");
+	}
+      machine.script_on = 1;
+      if (!machine.script_file)
+        {
+	  stream_printf("Couldn't open %s for reading.\n", script_fname);
+          machine.script_on = 0;
+	}
+      break;
+
+    default:
+      zmachine_warning("Input stream %i not supported", argblock.arg[0]);
+    }
+%}
 
 OPCODE "sound_effect"   VAR:0x15                      VERSION all # 3,4,5,6,7,8
 %{
@@ -1870,7 +1900,7 @@ OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
       do
 	{
 	  ok = 1;
-	  display_prints("\nPlease supply a filename for save\n");
+	  stream_prints("\nPlease supply a filename for save\n");
 	  get_filename(save_fname, 255);
 
 	  if (get_file_size(save_fname) != -1)
@@ -1879,8 +1909,8 @@ OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
 
 	      yn[0] = 0;
 	      ok = 0;
-	      display_prints("That file already exists!\nAre you sure? (y/N) ");
-	      display_readline(yn, 1, 0);
+	      stream_prints("That file already exists!\nAre you sure? (y/N) ");
+	      stream_readline(yn, 1, 0);
 	      
 	      if (tolower(yn[0]) == 'y')
 		ok = 1;
@@ -1905,9 +1935,9 @@ OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
 	  store(stack, st, 0);
 
 	  if (state_fail())
-	    display_printf("(Save failed, reason: %s)\n", state_fail());
+	    stream_printf("(Save failed, reason: %s)\n", state_fail());
 	  else
-	    display_printf("(Save failed, reason unknown)\n");
+	    stream_printf("(Save failed, reason unknown)\n");
 	}
     }
   else
@@ -1917,13 +1947,13 @@ OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
 
       /* Untested */
 
-      if (argblock.arg[3] != 0)
-	strcpy(fname, Address(argblock.arg[2]));
+      if (argblock.arg[2] != 0)
+	strncpy(fname, Address(argblock.arg[2]+1), Address(argblock.arg[2])[0]);
       else
 	strcpy(fname, "table.dat");
 
-      display_prints("\nPlease supply a filename for save\nFile: ");
-      display_readline(fname, 255, 0);
+      stream_prints("\nPlease supply a filename for save\nFile: ");
+      stream_readline(fname, 255, 0);
 
       if (!(file = open_file_write(fname)))
 	{
@@ -1931,7 +1961,7 @@ OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
 	  goto loop;
 	}
 
-      write_block(file, Address(argblock.arg[0]), argblock.arg[1]);
+      write_block(file, Address(argblock.arg[0]), (ZUWord)argblock.arg[1]);
 	
       store(stack, st, 1);
     }
@@ -1941,7 +1971,7 @@ OPCODE "restore"       EXT:0x01 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
 %{
   if (argblock.n_args == 0)
     {
-      display_prints("\nPlease supply a filename for restore\n");
+      stream_prints("\nPlease supply a filename for restore\n");
       get_filename(save_fname, 255);
 
       if (state_load(save_fname, stack, &pc))
@@ -1951,9 +1981,9 @@ OPCODE "restore"       EXT:0x01 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
 	}
 
       if (state_fail())
-	display_printf("(Restore failed, reason: %s)\n", state_fail());
+	stream_printf("(Restore failed, reason: %s)\n", state_fail());
       else
-	display_printf("(Restore failed, reason unknown)\n");
+	stream_printf("(Restore failed, reason unknown)\n");
       
       store(stack, st, 0);
     }
@@ -1969,8 +1999,8 @@ OPCODE "restore"       EXT:0x01 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
       else
 	strcpy(fname, "table.dat");
 
-      display_prints("\nPlease supply a filename for restore\nFile: ");
-      display_readline(fname, 255, 0);
+      stream_prints("\nPlease supply a filename for restore\nFile: ");
+      stream_readline(fname, 255, 0);
 
       if (!(file = open_file(fname)))
 	{
@@ -1979,7 +2009,7 @@ OPCODE "restore"       EXT:0x01 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
 	}
 
       read_block2(Address(argblock.arg[0]),
-		  file, 0, argblock.arg[1]);
+		  file, 0, (ZUWord)argblock.arg[1]);
 	
       store(stack, st, 1);
     }

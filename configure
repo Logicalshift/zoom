@@ -524,7 +524,7 @@ fi
 
 
 
-VERSION=0.9.99dev5
+VERSION=0.9.99dev7
 PACKAGE=zoom
 
 
@@ -2801,6 +2801,78 @@ EOF
 fi
 rm -f conftest*
 
+fi
+rm -f conftest*
+
+echo $ac_n "checking for freetype.h""... $ac_c" 1>&6
+echo "configure:2809: checking for freetype.h" >&5
+cat > conftest.$ac_ext <<EOF
+#line 2811 "configure"
+#include "confdefs.h"
+#include "freetype.h"
+int main() {
+
+; return 0; }
+EOF
+if { (eval echo configure:2818: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+  rm -rf conftest*
+  
+    echo "$ac_t""yes" 1>&6
+    echo $ac_n "checking for FT_Open_Face in -lfreetype""... $ac_c" 1>&6
+echo "configure:2823: checking for FT_Open_Face in -lfreetype" >&5
+ac_lib_var=`echo freetype'_'FT_Open_Face | sed 'y%./+-%__p_%'`
+if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  ac_save_LIBS="$LIBS"
+LIBS="-lfreetype  $LIBS"
+cat > conftest.$ac_ext <<EOF
+#line 2831 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char FT_Open_Face();
+
+int main() {
+FT_Open_Face()
+; return 0; }
+EOF
+if { (eval echo configure:2842: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+  rm -rf conftest*
+  eval "ac_cv_lib_$ac_lib_var=yes"
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+  eval "ac_cv_lib_$ac_lib_var=no"
+fi
+rm -f conftest*
+LIBS="$ac_save_LIBS"
+
+fi
+if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
+  echo "$ac_t""yes" 1>&6
+    ac_tr_lib=HAVE_LIB`echo freetype | sed -e 's/[^a-zA-Z0-9_]/_/g' \
+    -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
+  cat >> confdefs.h <<EOF
+#define $ac_tr_lib 1
+EOF
+
+  LIBS="-lfreetype $LIBS"
+
+else
+  echo "$ac_t""no" 1>&6
+fi
+
+  
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+  
+    echo "$ac_t""no" 1>&6
+  
 fi
 rm -f conftest*
 

@@ -111,6 +111,8 @@ void zmachine_load_story(char* filename, ZMachine* machine)
   machine->screen_on = 1;
   machine->transcript_on = 0;
   machine->transcript_file = NULL;
+  machine->script_on = 0;
+  machine->script_file = NULL;
   machine->memory_on = 0;
 }
 

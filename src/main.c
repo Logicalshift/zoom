@@ -38,6 +38,7 @@
 
 ZMachine machine;
 extern char save_fname[256];
+extern char script_fname[256];
 
 int main(int argc, char** argv)
 {
@@ -107,6 +108,7 @@ int main(int argc, char** argv)
     display_set_title(title);
 
     sprintf(save_fname, "%s.qut", name);
+    sprintf(script_fname, "%s.txt", name);
   }
   
 #ifdef DEBUG

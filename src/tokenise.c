@@ -137,8 +137,8 @@ ZDictionary* dictionary_cache(const ZUWord dict_pos)
 int cache = 1;
 
 inline ZUWord lookup_word(unsigned char* word,
-		   int            wordlen,
-		   ZUWord         dct)
+			  int            wordlen,
+			  ZUWord         dct)
 {
   ZByte packed[12];
   int zscii_len;
@@ -148,13 +148,13 @@ inline ZUWord lookup_word(unsigned char* word,
   int x;
 
 #ifdef DEBUG
-	  printf("Looking up '");
-	  {
-	    int x;
-	    for (x=0; x<wordlen; x++)
-	      printf("%c", word[x]);
-	  }
-	  printf("'... ");
+  printf("Looking up '");
+  {
+    int x;
+    for (x=0; x<wordlen; x++)
+      printf("%c", word[x]);
+  }
+  printf("'... ");
 #endif
 
   if (Byte(ZH_version) <= 3)
@@ -179,7 +179,7 @@ inline ZUWord lookup_word(unsigned char* word,
   no_entries   = Word(dct+1);
   dct += 3;
   
-  if (cache && no_entries > 0)
+  if (cache && (no_entries > 0 || dct > machine.dynamic_ceiling))
     {
       struct dict_entry* ent;
 

@@ -118,11 +118,52 @@ void stream_input(const char* s)
 int stream_readline(char* buf, int len, long int timeout)
 {
   int r;
-  
-  r = display_readline(buf, len, timeout);
-  if (r)
-    stream_input(buf);
 
+  stream_flush_buffer();
+
+  if (machine.script_on)
+    {
+      int pos = 0;
+      char rc;
+      
+      r = 1;
+
+      while ((rc = fgetc(machine.script_file)) != 10)
+	{
+	  if (rc == EOF && pos == 0)
+	    {
+	      machine.script_on = 0;
+	      fclose(machine.script_file);
+	      machine.script_file = NULL;
+	      
+	      display_set_more(0, 1);
+	      
+	      return stream_readline(buf, len, timeout);
+	    }
+	  
+	  if (rc >= 32 && rc < 127)
+	    buf[pos++] = rc;
+	  
+	  if (pos >= len)
+	    {
+	      zmachine_warning("Input stream line exceeds length of input buffer");
+	      break;
+	    }
+	  if (feof(machine.script_file))
+	    break;
+	}
+
+      buf[pos++] = 0;
+      stream_prints(buf);
+      stream_prints("\n");
+    }
+  else
+    {
+      r = display_readline(buf, len, timeout);
+      if (r)
+	stream_input(buf);
+    }
+      
   return r;
 }
 

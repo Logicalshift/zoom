@@ -29,11 +29,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <X11/Xlib.h>
-#include <X11/Xatom.h>
-#include <X11/Xutil.h>
-#include <X11/Xresource.h>
-#include <X11/keysym.h>
+#include "xdisplay.h"
+#include "xfont.h"
 
 #include "zmachine.h"
 #include "display.h"
@@ -47,8 +44,12 @@
 Display*     x_display;
 int          x_screen = 0;
 
+/*
 Font*         x_font  = NULL;
 XFontStruct** x_fonti = NULL;
+*/
+
+xfont**      x_fonts = NULL;
 
 Window       x_mainwin;
 GC           x_wingc;
@@ -221,6 +222,8 @@ void display_initialise(void)
   fonts = rc_get_fonts(&num);
   n_fonts = 0;
 
+  xfont_initialise();
+
   for (x=0; x<num; x++)
     {
       if (fonts[x].num <= 0)
@@ -228,22 +231,10 @@ void display_initialise(void)
       if (fonts[x].num > n_fonts)
 	{
 	  n_fonts = fonts[x].num;
-	  x_font = realloc(x_font, sizeof(Font)*n_fonts);
-	  x_fonti = realloc(x_fonti, sizeof(XFontStruct*)*n_fonts);
+	  x_fonts = realloc(x_fonts, sizeof(xfont*)*n_fonts);
 	}
 
-      x_fonti[fonts[x].num-1] = XLoadQueryFont(x_display, fonts[x].name);
-      if (x_fonti[fonts[x].num-1] == NULL)
-	{
-	  x_fonti[fonts[x].num-1] = XLoadQueryFont(x_display, "8x13");
-	  if (x_fonti[fonts[x].num-1] == NULL)
-	    zmachine_fatal("Unable to load font %s (number %i)",
-			   fonts[x].name, fonts[x].num);
-	  else
-	    zmachine_warning("Unable to load font %s (number %i)",
-			     fonts[x].name, fonts[x].num);
-	}
-      x_font[fonts[x].num-1] = x_fonti[fonts[x].num-1]->fid;
+      x_fonts[fonts[x].num-1] = xfont_load_font(fonts[x].name);
 
       for (y=0; y<fonts[x].n_attr; y++)
 	{
@@ -251,8 +242,8 @@ void display_initialise(void)
 	}
     }
     
-  font_x = x_fonti[3]->max_bounds.width;
-  font_y = x_fonti[3]->ascent + x_fonti[3]->descent;
+  font_x = xfont_get_width(x_fonts[3]);
+  font_y = xfont_get_height(x_fonts[3]);;
 
   cols = rc_get_colours(&num);
   if (num > 11)
@@ -374,7 +365,7 @@ void display_reinitialise(void)
   /* Deallocate resources */
   for (x=0; x<n_fonts; x++)
     {
-      XFreeFont(x_display, x_fonti[x]);
+      xfont_release_font(x_fonts[x]);
     }
   for (x=0; x<N_COLS; x++)
     {
@@ -382,7 +373,11 @@ void display_reinitialise(void)
 		  &x_colour[x].pixel, 1, 0);
     }
 
+  xfont_shutdown();
+
   /* Reallocate fonts */
+  xfont_initialise();
+  
   fonts = rc_get_fonts(&num);
   n_fonts = 0;
 
@@ -393,22 +388,10 @@ void display_reinitialise(void)
       if (fonts[x].num > n_fonts)
 	{
 	  n_fonts = fonts[x].num;
-	  x_font = realloc(x_font, sizeof(Font)*n_fonts);
-	  x_fonti = realloc(x_fonti, sizeof(XFontStruct*)*n_fonts);
+	  x_fonts = realloc(x_fonts, sizeof(xfont*)*n_fonts);
 	}
 
-      x_fonti[fonts[x].num-1] = XLoadQueryFont(x_display, fonts[x].name);
-      if (x_fonti[fonts[x].num-1] == NULL)
-	{
-	  x_fonti[fonts[x].num-1] = XLoadQueryFont(x_display, "8x13");
-	  if (x_fonti[fonts[x].num-1] == NULL)
-	    zmachine_fatal("Unable to load font %s (number %i)",
-			   fonts[x].name, fonts[x].num);
-	  else
-	    zmachine_warning("Unable to load font %s (number %i)",
-			     fonts[x].name, fonts[x].num);
-	}
-      x_font[fonts[x].num-1] = x_fonti[fonts[x].num-1]->fid;
+      x_fonts[fonts[x].num-1] = xfont_load_font(fonts[x].name);
 
       for (y=0; y<fonts[x].n_attr; y++)
 	{
@@ -416,8 +399,8 @@ void display_reinitialise(void)
 	}
     }
     
-  font_x = x_fonti[3]->max_bounds.width;
-  font_y = x_fonti[3]->ascent + x_fonti[3]->descent;
+  font_x = xfont_get_width(x_fonts[3]);
+  font_y = xfont_get_height(x_fonts[3]);
 
   /* Reallocate colours */
   cols = rc_get_colours(&num);
@@ -537,8 +520,7 @@ static void new_line(int more)
   
   CURWIN.xpos = CURWIN.winsx + CURWIN.lmargin;
   if (font_num >= 0)
-    CURWIN.line_height = x_fonti[font_num]->ascent +
-      x_fonti[font_num]->descent;
+    CURWIN.line_height = xfont_get_height(x_fonts[font_num]);
   else
     CURWIN.line_height = font_y;
 
@@ -635,8 +617,8 @@ static int outputs(const char* string, int font, int len, int split)
       return 0;
     }
   
-  width  = XTextWidth(x_fonti[font], string, len);
-  height = x_fonti[font]->ascent + x_fonti[font]->descent;
+  width  = xfont_get_text_width(x_fonts[font], string, len);
+  height = xfont_get_height(x_fonts[font]);
 
   if (split && CURWIN.xpos+width > CURWIN.winlx)
     {
@@ -657,9 +639,9 @@ static int outputs(const char* string, int font, int len, int split)
 	  if (string[x] == ' ' || x==(len-1))
 	    {
 	      /* We've got a word */
-	      xpos += XTextWidth(x_fonti[font],
-				 string + word_start,
-				 word_len+1);
+	      xpos += xfont_get_text_width(x_fonts[font],
+					   string + word_start,
+					   word_len+1);
 
 	      if (xpos > CURWIN.winlx-CURWIN.rmargin)
 		{
@@ -764,15 +746,14 @@ static int outputs(const char* string, int font, int len, int split)
 		 CURWIN.xpos, CURWIN.ypos,
 		 width, CURWIN.line_height);	 
 
-  XSetForeground(x_display, x_pixgc,
-		 x_colour[CURWIN.fore+FIRST_ZCOLOUR].pixel);
-  XSetFont(x_display, x_pixgc,
-	   x_font[font]);
-  
-  XDrawString(x_display, x_pix, x_pixgc,
-	      CURWIN.xpos, CURWIN.ypos+CURWIN.line_height-x_fonti[font]->descent,
-	      string,
-	      len);
+  xfont_set_colours(CURWIN.fore+FIRST_ZCOLOUR, CURWIN.back+FIRST_ZCOLOUR);
+
+  xfont_plot_string(x_fonts[font],
+		    x_pix,
+		    x_pixgc,
+		    CURWIN.xpos,
+		    CURWIN.ypos+CURWIN.line_height-xfont_get_descent(x_fonts[font]),
+		    string, len);
 
   do_redraw = 1;
 
@@ -940,21 +921,23 @@ static void draw_window(void)
   if (more_on)
     {
       int w;
-      
-      w = XTextWidth(x_fonti[3], "[MORE]", 6);
+
+      w = xfont_get_text_width(x_fonts[3], "[MORE]", 6);
       XSetForeground(x_display, x_wingc,
 		     x_colour[FIRST_ZCOLOUR+6].pixel);
       XFillRectangle(x_display, x_mainwin, x_wingc,
 		     win_width-w-2,
-		     win_height-x_fonti[3]->ascent-x_fonti[3]->descent-2,
-		     w, x_fonti[3]->ascent+x_fonti[0]->descent);
+		     win_height-xfont_get_height(x_fonts[3])-2,
+		     w, xfont_get_height(x_fonts[3]));
 
-      XSetFont(x_display, x_wingc, x_font[3]);
-      XSetForeground(x_display, x_wingc,
-		     x_colour[FIRST_ZCOLOUR+0].pixel);
-      XDrawString(x_display, x_mainwin, x_wingc,
-		  win_width-w-2, win_height-x_fonti[3]->descent-2,
-		  "[MORE]", 6);
+      xfont_set_colours(FIRST_ZCOLOUR+0, FIRST_ZCOLOUR+6);
+
+      xfont_plot_string(x_fonts[3],
+			x_mainwin,
+			x_wingc,
+			win_width-w-2,
+			win_height-xfont_get_descent(x_fonts[3])-2,
+			"[MORE]", 6);
     }
 }
 
@@ -986,19 +969,18 @@ static void draw_input_text(char* buf, int inputpos)
 		 input_sx, input_sy,
 		 CURWIN.winlx, input_sh);	 
 
-  width = XTextWidth(x_fonti[font_num], buf, len);
+  width = xfont_get_text_width(x_fonts[font_num], buf, len);
 
   if (input_sx+width < CURWIN.winlx)
     {
       /* It all fits in */
-      XSetForeground(x_display, x_pixgc,
-		     x_colour[CURWIN.fore+FIRST_ZCOLOUR].pixel);
-      XSetFont(x_display, x_pixgc,
-	       x_font[font_num]);
-      XDrawString(x_display, x_pix, x_pixgc,
-		  input_sx, input_sy + x_fonti[font_num]->ascent,
-		  buf, len);
-      caret_x = input_sx+XTextWidth(x_fonti[font_num], buf, inputpos);
+      xfont_set_colours(CURWIN.fore+FIRST_ZCOLOUR,
+			CURWIN.back+FIRST_ZCOLOUR);
+      xfont_plot_string(x_fonts[font_num], x_pix, x_pixgc,
+			input_sx,
+			input_sy+xfont_get_ascent(x_fonts[font_num]),
+			buf, len);
+      caret_x = input_sx+xfont_get_text_width(x_fonts[font_num], buf, inputpos);
     }
   else
     {
@@ -1008,14 +990,12 @@ static void draw_input_text(char* buf, int inputpos)
 
       tempgc = XCreateGC(x_display, x_pix, 0, NULL);
 
-      XSetForeground(x_display, tempgc,
-		     x_colour[CURWIN.fore+FIRST_ZCOLOUR].pixel);
-      XSetFont(x_display, tempgc,
-	       x_font[font_num]);
-
-      width_ell = XTextWidth(x_fonti[font_num], "...", 3);
-      width_l   = XTextWidth(x_fonti[font_num], buf, inputpos);
-      width_r   = XTextWidth(x_fonti[font_num], buf+inputpos, len-inputpos);
+      xfont_set_colours(CURWIN.fore+FIRST_ZCOLOUR, CURWIN.back+FIRST_ZCOLOUR);
+      
+      width_ell = xfont_get_text_width(x_fonts[font_num], "...", 3);
+      width_l   = xfont_get_text_width(x_fonts[font_num], buf, inputpos);
+      width_r   = xfont_get_text_width(x_fonts[font_num],
+				       buf+inputpos, len-inputpos);
 
       clip[0].x = input_sx;
       clip[0].y = input_sy;
@@ -1025,28 +1005,31 @@ static void draw_input_text(char* buf, int inputpos)
 
       if (width_l < (CURWIN.winlx-input_sx))
 	{
-	  XDrawString(x_display, x_pix, tempgc,
-		      input_sx,
-		      input_sy + x_fonti[font_num]->ascent,
-		      buf, len);
+	  xfont_plot_string(x_fonts[font_num],
+			    x_pix, tempgc,
+			    input_sx,
+			    input_sy+xfont_get_ascent(x_fonts[font_num]),
+			    buf, len);
 	  
 	  caret_x = input_sx+width_l;
 	}
       else if (width_r < (CURWIN.winlx-input_sx))
 	{
-	  XDrawString(x_display, x_pix, tempgc,
-		      CURWIN.winlx-width,
-		      input_sy + x_fonti[font_num]->ascent,
-		      buf, len);
-	  
+	  xfont_plot_string(x_fonts[font_num],
+			    x_pix, tempgc,
+			    CURWIN.winlx-width,
+			    input_sy+xfont_get_ascent(x_fonts[font_num]),
+			    buf, len);
+
 	  caret_x = CURWIN.winlx - width_r;
 	}
       else
 	{
-	  XDrawString(x_display, x_pix, tempgc,
-		      (input_sx+3*((CURWIN.winlx-input_sx)/4))-width_l,
-		      input_sy + x_fonti[font_num]->ascent,
-		      buf, len);
+	  xfont_plot_string(x_fonts[font_num],
+			    x_pix, tempgc,
+			    (input_sx+3*((CURWIN.winlx-input_sx)/4))-width_l,
+			    input_sy+xfont_get_ascent(x_fonts[font_num]),
+			    buf, len);
 	  caret_x = input_sx+3*((CURWIN.winlx-input_sx)/4);
 	}
 
@@ -1596,7 +1579,7 @@ void display_erase_window(void)
   int height;
 
   if (font_num >= 0)
-    height = x_fonti[font_num]->ascent+x_fonti[font_num]->descent;
+    height = xfont_get_height(x_fonts[font_num]);
   else
     height = font_y;
   
@@ -1792,7 +1775,7 @@ void display_set_newline_function(int (*func)(const char* remaining,
  */
 int display_get_font_height(void)
 {
-  return x_fonti[font_num]->ascent + x_fonti[font_num]->descent;
+  return xfont_get_height(x_fonts[font_num]);
 }
 
 /*
@@ -1800,7 +1783,7 @@ int display_get_font_height(void)
  */
 int display_get_font_width(void)
 {
-  return XTextWidth(x_fonti[font_num], "0", 1);
+  return xfont_get_text_width(x_fonts[font_num], "0", 1);
 }
 
 /*

@@ -2,7 +2,7 @@
 AC_PREREQ(2.13)
 AC_INIT()
 
-VERSION=0.9.99dev5
+VERSION=0.9.99dev7
 PACKAGE=zoom
 
 UTIL_DISPLAY_INIT()
@@ -135,6 +135,16 @@ AC_TRY_LINK([
     AC_DEFINE(OPT_TYPE, 200)
   ])
 )
+
+AC_MSG_CHECKING(for freetype.h)
+AC_TRY_COMPILE([#include "freetype.h"], [],
+  [
+    AC_MSG_RESULT(yes)
+    AC_CHECK_LIB(freetype, FT_Open_Face)
+  ],
+  [
+    AC_MSG_RESULT(no)
+  ])
 
 UTIL_DISPLAY_INFO(Generating files)
 

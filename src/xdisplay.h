@@ -18,18 +18,29 @@
  */
 
 /*
- * Deal with input/output streams
+ * Display for X-Windows
  */
 
-#ifndef __STREAM_H
-#define __STREAM_H
+#ifndef __XDISPLAY_H
+#define __XDISPLAY_H
 
-extern void stream_prints       (const char* s);
-extern void stream_printf       (const char* f, ...);
-extern void stream_input        (const char* s);
-extern int  stream_readline     (char* buf, int len, long int timeout);
-extern void stream_buffering    (int buffer);
-extern void stream_flush_buffer (void);
-extern void stream_remove_buffer(const char* s);
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
+#include <X11/Xutil.h>
+#include <X11/Xresource.h>
+#include <X11/keysym.h>
+
+/* Globals */
+
+extern Display*      x_display;
+extern int           x_screen;
+
+extern Window        x_mainwin;
+extern GC            x_wingc;
+extern GC            x_caretgc;
+extern GC            x_pixgc;
+
+extern Pixmap        x_pix;
+extern XColor        x_colour[];
 
 #endif

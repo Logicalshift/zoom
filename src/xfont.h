@@ -18,18 +18,36 @@
  */
 
 /*
- * Deal with input/output streams
+ * Font handling for X-Windows
  */
 
-#ifndef __STREAM_H
-#define __STREAM_H
+#ifndef __XFONT_H
+#define __XFONT_H
 
-extern void stream_prints       (const char* s);
-extern void stream_printf       (const char* f, ...);
-extern void stream_input        (const char* s);
-extern int  stream_readline     (char* buf, int len, long int timeout);
-extern void stream_buffering    (int buffer);
-extern void stream_flush_buffer (void);
-extern void stream_remove_buffer(const char* s);
+struct xfont;
+
+typedef struct xfont xfont;
+
+extern void    xfont_initialise    (void);
+extern void    xfont_shutdown      (void);
+
+extern xfont*  xfont_load_font     (char* font);
+extern void    xfont_release_font  (xfont*);
+
+extern void    xfont_set_colours   (int foreground,
+				    int background);
+extern int     xfont_get_width     (xfont*);
+extern int     xfont_get_height    (xfont*);
+extern int     xfont_get_ascent    (xfont*);
+extern int     xfont_get_descent   (xfont*);
+extern int     xfont_get_text_width(xfont*,
+				    const char*,
+				    int);
+extern void    xfont_plot_string   (xfont*,
+				    Drawable,
+				    GC,
+				    int, int,
+				    const char*,
+				    int);
 
 #endif

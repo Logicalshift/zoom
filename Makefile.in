@@ -73,8 +73,6 @@ ZUWORD_TYPE = @ZUWORD_TYPE@
 ZWORD_TYPE = @ZWORD_TYPE@
 
 SUBDIRS = m4 builder src
-
-EXTRA_DIST = zoomrc
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h

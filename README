@@ -207,3 +207,24 @@ print_timer (EXT:131)
     This displays the difference between the start time and end time as a
     decimal number of seconds, to centisecond precision.
 
+FreeType rant
+=============
+
+I was going to try to include freetype support, because anti-aliased
+fonts look nice. However, I've ended up not doing this for a number of 
+reasons, mainly because freetype sucks rocks (to put it mildly). Their 
+license probably isn't compatable with the GPL (but I'd sort that out
+by changing Zoom's licence), their documentation is wrong (even their
+comments are wrong), the font metrics returned for type 1 fonts seem
+to be completely random (and don't look right for the truetype fonts
+I've tried), it's hell to get it to compile properly under any variety 
+of Unix, ...
+
+The interface is a pain to use, too, even when you use the non-b0rken
+features (glyph numbers different to character numbers - whatever
+happened to Unicode? Dealing with glyphs independantly is a PITA, too, 
+not to mention probably a tad inefficient).
+
+Ho-hum. You'll get anti-aliased fonts when the Impulse font renderer
+is complete and I can do the things that Zoom requires without
+premature hair loss.

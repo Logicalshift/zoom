@@ -1,3 +1,7 @@
+2000-11-17  Andrew Hunter    <andrew@logicalshift.co.uk>
+
+	* freetype work started. Version changed to 0.9.99dev6
+	
 2000-11-10  Andrew Hunter    <andrew@logicalshift.co.uk>
 
 	* restore was reporting file was too small when it actually

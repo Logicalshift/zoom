@@ -67,7 +67,7 @@
 #define SUPPORT_VERSION_3
 #define SUPPORT_VERSION_4
 #define SUPPORT_VERSION_5
-#define SUPPORT_VERSION_6
+#undef  SUPPORT_VERSION_6
 
 /* File format */
 
@@ -210,6 +210,10 @@ typedef struct ZMachine
   ZUWord memory_pos[16];
   
   int    buffering;
+
+  /* Input streams */
+  int   script_on;
+  FILE* script_file;
 
 #ifdef GLOBAL_PC
   ZDWord pc;
