@@ -41,7 +41,7 @@ OPCODE "dec_chk"    2OP:0x04 BRANCH VERSION all
 
   var = GetVarNoPop(arg1);
   result = (--var) < arg2;
-  store(stack, arg1, var);
+  store_nopush(stack, arg1, var);
   dobranch;
 %}
 
@@ -51,7 +51,7 @@ OPCODE "inc_chk"    2OP:0x05 BRANCH VERSION all
 
   var = GetVarNoPop(arg1);
   result = (++var) > arg2;
-  store(stack, arg1, var);
+  store_nopush(stack, arg1, var);
   dobranch;
 %}
 
@@ -861,7 +861,7 @@ OPCODE "inc"          1OP:0x05              VERSION all
   
   var = GetVarNoPop(arg1);
   var++;
-  store(stack, arg1, var);
+  store_nopush(stack, arg1, var);
 %}
 
 OPCODE "dec"          1OP:0x06              VERSION all
@@ -874,7 +874,7 @@ OPCODE "dec"          1OP:0x06              VERSION all
   
   var = GetVarNoPop(arg1);
   var--;
-  store(stack, arg1, var);  
+  store_nopush(stack, arg1, var);  
 %}
 
 OPCODE "print_addr"   1OP:0x07              VERSION all
