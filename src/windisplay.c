@@ -79,8 +79,10 @@ HPEN   winpen  [14];
 HWND   mainwin, mainwinstat;
 HDC    mainwindc;
 HMENU  mainwinmenu;
+HMENU  fontmenu = 0;
 
 static xfont** font = NULL;
+static int     n_fonts = 9;
 
 static char*   fontlist[] =
 {
@@ -232,10 +234,35 @@ static void size_window(void)
   total_y = win_y + 8;
 }
 
+static void rejig_fonts(void)
+{
+  int x;
+
+  for (x=0; x<16; x++)
+    {
+      if (style_font[x] == -1)
+	{
+	  if (x == 0)
+	    zmachine_fatal("No roman font defined");
+	  if (x == 4)
+	    zmachine_fatal("No fixed-pitch font defined");
+	  if (x == 8)
+	    zmachine_fatal("No symbolic font defined");
+
+	  if (x<4)
+	    style_font[x] = style_font[0];
+	  else if (x<8)
+	    style_font[x] = style_font[4];
+	  else
+	    style_font[x] = style_font[8];
+	}
+    }
+}
+
 void display_initialise(void)
 {
   int x;
-  int n_cols, n_fonts;
+  int n_cols;
   rc_font* fonts;
   rc_colour* colours;
 
@@ -293,6 +320,7 @@ void display_initialise(void)
 	{
 	  font[x] = xfont_load_font(fontlist[x]);
 	}
+      n_fonts = 9;
     }
   else
     {
@@ -310,9 +338,11 @@ void display_initialise(void)
 	    style_font[fonts[x].attributes[y]] = x;
 	}
     }
+
+  rejig_fonts();
   
-  max_x = size_x = DEFAULTX;
-  max_y = size_y = DEFAULTY;
+  max_x = size_x = rc_get_xsize();
+  max_y = size_y = rc_get_ysize();
  
   size_window();
  
@@ -327,7 +357,7 @@ void display_initialise(void)
 void display_reinitialise(void)
 {
   int x;
-  int n_cols, n_fonts;
+  int n_cols;
   rc_font* fonts;
   rc_colour* colours;
   
@@ -386,6 +416,7 @@ void display_reinitialise(void)
 	{
 	  font[x] = xfont_load_font(fontlist[x]);
 	}
+      n_fonts = 9;
     }
   else
     {
@@ -403,6 +434,14 @@ void display_reinitialise(void)
 	    style_font[fonts[x].attributes[y]] = x;
 	}
     }
+
+  rejig_fonts();
+  
+  max_x = size_x = rc_get_xsize();
+  max_y = size_y = rc_get_ysize();
+ 
+  size_window();
+  display_clear();
 }
 
 void display_finalise(void)
