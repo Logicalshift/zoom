@@ -610,6 +610,11 @@ int state_load(char* filename, ZStack* stack, ZDWord* pc)
   detail = NULL;
 
   fsize = get_file_size(filename);
+  if (fsize < 0)
+    {
+      detail = "Savefile not found";
+      return 0;
+    }
   if (fsize < 8)
     {
       detail = "Savefile is WAY too small";

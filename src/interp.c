@@ -496,16 +496,18 @@ static void get_filename(char* name, int len)
   display_readline(fname, len, 0);
 
   if (fname[0] != '/')
-    strcpy(name, rc_get_savedir());
+    {
+      strcpy(name, rc_get_savedir());
+      strcat(name, "/");
+    }
   else
     name[0] = 0;
-  strcat(name, "/");
   strcat(name, fname);
 }
 
 static int save_1234(ZDWord  pc,
-			    ZStack* stack,
-			    int     st)
+		     ZStack* stack,
+		     int     st)
 {
   ZWord tmp;
   int ok;

@@ -1062,7 +1062,11 @@ OPCODE "save"        0OP:0x05 BRANCH  VERSION 1,2,3
       newpc = pc;
     }
   else
-    newpc = pc + branch-2;
+    {
+      newpc = pc;
+      if (negate) 
+        newpc += branch-2;
+    }
 
   result = save_1234(newpc, stack, -1);
   dobranch;

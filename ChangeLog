@@ -1,5 +1,11 @@
 2000-11-10  Andrew Hunter    <andrew@logicalshift.co.uk>
 
+	* restore was reporting file was too small when it actually
+	doesn't exist. Fixed.
+	
+	* v3 save was storing the wrong address in PC under some
+	circumstances. Fixed
+
 	* savedir option added to .zoomrc
 
 	* V6 support improved further... Zork Zero is now displaying
