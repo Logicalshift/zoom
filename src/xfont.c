@@ -503,10 +503,11 @@ void xfont_plot_string(xfont* f,
 	t1txt[i] = 0;
 
 	XSetForeground(x_display, gc, x_colour[fore].pixel);
-	XSetBackground(x_display, gc, x_colour[back].pixel);
-	if (rc_get_antialias())
+	if (back > -1)
+	  XSetBackground(x_display, gc, x_colour[back].pixel);
+	if (rc_get_antialias() && back > -1)
 	  {
-	    T1_AASetStringX(draw, gc, T1_OPAQUE, 
+	    T1_AASetStringX(draw, gc, T1_TRANSPARENT, 
 			    x, y + (f->data.t1.bounds.llx*f->data.t1.size)/1000, 
 			    f->data.t1.id,
 			    t1txt, len, 0, T1_KERNING,
@@ -514,7 +515,7 @@ void xfont_plot_string(xfont* f,
 	  }
 	else
 	  {
-	    T1_SetStringX(draw, gc, T1_OPAQUE, 
+	    T1_SetStringX(draw, gc, T1_TRANSPARENT, 
 			  x, y + (f->data.t1.bounds.llx*f->data.t1.size)/1000, 
 			  f->data.t1.id,
 			  t1txt, len, 0, T1_KERNING,

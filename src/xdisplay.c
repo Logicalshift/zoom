@@ -63,13 +63,19 @@
 Display*     x_display;
 int          x_screen = 0;
 
-Window         x_mainwin;
-GC             x_wingc, x_caretgc;
-Drawable       x_drawable = None;
+Window       x_mainwin;
+GC           x_wingc, x_caretgc;
+Drawable     x_drawable = None;
+
+Pixmap       x_pixmap = None;
+GC           x_pixgc;
 
 #ifdef HAVE_XRENDER
 XRenderPictFormat* x_picformat = NULL;
 Picture            x_winpic = None;
+Picture            x_pixpic = None;
+
+static int pix_w, pix_h;
 #endif
 
 #ifdef HAVE_XDBE
@@ -684,271 +690,300 @@ static void draw_window()
   XIntersectRegion(dregion, newregion, newregion);
   
   XSetRegion(x_display, x_wingc, newregion);
-#ifdef HAVE_XFT
-  if (xft_drawable != NULL)
-    XftDrawSetClip(xft_drawable, newregion);
-#endif
 
-  /* Text */
-  for (win = 0; win<3; win++)
+  if (x_pixmap == None)
     {
-      if (text_win[win].overlay)
-	{
-	  int x,y;
-
-	  x=0; y=0;
-
-	  for (y=text_win[win].winsy/xfont_y; y<size_y; y++)
-	    {
-	      for (x=0; x<size_x; x++)
-		{
-		  if (text_win[win].cline[y].cell[x] != ' ' ||
-		      text_win[win].cline[y].bg[x]   != 255 ||
-		      y*xfont_y < text_win[win].winly)
-		    {
-		      int len;
-		      int fn, fg, bg;
-    
-		      len = 1;
-		      fg = text_win[win].cline[y].fg[x];
-		      bg = text_win[win].cline[y].bg[x];
-		      fn = text_win[win].cline[y].font[x];
-		      
-		      while (text_win[win].cline[y].font[x+len] == fn &&
-			     text_win[win].cline[y].fg[x+len]   == fg &&
-			     text_win[win].cline[y].bg[x+len]   == bg &&
-			     x+len < size_x &&
-			     (bg != 255 ||
-			      text_win[win].cline[y].cell[x+len] != ' ' ||
-			      y*xfont_y<text_win[win].winly))
-			len++;
-		      
-		      if (bg == 255)
-			bg = fg;
-
-		      XSetForeground(x_display, x_wingc, x_colour[bg+FIRST_ZCOLOUR].pixel);
-		      XFillRectangle(x_display, x_drawable, x_wingc,
-				     x*xfont_x + BORDER_SIZE,
-				     y*xfont_y + BORDER_SIZE,
-				     len*xfont_x,
-				     xfont_y);
-
-		      xfont_set_colours(fg+FIRST_ZCOLOUR, bg+FIRST_ZCOLOUR);
-		      xfont_plot_string(font[fn],
-					x_drawable, x_wingc,
-					x*xfont_x+BORDER_SIZE,
-					y*xfont_y+BORDER_SIZE +
-					xfont_get_ascent(font[fn]),
-					&text_win[win].cline[y].cell[x],
-					len);
-
-		      x+=len-1;
-		    }
-		}
-	    }
-	}
-      else
-	{
-	  struct line* line;
-	  struct text* text;
-	  XFONT_MEASURE lasty, width;
-	  int offset;
-
-	  Region r;
-	  XRectangle clip;
-
-	  int phase;
-
-	  r = XCreateRegion();
-	  clip.x = 0; clip.y = BORDER_SIZE + text_win[win].winsy;
-	  clip.width = total_x;
-	  clip.height = text_win[win].winly - text_win[win].winsy;
-	  XUnionRectWithRegion(&clip, r, r);
-	  
-	  XIntersectRegion(newregion, r, r);
-
-	  XSetRegion(x_display, x_wingc, r);
 #ifdef HAVE_XFT
-	  if (xft_drawable != NULL)
-	    XftDrawSetClip(xft_drawable, newregion);
+      if (xft_drawable != NULL)
+	XftDrawSetClip(xft_drawable, newregion);
 #endif
-	  XFree(r);
-
-	  line = text_win[win].line;
-	  lasty = BORDER_SIZE;
-
-	  /* Free any lines that scrolled off ages ago */
-	  if (line != NULL)
+      
+      /* Text */
+      for (win = 0; win<3; win++)
+	{
+	  if (text_win[win].overlay)
 	    {
-	      while (line->baseline < -32768)
-		{
-		  struct line* n;
-
-		  n = line->next;
-		  if (n == NULL)
-		    break;
+	      int x,y;
 	      
-		  if (text_win[win].topline == line)
-		    text_win[win].topline = NULL;
-		  
-		  if (n->start != line->start)
+	      x=0; y=0;
+	      
+	      for (y=text_win[win].winsy/xfont_y; y<size_y; y++)
+		{
+		  for (x=0; x<size_x; x++)
 		    {
-		      struct text* nt;
-		      
-		      if (line->start != text_win[win].text)
-			zmachine_fatal("Programmer is a spoon");
-		      text_win[win].text = n->start;
-		      
-		      text = line->start;
-		      while (text != n->start)
+		      if (text_win[win].cline[y].cell[x] != ' ' ||
+			  text_win[win].cline[y].bg[x]   != 255 ||
+			  y*xfont_y < text_win[win].winly)
 			{
-			  if (text == NULL)
-			    zmachine_fatal("Programmer is a spoon");
-			  nt = text->next;
-			  free(text);
-			  text = nt;
+			  int len;
+			  int fn, fg, bg;
+			  
+			  len = 1;
+			  fg = text_win[win].cline[y].fg[x];
+			  bg = text_win[win].cline[y].bg[x];
+			  fn = text_win[win].cline[y].font[x];
+			  
+			  while (text_win[win].cline[y].font[x+len] == fn &&
+				 text_win[win].cline[y].fg[x+len]   == fg &&
+				 text_win[win].cline[y].bg[x+len]   == bg &&
+				 x+len < size_x &&
+				 (bg != 255 ||
+				  text_win[win].cline[y].cell[x+len] != ' ' ||
+				  y*xfont_y<text_win[win].winly))
+			    len++;
+			  
+			  if (bg == 255)
+			    bg = fg;
+			  
+			  XSetForeground(x_display, x_wingc, x_colour[bg+FIRST_ZCOLOUR].pixel);
+			  XFillRectangle(x_display, x_drawable, x_wingc,
+					 x*xfont_x + BORDER_SIZE,
+					 y*xfont_y + BORDER_SIZE,
+					 len*xfont_x,
+					 xfont_y);
+			  
+			  xfont_set_colours(fg+FIRST_ZCOLOUR, bg+FIRST_ZCOLOUR);
+			  xfont_plot_string(font[fn],
+					    x_drawable, x_wingc,
+					    x*xfont_x+BORDER_SIZE,
+					    y*xfont_y+BORDER_SIZE +
+					    xfont_get_ascent(font[fn]),
+					    &text_win[win].cline[y].cell[x],
+					    len);
+			  
+			  x+=len-1;
 			}
 		    }
-		  
-		  
-		  free(line);
-		  text_win[win].line = n;
-		  
-		  line = n;
-		}
-	    }
-
-	  /* Skip to the first visible line */
-	  if (line != NULL)
-	    {
-	      while (line->baseline + line->descent - scrollpos < text_win[win].winsy)
-		line = line->next;
-	    }
-
-	  /* Fill in to the start of the lines */
-	  if (line != NULL)
-	    {
-	      XSetForeground(x_display, x_wingc,
-			     x_colour[text_win[win].winback+FIRST_ZCOLOUR].pixel);
-	      if (line->baseline-line->ascent-scrollpos > text_win[win].winsy)
-		{
-		  XFillRectangle(x_display, x_drawable, x_wingc,
-				 BORDER_SIZE, text_win[win].winsy+BORDER_SIZE,
-				 win_x, line->baseline-line->ascent-scrollpos);
 		}
 	    }
 	  else
-	    lasty = text_win[win].winsy + BORDER_SIZE;
-	  
-	  /* Draw the lines */
-	  while (line != NULL &&
-		 line->baseline - line->ascent - scrollpos < text_win[win].winly)
 	    {
-	      int x;
-
-	      for (phase=0; phase<2; phase++)
+	      struct line* line;
+	      struct text* text;
+	      XFONT_MEASURE lasty, width;
+	      int offset;
+	      
+	      Region r;
+	      XRectangle clip;
+	      
+	      int phase;
+	      
+	      r = XCreateRegion();
+	      clip.x = 0; clip.y = BORDER_SIZE + text_win[win].winsy;
+	      clip.width = total_x;
+	      clip.height = text_win[win].winly - text_win[win].winsy;
+	      XUnionRectWithRegion(&clip, r, r);
+	      
+	      XIntersectRegion(newregion, r, r);
+	      
+	      XSetRegion(x_display, x_wingc, r);
+#ifdef HAVE_XFT
+	      if (xft_drawable != NULL)
+		XftDrawSetClip(xft_drawable, newregion);
+#endif
+	      XFree(r);
+	      
+	      line = text_win[win].line;
+	      lasty = BORDER_SIZE;
+	      
+	      /* Free any lines that scrolled off ages ago */
+	      if (line != NULL)
 		{
-		  text = line->start;
-		  width = 0;
-		  offset = line->offset;
-
-		  /*
-		   * Each line may span several text objects. We have to plot
-		   * each one in turn.
-		   */
-		  for (x=0; x<line->n_chars;)
+		  while (line->baseline < -32768)
 		    {
-		      int w;
-		      int toprint;
-		  
-		      /* 
-		       * Work out the amount of text to plot from the current 
-		       * text object 
-		       */
-		      toprint = line->n_chars-x;
-		      if (toprint > (text->len - offset))
-			toprint = text->len - offset;
-		  
-		      if (toprint > 0)
-			{
-			  /* Plot the text */
-			  if (text->text[toprint+offset-1] == 10)
-			    {
-			      toprint--;
-			      x++;
-			    }
+		      struct line* n;
 		      
-			  w = xfont_get_text_width(font[text->font],
-						   text->text + offset,
-						   toprint);
-
-			  if (phase == 0)
+		      n = line->next;
+		      if (n == NULL)
+			break;
+		      
+		      if (text_win[win].topline == line)
+			text_win[win].topline = NULL;
+		      
+		      if (n->start != line->start)
+			{
+			  struct text* nt;
+			  
+			  if (line->start != text_win[win].text)
+			    zmachine_fatal("Programmer is a spoon");
+			  text_win[win].text = n->start;
+			  
+			  text = line->start;
+			  while (text != n->start)
 			    {
-			      XSetForeground(x_display, x_wingc,
-					     x_colour[text->bg+FIRST_ZCOLOUR].pixel);
-			      XFillRectangle(x_display, x_drawable, x_wingc,
-					     width + BORDER_SIZE,
-					     line->baseline + BORDER_SIZE - line->ascent - scrollpos,
-					     w,
-					     line->ascent + line->descent);
+			      if (text == NULL)
+				zmachine_fatal("Programmer is a spoon");
+			      nt = text->next;
+			      free(text);
+			      text = nt;
+			    }
+			}
+		      
+		      
+		      free(line);
+		      text_win[win].line = n;
+		      
+		      line = n;
+		    }
+		}
+	      
+	      /* Skip to the first visible line */
+	      if (line != NULL)
+		{
+		  while (line->baseline + line->descent - scrollpos < text_win[win].winsy)
+		    line = line->next;
+		}
+	      
+	      /* Fill in to the start of the lines */
+	      if (line != NULL)
+		{
+		  XSetForeground(x_display, x_wingc,
+				 x_colour[text_win[win].winback+FIRST_ZCOLOUR].pixel);
+		  if (line->baseline-line->ascent-scrollpos > text_win[win].winsy)
+		    {
+		      XFillRectangle(x_display, x_drawable, x_wingc,
+				     BORDER_SIZE, text_win[win].winsy+BORDER_SIZE,
+				     win_x, line->baseline-line->ascent-scrollpos);
+		    }
+		}
+	      else
+		lasty = text_win[win].winsy + BORDER_SIZE;
+	      
+	      /* Draw the lines */
+	      while (line != NULL &&
+		     line->baseline - line->ascent - scrollpos < text_win[win].winly)
+		{
+		  int x;
+		  
+		  for (phase=0; phase<2; phase++)
+		    {
+		      text = line->start;
+		      width = 0;
+		      offset = line->offset;
+		      
+		      /*
+		       * Each line may span several text objects. We have to plot
+		       * each one in turn.
+		       */
+		      for (x=0; x<line->n_chars;)
+			{
+			  int w;
+			  int toprint;
+			  
+			  /* 
+			   * Work out the amount of text to plot from the current 
+			   * text object 
+			   */
+			  toprint = line->n_chars-x;
+			  if (toprint > (text->len - offset))
+			    toprint = text->len - offset;
+			  
+			  if (toprint > 0)
+			    {
+			      /* Plot the text */
+			      if (text->text[toprint+offset-1] == 10)
+				{
+				  toprint--;
+				  x++;
+				}
+			      
+			      w = xfont_get_text_width(font[text->font],
+						       text->text + offset,
+						       toprint);
+			      
+			      if (phase == 0)
+				{
+				  XSetForeground(x_display, x_wingc,
+						 x_colour[text->bg+FIRST_ZCOLOUR].pixel);
+				  XFillRectangle(x_display, x_drawable, x_wingc,
+						 width + BORDER_SIZE,
+						 line->baseline + BORDER_SIZE - line->ascent - scrollpos,
+						 w,
+						 line->ascent + line->descent);
+				}
+			      else
+				{
+				  xfont_set_colours(text->fg+FIRST_ZCOLOUR, 
+						    text->bg+FIRST_ZCOLOUR);
+				  xfont_plot_string(font[text->font],
+						    x_drawable, x_wingc,
+						    width + BORDER_SIZE,
+						    line->baseline + BORDER_SIZE - scrollpos,
+						    text->text + offset,
+						    toprint);
+				}
+			      
+			      x      += toprint;
+			      offset += toprint;
+			      width  += w;
 			    }
 			  else
 			    {
-			      xfont_set_colours(text->fg+FIRST_ZCOLOUR, 
-						text->bg+FIRST_ZCOLOUR);
-			      xfont_plot_string(font[text->font],
-						x_drawable, x_wingc,
-						width + BORDER_SIZE,
-						line->baseline + BORDER_SIZE - scrollpos,
-						text->text + offset,
-						toprint);
+			      /* At the end of this object - move onto the next */
+			      offset = 0;
+			      text = text->next;
 			    }
-
-			  x      += toprint;
-			  offset += toprint;
-			  width  += w;
 			}
-		      else
+		      
+		      /* Fill in to the end of the line */
+		      if (phase == 0)
 			{
-			  /* At the end of this object - move onto the next */
-			  offset = 0;
-			  text = text->next;
+			  XSetForeground(x_display, x_wingc, x_colour[text_win[win].winback+FIRST_ZCOLOUR].pixel);
+			  XFillRectangle(x_display, x_drawable, x_wingc,
+					 width + BORDER_SIZE,
+					 line->baseline - line->ascent + BORDER_SIZE - scrollpos,
+					 win_x-width,
+					 line->ascent + line->descent);
 			}
+		      
+		      lasty = line->baseline + line->descent - scrollpos + BORDER_SIZE;
 		    }
-	      
-		  /* Fill in to the end of the line */
-		  if (phase == 0)
-		    {
-		      XSetForeground(x_display, x_wingc, x_colour[text_win[win].winback+FIRST_ZCOLOUR].pixel);
-		      XFillRectangle(x_display, x_drawable, x_wingc,
-				     width + BORDER_SIZE,
-				     line->baseline - line->ascent + BORDER_SIZE - scrollpos,
-				     win_x-width,
-				     line->ascent + line->descent);
-		    }
-
-		  lasty = line->baseline + line->descent - scrollpos + BORDER_SIZE;
+		  
+		  /* Move on */
+		  line = line->next;
 		}
 	      
-	      /* Move on */
-	      line = line->next;
+	      /* Fill in to the bottom of the window */
+	      XSetForeground(x_display, x_wingc, x_colour[text_win[win].winback+FIRST_ZCOLOUR].pixel);
+	      if ((lasty-BORDER_SIZE) < win_y)
+		{
+		  XFillRectangle(x_display, x_drawable, x_wingc,
+				 BORDER_SIZE,
+				 lasty,
+				 win_x,
+				 win_y - (lasty-BORDER_SIZE));
+		}
+	      
+	      XSetRegion(x_display, x_wingc, newregion);
 	    }
-
-	  /* Fill in to the bottom of the window */
-	  XSetForeground(x_display, x_wingc, x_colour[text_win[win].winback+FIRST_ZCOLOUR].pixel);
-	  if ((lasty-BORDER_SIZE) < win_y)
-	    {
-	      XFillRectangle(x_display, x_drawable, x_wingc,
-			     BORDER_SIZE,
-			     lasty,
-			     win_x,
-			     win_y - (lasty-BORDER_SIZE));
-	    }
-
-	  XSetRegion(x_display, x_wingc, newregion);
 	}
     }
+  else
+    {
+      int xp, yp;
 
+      xp = BORDER_SIZE + win_x/2-pix_w/2;
+      yp = BORDER_SIZE + win_y/2-pix_h/2;
+
+      XSetForeground(x_display, x_wingc, x_colour[3].pixel);
+      XFillRectangle(x_display, x_drawable, x_wingc,
+		     left, top,
+		     xp-left, bottom-top);
+      XFillRectangle(x_display, x_drawable, x_wingc,
+		     left, top,
+		     right-left, yp-top);
+      XFillRectangle(x_display, x_drawable, x_wingc,
+		     xp+pix_w, top,
+		     right-xp-pix_w, bottom-top);
+      XFillRectangle(x_display, x_drawable, x_wingc,
+		     left, yp+pix_h,
+		     right-left, bottom-yp-pix_h);
+
+      XCopyArea(x_display, x_pixmap, x_drawable, x_wingc,
+		0,0, pix_w, pix_h,
+		xp, yp);
+    }
+  
   /* MORE */
   if (more_on)
     {
@@ -1712,12 +1747,14 @@ static int process_events(long int to, int* buf, int buflen)
 
 	    case ConfigureNotify:
 #ifdef HAVE_XFT
-	      if (xft_drawable != NULL)
+	      if (xft_drawable != NULL &&
+		  x_pixmap     == None)
 		{
 		  /*
 		   * Sometimes the xft_drawable breaks when the window is 
 		   * resized - in particular when we're using DBE.
-		   * Recreating it fixes this...
+		   * Recreating it fixes this... (Not necessary when
+		   * using a pixmap for rendering)
 		   */
 		  XftDrawChange(xft_drawable, x_drawable);
 		}
@@ -2453,6 +2490,96 @@ ZDisplay* display_get_info(void)
   dis.back          = DEFAULT_BACK;
 
   return &dis;
+}
+
+/***                           ----// 888 \\----                           ***/
+/* Pixmap display */
+
+static int pix_fore;
+static int pix_back;
+
+int display_init_pixmap(int width, int height)
+{
+  if (x_pixmap != None)
+    {
+      zmachine_fatal("Can't initialise a pixmap display twice in succession");
+      return 0;
+    }
+
+  if (width < 0)
+    {
+      width = win_x; height = win_y;
+    }
+  pix_w = width; pix_h = height;
+  x_pixmap = XCreatePixmap(x_display, x_drawable,
+			   width, height,
+			   DefaultDepth(x_display, x_screen));
+  if (x_pixmap == None)
+    return 0;
+
+  x_pixgc = XCreateGC(x_display, x_pixmap, 0, NULL);
+
+  XSetForeground(x_display, x_pixgc, x_colour[4].pixel);
+  XFillRectangle(x_display, x_pixmap, x_pixgc, 0,0, width, height);
+
+  XResizeWindow(x_display, x_mainwin,
+		width+BORDER_SIZE*2+SCROLLBAR_SIZE,
+		height+BORDER_SIZE*2);
+
+#ifdef HAVE_XRENDER
+  if (x_picformat != NULL)
+    x_pixpic = XRenderCreatePicture(x_display, x_pixmap, x_picformat, 0, NULL);
+#endif
+
+#ifdef HAVE_XFT
+  if (xft_drawable != NULL)
+    {
+      XftDrawChange(xft_drawable, x_pixmap);
+    }
+#endif
+
+  return 1;
+}
+
+void display_pixmap_cols(int fore, int back)
+{
+  pix_fore = fore + FIRST_ZCOLOUR;
+  pix_back = back + FIRST_ZCOLOUR;
+  if (back == -1)
+    pix_back = -1;
+}
+
+void display_plot_gtext(int* text,
+			int  len,
+			int  style,
+			int  x,
+			int  y)
+{
+  int fg, bg;
+  int ft;
+
+  fg = pix_fore; bg = pix_back;
+  if (style&1)
+    { fg = pix_back; bg = pix_fore; }
+  if (fg < 0)
+    fg = 0;
+
+  ft = style_font[(style>>1)&15];
+
+  xfont_set_colours(fg, bg);
+  if (bg >= 0)
+    {
+      XSetForeground(x_display, x_pixgc,
+		     x_colour[bg].pixel);
+      XFillRectangle(x_display, x_pixmap, x_pixgc,
+		     x, y-xfont_get_ascent(font[ft]),
+		     xfont_get_text_width(font[ft],
+					  text, len),
+		     xfont_get_height(font[ft]));
+    }
+  xfont_plot_string(font[ft], x_pixmap, x_pixgc,
+		    x, y,
+		    text, len);
 }
 
 #endif

@@ -89,6 +89,8 @@ void zmachine_load_story(char* filename, ZMachine* machine)
   machine->blorb = NULL;
   if (blorb_is_blorbfile(machine->file))
     {
+      int test[] = { 'T', 'e', 's', 't' };
+
       machine->blorb_file = machine->file;
       machine->blorb_tokens = iff_decode_file(machine->file);
       machine->blorb = blorb_loadfile(machine->file);
@@ -96,6 +98,9 @@ void zmachine_load_story(char* filename, ZMachine* machine)
       rc_set_game("xxxxxx", 65535);
 
       display_initialise();
+      display_init_pixmap(640, 480);
+      display_pixmap_cols(0, -1);
+      display_plot_gtext(test, 4, 2, 100, 100);
       display_clear();
       display_prints_c("Hello\n");
       display_readchar(0);

@@ -31,6 +31,8 @@ gamedir                         return GAMEDIR;
 savedir				return SAVEDIR;
 sounds				return SOUNDS;
 graphics			return GRAPHICS;
+resources			return GRAPHICS;
+blorb   			return GRAPHICS;
 size				return SIZE;
 antialias                       return ANTIALIAS;
 

@@ -127,7 +127,7 @@ extern void  display_scroll_region  (int x, int y,
 				     int width, int height,
 				     int xoff, int yoff);
 extern void  display_pixmap_cols    (int fg, int bg);
-extern void  display_plot_gtext     (int*, int style, int x, int y);
+extern void  display_plot_gtext     (int*, int len, int style, int x, int y);
 extern void  display_plot_image     (image_data*, int x, int y);
 extern float display_measure_text   (int*, int style);
 extern void  display_wait_for_more  (void);
