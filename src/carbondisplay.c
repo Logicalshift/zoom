@@ -822,9 +822,6 @@ static pascal OSStatus zoom_evt_handler(EventHandlerCallRef myHandlerChain,
 		  AlertStdCFStringAlertParamRec par;
 		  OSStatus res;
 	
-		  printf("%i\n", carbon_ask_question("Hmm", "La", "Yeep", "Neep", 1));
-		  printf("%i\n", carbon_ask_question("Hmm", "La", "Yeep", "Neep", 0));
-	  
 		  par.version       = kStdCFStringAlertVersionOne;
 		  par.movable       = false;
 		  par.helpButton    = false;
@@ -1967,6 +1964,84 @@ void display_exit(int code)
   exit(code);
 }
 
+static OSErr drag_receive(WindowRef win, void* data, DragRef drag)
+{
+  UInt16 nitems;
+  UInt16 nflavs;
+  DragItemRef item;
+  OSErr erm;
+
+  int x;
+
+  erm = CountDragItems(drag, &nitems);
+  if (erm != noErr || nitems != 1)
+    return dragNotAcceptedErr;
+
+  erm = GetDragItemReferenceNumber(drag, 1, &item);
+  if (erm != noErr)
+    return dragNotAcceptedErr;
+
+  erm = CountDragItemFlavors(drag, item, &nflavs);
+  if (erm != noErr)
+    return dragNotAcceptedErr;
+
+  for (x=0; x<nflavs; x++)
+    {
+      FlavorType t;
+
+      GetFlavorType(drag, item, x+1, &t);
+
+      if (t == kDragFlavorTypeHFS)
+	{
+	  HFSFlavor hfs;
+	  Size sz;
+	  FSRef ref;
+	  char path[512];
+	  ZFile* f;
+
+	  sz = sizeof(HFSFlavor);
+	  erm = GetFlavorData(drag, item, kDragFlavorTypeHFS,
+			      &hfs, &sz,
+			      NULL);
+	  if (erm != noErr)
+	    {
+	      return dragNotAcceptedErr;
+	    }
+
+	  erm = FSpMakeFSRef(&hfs.fileSpec,
+			     &ref);
+	  if (erm != noErr)
+	    {
+	      return dragNotAcceptedErr;
+	    }
+
+	  if (FSRefMakePath(&ref, path, 512) != noErr)
+	    {
+	      return dragNotAcceptedErr;
+	    }
+
+	  f = open_file(path);
+	  if (f == NULL || !blorb_is_blorbfile(f))
+	    {
+	      return dragNotAcceptedErr;
+	    }
+
+	  close_file(f);
+
+	  if (machine.blorb == NULL ||
+	      carbon_ask_question("Resources already loaded", "This game already has a resource file associated with it: are you sure you wish to replace it with a new one?",
+				  "Replace", "Cancel", 1))
+	    {
+	      carbon_prefs_set_resources(path);
+	    }
+
+	  return noErr;
+	}
+    }
+
+  return dragNotAcceptedErr;
+}
+
 void display_initialise(void)
 {
   EventLoopRef    mainLoop;
@@ -2016,6 +2091,11 @@ void display_initialise(void)
 			NewEventLoopTimerUPP(caret_flasher),
 			NULL,
 			&caret_timer);
+
+  /* Install a drag handler */
+  InstallReceiveHandler(NewDragReceiveHandlerUPP(drag_receive),
+			NULL,
+			NULL);
 
   /* Yay, we can now show the window */
   ShowWindow(zoomWindow);

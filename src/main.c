@@ -159,7 +159,7 @@ int zoom_main(int argc, char** argv)
 
 	res = open_file(rc_get_graphics());
 	
-	if (blorb_is_blorbfile(res))
+	if (res != NULL && blorb_is_blorbfile(res))
 	  {
 	    machine.blorb_file = res;
 	    machine.blorb = blorb_loadfile(machine.blorb_file);
@@ -218,8 +218,8 @@ int zoom_main(int argc, char** argv)
 		  }
 		else
 		  {
-		    machine->blorb = blb;
-		    machine->blorb_file = bf;
+		    machine.blorb = blb;
+		    machine.blorb_file = bf;
 		  }
 	      }
 	  }
