@@ -14,6 +14,7 @@
 #import "ZoomPreferences.h"
 #import "ZoomCursor.h"
 #import "ZoomInputLine.h"
+#import "ZoomBlorbFile.h"
 
 #define ZBoldStyle 1
 #define ZUnderlineStyle 2
@@ -95,6 +96,9 @@ extern NSString* ZoomStyleAttributeName;
 	
 	// Input source
 	NSObject* inputSource;
+	
+	// Resources
+	ZoomBlorbFile* resources;
 }
 
 // The delegate
@@ -193,6 +197,10 @@ extern NSString* ZoomStyleAttributeName;
 // Input sources (nil = default, window input source)
 - (void) setInputSource: (id) source;
 - (void) removeInputSource: (id) source;
+
+// Resources
+- (void)		   setResources: (ZoomBlorbFile*) resources;
+- (ZoomBlorbFile*) resources;
 
 @end
 

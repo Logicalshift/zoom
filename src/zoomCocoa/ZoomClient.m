@@ -66,6 +66,7 @@
 		storyId = nil;
 		autosaveData = nil;
 		skein = [[ZoomSkein alloc] init];
+		resources = nil;
     }
 
     return self;
@@ -78,6 +79,8 @@
 	
 	if (defaultView) [defaultView release];
 	if (saveData) [saveData release];
+	
+	if (resources) [resources release];
 	
 	[skein release];
     
@@ -184,9 +187,57 @@
 	autosaveData = [[NSData dataWithContentsOfFile: autosaveFile] retain];
 }
 
+- (BOOL) checkResourceFile: (NSString*) file {
+	NSFileManager* fm = [NSFileManager defaultManager];
+	BOOL exists, isDir;
+	
+	// Check that the file exists
+	exists = [fm fileExistsAtPath: file
+					  isDirectory: &isDir];
+	if (!exists || isDir) return NO;
+	
+	// Try to load it as a blorb resource file
+	ZoomBlorbFile* newRes = [[ZoomBlorbFile alloc] initWithContentsOfFile: file];
+	if (newRes == nil) return NO;
+	
+	// Set resources appropriately
+	[self setResources: [newRes autorelease]];
+	
+	// Success!
+	return YES;
+}
+
 - (BOOL)loadFileWrapperRepresentation:(NSFileWrapper *)wrapper 
 							   ofType:(NSString *)docType {
 	if (![wrapper isDirectory]) {
+		// If we're loading a .zX game, then look for resources
+		// If we're foo.zX, look in:
+		//   foo.blb
+		//   foo.zlb
+		//   resources.blb
+		// for the resources
+		
+		// Note that resources might come from elsewhere later on in the load process, too
+		NSString* resFilename = [self fileName];
+		if (resFilename != nil) {
+			NSString* resPath = [resFilename stringByDeletingLastPathComponent];
+			NSString* resPrefix = [[resFilename lastPathComponent] stringByDeletingPathExtension];
+			
+			NSString* fileToCheck;
+			
+			// foo.blb
+			fileToCheck = [[resPath stringByAppendingPathComponent: resPrefix] stringByAppendingPathExtension: @"blb"];
+			if (![self checkResourceFile: fileToCheck]) {
+				// foo.zlb
+				fileToCheck = [[resPath stringByAppendingPathComponent: resPrefix] stringByAppendingPathExtension: @"zlb"];
+				if (![self checkResourceFile: fileToCheck]) {
+					// resources.blb
+					fileToCheck = [resPath stringByAppendingPathComponent: @"resources.blb"];
+					[self checkResourceFile: fileToCheck];
+				}
+			}
+		}
+		
 		// Pass files onto the data loader
 		return [self loadDataRepresentation: [wrapper regularFileContents] 
 									 ofType: docType];
@@ -323,6 +374,15 @@
 
 - (ZoomSkein*) skein {
 	return skein;
+}
+
+- (void) setResources: (ZoomBlorbFile*) res {
+	if (resources) [resources release];
+	resources = [res retain];
+}
+
+- (ZoomBlorbFile*) resources {
+	return resources;
 }
 
 @end

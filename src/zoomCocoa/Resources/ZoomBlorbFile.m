@@ -44,17 +44,20 @@
 	else
 		res = NO;
 	
+	if (![fl parseResourceIndex]) res = NO;
+	
 	[fl release];
 	
 	return res;
 }
 
 // = Initialisation =
+
 - (id) initWithZFile: (NSObject<ZFile>*) f {
 	self = [super init];
 	
 	if (self) {
-		if (file == nil) {
+		if (f == nil) {
 			[self release];
 			return nil;
 		}
@@ -139,6 +142,7 @@
 			
 			// Next position
 			pos += 8 + blockLength;
+			if ((pos&1)) pos++;
 		}
 	}
 	
@@ -161,25 +165,155 @@
 	}
 	
 	if (formID) [formID release];
+	
 	if (iffBlocks) [iffBlocks release];
 	if (typesToBlocks) [typesToBlocks release];
 	if (locationsToBlocks) [locationsToBlocks release];
 	
+	if (resourceIndex) [resourceIndex release];
+	
 	[super dealloc];
 }
 
-// Generic IFF data
+// = Generic IFF data =
+
 - (NSArray*) chunksWithType: (NSString*) chunkType {
 	return [typesToBlocks objectForKey: chunkType];
 }
 
-// Typed data
+- (NSData*) dataForChunk: (id) chunk {
+	if (![chunk isKindOfClass: [NSDictionary class]]) return nil;
+	if (!file) return nil;
+	if (![[chunk objectForKey: @"offset"] isKindOfClass: [NSNumber class]]) return nil;
+	if (![[chunk objectForKey: @"length"] isKindOfClass: [NSNumber class]]) return nil;
+	
+	NSDictionary* cD = chunk;
+	
+	[file seekTo: [[cD objectForKey: @"offset"] unsignedIntValue]];
+	
+	return [file readBlock: [[cD objectForKey: @"length"] unsignedIntValue]];
+}
+
+- (NSData*) dataForChunkWithType: (NSString*) chunkType {
+	return [self dataForChunk: [[self chunksWithType: chunkType] objectAtIndex: 0]];
+}
+
+// = The resource index =
+
+- (BOOL) parseResourceIndex {
+	if (resourceIndex) {
+		[resourceIndex release];
+		resourceIndex = nil;
+	}
+
+	// Get the index chunk
+	NSData* resourceChunk = [self dataForChunkWithType: @"RIdx"];
+	if (resourceChunk == nil) {
+		return NO;
+	}
+	const unsigned char* data = [resourceChunk bytes];
+		
+	// Create the index
+	resourceIndex = [[NSMutableDictionary alloc] init];
+	
+	// Process the chunk
+	int pos;
+	for (pos = 4; pos+12 <= [resourceChunk length]; pos += 12) {
+		// Read the chunk
+		NSString* usage = [NSString stringWithCString: data+pos
+											   length: 4];
+		NSNumber* num = [NSNumber numberWithUnsignedInt: (data[pos+4]<<24)|(data[pos+5]<<16)|(data[pos+6]<<8)|(data[pos+7])];
+		NSNumber* start = [NSNumber numberWithUnsignedInt: (data[pos+8]<<24)|(data[pos+9]<<16)|(data[pos+10]<<8)|(data[pos+11])];
+		
+		// Store it in the index
+		NSMutableDictionary* usageDict = [resourceIndex objectForKey: usage];
+		if (usageDict == nil) {
+			usageDict = [NSMutableDictionary dictionary];
+			[resourceIndex setObject: usageDict
+							  forKey: usage];
+		}
+		
+		[usageDict setObject: start
+					  forKey: num];
+		
+		// Check against the data we've already parsed for this file
+		if ([locationsToBlocks objectForKey: start] == nil) {
+			NSLog(@"ZoomBlorbFile: Warning: '%@' resource %@ not found (at %@)", usage, num, start);
+		}
+	}
+	
+	return YES;
+}
+
+// = Typed data =
+
+- (NSData*) gameHeader {
+	return [self dataForChunkWithType: @"IFhd"];
+}
+
 - (NSData*) imageDataWithNumber: (int) num {
+	// Get the index	
+	if (!resourceIndex) {
+		if (![self parseResourceIndex]) return NO;
+	}
+	if (!resourceIndex) return NO;
+	
+	// Get the resource
+	return [self dataForChunk: 
+		[locationsToBlocks objectForKey: 
+			[[resourceIndex objectForKey: @"Pict"] objectForKey: 
+				[NSNumber numberWithUnsignedInt: num]]]];
 }
 
 - (NSData*) soundDataWithNumber: (int) num {
+	// Get the index	
+	if (!resourceIndex) {
+		if (![self parseResourceIndex]) return NO;
+	}
+	if (!resourceIndex) return NO;
+	
+	// Get the resource
+	return [self dataForChunk: 
+		[locationsToBlocks objectForKey: 
+			[[resourceIndex objectForKey: @"Snd "] objectForKey: 
+				[NSNumber numberWithUnsignedInt: num]]]];
 }
 
+// Fiddling with PNG palettes
+
 // Decoded data
+- (NSImage*) imageWithNumber: (int) num {
+	NSDictionary* imageBlock = [locationsToBlocks objectForKey: 
+		[[resourceIndex objectForKey: @"Pict"] objectForKey: 
+			[NSNumber numberWithUnsignedInt: num]]];
+	
+	if (imageBlock == nil) return nil;
+	
+	NSString* type = [imageBlock objectForKey: @"id"];
+	NSImage* res = nil;
+	
+	// IMPLEMENT ME: cache/retrieve the image
+	
+	if ([type isEqualToString: @"Rect"]) {
+		// Nonstandard extension: rectangle
+		res = nil; // Implement me
+	} else if ([type isEqualToString: @"PNG "]) {
+		// PNG file
+		NSData* pngData = [self dataForChunk: imageBlock];
+		
+		res = [[[NSImage alloc] initWithData: pngData] autorelease];
+	} else if ([type isEqualToString: @"JPEG"]) {
+		// JPEG file
+		res = [[[NSImage alloc] initWithData: [self dataForChunk: imageBlock]] autorelease];
+	} else {
+		// Could be anything
+		res = [[[NSImage alloc] initWithData: [self dataForChunk: imageBlock]] autorelease];
+	}
+	
+	// IMPLEMENT ME: scale according to resolution
+	
+	// Return the result
+	return res;
+}
 
 @end

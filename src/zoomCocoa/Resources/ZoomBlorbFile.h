@@ -19,6 +19,8 @@
 	NSMutableArray*		 iffBlocks;
 	NSMutableDictionary* typesToBlocks;
 	NSMutableDictionary* locationsToBlocks;
+	
+	NSMutableDictionary* resourceIndex;
 }
 
 // Testing files
@@ -33,11 +35,17 @@
 
 // Generic IFF data
 - (NSArray*) chunksWithType: (NSString*) chunkType;
+- (NSData*) dataForChunk: (id) chunk;
+- (NSData*) dataForChunkWithType: (NSString*) chunkType;
+
+// The resource index
+- (BOOL) parseResourceIndex;
 
 // Typed data
 - (NSData*) imageDataWithNumber: (int) num;
 - (NSData*) soundDataWithNumber: (int) num;
 
 // Decoded data
+- (NSImage*) imageWithNumber: (int) num;
 
 @end

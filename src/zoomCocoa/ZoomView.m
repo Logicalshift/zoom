@@ -156,6 +156,9 @@ static void finalizeViews(void) {
 		// Command history
 		commandHistory = [[NSMutableArray alloc] init];
 		historyPos     = 0;
+		
+		// Resources
+		resources = nil;
     }
 	
     return self;
@@ -210,6 +213,8 @@ static void finalizeViews(void) {
 	if (inputLine) [inputLine release];
 	
 	if (inputSource) [inputSource release];
+	
+	if (resources) [resources release];
 
     [super dealloc];
 }
@@ -2237,6 +2242,17 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		[inputSource release];
 		inputSource = nil;
 	}
+}
+
+// = Resources =
+
+- (void) setResources: (ZoomBlorbFile*) res {
+	if (resources) [resources release];
+	resources = [res retain];
+}
+
+- (ZoomBlorbFile*) resources {
+	return resources;
 }
 
 @end

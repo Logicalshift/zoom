@@ -10,6 +10,7 @@
 #import "ZoomProtocol.h"
 #import "ZoomStory.h"
 #import "ZoomSkein.h"
+#import "ZoomBlorbFile.h"
 
 @class ZoomView;
 @interface ZoomClient : NSDocument {
@@ -23,6 +24,8 @@
 	ZoomView*  defaultView;
 	ZoomSkein* skein;
 	NSData*   saveData;
+	
+	ZoomBlorbFile* resources;
 }
 
 - (NSData*) gameData;
@@ -38,5 +41,9 @@
 // Loading a zoomSave file
 - (ZoomView*) defaultView;
 - (NSData*)   saveData;
+
+// Resources
+- (void)           setResources: (ZoomBlorbFile*) resources;
+- (ZoomBlorbFile*) resources;
 
 @end

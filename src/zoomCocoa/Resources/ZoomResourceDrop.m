@@ -8,6 +8,7 @@
 
 #import "ZoomResourceDrop.h"
 #import "ZoomPreferences.h"
+#import "ZoomBlorbFile.h"
 
 static NSImage* needDropImage;
 static NSImage* blorbImage;
@@ -221,6 +222,22 @@ notAFilename:
 	if ([delegate respondsToSelector: @selector(resourceDropFilenameChanged:)]) {
 		[delegate resourceDropFilenameChanged: drop];
 	}
+	
+	NSLog(@"Resource drop filename changed... Checking:");
+	ZoomBlorbFile* file = [[ZoomBlorbFile alloc] initWithContentsOfFile: droppedFilename];
+	if (file == nil) {
+		NSLog(@"Failed to load file");
+		return;
+	}
+	
+	if (![file parseResourceIndex]) {
+		NSLog(@"Failed to parse index");
+	} else {
+		NSLog(@"Parsed index. Image 1: %@", [file imageDataWithNumber: 1]);
+	}
+	
+	NSLog(@"Releasing file");
+	[file release];
 }
 
 - (void) resourceDropDataChanged: (ZoomResourceDrop*) drop {
