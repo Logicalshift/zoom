@@ -137,6 +137,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	if (trackingItems) [trackingItems release];
 
 	[layout release];
+	[[NSNotificationCenter defaultCenter] removeObserver: self];
 
 	[super dealloc];
 }

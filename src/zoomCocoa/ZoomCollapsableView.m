@@ -39,6 +39,8 @@
 	[titles release];
 	[states release];
 	
+	[[NSNotificationCenter defaultCenter] removeObserver: self];
+	
 	[super dealloc];
 }
 
