@@ -37,6 +37,7 @@
 #include "display.h"
 
 ZMachine machine;
+extern char save_fname[256];
 
 int main(int argc, char** argv)
 {
@@ -104,6 +105,8 @@ int main(int argc, char** argv)
 	    Word(ZH_release),
 	    Address(ZH_serial));
     display_set_title(title);
+
+    sprintf(save_fname, "%s.qut", name);
   }
   
 #ifdef DEBUG

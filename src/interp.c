@@ -481,7 +481,7 @@ inline static int convert_colour(int col)
     }
 }
 
-static char save_fname[256] = "savefile.qut";
+char save_fname[256] = "savefile.qut";
 
 static void get_filename(char* name, int len)
 {
