@@ -39,6 +39,7 @@
 #include "state.h"
 #include "tokenise.h"
 #include "rc.h"
+#include "random.h"
 
 /***                           ----// 888 \\----                           ***/
 

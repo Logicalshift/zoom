@@ -81,7 +81,7 @@ pkgdata_DATA = zoomrc
 
 EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico
 
-zoom_SOURCES =  	main.c interp.c file.c options.c zmachine.c zscii.c xdisplay.c 	hash.c tokenise.c stream.c font3.c state.c pix.c rc.c rc_parse.y 	rc_lex.l menu.c xfont.c windisplay.c winfont.c 		file.h zmachine.h options.h interp.h zscii.h display.h hash.h 	tokenise.h stream.h font3.h state.h pix.h rc.h rcp.h rc_parse.h 	menu.h xdisplay.h xfont.h zoomres.h windisplay.h
+zoom_SOURCES =  	main.c interp.c file.c options.c zmachine.c zscii.c xdisplay.c 	hash.c tokenise.c stream.c font3.c state.c pix.c rc.c rc_parse.y 	rc_lex.l menu.c xfont.c windisplay.c winfont.c random.c 		file.h zmachine.h options.h interp.h zscii.h display.h hash.h 	tokenise.h stream.h font3.h state.h pix.h rc.h rcp.h rc_parse.h 	menu.h xdisplay.h xfont.h zoomres.h windisplay.h random.h
 
 
 WINDRES = @WINDRES@
@@ -106,7 +106,7 @@ X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 zoom_OBJECTS =  main.o interp.o file.o options.o zmachine.o zscii.o \
 xdisplay.o hash.o tokenise.o stream.o font3.o state.o pix.o rc.o \
-rc_parse.o rc_lex.o menu.o xfont.o windisplay.o winfont.o
+rc_parse.o rc_lex.o menu.o xfont.o windisplay.o winfont.o random.o
 zoom_LDADD = $(LDADD)
 zoom_DEPENDENCIES = 
 zoom_LDFLAGS = 
@@ -126,8 +126,8 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 TAR = tar
 GZIP_ENV = --best
 DEP_FILES =  .deps/file.P .deps/font3.P .deps/hash.P .deps/interp.P \
-.deps/main.P .deps/menu.P .deps/options.P .deps/pix.P .deps/rc.P \
-.deps/rc_lex.P .deps/rc_parse.P .deps/state.P .deps/stream.P \
+.deps/main.P .deps/menu.P .deps/options.P .deps/pix.P .deps/random.P \
+.deps/rc.P .deps/rc_lex.P .deps/rc_parse.P .deps/state.P .deps/stream.P \
 .deps/tokenise.P .deps/windisplay.P .deps/winfont.P .deps/xdisplay.P \
 .deps/xfont.P .deps/zmachine.P .deps/zscii.P
 SOURCES = $(zoom_SOURCES)

@@ -1,5 +1,8 @@
 2000-12-06  Andrew Hunter    <andrew@logicalshift.co.uk>
 
+	* random number generator added (no longer relies on whatever your
+	OS provides for srand and rand)
+	
 	* version updated to 0.9.99dev8
 	
 	* merged windows version back into CVS. Main changes are the use of

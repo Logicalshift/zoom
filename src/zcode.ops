@@ -1447,11 +1447,11 @@ OPCODE "random"         VAR:0x07 ARGS:1 STORE         VERSION all
 %{
   if (argblock.arg[0] > 0)
     {
-      store(stack, st, (rand()%argblock.arg[0])+1);
+      store(stack, st, (random_number()%argblock.arg[0])+1);
     }
   else if (argblock.arg[0] < 0)
     {
-      srand(argblock.arg[0]);
+      random_seed(argblock.arg[0]);
       store(stack, st, 0);
     }
   else
@@ -1461,9 +1461,9 @@ OPCODE "random"         VAR:0x07 ARGS:1 STORE         VERSION all
       
       /* Reseed RNG */
       gettimeofday(&tv, NULL);
-      srand(tv.tv_sec|tv.tv_usec);
+      random_seed(tv.tv_sec^tv.tv_usec);
 #else
-      srand((unsigned int) time(NULL));
+      random_seed((unsigned int) time(NULL));
 #endif
 
       store(stack, st, 0);

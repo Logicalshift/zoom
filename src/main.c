@@ -42,6 +42,7 @@
 #include "rc.h"
 #include "stream.h"
 #include "menu.h"
+#include "random.h"
 
 #include "display.h"
 
@@ -61,9 +62,9 @@ int zoom_main(int argc, char** argv)
   /* Seed RNG */
 #ifdef HAVE_GETTIMEOFDAY
   gettimeofday(&tv, NULL);
-  srand(tv.tv_sec|tv.tv_usec);
+  random_seed(tv.tv_sec^tv.tv_usec);
 #else
-  srand((unsigned int)time(NULL));
+  random_seed((unsigned int)time(NULL));
 #endif
 
   get_options(argc, argv, &args);
