@@ -1108,6 +1108,8 @@ static int process_events(long int to, int* buf, int buflen)
   int x;
   KeySym ks;
 
+  int exposing = 0;
+
   if (buf != NULL)
     {
       text_buf    = buf;
@@ -1210,7 +1212,8 @@ static int process_events(long int to, int* buf, int buflen)
 	}
 
       /* Update the display if necessary */
-      if (dregion != None)
+      if (dregion != None && exposing <= 0 &&
+	  !XPending(x_display))
 	{
 	  draw_window();
 	}
@@ -1693,12 +1696,19 @@ static int process_events(long int to, int* buf, int buflen)
 	      break;
 
 	    case Expose:
-	      if (dregion != None)
-		{
-		  XFree(dregion);
-		  dregion = None;
-		}
-	      draw_window();
+	      {
+		XRectangle r;
+
+		if (dregion == None)
+		  dregion = XCreateRegion();
+		exposing = ev.xexpose.count;
+
+		r.x = ev.xexpose.x;
+		r.y = ev.xexpose.y;
+		r.width = ev.xexpose.width;
+		r.height = ev.xexpose.height;
+		XUnionRectWithRegion(&r, dregion, dregion);
+	      }
 	      break;
 	    }
 	}
@@ -1857,6 +1867,17 @@ void display_set_scroll_position(XFONT_MEASURE pos)
 
 void display_set_title(const char* title)
 {
+  XTextProperty tprop;
+  char *t;
+
+  t = malloc(sizeof(char)*300);
+  sprintf(t, "Zoom " VERSION " - %s", title);
+    
+  XStringListToTextProperty(&t, 1, &tprop);
+  XSetWMName(x_display, x_mainwin, &tprop);
+  XFree(tprop.value);
+
+  free(t);
 }
 
 void display_terminating(unsigned char* table)
