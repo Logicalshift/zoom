@@ -57,6 +57,8 @@
 	[gamePrefs release];
 }
 
+// = Setting up the game info window =
+
 - (IBAction) updateGameInfo: (id) sender {
 	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: [[self document] storyInfo]];
 }
@@ -71,6 +73,48 @@
 
 - (void)windowDidBecomeMain:(NSNotification *)aNotification {
 	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: [[self document] storyInfo]];
+}
+
+// = GameInfo updates =
+
+- (IBAction) infoNameChanged: (id) sender {
+	[[[self document] storyInfo] setTitle: [[ZoomGameInfoController sharedGameInfoController] title]];
+}
+
+- (IBAction) infoHeadlineChanged: (id) sender {
+	[[[self document] storyInfo] setHeadline: [[ZoomGameInfoController sharedGameInfoController] headline]];
+}
+
+- (IBAction) infoAuthorChanged: (id) sender {
+	[[[self document] storyInfo] setAuthor: [[ZoomGameInfoController sharedGameInfoController] author]];
+}
+
+- (IBAction) infoGenreChanged: (id) sender {
+	[[[self document] storyInfo] setGenre: [[ZoomGameInfoController sharedGameInfoController] genre]];
+}
+
+- (IBAction) infoYearChanged: (id) sender {
+	[[[self document] storyInfo] setYear: [[ZoomGameInfoController sharedGameInfoController] year]];
+}
+
+- (IBAction) infoGroupChanged: (id) sender {
+	[[[self document] storyInfo] setGroup: [[ZoomGameInfoController sharedGameInfoController] group]];
+}
+
+- (IBAction) infoCommentsChanged: (id) sender {
+	[[[self document] storyInfo] setComment: [[ZoomGameInfoController sharedGameInfoController] comments]];
+}
+
+- (IBAction) infoTeaserChanged: (id) sender {
+	[[[self document] storyInfo] setTeaser: [[ZoomGameInfoController sharedGameInfoController] teaser]];
+}
+
+- (IBAction) infoZarfRatingChanged: (id) sender {
+	[[[self document] storyInfo] setZarfian: [[ZoomGameInfoController sharedGameInfoController] zarfRating]];
+}
+
+- (IBAction) infoMyRatingChanged: (id) sender {
+	[[[self document] storyInfo] setRating: [[ZoomGameInfoController sharedGameInfoController] rating]];
 }
 
 @end

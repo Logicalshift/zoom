@@ -410,13 +410,12 @@ IFMetadata* IFMD_Parse(const IFMDByte* data, size_t length) {
 	
 	/* Index */
 	for (story = 0; story < res->numberOfStories; story++) {
-		if (!res->stories[story].error) {
-			for (ident = 0; ident < res->stories[story].numberOfIdents; ident++) {
+		if (!res->stories[story]->error) {
+			for (ident = 0; ident < res->stories[story]->numberOfIdents; ident++) {
 				IFMDIndexEntry newEntry;
 				
-				newEntry.ident = res->stories[story].idents + ident;
-				/* newEntry.story = res->stories + story; */
-				newEntry.storyNum = story;
+				newEntry.ident = res->stories[story]->idents + ident;
+				newEntry.story = res->stories[story];
 				
 				res->numberOfIndexEntries++;
 				res->index = realloc(res->index, sizeof(IFMDIndexEntry)*res->numberOfIndexEntries);
@@ -434,7 +433,7 @@ IFMetadata* IFMD_Parse(const IFMDByte* data, size_t length) {
 		if (cmp > 0) addError(currentState, IFMDErrorProgrammerIsASpoon, "Index not sorted");
 		if (cmp == 0) {
 			/* Duplicate entry */
-			if (res->index[entry].storyNum != res->index[entry+1].storyNum) {
+			if (res->index[entry].story != res->index[entry+1].story) {
 				char msg[512];
 				
 				snprintf(msg, 512, "FIX THIS MESSAGE");
@@ -480,7 +479,8 @@ void IFMD_Free(IFMetadata* oldData) {
 	
 	/* Stories */
 	for (x=0; x<oldData->numberOfStories; x++) {
-		IFStory_Free(oldData->stories + x);
+		IFStory_Free(oldData->stories[x]);
+		free(oldData->stories[x]);
 	}
 	
 	free(oldData->stories);
@@ -505,13 +505,13 @@ IFMDStory* IFMD_Find(IFMetadata* data, const IFMDIdent* id) {
 		int middle = (bottom + top)>>1;
 		int cmp = IFID_Compare(data->index[middle].ident, id);
 		
-		if (cmp == 0) return data->stories + data->index[middle].storyNum;
+		if (cmp == 0) return data->index[middle].story;
 		else if (cmp < 0) bottom = middle+1;
 		else if (cmp > 0) top    = middle-1;
 	}
 	
 	if (bottom == top && IFID_Compare(id, data->index[bottom].ident) == 0) {
-		return data->stories + data->index[bottom].storyNum;
+		return data->index[bottom].story;
 	}
 	
 	return NULL;
@@ -563,10 +563,11 @@ static XMLCALL void startElement(void *userData,
 			newStory.data.rating = -1.0;
 			
 			state->data->numberOfStories++;
-			state->data->stories = realloc(state->data->stories, sizeof(IFMDStory)*state->data->numberOfStories);
-			state->data->stories[state->data->numberOfStories-1] = newStory;
+			state->data->stories = realloc(state->data->stories, sizeof(IFMDStory*)*state->data->numberOfStories);
+			state->data->stories[state->data->numberOfStories-1] = IFStory_Alloc();
+			*(state->data->stories[state->data->numberOfStories-1]) = newStory;
 			
-			state->story = state->data->stories + (state->data->numberOfStories-1);
+			state->story = state->data->stories[state->data->numberOfStories-1];
 		} else {
 			/* Unrecognised tag */
 			addError(state, IFMDErrorUnknownTag, NULL);
@@ -1207,37 +1208,30 @@ void IFStory_Copy(IFMDStory* dst, const IFMDStory* src) {
 
 /* = Modification functions = */
 void IFMD_AddStory(IFMetadata* data, IFMDStory* newStory) {
-	int x;
+	int x, y;
 	IFMDStory* newEntry;
+	int oldIndex;
+	
+	/* Try to find the old story if it exists */
+	oldIndex = -1;
+	for (y=0; y<data->numberOfStories; y++) {
+		if (data->stories[y] == newStory) {
+			oldIndex = y; break;
+		}
+	}
 	
 	/* Add story to the list */
-	if (!(newStory >= data->stories && newStory < (data->stories + data->numberOfStories))) {
-		/* Story doesn't exist yet */
-		IFMDStory template;
-		
-		template.numberOfIdents = 0;
-		template.idents = NULL;
-		template.error = 0;
-		
-		template.data.title = NULL;
-		template.data.headline = NULL;
-		template.data.author = NULL;
-		template.data.genre = NULL;
-		template.data.year = 0;
-		template.data.group = NULL;
-		template.data.zarfian = IFMD_Unrated;
-		template.data.teaser = NULL;
-		template.data.comment = NULL;
-		template.data.rating = -1.0;		
-		
+	if (oldIndex < 0) {
+		/* Story doesn't exist yet */		
 		data->numberOfStories++;
-		data->stories = realloc(data->stories, sizeof(IFMDStory)*data->numberOfStories);
+		data->stories = realloc(data->stories, sizeof(IFMDStory*)*data->numberOfStories);
 		
-		data->stories[data->numberOfStories-1] = template;
-		IFStory_Copy(data->stories + (data->numberOfStories-1), newStory);
+		data->stories[data->numberOfStories-1] = IFStory_Alloc();
+		IFStory_Copy(data->stories[data->numberOfStories-1], newStory);
 		
-		newEntry = data->stories + (data->numberOfStories-1);
+		newEntry = data->stories[data->numberOfStories-1];
 	} else {
+		/* Story is already in the metadata repository */
 		newEntry = newStory;
 	}
 	
@@ -1262,9 +1256,9 @@ void IFMD_AddStory(IFMetadata* data, IFMDStory* newStory) {
 		if (bottom == top && IFID_Compare(id, data->index[bottom].ident) == 0) res = bottom;
 		
 		if (res != -1) {
-			if ((data->stories + data->index[res].storyNum) != newEntry) {
+			if (data->index[res].story != newEntry) {
 				int storyId, y;
-				IFMDStory* thisStory = data->stories + data->index[res].storyNum;
+				IFMDStory* thisStory = data->index[res].story;
 				
 				/* Delete this ident from the index */
 				data->numberOfIndexEntries--;
@@ -1290,10 +1284,15 @@ void IFMD_AddStory(IFMetadata* data, IFMDStory* newStory) {
 						/* thisStory->error = 1; */ /* Won't be saved/indexed any more */
 						/* Was simple, and slightly problematic for what I want to do */
 						/* Ergo, must delete this story from the list */
-						int storyNum;
+						int storyNum = -1;
+						int z;
 						
 						/* thisStory must be in data->stories */
-						storyNum = thisStory - data->stories;
+						for (z=0; z<data->numberOfStories; z++) {
+							if (data->stories[z] == thisStory) {
+								storyNum = z; break;
+							}
+						}
 						
 						if (storyNum < 0 || storyNum >= data->numberOfStories) {
 							/* Subtly handle this error condition */
@@ -1312,7 +1311,11 @@ void IFMD_AddStory(IFMetadata* data, IFMDStory* newStory) {
 						data->numberOfStories--;
 						memmove(data->index+storyNum,
 								data->index+storyNum+1,
-								sizeof(IFMDIndexEntry)*(data->numberOfStories-storyNum));						
+								sizeof(IFMDIndexEntry)*(data->numberOfStories-storyNum));
+						
+						/* Delete this story */
+						IFStory_Free(thisStory);
+						free(thisStory);
 					}
 				}
 			}
@@ -1338,7 +1341,7 @@ void IFMD_AddStory(IFMetadata* data, IFMDStory* newStory) {
 		data->index = realloc(data->index, sizeof(IFMDIndexEntry)*data->numberOfIndexEntries);
 		memmove(data->index+res + 1, data->index+res, sizeof(IFMDIndexEntry)*(data->numberOfIndexEntries-res-1));
 		
-		data->index[res].storyNum = newEntry - data->stories;
+		data->index[res].story = newEntry;
 		data->index[res].ident = newEntry->idents + x;
 	}
 	

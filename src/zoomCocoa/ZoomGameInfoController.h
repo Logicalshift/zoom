@@ -27,10 +27,24 @@
 
 + (ZoomGameInfoController*) sharedGameInfoController;
 
+// Interface actions
 - (IBAction)selectGenre:(id)sender;
 - (IBAction)showGenreMenu:(id)sender;
 - (IBAction)activateRating:(id)sender;
 
+// Setting up the game info window
 - (void) setGameInfo: (ZoomStory*) info;
+
+// Reading the current (updated) contents of the game info window
+- (NSString*) title;
+- (NSString*) headline;
+- (NSString*) author;
+- (NSString*) genre;
+- (int)       year;
+- (NSString*) group;
+- (NSString*) comments;
+- (NSString*) teaser;
+- (unsigned)  zarfRating;
+- (float)     rating;
 
 @end

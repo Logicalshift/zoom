@@ -120,4 +120,45 @@
 	}
 }
 
+// Reading the current (updated) contents of the game info window
+- (NSString*) title {
+	return [gameName stringValue];
+}
+
+- (NSString*) headline {
+	return [headline stringValue];
+}
+
+- (NSString*) author {
+	return [author stringValue];
+}
+
+- (NSString*) genre {
+	return [genre stringValue];
+}
+
+- (int) year {
+	return [year intValue];
+}
+
+- (NSString*) group {
+	return [group stringValue];
+}
+
+- (NSString*) comments {
+	return [comments string];
+}
+
+- (NSString*) teaser {
+	return [teaser string];
+}
+
+- (unsigned) zarfRating {
+	return [zarfRating indexOfSelectedItem];
+}
+
+- (float) rating {
+	return [rating floatValue];
+}
+
 @end

@@ -130,12 +130,12 @@ struct IFMDStory {
 
 struct IFMDIndexEntry {
 	IFMDIdent* ident;
-	int		   storyNum;
+	IFMDStory* story;
 };
 
 struct IFMetadata {
 	int			    numberOfStories;
-	IFMDStory*      stories;
+	IFMDStory**		stories;
 	
 	int             numberOfErrors;
 	IFMDError*      error;
