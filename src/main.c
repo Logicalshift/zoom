@@ -157,6 +157,7 @@ int main(int argc, char** argv)
   display_set_colour(0, 7);
   display_readchar(0);
   display_clear();
+  display_prints_c(" \n");
 
   machine.graphical = args.graphical;
   

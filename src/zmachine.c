@@ -256,6 +256,8 @@ void zmachine_setup_header(void)
 	  machine.memory[ZH_height+1]   = machine.dinfo->lines;
 	  machine.memory[ZH_fontwidth]  = 1;
 	  machine.memory[ZH_fontheight] = 1;
+
+	  Flag(11, 3, 0);
 	}
       else
 	{
@@ -264,8 +266,15 @@ void zmachine_setup_header(void)
 	  machine.memory[ZH_height]     = machine.dinfo->height>>8;
 	  machine.memory[ZH_height+1]   = machine.dinfo->height;
 	  machine.memory[ZH_fontwidth]  = machine.dinfo->font_width;
-	  machine.memory[ZH_fontheight] = machine.dinfo->font_height;	  
+	  machine.memory[ZH_fontheight] = machine.dinfo->font_height;
 	}
+
+      if (Word(ZH_flags2)&(1<<5))
+	Flag(11, 5, machine.dinfo->mouse);
+      if (Word(ZH_flags2)&(1<<6))
+	Flag(11, 6, machine.dinfo->colours);
+      if (Word(ZH_flags2)&(1<<7))
+	Flag(11, 7, machine.dinfo->sound_effects);
     case 4:
       Flag(1, 2, machine.dinfo->boldface);
       Flag(1, 3, machine.dinfo->italic);
@@ -285,6 +294,23 @@ void zmachine_setup_header(void)
       Flag(1, 6, machine.dinfo->variable_font);
       break;
     }
+
+  /*
+   * Spec 1.0 doesn't let us use graphical mode for v5 games, so if
+   * it's on, we're not conformant. (This is daft because the checks
+   * already made mean that no game malfunctions with this mode on)
+   */
+#ifdef SPEC_10
+  if (!machine.graphical)
+    {
+      machine.memory[0x32] = 1;
+      machine.memory[0x33] = 0;
+    }
+  else
+    {
+      zmachine_warning("Graphics mode on - not indicating conformance to specification v1.0");
+    }
+#endif
 }
 
 #ifdef DEBUG

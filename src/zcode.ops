@@ -1345,7 +1345,10 @@ OPCODE "put_prop"       VAR:0x03 ARGS:3               VERSION 4,5,6,7,8
   
   p = get_object_prop_4(argblock.arg[0], argblock.arg[1]);
   if (p->isdefault)
-    zmachine_fatal("No such property %i for object %i", argblock.arg[1], argblock.arg[0]);
+    {
+      zmachine_warning("No such property %i for object %i", argblock.arg[1], argblock.arg[0]);
+      goto loop;
+    }
 
   switch (p->size)
     {

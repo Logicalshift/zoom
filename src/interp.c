@@ -255,7 +255,7 @@ static inline struct prop* get_object_prop_3(ZUWord object, ZWord property)
 
 #define UnpackR(x) (machine.packtype==packed_v4?4*((ZUWord)x):(machine.packtype==packed_v8?8*((ZUWord)x):4*((ZUWord)x)+machine.routine_offset))
 #define UnpackS(x) (machine.packtype==packed_v4?4*((ZUWord)x):(machine.packtype==packed_v8?8*((ZUWord)x):4*((ZUWord)x)+machine.string_offset))
-#define Obj4(x) (machine.objects + 126 + (((x)-1)*14))
+#define Obj4(x) (machine.objects + 126 + ((((ZUWord)x)-1)*14))
 #define parent_4  6
 #define sibling_4 8
 #define child_4   10

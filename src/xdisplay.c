@@ -1521,7 +1521,8 @@ ZDisplay* display_get_info(void)
   info.font_height = xfont_y;
   info.fore = DEFAULT_FORE;
   info.back = DEFAULT_BACK;
-
+  info.mouse = 1;
+  
   info.pictures = 0;
 
   return &info;
@@ -1546,6 +1547,7 @@ void display_split(int lines, int window)
   text_win[window].ypos        = CURWIN.winsy;
   text_win[window].force_fixed = 0;
   text_win[window].no_scroll   = 0;
+  text_win[window].line_height = xfont_y;
 
 #ifdef DEBUG
   printf("Bottom of window is now %i\n", text_win[window].winly);
@@ -1810,8 +1812,8 @@ void display_reset_windows(void)
 {
   cur_win = 0;
   text_win[0].xpos = 0;
-  text_win[0].ypos = win_y;
-  text_win[0].line_height = 0;
+  text_win[0].ypos = 0;
+  text_win[0].line_height = xfont_y;
   text_win[0].winsx = text_win[0].winsy = 0;
   text_win[0].lmargin = text_win[0].rmargin = 0;
   text_win[0].winlx = win_x;

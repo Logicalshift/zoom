@@ -64,6 +64,7 @@ typedef struct
   int fixed_space;
   int sound_effects;
   int timed_input;
+  int mouse;
 
   int lines, columns;
   int width, height;

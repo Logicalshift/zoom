@@ -30,14 +30,27 @@ static unsigned char *buf  = NULL;
 static unsigned char *buf2 = NULL;
 static int maxlen;
 
-static unsigned char* convert_table[33] =
+static unsigned int alpha_a[32] =
 {
-  "\0\0\0\0\0\0abcdefghijklmnopqrstuvwxyz",
-  "\0\0\0\0\0\0ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-  "\0\0\0\0\0\0 \n0123456789.,!?_#'\"/\\-:()"
+  0,0,0,0,0,0,
+   97, 98, 99,100,101,102,103,104,105,106,107,108,109,
+  110,111,112,113,114,115,116,117,118,119,120,121,122
 };
+static unsigned int alpha_b[32] =
+{
+  0,0,0,0,0,0,
+  65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77,
+  78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90
+};
+static unsigned int alpha_c[32] =
+{
+  0,0,0,0,0,0,
+   0, 10, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 46,
+  44, 33, 63, 95, 35, 39, 34, 47, 92, 45, 59, 40, 41
+};
+static unsigned int* convert_table[3] = { alpha_a, alpha_b, alpha_c };
 
-static unsigned char** convert = convert_table;
+static unsigned int** convert = convert_table;
 
 /*
  * Convert a ZSCII string (packed) to ASCII (unpacked)
@@ -284,7 +297,7 @@ void zscii_install_alphabet(void)
       table = Word(ZH_alphatable);
       if (table)
 	{
-	  static unsigned char** conv = NULL;
+	  static unsigned int** conv = NULL;
 	  static unsigned char* zsc = NULL;
 	  ZByte* alpha;
 	  int x, y;
@@ -293,9 +306,9 @@ void zscii_install_alphabet(void)
 
 	  if (conv == NULL)
 	    {
-	      conv = malloc(sizeof(char*)*3);
+	      conv = malloc(sizeof(int*)*3);
 	      for (x=0; x<3; x++)
-		conv[x] = malloc(sizeof(char)*32);
+		conv[x] = malloc(sizeof(int)*32);
 	    }
 	  
 	  zsc = realloc(zsc, sizeof(char)*256);
