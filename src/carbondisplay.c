@@ -85,7 +85,7 @@ ControlRef    zoomScroll;
 
 DialogRef  fataldlog = nil;
 DialogRef  quitdlog  = nil;
-DialogRef  questdlog = nil;
+DialogRef  carbon_questdlog = nil;
 int        carbon_q_res = 0;
 int        window_available = 0;
 int        quitflag = 0;
@@ -1554,10 +1554,10 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 		    display_exit(0);
 		    return noErr;
 		  }
-		else if (questdlog != nil)
+		else if (carbon_questdlog != nil)
 		  {
-		    QuitAppModalLoopForWindow(GetDialogWindow(questdlog));
-		    questdlog = nil;
+		    QuitAppModalLoopForWindow(GetDialogWindow(carbon_questdlog));
+		    carbon_questdlog = nil;
 		    carbon_q_res = 1;
 		    return noErr;
 		  }
@@ -1576,10 +1576,10 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 		    quitdlog = nil;
 		    return noErr;
 		  }
-		else if (questdlog != nil)
+		else if (carbon_questdlog != nil)
 		  {
-		    QuitAppModalLoopForWindow(GetDialogWindow(questdlog));
-		    questdlog = nil;
+		    QuitAppModalLoopForWindow(GetDialogWindow(carbon_questdlog));
+		    carbon_questdlog = nil;
 		    carbon_q_res = 0;
 		    return noErr;
 		  }
@@ -1972,6 +1972,9 @@ static OSErr drag_receive(WindowRef win, void* data, DragRef drag)
   OSErr erm;
 
   int x;
+  WindowRef lastmsg;
+
+  lastmsg = carbon_message_win;
 
   erm = CountDragItems(drag, &nitems);
   if (erm != noErr || nitems != 1)
@@ -2028,6 +2031,7 @@ static OSErr drag_receive(WindowRef win, void* data, DragRef drag)
 
 	  close_file(f);
 
+	  carbon_message_win = win;
 	  if (machine.blorb == NULL ||
 	      carbon_ask_question("Resources already loaded", "This game already has a resource file associated with it: are you sure you wish to replace it with a new one?",
 				  "Replace", "Cancel", 1))
@@ -2035,6 +2039,7 @@ static OSErr drag_receive(WindowRef win, void* data, DragRef drag)
 	      carbon_prefs_set_resources(path);
 	    }
 
+	  carbon_message_win = lastmsg;
 	  return noErr;
 	}
     }

@@ -44,6 +44,7 @@
 #define SIGNATURE 'YZZY'
 
 extern WindowRef zoomWindow;
+extern WindowRef carbon_message_win;
 extern RGBColor  maccolour[14];
 extern int       window_available;
 extern DialogRef fataldlog;
@@ -52,6 +53,9 @@ extern FSRef*    forceopenfs;
 extern int       quitflag;
 extern int       mac_openflag;
 extern char      carbon_title[];
+
+extern DialogRef carbon_questdlog;
+extern int       carbon_q_res;
 
 #ifdef USE_QUARTZ
 extern CGContextRef carbon_quartz_context;

@@ -57,6 +57,8 @@ static int    opengame_finished = 0;
 FSRef* lastopenfs = NULL;
 FSRef* forceopenfs = NULL;
 
+WindowRef carbon_message_win = nil;
+
 /* Display a message box */
 void carbon_display_message(char* title, char* message)
 {
@@ -92,6 +94,9 @@ void carbon_display_message(char* title, char* message)
       CFStringRef erm = nil;
       DialogRef msgdlog;
 
+      if (carbon_message_win == nil)
+	carbon_message_win = zoomWindow;
+
       tit = CFStringCreateWithCString(NULL, title, kCFStringEncodingMacRoman);
       erm = CFStringCreateWithCString(NULL, message, kCFStringEncodingMacRoman);
       
@@ -110,11 +115,15 @@ void carbon_display_message(char* title, char* message)
 				tit,
 				erm,
 				&par,
-				GetWindowEventTarget(zoomWindow),
+				GetWindowEventTarget(carbon_message_win),
 				&msgdlog);
 
       if (res == noErr)
-	res = ShowSheetWindow(GetDialogWindow(msgdlog), zoomWindow);
+	{
+	  carbon_questdlog = msgdlog;
+	  res = ShowSheetWindow(GetDialogWindow(msgdlog), carbon_message_win);
+	  RunAppModalLoopForWindow(GetDialogWindow(msgdlog));
+	}
 
       if (res != noErr)
 	{
@@ -128,13 +137,15 @@ void carbon_display_message(char* title, char* message)
 
 	  StandardAlert(kAlertNoteAlert, tit, erm, NULL, &item);
 	}
+
+      CFRelease(tit);
+      CFRelease(erm);
+
+      carbon_questdlog = nil;
     }
 }
 
 /* Ask a question */
-extern DialogRef questdlog;
-extern int       carbon_q_res;
-
 int carbon_ask_question(char* title, char* message,
 			char* OK, char* cancel, int def)
 {
@@ -185,6 +196,9 @@ int carbon_ask_question(char* title, char* message,
       CFStringRef nope = nil;
       DialogRef msgdlog;
 
+      if (carbon_message_win == nil)
+	carbon_message_win = zoomWindow;
+
       tit = CFStringCreateWithCString(NULL, title, kCFStringEncodingMacRoman);
       erm = CFStringCreateWithCString(NULL, message, kCFStringEncodingMacRoman);
       yup = CFStringCreateWithCString(NULL, OK, kCFStringEncodingMacRoman);
@@ -213,13 +227,13 @@ int carbon_ask_question(char* title, char* message,
 				tit,
 				erm,
 				&par,
-				GetWindowEventTarget(zoomWindow),
+				GetWindowEventTarget(carbon_message_win),
 				&msgdlog);
 
       if (res == noErr)
 	{
-	  questdlog = msgdlog;
-	  res = ShowSheetWindow(GetDialogWindow(msgdlog), zoomWindow);
+	  carbon_questdlog = msgdlog;
+	  res = ShowSheetWindow(GetDialogWindow(msgdlog), carbon_message_win);
 	  RunAppModalLoopForWindow(GetDialogWindow(msgdlog));
 	}
 
@@ -231,7 +245,7 @@ int carbon_ask_question(char* title, char* message,
       CFRelease(yup);
       CFRelease(nope);
 
-      questdlog = nil;
+      carbon_questdlog = nil;
       return carbon_q_res;
     }
 }

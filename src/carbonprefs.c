@@ -41,7 +41,7 @@
 #include "xfont.h"
 #include "carbondisplay.h"
 
-static WindowRef prefdlog    = nil;
+WindowRef carbon_prefdlog    = nil;
 static rc_font*  font_copy   = NULL;
 static int       font_nfonts = 0;
 static MenuRef   fontmenu    = nil;
@@ -259,7 +259,7 @@ static void pref_store(void)
   ControlID  cid;
   ControlRef cntl;
 
-  char str[256];
+  char str[512];
   Size outsize;
 
   int  islocal;
@@ -268,25 +268,25 @@ static void pref_store(void)
   /* Get the general preferences */
   cid.signature = CARBON_DISPWARNS;
   cid.id        = CARBON_DISPWARNSID;
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
   carbon_prefs.show_warnings = 
     GetControlValue(cntl)==kControlCheckBoxCheckedValue;
 
   cid.signature = CARBON_FATWARNS;
   cid.id        = CARBON_FATWARNSID;
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
   carbon_prefs.fatal_warnings =
     GetControlValue(cntl)==kControlCheckBoxCheckedValue;
 
   cid.signature = CARBON_SPEAK;
   cid.id        = CARBON_SPEAKID;
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
   carbon_prefs.use_speech = 
     GetControlValue(cntl)==kControlCheckBoxCheckedValue;
 
   cid.signature = CARBON_RENDER;
   cid.id        = CARBON_RENDERID;
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
   carbon_prefs.use_quartz = 
     GetControlValue(cntl)==2;
 
@@ -299,7 +299,7 @@ static void pref_store(void)
 
   cid.signature = CARBON_ANTI;
   cid.id        = CARBON_ANTIID;
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
   ourgame->antialias = -1;
   rc_defgame->antialias =
     GetControlValue(cntl)==kControlCheckBoxCheckedValue?1:0;
@@ -307,7 +307,7 @@ static void pref_store(void)
   /* Get the game title */
   cid.signature = CARBON_TITLE;
   cid.id        = CARBON_TITLEID;  
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
 
   GetControlData(cntl, kControlEntireControl, kControlEditTextTextTag,
 		 256, str, &outsize);
@@ -319,14 +319,14 @@ static void pref_store(void)
   /* Get the interpreter ID */
   cid.signature = CARBON_INTERPLOC;
   cid.id        = CARBON_INTERPLOCID;
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
 
   islocal = GetControlValue(cntl)==kControlCheckBoxCheckedValue;
   
   cid.signature = CARBON_INTERP;
   cid.id        = CARBON_INTERPID;
 
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
   GetControlData(cntl, kControlEntireControl, kControlEditTextTextTag,
 		 256, str, &outsize);
   str[outsize] = '\0';
@@ -344,14 +344,14 @@ static void pref_store(void)
   /* Get the interpreter revision */
   cid.signature = CARBON_REVLOC;
   cid.id        = CARBON_REVLOCID;
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
 
   islocal = GetControlValue(cntl)==kControlCheckBoxCheckedValue;
   
   cid.signature = CARBON_REVISION;
   cid.id        = CARBON_REVISIONID;
 
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
   GetControlData(cntl, kControlEntireControl, kControlEditTextTextTag,
 		 256, str, &outsize);
   str[outsize] = '\0';
@@ -376,7 +376,7 @@ static void pref_store(void)
   /* Get the fonts */
   cid.signature = CARBON_FONTLOC;
   cid.id        = CARBON_FONTLOCID;
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
 
   islocal = GetControlValue(cntl)==kControlCheckBoxCheckedValue;
 
@@ -427,7 +427,7 @@ static void pref_store(void)
   /* ...and the colours */
   cid.signature = CARBON_COLLOC;
   cid.id        = CARBON_COLLOCID;
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
   
   islocal = GetControlValue(cntl)==kControlCheckBoxCheckedValue;
   
@@ -473,6 +473,34 @@ static void pref_store(void)
 
   /* Rewrite the preferences file */
   pref_write();
+
+  /* Resource location is handled slightly differently */
+  cid.signature = CARBON_RESFILE;
+  cid.id        = CARBON_RESFILEID;
+
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
+  GetControlData(cntl, kControlEntireControl, kControlEditTextTextTag,
+		 512, str, &outsize);
+  str[outsize] = '\0';
+
+  if (strcmp(str, "") == 0)
+    {
+      if (ourgame->graphics != NULL)
+	free(ourgame->graphics);
+      ourgame->graphics = NULL;
+    }
+  else
+    {
+      if (strcmp(ourgame->graphics, str) != 0)
+	{
+	  WindowRef lastmsg;
+
+	  lastmsg = carbon_message_win;
+	  carbon_message_win = carbon_prefdlog;
+	  carbon_prefs_set_resources(str);
+	  carbon_message_win = lastmsg;
+	}
+    }
 
   /* Store the app preferences */
   {
@@ -554,7 +582,7 @@ static pascal OSStatus pref_wnd_evt(EventHandlerCallRef handler,
 
 		    cid.signature = CARBON_FONTLOC;
 		    cid.id        = CARBON_FONTLOCID;
-		    GetControlByID(prefdlog, &cid, &cntl);
+		    GetControlByID(carbon_prefdlog, &cid, &cntl);
 
 		    if (ourgame->fonts != NULL &&
 			GetControlValue(cntl) == kControlCheckBoxUncheckedValue)
@@ -570,7 +598,7 @@ static pascal OSStatus pref_wnd_evt(EventHandlerCallRef handler,
 
 		    cid.signature = CARBON_COLLOC;
 		    cid.id        = CARBON_COLLOCID;
-		    GetControlByID(prefdlog, &cid, &cntl);
+		    GetControlByID(carbon_prefdlog, &cid, &cntl);
 
 		    if (ourgame->colours != NULL &&
 			GetControlValue(cntl) == kControlCheckBoxUncheckedValue)
@@ -601,16 +629,16 @@ static pascal OSStatus pref_wnd_evt(EventHandlerCallRef handler,
 					    CFSTR("Are you sure you want the changes to apply globally?"),
 					    CFSTR("You have changed the font and/or colour settings from applying only to the current game to applying to all games - if you choose to keep these changes, they will apply to all games, not just the current one"),
 					    &par,
-					    GetWindowEventTarget(prefdlog),
+					    GetWindowEventTarget(carbon_prefdlog),
 					    &confdlog);
-			ShowSheetWindow(GetDialogWindow(confdlog), prefdlog);
+			ShowSheetWindow(GetDialogWindow(confdlog), carbon_prefdlog);
 		      }
 		    else
 		      {
 			pref_store();
 
-			DisposeWindow(prefdlog);
-			prefdlog = nil;
+			DisposeWindow(carbon_prefdlog);
+			carbon_prefdlog = nil;
 		      }
 		  }
 		return noErr;
@@ -637,15 +665,36 @@ static pascal OSStatus pref_wnd_evt(EventHandlerCallRef handler,
 	    switch (cmd.commandID)
 	      {
 	      case kHICommandOK:
-		pref_store();
-
-		DisposeWindow(prefdlog);
-		prefdlog = nil;
+		if (carbon_questdlog != nil)
+		  {
+		    QuitAppModalLoopForWindow(GetDialogWindow(carbon_questdlog));
+		    carbon_questdlog = nil;
+		    carbon_q_res = 1;
+		    return noErr;
+		  }
+		else
+		  {
+		    pref_store();
+		    
+		    DisposeWindow(carbon_prefdlog);
+		    carbon_prefdlog = nil;
+		  }
 		break;
 		
+	      case kHICommandCancel:
 	      case kHICommandOther:
-		DisposeWindow(prefdlog);
-		prefdlog = nil;
+		if (carbon_questdlog != nil)
+		  {
+		    QuitAppModalLoopForWindow(GetDialogWindow(carbon_questdlog));
+		    carbon_questdlog = nil;
+		    carbon_q_res = 0;
+		    return noErr;
+		  }
+		else
+		  {
+		    DisposeWindow(carbon_prefdlog);
+		    carbon_prefdlog = nil;
+		  }
 		break;
 	      }
 	  }
@@ -1175,6 +1224,21 @@ void carbon_prefs_set_resources(char* path)
 
   pref_write();
 
+  if (carbon_prefdlog != nil)
+    {
+      ControlID  cid;
+      ControlRef cntl;
+      
+      cid.signature = CARBON_RESFILE;
+      cid.id        = CARBON_RESFILEID;
+      GetControlByID(carbon_prefdlog, &cid, &cntl);
+
+      SetControlData(cntl, kControlEntireControl, kControlEditTextTextTag,
+		     strlen(game->graphics), game->graphics);
+
+    }
+
+  /* Notification... */
   if (!hadblorb)
     {
       char str[512];
@@ -1182,6 +1246,11 @@ void carbon_prefs_set_resources(char* path)
 	      carbon_title);
       carbon_display_message("Resource location recorded",
 			     str);
+    }
+  else
+    {
+      carbon_display_message("Resource location recorded",
+			     "The resources for this game have been updated with the location of the new file you have supplied");
     }
 }
 
@@ -1204,31 +1273,31 @@ static void pref_setup(void)
   /* Set up the general preferences */
   cid.signature = CARBON_DISPWARNS;
   cid.id        = CARBON_DISPWARNSID;
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
   SetControlValue(cntl, carbon_prefs.show_warnings?
 		  kControlCheckBoxCheckedValue:kControlCheckBoxUncheckedValue);
 
   cid.signature = CARBON_FATWARNS;
   cid.id        = CARBON_FATWARNSID;
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
   SetControlValue(cntl, carbon_prefs.fatal_warnings?
 		  kControlCheckBoxCheckedValue:kControlCheckBoxUncheckedValue);
 
   cid.signature = CARBON_SPEAK;
   cid.id        = CARBON_SPEAKID;
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
   SetControlValue(cntl, carbon_prefs.use_speech?
 		  kControlCheckBoxCheckedValue:kControlCheckBoxUncheckedValue);
 
   cid.signature = CARBON_RENDER;
   cid.id        = CARBON_RENDERID;
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
   SetControlValue(cntl, carbon_prefs.use_quartz?
 		  2:1);
 
   cid.signature = CARBON_ANTI;
   cid.id        = CARBON_ANTIID;
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
   SetControlValue(cntl, rc_defgame->antialias?
 		  kControlCheckBoxCheckedValue:kControlCheckBoxUncheckedValue);
 
@@ -1283,7 +1352,7 @@ static void pref_setup(void)
   cid.signature = CARBON_SERIAL;
   cid.id        = CARBON_SERIALID;
   
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
   sprintf(str, "%.6s", Address(ZH_serial));
   SetControlData(cntl, kControlEntireControl, kControlStaticTextTextTag,
 		 strlen(str), str);
@@ -1292,7 +1361,7 @@ static void pref_setup(void)
   cid.signature = CARBON_RELEASE;
   cid.id        = CARBON_RELEASEID;
   
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
   sprintf(str, "%i", Word(ZH_release));
   SetControlData(cntl, kControlEntireControl, kControlStaticTextTextTag,
 		 strlen(str), str);
@@ -1301,14 +1370,14 @@ static void pref_setup(void)
   cid.signature = CARBON_TITLE;
   cid.id        = CARBON_TITLEID;
   
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
   SetControlData(cntl, kControlEntireControl, kControlEditTextTextTag,
 		 strlen(game->name), game->name);
 
   /* Set up the 'Interpreter' field */
   cid.signature = CARBON_INTERPLOC;
   cid.id        = CARBON_INTERPLOCID;
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
 
   if (game->interpreter == -1)
     {
@@ -1323,7 +1392,7 @@ static void pref_setup(void)
 
   cid.signature = CARBON_INTERP;
   cid.id        = CARBON_INTERPID;
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
 
   sprintf(str, "%i", val);
   SetControlData(cntl, kControlEntireControl, kControlEditTextTextTag,
@@ -1332,7 +1401,7 @@ static void pref_setup(void)
   /* Set up the 'Interpreter revision' field */
   cid.signature = CARBON_REVLOC;
   cid.id        = CARBON_REVLOCID;
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
 
   if (game->revision == -1)
     {
@@ -1347,7 +1416,7 @@ static void pref_setup(void)
 
   cid.signature = CARBON_REVISION;
   cid.id        = CARBON_REVISIONID;
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
 
   sprintf(str, "%c", val);
   SetControlData(cntl, kControlEntireControl, kControlEditTextTextTag,
@@ -1356,7 +1425,7 @@ static void pref_setup(void)
   /* Set up the font list */
   cid.signature = CARBON_FONTLOC;
   cid.id        = CARBON_FONTLOCID;
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
 
   if (game->fonts != NULL)
     {
@@ -1373,7 +1442,7 @@ static void pref_setup(void)
 
   cid.signature = CARBON_FONTLIST;
   cid.id        = CARBON_FONTLISTID;
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
 
   font_copy = realloc(font_copy, sizeof(rc_font)*n_fonts);
   memcpy(font_copy, fonts, sizeof(rc_font)*n_fonts);
@@ -1390,7 +1459,7 @@ static void pref_setup(void)
   /* Set up the colour list */
   cid.signature = CARBON_COLLIST;
   cid.id        = CARBON_COLLISTID;
-  GetControlByID(prefdlog, &cid, &cntl);
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
 
   for (x=0; x < 11; x++)
     {
@@ -1399,7 +1468,23 @@ static void pref_setup(void)
     }
   AddDataBrowserItems(cntl, kDataBrowserNoItem, 11, items, 0);
 
-  ourgame = game;
+  /* Set up the resource file field */
+  cid.signature = CARBON_RESFILE;
+  cid.id        = CARBON_RESFILEID;
+  GetControlByID(carbon_prefdlog, &cid, &cntl);
+
+  if (game->graphics != NULL)
+    {
+      SetControlData(cntl, kControlEntireControl, kControlEditTextTextTag,
+		     strlen(game->graphics), game->graphics);
+    }
+  else
+    {
+      SetControlData(cntl, kControlEntireControl, kControlEditTextTextTag,
+		     strlen(""), "");
+    }
+
+  ourgame = game;  
 }
 
 void carbon_show_prefs(void)
@@ -1415,7 +1500,7 @@ void carbon_show_prefs(void)
       InsertMenu(fontmenu, -1);
     }
 
-  if (prefdlog == nil)
+  if (carbon_prefdlog == nil)
     {
       ControlID tab;
       ControlRef tabcontrol;
@@ -1437,20 +1522,20 @@ void carbon_show_prefs(void)
 
       /* Create the window */
       CreateNibReference(CFSTR("zoom"), &nib);
-      CreateWindowFromNib(nib, CFSTR("Preferences"), &prefdlog);
+      CreateWindowFromNib(nib, CFSTR("Preferences"), &carbon_prefdlog);
       DisposeNibReference(nib);
 
       /* Install a handler to deal with adjustments to the window */
       if (prefhandle == nil)
 	prefhandle = NewEventHandlerUPP(pref_wnd_evt);
 
-      InstallEventHandler(GetWindowEventTarget(prefdlog),
+      InstallEventHandler(GetWindowEventTarget(carbon_prefdlog),
 			  prefhandle, 2, winspec, 0, NULL);
 
       /* Install a handler to change the tab panes */
       tab.signature = CARBON_TABS;
       tab.id        = CARBON_TABSID;
-      GetControlByID(prefdlog, &tab, &tabcontrol);
+      GetControlByID(carbon_prefdlog, &tab, &tabcontrol);
 
       if (evhandle == nil)
 	evhandle = NewEventHandlerUPP(pref_tab_evt);
@@ -1464,7 +1549,7 @@ void carbon_show_prefs(void)
       /* Install handlers for the font list box */
       cid.signature = CARBON_FONTLIST;
       cid.id        = CARBON_FONTLISTID;
-      GetControlByID(prefdlog, &cid, &cntl);
+      GetControlByID(carbon_prefdlog, &cid, &cntl);
       
       dbcb.version = kDataBrowserLatestCallbacks;
       InitDataBrowserCallbacks(&dbcb);
@@ -1489,7 +1574,7 @@ void carbon_show_prefs(void)
       /* Set up the colour list box */
       cid.signature = CARBON_COLLIST;
       cid.id        = CARBON_COLLISTID;
-      GetControlByID(prefdlog, &cid, &cntl);
+      GetControlByID(carbon_prefdlog, &cid, &cntl);
       
       SetDataBrowserPropertyFlags(cntl, 'Samp', kDataBrowserPropertyIsEditable);
       
@@ -1510,8 +1595,8 @@ void carbon_show_prefs(void)
       SetDataBrowserCustomCallbacks(cntl, &dbcustom);
     }
 
-  ShowWindow(prefdlog);
-  BringToFront(prefdlog);
+  ShowWindow(carbon_prefdlog);
+  BringToFront(carbon_prefdlog);
 }
 
 #endif
