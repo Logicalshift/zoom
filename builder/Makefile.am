@@ -12,6 +12,6 @@ YFLAGS = -d
 
 main.c: gram.c
 
-builder: $(builder_OBJECTS) $(builder_DEPENDENCIES)
+builder$(EXEEXT): $(builder_OBJECTS) $(builder_DEPENDENCIES)
 	@rm -f builder
 	$(CC) -o builder $(builder_OBJECTS)

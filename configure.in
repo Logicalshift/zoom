@@ -142,6 +142,7 @@ if test "$CYGWIN" != "yes"; then
     AM_CONDITIONAL(WINDOWS_VERSION, true)
     AM_CONDITIONAL(BORLAND_VERSION, false)
     AM_CONDITIONAL(CREATE_EXE, true)
+    AM_CONDITIONAL(COCOA_VERSION, false)
 
     WINDOW_SYSTEM=2
     AC_DEFINE(WINDOW_SYSTEM, 2)
@@ -163,33 +164,43 @@ if test "$CYGWIN" = "yes"; then
 
   AM_CONDITIONAL(WINDOWS_VERSION, true)
   AM_CONDITIONAL(BORLAND_VERSION, false)
+  AM_CONDITIONAL(COCOA_VERSION, false)
 
   WINDOW_SYSTEM=2
   AC_DEFINE(WINDOW_SYSTEM, 2)
 else
 if test "$MINGW32" != "yes"; then
-  AC_PATH_XTRA
-  if test "$no_x" = "yes"; then
-    AC_MSG_CHECKING([for Windows headers & libraries])
-    AC_TRY_LINK([#include <windows.h>],
-                [ { MessageBox(NULL, "Arg", "Whoops", MB_OK | MB_SYSTEMMODAL); } ],
-		AC_MSG_RESULT(yes),
-		AC_MSG_RESULT(no)
-		AC_MSG_ERROR([No supported display interfaces found]))
-    AC_PATH_PROG(WINDRES, brcc32)
-    RESEXTN=res
-    AC_SUBST(RESEXTN)
+  COCOA_DETECT
+  if test "$cocoa_present" = "no"; then
+    AC_PATH_XTRA
+    if test "$no_x" = "yes"; then
+      AC_MSG_CHECKING([for Windows headers & libraries])
+      AC_TRY_LINK([#include <windows.h>],
+                  [ { MessageBox(NULL, "Arg", "Whoops", MB_OK | MB_SYSTEMMODAL); } ],
+	    	  AC_MSG_RESULT(yes),
+		  AC_MSG_RESULT(no)
+		  AC_MSG_ERROR([No supported display interfaces found]))
+      AC_PATH_PROG(WINDRES, brcc32)
+      RESEXTN=res
+      AC_SUBST(RESEXTN)
 
-    AM_CONDITIONAL(WINDOWS_VERSION, true)
-    AM_CONDITIONAL(BORLAND_VERSION, true)
+      AM_CONDITIONAL(WINDOWS_VERSION, true)
+      AM_CONDITIONAL(BORLAND_VERSION, true)
+      AM_CONDITIONAL(COCOA_VERSION, false)
 
-    WINDOW_SYSTEM=2
-    AC_DEFINE(WINDOW_SYSTEM, 2)
+      WINDOW_SYSTEM=2
+      AC_DEFINE(WINDOW_SYSTEM, 2)
+    else
+      WINDOW_SYSTEM=1
+      AC_DEFINE(WINDOW_SYSTEM, 1)
+
+      AM_CONDITIONAL(WINDOWS_VERSION, false)
+      AM_CONDITIONAL(COCOA_VERSION, false)
+    fi
   else
-    WINDOW_SYSTEM=1
-    AC_DEFINE(WINDOW_SYSTEM, 1)
-
-    AM_CONDITIONAL(WINDOWS_VERSION, false)
+    WINDOW_SYSTEM=3
+    AC_DEFINE(WINDOW_SYSTEM, 3)
+    AM_CONDITIONAL(COCOA_VERSION, true)
   fi
 fi
 fi

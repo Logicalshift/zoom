@@ -1,6 +1,7 @@
-# Makefile.in generated automatically by automake 1.4 from Makefile.am
+# Makefile.in generated automatically by automake 1.5 from Makefile.am.
 
-# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
+# Copyright 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
+# Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -10,6 +11,7 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
+@SET_MAKE@
 
 SHELL = @SHELL@
 
@@ -31,13 +33,9 @@ infodir = @infodir@
 mandir = @mandir@
 includedir = @includedir@
 oldincludedir = /usr/include
-
-DESTDIR =
-
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
-
 top_builddir = ..
 
 ACLOCAL = @ACLOCAL@
@@ -46,352 +44,401 @@ AUTOMAKE = @AUTOMAKE@
 AUTOHEADER = @AUTOHEADER@
 
 INSTALL = @INSTALL@
-INSTALL_PROGRAM = @INSTALL_PROGRAM@ $(AM_INSTALL_PROGRAM_FLAGS)
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
+INSTALL_HEADER = $(INSTALL_DATA)
 transform = @program_transform_name@
-
 NORMAL_INSTALL = :
 PRE_INSTALL = :
 POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+AMTAR = @AMTAR@
+AWK = @AWK@
 BUILDERCC = @BUILDERCC@
 CC = @CC@
 CPP = @CPP@
+DEPDIR = @DEPDIR@
+EXEEXT = @EXEEXT@
+INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LEX = @LEX@
-MAKEINFO = @MAKEINFO@
 MINGWWINDRES = @MINGWWINDRES@
+OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PERL = @PERL@
 RANLIB = @RANLIB@
 RESEXTN = @RESEXTN@
 UTIL_PROG_TPUT = @UTIL_PROG_TPUT@
 VERSION = @VERSION@
+X_CFLAGS = @X_CFLAGS@
+X_EXTRA_LIBS = @X_EXTRA_LIBS@
+X_LIBS = @X_LIBS@
+X_PRE_LIBS = @X_PRE_LIBS@
 YACC = @YACC@
 ZBYTE_TYPE = @ZBYTE_TYPE@
 ZDWORD_TYPE = @ZDWORD_TYPE@
 ZMACHINE_CONV_WORD = @ZMACHINE_CONV_WORD@
 ZUWORD_TYPE = @ZUWORD_TYPE@
 ZWORD_TYPE = @ZWORD_TYPE@
+am__include = @am__include@
+am__quote = @am__quote@
+install_sh = @install_sh@
 
-bin_PROGRAMS =  	zoom
+WINDRES = @WINDRES@
+
+bin_PROGRAMS = \
+	zoom
 
 pkgdata_DATA = zoomrc
 
 EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico
 
-zoom_SOURCES =  	main.c interp.c file.c options.c zmachine.c zscii.c xdisplay.c 	hash.c tokenise.c stream.c font3.c state.c pix.c rc.c rc_parse.y 	rc_lex.l menu.c xfont.c windisplay.c winfont.c random.c 	layout.c 		file.h zmachine.h options.h interp.h zscii.h display.h hash.h 	tokenise.h stream.h font3.h state.h pix.h rc.h rcp.h rc_parse.h 	menu.h xdisplay.h xfont.h zoomres.h windisplay.h random.h 	layout.h
+zoom_SOURCES = \
+	main.c interp.c file.c options.c zmachine.c zscii.c xdisplay.c \
+	hash.c tokenise.c stream.c font3.c state.c pix.c rc.c rc_parse.y \
+	rc_lex.l menu.c xfont.c windisplay.c winfont.c random.c \
+	layout.c \
+	\
+	file.h zmachine.h options.h interp.h zscii.h display.h hash.h \
+	tokenise.h stream.h font3.h state.h pix.h rc.h rcp.h rc_parse.h \
+	menu.h xdisplay.h xfont.h zoomres.h windisplay.h random.h \
+	layout.h
 
-
-WINDRES = @WINDRES@
-@WINDOWS_VERSION_TRUE@@BORLAND_VERSION_TRUE@LDFLAGS = @LDFLAGS@ -link
-@WINDOWS_VERSION_TRUE@@BORLAND_VERSION_FALSE@LDFLAGS = @LDFLAGS@
-@WINDOWS_VERSION_FALSE@LDFLAGS = @LDFLAGS@
 
 CFLAGS = @CFLAGS@ @X_CFLAGS@ -DDATADIR="\"${pkgdatadir}\""
 LIBS = @LIBS@ @X_PRE_LIBS@ @X_LIBS@ @X_EXTRA_LIBS@
 YFLAGS = -d
+subdir = src
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
-CONFIG_HEADER = ../config.h
-CONFIG_CLEAN_FILES =  ztypes.h zoom.rc
-PROGRAMS =  $(bin_PROGRAMS)
+CONFIG_HEADER = $(top_builddir)/config.h
+CONFIG_CLEAN_FILES = ztypes.h zoom.rc
+bin_PROGRAMS = zoom$(EXEEXT)
+PROGRAMS = $(bin_PROGRAMS)
 
-
-DEFS = @DEFS@ -I. -I$(srcdir) -I..
-CPPFLAGS = @CPPFLAGS@
-X_CFLAGS = @X_CFLAGS@
-X_LIBS = @X_LIBS@
-X_EXTRA_LIBS = @X_EXTRA_LIBS@
-X_PRE_LIBS = @X_PRE_LIBS@
-zoom_OBJECTS =  main.o interp.o file.o options.o zmachine.o zscii.o \
-xdisplay.o hash.o tokenise.o stream.o font3.o state.o pix.o rc.o \
-rc_parse.o rc_lex.o menu.o xfont.o windisplay.o winfont.o random.o \
-layout.o
+am_zoom_OBJECTS = main.$(OBJEXT) interp.$(OBJEXT) file.$(OBJEXT) \
+	options.$(OBJEXT) zmachine.$(OBJEXT) zscii.$(OBJEXT) \
+	xdisplay.$(OBJEXT) hash.$(OBJEXT) tokenise.$(OBJEXT) \
+	stream.$(OBJEXT) font3.$(OBJEXT) state.$(OBJEXT) pix.$(OBJEXT) \
+	rc.$(OBJEXT) rc_parse.$(OBJEXT) rc_lex.$(OBJEXT) menu.$(OBJEXT) \
+	xfont.$(OBJEXT) windisplay.$(OBJEXT) winfont.$(OBJEXT) \
+	random.$(OBJEXT) layout.$(OBJEXT)
+zoom_OBJECTS = $(am_zoom_OBJECTS)
 zoom_LDADD = $(LDADD)
-zoom_DEPENDENCIES = 
-zoom_LDFLAGS = 
-LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
-LEXLIB = @LEXLIB@
-COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+zoom_DEPENDENCIES =
+zoom_LDFLAGS =
+
+DEFS = @DEFS@
+DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
+CPPFLAGS = @CPPFLAGS@
+LDFLAGS = @LDFLAGS@
+depcomp = $(SHELL) $(top_srcdir)/depcomp
+@AMDEP_TRUE@DEP_FILES = $(DEPDIR)/file.Po $(DEPDIR)/font3.Po \
+@AMDEP_TRUE@	$(DEPDIR)/hash.Po $(DEPDIR)/interp.Po \
+@AMDEP_TRUE@	$(DEPDIR)/layout.Po $(DEPDIR)/main.Po \
+@AMDEP_TRUE@	$(DEPDIR)/menu.Po $(DEPDIR)/options.Po \
+@AMDEP_TRUE@	$(DEPDIR)/pix.Po $(DEPDIR)/random.Po \
+@AMDEP_TRUE@	$(DEPDIR)/rc.Po $(DEPDIR)/rc_lex.Po \
+@AMDEP_TRUE@	$(DEPDIR)/rc_parse.Po $(DEPDIR)/state.Po \
+@AMDEP_TRUE@	$(DEPDIR)/stream.Po $(DEPDIR)/tokenise.Po \
+@AMDEP_TRUE@	$(DEPDIR)/windisplay.Po $(DEPDIR)/winfont.Po \
+@AMDEP_TRUE@	$(DEPDIR)/xdisplay.Po $(DEPDIR)/xfont.Po \
+@AMDEP_TRUE@	$(DEPDIR)/zmachine.Po $(DEPDIR)/zscii.Po
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
-LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
-DATA =  $(pkgdata_DATA)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+LEXCOMPILE = $(LEX) $(LFLAGS) $(AM_LFLAGS)
+YACCCOMPILE = $(YACC) $(YFLAGS) $(AM_YFLAGS)
+DIST_SOURCES = $(zoom_SOURCES)
+DATA = $(pkgdata_DATA)
 
-DIST_COMMON =  Makefile.am Makefile.in rc_lex.c rc_parse.c zoom.rc.in \
-ztypes.h.in
-
-
-DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
-
-TAR = tar
-GZIP_ENV = --best
-DEP_FILES =  .deps/file.P .deps/font3.P .deps/hash.P .deps/interp.P \
-.deps/layout.P .deps/main.P .deps/menu.P .deps/options.P .deps/pix.P \
-.deps/random.P .deps/rc.P .deps/rc_lex.P .deps/rc_parse.P .deps/state.P \
-.deps/stream.P .deps/tokenise.P .deps/windisplay.P .deps/winfont.P \
-.deps/xdisplay.P .deps/xfont.P .deps/zmachine.P .deps/zscii.P
+DIST_COMMON = Makefile.am Makefile.in rc_lex.c rc_parse.c rc_parse.h \
+	zoom.rc.in ztypes.h.in
 SOURCES = $(zoom_SOURCES)
-OBJECTS = $(zoom_OBJECTS)
 
-all: all-redirect
+all: all-am
+
 .SUFFIXES:
-.SUFFIXES: .S .c .l .o .s .y
-$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu src/Makefile
-
-Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
-	cd $(top_builddir) \
-	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
-
+.SUFFIXES: .c .l .o .obj .y
+$(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
+	cd $(top_srcdir) && \
+	  $(AUTOMAKE) --gnu  src/Makefile
+Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
+	cd $(top_builddir) && \
+	  CONFIG_HEADERS= CONFIG_LINKS= \
+	  CONFIG_FILES=$(subdir)/$@ $(SHELL) ./config.status
 ztypes.h: $(top_builddir)/config.status ztypes.h.in
-	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= CONFIG_LINKS= $(SHELL) ./config.status
 zoom.rc: $(top_builddir)/config.status zoom.rc.in
-	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
-
-mostlyclean-binPROGRAMS:
-
-clean-binPROGRAMS:
-	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
-
-distclean-binPROGRAMS:
-
-maintainer-clean-binPROGRAMS:
-
+	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= CONFIG_LINKS= $(SHELL) ./config.status
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	$(mkinstalldirs) $(DESTDIR)$(bindir)
 	@list='$(bin_PROGRAMS)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    echo "  $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`"; \
-	     $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	  p1=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
+	  if test -f $$p \
+	  ; then \
+	    f=`echo $$p1|sed '$(transform);s/$$/$(EXEEXT)/'`; \
+	   echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/$$f"; \
+	   $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/$$f; \
 	  else :; fi; \
 	done
 
 uninstall-binPROGRAMS:
 	@$(NORMAL_UNINSTALL)
-	list='$(bin_PROGRAMS)'; for p in $$list; do \
-	  rm -f $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  f=`echo $$p|sed 's/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/'`; \
+	  echo " rm -f $(DESTDIR)$(bindir)/$$f"; \
+	  rm -f $(DESTDIR)$(bindir)/$$f; \
 	done
 
-.s.o:
-	$(COMPILE) -c $<
-
-.S.o:
-	$(COMPILE) -c $<
+clean-binPROGRAMS:
+	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+rc_parse.h: rc_parse.c
+@BORLAND_VERSION_TRUE@@WINDOWS_VERSION_FALSE@zoom$(EXEEXT): $(zoom_OBJECTS) $(zoom_DEPENDENCIES) 
+@BORLAND_VERSION_TRUE@@WINDOWS_VERSION_FALSE@	@rm -f zoom$(EXEEXT)
+@BORLAND_VERSION_TRUE@@WINDOWS_VERSION_FALSE@	$(LINK) $(zoom_LDFLAGS) $(zoom_OBJECTS) $(zoom_LDADD) $(LIBS)
+@BORLAND_VERSION_FALSE@@WINDOWS_VERSION_FALSE@zoom$(EXEEXT): $(zoom_OBJECTS) $(zoom_DEPENDENCIES) 
+@BORLAND_VERSION_FALSE@@WINDOWS_VERSION_FALSE@	@rm -f zoom$(EXEEXT)
+@BORLAND_VERSION_FALSE@@WINDOWS_VERSION_FALSE@	$(LINK) $(zoom_LDFLAGS) $(zoom_OBJECTS) $(zoom_LDADD) $(LIBS)
 
 mostlyclean-compile:
-	-rm -f *.o core *.core
-
-clean-compile:
+	-rm -f *.$(OBJEXT) core *.core
 
 distclean-compile:
 	-rm -f *.tab.c
 
-maintainer-clean-compile:
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/file.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/font3.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/hash.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/interp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/layout.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/menu.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/options.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/pix.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/random.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/rc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/rc_lex.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/rc_parse.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/state.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/stream.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/tokenise.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/windisplay.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/winfont.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/xdisplay.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/xfont.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/zmachine.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/zscii.Po@am__quote@
+
+distclean-depend:
+	-rm -rf $(DEPDIR)
+
+.c.o:
+@AMDEP_TRUE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(COMPILE) -c `test -f $< || echo '$(srcdir)/'`$<
+
+.c.obj:
+@AMDEP_TRUE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(COMPILE) -c `cygpath -w $<`
+CCDEPMODE = @CCDEPMODE@
+
+LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
+LEXLIB = @LEXLIB@
+
 .l.c:
-	$(LEX) $(AM_LFLAGS) $(LFLAGS) $< && mv $(LEX_OUTPUT_ROOT).c $@
+	$(LEXCOMPILE) $< && mv $(LEX_OUTPUT_ROOT).c $@
+
 .y.c:
-	$(YACC) $(AM_YFLAGS) $(YFLAGS) $< && mv y.tab.c $*.c
+	$(YACCCOMPILE) $< && mv y.tab.c $@
 	if test -f y.tab.h; then \
-	if cmp -s y.tab.h $*.h; then rm -f y.tab.h; else mv y.tab.h $*.h; fi; \
-	else :; fi
-rc_parse.h: rc_parse.c
-
-
+	  if cmp -s y.tab.h $*.h; then \
+	    rm -f y.tab.h; \
+	  else \
+	    mv y.tab.h $*.h; \
+	  fi; \
+	fi
+uninstall-info-am:
 install-pkgdataDATA: $(pkgdata_DATA)
 	@$(NORMAL_INSTALL)
 	$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)
 	@list='$(pkgdata_DATA)'; for p in $$list; do \
-	  if test -f $(srcdir)/$$p; then \
-	    echo " $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(pkgdatadir)/$$p"; \
-	    $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(pkgdatadir)/$$p; \
-	  else if test -f $$p; then \
-	    echo " $(INSTALL_DATA) $$p $(DESTDIR)$(pkgdatadir)/$$p"; \
-	    $(INSTALL_DATA) $$p $(DESTDIR)$(pkgdatadir)/$$p; \
-	  fi; fi; \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f="`echo $$p | sed -e 's|^.*/||'`"; \
+	  echo " $(INSTALL_DATA) $$d$$p $(DESTDIR)$(pkgdatadir)/$$f"; \
+	  $(INSTALL_DATA) $$d$$p $(DESTDIR)$(pkgdatadir)/$$f; \
 	done
 
 uninstall-pkgdataDATA:
 	@$(NORMAL_UNINSTALL)
-	list='$(pkgdata_DATA)'; for p in $$list; do \
-	  rm -f $(DESTDIR)$(pkgdatadir)/$$p; \
+	@list='$(pkgdata_DATA)'; for p in $$list; do \
+	  f="`echo $$p | sed -e 's|^.*/||'`"; \
+	  echo " rm -f $(DESTDIR)$(pkgdatadir)/$$f"; \
+	  rm -f $(DESTDIR)$(pkgdatadir)/$$f; \
 	done
 
 tags: TAGS
 
-ID: $(HEADERS) $(SOURCES) $(LISP)
-	list='$(SOURCES) $(HEADERS)'; \
-	unique=`for i in $$list; do echo $$i; done | \
-	  awk '    { files[$$0] = 1; } \
+ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
+	list='$(SOURCES) $(HEADERS) $(TAGS_FILES)'; \
+	unique=`for i in $$list; do \
+	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+	  done | \
+	  $(AWK) '    { files[$$0] = 1; } \
 	       END { for (i in files) print i; }'`; \
-	here=`pwd` && cd $(srcdir) \
-	  && mkid -f$$here/ID $$unique $(LISP)
+	mkid -fID $$unique $(LISP)
 
-TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
-	list='$(SOURCES) $(HEADERS)'; \
-	unique=`for i in $$list; do echo $$i; done | \
-	  awk '    { files[$$0] = 1; } \
+	list='$(SOURCES) $(HEADERS) $(TAGS_FILES)'; \
+	unique=`for i in $$list; do \
+	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+	  done | \
+	  $(AWK) '    { files[$$0] = 1; } \
 	       END { for (i in files) print i; }'`; \
 	test -z "$(ETAGS_ARGS)$$unique$(LISP)$$tags" \
-	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $$unique $(LISP) -o $$here/TAGS)
+	  || etags $(ETAGS_ARGS) $$tags  $$unique $(LISP)
 
-mostlyclean-tags:
-
-clean-tags:
+GTAGS:
+	here=`CDPATH=: && cd $(top_builddir) && pwd` \
+	  && cd $(top_srcdir) \
+	  && gtags -i $(GTAGS_ARGS) $$here
 
 distclean-tags:
-	-rm -f TAGS ID
+	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH
 
-maintainer-clean-tags:
+DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 
-distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
-
-subdir = src
+top_distdir = ..
+distdir = $(top_distdir)/$(PACKAGE)-$(VERSION)
 
 distdir: $(DISTFILES)
-	here=`cd $(top_builddir) && pwd`; \
-	top_distdir=`cd $(top_distdir) && pwd`; \
-	distdir=`cd $(distdir) && pwd`; \
-	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu src/Makefile
 	@for file in $(DISTFILES); do \
-	  d=$(srcdir); \
+	  if test -f $$file; then d=.; else d=$(srcdir); fi; \
+	  dir=`echo "$$file" | sed -e 's,/[^/]*$$,,'`; \
+	  if test "$$dir" != "$$file" && test "$$dir" != "."; then \
+	    $(mkinstalldirs) "$(distdir)/$$dir"; \
+	  fi; \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$/$$file $(distdir)/$$file; \
+	    cp -pR $$d/$$file $(distdir) \
+	    || exit 1; \
 	  else \
 	    test -f $(distdir)/$$file \
-	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
-	    || cp -p $$d/$$file $(distdir)/$$file || :; \
+	    || cp -p $$d/$$file $(distdir)/$$file \
+	    || exit 1; \
 	  fi; \
 	done
-
-DEPS_MAGIC := $(shell mkdir .deps > /dev/null 2>&1 || :)
-
--include $(DEP_FILES)
-
-mostlyclean-depend:
-
-clean-depend:
-
-distclean-depend:
-	-rm -rf .deps
-
-maintainer-clean-depend:
-
-%.o: %.c
-	@echo '$(COMPILE) -c $<'; \
-	$(COMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
-	@-cp .deps/$(*F).pp .deps/$(*F).P; \
-	tr ' ' '\012' < .deps/$(*F).pp \
-	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
-	    >> .deps/$(*F).P; \
-	rm .deps/$(*F).pp
-
-%.lo: %.c
-	@echo '$(LTCOMPILE) -c $<'; \
-	$(LTCOMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
-	@-sed -e 's/^\([^:]*\)\.o[ 	]*:/\1.lo \1.o :/' \
-	  < .deps/$(*F).pp > .deps/$(*F).P; \
-	tr ' ' '\012' < .deps/$(*F).pp \
-	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
-	    >> .deps/$(*F).P; \
-	rm -f .deps/$(*F).pp
-info-am:
-info: info-am
-dvi-am:
-dvi: dvi-am
 check-am: all-am
 check: check-am
-installcheck-am:
-installcheck: installcheck-am
-install-exec-am: install-binPROGRAMS
-install-exec: install-exec-am
+all-am: Makefile $(PROGRAMS) $(DATA)
 
-install-data-am: install-pkgdataDATA
+installdirs:
+	$(mkinstalldirs) $(DESTDIR)$(bindir) $(DESTDIR)$(pkgdatadir)
+
+install: install-am
+install-exec: install-exec-am
 install-data: install-data-am
+uninstall: uninstall-am
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
-install: install-am
-uninstall-am: uninstall-binPROGRAMS uninstall-pkgdataDATA
-uninstall: uninstall-am
-all-am: Makefile $(PROGRAMS) $(DATA)
-all-redirect: all-am
+
+installcheck: installcheck-am
 install-strip:
-	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
-installdirs:
-	$(mkinstalldirs)  $(DESTDIR)$(bindir) $(DESTDIR)$(pkgdatadir)
-
-
+	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
+	  `test -z '$(STRIP)' || \
+	    echo "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'"` install
 mostlyclean-generic:
 
 clean-generic:
 
 distclean-generic:
-	-rm -f Makefile $(CONFIG_CLEAN_FILES)
-	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+	-rm -f Makefile $(CONFIG_CLEAN_FILES) stamp-h stamp-h[0-9]*
 
 maintainer-clean-generic:
-	-test -z "rc_lexlrc_parsehrc_parsec" || rm -f rc_lexl rc_parseh rc_parsec
-mostlyclean-am:  mostlyclean-binPROGRAMS mostlyclean-compile \
-		mostlyclean-tags mostlyclean-depend mostlyclean-generic
-
-mostlyclean: mostlyclean-am
-
-clean-am:  clean-binPROGRAMS clean-compile clean-tags clean-depend \
-		clean-generic mostlyclean-am
-
+	@echo "This command is intended for maintainers to use"
+	@echo "it deletes files that may require special tools to rebuild."
+	-test -z "rc_parse.h" || rm -f rc_parse.h
 clean: clean-am
 
-distclean-am:  distclean-binPROGRAMS distclean-compile distclean-tags \
-		distclean-depend distclean-generic clean-am
+clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
 
-maintainer-clean-am:  maintainer-clean-binPROGRAMS \
-		maintainer-clean-compile maintainer-clean-tags \
-		maintainer-clean-depend maintainer-clean-generic \
-		distclean-am
-	@echo "This command is intended for maintainers to use;"
-	@echo "it deletes files that may require special tools to rebuild."
+distclean-am: clean-am distclean-compile distclean-depend \
+	distclean-generic distclean-tags
+
+dvi: dvi-am
+
+dvi-am:
+
+info: info-am
+
+info-am:
+
+install-data-am: install-pkgdataDATA
+
+install-exec-am: install-binPROGRAMS
+
+install-info: install-info-am
+
+install-man:
+
+installcheck-am:
 
 maintainer-clean: maintainer-clean-am
 
-.PHONY: mostlyclean-binPROGRAMS distclean-binPROGRAMS clean-binPROGRAMS \
-maintainer-clean-binPROGRAMS uninstall-binPROGRAMS install-binPROGRAMS \
-mostlyclean-compile distclean-compile clean-compile \
-maintainer-clean-compile uninstall-pkgdataDATA install-pkgdataDATA tags \
-mostlyclean-tags distclean-tags clean-tags maintainer-clean-tags \
-distdir mostlyclean-depend distclean-depend clean-depend \
-maintainer-clean-depend info-am info dvi-am dvi check check-am \
-installcheck-am installcheck install-exec-am install-exec \
-install-data-am install-data install-am install uninstall-am uninstall \
-all-redirect all-am all installdirs mostlyclean-generic \
-distclean-generic clean-generic maintainer-clean-generic clean \
-mostlyclean distclean maintainer-clean
+maintainer-clean-am: distclean-am maintainer-clean-generic
+
+mostlyclean: mostlyclean-am
+
+mostlyclean-am: mostlyclean-compile mostlyclean-generic
+
+uninstall-am: uninstall-binPROGRAMS uninstall-info-am \
+	uninstall-pkgdataDATA
+
+.PHONY: GTAGS all all-am check check-am clean clean-binPROGRAMS \
+	clean-generic distclean distclean-compile distclean-depend \
+	distclean-generic distclean-tags distdir dvi dvi-am info \
+	info-am install install-am install-binPROGRAMS install-data \
+	install-data-am install-exec install-exec-am install-info \
+	install-info-am install-man install-pkgdataDATA install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic tags uninstall uninstall-am \
+	uninstall-binPROGRAMS uninstall-info-am uninstall-pkgdataDATA
 
 
 $(srcdir)/interp.c: interp_gen.h interp_z3.h interp_z4.h interp_z5.h interp_z6.h varop.h
 
-@WINDOWS_VERSION_TRUE@@BORLAND_VERSION_TRUE@zoom: zoom.res $(zoom_OBJECTS)
-@WINDOWS_VERSION_TRUE@@BORLAND_VERSION_TRUE@	$(LINK) -aa c0w32 $(zoom_OBJECTS),zoom,,import32 cw32,,zoom.res
-@WINDOWS_VERSION_TRUE@@BORLAND_VERSION_FALSE@zoom: zoom.o $(zoom_OBJECTS) $(zoom_DEPENDENCIES)
-@WINDOWS_VERSION_TRUE@@BORLAND_VERSION_FALSE@	@rm -f zoom
-@WINDOWS_VERSION_TRUE@@BORLAND_VERSION_FALSE@	$(LINK) $(zoom_LDFLAGS) $(zoom_OBJECTS) zoom.o $(zoom_LDADD) $(LIBS)
-@WINDOWS_VERSION_TRUE@@BORLAND_VERSION_FALSE@@CREATE_EXE_TRUE@	mv zoom zoom.exe
-@WINDOWS_VERSION_TRUE@@BORLAND_VERSION_FALSE@@CREATE_EXE_TRUE@	ln -s zoom.exe zoom
+@BORLAND_VERSION_TRUE@@WINDOWS_VERSION_TRUE@zoom$(EXEEXT): zoom.res $(zoom_OBJECTS)
+@BORLAND_VERSION_TRUE@@WINDOWS_VERSION_TRUE@	$(LINK) -aa c0w32 $(zoom_OBJECTS),zoom,,import32 cw32,,zoom.res
+#LDFLAGS=@LDFLAGS@ -link
+#LDFLAGS=@LDFLAGS@
+@BORLAND_VERSION_FALSE@@WINDOWS_VERSION_TRUE@zoom$(EXEEXT): zoom.o $(zoom_OBJECTS) $(zoom_DEPENDENCIES)
+@BORLAND_VERSION_FALSE@@WINDOWS_VERSION_TRUE@	@rm -f zoom
+@BORLAND_VERSION_FALSE@@WINDOWS_VERSION_TRUE@	$(LINK) $(zoom_LDFLAGS) $(zoom_OBJECTS) zoom.o $(zoom_LDADD) $(LIBS)
+#if CREATE_EXE
+#	mv zoom zoom.exe
+#	ln -s zoom.exe zoom
+#endif
 
 @WINDOWS_VERSION_TRUE@%.o: %.rc
 @WINDOWS_VERSION_TRUE@	$(WINDRES) -i $< -o $@
 
 @WINDOWS_VERSION_TRUE@%.res: %.rc
 @WINDOWS_VERSION_TRUE@	$(WINDRES) -fo$@ $<
+#LDFLAGS=@LDFLAGS@
 
-@WINDOWS_VERSION_FALSE@zoom: $(zoom_OBJECTS) $(zoom_DEPENDENCIES)
+@WINDOWS_VERSION_FALSE@zoom$(EXEEXT): $(zoom_OBJECTS) $(zoom_DEPENDENCIES)
 @WINDOWS_VERSION_FALSE@	@rm -f zoom
 @WINDOWS_VERSION_FALSE@	$(LINK) $(zoom_LDFLAGS) $(zoom_OBJECTS) $(zoom_LDADD) $(LIBS)
 
@@ -410,7 +457,6 @@ interp_z5.h: zcode.ops $(top_builddir)/builder/builder
 	     $(top_builddir)/builder/builder interp_z5.h 5 $(top_srcdir)/src/zcode.ops
 interp_z6.h: zcode.ops $(top_builddir)/builder/builder
 	     $(top_builddir)/builder/builder interp_z6.h 6 $(top_srcdir)/src/zcode.ops
-
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

@@ -21,18 +21,18 @@ WINDRES = @WINDRES@
 
 if WINDOWS_VERSION
 if BORLAND_VERSION
-zoom: zoom.res $(zoom_OBJECTS)
+zoom$(EXEEXT): zoom.res $(zoom_OBJECTS)
 	$(LINK) -aa c0w32 $(zoom_OBJECTS),zoom,,import32 cw32,,zoom.res
-LDFLAGS=@LDFLAGS@ -link
+#LDFLAGS=@LDFLAGS@ -link
 else
-LDFLAGS=@LDFLAGS@
-zoom: zoom.o $(zoom_OBJECTS) $(zoom_DEPENDENCIES)
+#LDFLAGS=@LDFLAGS@
+zoom$(EXEEXT): zoom.o $(zoom_OBJECTS) $(zoom_DEPENDENCIES)
 	@rm -f zoom
 	$(LINK) $(zoom_LDFLAGS) $(zoom_OBJECTS) zoom.o $(zoom_LDADD) $(LIBS)
-if CREATE_EXE
-	mv zoom zoom.exe
-	ln -s zoom.exe zoom
-endif
+#if CREATE_EXE
+#	mv zoom zoom.exe
+#	ln -s zoom.exe zoom
+#endif
 endif
 
 %.o: %.rc
@@ -41,9 +41,9 @@ endif
 %.res: %.rc
 	$(WINDRES) -fo$@ $<
 else
-LDFLAGS=@LDFLAGS@
+#LDFLAGS=@LDFLAGS@
 
-zoom: $(zoom_OBJECTS) $(zoom_DEPENDENCIES)
+zoom$(EXEEXT): $(zoom_OBJECTS) $(zoom_DEPENDENCIES)
 	@rm -f zoom
 	$(LINK) $(zoom_LDFLAGS) $(zoom_OBJECTS) $(zoom_LDADD) $(LIBS)
 endif
