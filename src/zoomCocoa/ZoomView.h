@@ -234,6 +234,8 @@ extern NSString* ZoomStyleAttributeName;
 
 - (void) zoomViewIsNotResizable;
 
+- (void) zoomWaitingForInput;
+
 @end
 
 // ZoomView input/output receivers

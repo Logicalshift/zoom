@@ -2379,6 +2379,10 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	NSEnumerator* orEnum = [outputReceivers objectEnumerator];
 	NSObject* or;
 	
+	if (delegate && [delegate respondsToSelector: @selector(zoomWaitingForInput)]) {
+		[delegate zoomWaitingForInput];
+	}
+	
 	while (or = [orEnum nextObject]) {
 		if ([or respondsToSelector: @selector(zoomWaitingForInput)]) {
 			[or zoomWaitingForInput];
