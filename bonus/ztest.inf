@@ -7,6 +7,8 @@
 
 Switches v6;
 
+Array abuf -> 256;
+
 Global standard_interpreter = 0;
 
 Class Test
@@ -15,10 +17,9 @@ Class Test
 	    return -1;
 	],
 	test_result -1,
-	Title "Unnamed test",
 	Display [;
 	    @set_colour 6 1;
-	    print (string) self.Title, ": ";
+	    print (name) self, ": ";
 
 	    if (self.test_result == -1)
 	    {

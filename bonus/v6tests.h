@@ -6,11 +6,11 @@
 ! ====================================
 
 Test colourTest "Version 6 colours test"
-    with Title "V6 colours",
+    with
     Run [ x c y;
 	for (x=2: x<10: x++)
 	{
-	    y = 12-x;
+	    y = 11-x;
 	    @set_colour x y;
 	    print "Colour ", x, "^";
 
@@ -90,7 +90,7 @@ Test colourTest "Version 6 colours test"
 
 #ifdef Foo;
 Test windowTest "V6 window test"
-    with Title "V6 window test",
+    with
     Run
 	[;
 	    @move_window 2 100 100;
