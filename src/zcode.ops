@@ -1992,8 +1992,8 @@ OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
       else
 	strcpy(fname, "table.dat");
 
-      stream_prints("\nPlease supply a filename for save\nFile: ");
-      stream_readline(fname, 255, 0);
+      stream_prints("\nPlease supply a filename for data save\n");
+      get_filename(save_fname, 255, 1);
 
       if (!(file = open_file_write(fname)))
 	{
@@ -2005,7 +2005,7 @@ OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
 
       close_file(file);
 	
-      store(stack, st, 1);
+      store(stack, st, argblock.arg[1]);
     }
 %}
 
@@ -2033,6 +2033,7 @@ OPCODE "restore"       EXT:0x01 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
     {
       char fname[256];
       ZFile* file;
+      int sz;
 
       if (argblock.arg[2] != 0)
         {
@@ -2044,8 +2045,10 @@ OPCODE "restore"       EXT:0x01 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
       else
 	strcpy(fname, "table.dat");
 
-      stream_prints("\nPlease supply a filename for restore\nFile: ");
-      stream_readline(fname, 255, 0);
+      stream_prints("\nPlease supply a filename for data restore\n");
+      get_filename(save_fname, 255, 0);
+
+      sz = get_file_size(fname);
 
       if (!(file = open_file(fname)))
 	{
@@ -2053,12 +2056,14 @@ OPCODE "restore"       EXT:0x01 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
 	  goto loop;
 	}
 
+      if (sz < (ZUWord)argblock.arg[1])
+	argblock.arg[1] = (ZUWord) sz;
       read_block2(Address(argblock.arg[0]),
 		  file, 0, (ZUWord)argblock.arg[1]);
 
       close_file(file);
 	
-      store(stack, st, 1);
+      store(stack, st, argblock.arg[1]);
     }
 %}
 

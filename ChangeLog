@@ -1,3 +1,12 @@
+2000-12-08  Andrew Hunter    <amdrew@logicalshift.co.uk>
+
+	* save/restore now display windows dialogue boxes. Unless its the X
+	version, o'course.
+	
+	* windows display drivers tidied up and polished off a bit more.
+	> polish drivers
+	The display drivers look a bit cleaner now.
+
 2000-12-07  Andrew Hunter    <andrew@logicalshift.co.uk>
 
 	* windows input now working, a few bugs fixed in windisplay.c
