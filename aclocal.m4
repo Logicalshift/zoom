@@ -663,27 +663,28 @@ AC_DEFUN(UTIL_CHECK_LDFLAG,
       LDFLAGS="$ac_OLD_LDFLAGS")
   ])
 
-dnl Detect the presence of Apple's Cocoa API
+dnl Detect the presence of Apple's Carbon API
 
 AC_DEFUN(COCOA_DETECT, [
-   AC_CACHE_CHECK([for Cocoa], cocoa_present, [
+   AC_CACHE_CHECK([for Carbon], carbon_present, [
      AC_TRY_COMPILE([
-	#include <Cocoa/Cocoa.h>
-	], [ NSApplicationMain(0, NULL); ],
+	#include <Carbon/Carbon.h>
+	], [ WindowRef w; SetWTitle(0, ""); ],
 	[
-	  cocoa_old_LDFLAGS="$LDFLAGS"
-	  LDFLAGS="$LDFLAGS -framework Cocoa"
+	  carbon_old_LDFLAGS="$LDFLAGS"
+	  LDFLAGS="$LDFLAGS -framework Carbon"
 	  AC_TRY_LINK([
-	    #include <Cocoa/Cocoa.h>
-	    ], [ NSApplicationMain(0, NULL); ],
-	    [ cocoa_present=yes ],
-	    [ cocoa_presnet=no ])
+	    #include <Carbon/Carbon.h>
+	    ], [  WindowRef w; SetWTitle(0, ""); ],
+	    [ carbon_present=yes ],
+	    [ carbon_present=no
+	      LDFLAGS="$carbon_old_LD_FLAGS" ])
 	],
-	cocoa_present=no)
+	carbon_present=no)
      ])
 
-   if test "x$cocoa_present" = "xyes"; then
-     LDFLAGS="$LDFLAGS -framework Cocoa"
+   if test "x$carbon_present" = "xyes"; then
+     LDFLAGS="$LDFLAGS -framework Carbon"
    fi
 ])
 
