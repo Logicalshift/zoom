@@ -481,8 +481,8 @@ void xfont_plot_string(xfont* f,
 	    xfttxt[i] = text[i];
 	  }
 
-	XftDrawString16(xft_drawable, &xft_colour[fore], f->data.Xft,
-			x, y, xfttxt, len);
+	XftDrawString16(xft_drawable, xdisplay_get_xft_colour(fore), 
+			f->data.Xft, x, y, xfttxt, len);
       }
       break;
 #endif
@@ -502,9 +502,9 @@ void xfont_plot_string(xfont* f,
 	  }
 	t1txt[i] = 0;
 
-	XSetForeground(x_display, gc, x_colour[fore].pixel);
+	XSetForeground(x_display, gc, xdisplay_get_pixel_value(fore));
 	if (back > -1)
-	  XSetBackground(x_display, gc, x_colour[back].pixel);
+	  XSetBackground(x_display, gc, xdisplay_get_pixel_value(back));
 	if (rc_get_antialias() && back > -1)
 	  {
 	    /*
@@ -536,13 +536,13 @@ void xfont_plot_string(xfont* f,
 	  xtxt[i].byte1 = (text[i]>>8)&255;
 	}
 
-      XSetForeground(x_display, gc, x_colour[fore].pixel);
+      XSetForeground(x_display, gc, xdisplay_get_pixel_value(fore));
       XSetFont(x_display, gc, f->data.X->fid);
       XDrawString16(x_display, draw, gc, x, y, xtxt, len);
       break;
       
     case XFONT_FONT3:
-      XSetForeground(x_display, gc, x_colour[fore].pixel);
+      XSetForeground(x_display, gc, xdisplay_get_pixel_value(fore));
       {
 	int pos;
 

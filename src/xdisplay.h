@@ -52,4 +52,9 @@ extern XftColor xft_colour[];
 extern XftDraw* xft_drawable;
 #endif
 
+extern long int xdisplay_get_pixel_value(int colour);
+#ifdef HAVE_XFT
+extern XftColor* xdisplay_get_xft_colour(int colour);
+#endif
+
 #endif

@@ -186,6 +186,94 @@ static inline void istrcpy(int* dest, const int* src)
 }
 
 /* === Functions specific to this display style === */
+static int     ntruecols = 0;
+static XColor* truecol = NULL;
+
+long int xdisplay_get_pixel_value(int colour)
+{
+  if (colour < 16)
+    {
+      /* Standard z-colour */
+
+      /* NOTE: colour 15 = transparent... */
+      return x_colour[colour+FIRST_ZCOLOUR].pixel;
+    }
+  else
+    {
+      XColor col;
+      int x;
+
+      /* True colour */
+      colour -= 16;
+
+      col.red   = (colour&0x001f)<<11;
+      col.green = (colour&0x03e0)<<6;
+      col.blue  = (colour&0x7c00)<<1;
+
+      /* Try to find this colour */
+      for (x=0; x<ntruecols; x++)
+	{
+	  long int err;
+	  int r,g,b;
+	  
+	  r = truecol[x].red   - col.red;
+	  g = truecol[x].green - col.green;
+	  b = truecol[x].blue  - col.blue;
+
+	  /* Sort of RMS error */
+	  err = (r>>8)*(r>>8) + (g>>8)*(g>>8) + (b>>8)*(b>>8);
+	  
+	  if (err <= 192)
+	    {
+	      return truecol[x].pixel;
+	    }
+	}
+
+      /* Try to allocate this colour */
+      if (!XAllocColor(x_display, DefaultColormap(x_display, x_screen),
+		       &col))
+	{
+	  int x;
+	  long int lowerror, lowerrorcol;
+
+	  lowerror = 196608;
+	  lowerrorcol = -1;
+
+	  /* Find the closest match instead... */
+	  for (x=FIRST_ZCOLOUR; x<FIRST_ZCOLOUR+8; x++)
+	    {
+	      long int err;
+	      int r,g,b;
+
+	      r = x_colour[x].red   - col.red;
+	      g = x_colour[x].green - col.green;
+	      b = x_colour[x].blue  - col.blue;
+
+	      /* Sort of RMS error */
+	      err = (r>>8)*(r>>8) + (g>>8)*(g>>8) + (b>>8)*(b>>8);
+ 
+	      if (err < lowerror)
+		{
+		  lowerrorcol = x;
+		  lowerror = err;
+		}
+	    }
+	  
+	  if (lowerrorcol == -1)
+	    zmachine_fatal("Unable to find a suitable colour for colour #%x\n", colour);
+	  
+	  return x_colour[lowerrorcol].pixel;
+	}
+      else
+	{
+	  ntruecols++;
+	  truecol = realloc(truecol, sizeof(XColor)*ntruecols);
+	  truecol[ntruecols-1] = col;
+
+	  return col.pixel;
+	}
+    }
+}
 
 #ifdef HAVE_XFT
 static void alloc_xft_colours(void)
@@ -207,6 +295,102 @@ static void alloc_xft_colours(void)
 			      &xft_colour[x]))
 	{
 	  fprintf(stderr, "Unable to allocate colour for Xft\n");
+	}
+    }
+}
+
+static int           nxftruecols = 0;
+static XftColor*     xftruecol = NULL;
+static XRenderColor* rendercol = NULL;
+
+XftColor* xdisplay_get_xft_colour(int colour)
+{
+  if (colour < 16)
+    {
+      /* Standard z-colour */
+
+      /* NOTE: colour 15 = transparent... */
+      return &xft_colour[colour+FIRST_ZCOLOUR];
+    }
+  else
+    {
+      XRenderColor col;
+      XftColor     xft_col;
+      int x;
+
+      /* True colour */
+      colour -= 16;
+
+      col.red   = (colour&0x001f)<<11;
+      col.green = (colour&0x03e0)<<6;
+      col.blue  = (colour&0x7c00)<<1;
+      col.alpha = 0xffff;
+
+      /* Try to find this colour */
+      for (x=0; x<nxftruecols; x++)
+	{
+	  long int err;
+	  int r,g,b;
+	  
+	  r = rendercol[x].red   - col.red;
+	  g = rendercol[x].green - col.green;
+	  b = rendercol[x].blue  - col.blue;
+
+	  /* Sort of RMS error */
+	  err = (r>>8)*(r>>8) + (g>>8)*(g>>8) + (b>>8)*(b>>8);
+	  
+	  if (err <= 192)
+	    {
+	      return &xftruecol[x];
+	    }
+	}
+
+      /* Try to allocate this colour */
+      if (!XftColorAllocValue(x_display, DefaultVisual(x_display, x_screen),
+			      DefaultColormap(x_display, x_screen),
+			      &col,
+			      &xft_col))
+	{
+	  int x;
+	  long int lowerror, lowerrorcol;
+
+	  lowerror = 196608;
+	  lowerrorcol = -1;
+
+	  /* Find the closest match instead... */
+	  for (x=FIRST_ZCOLOUR; x<FIRST_ZCOLOUR+8; x++)
+	    {
+	      long int err;
+	      int r,g,b;
+
+	      r = x_colour[x].red - col.red;
+	      g = x_colour[x].green - col.green;
+	      b = x_colour[x].blue - col.blue;
+
+	      /* Sort of RMS error */
+	      err = (r>>8)*(r>>8) + (g>>8)*(g>>8) + (b>>8)*(b>>8);
+
+	      if (err < lowerror)
+		{
+		  lowerrorcol = x;
+		  lowerror = err;
+		}
+	    }
+	  
+	  if (lowerrorcol == -1)
+	    zmachine_fatal("Unable to find a suitable colour for colour #%x\n", colour);
+	  
+	  return &xft_colour[lowerrorcol];
+	}
+      else
+	{
+	  nxftruecols++;
+	  xftruecol = realloc(xftruecol, sizeof(XftColor)*nxftruecols);
+	  xftruecol[nxftruecols-1] = xft_col;
+	  rendercol = realloc(rendercol, sizeof(XRenderColor)*nxftruecols);
+	  rendercol[nxftruecols-1] = col;
+
+	  return &xftruecol[nxftruecols-1];
 	}
     }
 }
@@ -267,7 +451,7 @@ static void draw_caret(void)
 		       CapButt, JoinBevel);
 
   XSetForeground(x_display, x_caretgc,
-		 x_colour[FIRST_ZCOLOUR+CURWIN.back].pixel ^
+		 xdisplay_get_pixel_value(CURWIN.back) ^
 		 x_colour[4].pixel);
 
   ison = caret_on;
@@ -410,8 +594,8 @@ static void draw_input_text(void)
       input_x += xp; input_y += yp;
       caret_x += xp; caret_y += yp;
 
-      fg = pix_fore - FIRST_ZCOLOUR;
-      bg = pix_back - FIRST_ZCOLOUR;
+      fg = pix_fore;
+      bg = pix_back;
     }
   else
     {
@@ -447,7 +631,7 @@ static void draw_input_text(void)
 			       text_buf,
 			       istrlen(text_buf));
 
-      XSetForeground(x_display, x_wingc, x_colour[bg+FIRST_ZCOLOUR].pixel);
+      XSetForeground(x_display, x_wingc, xdisplay_get_pixel_value(bg));
       XFillRectangle(x_display, x_mainwin, x_wingc,
 		     input_x + BORDER_SIZE,
 		     caret_y + BORDER_SIZE,
@@ -458,7 +642,7 @@ static void draw_input_text(void)
 				      text_buf,
 				      buf_offset);
 
-      xfont_set_colours(fg+FIRST_ZCOLOUR, bg+FIRST_ZCOLOUR);
+      xfont_set_colours(fg, bg);
 #ifdef HAVE_XFT
       { XftDraw* xft_lastdraw; /* Save the last drawable */
       if (xft_drawable != NULL && xft_maindraw != NULL)
@@ -803,14 +987,15 @@ static void draw_window()
 			  if (bg == 255)
 			    bg = fg;
 			  
-			  XSetForeground(x_display, x_wingc, x_colour[bg+FIRST_ZCOLOUR].pixel);
+			  XSetForeground(x_display, x_wingc,
+					 xdisplay_get_pixel_value(bg));
 			  XFillRectangle(x_display, x_drawable, x_wingc,
 					 x*xfont_x + BORDER_SIZE,
 					 y*xfont_y + BORDER_SIZE,
 					 len*xfont_x,
 					 xfont_y);
 			  
-			  xfont_set_colours(fg+FIRST_ZCOLOUR, bg+FIRST_ZCOLOUR);
+			  xfont_set_colours(fg, bg);
 			  xfont_plot_string(font[fn],
 					    x_drawable, x_wingc,
 					    x*xfont_x+BORDER_SIZE,
@@ -906,7 +1091,7 @@ static void draw_window()
 	      if (line != NULL)
 		{
 		  XSetForeground(x_display, x_wingc,
-				 x_colour[text_win[win].winback+FIRST_ZCOLOUR].pixel);
+				 xdisplay_get_pixel_value(text_win[win].winback));
 		  if (line->baseline-line->ascent-scrollpos > text_win[win].winsy)
 		    {
 		      XFillRectangle(x_display, x_drawable, x_wingc,
@@ -962,7 +1147,7 @@ static void draw_window()
 			      if (phase == 0)
 				{
 				  XSetForeground(x_display, x_wingc,
-						 x_colour[text->bg+FIRST_ZCOLOUR].pixel);
+						 xdisplay_get_pixel_value(text->bg));
 				  XFillRectangle(x_display, x_drawable, x_wingc,
 						 width + BORDER_SIZE,
 						 line->baseline + BORDER_SIZE - line->ascent - scrollpos,
@@ -971,8 +1156,8 @@ static void draw_window()
 				}
 			      else
 				{
-				  xfont_set_colours(text->fg+FIRST_ZCOLOUR, 
-						    text->bg+FIRST_ZCOLOUR);
+				  xfont_set_colours(text->fg, 
+						    text->bg);
 				  xfont_plot_string(font[text->font],
 						    x_drawable, x_wingc,
 						    width + BORDER_SIZE,
@@ -996,7 +1181,8 @@ static void draw_window()
 		      /* Fill in to the end of the line */
 		      if (phase == 0)
 			{
-			  XSetForeground(x_display, x_wingc, x_colour[text_win[win].winback+FIRST_ZCOLOUR].pixel);
+			  XSetForeground(x_display, x_wingc, 
+					 xdisplay_get_pixel_value(text_win[win].winback));
 			  XFillRectangle(x_display, x_drawable, x_wingc,
 					 width + BORDER_SIZE,
 					 line->baseline - line->ascent + BORDER_SIZE - scrollpos,
@@ -1012,7 +1198,8 @@ static void draw_window()
 		}
 	      
 	      /* Fill in to the bottom of the window */
-	      XSetForeground(x_display, x_wingc, x_colour[text_win[win].winback+FIRST_ZCOLOUR].pixel);
+	      XSetForeground(x_display, x_wingc,
+			     xdisplay_get_pixel_value(text_win[win].winback));
 	      if ((lasty-BORDER_SIZE) < win_y)
 		{
 		  XFillRectangle(x_display, x_drawable, x_wingc,
@@ -1096,7 +1283,7 @@ static void draw_window()
       XFillRectangle(x_display, x_mainwin, x_wingc,
 		     clip.x, clip.y, morew+1, moreh+1);
 
-      xfont_set_colours(0+FIRST_ZCOLOUR, 4);
+      xfont_set_colours(0, 4);
       xfont_plot_string(font[style_font[2]],
 			x_mainwin, x_wingc,
 			win_x+BORDER_SIZE*2-(morew+1), 
@@ -2386,7 +2573,7 @@ void display_initialise(void)
   x_caretgc = XCreateGC(x_display, x_mainwin, 0, NULL);
 
   XSetForeground(x_display, x_caretgc,
-		 x_colour[FIRST_ZCOLOUR+DEFAULT_FORE].pixel);
+		 xdisplay_get_pixel_value(DEFAULT_FORE));
   XSetFunction(x_display, x_caretgc, GXxor);
   XSetLineAttributes(x_display, x_caretgc, 2, LineSolid, CapButt, JoinBevel);
   
@@ -2574,7 +2761,7 @@ int display_init_pixmap(int width, int height)
 
   x_pixgc = XCreateGC(x_display, x_pixmap, 0, NULL);
 
-  XSetForeground(x_display, x_pixgc, x_colour[FIRST_ZCOLOUR+1].pixel);
+  XSetForeground(x_display, x_pixgc, xdisplay_get_pixel_value(1));
   XFillRectangle(x_display, x_pixmap, x_pixgc, 0,0, width, height);
 
   XResizeWindow(x_display, x_mainwin,
@@ -2598,12 +2785,53 @@ int display_init_pixmap(int width, int height)
 
 void display_pixmap_cols(int fore, int back)
 {
-  pix_fore = fore + FIRST_ZCOLOUR;
-  pix_back = back + FIRST_ZCOLOUR;
+  pix_fore = fore;
+  pix_back = back;
   if (back == -1)
     pix_back = -1;
   if (fore < 0)
-    pix_fore = DEFAULT_FORE + FIRST_ZCOLOUR;
+    pix_fore = DEFAULT_FORE;
+}
+
+int display_get_pix_colour(int x, int y)
+{
+  /* Blecherous, but there you go */
+  XImage* teeny;
+  unsigned long px;
+  XColor out;
+
+  int res;
+  
+  teeny = XGetImage(x_display, x_pixmap, x, y, 1, 1, AllPlanes, XYPixmap);
+  px = XGetPixel(teeny, 0, 0);
+  XDestroyImage(teeny);
+
+  out.pixel = px;
+  XQueryColor(x_display, DefaultColormap(x_display, x_screen),
+	      &out);
+
+  /* See if we have a standard colour */
+  for (x=FIRST_ZCOLOUR; x<FIRST_ZCOLOUR+8; x++)
+    {
+      long int err;
+      int r,g,b;
+      
+      r = x_colour[x].red   - out.red;
+      g = x_colour[x].green - out.green;
+      b = x_colour[x].blue  - out.blue;
+      
+      /* Sort of RMS error */
+      err = (r>>8)*(r>>8) + (g>>8)*(g>>8) + (b>>8)*(b>>8);
+      
+      if (err <= 192)
+	{
+	  return x-FIRST_ZCOLOUR;
+	}
+    }
+  
+  res = (out.red>>11)|((out.green>>11)<<5)|((out.blue>>11)<<10);
+
+  return res+16;
 }
 
 void display_plot_gtext(const int* text,
@@ -2627,7 +2855,7 @@ void display_plot_gtext(const int* text,
   if ((style&1))
     { fg = pix_back; bg = pix_fore; }
   if (fg < 0)
-    fg = FIRST_ZCOLOUR+7;
+    fg = 7;
 
   ft = style_font[(style>>1)&15];
 
@@ -2640,28 +2868,11 @@ void display_plot_gtext(const int* text,
   if (bg >= 0)
     {
       XSetForeground(x_display, x_pixgc,
-		     x_colour[bg].pixel);
+		     xdisplay_get_pixel_value(bg));
       XFillRectangle(x_display, x_pixmap, x_pixgc,
 		     x, y-xfont_get_ascent(font[ft]),
 		     width+0.5,
 		     height+0.5);
-    }
-  else if (bg == -1)
-    {
-      /* Blecherous, but there you go */
-      XImage* teeny;
-      unsigned long px;
-
-      teeny = XGetImage(x_display, x_pixmap, x, y, 1, 1, AllPlanes, XYPixmap);
-      px = XGetPixel(teeny, 0, 0);
-      XDestroyImage(teeny);
-
-      XSetForeground(x_display, x_pixgc,
-		     px);
-      XFillRectangle(x_display, x_pixmap, x_pixgc,
-		     x, y-xfont_get_ascent(font[ft]),
-		     width+0.5,
-		     height+0.5);   
     }
   xfont_plot_string(font[ft], x_pixmap, x_pixgc,
 		    x, y,
@@ -2675,7 +2886,7 @@ void display_plot_rect(int x, int y,
 		       int width, int height)
 {
   XSetForeground(x_display, x_pixgc,
-		 x_colour[pix_fore].pixel);
+		 xdisplay_get_pixel_value(pix_fore));
   XFillRectangle(x_display, x_pixmap, x_pixgc,
 		 x, y,
 		 width, height);

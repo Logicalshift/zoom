@@ -76,7 +76,7 @@
 		      * interpreter is conformant to the ZMachine
 		      * specification v1.0
 		      */
-#undef  SPEC_11      /* Define to implement spec 1.1 (draft 6) */
+#define SPEC_11      /* Define to implement spec 1.1 (draft 6) */
 #undef  GRAPHICAL    /*
 		      * Define to set the default behaviour to mimic
 		      * that of the Beyond Zork interpreter

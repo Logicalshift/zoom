@@ -125,10 +125,11 @@ extern int  display_get_mouse_y (void);
 extern int   display_init_pixmap    (int width, int height);
 extern void  display_plot_rect      (int x, int y, 
 				     int width, int height);
-extern void  display_scroll_region  (int x, int y, 
-				     int width, int height,
-				     int xoff, int yoff);
+extern void  display_scroll_region   (int x, int y, 
+				      int width, int height,
+				      int xoff, int yoff);
 extern void  display_pixmap_cols     (int fg, int bg);
+extern int   display_get_pix_colour  (int x, int y);
 extern void  display_plot_gtext      (const int*, int len, 
 				      int style, int x, int y);
 extern void  display_plot_image      (BlorbImage*, int x, int y);

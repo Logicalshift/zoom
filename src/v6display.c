@@ -429,8 +429,12 @@ void v6_set_colours(int fg, int bg)
     fg = DEFAULT_FORE;
   if (bg == -1)
     bg = DEFAULT_BACK;
+
   if (bg == -3)
-    bg = -1;
+    bg = display_get_pix_colour(ACTWIN.curx, ACTWIN.cury);
+  if (fg == -3)
+    bg = display_get_pix_colour(ACTWIN.curx, ACTWIN.cury);
+
   ACTWIN.fore = fg;
   ACTWIN.back = bg;
 

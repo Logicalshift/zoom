@@ -3006,11 +3006,24 @@ OPCODE "picture_table" EXT:0x1c               VERSION 6
 ####                           ----// 888 \\----                           ####
 # Standard 1.1 opcodes
 
-OPCODE "set_true_colour" EXT:0x0d VERSION 5,6,7,8
+OPCODE "set_true_colour" EXT:0x0d VERSION 5,7,8
 %{
+  int fore, back;
+
 #ifndef SPEC_11
   zmachine_warning("set_true_colour has no effect before standard 1.1");
 #else
+  stream_flush_buffer();
+
+  fore = arg1+16;
+  back = arg2+16;
+
+  if (arg1 < 0)
+    fore = arg1;
+  if (arg2 < 0)
+    back = arg2;
+
+  display_set_colour(fore, back);
 #endif
 %}
 
