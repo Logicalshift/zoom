@@ -217,4 +217,41 @@ static NSString* blankLine(int length) {
 	}
 }
 
+// = NSCoding =
+- (void) encodeWithCoder: (NSCoder*) encoder {
+	[encoder encodeValueOfObjCType: @encode(int)
+								at: &startLine];
+	[encoder encodeValueOfObjCType: @encode(int)
+								at: &endLine];
+	[encoder encodeValueOfObjCType: @encode(int)
+								at: &xpos];
+	[encoder encodeValueOfObjCType: @encode(int)
+								at: &ypos];
+	[encoder encodeObject: lines];
+	[encoder encodeObject: backgroundColour];
+}
+
+- (id)initWithCoder:(NSCoder *)decoder {
+	self = [super init];
+	
+    if (self) {
+		[decoder decodeValueOfObjCType: @encode(int)
+									at: &startLine];
+		[decoder decodeValueOfObjCType: @encode(int)
+									at: &endLine];
+		[decoder decodeValueOfObjCType: @encode(int)
+									at: &xpos];
+		[decoder decodeValueOfObjCType: @encode(int)
+									at: &ypos];
+		lines = [[decoder decodeObject] retain];
+		backgroundColour = [[decoder decodeObject] retain];
+    }
+	
+    return self;
+}
+
+- (void) setZoomView: (ZoomView*) view {
+	theView = view;
+}
+
 @end

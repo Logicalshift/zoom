@@ -14,9 +14,17 @@
     NSData* gameData;
 	
 	ZoomStory* story;
+	ZoomStoryID* storyId;
+	
+	NSData* autosaveData;
 }
 
 - (NSData*) gameData;
 - (ZoomStory*) storyInfo;
+- (ZoomStoryID*) storyId;
+
+- (void) loadDefaultAutosave;
+- (void) setAutosaveData: (NSData*) data;
+- (NSData*) autosaveData;
 
 @end

@@ -9,6 +9,7 @@
 #import "ZoomClientController.h"
 #import "ZoomPreferenceWindow.h"
 #import "ZoomGameInfoController.h"
+#import "ZoomStoryOrganiser.h"
 
 #import "ZoomAppDelegate.h"
 
@@ -39,6 +40,17 @@
 
 - (void) zMachineStarted: (id) sender {
     [[zoomView zMachine] loadStoryFile: [[self document] gameData]];
+	
+	if ([[self document] autosaveData] != nil) {
+		NSUnarchiver* decoder;
+		
+		decoder = [[NSUnarchiver alloc] initForReadingWithData: [[self document] autosaveData]];
+		
+		[zoomView restoreAutosaveFromCoder: decoder];
+		
+		[decoder release];
+		[[self document] setAutosaveData: nil];
+	}
 }
 
 - (void) zMachineFinished: (id) sender {
@@ -100,8 +112,33 @@
 	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
 }
 
-- (void)windowWillClose:(NSNotification *)aNotification {
+- (BOOL) windowShouldClose: (id) sender {	
+	// Record any game information
 	[self recordGameInfo: self];
+	
+	// Record autosave data
+	NSMutableData* autosaveData = [[NSMutableData alloc] init];
+	NSArchiver* theCoder = [[NSArchiver alloc] initForWritingWithMutableData: autosaveData];
+	
+	BOOL autosave = [zoomView createAutosaveDataWithCoder: theCoder];
+	
+	[theCoder release];
+	
+	if (autosave) {
+		// Produce an autosave file
+		NSString* autosaveDir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: [[self document] storyId]];
+		NSString* autosaveFile = [autosaveDir stringByAppendingPathComponent: @"autosave.zoomauto"];
+		
+		[autosaveData writeToFile: autosaveFile atomically: YES];
+	}
+	
+	[autosaveData release];
+	
+	return YES;
+}
+
+- (void)windowWillClose:(NSNotification *)aNotification {
+	// Can't do stuff here: [self document] has been set to nil
 	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
 }
 

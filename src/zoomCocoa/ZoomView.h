@@ -71,6 +71,10 @@ extern NSString* ZoomStyleAttributeName;
 	// Command history
 	NSMutableArray* commandHistory;
 	int				historyPos;
+	
+	// Autosave
+	NSData* lastAutosave;
+	int		upperWindowsToRestore;
 }
 
 // The delegate
@@ -134,6 +138,10 @@ extern NSString* ZoomStyleAttributeName;
 - (void) preferencesHaveChanged: (NSNotification*)not;
 
 - (void) reformatWindow;
+
+// Autosaving
+- (BOOL) createAutosaveDataWithCoder: (NSCoder*) encoder;
+- (void) restoreAutosaveFromCoder: (NSCoder*) decoder;
 
 @end
 

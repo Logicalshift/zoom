@@ -28,6 +28,8 @@ extern NSAutoreleasePool* displayPool;
     BOOL             filePromptFinished;
     NSObject<ZFile>* lastFile;
     int              lastSize;
+	
+	BOOL wasRestored;
 }
 
 - (NSObject<ZDisplay>*) display;

@@ -12,6 +12,7 @@
 #import "ZoomStoryID.h"
 #import "ZoomAppDelegate.h"
 #import "ZoomGameInfoController.h"
+#import "ZoomClient.h"
 
 #import "ifmetadata.h"
 
@@ -261,8 +262,15 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	
 	// FIXME: multiple selections?, actually save/restore autosaves
 	if (filename) {
-		[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfFile: filename
-																				display: YES];
+		ZoomClient* newDoc = [[NSDocumentController sharedDocumentController] openDocumentWithContentsOfFile: filename
+																									display: NO];
+		
+		if ([[newDoc windowControllers] count] == 0) {
+			[newDoc makeWindowControllers];
+		}
+		
+		[newDoc loadDefaultAutosave];
+		[[[newDoc windowControllers] objectAtIndex: 0] showWindow: self];
 		
 		[self configureFromMainTableSelection];
 	}
@@ -617,6 +625,14 @@ int tableSorter(id a, id b, void* context) {
 			[continueButton setEnabled: YES];
 		} else {
 			[newgameButton setEnabled: YES];
+			
+			NSString* autosaveDir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: ident];
+			NSString* autosaveFile = [autosaveDir stringByAppendingPathComponent: @"autosave.zoomauto"];
+
+			if ([[NSFileManager defaultManager] fileExistsAtPath: autosaveFile]) {
+				// Can restore an autosave
+				[continueButton setEnabled: YES];
+			}
 		}
 	}
 	

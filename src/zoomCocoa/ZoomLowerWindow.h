@@ -11,7 +11,7 @@
 #import "ZoomProtocol.h"
 #import "ZoomView.h"
 
-@interface ZoomLowerWindow : NSObject<ZLowerWindow> {
+@interface ZoomLowerWindow : NSObject<ZLowerWindow, NSCoding> {
     ZoomView* zoomView;
 	
 	ZStyle* backgroundStyle;
@@ -20,5 +20,7 @@
 - (id) initWithZoomView: (ZoomView*) zoomView;
 
 - (ZStyle*) backgroundStyle;
+
+- (void) setZoomView: (ZoomView*) view;
 
 @end

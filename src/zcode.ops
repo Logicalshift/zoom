@@ -1411,6 +1411,8 @@ OPCODE "sread"          VAR:0x04 ARGS:2               VERSION 1,2,3
   int* buf;
   int x;
 
+  pc -= (2+padding); /* HACK: allow autosave */
+
   stream_flush_buffer();
 
   mem = machine.memory + (ZUWord) argblock.arg[0];
@@ -1452,16 +1454,22 @@ OPCODE "sread"          VAR:0x04 ARGS:2               VERSION 1,2,3
     }
 
   free(buf);
+
+  pc += (2+padding); /* HACK: allow autosave */
 %}
 
 OPCODE "sread"          VAR:0x04 ARGS:4       CANJUMP VERSION 4
 %{
+  pc -= (2+padding); /* HACK: allow autosave */
   zcode_op_sread_4(&pc, stack, &argblock);
+  pc += (2+padding); /* HACK: allow autosave */
 %}
 
 OPCODE "aread"          VAR:0x04 ARGS:4 STORE CANJUMP VERSION 5,7,8
 %{
+  pc -= (3+padding); /* HACK: allow autosave */
   zcode_op_aread_5678(&pc, stack, &argblock, st);
+  pc += (3+padding); /* HACK: allow autosave */
 %}
 
 OPCODE "print_char"     VAR:0x05 ARGS:1               VERSION all
@@ -1770,6 +1778,8 @@ OPCODE "sound_effect"   VAR:0x15                      VERSION all # 3,4,5,6,7,8
 
 OPCODE "read_char"      VAR:0x16 ARGS:3 STORE CANJUMP VERSION 4,5,7,8
 %{
+  pc -= (3+padding); /* HACK: allow autosave */
+
   stream_flush_buffer();
 
   if (argblock.n_args < 2)
@@ -1780,6 +1790,8 @@ OPCODE "read_char"      VAR:0x16 ARGS:3 STORE CANJUMP VERSION 4,5,7,8
     {
       zcode_op_readchar(&pc, stack, &argblock, st);
     }
+
+  pc += (3+padding); /* HACK: allow autosave */
 %}
 
 OPCODE "scan_table"     VAR:0x17        BRANCH STORE  VERSION 4,5,6,7,8
@@ -2307,9 +2319,13 @@ OPCODE "check_unicode" EXT:0x0c ARGS:1 STORE  VERSION 5,7,8
 
 OPCODE "aread"          VAR:0x04 ARGS:4 STORE CANJUMP VERSION 6
 %{
+  pc -= (3+padding); /* HACK: allow autosave */
+  
   stream_flush_buffer();
   v6_set_caret();
   zcode_op_aread_5678(&pc, stack, &argblock, st);
+  
+  pc += (3+padding);
 %}
 
 OPCODE "split_window"   VAR:0x0a ARGS:1               VERSION 6
@@ -2364,6 +2380,8 @@ OPCODE "set_text_style" VAR:0x11 ARGS:1               VERSION 6
 
 OPCODE "read_char"      VAR:0x16 ARGS:3 STORE CANJUMP VERSION 6
 %{
+  pc -= (3+padding); /* HACK: allow autosave */
+
   stream_flush_buffer();
   v6_set_caret();
 
@@ -2375,6 +2393,8 @@ OPCODE "read_char"      VAR:0x16 ARGS:3 STORE CANJUMP VERSION 6
     {
       zcode_op_readchar(&pc, stack, &argblock, st);
     }
+	
+  pc += (3+padding); /* HACK: allow autosave */
 %}
 
 OPCODE "print_table"    VAR:0x1e                      VERSION 6

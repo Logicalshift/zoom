@@ -22,6 +22,7 @@
 #include "stream.h"
 #include "blorb.h"
 #include "v6display.h"
+#include "state.h"
 
 @implementation ZoomZMachine
 
@@ -84,6 +85,23 @@
     // Create the machine file
     ZDataFile* file = [[ZDataFile alloc] initWithData: storyFile];
     machineFile = open_file_from_object([file autorelease]);
+	
+	// Start initialising the Z-Machine
+	// (We do this so that we can load a save state at any time after this call)
+	
+	wasRestored = NO;
+	
+    // RNG
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    random_seed(tv.tv_sec^tv.tv_usec);
+	
+    // Options
+    rc_load();
+	
+    // Load the story
+    machine.story_length = get_size_of_file(machineFile);
+    zmachine_load_file(machineFile, &machine);
 }
 
 - (BOOL) loadResourcesFromData: (in bycopy NSData*) resources {
@@ -114,18 +132,6 @@
     display = [disp retain];
 
     // OK, we can now set up the ZMachine and get running
-
-    // RNG
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    random_seed(tv.tv_sec^tv.tv_usec);
-
-    // Options
-    rc_load();
-
-    // Load the story
-    machine.story_length = get_size_of_file(machineFile);
-    zmachine_load_file(machineFile, &machine);
 
     // Setup the display
     windows[0] = NULL;
@@ -172,30 +178,30 @@
 
             display_set_colour(0, 7); display_set_font(0);
             display_set_window(0);
-            zmachine_run(3, NULL);
+            if (!wasRestored) zmachine_run(3, NULL); else zmachine_runsome(3, machine.zpc);
             break;
 #endif
 #ifdef SUPPORT_VERSION_4
         case 4:
-            zmachine_run(4, NULL);
+            if (!wasRestored) zmachine_run(4, NULL); else zmachine_runsome(4, machine.zpc);
             break;
 #endif
 #ifdef SUPPORT_VERSION_5
         case 5:
-            zmachine_run(5, NULL);
+            if (!wasRestored) zmachine_run(5, NULL); else zmachine_runsome(5, machine.zpc);
             break;
         case 7:
-            zmachine_run(7, NULL);
+            if (!wasRestored) zmachine_run(7, NULL); else zmachine_runsome(7, machine.zpc);
             break;
         case 8:
-            zmachine_run(8, NULL);
+            if (!wasRestored) zmachine_run(8, NULL); else zmachine_runsome(8, machine.zpc);
             break;
 #endif
 #ifdef SUPPORT_VERSION_6
         case 6:
             v6_startup();
             v6_set_cursor(1,1);
-            zmachine_run(6, NULL);
+            if (!wasRestored) zmachine_run(6, NULL); else zmachine_runsome(6, machine.zpc);
             break;
 #endif
 
@@ -212,6 +218,28 @@
 
 // = Debugging =
 - (NSData*) staticMemory {
+}
+
+// = Autosave =
+- (NSData*) createGameSave {
+	// Create a save game, for autosave purposes
+	int len;
+	
+	void* gameData = state_compile(&machine.stack, machine.zpc, &len, 1);
+	
+	NSData* result = [NSData dataWithBytes: gameData length: len];
+	
+	free(gameData);
+	
+	return result;
+}
+
+- (void) restoreSaveState: (NSData*) saveData {
+	const ZByte* gameData = [saveData bytes];
+	
+	// NOTE: suppresses a warning (but it should be OK)
+	state_decompile((ZByte*)gameData, &machine.stack, &machine.zpc, [saveData length]);
+	wasRestored = YES;
 }
 
 // = Receiving text/characters =

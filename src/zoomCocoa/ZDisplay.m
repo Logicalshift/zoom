@@ -108,7 +108,7 @@ void display_initialise(void) {
 	if (currentStyle) [currentStyle release];
     currentStyle = [[ZStyle alloc] init];
 
-    display_clear();
+    //display_clear(); (Commented out to support autosave)
 }
 
 void display_reinitialise(void) {

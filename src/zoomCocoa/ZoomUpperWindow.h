@@ -11,7 +11,7 @@
 #import "ZoomView.h"
 
 @class ZoomView;
-@interface ZoomUpperWindow : NSObject<ZUpperWindow> {
+@interface ZoomUpperWindow : NSObject<ZUpperWindow, NSCoding> {
     ZoomView* theView;
 
     int startLine, endLine;
@@ -30,5 +30,7 @@
 - (void)     cutLines;
 
 - (void) reformatLines;
+
+- (void) setZoomView: (ZoomView*) view;
 
 @end

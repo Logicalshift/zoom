@@ -72,4 +72,23 @@
     [zoomView displayMoreIfNecessary];
 }
 
+// = NSCoding =
+- (void) encodeWithCoder: (NSCoder*) encoder {
+	[encoder encodeObject: backgroundStyle];
+}
+
+- (id)initWithCoder:(NSCoder *)decoder {
+	self = [super init];
+	
+    if (self) {
+		backgroundStyle = [[decoder decodeObject] retain];
+    }
+	
+    return self;
+}
+
+- (void) setZoomView: (ZoomView*) view {
+	zoomView = view;
+}
+
 @end

@@ -49,6 +49,9 @@ typedef enum {
 - (BOOL) loadResourcesFromFile: (in bycopy NSFileHandle*) file;
 - (BOOL) loadResourcesFromZFile: (in byref NSObject<ZFile>*) file;
 
+// Restoring game state
+- (void) restoreSaveState: (in bycopy NSData*) gameSave;
+
 // Running
 - (oneway void) startRunningInDisplay: (in byref NSObject<ZDisplay>*) display;
 
@@ -66,6 +69,10 @@ typedef enum {
 - (oneway void) filePromptCancelled;
 - (oneway void) promptedFileIs: (in byref NSObject<ZFile>*) file
                           size: (int) size;
+
+// Obtaining game state
+- (out bycopy NSData*) createGameSave;
+
 @end
 
 // == Client-side objects ==

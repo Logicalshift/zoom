@@ -50,4 +50,7 @@ extern NSString* ZoomStoryOrganiserChangedNotification;
 - (NSArray*) storyFilenames;
 - (NSArray*) storyIdents;
 
+// Story-specific data
+- (NSString*) directoryForIdent: (ZoomStoryID*) ident;
+
 @end

@@ -6,6 +6,8 @@
 //  Copyright (c) 2004 Andrew Hunter. All rights reserved.
 //
 
+#import <Cocoa/Cocoa.h>
+
 #import "ZoomStoryOrganiser.h"
 
 NSString* ZoomStoryOrganiserChangedNotification = @"ZoomStoryOrganiserChangedNotification";
@@ -240,7 +242,6 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	
 	if (oldFilename && oldIdent && [oldFilename isEqualToString: filename] && [oldIdent isEqualTo: ident]) {
 		// Nothing to do
-		NSLog(@"ZZzz");
 		[storyLock unlock];
 		return;
 	}
@@ -295,6 +296,27 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 
 - (NSArray*) storyIdents {
 	return [[storyIdents copy] autorelease];
+}
+
+// Story-specific data
+- (NSString*) directoryForIdent: (ZoomStoryID*) ident {
+	NSString* confDir = [[NSApp delegate] zoomConfigDirectory];
+	
+	if (!confDir) return nil;
+	confDir = [confDir stringByAppendingPathComponent: [ident description]];
+	if (!confDir) return nil;
+	
+	if (![[NSFileManager defaultManager] fileExistsAtPath: confDir]) {
+		[[NSFileManager defaultManager] createDirectoryAtPath: confDir
+												   attributes: nil];
+	}
+	
+	BOOL isDir;
+	if (![[NSFileManager defaultManager] fileExistsAtPath: confDir
+											  isDirectory: &isDir]) return nil;
+	if (!isDir) return nil;
+	
+	return confDir;
 }
 
 @end

@@ -57,6 +57,10 @@ static void finalizeViews(void) {
 
         // Yep, we autoresize our subviews
         [self setAutoresizesSubviews: YES];
+		
+		// Autosave
+		lastAutosave = nil;
+		upperWindowsToRestore = 0;
 
 		// Default scale factor
 		scaleFactor = 1.0;
@@ -185,6 +189,7 @@ static void finalizeViews(void) {
     [upperWindowBuffer release];
 	[viewPrefs release];
 	[commandHistory release];
+	if (lastAutosave) [lastAutosave release];
 
     [super dealloc];
 }
@@ -219,6 +224,9 @@ static void finalizeViews(void) {
 
 // = ZDisplay functions =
 - (NSObject<ZLowerWindow>*) createLowerWindow {
+	// Can only have one lower window
+	if ([lowerWindows count] > 0) return [lowerWindows objectAtIndex: 0];
+	
     ZoomLowerWindow* win = [[ZoomLowerWindow allocWithZone: [self zone]]
         initWithZoomView: self];
 
@@ -229,6 +237,13 @@ static void finalizeViews(void) {
 }
 
 - (out byref NSObject<ZUpperWindow>*) createUpperWindow {
+	if (upperWindowsToRestore > 0) {
+		// Restoring upper windows from autosave
+		upperWindowsToRestore--;
+		return [upperWindows objectAtIndex: [upperWindows count] - (upperWindowsToRestore+1)];
+	}
+	
+	// Otherwise, create a brand new upper window
     ZoomUpperWindow* win = [[ZoomUpperWindow allocWithZone: [self zone]]
         initWithZoomView: self];
 
@@ -263,6 +278,9 @@ static void finalizeViews(void) {
 
 // Set whether or not we recieve certain types of data
 - (void) shouldReceiveCharacters {
+	if (lastAutosave) [lastAutosave release];
+	lastAutosave = [[zMachine createGameSave] retain];
+	
     [self rearrangeUpperWindows];
 
     int currentSize = [self upperWindowSize];
@@ -289,6 +307,9 @@ static void finalizeViews(void) {
 }
 
 - (void) shouldReceiveText: (int) maxLength {
+	if (lastAutosave) [lastAutosave release];
+	lastAutosave = [[zMachine createGameSave] retain];
+
     [self rearrangeUpperWindows];
 
     int currentSize = [self upperWindowSize];
@@ -1014,8 +1035,13 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     NSString* finishString = @"[ The game has finished ]";
     if ([zoomTask terminationStatus] != 0) {
         finishString = @"[ The Zoom interpreter has quit unexpectedly ]";
-    }
-
+    } else {
+		if (lastAutosave != nil) {
+			[lastAutosave release];
+			lastAutosave = nil;
+		}
+	}
+	
     NSAttributedString* newline = [self formatZString: @"\n"
                                             withStyle: [standardStyle autorelease]];
     NSAttributedString* string = [self formatZString: finishString
@@ -1409,6 +1435,71 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         [self updateMorePrompt];
         lastTileSize = currentSize;
     }
+}
+
+// = Autosave =
+
+- (BOOL) createAutosaveDataWithCoder: (NSCoder*) encoder {
+	if (lastAutosave == nil) return NO;
+	
+	int autosaveVersion = 100;
+	
+	[encoder encodeValueOfObjCType: @encode(int) 
+								at: &autosaveVersion];
+	
+	[encoder encodeObject: lastAutosave];
+	
+	[encoder encodeObject: upperWindows];
+	[encoder encodeObject: lowerWindows];
+	
+	// The rest of the view state
+	[encoder encodeObject: [textView textStorage]];
+	
+	// All we need, I think
+	
+	// Done
+	return YES;
+}
+
+- (void) restoreAutosaveFromCoder: (NSCoder*) decoder {
+	int autosaveVersion;
+	
+	[decoder decodeValueOfObjCType: @encode(int)
+								at: &autosaveVersion];
+	
+	if (autosaveVersion == 100) {
+		if (lastAutosave) [lastAutosave release];
+		if (upperWindows) [upperWindows release];
+		if (lowerWindows) [lowerWindows release];
+
+		lastAutosave = [[decoder decodeObject] retain];
+		upperWindows = [[decoder decodeObject] retain];
+		lowerWindows = [[decoder decodeObject] retain];
+		
+		NSTextStorage* storage = [decoder decodeObject];
+		
+		[[textView textStorage] setAttributedString: storage];
+		
+		// Final setup
+		upperWindowsToRestore = [upperWindows count];
+		
+		[upperWindows makeObjectsPerformSelector: @selector(setZoomView:)
+									  withObject: self];
+		[lowerWindows makeObjectsPerformSelector: @selector(setZoomView:)
+									  withObject: self];
+		
+		// Load the state into the z-machine
+		if (zMachine) {
+			[zMachine restoreSaveState: lastAutosave];
+		}
+		
+		[self reformatWindow];
+		[self resetMorePrompt];
+		[self scrollToEnd];
+		inputPos = [[textView textStorage] length];
+	} else {
+		NSLog(@"Unknown autosave version (ignoring)");
+	}
 }
 
 @end
