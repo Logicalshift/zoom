@@ -18,3 +18,6 @@
 
 /* libpng available? */
 #undef HAVE_LIBPNG
+
+/* XRender available? */
+#undef HAVE_XRENDER

@@ -347,16 +347,35 @@ if test "$WINDOW_SYSTEM" = "1"; then
 	[
 	  AC_MSG_RESULT(no)
 	])
+    fi
 
-      AC_CHECK_LIB(png, png_get_IHDR,
-        [
-	  AC_DEFINE(HAVE_LIBPNG)
-	  LDFLAGS="$LDFLAGS -lpng"
+    AC_CHECK_LIB(Xrender, XRenderQueryExtension,
+      [
+        LDFLAGS="$LDFLAGS -lXft"
+	HAVE_XRENDER=1
+      ])
+    if test "$HAVE_XRENDER" = "1"; then
+      AC_MSG_CHECKING([that we can compile an Xrender program])
+      AC_TRY_LINK(
+        [ #include <X11/extensions/Xrender.h> ],
+	[ XRenderCreatePicture(NULL, None, NULL, 0, NULL); ],
+	[ 
+	  AC_MSG_RESULT(yes)
+	  AC_DEFINE(HAVE_XRENDER)
 	],
 	[
-	  AC_MSG_WARN([libpng not detected: image support will be disabled])
+	  AC_MSG_RESULT(no)
 	])
     fi
+
+    AC_CHECK_LIB(png, png_get_IHDR,
+      [
+	AC_DEFINE(HAVE_LIBPNG)
+	LDFLAGS="$LDFLAGS -lpng"
+      ],
+      [
+	AC_MSG_WARN([libpng not detected: image support will be disabled])
+      ])
 fi
 
 UTIL_DISPLAY_INFO(Generating files)
