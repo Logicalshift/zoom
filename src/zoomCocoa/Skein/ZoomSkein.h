@@ -22,6 +22,7 @@ extern NSString* ZoomSkeinChangedNotification;
 // Retrieving the root skein item
 - (ZoomSkeinItem*) rootItem;
 - (ZoomSkeinItem*) activeItem;
+- (void) setActiveItem: (ZoomSkeinItem*) active;
 
 // Acting as a Zoom output receiver
 - (void) inputCommand:   (NSString*) command;

@@ -42,6 +42,10 @@
 	
 	// Annoyingly poor support for tracking rects band-aid
 	NSRect lastVisibleRect;
+	
+	// Editing things
+	ZoomSkeinItem* itemToEdit;
+	NSTextField* itemEditor;
 }
 
 // Setting/getting the source
@@ -54,5 +58,7 @@
 // Affecting the display
 - (void) scrollToItem: (ZoomSkeinItem*) item;
 - (ZoomSkeinItem*) itemAtPoint: (NSPoint) point;
+
+- (void) editItem: (ZoomSkeinItem*) skeinItem;
 
 @end

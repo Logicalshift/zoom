@@ -16,7 +16,7 @@
 	
 	if (self) {
 		rootItem = [[ZoomSkeinItem alloc] initWithCommand: @"- start -"];		
-		activeItem = rootItem;
+		activeItem = [rootItem retain];
 		currentOutput = [[NSMutableString alloc] init];
 		
 		[rootItem setTemporary: NO];
@@ -26,12 +26,25 @@
 	return self;
 }
 
+- (void) dealloc {
+	[activeItem release];
+	[rootItem release];
+	[currentOutput release];
+	
+	[super dealloc];
+}
+
 - (ZoomSkeinItem*) rootItem {
 	return rootItem;
 }
 
 - (ZoomSkeinItem*) activeItem {
 	return activeItem;
+}
+
+- (void) setActiveItem: (ZoomSkeinItem*) active {
+	[activeItem release];
+	activeItem = [active retain];
 }
 
 // = Notifications =
@@ -50,7 +63,8 @@ NSString* ZoomSkeinChangedNotification = @"ZoomSkeinChangedNotification";
 	ZoomSkeinItem* newItem = [activeItem addChild: [ZoomSkeinItem skeinItemWithCommand: command]];
 	
 	// Move the 'active' item
-	activeItem = newItem;
+	[activeItem release];
+	activeItem = [newItem retain];
 	
 	// Some values for this item
 	[activeItem setPlayed: YES];
@@ -88,7 +102,8 @@ NSString* ZoomSkeinChangedNotification = @"ZoomSkeinChangedNotification";
 	[self zoomWaitingForInput];
 	
 	// Back to the top
-	activeItem = rootItem;
+	[activeItem release];
+	activeItem = [rootItem retain];
 	
 	[self zoomSkeinChanged];
 }

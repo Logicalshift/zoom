@@ -13,6 +13,9 @@ static const float itemWidth = 120.0; // Pixels
 static const float itemHeight = 96.0;
 static const float itemPadding = 56.0;
 
+// Drawing info
+static NSDictionary* itemTextAttributes;
+
 // Entries in the item dictionary
 static NSString* ZSitem = @"ZSitem";
 static NSString* ZSwidth = @"ZSwidth";
@@ -44,6 +47,7 @@ enum ZSVbutton
 // Item information
 - (NSDictionary*) itemForItem: (ZoomSkeinItem*) item;
 - (NSRect) activeAreaForItem: (NSDictionary*) item;
+- (NSRect) textAreaForItem: (NSDictionary*) item;
 
 // Layout
 - (void) layoutSkein;
@@ -68,6 +72,9 @@ enum ZSVbutton
 						withItem: (NSDictionary*) item;
 - (void) lockButtonClicked: (NSEvent*) event
 				  withItem: (NSDictionary*) item;
+
+- (void) cancelEditing: (id) sender;
+- (void) finishEditing: (id) sender;
 
 @end
 
@@ -152,6 +159,11 @@ enum ZSVbutton
 	unlocked   = [[[self class] imageNamed: @"SkeinUnlocked"] retain];
 	annotate   = [[[self class] imageNamed: @"SkeinAnnotate"] retain];
 	transcript = [[[self class] imageNamed: @"SkeinTranscript"] retain];
+	
+	itemTextAttributes = [[NSDictionary dictionaryWithObjectsAndKeys:
+		[NSFont systemFontOfSize: 10], NSFontAttributeName,
+		[NSColor blackColor], NSForegroundColorAttributeName,
+		nil] retain];
 }
 
 + (NSMutableDictionary*) item: (ZoomSkeinItem*) item
@@ -186,6 +198,9 @@ enum ZSVbutton
 	if (levels) [levels release];
 	if (trackingRects) [trackingRects release];
 	if (itemForItem) [itemForItem release];
+
+	if (itemEditor != nil) [itemEditor release];
+	if (itemToEdit != nil) [itemToEdit release];
 	
 	[super dealloc];
 }
@@ -220,6 +235,21 @@ enum ZSVbutton
 	
 	// 'overflow' border
 	itemRect = NSInsetRect(itemRect, -4.0, -4.0);	
+	
+	return itemRect;
+}
+
+- (NSRect) textAreaForItem: (NSDictionary*) item {
+	NSRect itemRect;
+	float ypos = ((float)[[item objectForKey: ZSlevel] intValue]) * itemHeight + (itemHeight/2.0);
+	float position = [[item objectForKey: ZSposition] floatValue];
+	float width = [[item objectForKey: ZSwidth] floatValue];
+	
+	// Basic rect
+	itemRect.origin.x = position + globalOffset - (width/2.0);
+	itemRect.origin.y = ypos + 1;
+	itemRect.size.width = width;
+	itemRect.size.height = [[NSFont systemFontOfSize: 10] defaultLineHeightForFont];
 	
 	return itemRect;
 }
@@ -291,12 +321,7 @@ enum ZSVbutton
 	int startLevel = floorf(NSMinY(rect) / itemHeight)-1;
 	int endLevel = ceilf(NSMaxY(rect) / itemHeight);
 	int level;
-	
-	NSDictionary* fontAttrs = [NSDictionary dictionaryWithObjectsAndKeys: 
-		[NSColor blackColor], NSForegroundColorAttributeName,
-		[NSFont systemFontOfSize: 10], NSFontAttributeName,
-		nil];
-	
+		
 	for (level = startLevel; level < endLevel; level++) {
 		if (level < 0) continue;
 		if (level >= [levels count]) break;
@@ -310,7 +335,7 @@ enum ZSVbutton
 		while (item = [levelEnum nextObject]) {
 			ZoomSkeinItem* skeinItem = [item objectForKey: ZSitem];
 			float xpos = [[item objectForKey: ZSposition] floatValue] + globalOffset;
-			NSSize size = [[skeinItem command] sizeWithAttributes: fontAttrs];
+			NSSize size = [[skeinItem command] sizeWithAttributes: itemTextAttributes];
 			
 			// Draw the background
 			NSImage* background = unchanged;
@@ -332,7 +357,7 @@ enum ZSVbutton
 
 			// Draw the item
 			[[skeinItem command] drawAtPoint: NSMakePoint(xpos - (size.width/2), ypos)
-							  withAttributes: fontAttrs];
+							  withAttributes: itemTextAttributes];
 			
 			// Draw links to the children
 			[[NSColor blackColor] set];
@@ -443,6 +468,7 @@ enum ZSVbutton
 // = Laying things out =
 
 - (void) skeinDidChange: (NSNotification*) not {
+	[self finishEditing: self];
 	[self skeinNeedsLayout];
 	
 	[self scrollToItem: [skein activeItem]];
@@ -507,8 +533,7 @@ enum ZSVbutton
 	}
 	
 	// Adjust the width to fit the text, if required
-	float ourWidth = [[item command] sizeWithAttributes: [NSDictionary dictionaryWithObjectsAndKeys: 
-		[NSFont systemFontOfSize: 10.0], NSFontAttributeName, nil]].width;
+	float ourWidth = [[item command] sizeWithAttributes: itemTextAttributes].width;
 	if (position < (ourWidth + itemPadding)) position = ourWidth + itemPadding;
 	
 	// Return the result
@@ -846,6 +871,8 @@ enum ZSVbutton
 // = Mouse handling =
 
 - (void) mouseDown: (NSEvent*) event {
+	[self finishEditing: self];
+	
 	if (trackedItem == nil) {
 		// We're dragging to move the view around
 		[[NSCursor closedHandCursor] push];
@@ -923,6 +950,10 @@ enum ZSVbutton
 					[self lockButtonClicked: event
 								   withItem: trackedItem];
 					break;
+					
+				case ZSVmainItem:
+					[self editItem: [trackedItem objectForKey: ZSitem]];
+					break;
 			}
 			
 			activeButton = ZSVnoButton;
@@ -941,10 +972,7 @@ enum ZSVbutton
 	float xpos = [[item objectForKey: ZSposition] floatValue] + globalOffset;
 	float ypos = ((float)[[item objectForKey: ZSlevel] intValue]) * itemHeight + (itemHeight/2.0);
 
-	NSDictionary* fontAttrs = [NSDictionary dictionaryWithObjectsAndKeys: 
-		[NSColor blackColor], NSForegroundColorAttributeName,
-		[NSFont systemFontOfSize: 10], NSFontAttributeName,
-		nil];
+	NSDictionary* fontAttrs = itemTextAttributes;
 	
 	NSSize size = [[[item objectForKey: ZSitem] command] sizeWithAttributes: fontAttrs];
 
@@ -989,12 +1017,13 @@ enum ZSVbutton
 	
 	// Add a new, blank item
 	ZoomSkeinItem* newItem = 
-		[skeinItem addChild: [ZoomSkeinItem skeinItemWithCommand: @"FIXME: edit this item"]];
+		[skeinItem addChild: [ZoomSkeinItem skeinItemWithCommand: @""]];
 	
 	[self skeinNeedsLayout];
 	
-	// (IMPLEMENT ME) edit the item
+	// Edit the item
 	[self scrollToItem: newItem];
+	[self editItem: newItem];
 }
 
 - (void) deleteButtonClicked: (NSEvent*) event
@@ -1058,12 +1087,104 @@ enum ZSVbutton
 
 - (void) annotateButtonClicked: (NSEvent*) event
 					  withItem: (NSDictionary*) item {
-	ZoomSkeinItem* skeinItem = [item objectForKey: ZSitem];
+	//ZoomSkeinItem* skeinItem = [item objectForKey: ZSitem];
 }
 
 - (void) transcriptButtonClicked: (NSEvent*) event
 						withItem: (NSDictionary*) item {
-	ZoomSkeinItem* skeinItem = [item objectForKey: ZSitem];
+	//ZoomSkeinItem* skeinItem = [item objectForKey: ZSitem];
+}
+
+// = Editing items =
+
+- (void) finishEditing: (id) sender {
+	if (itemToEdit != nil && itemEditor != nil) {
+		ZoomSkeinItem* parent = [itemToEdit parent];
+		
+		// This will merge trees if the item gets the same name as a neighbouring item
+		[itemToEdit removeFromParent];
+		[itemToEdit setCommand: [itemEditor stringValue]];
+		ZoomSkeinItem* newItem = [parent addChild: itemToEdit];
+		
+		// Change the active item if required
+		if (itemToEdit == [skein activeItem]) {
+			[skein setActiveItem: newItem];
+		}
+		
+		// NOTE: if 'addChild' can ever release the active item, we may have a problem here.
+		// Currently, this can't happen
+
+		[self skeinNeedsLayout];
+
+		if (sender == itemEditor) [self scrollToItem: itemToEdit];
+	}
+	
+	[self cancelEditing: self];
+}
+
+- (void) cancelEditing: (id) sender {
+	if (itemToEdit != nil) {
+		[itemToEdit release];
+		itemToEdit = nil;
+	}
+
+	if (itemEditor != nil) {
+		[itemEditor removeFromSuperview];
+		[itemEditor release];
+		itemEditor = nil;
+	}
+}
+
+- (void)controlTextDidEndEditing:(NSNotification *)aNotification {
+	[self finishEditing: self];
+}
+
+- (void) editItem: (ZoomSkeinItem*) skeinItem {
+	// Cancel any existing editing
+	// FIXME: store it? Probably a good idea
+	[self finishEditing: self];
+	
+	// Allows you to edit an item's command
+	NSDictionary* item = [self itemForItem: skeinItem];
+	
+	if (item == nil) {
+		NSLog(@"ZoomSkeinView: Item not found for editing");
+		return;
+	}
+	
+	// Area of the text for this item
+	NSRect itemFrame = [self textAreaForItem: item];
+	
+	// Make sure the item is the right size
+	float minItemWidth = itemWidth - 32.0;
+	if (itemFrame.size.width < minItemWidth) {
+		itemFrame.origin.x  -= (minItemWidth - itemFrame.size.width)/2.0;
+		itemFrame.size.width = minItemWidth;
+	}
+	
+	// 'overflow' border
+	itemFrame = NSInsetRect(itemFrame, -4.0, -4.0);	
+	
+	itemToEdit = [skeinItem retain];
+	
+	itemEditor = [[NSTextField alloc] initWithFrame: itemFrame];
+	
+	[itemEditor setAllowsEditingTextAttributes: NO];
+	[itemEditor setFont: [NSFont systemFontOfSize: 10]];
+	
+	[itemEditor setAttributedStringValue: 
+		[[[NSAttributedString alloc] initWithString: [skeinItem command]
+										 attributes: itemTextAttributes] autorelease]];
+		
+	[itemEditor setAlignment: NSCenterTextAlignment];
+	[itemEditor setAction: @selector(finishEditing:)];
+	[itemEditor setTarget: self];
+	[itemEditor setDelegate: self];
+
+	[self addSubview: itemEditor];
+	
+	[[self window] makeFirstResponder: itemEditor];
+	[[self window] makeKeyWindow];
 }
 
 @end
