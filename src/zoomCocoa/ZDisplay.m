@@ -190,8 +190,6 @@ void display_printc(int chr) {
 void display_printf(const char* format, ...) {
     va_list  ap;
     char     string[512];
-    int x,len;
-    int      istr[512];
 
     va_start(ap, format);
     vsprintf(string, format, ap);
@@ -230,6 +228,10 @@ int display_readline(int* buf, int len, long int timeout) {
     while (mainMachine != nil &&
            [[mainMachine inputBuffer] length] == 0 &&
            [when compare: [NSDate date]] == NSOrderedDescending) {
+        // Cycle the autorelease pool
+        [displayPool release];
+        displayPool = [[NSAutoreleasePool alloc] init];
+        
         [mainLoop acceptInputForMode: NSDefaultRunLoopMode
                           beforeDate: [NSDate distantFuture]];
     }
@@ -337,8 +339,9 @@ void display_desanitise(void) {
 
 void display_is_v6(void) { NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__); }
 
-int  display_set_font(int font) {
+int display_set_font(int font) {
     NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
+    return 0;
 }
 
 int display_set_style(int style) {
@@ -455,19 +458,25 @@ void display_set_cursor(int x, int y) {
 }
 
 int display_get_cur_x(void) {
-    int x, y;
-    [(NSObject<ZUpperWindow>*)[mainMachine windowNumber: currentWindow] cursorPositionX: &x
-                                                             Y: &y];
-
-    return x;
+    if (currentWindow == 0) {
+        NSLog(@"Get_cur_x called for lower window");
+        return -1; // No cursor position for the lower window
+    }
+    
+    NSPoint pos = [(NSObject<ZUpperWindow>*)[mainMachine windowNumber: currentWindow]
+        cursorPosition];
+    return pos.x;
 }
 
 int display_get_cur_y(void) {
-    int x, y;
-    [(NSObject<ZUpperWindow>*)[mainMachine windowNumber: currentWindow] cursorPositionX: &x
-                                                                                      Y: &y];
+    if (currentWindow == 0) {
+        NSLog(@"Get_cur_y called for lower window");
+        return -1; // No cursor position for the lower window
+    }
 
-    return y;
+    NSPoint pos = [(NSObject<ZUpperWindow>*)[mainMachine windowNumber: currentWindow]
+        cursorPosition];
+    return pos.y;
 }
 
 void display_force_fixed (int window, int val) {
@@ -480,10 +489,12 @@ void display_terminating (unsigned char* table) {
 
 int  display_get_mouse_x(void) {
     NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
+    return 0;
 }
 
 int display_get_mouse_y(void) {
     NSLog(@"Function not implemented: %s %i", __FILE__, __LINE__);
+    return 0;
 }
 
 void display_set_title(const char* title) {

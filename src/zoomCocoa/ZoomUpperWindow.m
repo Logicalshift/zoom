@@ -129,10 +129,10 @@
     xpos = xp; ypos = yp-startLine;
 }
 
-- (void) cursorPositionX: (int*) xp
-                       Y: (int*) yp {
-    *xp = xpos; *yp = ypos+startLine;
+- (NSPoint) cursorPosition {
+    return NSMakePoint(xpos, ypos+startLine);
 }
+
 
 // Line erasure
 - (void) eraseLine {

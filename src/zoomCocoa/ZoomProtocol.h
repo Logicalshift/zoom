@@ -103,8 +103,7 @@
     // Cursor positioning
 - (oneway void) setCursorPositionX: (in int) xpos
                                  Y: (in int) ypos;
-- (void)           cursorPositionX: (out int*) xpos
-                                 Y: (out int*) ypos;
+- (NSPoint) cursorPosition;
 
     // Line erasure
 - (oneway void) eraseLine;
