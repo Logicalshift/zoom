@@ -2152,6 +2152,9 @@ int display_readline(int* buf, int buflen, long int timeout)
 {
   int result;
 
+  if (pixmap != NULL)
+    v6_set_caret();
+
   displayed_text = 0;
   result = process_events(timeout, buf, buflen);
 
@@ -2160,6 +2163,9 @@ int display_readline(int* buf, int buflen, long int timeout)
 
 int display_readchar(long int timeout)
 {
+  if (pixmap != NULL)
+    v6_set_caret();
+
   displayed_text = 0;
   return process_events(timeout, NULL, 0);
 }

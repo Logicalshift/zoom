@@ -195,6 +195,7 @@ typedef struct ZMachine
   ZUWord   static_ceiling;
   ZUWord   dynamic_ceiling;
   ZDWord   high_start;
+  ZDWord   story_offset;
   ZDWord   story_length;
 
   ZByte*   header;
