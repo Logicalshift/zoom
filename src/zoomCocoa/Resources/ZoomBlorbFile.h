@@ -30,6 +30,9 @@
 	NSSize minSize;
 	NSSize maxSize;
 	NSMutableDictionary* resolution;
+	
+	NSMutableDictionary* cache;
+	unsigned int maxCacheNum;
 }
 
 // Testing files

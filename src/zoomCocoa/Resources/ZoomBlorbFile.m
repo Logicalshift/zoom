@@ -423,6 +423,59 @@ static unsigned int Int4(const unsigned char* bytes) {
 	return newPng;
 }
 
+// = Caching images =
+
+static const int cacheLowerLimit = 32;
+static const int cacheUpperLimit = 64;
+
+- (NSImage*) cachedImageWithNumber: (int) num {
+	return [[cache objectForKey: [NSNumber numberWithUnsignedInt: num]] objectForKey: @"image"];
+}
+
+- (NSData*) cachedPaletteForImage: (int) num {
+	return [[cache objectForKey: [NSNumber numberWithUnsignedInt: num]] objectForKey: @"palette"];
+}
+
+- (void) usedImageInCache: (int) num {
+	[[cache objectForKey: [NSNumber numberWithUnsignedInt: num]]
+		setObject: 
+}
+
+- (void) cacheImage: (NSImage*) img
+		withPalette: (NSData*) palette
+		   adaptive: (BOOL) adaptive
+			 number: (int) num {
+	if (cache == nil) {
+		cache = [[NSMutableDictionary alloc] init];
+	}
+	
+	// Add to the cache
+	[cache setObject: [NSMutableDictionary dictionaryWithObjectsAndKeys:
+		img, @"image",
+		palette, @"palette",
+		[NSNumber numberWithBool: adaptive], @"adaptive",
+		[NSNumber numberWithUnsignedInt: maxCacheNum++], @"usageNumber",
+		[NSNumber numberWithUnsignedInt: num], @"number",
+		nil]
+			  forKey: [NSNumber numberWithUnsignedInt: num]];
+	
+	// Remove lowest-priority images if the cache gets too full
+	if ([cache count] >= cacheUpperLimit) {
+		NSLog(@"ImageCache: hit %i images (removing oldest entries)", [cache count]);
+		
+		NSEnumerator* keyEnum = [cache keyEnumerator];
+		NSMutableArray* oldestEntries = [NSMutableArray array];
+		NSNumber* key;
+		
+		while (key = [keyEnum nextObject]) {
+			
+		}
+	}
+}
+
+- (void) removeAdaptiveImagesFromCache {
+}
+
 // = Decoded data =
 
 - (NSSize) sizeForImageWithNumber: (int) num
