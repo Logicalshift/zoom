@@ -42,6 +42,11 @@
 	
 	if (self) {
 		metadata = IFMD_Parse([xmlData bytes], [xmlData length]);
+		
+#ifdef IFMD_ALLOW_TESTING
+		// Test, if available
+		IFMD_testrepository(metadata);
+#endif
 	}
 	
 	return self;

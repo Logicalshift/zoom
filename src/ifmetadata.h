@@ -36,6 +36,8 @@
 # include <CoreFoundation/CoreFoundation.h>
 #endif
 
+#undef IFMD_ALLOW_TESTING
+
 /*
  * Some notes:
  *
@@ -214,5 +216,10 @@ extern void IFMD_AddStory(IFMetadata* data, IFMDStory* newStory); /* newStory ca
 
 /* Saving metadata */
 extern int IFMD_Save(IFMetadata* data, int(*writeFunction)(const char* bytes, int length, void* userData), void* userData);
+
+#ifdef IFMD_ALLOW_TESTING
+/* Testing */
+extern void IFMD_testrepository(IFMetadata* data);
+#endif
 
 #endif

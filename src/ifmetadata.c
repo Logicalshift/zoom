@@ -1244,22 +1244,34 @@ void IFMD_AddStory(IFMetadata* data, IFMDStory* storyToAdd) {
 	/* Try to find the old story if it exists */
 	
 	/* Add story to the list */
-		data->numberOfStories++;
-		data->stories = realloc(data->stories, sizeof(IFMDStory*)*data->numberOfStories);
-		
-		data->stories[data->numberOfStories-1] = IFStory_Alloc();
-		IFStory_Copy(data->stories[data->numberOfStories-1], storyToAdd);
-		
-		newEntry = data->stories[data->numberOfStories-1];
+	data->numberOfStories++;
+	data->stories = realloc(data->stories, sizeof(IFMDStory*)*data->numberOfStories);
+	
+	data->stories[data->numberOfStories-1] = IFStory_Alloc();
+	IFStory_Copy(data->stories[data->numberOfStories-1], storyToAdd);
+	
+	newEntry = data->stories[data->numberOfStories-1];
 	
 	/* Add story to the index, remove any idents that appear twice */
+#define BINARY_SEARCH
 	for (x=0; x<storyToAdd->numberOfIdents; x++) {
+#ifndef BINARY_SEARCH
+		int res, cmp;
+		IFMDIdent* id = storyToAdd->idents[x];
+		
+		cmp = -1;
+		for (res=0; res<data->numberOfIndexEntries; res++) {
+			cmp = IFID_Compare(data->index[res].ident, id);
+			if (cmp != -1) break;
+		}
+#else
 		int top, bottom, res, cmp;
 		IFMDIdent* id = storyToAdd->idents[x];
 		
 		bottom = 0;
 		top = data->numberOfIndexEntries-1;
-		res = -1;
+		res = 0;
+		cmp = -1;
 		
 		while (bottom < top) {
 			int middle = (bottom + top)>>1;
@@ -1270,9 +1282,36 @@ void IFMD_AddStory(IFMetadata* data, IFMDStory* storyToAdd) {
 			else if (cmp > 0) top    = middle-1;
 		}
 		
-		if (bottom == top && IFID_Compare(id, data->index[bottom].ident) == 0) res = bottom;
+		/* Maneuver to the right place to add new entries */
+		if (cmp != 0) res = bottom;
+		if (res < 0) res++;
+		if (res >= data->numberOfIndexEntries)
+			res--;
 		
-		if (res != -1) {
+		if (res >= 0)
+			cmp = IFID_Compare(data->index[res].ident, id);
+		else
+			cmp = -1;
+		
+		/* Move down */
+		while (cmp > 0 && res > 0) {
+			res--;
+			cmp = IFID_Compare(data->index[res].ident, id);
+		}
+		
+		/* Move up */
+		while (cmp < 0 && res < data->numberOfIndexEntries-1) {
+			res++;
+			cmp = IFID_Compare(data->index[res].ident, id);
+		}
+		
+		/* Fall off the end if need be */
+		if (cmp < 0 && res == data->numberOfIndexEntries-1) {
+			res++;
+		}
+#endif
+		
+		if (res != -1 && cmp == 0) {
 			if (data->index[res].story != newEntry) {
 				int storyId, y;
 				IFMDStory* thisStory = data->index[res].story;
@@ -1338,6 +1377,7 @@ void IFMD_AddStory(IFMetadata* data, IFMDStory* storyToAdd) {
 			}
 		}
 		
+#if 0
 		/* Add this ident to the index */
 		if (top >= data->numberOfIndexEntries) top = data->numberOfIndexEntries-1;
 		
@@ -1352,6 +1392,7 @@ void IFMD_AddStory(IFMetadata* data, IFMDStory* storyToAdd) {
 		if (cmp > 0) {
 			res++;
 		}
+#endif
 		
 		/* Res should now be equal to the first place where cmp = 1 */
 		data->numberOfIndexEntries++;
@@ -1609,3 +1650,121 @@ int IFMD_Save(IFMetadata* data,
 	
 	return 0;
 }
+
+#ifdef IFMD_ALLOW_TESTING
+/* ==== TESTING ==== */
+
+/*
+ * Sometimes, it seems a game's description can disappear when it's transferred from one
+ * iFiction repository to another. These functions are designed to test the addition and
+ * removal of items to a repository.
+ *
+ * I haven't yet seen this for an 'established' game: IE, I think it's a problem to do
+ * with adding a new game to a repository.
+ */
+static int indexCheck(IFMetadata* data) {
+	int x;
+	int result = 1;
+	int missing = 0;
+	int wrongStory = 0;
+	int outOfOrder = 0;
+	
+	for (x=0; x<data->numberOfIndexEntries; x++) {
+		IFMDStory* story = IFMD_Find(data,  data->index[x].ident);
+		
+		if (story == NULL) {
+			missing++;
+			result = 0;
+		} else if (story != data->index[x].story) {
+			wrongStory++;
+			result = 0;
+		}
+		
+		if (x > 0) {
+			int cmp;
+			cmp = IFID_Compare(data->index[x-1].ident, data->index[x].ident);
+			if (cmp != -1) {
+				printf(" OO: %i/%i", cmp, x);
+				outOfOrder++;
+				result = 0;
+			}
+		}
+	}
+	
+	if (result == 0) {
+		printf(" FAIL: %i/%i/%i (%i) ", missing, wrongStory, outOfOrder, data->numberOfIndexEntries);
+	}
+
+	return result;
+}
+
+static int storyCheck(IFMetadata* data) {
+	int x;
+	int result = 1;
+	int missing = 0;
+	int wrongStory = 0;
+	int count = 0;
+	
+	for (x=0; x<data->numberOfStories; x++) {
+		int y;
+		
+		for (y=0; y<data->stories[x]->numberOfIdents; y++) {
+			IFMDStory* story = IFMD_Find(data, data->stories[x]->idents[y]);
+			
+			count++;
+			
+			if (story == NULL) {
+				missing++;
+				result = 0;
+			} else if (story != data->stories[x]) {
+				wrongStory++;
+				result = 0;
+			}
+		}
+	}
+	
+	if (result == 0) {
+		printf(" FAIL: %i/%i (%i) ", missing, wrongStory, count);
+	}
+	
+	return result;
+}
+
+void IFMD_testrepository(IFMetadata* data) {
+	IFMetadata* newData;
+	int x;
+	int iter;
+	
+	printf("= IFMetadata testing started\n");
+	printf("== Repository has %i entries, and was parsed with %i errors\n", data->numberOfStories, data->numberOfErrors);
+	printf("== Index contains %i entries\n", data->numberOfIndexEntries);
+	printf("==\n");
+	
+	// Test one: check index entries are in order and check that we can find them OK
+	printf("== TEST ONE: existing index test - %s\n", indexCheck(data)?"Passed":"Failed");
+	
+	// Test two: make sure that index entries are available for all idents stored in stories
+	printf("== TEST TWO: complete index test - %s\n", storyCheck(data)?"Passed":"Failed");
+	
+	// Test three: create a new metadata set, add all the stories from this one to it, several times
+	// (additional passes determine the failure pattern in
+	printf("== TEST THREE: new data test:");
+	
+	newData = IFMD_Alloc();
+	
+	for (iter = 0; iter<4; iter++) {
+		for (x=0; x<data->numberOfStories; x++) {
+			int y;
+		
+			IFMD_AddStory(newData, data->stories[x]);
+		}
+		
+		printf(" %i - %s/%s", iter, indexCheck(newData)?"Passed":"Failed", storyCheck(newData)?"Passed":"Failed");
+	}
+	printf("\n");
+	
+	IFMD_Free(newData);
+	
+	printf("= IFMetadata testing complete\n");
+}
+#endif
