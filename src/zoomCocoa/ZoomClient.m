@@ -100,9 +100,31 @@
     return gameData;
 }
 
-- (BOOL)loadDataRepresentation:(NSData *)data ofType:(NSString *)type {
-    if (gameData) [gameData release];
-    gameData = [data retain];
+- (BOOL)loadDataRepresentation:(NSData *)data
+						ofType:(NSString *)type {
+	if ([[type lowercaseString] isEqualToString: @"blorb resource file"]) {
+		if (gameData) [gameData release];
+		gameData = nil;
+		
+		ZoomBlorbFile* newRes = [[ZoomBlorbFile alloc] initWithData: data];
+		if (newRes == nil) return NO;
+		
+		[self setResources: [newRes autorelease]];
+		
+		NSArray* zcodChunks = [newRes chunksWithType: @"ZCOD"];
+		if (zcodChunks == nil || [zcodChunks count] <= 0) {
+			NSLog(@"Not a Z-Code file");
+			return NO;
+		}
+		
+		gameData = [newRes dataForChunk: [zcodChunks objectAtIndex: 0]];
+		if (gameData == nil) return NO;
+		
+		[gameData retain];
+	} else {
+		if (gameData) [gameData release];
+		gameData = [data retain];
+	}
 	
 	storyId = [[ZoomStoryID alloc] initWithZCodeStory: gameData];
 
