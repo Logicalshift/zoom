@@ -119,4 +119,8 @@ static NSImage* disabledImage;
 	[super setEnabled: enabled];
 }
 
+- (BOOL) acceptsFirstMouse: (NSEvent*) evt {
+	return YES;
+}
+
 @end
