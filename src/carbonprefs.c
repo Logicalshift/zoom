@@ -1170,7 +1170,6 @@ static pascal void colour_data_notify(ControlRef browser,
 
   switch (msg)
     {
-    case kDataBrowserItemSelected:
     case kDataBrowserItemDoubleClicked:
       GetGlobalMouse(&pt);
       pt.v -= 10;
