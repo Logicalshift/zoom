@@ -177,10 +177,10 @@ static image_data* iload(image_data* resin, ZFile* file, int offset, int realrea
 	    {
 	      new-=4;
 
-	      res->image[new]   = res->image[old];
-	      res->image[new+1] = res->image[old+1];
-	      res->image[new+2] = res->image[old+2];
 	      res->image[new+3] = 255;
+	      res->image[new+2] = res->image[old+2];
+	      res->image[new+1] = res->image[old+1];
+	      res->image[new]   = res->image[old];
 	    }
 
 	  for (x=0; x<res->height; x++)
@@ -188,6 +188,18 @@ static image_data* iload(image_data* resin, ZFile* file, int offset, int realrea
 	      res->row[x] = res->image + (x*res->width*4);
 	    }
 	}
+
+#if WINDOW_SYSTEM == 3
+      /* Premultiply */
+      for (x=0; x<(res->width*res->height)*4; x += 4)
+	{
+	  int pm;
+
+	  res->image[x+0] = ((int)res->image[x+0]*(int)res->image[x+3])>>8;
+	  res->image[x+1] = ((int)res->image[x+1]*(int)res->image[x+3])>>8;
+	  res->image[x+2] = ((int)res->image[x+2]*(int)res->image[x+3])>>8;
+	}
+#endif
       
       png_read_end(png, end_info);
     }
