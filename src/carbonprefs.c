@@ -406,6 +406,12 @@ static void pref_store(void)
       ourgame->n_fonts = font_nfonts;
       ourgame->fonts = realloc(ourgame->fonts, sizeof(rc_font)*font_nfonts);
       memcpy(ourgame->fonts, font_copy, sizeof(rc_font)*font_nfonts);
+
+      for (x=0; x<ourgame->n_fonts; x++)
+	{
+	  ourgame->fonts[x].name = malloc(strlen(font_copy[x].name)+1);
+	  strcpy(ourgame->fonts[x].name, font_copy[x].name);
+	}
     }
   else
     {
@@ -593,8 +599,6 @@ static pascal OSStatus pref_wnd_evt(EventHandlerCallRef handler,
 	    GetEventParameter(event, kEventParamCurrentBounds,
 			      typeQDRectangle, NULL, sizeof(Rect),
 			      NULL, &newSize);
-
-	    printf("%i, %i\n", newSize.right, origSize.right);
 
 	    /* Resize those as need resizing */
 	    for (x=0; x<36; x+=3)
