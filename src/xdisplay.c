@@ -587,7 +587,7 @@ static void draw_input_text(void)
 
       input_x = caret_x = pix_cx;
       input_y = caret_y = pix_cy;
-      input_y += xfont_get_ascent(font[style_font[(pix_cstyle>>1)&15]]);
+      input_y += xfont_get_ascent(font[style_font[(pix_cstyle>>1)&15]])+0.5;
       input_width = pix_cw;
       caret_height = xfont_get_height(font[style_font[(pix_cstyle>>1)&15]])-1;
 
@@ -2720,8 +2720,8 @@ ZDisplay* display_get_info(void)
       dis.width = pix_w;
       dis.height = pix_h;
 
-      dis.font_width = xfont_get_width(font[style_font[4]]);
-      dis.font_height = xfont_get_height(font[style_font[4]]);
+      dis.font_width = xfont_get_width(font[style_font[4]])+0.5;
+      dis.font_height = xfont_get_height(font[style_font[4]])+0.5;
     }
 
   return &dis;

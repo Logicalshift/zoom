@@ -2514,6 +2514,7 @@ OPCODE "set_window"    VAR:0x0b ARGS:1        VERSION 6
   stream_flush_buffer();
 
   v6_set_window(WinNum(argblock.arg[0]));
+  stream_buffering(windows[WinNum(argblock.arg[0])].buffering);
 %}
 
 OPCODE "set_cursor"    VAR:0x0f ARGS:3        VERSION 6
