@@ -116,6 +116,8 @@ static void pref_write_block(FILE*    f,
     {
       if (game->name[x] == '\"')
 	game->name[x] = '\'';
+      if (game->name[x] < 32 || game->name[x] >= 127)
+	game->name[x] = '.';
     }
 
   fprintf(f, "%s \"%s\" %s\n{\n", 

@@ -113,6 +113,8 @@ extern void carbon_display_about      (void);
 
 extern void carbon_merge_rc           (void);
 
+extern void carbon_set_scale_factor   (double factor);
+
 extern enum carbon_file_type carbon_type_fsref(FSRef* file);
 
 /* image_ routines have their own naming convention, which we preserve */

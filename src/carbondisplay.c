@@ -171,6 +171,7 @@ static unsigned char terminating[256] =
 static int click_x, click_y;
 
 static void draw_input_text(void);
+static void rejig_fonts(void);
 
 /***                           ----// 888 \\----                           ***/
 
@@ -841,6 +842,73 @@ static void redraw_input_text(void)
   CGContextSynchronize(carbon_quartz_context);
 }
 
+/* Set/unset 'fullscreen' */
+static void set_fullscreen(int is_fullscreen)
+{
+  static int setting = 0;
+  static int used_fs = 0;
+
+  static Rect oldBounds;
+
+  if (is_fullscreen == -1)
+    {
+      if (setting)
+	is_fullscreen = 0;
+      else
+	is_fullscreen = 1;
+    }
+
+  if (setting == is_fullscreen)
+    {
+      return;
+    }
+
+  setting = is_fullscreen;
+
+  if (is_fullscreen)
+    {
+      Rect newBounds;
+      CGrafPtr oldport = nil;
+      GDHandle dev;
+
+      HideMenuBar();
+
+      GetWindowBounds(zoomWindow, kWindowContentRgn, &oldBounds);
+
+      GetPort(&oldport);
+      SetPortWindowPort(zoomWindow);
+      dev = GetGDevice();
+      newBounds = (*dev)->gdRect;
+      SetPort(oldport);
+
+      carbon_set_scale_factor((double)(newBounds.right-newBounds.left) / 
+			      (double)(oldBounds.right-oldBounds.left));
+      carbon_display_rejig();
+
+      SetWindowBounds(zoomWindow, kWindowContentRgn, &newBounds);
+
+      ChangeWindowAttributes(zoomWindow, 0, kWindowResizableAttribute);
+
+      if (!used_fs)
+	{
+	  carbon_display_message("Fullscreen mode started",
+				 "To exit fullscreen mode, use Command-F");
+	}
+    }
+  else
+    {
+      ShowMenuBar();
+      carbon_set_scale_factor(1.0);
+      SetWindowBounds(zoomWindow, kWindowContentRgn, &oldBounds);
+      carbon_display_rejig();
+
+      ChangeWindowAttributes(zoomWindow, kWindowResizableAttribute, 0);
+
+      used_fs = 1;
+      
+    }
+}
+
 /* Redraw (part of?) the window */
 void redraw_window(Rect* rct)
 {
@@ -999,6 +1067,10 @@ static pascal OSStatus zoom_evt_handler(EventHandlerCallRef myHandlerChain,
 		  carbon_display_message("Unable to force save",
 					 "Unable to force a save at this point (the game is probably not waiting for the right kind of input)");
 		}
+	      break;
+
+	    case 'FULL':
+	      set_fullscreen(-1);
 	      break;
 
 	    case kHICommandPreferences:
@@ -2302,6 +2374,8 @@ void display_exit(int code)
   if (window_available)
     {
       int n;
+
+      set_fullscreen(0);
 
       GetWindowBounds(zoomWindow, kWindowContentRgn, &rct);
 

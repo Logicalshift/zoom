@@ -136,6 +136,13 @@ void carbon_set_quartz(int q)
 }
 #endif
 
+static double scale_factor = 1.0;
+
+void carbon_set_scale_factor(double factor)
+{
+  scale_factor = factor;
+}
+
 void xfont_initialise(void)
 {
   int x;
@@ -482,7 +489,7 @@ xfont* xfont_load_font(char* font)
   ATSUCreateStyle(&xf->data.mac.style);
   
   size = atoi(face_width)<<16;
-
+  size = (int) ((double)size * scale_factor);
 
   /* Set the attributes of this font */
   attsz[0] = sizeof(Fixed);
@@ -528,7 +535,7 @@ xfont* xfont_load_font(char* font)
       zmachine_warning("Font '%s' not found, reverting to default", face_name);
       xf->data.mac.family = DEFAULT_FONT;
     }
-  xf->data.mac.size = atoi(face_width);
+  xf->data.mac.size = (int)((double)atoi(face_width)*scale_factor);
   xf->data.mac.isbold = 0;  
   xf->data.mac.isitalic = 0;
   xf->data.mac.isunderlined = 0;
