@@ -1574,6 +1574,38 @@ static pascal OSStatus zoom_wnd_handler(EventHandlerCallRef myHandlerChain,
 		return eventNotHandledErr;
 	      }
 	  }
+	  break;
+	  
+	case kEventMouseUp:
+	  {
+	    short part;
+	    WindowPtr ourwindow;
+	    HIPoint   argh;
+	    Point     point;
+	    Rect      bound;
+	    
+	    GetEventParameter(event, kEventParamMouseLocation,
+			      typeHIPoint, NULL, sizeof(HIPoint),
+			      NULL, &argh);
+	    point.h = argh.x;
+	    point.v = argh.y;
+	    part = FindWindow(point, &ourwindow);
+	    
+	    if (part == inContent && 
+		(terminating[254] || text_buf == NULL))
+	      {
+		GetWindowBounds(ourwindow, kWindowContentRgn, &bound);
+
+		click_x = (argh.x - BORDERWIDTH - bound.left)/xfont_x;
+		click_y = (argh.y - BORDERWIDTH - bound.top)/xfont_y;
+
+		read_key = 254;
+		return noErr;
+	      }
+
+	    return eventNotHandledErr;
+	  }
+	  break;
 	}
       break;
 
@@ -2946,12 +2978,12 @@ void display_terminating (unsigned char* table)
 
 int  display_get_mouse_x (void)
 {
-  return 0;
+  return click_x;
 }
 
 int  display_get_mouse_y (void)
 {
-  return 0;
+  return click_y;
 }
 
 void display_window_define       (int window,
@@ -3024,6 +3056,7 @@ int main(int argc, char** argv)
       { kEventClassWindow,     kEventWindowActivated },
       { kEventClassWindow,     kEventWindowDeactivated },
       { kEventClassMouse,      kEventMouseDown },
+      { kEventClassMouse,      kEventMouseUp },
       { kEventClassCommand,    kEventProcessCommand },
       { kEventClassTextInput,  kEventTextInputUnicodeForKeyEvent }
     };
@@ -3194,7 +3227,7 @@ int main(int argc, char** argv)
 				 3, appevts, 0, NULL);
   InstallWindowEventHandler(zoomWindow,
 			    NewEventHandlerUPP(zoom_wnd_handler),
-			    10, wndevts, 0, NULL);
+			    11, wndevts, 0, NULL);
 
   /* Wait for the open event to arrive */
 

@@ -703,12 +703,23 @@ static char* convert_text(xfont* font,
 
   outbuf = realloc(outbuf, length*2);
 
-  res = ConvertFromUnicodeToText(font->data.mac.convert, 
-				 sizeof(UniChar)*length, iunicode,
-				 kUnicodeLooseMappingsMask, 0,
-				 NULL, NULL, NULL,
-				 length*2, &inread, &outlen,
-				 outbuf);
+  do
+    {
+      res = ConvertFromUnicodeToText(font->data.mac.convert, 
+				     sizeof(UniChar)*length, iunicode,
+				     kUnicodeLooseMappingsMask, 0,
+				     NULL, NULL, NULL,
+				     length*2, &inread, &outlen,
+				     outbuf);
+
+      if (res == kTECUnmappableElementErr)
+	{
+	  if (iunicode[inread>>1] == '?')
+	    break;
+	  iunicode[inread>>1] = '?';
+	}
+    }
+  while (res == kTECUnmappableElementErr);
 
   if (res != noErr)
     {
@@ -718,6 +729,8 @@ static char* convert_text(xfont* font,
 	  zmachine_warning("Unable to convert game text to font text");
 	}
 
+      if (olen != NULL)
+	(*olen) = 3;
       return "<?>";
     }
 
