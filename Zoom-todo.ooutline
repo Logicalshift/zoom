@@ -195,7 +195,7 @@ FIXED: this only happened on v8 files, because we weren't setting the address pa
 
 \f0\fs24 \cf0 Depends on the game, I think. New games that like to fiddle with the status bar are particularly bad. Some seem fine (Dreamhold being an example of a game that runs fine).\
 \
-Most of the '03 comp games seem to suffer from this. (Noticed this myself, and it's not been reported independently. May be exacerbated by }</string>
+Most of the '03 comp games seem to suffer from this. (Noticed this myself, and it's not been reported independently. May be exacerbated by games that fiddle with the upper window a lot, for example, Curses.}</string>
 							<string>{\rtf1\mac\ansicpg10000\cocoartf102
 {\fonttbl\f0\fswiss\fcharset77 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
