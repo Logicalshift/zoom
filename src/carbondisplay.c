@@ -38,6 +38,8 @@
 #include "rc.h"
 #include "hash.h"
 
+WindowRef zoomWindow;
+
 void printf_debug(char* format, ...)
 {
 }
@@ -263,6 +265,10 @@ extern int zoom_main(int, char**);
 
 int main(int argc, char** argv)
 {
+  Rect bounds;
+
+  CreateNewWindow(kPlainWindowClass, 0, 
+
   RunApplicationEventLoop();
 }
 
