@@ -2049,12 +2049,16 @@ OPCODE "save"          EXT:0x00 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
 	}
       else
         {
-	  char newname[512];
+	  char* newname;
+
+	  newname = malloc(strlen(rc_get_savedir()) +
+	                   strlen(fname) + 3);
 
 	  sprintf(newname, "%s/%s", rc_get_savedir(), fname);
-	printf("%s\n", newname);
 
 	  file = open_file_write(newname);
+
+	  free(newname);
         }
 
       if (!(file))
@@ -2123,11 +2127,16 @@ OPCODE "restore"       EXT:0x01 ARGS:3 STORE CANJUMP VERSION 5,6,7,8
         }
       else
         {
-	  char newname[512];
+	  char* newname = NULL;
+
+	  newname = malloc(strlen(rc_get_savedir()) +
+	                   strlen(fname) + 3);
 
 	  sprintf(newname, "%s/%s", rc_get_savedir(), fname);
 
-	  file = open_file_write(newname);
+	  file = open_file(newname);
+
+	  free(newname);
         }
 
       if (!(file))
