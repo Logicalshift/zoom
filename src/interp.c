@@ -1555,6 +1555,7 @@ void zmachine_run(const int version,
 #if defined(SUPPORT_VERSION_6)
   if (version == 6)
     {
+      machine.dinfo = display_get_info();
       zcode_v6_initialise();
     }
 #endif

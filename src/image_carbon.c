@@ -45,8 +45,9 @@
 
 struct image_data
 {
-  Handle             dataRef;
-  ComponentInstance  gi;
+  Handle                  dataRef;
+  GraphicsImportComponent gi;
+  Rect                    bounds;
 };
 
 image_data* image_load(ZFile* file, int offset, int len)
@@ -70,16 +71,44 @@ image_data* image_load(ZFile* file, int offset, int len)
   res->gi      = NULL;
 
   erm = PtrToHand(data, &res->dataRef, len);
-  free(data);
+  //free(data);
   if (erm != noErr)
     {
       free(res);
       return NULL;
     }
 
-  erm = GetGraphicsImporterForDataRef(res->dataRef, 'PNG ', &res->gi);
+  res->gi = 0;
+  erm = GetGraphicsImporterForDataRef(data, PointerDataHandlerSubType, &res->gi);
+  if (erm != noErr)
+    {
+      DisposeHandle(res->dataRef);
+      free(res);
+      return NULL;
+    }
+
+  erm = GraphicsImportGetNaturalBounds(res->gi, &res->bounds);
+  if (erm != noErr)
+    {
+      CloseComponent(res->gi);
+      DisposeHandle(res->dataRef);
+      free(res);
+      return NULL;
+    }
+
+  printf("Image, bounds %i, %i\n", res->bounds.right, res->bounds.bottom);
 
   return res;
+}
+
+int image_height(image_data* img)
+{
+  return img->bounds.bottom;
+}
+
+int image_width(image_data* img)
+{
+  return img->bounds.right;
 }
 
 #endif

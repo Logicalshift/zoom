@@ -2388,4 +2388,78 @@ static int process_events(long int timeout,
   return 0;
 }
 
+/***                           ----// 888 \\----                           ***/
+
+/*
+ * Pixmap display
+ */
+int display_init_pixmap(int width, int height)
+{
+}
+
+void display_plot_rect(int x, int y, int width, int height)
+{
+}
+
+void display_scroll_region(int x, int y, int width, int height, int xoff, int yoff)
+{
+}
+
+void display_pixmap_cols(int fg, int bg)
+{
+}
+
+int display_get_pix_colour(int x, int y)
+{
+}
+
+void display_plot_gtext(const int* text, int len,
+			int style, int x, int y)
+{
+}
+
+float display_measure_text(const int* text, int len, int style)
+{
+}
+
+float display_get_font_width(int style)
+{
+}
+
+float display_get_font_height(int style)
+{
+}
+
+float display_get_font_ascent(int style)
+{
+}
+
+float display_get_font_descent(int style)
+{
+}
+
+void display_plot_image(BlorbImage* img, int x, int y)
+{
+}
+
+void display_wait_for_more(void)
+{
+}
+
+int display_get_pix_mouse_x(void)
+{
+}
+
+int display_get_pix_mouse_y(void)
+{
+}
+
+void display_set_input_pos(int style, int x, int y, int width)
+{
+}
+
+void display_set_mouse_win(int x, int y, int width, int height)
+{
+}
+
 #endif
