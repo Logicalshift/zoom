@@ -235,6 +235,7 @@ static void size_window(void)
 void display_initialise(void)
 {
   int x;
+  int n_cols, n_fonts;
   rc_font* fonts;
   rc_colour* colours;
 
@@ -247,10 +248,9 @@ void display_initialise(void)
       text_win[x].lastline    = NULL;
       text_win[x].cline       = NULL;
     }
-      
-
-  fonts = rc_get_fonts();
-  colours = rc_get_colours();
+  
+  fonts = rc_get_fonts(&n_fonts);
+  colours = rc_get_colours(&n_cols);
   
   /* Allocate colours */
   if (colours == NULL)
@@ -261,6 +261,29 @@ void display_initialise(void)
 	  winpen[x]   = CreatePen(PS_SOLID, 1, wincolour[x]);
 	}
     }
+  else
+    {
+      for (x=3; x<14; x++)
+	{
+	  if ((x-3)<n_cols)
+	    {
+	      wincolour[x] = RGB(colours[x-3].r,
+				 colours[x-3].g,
+				 colours[x-3].b);
+	      winbrush[x] = CreateSolidBrush(RGB(colours[x-3].r,
+						 colours[x-3].g,
+						 colours[x-3].b));
+	      winpen[x]   = CreatePen(PS_SOLID, 1, RGB(colours[x-3].r,
+						       colours[x-3].g,
+						       colours[x-3].b));
+	    }
+	  else
+	    {
+	      winbrush[x] = CreateSolidBrush(wincolour[x]);
+	      winpen[x]   = CreatePen(PS_SOLID, 1, wincolour[x]);
+	    }
+	}
+    }
   
   /* Allocate fonts */
   if (fonts == NULL)
@@ -269,6 +292,22 @@ void display_initialise(void)
       for (x=0; x<9; x++)
 	{
 	  font[x] = xfont_load_font(fontlist[x]);
+	}
+    }
+  else
+    {
+      int y;
+      
+      for (x=0; x<16; x++)
+	style_font[x] = -1;
+      
+      font = realloc(font, sizeof(xfont*)*n_fonts);
+      for (x=0; x<n_fonts; x++)
+	{
+	  font[x] = xfont_load_font(fonts[x].name);
+
+	  for (y=0; y<fonts[x].n_attr; y++)
+	    style_font[fonts[x].attributes[y]] = x;
 	}
     }
   
@@ -288,6 +327,9 @@ void display_initialise(void)
 void display_reinitialise(void)
 {
   int x;
+  int n_cols, n_fonts;
+  rc_font* fonts;
+  rc_colour* colours;
   
   /* Deallocate colours */
   for (x=3; x<14; x++)
@@ -299,18 +341,67 @@ void display_reinitialise(void)
   /* Deallocate fonts */
   for (x=0; x<5; x++)
     xfont_release_font(font[x]);
-
+  
+  fonts = rc_get_fonts(&n_fonts);
+  colours = rc_get_colours(&n_cols);
+  
   /* Allocate colours */
-  for (x=3; x<14; x++)
+  if (colours == NULL)
     {
-      winbrush[x] = CreateSolidBrush(wincolour[x]);
-      winpen[x]   = CreatePen(PS_SOLID, 1, wincolour[x]);
+      for (x=3; x<14; x++)
+	{
+	  winbrush[x] = CreateSolidBrush(wincolour[x]);
+	  winpen[x]   = CreatePen(PS_SOLID, 1, wincolour[x]);
+	}
     }
-
-  /* Allocate fonts */
-  for (x=0; x<9; x++)
+  else
     {
-      font[x] = xfont_load_font(fontlist[x]);
+      for (x=3; x<14; x++)
+	{
+	  if ((x-3)<n_cols)
+	    {
+	      wincolour[x] = RGB(colours[x-3].r,
+				 colours[x-3].g,
+				 colours[x-3].b);
+	      winbrush[x] = CreateSolidBrush(RGB(colours[x-3].r,
+						 colours[x-3].g,
+						 colours[x-3].b));
+	      winpen[x]   = CreatePen(PS_SOLID, 1, RGB(colours[x-3].r,
+						       colours[x-3].g,
+						       colours[x-3].b));
+	    }
+	  else
+	    {
+	      winbrush[x] = CreateSolidBrush(wincolour[x]);
+	      winpen[x]   = CreatePen(PS_SOLID, 1, wincolour[x]);
+	    }
+	}
+    }
+  
+  /* Allocate fonts */
+  if (fonts == NULL)
+    {
+      font = realloc(font, sizeof(xfont*)*9);
+      for (x=0; x<9; x++)
+	{
+	  font[x] = xfont_load_font(fontlist[x]);
+	}
+    }
+  else
+    {
+      int y;
+      
+      for (x=0; x<16; x++)
+	style_font[x] = -1;
+      
+      font = realloc(font, sizeof(xfont*)*n_fonts);
+      for (x=0; x<n_fonts; x++)
+	{
+	  font[x] = xfont_load_font(fonts[x].name);
+
+	  for (y=0; y<fonts[x].n_attr; y++)
+	    style_font[fonts[x].attributes[y]] = x;
+	}
     }
 }
 
