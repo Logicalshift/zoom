@@ -74,7 +74,7 @@ endif
 
 CFLAGS = @CFLAGS@ @X_CFLAGS@ -DDATADIR="\"${pkgdatadir}\""
 OBJCFLAGS = @CFLAGS@ @X_CFLAGS@ -DDATADIR="\"${pkgdatadir}\""
-LIBS = @LIBS@ @X_PRE_LIBS@ @X_LIBS@ @X_EXTRA_LIBS@
+LIBS = @LIBS@
 YFLAGS = -d
 
 debug.c: eval.h
