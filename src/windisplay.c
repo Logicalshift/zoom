@@ -738,8 +738,6 @@ static void format_last_text(int more)
 	{
 	  int w;
 
-	  while (text[x+1] == ' ')
-	    x++;
 	  word_len++;
 
 	  w = xfont_get_text_width(fn,
