@@ -115,8 +115,28 @@ ZDictionary* dictionary_cache(const ZUWord dict_pos)
 		     dct[3+entry_length*x+3],
 		     entry->address);
 	{
-	  int blob;
-	  printf_debug("%s\n", zscii_to_ascii(dct + 3+entry_length*x, &blob));
+		int blob,y;
+		unsigned char packed[12];
+		int* unicode = zscii_to_unicode(dct + 3+entry_length*x, &blob);
+		
+		for (y=0; unicode[y] !=0; y++); /* y = length of string */
+		
+		pack_zscii(unicode,
+				   y,
+				   packed,
+				   9);
+
+		printf_debug("%s (", zscii_to_ascii(dct + 3+entry_length*x, &blob));
+	  
+		for (y=0; y<text_len; y++) {
+			printf_debug("%02x", (dct + (3+entry_length*x))[y]);
+		}
+		
+		printf_debug(" - ");
+		for (y=0; y<text_len; y++) {
+			printf_debug("%02x", packed[y]);
+		}
+		printf_debug(")\n");
 	}
 #endif
 
@@ -166,6 +186,16 @@ inline ZUWord lookup_word(unsigned int*  word,
       text_len = 6;
     }
   pack_zscii(word, wordlen, packed, zscii_len);
+  
+#ifdef DEBUG
+  {
+	  int x;
+	  for (x=0; x<text_len; x++) {
+		  printf_debug("(%02x)", packed[x]);
+		  printf_debug("... ");
+	  }
+  }
+#endif
   
   cached = dictionary_cache(dct);
   if (!cached)
