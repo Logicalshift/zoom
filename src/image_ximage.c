@@ -610,8 +610,6 @@ void image_plot_Xrender(image_data* img,
       data->piccy = None;
 
       image_set_data(img, data, x_destruct);
-      if (image_get_data(img) != data)
-	printf("Yargh\n");
     }
   
   /* Get the format if necessary */

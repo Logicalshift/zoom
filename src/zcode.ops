@@ -2304,6 +2304,50 @@ OPCODE "read_char"      VAR:0x16 ARGS:3 STORE CANJUMP VERSION 6
     }
 %}
 
+OPCODE "print_table"    VAR:0x1e                      VERSION 6
+%{
+  ZByte* table;
+  int x,y;
+  int xpos;
+
+  stream_flush_buffer();
+  xpos = v6_get_cursor_x();
+
+  if (argblock.arg[2] == 0)
+    argblock.arg[2] = 1;
+
+#ifdef DEBUG
+  printf_debug("Printing table #%x (%ix%i), offset %i\n", argblock.arg[0], argblock.arg[1], argblock.arg[2], argblock.arg[3]);
+#endif
+  
+  table = Address((ZUWord) argblock.arg[0]);
+
+  for (y=0; y<argblock.arg[2]; y++)
+    {
+      if (y != 0)
+	{
+	  stream_prints("\n");
+	  stream_flush_buffer();
+	  if (machine.screen_on)
+	    v6_set_cursor(xpos, v6_get_cursor_y());
+	}
+
+      for (x=0; x<argblock.arg[1]; x++)
+	{
+	  unsigned char c;
+
+	  c = (table++)[0];
+	  if (c == 0)
+	    c = 32;
+	  if (c>31)
+	    stream_printf("%c", c);
+	}
+
+      table += argblock.arg[3];
+    }
+  stream_flush_buffer();
+%}
+
 OPCODE "restart"     0OP:0x07 CANJUMP VERSION 6
 %{
   int x;
