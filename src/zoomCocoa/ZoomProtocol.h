@@ -112,13 +112,13 @@ typedef enum {
 - (oneway void) startAtLine: (int) line;
 - (oneway void) endAtLine:   (int) line;
 
-    // Cursor positioning
+// Cursor positioning
 - (oneway void) setCursorPositionX: (in int) xpos
                                  Y: (in int) ypos;
 - (NSPoint) cursorPosition;
 
-    // Line erasure
-- (oneway void) eraseLine;
+// Line erasure
+- (oneway void) eraseLineWithStyle: (in bycopy ZStyle*) style;
 @end
 
 @protocol ZLowerWindow<ZWindow>

@@ -132,10 +132,35 @@
 
 
 // Line erasure
-- (void) eraseLine {
-    if (ypos < [lines count]) {
-        [[[lines objectAtIndex: ypos] mutableString] setString: @""];
+static NSString* blankLine(int length) {
+	char* cString = malloc(length);
+	int x;
+	
+	for (x=0; x<length; x++) cString[x] = ' ';
+	
+	NSString* res = [NSString stringWithCString: cString 
+										 length: length];
+	
+	return res;
+}
+
+- (void) eraseLineWithStyle: (ZStyle*) style {
+    if (ypos >= [lines count]) {
+        int x;
+        for (x=[lines count]; x<=ypos; x++) {
+            [lines addObject: [[[NSMutableAttributedString alloc] init] autorelease]];
+        }
     }
+
+		int xs, ys;
+		NSAttributedString* newString;
+		
+		[theView dimensionX: &xs Y: &ys];
+		
+		newString = [theView formatZString: blankLine(xs+1)
+								 withStyle: style];
+		
+        [[lines objectAtIndex: ypos] setAttributedString: newString];
 }
 
 // Maintainance
