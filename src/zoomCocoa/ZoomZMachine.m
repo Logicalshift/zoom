@@ -24,6 +24,7 @@
 #include "v6display.h"
 #include "state.h"
 #include "debug.h"
+#include "zscii.h"
 
 @implementation ZoomZMachine
 
@@ -307,6 +308,168 @@ void cocoa_debug_handler(ZDWord pc) {
 - (NSData*) staticMemory {
 }
 
+// Macros from interp.c (copy those back for preference if they ever need to change)
+#define UnpackR(x) (machine.packtype==packed_v4?4*((ZUWord)x):(machine.packtype==packed_v8?8*((ZUWord)x):4*((ZUWord)x)+machine.routine_offset))
+#define UnpackS(x) (machine.packtype==packed_v4?4*((ZUWord)x):(machine.packtype==packed_v8?8*((ZUWord)x):4*((ZUWord)x)+machine.string_offset))
+#define Obj3(x) (machine.memory + GetWord(machine.header, ZH_objs) + 62+(((x)-1)*9))
+#define Obj4(x) ((machine.memory + (GetWord(machine.header, ZH_objs))) + 126 + ((((ZUWord)x)-1)*14))
+#define GetPropAddr4(x) (((x)[12]<<8)|(x)[13])
+
+- (int) zRegion: (int) addr {
+	// Being a port of the Z__Region function from Inform
+	if (addr > 0x7fff) addr |= 0xffff0000;
+	int top = addr;
+	
+	if (machine.version == 6 || machine.version == 7) top >>= 1; // (?? might be wrong ??)
+	
+	// Outside the file?
+	if (((unsigned)top&0xffff) > Word(0x1a)) return 0;
+	
+	// Is this an object?
+	if (addr >= 1 && addr <= debug_syms.largest_object) return 1;
+	
+	// Is this a string?
+	ZDWord strUnpack = UnpackS(addr);
+	if (strUnpack >= debug_syms.stringarea) return 3;
+	
+	// Is this a routine?
+	ZDWord routUnpack = UnpackR(addr);
+	if (routUnpack >= debug_syms.codearea) return 2;
+	
+	// Is unknown
+	return 0;
+}
+
+- (unsigned) typeMasksForValue: (unsigned) value {
+	unsigned mask = 0;
+	
+	// Get the region
+	int region = [self zRegion: value];
+	
+	// Is value a valid object number?
+	if (region == 1) {
+		mask |= ZValueObject;
+	}
+	
+	// Is value a valid routine number?
+	if (region == 2) {
+		// Check through the list of routines for this one
+		ZDWord routineAddr = UnpackR(value);
+		int x;
+		BOOL isRoutine = NO;
+		
+		for (x=0; x<debug_syms.nroutines; x++) {
+			if (debug_syms.routine[x].start == routineAddr) isRoutine = YES;
+		}
+		
+		if (isRoutine) mask |= ZValueRoutine;
+	}
+	
+	// Is value a valid string number
+	if (region == 3) {
+		mask |= ZValueString;
+	}
+	
+	return mask;
+}
+
+static NSString* zscii_to_string(ZByte* buf) {
+	int len;
+	int* unistr = zscii_to_unicode(buf, &len);
+	
+	int x;
+	int strLen = 0;
+	
+	for (x=0; unistr[x]!=0; x++) strLen++;
+	
+	unichar* cBuf = malloc(sizeof(unichar)*(strLen+1));
+	
+	for (x=0; x<strLen; x++) {
+		if (unistr[x] <= 0xffff) cBuf[x] = unistr[x]; else cBuf[x] = '?';
+	}
+	cBuf[strLen] = 0;
+	
+	NSString* res = [NSString stringWithCharacters: cBuf
+											length: strLen];
+	
+	free(cBuf);
+	return res;
+}
+
+- (NSString*) descriptionForValue: (unsigned) value {
+	NSMutableString* description = [NSMutableString string];
+	unsigned mask = [self typeMasksForValue: value];
+	
+	// If the value could be an object, get the name
+	if ((mask&ZValueObject)) {
+		ZUWord uarg1 = value&0xffff;
+
+		// 'Object (' at the start of the string
+		[description appendString: @"Object ("];
+		
+		// Built-in name of the object if available
+		debug_symbol* symbol;
+		for (symbol = debug_syms.first_symbol; symbol != NULL; symbol = symbol->next) {
+			if (symbol->type == dbg_object &&
+				symbol->data.object.number == uarg1) {
+				if (symbol->data.object.name != NULL &&
+					symbol->data.object.name[0] != 0) {
+					[description appendFormat: @"%s ", symbol->data.object.name];
+				}
+				break;
+			}
+		}
+		
+		// Short name of the object
+		if (machine.version <= 3) {
+			ZByte* obj;
+			ZByte* prop;
+			
+			obj = Obj3(uarg1);
+			prop = machine.memory + ((obj[7]<<8)|obj[8]) + 1;
+			
+			[description appendFormat: @"\"%@\"", zscii_to_string(prop)];
+		} else {
+			ZByte* obj;
+			ZByte* prop;
+			
+			obj = Obj4(uarg1);
+			prop = Address((ZUWord)GetPropAddr4(obj)+1);
+			
+			[description appendFormat: @"\"%@\"", zscii_to_string(prop)];
+		}
+		
+		[description appendString: @") "];
+	}
+	
+	// If the value could be a string, convert it
+	if ((mask&ZValueString)) {
+		[description appendFormat: @"String (\"%@\") ", zscii_to_string(machine.memory + UnpackS(value))];
+	}
+	
+	// If the value could be a routine, find the name
+	if ((mask&ZValueRoutine)) {
+		ZDWord routineAddr = UnpackR(value);
+		int x;
+		
+		for (x=0; x<debug_syms.nroutines; x++) {
+			if (debug_syms.routine[x].start == routineAddr) {
+				[description appendFormat: @"Routine ([ %s; ]) ", debug_syms.routine[x].name];
+			}
+		}
+	}
+	
+	// If nothing, then just use the value
+	if ([description length] <= 0) {
+		int signedValue = value;
+		if (signedValue > 0x7fff) signedValue &= 0xffff0000;
+		
+		[description appendFormat: @"%i", signedValue];
+	}
+	
+	return description;
+}
+
 - (void) loadDebugSymbolsFrom: (NSString*) symbolFile
 			   withSourcePath: (NSString*) sourcePath {	
 	debug_load_symbols([symbolFile cString], [sourcePath cString]);
@@ -401,6 +564,14 @@ void cocoa_debug_handler(ZDWord pc) {
 	if (addr.line == NULL) return -1;
 	
 	return addr.line->ln;
+}
+
+- (int) characterForAddress: (int) address {
+	debug_address addr = debug_find_address(address);
+	
+	if (addr.line == NULL) return -1;
+	
+	return addr.line->ch;
 }
 
 // = Autosave =

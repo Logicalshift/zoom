@@ -38,6 +38,15 @@ typedef enum {
     ZFileData
 } ZFileType;
 
+enum ZValueTypeMasks {
+	ZValueRoutine = 1,
+	ZValueObject  = 2,
+	ZValueClass   = 4,
+	ZValueString  = 8,
+	ZValueArray   = 16,
+	ZValueAction  = 32,
+};
+
 // == Server-side objects ==
 @protocol ZMachine
 
@@ -86,9 +95,14 @@ typedef enum {
 - (int)        addressForName: (NSString*) name;
 - (NSString*)  nameForAddress: (int) address;
 
-- (NSString*) sourceFileForAddress: (int) address;
-- (NSString*) routineForAddress: (int) address;
-- (int)       lineForAddress: (int) address;
+- (NSString*)   sourceFileForAddress: (int) address;
+- (NSString*)   routineForAddress: (int) address;
+- (int)         lineForAddress: (int) address;
+- (int)			characterForAddress: (int) address;
+
+- (unsigned)			 typeMasksForValue: (unsigned) value;
+- (int)					 zRegion: (int) addr;
+- (out bycopy NSString*) descriptionForValue: (unsigned) value;
 
 @end
 

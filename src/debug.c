@@ -563,6 +563,9 @@ static void debug_add_symbol(char* name,
 		   storename,
 		   strlen(name),
 		   sym);
+  
+  sym->next = debug_syms.first_symbol;
+  debug_syms.first_symbol = sym;
 
   free(storename);
 }
@@ -625,6 +628,8 @@ void debug_load_symbols(char* filename,
       free(db_file);
       return;
     }
+  
+  debug_syms.largest_object = 0;
 
   pos = 6;
 
@@ -811,6 +816,8 @@ void debug_load_symbols(char* filename,
 	    sym->data.object = o;
 	    debug_add_symbol(o.name,
 			     sym);
+	    
+	    if (o.number > debug_syms.largest_object) debug_syms.largest_object = o.number;
 	  }
 	  break;
 	  

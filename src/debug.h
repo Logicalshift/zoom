@@ -204,6 +204,7 @@ struct debug_symbols
 
   ZDWord         codearea;
   ZDWord		 stringarea;
+  ZDWord		 largest_object;
 };
 
 struct debug_address
