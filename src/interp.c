@@ -55,7 +55,7 @@
 #define WinNum(x) ((x)==-3?v6_get_window():(x))
 
 #define StyleSet(x, y) switch (argblock.arg[2]) { case 0: x = (y)!=0; \
-   break; case 1: if ((y)!=0) x=1; break; case 2: if ((y)==0) x=0; break; \
+   break; case 1: if ((y)!=0) x=1; break; case 2: if ((y)!=0) x=0; break; \
    case 3: x ^= (y)!=0; }
 
 static struct v6_wind
@@ -1376,6 +1376,14 @@ static inline void zcode_setup_window(int window)
   if (windows[window].line_count == -999)
     v6_set_more(window, 0);
   stream_buffering(windows[window].buffering);
+
+#ifdef DEBUG
+  printf_debug("Window %i setup: scrolling %i, buffering %i, line count %i\n",
+	       window,
+	       windows[window].scrolling,
+	       windows[window].buffering,
+	       windows[window].line_count);
+#endif
 }
 
 static inline int zcode_v6_push_stack(ZStack* stack,

@@ -2301,6 +2301,8 @@ OPCODE "set_text_style" VAR:0x11 ARGS:1               VERSION 6
   if (argblock.arg[0] == 0)
     windows[cwin].style = 0;
 
+  machine.memory[ZH_fontheight] = display_get_font_height(windows[argblock.arg[0]].style)+0.5;
+
   v6_set_style(argblock.arg[0]);
 %}
 
@@ -2770,6 +2772,10 @@ OPCODE "window_style"  EXT:0x12               VERSION 6
 
   stream_flush_buffer();
 
+#ifdef DEBUG
+  printf_debug("Window_style: %i %i %i\n", argblock.arg[0], argblock.arg[1], argblock.arg[2]);
+#endif
+
   StyleSet(windows[win].wrapping,   argblock.arg[1]&1);
   StyleSet(windows[win].scrolling,  argblock.arg[1]&2);
   StyleSet(windows[win].transcript, argblock.arg[1]&4);
@@ -2834,8 +2840,8 @@ OPCODE "get_wind_prop" EXT:0x13        STORE  VERSION 6
       store(stack, st, windows[argblock.arg[0]].font_num);
       break;
     case 13:
-      store(stack, st, ((int)display_get_font_height(windows[argblock.arg[0]].style)<<8)|
-                        (int)display_get_font_width(windows[argblock.arg[0]].style));
+      store(stack, st, ((int)(display_get_font_height(windows[argblock.arg[0]].style)+0.5)<<8)|
+                        (int)(display_get_font_width(windows[argblock.arg[0]].style)+0.5));
       break;
     case 14:
       store(stack, st,

@@ -135,7 +135,7 @@ void v6_reset_windows(void)
       win[x].fore        = DEFAULT_FORE;
       win[x].back        = DEFAULT_BACK;
       win[x].style       = 0;
-      win[x].line_height = display_get_font_height(0);
+      win[x].line_height = display_get_font_height(0)+0.5;
       win[x].force_fixed = 0;
       win[x].text_amount = 0;
       win[x].no_scroll   = 0;
@@ -286,7 +286,7 @@ void v6_prints(const int* text)
       /* Work out the new height of this line... */
       if (text_pos != start_pos ||
 	  (text_pos == start_pos && text[text_pos] == 10))
-	height = display_get_font_height(ACTWIN.style);
+	height = display_get_font_height(ACTWIN.style)+0.5;
       else
 	height = ACTWIN.line_height;
 
@@ -329,16 +329,16 @@ void v6_prints(const int* text)
 	  if (more == 1 && !ACTWIN.no_more)
 	    {
 	      display_wait_for_more();
-	      ACTWIN.text_amount = ACTWIN.line_height;
+	      ACTWIN.text_amount = ACTWIN.line_height*2;
 	    }
 	  else if (more == -1 && ACTWIN.want_more)
 	    {
-	      ACTWIN.text_amount = ACTWIN.line_height;
+	      ACTWIN.text_amount = ACTWIN.line_height*2;
 	      display_wait_for_more();
 	    }
 	  ACTWIN.want_more = 0;
 	  
-	  scroll_to_height(display_get_font_height(ACTWIN.style), 0);
+	  scroll_to_height(display_get_font_height(ACTWIN.style)+0.5, 0);
 
 	  if (more == 2)
 	    return;
@@ -385,15 +385,16 @@ void v6_erase_window(void)
 
   ACTWIN.cury = ACTWIN.ypos;
   ACTWIN.curx = ACTWIN.xpos + ACTWIN.lmargin;
-  ACTWIN.line_height = ACTWIN.text_amount = display_get_font_height(ACTWIN.style);
+  ACTWIN.line_height = ACTWIN.text_amount = display_get_font_height(ACTWIN.style)+0.5;
+  ACTWIN.text_amount *= 2;
 }
 
 void v6_erase_line(int val)
 {
   if (ACTWIN.line_height == 0)
     {
-      scroll_to_height(display_get_font_height(ACTWIN.style), 1);
-      ACTWIN.line_height = display_get_font_height(ACTWIN.style);
+      scroll_to_height(display_get_font_height(ACTWIN.style)+0.5, 1);
+      ACTWIN.line_height = display_get_font_height(ACTWIN.style)+0.5;
     }
 
   if (ACTWIN.style&1)
@@ -437,18 +438,6 @@ void v6_set_colours(int fg, int bg)
 
   ACTWIN.fore = fg;
   ACTWIN.back = bg;
-
-#ifdef DEBUG
-  if (ACTWIN.fore > 7 || ACTWIN.fore < 0)
-    {
-      printf("Bad colour...\n");
-      ACTWIN.fore = 0;
-    }
-  if (ACTWIN.back > 7 || ACTWIN.back < 0)
-    {
-      printf("Bad colour...\n");
-    }
-#endif
 }
 
 int v6_set_style(int style)
@@ -522,12 +511,14 @@ void v6_define_window(int window,
 
   if (win[window].cury+win[window].line_height > win[window].ypos + win[window].height)
     {
-      win[window].line_height = display_get_font_height(win[window].style);
+      win[window].line_height = display_get_font_height(win[window].style)+0.5;
       win[window].cury = win[window].ypos + win[window].height - win[window].line_height;
       
       if (!ACTWIN.no_scroll)
-	scroll_to_height(display_get_font_height(ACTWIN.style), 0);
+	scroll_to_height(display_get_font_height(ACTWIN.style)+0.5, 0);
     }
+
+  win[window].text_amount = win[window].line_height*2;
 }
 
 void v6_set_scroll(int flag)
@@ -555,7 +546,9 @@ void v6_set_cursor(int x, int y)
   ACTWIN.cury = ACTWIN.ypos + y;
 
   if (ly != ACTWIN.cury)
-    ACTWIN.line_height = display_get_font_height(ACTWIN.style);
+    ACTWIN.line_height = display_get_font_height(ACTWIN.style)+0.5;
+
+  ACTWIN.text_amount = 0;
 }
 
 int  v6_get_cursor_x(void)

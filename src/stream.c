@@ -260,6 +260,10 @@ void stream_prints(const unsigned char* s)
       int* txt;
       int x;
 
+#ifdef DEBUG
+      printf_debug("Stream: (Buffering off)\n");
+#endif
+
       txt = malloc(sizeof(int)*(strlen(s)+1));
       for (x=0; s[x] != 0; x++)
 	txt[x] = zscii_unicode[s[x]];
@@ -428,6 +432,10 @@ void stream_buffering(int buf)
     stream_flush_buffer();
 
   buffering = buf;
+
+#ifdef DEBUG
+  printf_debug("Stream: buffering set to %i\n", buf);
+#endif
 }
 
 void stream_printf(const char* const f, ...)
