@@ -6,6 +6,9 @@
 ! by Andrew Hunter
 !
 
+[ func a b c d e f g;
+];
+
 [ Main i j k;
   print "ZMark version 0.2, by Andrew Hunter^^";
 
@@ -214,6 +217,22 @@
   @"EXT:129";
   @"EXT:131";
   new_line;
+
+  ! CallMark - how fast can your interpreter do function calls?
+  print "CallMark: ";
+  @read_char -> i;
+  @"EXT:128";
+  for (k=0: k<20: k++)
+  {  
+  for (i=0: i<32000: i++)
+    {
+      @call_vn func;
+  }
+  }
+    @"EXT:129";
+    @"EXT:131";
+    new_line;
+    
 
   ! NopMark - how fast can your interpreter do no-ops?
   print "NopMark: ";
