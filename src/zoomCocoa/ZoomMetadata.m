@@ -68,9 +68,30 @@
 	}
 }
 
-// Storing information
+// = Storing information =
 - (void) storeStory: (ZoomStory*) story {
 	IFMD_AddStory(metadata, [story story]);
+}
+
+// = Saving the file =
+static int dataWrite(const char* bytes, int length, void* userData) {
+	NSMutableData* data = userData;
+	[data appendBytes: bytes
+			   length: length];
+	return 0;
+}
+
+- (NSData*) xmlData {
+	NSMutableData* res = [[NSMutableData alloc] init];
+	
+	IFMD_Save(metadata, dataWrite, res);
+	
+	return [res autorelease];
+}
+
+- (BOOL) writeToFile: (NSString*)path
+		  atomically: (BOOL)flag {
+	return [[self xmlData] writeToFile: path atomically: flag];
 }
 
 @end

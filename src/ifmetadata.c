@@ -28,6 +28,14 @@
  * compiled for, which is pretty much anything.
  */
 
+/*
+ * FIXME: IFMD_AddStory() may cause a crash if:
+ *   You're adding a new entry for an existing story
+ *   The existing story has more than one ident
+ *
+ *   This is not a problem with Zoom's current implementation, as this situation never occurs.
+ */
+
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -574,7 +582,7 @@ static XMLCALL void startElement(void *userData,
 		}
 	} else if (XCstrcmp(parent, "story") == 0) {
 		/* Metadata or <identification> tags */
-		if (XCstrcmp(current, "identification") == 0) {
+		if (XCstrcmp(current, "identification") == 0 || XCstrcmp(current, "id") == 0) {
 			/* Story ID data */
 			IFMDIdent newID;
 			int x;
@@ -605,7 +613,7 @@ static XMLCALL void startElement(void *userData,
 			/* Unrecognised tag */
 			addError(state, IFMDErrorUnknownTag, NULL);
 		}
-	} else if (XCstrcmp(parent, "identification") == 0) {
+	} else if (XCstrcmp(parent, "identification") == 0 || XCstrcmp(parent, "id") == 0) {
 		/* ID tags */
 		if (XCstrcmp(current, "format") == 0) {
 			/* Format of the story */
@@ -671,7 +679,7 @@ static XMLCALL void endElement(void *userData,
 		if (state->ident != NULL) {
 			/* Dealing with a game identification section */
 			
-			if (XCstrcmp(parent, "identification") == 0) {
+			if (XCstrcmp(parent, "identification") == 0 || XCstrcmp(parent, "id") == 0) {
 				/* General identification */
 				if (XCstrcmp(current, "md5") == 0) {
 					/* MD5 key <identification><md5> */
@@ -877,7 +885,7 @@ static XMLCALL void endElement(void *userData,
 		return;
 	}
 	
-	if (XCstrcmp(current, "identification") == 0) {
+	if (XCstrcmp(current, "identification") == 0 || XCstrcmp(parent, "id") == 0) {
 		/* Verify the identification for errors */
 		if (state->ident->dataFormat != IFFormat_Unknown &&
 			state->ident->dataFormat != state->ident->format) {
@@ -1207,38 +1215,25 @@ void IFStory_Copy(IFMDStory* dst, const IFMDStory* src) {
 }
 
 /* = Modification functions = */
-void IFMD_AddStory(IFMetadata* data, IFMDStory* newStory) {
+void IFMD_AddStory(IFMetadata* data, IFMDStory* storyToAdd) {
 	int x, y;
 	IFMDStory* newEntry;
-	int oldIndex;
 	
 	/* Try to find the old story if it exists */
-	oldIndex = -1;
-	for (y=0; y<data->numberOfStories; y++) {
-		if (data->stories[y] == newStory) {
-			oldIndex = y; break;
-		}
-	}
 	
 	/* Add story to the list */
-	if (oldIndex < 0) {
-		/* Story doesn't exist yet */		
 		data->numberOfStories++;
 		data->stories = realloc(data->stories, sizeof(IFMDStory*)*data->numberOfStories);
 		
 		data->stories[data->numberOfStories-1] = IFStory_Alloc();
-		IFStory_Copy(data->stories[data->numberOfStories-1], newStory);
+		IFStory_Copy(data->stories[data->numberOfStories-1], storyToAdd);
 		
 		newEntry = data->stories[data->numberOfStories-1];
-	} else {
-		/* Story is already in the metadata repository */
-		newEntry = newStory;
-	}
 	
 	/* Add story to the index, remove any idents that appear twice */
-	for (x=0; x<newStory->numberOfIdents; x++) {
+	for (x=0; x<storyToAdd->numberOfIdents; x++) {
 		int top, bottom, res, cmp;
-		IFMDIdent* id = newStory->idents + x;
+		IFMDIdent* id = storyToAdd->idents + x;
 		
 		bottom = 0;
 		top = data->numberOfIndexEntries-1;
@@ -1270,7 +1265,7 @@ void IFMD_AddStory(IFMetadata* data, IFMDStory* newStory) {
 				storyId = -1;
 				
 				for (y=0; y<thisStory->numberOfIdents; y++) {
-					if (thisStory->idents + y == id) storyId = y;
+					if (IFID_Compare(thisStory->idents + y, id) == 0) { storyId = y; break; }
 				}
 				
 				if (storyId >= 0) {
@@ -1299,9 +1294,6 @@ void IFMD_AddStory(IFMetadata* data, IFMDStory* newStory) {
 							abort(); /* BLEAAARRRGH */
 						}
 						
-						/* Move newEntry if required */
-						if (newEntry > thisStory) newEntry--;
-						
 						if (newEntry == thisStory) {
 							/* Programmer is a spoon */
 							abort();
@@ -1309,9 +1301,9 @@ void IFMD_AddStory(IFMetadata* data, IFMDStory* newStory) {
 						
 						/* Rearrange the stories */
 						data->numberOfStories--;
-						memmove(data->index+storyNum,
-								data->index+storyNum+1,
-								sizeof(IFMDIndexEntry)*(data->numberOfStories-storyNum));
+						memmove(data->stories+storyNum,
+								data->stories+storyNum+1,
+								sizeof(IFMDStory*)*(data->numberOfStories-storyNum));
 						
 						/* Delete this story */
 						IFStory_Free(thisStory);
@@ -1346,4 +1338,249 @@ void IFMD_AddStory(IFMetadata* data, IFMDStory* newStory) {
 	}
 	
 	return;
+}
+
+/* Saving metadata */
+static unsigned char* makeutf8xml(IFMDChar* string, int allowNewlines) {
+	unsigned char* res = NULL;
+	int len = 0;
+	int pos = 0;
+	int x;
+	
+#define add(c) if (len <= pos) { len += 256; res = realloc(res, sizeof(unsigned char)*len); } res[pos++] = c
+	
+	for (x=0; string[x] != 0; x++) {
+		IFMDChar chr = string[x];
+
+		switch (chr) {
+			case '<':
+				add('&'); add('l'); add('t'); add(';');
+				break;
+			case '>':
+				add('&'); add('g'); add('t'); add(';');
+				break;
+			case '&':
+				add('&'); add('a'); add('m'); add('p'); add(';');
+				break;
+			case '\'':
+				add('&'); add('a'); add('p'); add('o'); add('s'); add(';');
+				break;
+			case '\"':
+				add('&'); add('q'); add('u'); add('o'); add('t'); add(';');
+				break;
+			case '\n':
+				if (allowNewlines) {
+					add('<'); add('b'); add('r'); add('/'); add('>');
+				}
+				break;
+				
+			default:
+				if (chr < 0x80) {
+					add(chr);
+				} else if (chr < 0x800) {
+					add(0xc0 | (chr>>6));
+					add(0x80 | (chr&0x3f));
+				} else if (chr < 0x10000) {
+					add(0xe0 | (chr>>12));
+					add(0x80 | ((chr>>6)&0x3f));
+					add(0x80 | (chr&0x3f));
+				} else if (chr < 0x200000) {
+					add(0xf0 | (chr>>18));
+					add(0x80 | ((chr>>12)&0x3f));
+					add(0x80 | ((chr>>6)&0x3f));
+					add(0x80 | (chr&0x3f));
+				} else {
+					/* These characters can't be represented by unicode anyway */
+				}
+		}
+	}
+	
+	add(0);
+	return res;
+}
+
+int IFMD_Save(IFMetadata* data, 
+			  int(*writeFunction)(const char* bytes, int length, void* userData), 
+			  void* userData) {
+	/*
+	 * We save in UTF-8 format. UTF-16 may be more efficient if characters outside ASCII are in 
+	 * common use
+	 */
+	int story;
+	unsigned char* utf8;
+
+#define ws(s) if (writeFunction(s, strlen(s), userData) != 0) return 1;
+#define wutf(s) utf8 = makeutf8xml(s, 0); ws(utf8); free(utf8);
+#define wutfblock(s) utf8 = makeutf8xml(s, 1); ws(utf8); free(utf8);
+	
+	/* Header */
+	ws("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+	ws("<ifindex version=\"0.9\">\n");
+	ws(" <!-- Metadata output generated automatically by ifmetadata.c by Andrew Hunter -->\n");
+	
+	/* For each story */
+	for (story=0; story<data->numberOfStories; story++) {
+		int ident;
+		IFMDStory* thisStory = data->stories[story];
+		
+		if (thisStory->error) continue; /* No erroneous stories */
+		if (thisStory->numberOfIdents == 0) continue; /* No nonexistant stories */
+		
+		ws("\n <story>\n");
+		
+		/* Write the idents */
+		for (ident=0; ident<thisStory->numberOfIdents; ident++) {
+			IFMDIdent* thisIdent = thisStory->idents + ident;
+			
+			ws("  <id>\n");
+
+			/* Data format */
+			ws("   <format>");
+			switch (thisIdent->dataFormat) {
+				case IFFormat_ZCode: ws("zcode"); break;
+				case IFFormat_Glulx: ws("glulx"); break;
+				
+				case IFFormat_TADS: ws("tads"); break;
+				case IFFormat_HUGO: ws("hugo"); break;
+				case IFFormat_Alan: ws("alan"); break;
+				case IFFormat_Adrift: ws("adrift"); break;
+				case IFFormat_Level9: ws("level9"); break;
+				case IFFormat_AGT: ws("agt"); break;
+				case IFFormat_MagScrolls: ws("magscrolls"); break;
+				case IFFormat_AdvSys: ws("advsys"); break;
+				default: ws("unknown"); break;
+			}
+			ws("</format>\n");
+			
+			/* Format-specific data */
+			switch (thisIdent->dataFormat) {
+				case IFFormat_ZCode:
+				{
+					char buf[16];
+					
+					ws("   <zcode>\n");
+					
+					ws("    <serial>");
+					snprintf(buf, 16, "%.6s", thisIdent->data.zcode.serial);
+					ws(buf);
+					ws("</serial>\n");
+					
+					ws("    <release>");
+					snprintf(buf, 16, "%i", thisIdent->data.zcode.release);
+					ws(buf);
+					ws("</release>\n");
+					
+					if (thisIdent->data.zcode.checksum < 0x10000) {
+						ws("    <checksum>");
+						snprintf(buf, 16, "%04x", thisIdent->data.zcode.checksum);
+						ws(buf);
+						ws("</checksum>\n");
+					}
+					
+					ws("   </zcode>\n");
+					break;
+				}
+					
+				default:
+					ws("    <!-- Format-specific data not current supported for this format -->\n");
+					break;
+			}
+			
+			/* MD5 */
+			if (thisIdent->usesMd5) {
+				int x;
+				
+				ws("   <md5>");
+				for (x=0; x<16; x++) {
+					char s[4];
+					
+					snprintf(s, 4, "%02x", (unsigned char) thisIdent->md5Sum[x]);
+				}
+				ws("   </md5>\n");
+			}
+			
+			ws("  </id>\n");
+		}
+		
+		/* Write the metadata */
+		if (thisStory->data.title && thisStory->data.title[0] != 0) {
+			ws("  <title>");
+			wutf(thisStory->data.title);
+			ws("</title>\n");
+		}
+
+		if (thisStory->data.headline && thisStory->data.headline[0] != 0) {
+			ws("  <headline>");
+			wutf(thisStory->data.headline);
+			ws("</headline>\n");
+		}
+		
+		if (thisStory->data.author && thisStory->data.author[0] != 0) {
+			ws("  <author>");
+			wutf(thisStory->data.author);
+			ws("</author>\n");
+		}
+		
+		if (thisStory->data.genre && thisStory->data.genre[0] != 0) {
+			ws("  <genre>");
+			wutf(thisStory->data.genre);
+			ws("</genre>\n");
+		}
+
+		if (thisStory->data.year != 0) {
+			char buf[16];
+			
+			snprintf(buf, 16, "%i", thisStory->data.year);
+			
+			ws("  <year>");
+			ws(buf);
+			ws("</year>\n");
+		}
+
+		if (thisStory->data.group && thisStory->data.group[0] != 0) {
+			ws("  <group>");
+			wutf(thisStory->data.group);
+			ws("</group>\n");
+		}
+
+		if (thisStory->data.zarfian != IFMD_Unrated) {
+			switch (thisStory->data.zarfian) {
+				case IFMD_Merciful: ws("  <zarfian>merciful</zarfian>\n"); break;
+				case IFMD_Polite: ws("  <zarfian>polite</zarfian>\n"); break;
+				case IFMD_Tough: ws("  <zarfian>tough</zarfian>\n"); break;
+				case IFMD_Nasty: ws("  <zarfian>nasty</zarfian>\n"); break;
+				case IFMD_Cruel: ws("  <zarfian>cruel</zarfian>\n"); break;
+				default: break;
+			}
+		}
+
+		if (thisStory->data.teaser && thisStory->data.teaser[0] != 0) {
+			ws("  <teaser>\n   ");
+			wutfblock(thisStory->data.teaser);
+			ws("\n  </teaser>\n");
+		}
+
+		if (thisStory->data.comment && thisStory->data.comment[0] != 0) {
+			ws("  <comment>\n   ");
+			wutfblock(thisStory->data.comment);
+			ws("\n  </comment>\n");
+		}
+		
+		if (thisStory->data.rating >= 0) {
+			char buf[16];
+			
+			snprintf(buf, 16, "%.2f", thisStory->data.rating);
+			
+			ws("  <rating>");
+			ws(buf);
+			ws("</rating>\n");
+		}
+		
+		ws(" </story>\n");
+	}
+	
+	/* Finish up */
+	ws("</ifindex>\n");
+	
+	return 0;
 }

@@ -25,6 +25,7 @@
 #ifndef __IFMETADATA_H
 #define __IFMETADATA_H
 
+#include <stdio.h>
 #include <stdlib.h>
 
 #ifdef HAVE_WCHAR_H
@@ -210,5 +211,8 @@ extern IFMDChar*   IFMakeStrCF(const CFStringRef src);
 
 /* Modification functions */
 extern void IFMD_AddStory(IFMetadata* data, IFMDStory* newStory); /* newStory can already exist, replaces any story with the same ID */
+
+/* Saving metadata */
+extern int IFMD_Save(IFMetadata* data, int(*writeFunction)(const char* bytes, int length, void* userData), void* userData);
 
 #endif

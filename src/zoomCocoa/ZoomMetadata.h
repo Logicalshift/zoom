@@ -29,4 +29,9 @@
 // Storing information
 - (void) storeStory: (ZoomStory*) story;
 
+// Saving the file
+- (NSData*) xmlData;
+- (BOOL)    writeToFile: (NSString*)path
+			 atomically: (BOOL)flag;
+
 @end

@@ -92,6 +92,9 @@
 
 // = Document closedown =
 
-// How?
+// How? Closing fails to cause an update of any of the fields from the gameinfo window, as
+// the controller has already had its document set to nil. Need to detect when a document
+// is about to finish with its controllers (or when a controller is about to finish with
+// its document) in order to close it down.
 
 @end

@@ -1658,6 +1658,19 @@
 			settings = {
 			};
 		};
+		4BB515B405BC615F00D00C96 = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			path = iFiction.nib;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4BB515B505BC615F00D00C96 = {
+			fileRef = 4BB515B405BC615F00D00C96;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		4BCF3F27050F8BB200A8E303 = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -1812,6 +1825,7 @@
 				4B418E150594FCDB009C44DE,
 				4B2EAF9A05B056EC0021A5E6,
 				4BACE9FB05B428C700A9B6DC,
+				4BB515B505BC615F00D00C96,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2034,6 +2048,7 @@
 				4BCF3F57050FB49F00A8E303,
 				4B418E140594FCDB009C44DE,
 				4B2EAF9905B056EC0021A5E6,
+				4BB515B405BC615F00D00C96,
 			);
 			isa = PBXGroup;
 			name = Resources;
