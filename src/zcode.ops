@@ -614,14 +614,14 @@ OPCODE "loadw"        2OP:0x0f STORE  VERSION all
 #ifdef DEBUG
   printf_debug("Loading word at #%x\n", (ZUWord)arg1+((ZUWord)arg2*2));
 #endif
-  store(stack, st, Word((ZUWord)arg1+((ZUWord)arg2*2)));
+  store(stack, st, Word((ZUWord)((ZUWord)arg1+((ZUWord)arg2*2))));
 %}
 OPCODE "loadb"        2OP:0x10 STORE  VERSION all
 %{
 #ifdef DEBUG
   printf_debug("Loading byte at #%x\n", (ZUWord)arg1+(ZUWord)arg2);
 #endif
-  store(stack, st, ReadByte((ZUWord)arg1+(ZUWord)arg2));
+  store(stack, st, ReadByte((ZUWord)((ZUWord)arg1+(ZUWord)arg2)));
 %}
 
 OPCODE "or"           2OP:0x08 STORE  VERSION all
