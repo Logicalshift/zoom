@@ -16,6 +16,7 @@
 // (Plus I want to be able to port all of Zoom's backend to other platforms)
 
 @interface ZoomMetadata : NSObject {
+	NSString* filename;
 	struct IFMetadata* metadata;
 	
 	NSLock* dataLock;

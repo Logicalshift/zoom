@@ -316,15 +316,22 @@ static XML_Char* currentTag(IFMDState* s) {
 static void addError(IFMDState* s, enum IFMDErrorType errorType, const char* data) {
 	s->data->numberOfErrors++;
 	s->data->error = realloc(s->data->error, s->data->numberOfErrors*sizeof(IFMDError));
-	
-	s->data->error[s->data->numberOfErrors-1].severity = IFMDErrorFatal;
-	s->data->error[s->data->numberOfErrors-1].type     = errorType;
-	s->data->error[s->data->numberOfErrors-1].moreText = NULL; /* FIXME */
+    
+	s->data->error[s->data->numberOfErrors-1].severity   = IFMDErrorFatal;
+	s->data->error[s->data->numberOfErrors-1].type       = errorType;
+    s->data->error[s->data->numberOfErrors-1].lineNumber = XML_GetCurrentLineNumber(s->parser);
+    
+    if (data) {
+        s->data->error[s->data->numberOfErrors-1].moreText   = malloc(strlen(data)+1);
+        strcpy(s->data->error[s->data->numberOfErrors-1].moreText, data);
+    } else {
+        s->data->error[s->data->numberOfErrors-1].moreText = NULL;
+    }
 	
 	if (s->story)
 		s->story->error = 1;
 	
-	printf("Error: %i (%s) (@%i)\n", errorType, data, XML_GetCurrentLineNumber(s->parser));
+	/* printf("Error: %i (%s) (@%i)\n", errorType, data, XML_GetCurrentLineNumber(s->parser)); */
 }
 
 /* Sorting functions */
@@ -603,7 +610,7 @@ static XMLCALL void startElement(void *userData,
 		} else if (XCstrcmp(current, "rating") == 0) {
 		} else {
 			/* Unrecognised tag */
-			addError(state, IFMDErrorUnknownTag, NULL);
+			addError(state, IFMDErrorUnknownTag, "Unrecognised tag");
 		}
 	} else if (XCstrcmp(parent, "identification") == 0 || XCstrcmp(parent, "id") == 0) {
 		/* ID tags */
@@ -624,7 +631,7 @@ static XMLCALL void startElement(void *userData,
 			/* Glulx data */
 		} else {
 			/* Unrecognised ID tag */
-			addError(state, IFMDErrorUnknownTag, NULL);
+			addError(state, IFMDErrorUnknownTag, "Unrecognised tag");
 		}
 	} else if (XCstrcmp(parent, "zcode") == 0) {
 		/* ZCode data */
@@ -633,7 +640,7 @@ static XMLCALL void startElement(void *userData,
 		} else if (XCstrcmp(current, "checksum") == 0) {
 		} else {
 			/* Unrecognised tag */
-			addError(state, IFMDErrorUnknownTag, NULL);
+			addError(state, IFMDErrorUnknownTag, "Unrecognised tag");
 		}
 	} else if (XCstrcmp(parent, "glulx") == 0) {
 		/* Glulx data */
@@ -641,7 +648,7 @@ static XMLCALL void startElement(void *userData,
 		} else if (XCstrcmp(current, "release") == 0) {
 		} else {
 			/* Unrecognised tag */
-			addError(state, IFMDErrorUnknownTag, NULL);
+			addError(state, IFMDErrorUnknownTag, "Unrecognised tag");
 		}
 	} else {
 		/* Unknown data */
@@ -747,7 +754,7 @@ static XMLCALL void endElement(void *userData,
 						state->ident->format = IFFormat_AdvSys;
 					} else {
 						/* Unrecognised format */
-						addError(state, IFMDErrorUnknownFormat, NULL);
+						addError(state, IFMDErrorUnknownFormat, "Unknown game format");
 					}
 					
 					free(format);
@@ -884,7 +891,7 @@ static XMLCALL void endElement(void *userData,
 		if (state->ident->dataFormat != IFFormat_Unknown &&
 			state->ident->dataFormat != state->ident->format) {
 			/* Specified one format with <format>, but gave data for another */
-			addError(state, IFMDErrorMismatchedFormats, NULL);
+			addError(state, IFMDErrorMismatchedFormats, "Specified one format with <format>, but gave data for another");
 		}
 				
 		/* Clear it */
@@ -1400,7 +1407,14 @@ static unsigned char* makeutf8xml(IFMDChar* string, int allowNewlines) {
 				break;
 				
 			default:
-				if (chr < 0x80) {
+                if (chr < 0x20) {
+                    /* These are for the most part invalid */
+                    /* 
+                       Actually, according to the XML spec, they are fine, but expat complains and pain often 
+                       results. This *will* prevent certain broken game files from indexing properly, and will
+                       generally result in duplicate entries in these cases.
+                    */
+				} else if (chr < 0x80) {
 					add(chr);
 				} else if (chr < 0x800) {
 					add(0xc0 | (chr>>6));
@@ -1482,12 +1496,16 @@ int IFMD_Save(IFMetadata* data,
 				case IFFormat_ZCode:
 				{
 					char buf[16];
+                    IFMDChar cbuf[16];
+                    int x;
 					
 					ws("   <zcode>\n");
 					
 					ws("    <serial>");
 					snprintf(buf, 16, "%.6s", thisIdent->data.zcode.serial);
-					ws(buf);
+                    for (x=0; x<16; x++) cbuf[x] = buf[x];
+					//ws(buf);
+                    wutf(cbuf);
 					ws("</serial>\n");
 					
 					ws("    <release>");

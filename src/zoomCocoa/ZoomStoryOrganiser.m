@@ -269,9 +269,23 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 	ZoomStoryID* newID = [[[ZoomStoryID alloc] initWithZCodeFile: gameFile] autorelease];
 	
 	if (newID == nil) {
-		NSLog(@"Found unindexed game at %@, but failed to obtain an ID. Not indexing");
+		NSLog(@"Found unindexed game at %@, but failed to obtain an ID. Not indexing", gameFile);
 		return;
 	}
+	
+	BOOL otherFile;
+	
+	[storyLock lock];
+	if ([identsToFilenames objectForKey: newID] != nil) {
+		otherFile = YES;
+		
+		NSLog(@"Story %@ appears to be a duplicate of %@", gameFile, [identsToFilenames objectForKey: newID]);
+	} else {
+		otherFile = NO;
+		
+		NSLog(@"Story %@ not in database (will add)", gameFile);
+	}
+	[storyLock unlock];
 	
 	ZoomMetadata* data = [[NSApp delegate] userMetadata];	
 	ZoomStory* oldStory = [[NSApp delegate] findStory: newID];

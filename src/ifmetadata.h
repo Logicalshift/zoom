@@ -171,6 +171,7 @@ enum IFMDErrorType {
 struct IFMDError {
 	enum IFMDSeverity severity;
 	enum IFMDErrorType type;
+	int lineNumber;
 
 	char* moreText;
 };

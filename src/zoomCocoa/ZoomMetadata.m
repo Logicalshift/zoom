@@ -11,6 +11,8 @@
 
 #include "ifmetadata.h"
 
+#define ReportErrors
+
 @implementation ZoomMetadata
 
 // = Initialisation, etc =
@@ -35,16 +37,29 @@
 	return self;
 }
 
-- (id) initWithContentsOfFile: (NSString*) filename {
-	return [self initWithData: [NSData dataWithContentsOfFile: filename]];
-}
-
-- (id) initWithData: (NSData*) xmlData {
+- (id) initWithData: (NSData*) xmlData
+		   filename: (NSString*) fname {
 	self = [super init];
 	
 	if (self) {
+		filename = [fname copy];
+		
 		metadata = IFMD_Parse([xmlData bytes], [xmlData length]);
 		dataLock = [[NSLock alloc] init];
+		
+#ifdef ReportErrors
+		if (metadata->numberOfErrors > 0) {
+			NSLog(@"ZoomMetadata: encountered errors in file %@", filename!=nil?[filename lastPathComponent]:@"(memory)");
+			
+			int x;
+			for (x=0; x<metadata->numberOfErrors; x++) {
+				NSLog(@"ZoomMetadata: %@ at line %i: %s",
+					  metadata->error[x].severity==IFMDErrorWarning?@"Warning":@"Error",
+					  metadata->error[x].lineNumber,
+					  metadata->error[x].moreText);
+			}
+		}
+#endif
 		
 #ifdef IFMD_ALLOW_TESTING
 		// Test, if available
@@ -55,9 +70,21 @@
 	return self;
 }
 
+- (id) initWithContentsOfFile: (NSString*) fname {
+	return [self initWithData: [NSData dataWithContentsOfFile: fname]
+					 filename: fname];
+}
+
+- (id) initWithData: (NSData*) xmlData {
+	return [self initWithData: xmlData
+					 filename: nil];
+}
+
 - (void) dealloc {
 	IFMD_Free(metadata);
 	[dataLock release];
+	
+	if (filename) [filename release];
 	
 	[super dealloc];
 }

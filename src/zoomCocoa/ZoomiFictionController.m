@@ -643,7 +643,7 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 		[story addID: [[[ZoomStoryID alloc] initWithZCodeFile: filename] autorelease]];
 		
 		// Store this in the user metadata for later
-		NSLog(@"Blonk");
+		NSLog(@"Failed to find story for ID: %@", ident);
 		[[[NSApp delegate] userMetadata] storeStory: story];
 		[[[NSApp delegate] userMetadata] writeToDefaultFile];
 	}
