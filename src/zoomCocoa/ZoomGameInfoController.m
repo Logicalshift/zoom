@@ -54,6 +54,10 @@
 	if (name) {
 		[genre setStringValue: name];
 	}
+	
+	[NSApp sendAction: @selector(infoGenreChanged:)
+				   to: nil 
+				 from: self];
 }
 
 - (IBAction)showGenreMenu:(id)sender {
@@ -175,6 +179,23 @@
 		return [rating floatValue];
 	} else {
 		return -1;
+	}
+}
+
+// = NSText delegate =
+- (void)textDidEndEditing:(NSNotification *)aNotification {
+	NSTextView* textView = [aNotification object];
+	
+	if (textView == comments) {
+		[NSApp sendAction: @selector(infoCommentsChanged:)
+					   to: nil
+					 from: self];
+	} else if (textView == teaser) {
+		[NSApp sendAction: @selector(infoTeaserChanged:)
+					   to: nil
+					 from: self];
+	} else {
+		NSLog(@"Unknown text view");
 	}
 }
 

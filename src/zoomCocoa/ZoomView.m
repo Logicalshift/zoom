@@ -781,8 +781,6 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         double sepHeight = fixedSize.height * (double)newSize;
         sepHeight -= [upperWindowBuffer containerSize].height;
 		
-		NSLog(@"Upper window go!");
-
         if ([[textView textStorage] length] == 0) {
             [[[textView textStorage] mutableString] appendString: @"\n"];
         }

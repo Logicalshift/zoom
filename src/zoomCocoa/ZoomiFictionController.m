@@ -55,7 +55,7 @@ static ZoomiFictionController* sharedController = nil;
 	showDrawer = YES;
 	needsUpdating = YES;
 	
-	sortColumn = nil;
+	sortColumn = [@"group" retain];
 	
 	[mainTableView setAllowsColumnSelection: NO];
 	
@@ -484,6 +484,25 @@ int tableSorter(id a, id b, void* context) {
 	[story setRating: [[ZoomGameInfoController sharedGameInfoController] rating]];
 	[self reloadTableData]; [mainTableView reloadData];
 	[[[NSApp delegate] userMetadata] writeToDefaultFile];
+}
+
+// = NSText delegate =
+
+- (void)textDidEndEditing:(NSNotification *)aNotification {
+	NSTextView* textView = [aNotification object];
+
+	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
+	
+	if (textView == commentView) {
+		[story setComment: [commentView string]];
+	} else if (textView == teaserView) {
+		[story setTeaser: [teaserView string]];
+	} else {
+		NSLog(@"Unknown text view");
+	}
+
+	[self reloadTableData]; [mainTableView reloadData];
+	[[[NSApp delegate] userMetadata] writeToDefaultFile];		
 }
 
 @end
