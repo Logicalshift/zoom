@@ -23,6 +23,7 @@ Array count --> 70;
 	    count-->y = count-->y+1;
 	}
 	iterations = iterations + time;
+	height = $24-->0;
 	display();
 	@read_char 1 1 fart -> z;
     }
