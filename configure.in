@@ -36,6 +36,22 @@ UTIL_CHECK_CFLAG(Wall)
 UTIL_CHECK_CFLAG(finline-functions)
 UTIL_CHECK_CFLAG(funroll-loops)
 
+AC_MSG_CHECKING([for computed gotos])
+AC_TRY_LINK([], 
+	[ 
+	  void *foo[] = { &&bar, &&baz };
+
+	bar:
+	  goto *foo[0];
+	baz:
+	  goto *foo[1];
+	],
+	[ 
+	  AC_MSG_RESULT(yes) 
+	  AC_DEFINE(HAVE_COMPUTED_GOTOS)
+	],
+	[ AC_MSG_RESULT(no) ])
+
 UTIL_DISPLAY_SECTION(architecture characteristics)
 
 AC_CHECK_SIZEOF(unsigned char, 1)
