@@ -1264,6 +1264,19 @@
 			settings = {
 			};
 		};
+		4B2EAF9905B056EC0021A5E6 = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
+			path = GameInfo.nib;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B2EAF9A05B056EC0021A5E6 = {
+			fileRef = 4B2EAF9905B056EC0021A5E6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		4B3C675B05566FE200764D1A = {
 			containerPortal = 4B1E3F4B050F7AD000A8E303;
 			isa = PBXContainerItemProxy;
@@ -1638,6 +1651,7 @@
 				4B418DEA0594FC3B009C44DE,
 				4B418DEB0594FC3B009C44DE,
 				4B418E150594FCDB009C44DE,
+				4B2EAF9A05B056EC0021A5E6,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1852,6 +1866,7 @@
 				4BCF3F51050FB42600A8E303,
 				4BCF3F57050FB49F00A8E303,
 				4B418E140594FCDB009C44DE,
+				4B2EAF9905B056EC0021A5E6,
 			);
 			isa = PBXGroup;
 			name = Resources;
