@@ -37,6 +37,7 @@
 #include "display.h"
 #include "zoomres.h"
 #include "rc.h"
+#include "hash.h"
 
 #include "windisplay.h"
 #include "xfont.h"
@@ -163,6 +164,7 @@ struct window
 int cur_win;
 struct window text_win[3];
 static int    nShow;
+static int    localchange = 0;
 
 #define CURWIN text_win[cur_win]
 #define CURSTYLE (text_win[cur_win].style|(text_win[cur_win].force_fixed<<8))
@@ -214,8 +216,8 @@ static void size_window(void)
 {
   RECT rct, clrct, strct;
   
-  xfont_x = xfont_get_width(font[3]);
-  xfont_y = xfont_get_height(font[3]);
+  xfont_x = xfont_get_width(font[style_font[4]]);
+  xfont_y = xfont_get_height(font[style_font[4]]);
 
   win_x = xfont_x*size_x;
   win_y = xfont_y*size_y;
@@ -1180,9 +1182,9 @@ void display_update(void)
 {
   RECT rct;
 
-  rct.top = rct.left = 0;
-  rct.right  = total_x;
-  rct.bottom = total_y;
+  rct.top = rct.left = 4;
+  rct.right  = win_x;
+  rct.bottom = win_y;
   InvalidateRect(mainwin, &rct, 0);
 }
 
@@ -1764,9 +1766,36 @@ static void resize_window()
   int owin;
   int x,y,z;
 
+  int ofont_x, ofont_y;
+
   if (xfont_x == 0 || xfont_y == 0)
     return;
-  
+
+  ofont_x = xfont_x; ofont_y = xfont_y;
+  xfont_x = xfont_get_width(font[style_font[4]]);
+  xfont_y = xfont_get_height(font[style_font[4]]);
+
+  if (xfont_x == 0 || xfont_y == 0)
+    zmachine_fatal("Bad font selection");
+
+  if (ofont_y != xfont_y)
+    {
+      int make_equal;
+      
+      for (x=1; x<3; x++)
+	{
+	  if (text_win[x].winly == text_win[0].winsy)
+	    make_equal = 1;
+	  else
+	    make_equal = 0;
+
+	  text_win[x].winsy = (text_win[x].winsy/ofont_y)*xfont_y;
+	  text_win[x].winly = (text_win[x].winly/ofont_y)*xfont_y;
+	  if (make_equal)
+	    text_win[0].winsy = text_win[x].winsy;
+	}
+    }
+    
   owin = cur_win;
   cur_win = 0;
 
@@ -1841,8 +1870,8 @@ static void resize_window()
 	      for (z=0; z<max_x; z++)
 		{
 		  CURWIN.cline[y].cell[z] = ' ';
-		  CURWIN.cline[y].fg[z]   = DEFAULT_FORE+FIRST_ZCOLOUR;
-		  CURWIN.cline[y].bg[z]   = DEFAULT_BACK+FIRST_ZCOLOUR;
+		  CURWIN.cline[y].fg[z]   = CURWIN.cline[max_y-1].fg[z];
+		  CURWIN.cline[y].bg[z]   = CURWIN.cline[max_y-1].bg[z];
 		  CURWIN.cline[y].font[z] = style_font[4];
 		}
 	    }
@@ -2009,6 +2038,64 @@ static BOOL CALLBACK about_dlg(HWND hwnd,
   return FALSE;
 }
 
+extern hash rc_hash;
+
+static BOOL CALLBACK game_dlg(HWND hwnd,
+			      UINT message,
+			      WPARAM wparam,
+			      LPARAM lparam)
+{
+  char hash[20];
+  rc_game* game;
+  
+  switch (message)
+    {
+    case WM_INITDIALOG:
+      sprintf(hash, "%i.%.6s", Word(ZH_release), Address(ZH_serial));
+      SendDlgItemMessage(hwnd, IDC_SERIAL, WM_SETTEXT,
+			 0, (LPARAM) (LPCTSTR) hash);
+      if ((game = hash_get(rc_hash, hash, strlen(hash))) == NULL)
+	{
+	  SendDlgItemMessage(hwnd, IDC_INBASE, WM_SETTEXT,
+			     0, (LPARAM) (LPCTSTR)
+			     "This game has no entry in the database");
+	  SendDlgItemMessage(hwnd, IDC_OK, WM_SETTEXT,
+			     0, (LPARAM) (LPCTSTR) "&Add");
+	  SendDlgItemMessage(hwnd, IDC_TITLE, WM_SETTEXT,
+			     0, (LPARAM) (LPCTSTR) "Untitled");
+	}
+      else
+	{
+	  SendDlgItemMessage(hwnd, IDC_INBASE, WM_SETTEXT,
+			     0, (LPARAM) (LPCTSTR) "This game is already in the database");
+	  SendDlgItemMessage(hwnd, IDC_OK, WM_SETTEXT,
+			     0, (LPARAM) (LPCTSTR) "&Change");
+	  SendDlgItemMessage(hwnd, IDC_TITLE, WM_SETTEXT,
+			     0, (LPARAM) (LPCTSTR)
+			     (game->name!=NULL?game->name:"Untitled"));
+	}
+      return TRUE;
+
+    case WM_COMMAND:
+      switch (LOWORD(wparam))
+	{
+	case IDC_CANCEL:
+	case IDC_OK:
+	  EndDialog(hwnd, 0);
+	  break;
+	}
+      break;
+    }
+
+  return FALSE;
+}
+
+void display_int_apply(void)
+{
+  resize_window();
+  display_update();
+}
+
 static LRESULT CALLBACK display_winproc(HWND hwnd,
 					UINT message,
 					WPARAM wparam,
@@ -2132,10 +2219,52 @@ static LRESULT CALLBACK display_winproc(HWND hwnd,
 	  PostQuitMessage(0);
 	  break;
 
+	case IDM_GAME:
+	  DialogBox(inst, MAKEINTRESOURCE(ID_GAME),
+		    mainwin, game_dlg);
+	  break;
+
+	case IDM_LOCALCHANGE:
+	  {
+	    char hash[20];
+	    
+	    sprintf(hash, "%i.%.6s", Word(ZH_release), Address(ZH_serial));
+	    if (hash_get(rc_hash, hash, strlen(hash)) == NULL)
+	      {
+		MessageBox(mainwin,
+			   "You must add the game to the database to enable this option",
+			   "Zoom", MB_OK|MB_ICONEXCLAMATION);
+	      }
+	    else
+	      {
+		localchange = !localchange;
+		ModifyMenu(optionmenu, IDM_LOCALCHANGE,
+			   MF_BYCOMMAND|(localchange?MF_CHECKED:MF_UNCHECKED),
+			   IDM_LOCALCHANGE,
+			   "&Local changes");
+	      }
+	  }
+	  break;
+
 	case IDM_ABOUT:
 	  DialogBox(inst, MAKEINTRESOURCE(ID_ABOUT),
 		    mainwin, about_dlg);
 	  break;
+
+	default:
+	  if (LOWORD(wparam) >= IDM_FONTS && LOWORD(wparam) <= IDM_FONTS+50)
+	    {
+	      int fnum;
+	      rc_font* fonts;
+
+	      fonts = rc_get_fonts(&n_fonts);
+
+	      fnum = LOWORD(wparam) - IDM_FONTS;
+	      xfont_choose_new_font(font[fnum],
+				    fonts[fnum].attributes[0]&4);
+	      resize_window();
+	      display_update();
+	    }
 	}
       break;
 
@@ -2248,6 +2377,8 @@ int WINAPI WinMain(HINSTANCE hInst,
 
   AppendMenu(filemenu, 0, IDM_EXIT, "E&xit");
 
+  AppendMenu(optionmenu, MF_UNCHECKED, IDM_LOCALCHANGE, "&Local changes...");
+  AppendMenu(optionmenu, MF_SEPARATOR, 0, NULL);
   AppendMenu(optionmenu, 0, IDM_GAME, "&Game...");
   AppendMenu(optionmenu, MF_POPUP, (UINT) screenmenu, "&Screen");
   AppendMenu(optionmenu, 0, IDM_INTERPRETER, "&Interpreter...");

@@ -47,6 +47,7 @@ struct xfont
     struct
     {
       HFONT handle;
+      LOGFONT defn;
     } win;
   } data;
 };
@@ -339,6 +340,7 @@ xfont* xfont_load_font(char* font)
       xf = malloc(sizeof(struct xfont));
       xf->type = WINFONT_INTERNAL;
       xf->data.win.handle = hfont;
+      xf->data.win.defn   = defn;
     }
   
   recur--;
@@ -502,7 +504,6 @@ int xfont_get_text_width(xfont*     font,
   return -1;  
 }
 
-
 void xfont_plot_string(xfont*     font,
 		       HDC        dc,
 		       int        xpos,
@@ -574,6 +575,47 @@ void xfont_plot_string(xfont*     font,
 
     default:
       zmachine_fatal("Programmer is a spoon");
+    }
+}
+
+void xfont_choose_new_font(xfont* font,
+			   int    fixed_pitch)
+{
+  CHOOSEFONT dlg;
+  LOGFONT    defn;
+  
+  if (font->type != WINFONT_INTERNAL)
+    {
+      MessageBox(0, "Sorry, can only reassign Windows fonts", "Zoom",
+		 MB_OK|MB_ICONSTOP);
+      return;
+    }
+
+  defn = font->data.win.defn;
+    
+  dlg.lStructSize = sizeof(dlg);
+  dlg.hwndOwner = mainwin;
+  dlg.lpLogFont = &defn;
+  dlg.Flags = CF_SCREENFONTS|CF_EFFECTS|CF_INITTOLOGFONTSTRUCT;
+
+  if (fixed_pitch)
+    dlg.Flags |= CF_FIXEDPITCHONLY;
+
+  if (ChooseFont(&dlg))
+    {
+      HFONT fnt;
+
+      fnt = CreateFontIndirect(&defn);
+
+      if (fnt == NULL)
+	{
+	  MessageBox(0, "Unable to load font", "Error", MB_ICONSTOP);
+	  return;
+	}
+
+      DeleteObject(font->data.win.handle);
+      font->data.win.handle = fnt;
+      font->data.win.defn   = defn;
     }
 }
 

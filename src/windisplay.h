@@ -34,4 +34,6 @@ extern COLORREF wincolour[14];
 
 extern int xfont_x, xfont_y;
 
+extern void display_int_apply(void);
+
 #endif

@@ -58,6 +58,9 @@ extern void xfont_plot_string(xfont*,
 			      int, int,
 			      const int*,
 			      int);
+
+extern void xfont_choose_new_font(xfont*,
+				  int);
 #endif
 
 #endif

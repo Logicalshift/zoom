@@ -28,7 +28,6 @@
 #define ID_SMICON  101
 
 #define ID_MENU    200
-#define ID_ABOUT   400
 
 #define IDM_EXIT        300
 #define IDM_GAME        302
@@ -38,9 +37,21 @@
 #define IDM_INTERPRETER 306
 #define IDM_SAVEOPTS    307
 #define IDM_ABOUT       308
-
-#define IDC_OK          500
+#define IDM_LOCALCHANGE 309
 
 #define IDM_FONTS       350
+
+#define ID_ABOUT        400
+#define ID_GAME         401
+#define ID_LAYOUT       402
+#define ID_COLOURS      403
+#define ID_INTERPRETER  404
+
+#define IDC_OK          500
+#define IDC_CANCEL      501
+
+#define IDC_INBASE      510
+#define IDC_SERIAL      511
+#define IDC_TITLE       512
 
 #endif
