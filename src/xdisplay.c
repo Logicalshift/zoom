@@ -704,6 +704,8 @@ static void draw_window()
 	  Region r;
 	  XRectangle clip;
 
+	  int phase;
+
 	  r = XCreateRegion();
 	  clip.x = 0; clip.y = BORDER_SIZE + text_win[win].winsy;
 	  clip.width = total_x;
@@ -790,78 +792,89 @@ static void draw_window()
 	    {
 	      int x;
 
-	      text = line->start;
-	      width = 0;
-	      offset = line->offset;
-
-	      /*
-	       * Each line may span several text objects. We have to plot
-	       * each one in turn.
-	       */
-	      for (x=0; x<line->n_chars;)
+	      for (phase=0; phase<2; phase++)
 		{
-		  int w;
-		  int toprint;
-		  
-		  /* 
-		   * Work out the amount of text to plot from the current 
-		   * text object 
-		   */
-		  toprint = line->n_chars-x;
-		  if (toprint > (text->len - offset))
-		    toprint = text->len - offset;
-		  
-		  if (toprint > 0)
-		    {
-		      /* Plot the text */
-		      if (text->text[toprint+offset-1] == 10)
-			{
-			  toprint--;
-			  x++;
-			}
-		      
-		      w = xfont_get_text_width(font[text->font],
-					       text->text + offset,
-					       toprint);
+		  text = line->start;
+		  width = 0;
+		  offset = line->offset;
 
-		      XSetForeground(x_display, x_wingc,
-				     x_colour[text->bg+FIRST_ZCOLOUR].pixel);
+		  /*
+		   * Each line may span several text objects. We have to plot
+		   * each one in turn.
+		   */
+		  for (x=0; x<line->n_chars;)
+		    {
+		      int w;
+		      int toprint;
+		  
+		      /* 
+		       * Work out the amount of text to plot from the current 
+		       * text object 
+		       */
+		      toprint = line->n_chars-x;
+		      if (toprint > (text->len - offset))
+			toprint = text->len - offset;
+		  
+		      if (toprint > 0)
+			{
+			  /* Plot the text */
+			  if (text->text[toprint+offset-1] == 10)
+			    {
+			      toprint--;
+			      x++;
+			    }
+		      
+			  w = xfont_get_text_width(font[text->font],
+						   text->text + offset,
+						   toprint);
+
+			  if (phase == 0)
+			    {
+			      XSetForeground(x_display, x_wingc,
+					     x_colour[text->bg+FIRST_ZCOLOUR].pixel);
+			      XFillRectangle(x_display, x_mainwin, x_wingc,
+					     width + BORDER_SIZE,
+					     line->baseline + BORDER_SIZE - line->ascent - scrollpos,
+					     w,
+					     line->ascent + line->descent);
+			    }
+			  else
+			    {
+			      xfont_set_colours(text->fg+FIRST_ZCOLOUR, 
+						text->bg+FIRST_ZCOLOUR);
+			      xfont_plot_string(font[text->font],
+						x_mainwin, x_wingc,
+						width + BORDER_SIZE,
+						line->baseline + BORDER_SIZE - scrollpos,
+						text->text + offset,
+						toprint);
+			    }
+
+			  x      += toprint;
+			  offset += toprint;
+			  width  += w;
+			}
+		      else
+			{
+			  /* At the end of this object - move onto the next */
+			  offset = 0;
+			  text = text->next;
+			}
+		    }
+	      
+		  /* Fill in to the end of the line */
+		  if (phase == 0)
+		    {
+		      XSetForeground(x_display, x_wingc, x_colour[text_win[win].winback+FIRST_ZCOLOUR].pixel);
 		      XFillRectangle(x_display, x_mainwin, x_wingc,
 				     width + BORDER_SIZE,
-				     line->baseline + BORDER_SIZE - line->ascent - scrollpos,
-				     w,
+				     line->baseline - line->ascent + BORDER_SIZE - scrollpos,
+				     win_x-width,
 				     line->ascent + line->descent);
-		      
-		      xfont_set_colours(text->fg+FIRST_ZCOLOUR, 
-					text->bg+FIRST_ZCOLOUR);
-		      xfont_plot_string(font[text->font],
-					x_mainwin, x_wingc,
-					width + BORDER_SIZE,
-					line->baseline + BORDER_SIZE - scrollpos,
-					text->text + offset,
-					toprint);
+		    }
 
-		      x      += toprint;
-		      offset += toprint;
-		      width  += w;
-		    }
-		  else
-		    {
-		      /* At the end of this object - move onto the next */
-		      offset = 0;
-		      text = text->next;
-		    }
+		  lasty = line->baseline + line->descent - scrollpos + BORDER_SIZE;
 		}
-	      
-	      /* Fill in to the end of the line */
-	      XSetForeground(x_display, x_wingc, x_colour[text_win[win].winback+FIRST_ZCOLOUR].pixel);
-	      XFillRectangle(x_display, x_mainwin, x_wingc,
-			     width + BORDER_SIZE,
-			     line->baseline - line->ascent + BORDER_SIZE - scrollpos,
-			     win_x-width,
-			     line->ascent + line->descent);
-	      
-	      lasty = line->baseline + line->descent - scrollpos + BORDER_SIZE;
 	      
 	      /* Move on */
 	      line = line->next;
