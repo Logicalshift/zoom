@@ -311,10 +311,13 @@ void v6_prints(const int* text)
 	{
 	  int more;
 
-	  display_pixmap_cols(bg, 0);
-	  display_plot_rect(ACTWIN.curx+width, ACTWIN.cury,
-			    (ACTWIN.xpos+ACTWIN.width-ACTWIN.rmargin)-(ACTWIN.curx+width),
-			    ACTWIN.line_height);
+	  if (bg >= 0)
+	    {
+	      display_pixmap_cols(bg, 0);
+	      display_plot_rect(ACTWIN.curx+width, ACTWIN.cury,
+				(ACTWIN.xpos+ACTWIN.width-ACTWIN.rmargin)-(ACTWIN.curx+width),
+				ACTWIN.line_height);
+	    }
 	  
 	  ACTWIN.text_amount += ACTWIN.line_height;
 	  ACTWIN.cury += ACTWIN.line_height;
