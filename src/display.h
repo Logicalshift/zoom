@@ -111,6 +111,7 @@ extern void display_set_newline_function(int (*func)(const char* remaining,
 						     int rem_len));
 extern int  display_get_font_width      (void);
 extern int  display_get_font_height     (void);
+extern void display_reset_windows       (void);
 
 #endif
 

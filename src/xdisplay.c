@@ -155,7 +155,6 @@ struct window
   int no_scroll;
 };
 
-int n_windows;
 int cur_win;
 struct window text_win[32];
 
@@ -499,7 +498,7 @@ void display_set_title(const char* title)
  */
 void display_clear(void)
 {
-  cur_win = n_windows = 0;
+  cur_win = 0;
   text_win[0].xpos = 0;
   text_win[0].ypos = win_y;
   text_win[0].fore = DEFAULT_FORE;
@@ -1706,4 +1705,20 @@ int display_get_font_height(void)
 int display_get_font_width(void)
 {
   return XTextWidth(x_fonti[font_num], "0", 1);
+}
+
+void display_reset_windows(void)
+{
+  cur_win = 0;
+  text_win[0].xpos = 0;
+  text_win[0].ypos = win_y;
+  text_win[0].line_height = 0;
+  text_win[0].winsx = text_win[0].winsy = 0;
+  text_win[0].lmargin = text_win[0].rmargin = 0;
+  text_win[0].winlx = win_x;
+  text_win[0].winly = win_y;
+  text_win[0].text_amount = 0;
+  text_win[0].no_more = 0;
+  text_win[0].force_fixed = 0;
+  text_win[0].no_scroll = 0;  
 }

@@ -81,7 +81,7 @@ Using Zoom
    xfontsel.
 
    Colours are defined using a list of values of the form (R, G,
-   B). There should be at least 8 attributes, coresponding to the
+   B). There should be at least 8 colours, coresponding to the
    Infocom colour scheme, and there can be up to 11 (corresponding
    to the colour scheme allowed by various interpreter versions):
 

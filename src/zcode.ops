@@ -2164,14 +2164,24 @@ OPCODE "erase_window"   VAR:0x0d ARGS:1               VERSION 6
   stream_flush_buffer();
   old_win = display_get_window();
 
-  if (argblock.arg[0] == -1)
+  if (argblock.arg[0] == -3)
     ewin = old_win;  
   else
     ewin = argblock.arg[0];
+  
+  if (argblock.arg[0] == -1)
+    {
+      old_win = 0;
+      ewin = 0;
+      display_reset_windows();
+    }
+
+  if (ewin < 0)
+    zmachine_fatal("Attempt to erase invalid window %i", ewin);
 
   display_set_window(ewin);
   display_erase_window();
-  display_set_gcursor(0,0);
+  display_set_gcursor(windows[ewin].x,windows[ewin].y);
   display_set_window(old_win);
 %}
 
