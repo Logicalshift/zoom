@@ -4,7 +4,7 @@
   <object name="rootObject" class="NSCustomObject" id="1">
     <string name="customClass">NSApplication</string>
   </object>
-  <array count="44" name="allObjects">
+  <array count="49" name="allObjects">
     <object class="IBCarbonMenuItem" id="199">
       <string name="title">About Zoom</string>
       <int name="keyEquivalentModifier">0</int>
@@ -53,17 +53,17 @@
     <reference idRef="211"/>
     <reference idRef="224"/>
     <object class="IBCarbonWindow" id="234">
-      <string name="windowRect">109 139 417 577 </string>
+      <string name="windowRect">113 139 421 577 </string>
       <string name="title">Zoom Preferences</string>
       <object name="rootControl" class="IBCarbonRootControl" id="235">
         <string name="bounds">0 0 308 438 </string>
         <array count="1" name="subviews">
           <object class="IBCarbonTab" id="236">
             <string name="bounds">12 -1 308 439 </string>
-            <array count="4" name="subviews">
+            <array count="5" name="subviews">
               <object class="IBCarbonUserPane" id="237">
                 <string name="bounds">44 -1 308 439 </string>
-                <array count="5" name="subviews">
+                <array count="6" name="subviews">
                   <object class="IBCarbonCheckBox" id="245">
                     <string name="bounds">62 17 80 162 </string>
                     <ostype name="controlSignature">Warn</ostype>
@@ -101,6 +101,14 @@
                         <string>Quartz rendering (slow)</string>
                       </array>
                     </array>
+                  </object>
+                  <object class="IBCarbonCheckBox" id="305">
+                    <string name="bounds">179 37 197 128 </string>
+                    <ostype name="controlSignature">Anti</ostype>
+                    <int name="controlID">604</int>
+                    <string name="title">Antialias</string>
+                    <string name="helpTagText">Uncheck this box to disable anti-aliasing under Quartz (this affects both Quartz text and image rendering under version 6)</string>
+                    <int name="initialState">1</int>
                   </object>
                 </array>
                 <ostype name="controlSignature">tabs</ostype>
@@ -304,10 +312,31 @@
                 <int name="controlID">403</int>
                 <int name="featureBits">2</int>
               </object>
+              <object class="IBCarbonUserPane" id="306">
+                <string name="bounds">44 -1 308 439 </string>
+                <array count="3" name="subviews">
+                  <object class="IBCarbonStaticText" id="307">
+                    <string name="bounds">64 19 98 419 </string>
+                    <string name="title">Double-click or drag a Blorb resource file to associate it with this game.</string>
+                  </object>
+                  <object class="IBCarbonStaticText" id="308">
+                    <string name="bounds">108 19 124 50 </string>
+                    <string name="title">File:</string>
+                  </object>
+                  <object class="IBCarbonEditText" id="309">
+                    <string name="bounds">109 61 125 416 </string>
+                    <ostype name="controlSignature">ReFN</ostype>
+                    <int name="controlID">1000</int>
+                  </object>
+                </array>
+                <ostype name="controlSignature">tabs</ostype>
+                <int name="controlID">404</int>
+                <int name="featureBits">2</int>
+              </object>
             </array>
             <ostype name="controlSignature">tabs</ostype>
             <int name="controlID">128</int>
-            <array count="4" name="tabItems">
+            <array count="5" name="tabItems">
               <dictionary count="4">
                 <string>contentResID</string>
                 <string>0</string>
@@ -347,6 +376,16 @@
                 <string>Colours</string>
                 <string>userPane</string>
                 <reference idRef="288"/>
+              </dictionary>
+              <dictionary count="4">
+                <string>contentResID</string>
+                <string>0</string>
+                <string>tabEnabled</string>
+                <string>1</string>
+                <string>tabName</string>
+                <string>Resources</string>
+                <string>userPane</string>
+                <reference idRef="306"/>
               </dictionary>
             </array>
           </object>
@@ -422,8 +461,13 @@
     <reference idRef="300"/>
     <reference idRef="301"/>
     <reference idRef="304"/>
+    <reference idRef="305"/>
+    <reference idRef="306"/>
+    <reference idRef="307"/>
+    <reference idRef="308"/>
+    <reference idRef="309"/>
   </array>
-  <array count="44" name="allParents">
+  <array count="49" name="allParents">
     <reference idRef="208"/>
     <reference idRef="1"/>
     <reference idRef="211"/>
@@ -468,6 +512,11 @@
     <reference idRef="296"/>
     <reference idRef="296"/>
     <reference idRef="237"/>
+    <reference idRef="237"/>
+    <reference idRef="236"/>
+    <reference idRef="306"/>
+    <reference idRef="306"/>
+    <reference idRef="306"/>
   </array>
   <dictionary count="5" name="nameTable">
     <string>AboutBox</string>
@@ -481,5 +530,5 @@
     <string>Preferences</string>
     <reference idRef="234"/>
   </dictionary>
-  <unsigned_int name="nextObjectID">305</unsigned_int>
+  <unsigned_int name="nextObjectID">310</unsigned_int>
 </object>

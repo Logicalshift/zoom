@@ -78,7 +78,7 @@ static void pref_select_tab(ControlRef tab)
 
   selpane = nil;
 
-  for (i = 400; i <= 403; i++)
+  for (i = 400; i <= 404; i++)
     {
       cid.id = i;
       GetControlByID(GetControlOwner(tab), &cid, &pane);
@@ -189,6 +189,11 @@ static void pref_write_block(FILE*    f,
     {
       fprintf(f, "  resources \"%s\"\n", game->graphics);
     }
+
+  if (game->antialias != -1)
+    {
+      fprintf(f, "  antialias %s\n", game->antialias?"yes":"no");
+    }
   fprintf(f, "}\n\n");
 }
 
@@ -288,6 +293,13 @@ static void pref_store(void)
       if (carbon_prefs.fatal_warnings)
 	machine.warning_level = 2;
     }
+
+  cid.signature = CARBON_ANTI;
+  cid.id        = CARBON_ANTIID;
+  GetControlByID(prefdlog, &cid, &cntl);
+  ourgame->antialias = -1;
+  rc_defgame->antialias =
+    GetControlValue(cntl)==kControlCheckBoxCheckedValue?1:0;
 
   /* Get the game title */
   cid.signature = CARBON_TITLE;
@@ -1085,6 +1097,12 @@ static void pref_setup(void)
   GetControlByID(prefdlog, &cid, &cntl);
   SetControlValue(cntl, carbon_prefs.use_quartz?
 		  2:1);
+
+  cid.signature = CARBON_ANTI;
+  cid.id        = CARBON_ANTIID;
+  GetControlByID(prefdlog, &cid, &cntl);
+  SetControlValue(cntl, rc_defgame->antialias?
+		  kControlCheckBoxCheckedValue:kControlCheckBoxUncheckedValue);
 
   /* Try to get the game hash entry */
   sprintf(str, "%i.%.6s", Word(ZH_release), Address(ZH_serial));

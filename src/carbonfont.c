@@ -115,6 +115,17 @@ void carbon_set_context(void)
   CGContextRelease(carbon_quartz_context);
   CreateCGContextForPort(thePort, &carbon_quartz_context);
   winlastfont = NULL;
+
+  if (rc_get_antialias())
+    {
+      CGContextSetShouldAntialias(carbon_quartz_context,
+				  1);
+    }
+  else
+    {
+       CGContextSetShouldAntialias(carbon_quartz_context,
+				   0);
+   }
 }
 
 void carbon_set_quartz(int q)

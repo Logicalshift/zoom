@@ -126,6 +126,7 @@ extern carbon_font* carbon_parse_font(char* name);
 #define CARBON_FATWARNS  'FWar' /* Warnings are fatal option */
 #define CARBON_SPEAK     'Spek' /* Speak game text option */
 #define CARBON_RENDER    'Rend' /* Rendering style */
+#define CARBON_ANTI      'Anti' /* Anti-aliasing */
 #define CARBON_SERIAL    'Seri' /* Serial # */
 #define CARBON_RELEASE   'Rele' /* Release # */
 #define CARBON_TITLE     'Titl' /* Game title */
@@ -137,6 +138,7 @@ extern carbon_font* carbon_parse_font(char* name);
 #define CARBON_FONTLIST  'Flis' /* Font list */
 #define CARBON_COLLOC    'Capp' /* Colours global/local */
 #define CARBON_COLLIST   'Clis' /* Colour list */
+#define CARBON_RESFILE   'ReFN' /* Resource filename */
 
 /* Preferences dialog identifiers */
 #define CARBON_TABSID      128
@@ -144,6 +146,7 @@ extern carbon_font* carbon_parse_font(char* name);
 #define CARBON_FATWARNSID  601
 #define CARBON_SPEAKID     602
 #define CARBON_RENDERID    603
+#define CARBON_ANTIID      604
 #define CARBON_SERIALID    700
 #define CARBON_RELEASEID   701
 #define CARBON_TITLEID     702
@@ -155,5 +158,6 @@ extern carbon_font* carbon_parse_font(char* name);
 #define CARBON_FONTLISTID  801
 #define CARBON_COLLOCID    900
 #define CARBON_COLLISTID   901
+#define CARBON_RESFILEID   1000
 
 #endif
