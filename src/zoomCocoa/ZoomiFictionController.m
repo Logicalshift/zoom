@@ -25,7 +25,10 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 
 + (ZoomiFictionController*) sharediFictionController {
 	if (!sharedController) {
-		sharedController = [[ZoomiFictionController alloc] initWithWindowNibName: @"iFiction"];
+		NSString* nibName = @"iFiction";
+		if (floor(NSAppKitVersionNumber) <= NSAppKitVersionNumber10_2)
+			nibName = @"iFiction-10.2";
+		sharedController = [[ZoomiFictionController alloc] initWithWindowNibName: nibName];
 	}
 	
 	return sharedController;
