@@ -1970,6 +1970,8 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	
 	attributedRange.location = 0;
 	
+	[storage beginEditing];
+	
 	while (attributedRange.location < len) {
 		attr = [storage attributesAtIndex: attributedRange.location
 						   effectiveRange: &attributedRange];
@@ -1981,6 +1983,13 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		ZStyle* sty = [attr objectForKey: ZoomStyleAttributeName];
 		
 		if (sty) {
+			//
+			// Uhh... FIXME: weird bug here when we're loading a game. The endEditing call below throws an exception
+			// which says 'endEditing not called'. Errm.
+			//
+			// Have implemented a sort-of fix. The problem occurs when you call setAttributedString: on an
+			// NSTextStorage where the attributed string is an NSTextStorage.
+			//
 			NSDictionary* newAttr = [self attributesForStyle: sty];
 			
 			[storage setAttributes: newAttr
@@ -1989,6 +1998,8 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		
 		attributedRange.location += attributedRange.length;
 	}
+	
+	[storage endEditing];
 	
 	// Reset the background colour of the lower window
 	if ([lowerWindows count] > 0) {
@@ -2060,7 +2071,9 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		
 		NSTextStorage* storage = [decoder decodeObject];
 		
-		[[textView textStorage] setAttributedString: storage];
+		[[textView textStorage] beginEditing];
+		// Workaround for a Cocoa bug
+		[[textView textStorage] setAttributedString: [[[NSAttributedString alloc] initWithAttributedString: storage] autorelease]];
 		
 		commandHistory = [[decoder decodeObject] retain];
 		if (autosaveVersion == 101) pixmapWindow = [[decoder decodeObject] retain];
@@ -2085,6 +2098,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		[self reformatWindow];
 		[self resetMorePrompt];
 		[self scrollToEnd];
+		[[textView textStorage] endEditing];
 		inputPos = [[textView textStorage] length];
 	} else {
 		NSLog(@"Unknown autosave version (ignoring)");
@@ -2132,7 +2146,9 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 			
 			NSTextStorage* storage = [decoder decodeObject];
 			
-			[[textView textStorage] setAttributedString: storage];
+			[[textView textStorage] beginEditing];
+			// Workaround for a bug in Cocoa
+			[[textView textStorage] setAttributedString: [[[NSAttributedString alloc] initWithAttributedString: storage] autorelease]];
 			
 			commandHistory = [[decoder decodeObject] retain];
 			
@@ -2157,6 +2173,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 			[self reformatWindow];
 			[self resetMorePrompt];
 			[self scrollToEnd];
+			[[textView textStorage] endEditing];
 			inputPos = [[textView textStorage] length];
 		} else {
 			NSLog(@"Unknown autosave version (ignoring)");
