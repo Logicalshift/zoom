@@ -107,6 +107,8 @@
 
 \f0\fs24 \cf2 Restoring a savegame by double-clicking displays [MORE] erroneously}</string>
 						</array>
+						<key>State</key>
+						<integer>1</integer>
 					</dict>
 					<dict>
 						<key>Cols</key>

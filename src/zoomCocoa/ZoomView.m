@@ -2252,6 +2252,11 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		NSLog(@"Failed to restore save state: %@", error);
 	}
 	
+	if (moreOn) {
+		moreOn = NO;
+		[self setShowsMorePrompt: NO];
+	}
+	
 	[self reformatWindow];
 	[self resetMorePrompt];
 	[self scrollToEnd];
