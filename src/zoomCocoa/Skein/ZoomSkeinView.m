@@ -72,6 +72,7 @@ enum ZSVbutton
 						withItem: (NSDictionary*) item;
 - (void) lockButtonClicked: (NSEvent*) event
 				  withItem: (NSDictionary*) item;
+- (void) playToPoint: (ZoomSkeinItem*) item;
 
 - (void) cancelEditing: (id) sender;
 - (void) finishEditing: (id) sender;
@@ -312,6 +313,8 @@ enum ZSVbutton
 }
 
 - (void)drawRect:(NSRect)rect {
+	NSLog(@"ZoomSkeinView: drawing");
+	
 	if (tree == nil) return;
 	
 	if (skeinNeedsLayout) [self layoutSkein];
@@ -1037,6 +1040,8 @@ enum ZSVbutton
 	ZoomSkeinItem* newItem = 
 		[skeinItem addChild: [ZoomSkeinItem skeinItemWithCommand: @""]];
 	
+	[skein zoomSkeinChanged];
+	
 	[self skeinNeedsLayout];
 	
 	// Edit the item
@@ -1063,6 +1068,7 @@ enum ZSVbutton
 	
 	// Delete the item
 	[skeinItem removeFromParent];
+	[skein zoomSkeinChanged];
 	[self skeinNeedsLayout];
 }
 
@@ -1100,6 +1106,7 @@ enum ZSVbutton
 		}
 	}
 	
+	[skein zoomSkeinChanged];
 	[self skeinNeedsLayout];
 }
 
@@ -1135,12 +1142,20 @@ enum ZSVbutton
 		[self skeinNeedsLayout];
 
 		if (sender == itemEditor) [self scrollToItem: itemToEdit];
+
+		[self cancelEditing: self];
+		[skein zoomSkeinChanged];
+	} else {
+		[self cancelEditing: self];
 	}
-	
-	[self cancelEditing: self];
 }
 
 - (void) cancelEditing: (id) sender {
+	if ([[self window] firstResponder] == itemToEdit) {
+		NSLog(@"Killing first responder");
+		[[self window] makeFirstResponder: self];
+	}
+	
 	if (itemToEdit != nil) {
 		[itemToEdit release];
 		itemToEdit = nil;

@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <WebKit/WebKit.h>
 
 #import "ZoomSkeinItem.h"
 
@@ -17,6 +18,9 @@ extern NSString* ZoomSkeinChangedNotification;
 	
 	NSMutableString* currentOutput;
 	ZoomSkeinItem* activeItem;
+	
+	// Web data
+	NSMutableData* webData;
 }
 
 // Retrieving the root skein item
@@ -42,9 +46,16 @@ extern NSString* ZoomSkeinChangedNotification;
 
 @end
 
+// = Dealing with/creating XML data =
+
 @interface ZoomSkein(ZoomSkeinXML)
 
 - (NSString*) xmlData;
-- (void)      parseXmlData: (NSData*) data;
+- (BOOL)      parseXmlData: (NSData*) data;
 
+@end
+
+// = WebKit interface =
+
+@interface ZoomSkein(ZoomSkeinWebDocRepresentation)<WebDocumentRepresentation>
 @end

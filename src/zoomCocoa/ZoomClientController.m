@@ -108,7 +108,9 @@
 }
 
 - (void) prepareSavePackage: (ZPackageFile*) file {
-	NSMutableString* skeinXML = [[[self document] skein] xmlData];
+	// (Secretly, we know skeinXML is an NSMutableString that we can edit ourselves)
+	// Normally, you aren't allowed to do this
+	NSMutableString* skeinXML = (NSMutableString*)[[[self document] skein] xmlData];
 	
 	if (![skeinXML isKindOfClass: [NSMutableString class]]) {
 		skeinXML = [skeinXML mutableCopy];
@@ -118,7 +120,7 @@
 				   atIndex: 0];
 	
 	[file addData: [[[[self document] skein] xmlData] dataUsingEncoding: NSUTF8StringEncoding]
-	  forFilename: @"Skein.xml"];
+	  forFilename: @"Skein.skein"];
 }
 
 - (NSString*) defaultSaveDirectory {

@@ -292,6 +292,12 @@
 		return NO;
 	}
 	
+	// Get the skein for this game
+	NSData* skeinArchive = [[[wrapper fileWrappers] objectForKey: @"Skein.skein"] regularFileContents];
+	if (skeinArchive) {
+		[skein parseXmlData: skeinArchive];
+	}
+	
 	// OK, we're ready to roll!
 	if (defaultView) [defaultView release];
 	if (saveData) [saveData release];

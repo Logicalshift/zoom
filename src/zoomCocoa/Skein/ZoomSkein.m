@@ -29,6 +29,8 @@
 		
 		[rootItem setTemporary: NO];
 		[rootItem setPlayed: YES];
+		
+		webData = nil;
 	}
 	
 	return self;
@@ -38,6 +40,8 @@
 	[activeItem release];
 	[rootItem release];
 	[currentOutput release];
+	
+	if (webData) [webData release];
 	
 	[super dealloc];
 }

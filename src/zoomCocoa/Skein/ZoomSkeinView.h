@@ -11,7 +11,6 @@
 #import "ZoomSkein.h"
 #import "ZoomSkeinItem.h"
 
-
 @interface ZoomSkeinView : NSView {
 	ZoomSkein* skein;
 	
@@ -75,6 +74,14 @@
 
 @end
 
+// = Using with the web kit =
+#import <WebKit/WebKit.h>
+
+@interface ZoomSkeinView(ZoomSkeinViewWeb)<WebDocumentView>
+
+@end
+
+// = Delegate =
 @interface NSObject(ZoomSkeinViewDelegate)
 
 // Playing the game
@@ -83,4 +90,3 @@
 		   fromPoint: (ZoomSkeinItem*) currentPoint;
 
 @end
-

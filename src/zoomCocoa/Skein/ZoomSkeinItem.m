@@ -233,6 +233,10 @@ static int currentScore = 1;
 	tempScore = currentScore;
 }
 
+- (void) setTemporaryScore: (int) score {
+	tempScore = score;
+}
+
 - (void) increaseTemporaryScore {
 	tempScore = currentScore++;
 	

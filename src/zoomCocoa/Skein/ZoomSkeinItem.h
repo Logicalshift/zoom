@@ -55,6 +55,7 @@
 							// (Automagically updated by setResult:)
 
 - (void) setTemporary: (BOOL) isTemporary;
+- (void) setTemporaryScore: (int) score;
 - (void) increaseTemporaryScore;
 - (void) setPlayed: (BOOL) played;
 - (void) setChanged: (BOOL) changed;
