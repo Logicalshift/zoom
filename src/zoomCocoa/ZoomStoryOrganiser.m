@@ -6,10 +6,15 @@
 //  Copyright (c) 2004 Andrew Hunter. All rights reserved.
 //
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
+
 #import <Cocoa/Cocoa.h>
 
 #import "ZoomStoryOrganiser.h"
 #import "ZoomAppDelegate.h"
+#import "ZoomPreferences.h"
 
 NSString* ZoomStoryOrganiserChangedNotification = @"ZoomStoryOrganiserChangedNotification";
 static NSString* defaultName = @"ZoomStoryOrganiser";
@@ -84,7 +89,7 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 		[storyLock unlock];
 	}
 		
-	// Function called from a seperate thread
+	// Preference keys indicate the filenames
 	NSEnumerator* filenameEnum = [prefs keyEnumerator];
 	NSString* filename;
 	
@@ -135,7 +140,7 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 		[realID release];
 		
 		counter++;
-		if (counter > 20) {
+		if (counter > 40) {
 			counter = 0;
 			[(ZoomStoryOrganiser*)[subThread rootProxy] organiserChanged];
 		}
@@ -143,6 +148,75 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 	
 	[(ZoomStoryOrganiser*)[subThread rootProxy] organiserChanged];
 	
+	// If story organisation is on, we need to check for any disappeared stories that have appeared in
+	// the organiser directory, and recreate any story data as required.
+	//
+	// REMEMBER: this is not the main thread! Don't make bad things happen!
+	if ([[ZoomPreferences globalPreferences] keepGamesOrganised]) {
+		// Directory scanning time. NSFileManager is not thread-safe, so we use opendir instead
+		// (Yup, pain in the neck)
+		NSString* orgDir = [[ZoomPreferences globalPreferences] organiserDirectory];
+		DIR* orgD = opendir([orgDir UTF8String]);
+		struct dirent* ent;
+		
+		while (orgD && (ent = readdir(orgD))) {
+			NSString* groupName = [NSString stringWithUTF8String: ent->d_name];
+			
+			// Don't really want to iterate these
+			if ([groupName isEqualToString: @".."] ||
+				[groupName isEqualToString: @"."]) {
+				continue;
+			}
+			
+			// Must be a directory
+			if (ent->d_type != DT_DIR) continue;
+			
+			// Iterate through the files in this directory
+			NSString* newDir = [orgDir stringByAppendingPathComponent: groupName];
+			
+			DIR* groupD = opendir([newDir UTF8String]);
+			struct dirent* gEnt;
+			
+			while (groupD && (gEnt = readdir(groupD))) {
+				NSString* gameName = [NSString stringWithUTF8String: gEnt->d_name];
+				
+				// Don't really want to iterate these
+				if ([gameName isEqualToString: @".."] ||
+					[gameName isEqualToString: @"."]) {
+					continue;
+				}
+				
+				// Must be a directory
+				if (gEnt->d_type != DT_DIR) continue;
+				
+				// See if there's a game.z5 there
+				NSString* gameDir = [newDir stringByAppendingPathComponent: gameName];
+				NSString* gameFile = [gameDir stringByAppendingPathComponent: @"game.z5"];
+				
+				struct stat sb;
+				if (stat([gameFile UTF8String], &sb) != 0) continue;
+				
+				// See if it's already in our database
+				[storyLock lock];
+				ZoomStoryID* fileID = [filenamesToIdents objectForKey: gameFile];
+				
+				if (fileID == nil) {
+					// Pass this off to the main thread
+					[self performSelectorOnMainThread: @selector(foundFileNotInDatabase:)
+										   withObject: [NSArray arrayWithObjects: groupName, gameName, gameFile, nil]
+										waitUntilDone: NO];
+				}
+				[storyLock unlock];
+			}
+			
+			if (groupD) closedir(groupD);
+		}
+		
+		if (orgD) closedir(orgD);
+	}
+
+	[(ZoomStoryOrganiser*)[subThread rootProxy] organiserChanged];
+
 	// Tidy up
 	[subThread release];
 	[port1 release];
@@ -191,6 +265,49 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName: ZoomStoryOrganiserChangedNotification
 														object: self];
+}
+
+- (void) foundFileNotInDatabase: (NSArray*) info {
+	// Called from the preferenceThread when a story not in the database is found
+	NSString* groupName = [info objectAtIndex: 0];
+	NSString* gameName = [info objectAtIndex: 1];
+	NSString* gameFile = [info objectAtIndex: 2];
+	
+	static BOOL loggedNote = NO;
+	if (!loggedNote) {
+		loggedNote = YES;
+	}
+	
+	// Check for story metadata first
+	ZoomStoryID* newID = [[[ZoomStoryID alloc] initWithZCodeFile: gameFile] autorelease];
+	
+	if (newID == nil) {
+		NSLog(@"Found unindexed game at %@, but failed to obtain an ID. Not indexing");
+		return;
+	}
+	
+	ZoomMetadata* data = [[NSApp delegate] userMetadata];	
+	ZoomStory* oldStory = [[NSApp delegate] findStory: newID];
+	
+	if (oldStory == nil) {
+		NSLog(@"Creating metadata entry for story '%@'", gameName);
+		
+		ZoomStory* newStory = [[ZoomStory alloc] init];
+		
+		[newStory setTitle: gameName];
+		if (![groupName isEqualToString: @"Ungrouped"]);
+		[newStory setGroup: groupName];
+		[newStory addID: newID];
+		
+		[data storeStory: newStory];
+	} else {
+		NSLog(@"Found metadata for story '%@'", gameName);
+	}
+	
+	// Now store with us
+	[self addStory: gameFile
+		 withIdent: newID
+		  organise: NO];
 }
 
 // = Initialisation =
