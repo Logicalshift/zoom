@@ -617,7 +617,6 @@ NSString* ZBufferSetWindow   = @"ZBSW";
             [win setCursorPositionX: whereTo.x
                                   Y: whereTo.y];
         } else if ([entryType isEqualToString: ZBufferEraseLine]) {
-            ZStyle* sty = [entry objectAtIndex: 1];
             NSObject<ZUpperWindow>* win = [entry objectAtIndex: 2];
 
             [win eraseLine];

@@ -1,4 +1,17 @@
 {
-    IBClasses = ({CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }); 
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            CLASS = ZoomPreferenceWindow; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                colourSettingsView = NSView; 
+                fontSettingsView = NSView; 
+                gameSettingsView = NSView; 
+                generalSettingsView = NSView; 
+            }; 
+            SUPERCLASS = NSWindowController; 
+        }
+    ); 
     IBVersion = 1; 
 }

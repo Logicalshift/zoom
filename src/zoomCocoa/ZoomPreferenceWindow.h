@@ -10,7 +10,12 @@
 
 
 @interface ZoomPreferenceWindow : NSWindowController {
-
+	IBOutlet NSView* generalSettingsView;
+	IBOutlet NSView* gameSettingsView;
+	IBOutlet NSView* fontSettingsView;
+	IBOutlet NSView* colourSettingsView;
+	
+	NSToolbar* toolbar;
 }
 
 @end

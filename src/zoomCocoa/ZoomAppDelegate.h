@@ -8,9 +8,10 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "ZoomPreferenceWindow.h"
 
 @interface ZoomAppDelegate : NSObject {
-
+	ZoomPreferenceWindow* preferencePanel;
 }
 
 @end

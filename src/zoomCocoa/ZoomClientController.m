@@ -7,6 +7,7 @@
 //
 
 #import "ZoomClientController.h"
+#import "ZoomPreferenceWindow.h"
 
 
 @implementation ZoomClientController
@@ -35,6 +36,24 @@
 
 - (void) zMachineStarted: (id) sender {
     [[zoomView zMachine] loadStoryFile: [[self document] gameData]];
+}
+
+- (void) showGamePreferences: (id) sender {
+	ZoomPreferenceWindow* gamePrefs;
+	
+	gamePrefs = [[ZoomPreferenceWindow alloc] init];
+	
+	[NSApp beginSheet: [gamePrefs window]
+	   modalForWindow: [self window]
+		modalDelegate: nil
+	   didEndSelector: nil
+		  contextInfo: nil];
+    [NSApp runModalForWindow: [gamePrefs window]];
+    // Sheet is up here.
+    [NSApp endSheet: [gamePrefs window]];
+	
+	[[gamePrefs window] orderOut: self];
+	[gamePrefs release];
 }
 
 @end
