@@ -434,20 +434,6 @@
 	return displayName;
 }
 
-/*
-- (NSString *) windowTitleForDocumentDisplayName: (NSString *)displayName {
-	ZoomStory* story = [[self document] storyInfo];
-	
-	if (story == nil) return displayName;
-	
-	if (finished) {
-		return [NSString stringWithFormat: @"%@ (finished)", [story title]];
-	}
-	
-	return [story title];
-}
-*/
-
 - (ZoomView*) zoomView {
 	return zoomView;
 }
