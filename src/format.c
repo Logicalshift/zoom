@@ -401,6 +401,8 @@ void format_last_text(int more)
 	  int s;
 
 	  s = line->start==text?line->offset:0;
+	  if (line->start == NULL)
+	    s = text->word[x].start;
 	  if (text->text[s] == '\n')
 	    s++;
 
