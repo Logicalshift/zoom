@@ -197,6 +197,8 @@ void zmachine_load_file(ZFile* file, ZMachine* machine) {
     machine->script_on = 0;
     machine->script_file = NULL;
     machine->memory_on = 0;
+	
+	machine->can_autosave = 0;
 }
 
 void zmachine_load_story(char* filename, ZMachine* machine)

@@ -214,7 +214,7 @@ typedef struct ZMachine
   ZByte  version;
 
 #ifdef PAGED_MEMORY
-  ZMap     memory;
+  ZMap     memory; /* Still not implemented */
 #else
   ZByte*   memory;
 #endif
@@ -269,6 +269,9 @@ typedef struct ZMachine
 #ifdef GLOBAL_PC
   ZDWord zpc;
 #endif
+  
+  /* Autosaving */
+  ZDWord can_autosave;
 
   /* Commandline options */
   int warning_level;

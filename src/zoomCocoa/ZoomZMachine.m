@@ -96,8 +96,24 @@
     gettimeofday(&tv, NULL);
     random_seed(tv.tv_sec^tv.tv_usec);
 	
-    // Options
-    rc_load();
+    // Some default options
+	rc_load(); // DELETEME: TEST FOR BUG
+	rc_hash = hash_create();
+	
+	rc_defgame = malloc(sizeof(rc_game));
+	rc_defgame->name = "";
+	rc_defgame->interpreter = 3;
+	rc_defgame->revision = 'Z';
+	rc_defgame->fonts = NULL;
+	rc_defgame->n_fonts = 0;
+	rc_defgame->colours = NULL;
+	rc_defgame->n_colours = 0;
+	rc_defgame->gamedir = rc_defgame->savedir = rc_defgame->sounds = rc_defgame->graphics = NULL;
+	rc_defgame->xsize = 80;
+	rc_defgame->ysize = 25;
+	rc_defgame->antialias = 1;
+	
+	hash_store(rc_hash, "default", 7, rc_defgame);
 	
     // Load the story
     machine.story_length = get_size_of_file(machineFile);
@@ -224,6 +240,8 @@
 - (NSData*) createGameSave {
 	// Create a save game, for autosave purposes
 	int len;
+	
+	if (!machine.can_autosave) return nil;
 	
 	void* gameData = state_compile(&machine.stack, machine.zpc, &len, 1);
 	
