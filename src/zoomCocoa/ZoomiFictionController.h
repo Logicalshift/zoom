@@ -24,6 +24,9 @@
 	
 	IBOutlet ZoomCollapsableView* collapseView;
 	
+	IBOutlet NSProgressIndicator* progressIndicator;
+	int indicatorCount;
+	
 	NSTextView*   commentView;
 	NSTextView*   teaserView;
 	

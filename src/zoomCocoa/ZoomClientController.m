@@ -14,6 +14,7 @@
 #import "ZoomStoryOrganiser.h"
 #import "ZoomSkeinController.h"
 #import "ZoomConnector.h"
+#import "ZoomAppDelegate.h"
 
 @implementation ZoomClientController
 

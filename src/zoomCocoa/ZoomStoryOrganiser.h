@@ -16,6 +16,7 @@
 
 // Notifications
 extern NSString* ZoomStoryOrganiserChangedNotification;
+extern NSString* ZoomStoryOrganiserProgressNotification;
 
 @interface ZoomStoryOrganiser : NSObject {
 	// Arrays of the stories and their idents
@@ -25,8 +26,6 @@ extern NSString* ZoomStoryOrganiserChangedNotification;
 	// Dictionaries associating them
 	NSMutableDictionary* filenamesToIdents;
 	NSMutableDictionary* identsToFilenames;
-	
-	NSMutableDictionary* identsToResources;
 	
 	// Preference loading/checking thread
 	NSPort* port1;
@@ -62,6 +61,10 @@ extern NSString* ZoomStoryOrganiserChangedNotification;
 // Story-specific data
 - (NSString*) directoryForIdent: (ZoomStoryID*) ident
 						 create: (BOOL) create;
+
+// Progress
+- (void) startedActing;
+- (void) endedActing;
 
 // Organising stories
 - (NSString*) directoryForStory: (ZoomStory*) story;

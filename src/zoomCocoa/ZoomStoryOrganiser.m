@@ -17,6 +17,8 @@
 #import "ZoomPreferences.h"
 
 NSString* ZoomStoryOrganiserChangedNotification = @"ZoomStoryOrganiserChangedNotification";
+NSString* ZoomStoryOrganiserProgressNotification = @"ZoomStoryOrganiserProgressNotification";
+
 static NSString* defaultName = @"ZoomStoryOrganiser";
 static NSString* extraDefaultsName = @"ZoomStoryOrganiserExtra";
 static NSString* ZoomGameDirectories = @"ZoomGameDirectories";
@@ -26,6 +28,7 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 @implementation ZoomStoryOrganiser
 
 // = Internal functions =
+
 - (NSDictionary*) dictionary {
 	NSMutableDictionary* defaultDictionary = [NSMutableDictionary dictionary];
 	
@@ -43,10 +46,7 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 }
 
 - (NSDictionary*) extraDictionary {
-	NSData* resourceData = [NSArchiver archivedDataWithRootObject: identsToResources];
-	
-	return [NSDictionary dictionaryWithObjectsAndKeys: 
-		resourceData, @"identsToResources", nil];
+	return [NSDictionary dictionary];
 }
 
 - (void) storePreferences {
@@ -59,7 +59,7 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 - (void) preferenceThread: (NSDictionary*) threadDictionary {
 	NSAutoreleasePool* p = [[NSAutoreleasePool alloc] init];
 	NSDictionary* prefs = [threadDictionary objectForKey: @"preferences"];
-	NSDictionary* prefs2 = [threadDictionary objectForKey: @"extraPreferences"];
+	//NSDictionary* prefs2 = [threadDictionary objectForKey: @"extraPreferences"]; - unused, presently
 	
 	int counter = 0;
 	
@@ -71,24 +71,9 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
                    sendPort: port1];
 	[subThread setRootObject: self];
 	
-	// Resources
-	NSData* idToRes = [prefs2 objectForKey: @"identsToResources"];
-	
-	if (idToRes != nil && [idToRes isKindOfClass: [NSData class]]) {
-		[storyLock lock];
-		if (identsToResources != nil) {
-			[identsToResources release];
-		}
-		
-		identsToResources = [[NSUnarchiver unarchiveObjectWithData: idToRes] mutableCopy];
-		
-		if (identsToResources == nil || ![identsToResources isKindOfClass: [NSMutableDictionary class]]) {
-			[identsToResources release];
-			identsToResources = [[NSMutableDictionary alloc] init];
-		}
-		[storyLock unlock];
-	}
-		
+	// Notify the main thread that things are happening
+	[(ZoomStoryOrganiser*)[subThread rootProxy] startedActing];
+			
 	// Preference keys indicate the filenames
 	NSEnumerator* filenameEnum = [prefs keyEnumerator];
 	NSString* filename;
@@ -218,6 +203,8 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 	[(ZoomStoryOrganiser*)[subThread rootProxy] organiserChanged];
 
 	// Tidy up
+	[(ZoomStoryOrganiser*)[subThread rootProxy] endedActing];
+
 	[subThread release];
 	[port1 release];
 	[port2 release];
@@ -311,6 +298,7 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 }
 
 // = Initialisation =
+
 + (void) initialize {
 	// User defaults
     NSUserDefaults *defaults  = [NSUserDefaults standardUserDefaults];
@@ -334,7 +322,6 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 		
 		filenamesToIdents = [[NSMutableDictionary alloc] init];
 		identsToFilenames = [[NSMutableDictionary alloc] init];
-		identsToResources = [[NSMutableDictionary alloc] init];
 		
 		storyLock = [[NSLock alloc] init];
 		port1 = nil;
@@ -370,6 +357,7 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 }
 
 // = The shared organiser =
+
 static ZoomStoryOrganiser* sharedOrganiser = nil;
 
 + (ZoomStoryOrganiser*) sharedStoryOrganiser {
@@ -382,6 +370,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 }
 
 // = Storing stories =
+
 - (void) addStory: (NSString*) filename
 		withIdent: (ZoomStoryID*) ident {
 	[self addStory: filename
@@ -397,7 +386,6 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	if (filename != nil) {
 		[filenamesToIdents removeObjectForKey: filename];
 		[identsToFilenames removeObjectForKey: ident];
-		[identsToResources removeObjectForKey: ident];
 		[storyIdents removeObjectIdenticalTo: ident];
 		[storyFilenames removeObject: filename];
 	}
@@ -484,7 +472,25 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	[self organiserChanged];
 }
 
+// = Progress =
+- (void) startedActing {
+	[[NSNotificationCenter defaultCenter] postNotificationName: ZoomStoryOrganiserProgressNotification
+														object: self
+													  userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
+														  [NSNumber numberWithBool: YES], @"ActionStarting",
+														  nil]];
+}
+
+- (void) endedActing {
+	[[NSNotificationCenter defaultCenter] postNotificationName: ZoomStoryOrganiserProgressNotification
+														object: self
+													  userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
+														  [NSNumber numberWithBool: NO], @"ActionStarting",
+														  nil]];
+}
+
 // = Retrieving story information =
+
 - (NSString*) filenameForIdent: (ZoomStoryID*) ident {
 	NSString* res;
 	
@@ -513,7 +519,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	return [[storyIdents copy] autorelease];
 }
 
-// Story-specific data
+// = Story-specific data =
 
 - (NSString*) preferredDirectoryForIdent: (ZoomStoryID*) ident {
 	// The preferred directory is defined by the story group and title
@@ -570,7 +576,6 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 					 createGroupDir: (BOOL) createGroup {
 	// Assuming a story doesn't already have a directory, find (and possibly create)
 	// a directory for it
-	NSString* confDir = nil;
 	BOOL isDir;
 	
 	ZoomStory* theStory = [[NSApp delegate] findStory: ident];
@@ -869,7 +874,8 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		[self organiserChanged];
 }
 
-// Reorganising stories
+// = Reorganising stories =
+
 - (void) organiseStory: (ZoomStory*) story
 			 withIdent: (ZoomStoryID*) ident {
 	NSString* filename = [self filenameForIdent: ident];

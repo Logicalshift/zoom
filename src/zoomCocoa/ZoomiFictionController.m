@@ -222,6 +222,11 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 												 name: ZoomStoryOrganiserChangedNotification
 											   object: [ZoomStoryOrganiser sharedStoryOrganiser]];
 	
+	[[NSNotificationCenter defaultCenter] addObserver: self
+											 selector: @selector(storyProgressChanged:)
+												 name: ZoomStoryOrganiserProgressNotification
+											   object: [ZoomStoryOrganiser sharedStoryOrganiser]];
+	
 	[self configureFromMainTableSelection];
 	[mainTableView reloadData];
 	
@@ -585,6 +590,24 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	
 	//[self queueStoryUpdate];
 	[self finishUpdatingStoryList: self];
+}
+
+- (void) storyProgressChanged: (NSNotification*) not {
+	NSDictionary* userInfo = [not userInfo];
+	BOOL activated = [[userInfo objectForKey: @"ActionStarting"] boolValue];
+	
+	if (activated) {
+		indicatorCount++;
+	} else {
+		indicatorCount--;
+	}
+		
+	if (indicatorCount <= 0) {
+		indicatorCount = 0;
+		[progressIndicator stopAnimation: self];
+	} else {
+		[progressIndicator startAnimation: self];
+	}
 }
 
 - (void)windowDidBecomeMain:(NSNotification *)aNotification {
