@@ -47,6 +47,10 @@ extern NSString* ZoomSkeinChangedNotification;
 - (id) inputSourceFromSkeinItem: (ZoomSkeinItem*) item1
 						 toItem: (ZoomSkeinItem*) item2;
 
+// Annotation lists
+- (NSArray*) annotations;
+- (void)	 populatePopupButton: (NSPopUpButton*) button;
+
 @end
 
 // = Dealing with/creating XML data =
@@ -58,7 +62,7 @@ extern NSString* ZoomSkeinChangedNotification;
 
 @end
 
-// = WebKit interface =
+// = WebKit interface (b0rked: webkit doesn't really support this) =
 
 @interface ZoomSkein(ZoomSkeinWebDocRepresentation)<WebDocumentRepresentation>
 @end

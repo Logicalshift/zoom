@@ -221,6 +221,51 @@ NSString* ZoomSkeinChangedNotification = @"ZoomSkeinChangedNotification";
 	}
 }
 
+
+// = Annotation lists =
+
+static NSComparisonResult stringCompare(id a, id b, void* context) {
+	return [(NSString*)a compare: b];
+}
+
+- (NSArray*) annotations {
+	if (rootItem == nil) return nil;
+	
+	// The result
+	NSMutableSet* resSet = [NSMutableSet set];
+	
+	// Iterate through the items
+	NSMutableArray* stack = [NSMutableArray array];
+	[stack addObject: rootItem];
+	
+	while ([stack count] > 0) {
+		ZoomSkeinItem* item = [stack lastObject];
+		[stack removeLastObject];
+		
+		if ([[item annotation] length] > 0) {
+			[resSet addObject: [item annotation]];
+		}
+		
+		[stack addObjectsFromArray: [[item children] allObjects]];
+	}
+	
+	// Return the result
+	return [[resSet allObjects] sortedArrayUsingFunction: stringCompare
+												 context: nil];
+}
+
+- (void) populatePopupButton: (NSPopUpButton*) button {
+	[button removeAllItems];
+	
+	// Get the list of annotations
+	NSArray* items = [self annotations];
+	
+	[button addItemWithTitle: [[NSBundle mainBundle] localizedStringForKey: @"Go to label..."
+																	 value: @"Go to label..."
+																	 table: nil]];
+	[button addItemsWithTitles: items];
+}
+
 @end
 
 // = Our input source object =
