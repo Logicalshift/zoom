@@ -6,6 +6,7 @@
                 displayNoteWindow = id; 
                 showGamePreferences = id; 
                 showPreferences = id; 
+                showiFiction = id; 
             }; 
             CLASS = FirstResponder; 
             LANGUAGE = ObjC; 

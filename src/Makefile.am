@@ -26,13 +26,23 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/ZoomPreferenceWindow.m  zoomCocoa/ZoomMetadata.h \
 	zoomCocoa/ZoomMetadata.m	  zoomCocoa/ZoomStory.h \
 	zoomCocoa/ZoomStory.m		  zoomCocoa/ZoomStoryID.h \
-	zoomCocoa/ZoomStoryID.m		  \
+	zoomCocoa/ZoomStoryID.m		  zoomCocoa/ZoomiFictionController.h \
+	zoomCocoa/ZoomiFictionController.m zoomCocoa/ZoomStoryOrganiser.h \
+	zoomCocoa/ZoomStoryOrganiser.h \
 	zoomCocoa/MainMenu.nib/classes.nib zoomCocoa/MainMenu.nib/info.nib \
 	zoomCocoa/MainMenu.nib/keyedobjects.nib \
 	zoomCocoa/MainMenu.nib/objects.nib \
 	zoomCocoa/ZoomClient.nib/classes.nib zoomCocoa/ZoomClient.nib/info.nib \
 	zoomCocoa/ZoomClient.nib/keyedobjects.nib \
 	zoomCocoa/ZoomClient.nib/objects.nib \
+	zoomCocoa/Preferences.nib/classes.nib \
+	zoomCocoa/Preferences.nib/info.nib \
+	zoomCocoa/Preferences.nib/keyedobjects.nib \
+	zoomCocoa/Preferences.nib/objects.nib \
+	zoomCocoa/iFiction.nib/classes.nib \
+	zoomCocoa/iFiction.nib/info.nib \
+	zoomCocoa/iFiction.nib/keyedobjects.nib \
+	zoomCocoa/iFiction.nib/objects.nib \
 	infocom.xml
 
 

@@ -1553,6 +1553,156 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
+		4B807B9E05BFEE0C00681653 = {
+			children = (
+				4B807BA305BFEE2700681653,
+				4B807BA405BFEE2700681653,
+				4B807BA905BFEE7200681653,
+				4B807BAA05BFEE7200681653,
+				4B807BEA05C009ED00681653,
+				4B807BEB05C009ED00681653,
+			);
+			isa = PBXGroup;
+			name = iFiction;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B807BA305BFEE2700681653 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = ZoomiFictionController.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B807BA405BFEE2700681653 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = ZoomiFictionController.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B807BA505BFEE2700681653 = {
+			fileRef = 4B807BA305BFEE2700681653;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B807BA605BFEE2700681653 = {
+			fileRef = 4B807BA405BFEE2700681653;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B807BA905BFEE7200681653 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = ZoomStoryOrganiser.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B807BAA05BFEE7200681653 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = ZoomStoryOrganiser.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B807BAB05BFEE7200681653 = {
+			fileRef = 4B807BA905BFEE7200681653;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B807BAC05BFEE7200681653 = {
+			fileRef = 4B807BAA05BFEE7200681653;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B807BC505BFF06E00681653 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			path = "add-out.png";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B807BC605BFF06F00681653 = {
+			fileRef = 4B807BC505BFF06E00681653;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B807BD605BFF36300681653 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			path = "add-in.png";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B807BD705BFF36300681653 = {
+			fileRef = 4B807BD605BFF36300681653;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B807BD805BFF74600681653 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			path = "drawer-out.png";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B807BD905BFF74600681653 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			path = "drawer-in.png";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B807BDA05BFF74600681653 = {
+			fileRef = 4B807BD805BFF74600681653;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B807BDB05BFF74600681653 = {
+			fileRef = 4B807BD905BFF74600681653;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B807BEA05C009ED00681653 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = ZoomiFButton.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B807BEB05C009ED00681653 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = ZoomiFButton.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		4B807BEC05C009ED00681653 = {
+			fileRef = 4B807BEA05C009ED00681653;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		4B807BED05C009ED00681653 = {
+			fileRef = 4B807BEB05C009ED00681653;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		4BACE9FA05B428C700A9B6DC = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -1805,6 +1955,9 @@
 				4BACEA9805B4597500A9B6DC,
 				4BACEAB705B45BF400A9B6DC,
 				4BACEABD05B45C0500A9B6DC,
+				4B807BA505BFEE2700681653,
+				4B807BAB05BFEE7200681653,
+				4B807BEC05C009ED00681653,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1826,6 +1979,10 @@
 				4B2EAF9A05B056EC0021A5E6,
 				4BACE9FB05B428C700A9B6DC,
 				4BB515B505BC615F00D00C96,
+				4B807BC605BFF06F00681653,
+				4B807BD705BFF36300681653,
+				4B807BDA05BFF74600681653,
+				4B807BDB05BFF74600681653,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1843,6 +2000,9 @@
 				4BACEA9905B4597500A9B6DC,
 				4BACEAB805B45BF400A9B6DC,
 				4BACEABE05B45C0500A9B6DC,
+				4B807BA605BFEE2700681653,
+				4B807BAC05BFEE7200681653,
+				4B807BED05C009ED00681653,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2026,6 +2186,7 @@
 				4B418DC30594FB97009C44DE,
 				4B418DC40594FB97009C44DE,
 				4B2EAFB105B08D2F0021A5E6,
+				4B807B9E05BFEE0C00681653,
 				4BDFA4E80535E9DE00A8E303,
 			);
 			isa = PBXGroup;
@@ -2044,6 +2205,10 @@
 				4B418DE50594FC3B009C44DE,
 				4B418DE60594FC3B009C44DE,
 				4B418DE70594FC3B009C44DE,
+				4B807BC505BFF06E00681653,
+				4B807BD605BFF36300681653,
+				4B807BD805BFF74600681653,
+				4B807BD905BFF74600681653,
 				4BCF3F51050FB42600A8E303,
 				4BCF3F57050FB49F00A8E303,
 				4B418E140594FCDB009C44DE,

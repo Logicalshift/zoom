@@ -1,4 +1,24 @@
 {
-    IBClasses = ({CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }); 
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            CLASS = ZoomiFButton; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {pushedImage = NSImage; }; 
+            SUPERCLASS = NSImageView; 
+        }, 
+        {
+            ACTIONS = {addButtonPressed = id; drawerButtonPressed = id; }; 
+            CLASS = ZoomiFictionController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                addButton = ZoomiFButton; 
+                drawer = NSDrawer; 
+                drawerButton = ZoomiFButton; 
+                drawerView = NSView; 
+            }; 
+            SUPERCLASS = NSWindowController; 
+        }
+    ); 
     IBVersion = 1; 
 }
