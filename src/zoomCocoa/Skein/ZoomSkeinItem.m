@@ -76,8 +76,15 @@
 	return children;
 }
 
-- (ZoomSkeinItem*) childWithCommand: (NSString*) command {
-	return [children objectForKey: command];
+- (ZoomSkeinItem*) childWithCommand: (NSString*) com {
+	NSEnumerator* objEnum = [children objectEnumerator];
+	ZoomSkeinItem* skeinItem;
+	
+	while (skeinItem = [objEnum nextObject]) {
+		if ([[skeinItem command] isEqualToString: com]) return skeinItem;
+	}
+	
+	return nil;
 }
 
 - (void) mergeWith: (ZoomSkeinItem*) newItem {
@@ -97,7 +104,7 @@
 	}
 }
 
-- (void) addChild: (ZoomSkeinItem*) childItem {
+- (ZoomSkeinItem*) addChild: (ZoomSkeinItem*) childItem {
 	ZoomSkeinItem* oldChild = [self childWithCommand: [childItem command]];
 	
 	if (oldChild != nil) {
@@ -111,10 +118,16 @@
 		if (![childItem temporary]) [oldChild setTemporary: NO];
 		[oldChild setPlayed: [childItem played]];
 		[oldChild setChanged: [childItem changed]];
+		
+		// 'New' item is the old one
+		return oldChild;
 	} else {
 		// Otherwise, just add the new item
 		[childItem setParent: self];
 		[children addObject: childItem];
+		
+		// 'new' item is the child item
+		return childItem;
 	}
 }
 

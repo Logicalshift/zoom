@@ -12,9 +12,19 @@
 
 @interface ZoomSkein : NSObject {
 	ZoomSkeinItem* rootItem;
+	
+	NSMutableString* currentOutput;
+	ZoomSkeinItem* activeItem;
 }
 
 // Retrieving the root skein item
 - (ZoomSkeinItem*) rootItem;
+
+// Acting as a Zoom output receiver
+- (void) inputCommand:   (NSString*) command;
+- (void) inputCharacter: (NSString*) character;
+- (void) outputText:     (NSString*) outputText;
+- (void) zoomWaitingForInput;
+- (void) zoomInterpreterRestart;
 
 @end

@@ -36,7 +36,7 @@
 - (NSSet*)         children;
 - (ZoomSkeinItem*) childWithCommand: (NSString*) command;
 
-- (void)		   addChild: (ZoomSkeinItem*) childItem;
+- (ZoomSkeinItem*) addChild: (ZoomSkeinItem*) childItem;
 - (void)		   removeChild: (ZoomSkeinItem*) childItem;
 - (void)		   removeFromParent;
 
