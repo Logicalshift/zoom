@@ -334,22 +334,30 @@ void display_clear(void)
 
       text_win[x].text        = NULL;
       text_win[x].line        = NULL;
-      text_win[x].cline       = malloc(sizeof(struct cellline)*size_y);
-      
-      for (y=0; y<size_y; y++)
+      if (text_win[x].cline == NULL)
 	{
-	  text_win[x].cline[y].cell = malloc(sizeof(int)*size_x);
-	  text_win[x].cline[y].fg   = malloc(sizeof(int)*size_x);
-	  text_win[x].cline[y].bg   = malloc(sizeof(int)*size_x);
-	  text_win[x].cline[y].font = malloc(sizeof(int)*size_x);
-
-	  for (z=0; z<size_x; z++)
+	  text_win[x].cline       = malloc(sizeof(struct cellline)*size_y);
+	  
+	  for (y=0; y<size_y; y++)
 	    {
-	      text_win[x].cline[y].cell[z] = ' ';
-	      text_win[x].cline[y].fg[z]   = DEFAULT_FORE+FIRST_ZCOLOUR;
-	      text_win[x].cline[y].bg[z]   = DEFAULT_BACK+FIRST_ZCOLOUR;
-	      text_win[x].cline[y].font[z] = style_font[4];
+	      text_win[x].cline[y].cell = malloc(sizeof(int)*size_x);
+	      text_win[x].cline[y].fg   = malloc(sizeof(int)*size_x);
+	      text_win[x].cline[y].bg   = malloc(sizeof(int)*size_x);
+	      text_win[x].cline[y].font = malloc(sizeof(int)*size_x);
+	      
+	      for (z=0; z<size_x; z++)
+		{
+		  text_win[x].cline[y].cell[z] = ' ';
+		  text_win[x].cline[y].fg[z]   = DEFAULT_FORE+FIRST_ZCOLOUR;
+		  text_win[x].cline[y].bg[z]   = DEFAULT_BACK+FIRST_ZCOLOUR;
+		  text_win[x].cline[y].font[z] = style_font[4];
+		}
 	    }
+
+	  if (size_x < max_x)
+	    max_x = size_x;
+	  if (size_y < max_y)
+	    max_y = size_y;
 	}
     }
 
@@ -508,12 +516,12 @@ void display_prints(const int* str)
       RECT rct;
       int sx;
 
-      if (CURWIN.xpos >= size_x)
-	CURWIN.xpos = size_x-1;
+      if (CURWIN.xpos >= max_x)
+	CURWIN.xpos = max_x-1;
       if (CURWIN.xpos < 0)
 	CURWIN.xpos = 0;
-      if (CURWIN.ypos >= size_y)
-	CURWIN.ypos = size_y-1;
+      if (CURWIN.ypos >= max_y)
+	CURWIN.ypos = max_y-1;
       if (CURWIN.ypos < 0)
 	CURWIN.ypos = 0;
       
@@ -641,7 +649,7 @@ void display_prints_c(const char* str)
 
 void display_printf(const char* format, ...)
 {
-  va_list* ap;
+  va_list ap;
   char     string[512];
   int x,len;
   int      istr[512];
@@ -665,7 +673,7 @@ static int debug_console = 0;
 static HANDLE console_buffer = INVALID_HANDLE_VALUE;
 static int console_exit = 0;
 
-static BOOL ctlHandler(DWORD ct)
+static BOOL CALLBACK ctlHandler(DWORD ct)
 {
   switch (ct)
     {
@@ -679,7 +687,7 @@ static BOOL ctlHandler(DWORD ct)
     }
 }
 
-static BOOL ctlExitHandler(DWORD ct)
+static BOOL CALLBACK ctlExitHandler(DWORD ct)
 {
   switch (ct)
     {
@@ -697,7 +705,7 @@ static BOOL ctlExitHandler(DWORD ct)
 
 void printf_debug(char* format, ...)
 {
-  va_list* ap;
+  va_list ap;
   char     string[512];
 
   va_start(ap, format);
@@ -734,7 +742,7 @@ void printf_debug(char* format, ...)
 
 void printf_info (char* format, ...)
 {
-  va_list* ap;
+  va_list ap;
   char     string[512];
 
   va_start(ap, format);
@@ -799,7 +807,7 @@ void display_exit(int code)
 static char* error = NULL;
 void printf_error(char* format, ...)
 {
-  va_list* ap;
+  va_list ap;
   char     string[512];
 
   va_start(ap, format);
@@ -1041,7 +1049,7 @@ void display_erase_window(void)
       
       for (y=0; y<(CURWIN.winly/xfont_y); y++)
 	{
-	  for (x=0; x<size_x; x++)
+	  for (x=0; x<max_x; x++)
 	    {
 	      CURWIN.cline[y].cell[x] = ' ';
 	      CURWIN.cline[y].fg[x]   = CURWIN.fore;
@@ -1414,10 +1422,10 @@ static void resize_window()
 	  /* Allocate new rows */
 	  for (y=max_y; y<size_y; y++)
 	    {
-	      CURWIN.cline[y].cell = malloc(sizeof(int)*size_x);
-	      CURWIN.cline[y].fg   = malloc(sizeof(int)*size_x);
-	      CURWIN.cline[y].bg   = malloc(sizeof(int)*size_x);
-	      CURWIN.cline[y].font = malloc(sizeof(int)*size_x);
+	      CURWIN.cline[y].cell = malloc(sizeof(int)*max_x);
+	      CURWIN.cline[y].fg   = malloc(sizeof(int)*max_x);
+	      CURWIN.cline[y].bg   = malloc(sizeof(int)*max_x);
+	      CURWIN.cline[y].font = malloc(sizeof(int)*max_x);
 
 	      for (z=0; z<max_x; z++)
 		{
@@ -1432,7 +1440,7 @@ static void resize_window()
       if (size_x > max_x)
 	{
 	  /* Allocate new columns */
-	  for (y=0; y<size_y; y++)
+	  for (y=0; y<(max_y>size_y?max_y:size_y); y++)
 	    {
 	      CURWIN.cline[y].cell = realloc(CURWIN.cline[y].cell,
 					     sizeof(int)*size_x);
@@ -1458,6 +1466,46 @@ static void resize_window()
   if (size_y > max_y)
     max_y = size_y;
 
+  /* Scroll more text onto the screen if we can */
+  cur_win = 0;
+  if (CURWIN.lastline != NULL)
+    {
+      if (CURWIN.lastline->baseline+CURWIN.lastline->descent < win_y)
+	{
+	  /* Scroll everything down */
+	  int down;
+	  struct line* l;
+
+	  down = win_y -
+	    (CURWIN.lastline->baseline+CURWIN.lastline->descent);
+
+	  l = CURWIN.line;
+	  while (l != NULL)
+	    {
+	      l->baseline += down;
+
+	      l = l->next;
+	    }
+	}
+
+      if (CURWIN.line->baseline-CURWIN.line->ascent > CURWIN.winsy)
+	{
+	  /* Scroll everything up */
+	  int up;
+	  struct line* l;
+
+	  up = (CURWIN.line->baseline-CURWIN.line->ascent) - CURWIN.winsy;
+
+	  l = CURWIN.line;
+	  while (l != NULL)
+	    {
+	      l->baseline -= up;
+
+	      l = l->next;
+	    }
+	}
+    }
+  
   zmachine_resize_display(display_get_info());
   
   cur_win = owin;
