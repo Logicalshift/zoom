@@ -1906,17 +1906,10 @@
 			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
-				4B4EF61D050FCEAE00A8E303,
 				4BACEA6605B43C1E00A9B6DC,
 			);
 			isa = PBXCopyFilesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4B4EF61D050FCEAE00A8E303 = {
-			fileRef = 4B1E3F5C050F7B2500A8E303;
-			isa = PBXBuildFile;
-			settings = {
-			};
 		};
 		4B4EF620050FD66E00A8E303 = {
 			fileEncoding = 4;

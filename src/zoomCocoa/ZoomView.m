@@ -1185,6 +1185,11 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         serverName = [[NSBundle mainBundle] pathForResource: @"ZoomServer"
                                                      ofType: nil];
     }
+	
+	if (serverName == nil) {
+		serverName = [[NSBundle bundleForClass: [self class]] pathForResource: @"ZoomServer"
+																	   ofType: nil];
+	}
 
     // Prepare for launch
     [zoomTask setLaunchPath: serverName];
