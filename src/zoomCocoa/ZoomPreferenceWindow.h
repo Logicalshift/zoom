@@ -38,4 +38,12 @@
 
 - (void) setPreferences: (ZoomPreferences*) prefs;
 
+// Interface actions
+- (IBAction) titleChanged: (id) sender;
+- (IBAction) interpreterChanged: (id) sender;
+- (IBAction) revisionChanged: (id) sender;
+- (IBAction) displayWarningsChanged: (id) sender;
+- (IBAction) fatalWarningsChanged: (id) sender;
+- (IBAction) speakGameTextChanged: (id) sender;
+
 @end

@@ -2,6 +2,14 @@
     IBClasses = (
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
+            ACTIONS = {
+                displayWarningsChanged = id; 
+                fatalWarningsChanged = id; 
+                interpreterChanged = id; 
+                revisionChanged = id; 
+                speakGameTextChanged = id; 
+                titleChanged = id; 
+            }; 
             CLASS = ZoomPreferenceWindow; 
             LANGUAGE = ObjC; 
             OUTLETS = {

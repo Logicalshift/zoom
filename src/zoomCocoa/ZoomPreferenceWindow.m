@@ -333,4 +333,29 @@ static void appendStyle(NSMutableString* styleName,
 	[cols release];
 }
 
+// == Various actions ==
+- (IBAction) titleChanged: (id) sender {
+	[prefs setGameTitle: [sender stringValue]];
+}
+
+- (IBAction) interpreterChanged: (id) sender {
+	[prefs setInterpreter: [interpreter indexOfSelectedItem]+1];
+}
+
+- (IBAction) revisionChanged: (id) sender {
+	[prefs setRevision: [[revision stringValue] characterAtIndex: 0]];
+}
+
+- (IBAction) displayWarningsChanged: (id) sender {
+	[prefs setDisplayWarnings: [sender boolValue]];
+}
+
+- (IBAction) fatalWarningsChanged: (id) sender {
+	[prefs setFatalWarnings: [sender boolValue]];
+}
+
+- (IBAction) speakGameTextChanged: (id) sender {
+	[prefs setSpeakGameText: [sender boolValue]];
+}
+
 @end
