@@ -1176,4 +1176,193 @@ There is a small mailbox here.
   </story>
   
   <!-- Version 6 -->
+  
+  <!-- Zork Zero (many versions) -->
+  <story>
+    <id>
+	  <format>zcode</format>
+	  <zcode>
+		<serial>890714</serial><release>393</release>
+	  </zcode>
+	</id>
+	
+	<title>Zork Zero (IBM version)</title>
+	<headline></headline>
+	<teaser>Another frantic day at the castle; Lord Dimwit Flathead the Excessive has invited a few thousand friends over for dinner. Three hundred dragons have been slaughtered for the occasion, and the kitchen is suffocated by the stench of their roasting flesh.</teaser>
+	<group>Infocom</group>
+	<genre>Fantasy</genre>
+	<author>Steve Meretzky</author>
+	<year>1988</year>
+  </story>
+  <story>
+    <id>
+	  <format>zcode</format>
+	  <zcode>
+		<serial>890602</serial><release>383</release>
+	  </zcode>
+	</id>
+	
+	<title>Zork Zero (Apple II version)</title>
+	<headline></headline>
+	<teaser>Another frantic day at the castle; Lord Dimwit Flathead the Excessive has invited a few thousand friends over for dinner. Three hundred dragons have been slaughtered for the occasion, and the kitchen is suffocated by the stench of their roasting flesh.</teaser>
+	<group>Infocom</group>
+	<genre>Fantasy</genre>
+	<author>Steve Meretzky</author>
+	<year>1988</year>
+  </story>
+  <story>
+    <id>
+	  <format>zcode</format>
+	  <zcode>
+		<serial>890323</serial><release>366</release>
+	  </zcode>
+	</id>
+	
+	<title>Zork Zero (Amiga version)</title>
+	<headline></headline>
+	<teaser>Another frantic day at the castle; Lord Dimwit Flathead the Excessive has invited a few thousand friends over for dinner. Three hundred dragons have been slaughtered for the occasion, and the kitchen is suffocated by the stench of their roasting flesh.</teaser>
+	<group>Infocom</group>
+	<genre>Fantasy</genre>
+	<author>Steve Meretzky</author>
+	<year>1988</year>
+  </story>
+  <story>
+    <id>
+	  <format>zcode</format>
+	  <zcode>
+		<serial>881019</serial><release>296</release>
+	  </zcode>
+	</id>
+	
+	<title>Zork Zero (Mac version)</title>
+	<headline></headline>
+	<teaser>Another frantic day at the castle; Lord Dimwit Flathead the Excessive has invited a few thousand friends over for dinner. Three hundred dragons have been slaughtered for the occasion, and the kitchen is suffocated by the stench of their roasting flesh.</teaser>
+	<group>Infocom</group>
+	<genre>Fantasy</genre>
+	<author>Steve Meretzky</author>
+	<year>1988</year>
+  </story>
+  
+  <!-- Arthur -->
+  <story>
+    <id>
+	  <format>zcode</format>
+	  <zcode>
+		<serial>890606</serial><release>54</release>
+	  </zcode>
+	</id>
+    <id>
+	  <format>zcode</format>
+	  <zcode>
+		<serial>890622</serial><release>63</release>
+	  </zcode>
+	</id>
+    <id>
+	  <format>zcode</format>
+	  <zcode>
+		<serial>890714</serial><release>89</release>
+	  </zcode>
+	</id>
+    <id>
+	  <format>zcode</format>
+	  <zcode>
+		<serial>890714</serial><release>74</release>
+	  </zcode>
+	</id>
+	
+	<title>Arthur: the Quest for Excalibur</title>
+	<headline></headline>
+	<teaser>
+You are shivering in the cold night air of an English churchyard, unsure of the forces that are driving you on this night of destiny. Here among the gravestones, the most famous sword in all England grows out of a large, oddly-shaped rock. A shaft of moonlight falls upon the magic runes that shimmer in the polished steel:<br/>
+<br/>
+WHOSO PULLETH OUT THIS SWORD OF THIS STONE, IS RIGHTWISE KING BORN OF ALL ENGLAND.<br/>
+<br/>
+The local chieftain, King Lot, has declared a curfew, and you know that even a boy such as yourself would be thrown in prison should you be caught by his soldiers. Yet you have come anyway, irresistibly drawn by this sword of mystery. Noblemen from far and wide have tried and failed to draw the sword from the stone, yet something inside urges you to try.<br/>
+<br/>
+Slowly you approach the sword. Driven by some inner force, you clasp your hand around the hilt. The two seem made for one another. You pull. Nothing happens. You strain harder. The sword gives a little, and then....
+	</teaser>
+	<group>Infocom</group>
+	<genre>Fantasy</genre>
+	<author>Bob Bates</author>
+	<year>1989</year>
+  </story>
+  
+  <!-- Journey -->
+  <story>
+    <id>
+	  <format>zcode</format>
+	  <zcode>
+		<serial>890316</serial><release>26</release>
+	  </zcode>
+	</id>
+    <id>
+	  <format>zcode</format>
+	  <zcode>
+		<serial>890322</serial><release>30</release>
+	  </zcode>
+	</id>
+    <id>
+	  <format>zcode</format>
+	  <zcode>
+		<serial>890706</serial><release>83</release>
+	  </zcode>
+	</id>
+    <id>
+	  <format>zcode</format>
+	  <zcode>
+		<serial>890616</serial><release>77</release>
+	  </zcode>
+	</id>
+	
+	<title>Journey</title>
+	<headline>Part One of The Golden Age Trilogy</headline>
+	<teaser>
+It was a golden age, or so it now seems; and there are but a few who can recall those years, and fewer still who would not tremble to speak of what followed.<br/>
+<br/>
+But we were younger then, and less wise. It seems strange now to think that we had never set foot outside our village when we were called upon to take part in a great adventure - that fateful Journey which changed our world forever...
+	</teaser>
+	<group>Infocom</group>
+	<genre>Fantasy</genre>
+	<author>Marc Blank</author>
+	<year>1988</year>
+  </story>
+  
+  <!-- Shogun -->
+  <story>
+    <id>
+	  <format>zcode</format>
+	  <zcode>
+		<release>292</release><serial>890314</serial>
+	  </zcode>
+	</id>
+    <id>
+	  <format>zcode</format>
+	  <zcode>
+		<release>295</release><serial>890321</serial>
+	  </zcode>
+	</id>
+    <id>
+	  <format>zcode</format>
+	  <zcode>
+		<release>322</release><serial>890706</serial>
+	  </zcode>
+	</id>
+    <id>
+	  <format>zcode</format>
+	  <zcode>
+		<release>311</release><serial>890510</serial>
+	  </zcode>
+	</id>
+
+	<title>Shogun</title>
+	<headline>A story of Japan</headline>
+	<teaser>
+The gale tears at you, biting deep with, and you know that if you don't make landfall soon you'll all be dead. You are John Blackthorne, Pilot-Major of a dead fleet: one ship left out of five, eight and twenty men out of one hundred and seven, and only ten of those can walk. Little food, almost no water, and that brackish and foul.
+	</teaser>
+	<group>Infocom</group>
+	<genre>Fiction</genre>
+	<author>Dave Lebling (adapted from the books by James Clavell)</author>
+	<year>1988</year>
+  </story>
+
 </ifindex>
