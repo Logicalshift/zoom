@@ -662,7 +662,7 @@ static void draw_input_text(void)
 
       xfont_set_colours(fg, bg);
 #ifdef HAVE_XFT
-      { XftDraw* xft_lastdraw; /* Save the last drawable */
+      { XftDraw* xft_lastdraw = xft_drawable; /* Save the last drawable */
       if (xft_drawable != NULL && xft_maindraw != NULL)
 	{
 	  /* 
@@ -1279,7 +1279,7 @@ static void draw_window()
   if (more_on)
     {
 #ifdef HAVE_XFT
-      XftDraw* lastdraw;
+      XftDraw* lastdraw = xft_drawable;
 #endif
 
       clip.x = (win_x+BORDER_SIZE*2) - (morew + 2);

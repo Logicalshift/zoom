@@ -95,7 +95,7 @@ static inline int bottombit(unsigned long mask)
     bit = 20;
   else if ((mask&0xf000000))
     bit = 24;
-  else if ((mask&0xf0000000))
+  else
     bit = 28;
   mask >>= bit;
   mask &= 0xf;
@@ -130,7 +130,7 @@ static inline int topbit(unsigned long mask)
     bit = 8;
   else if (mask >= 0x10)
     bit = 4;
-  else if (mask >= 0x1)
+  else
     bit = 0;
 
   mask >>= bit;

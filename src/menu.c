@@ -51,9 +51,9 @@ struct game_struct {
   char* storyname;
 };
 
-static int game_compare(void* a, void* b)
+static int game_compare(const void* a, const void* b)
 {
-  struct game_struct *ga, *gb;
+  const struct game_struct *ga, *gb;
 
   ga = a; gb = b;
 

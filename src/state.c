@@ -68,7 +68,7 @@ static ZByte* stacks = NULL;
 static char*  detail = NULL;
 static ZWord* stackpos = NULL;
 
-inline void push(ZStack* stack, const ZWord word)
+static inline void push(ZStack* stack, const ZWord word)
 {
   *(stack->stack_top++) = word;
   stack->stack_size--;

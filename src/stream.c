@@ -413,7 +413,7 @@ void stream_remove_buffer(const int* s)
 {
   int len, x;
 
-  len = strlen(s);
+  for (len=0; s[len] != 0; len++);
 
   if (len > bufpos)
     return;

@@ -500,7 +500,7 @@ void image_resample(image_data* data, int n, int d)
 	      int rs, gs, bs, as;
 
 	      /* Do the sampling */
-	      rs = gs = bs = 0;
+	      rs = gs = bs = as = 0;
 
 	      for (i=0; i<MATRIX_SIZE; i++)
 		{

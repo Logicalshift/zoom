@@ -292,7 +292,6 @@ extern void zmachine_fatal         (char* format, ...);
 extern void zmachine_warning       (char* format, ...);
 
 extern ZWord   pop         (ZStack*);
-extern void    push        (ZStack*, const ZWord);
 extern ZFrame* call_routine(ZDWord* pc, ZStack* stack, ZDWord start);
      
 /* Utility macros */

@@ -151,8 +151,8 @@ xfont* xfont_load_font(char* font)
 #ifndef HAVE_T1LIB
       zmachine_fatal("Font files are not supported in this version");
 #else
-      char* name;
-      char* size;
+      char* name = NULL;
+      char* size = NULL;
       int x;
 
       f->type = XFONT_T1LIB;
@@ -168,6 +168,10 @@ xfont* xfont_load_font(char* font)
 	  if (font[x] == '\\' && font[x+1] != 0)
 	    x++;
 	}
+      if (name == NULL)
+	name = font;
+      if (size == NULL)
+	size = "14";
 
       f->data.t1.id = T1_AddFont(name);
       f->data.t1.size = strtod(size, NULL);
