@@ -1658,7 +1658,10 @@ OPCODE "erase_window"   VAR:0x0d ARGS:1               VERSION 4,5,7,8
 
 OPCODE "erase_line"     VAR:0x0e ARGS:1               VERSION 4,5,7,8
 %{
-  display_erase_line(1);
+  if (arg1 == 1)
+    {
+      display_erase_line(1);
+    }
 %}
 
 OPCODE "set_cursor"     VAR:0x0f ARGS:2               VERSION 4,5,7,8
