@@ -341,7 +341,6 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 			ZoomStoryID* fileID = [[ZoomStoryID alloc] initWithZCodeFile: filename];
 			
 			if (fileID != nil) {
-				NSLog(@"Add: %@", filename);
 				[[ZoomStoryOrganiser sharedStoryOrganiser] addStory: filename
 														  withIdent: fileID
 														   organise: [[ZoomPreferences globalPreferences] keepGamesOrganised]];
@@ -496,11 +495,29 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 }
 
 // = Notifications =
+- (void) queueStoryUpdate {
+	// Queues an update to run next time through the run loop
+	if (!queuedUpdate) {
+		[[NSRunLoop currentRunLoop] performSelector: @selector(finishUpdatingStoryList:)
+											 target: self
+										   argument: self
+											  order: 128
+											  modes: [NSArray arrayWithObjects: NSDefaultRunLoopMode, NSModalPanelRunLoopMode, nil]];
+		queuedUpdate = YES;
+	}	
+}
+
 - (void) storyListChanged: (NSNotification*) not {
 	needsUpdating = YES;
 	
+	[self queueStoryUpdate];
+}
+
+- (void) finishUpdatingStoryList: (id) sender {
 	[mainTableView reloadData];
-	[self configureFromMainTableSelection];
+	[self configureFromMainTableSelection];	
+
+	queuedUpdate = NO;	
 }
 
 - (void)windowDidBecomeMain:(NSNotification *)aNotification {
@@ -839,7 +856,9 @@ int tableSorter(id a, id b, void* context) {
 		ZoomStoryID* ident = [storyList objectAtIndex: [mainTableView selectedRow]];
 		ZoomStory* story = [self storyForID: ident];
 
-		[[ZoomGameInfoController sharedGameInfoController] setGameInfo: story];
+		if ([[self window] isMainWindow]) {
+			[[ZoomGameInfoController sharedGameInfoController] setGameInfo: story];
+		}
 
 		comment = [story comment];
 		teaser = [story teaser];
@@ -850,7 +869,9 @@ int tableSorter(id a, id b, void* context) {
 																			  create: NO];
 		[previewView setDirectoryToUse: [dir stringByAppendingPathComponent: @"Saves"]];
 	} else {
-		[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
+		if ([[self window] isMainWindow]) {
+			[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
+		}
 		
 		comment = @"";
 		teaser = @"";

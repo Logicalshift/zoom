@@ -653,10 +653,23 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	ZoomStory* story = [not object];
 	
 	if (![story isKindOfClass: [ZoomStory class]]) {
-		NSLog(@"someStoryHasChanged: called with a non-story object");
-		return; // Unlikely but possible
+		NSLog(@"someStoryHasChanged: called with a non-story object (too many spoons?)");
+		return; // Unlikely but possible. If I'm a spoon, that is.
 	}
 	
+	// De and requeue this to be done next time through the run loop
+	// (stops this from being performed multiple times when many story parameters are updated together)
+	[[NSRunLoop currentRunLoop] cancelPerformSelector: @selector(finishChangingStory:)
+											   target: self
+											 argument: story];
+	[[NSRunLoop currentRunLoop] performSelector: @selector(finishChangingStory:)
+										 target: self
+									   argument: story
+										  order: 128
+										  modes: [NSArray arrayWithObjects: NSDefaultRunLoopMode, NSModalPanelRunLoopMode, nil]];
+}
+
+- (void) finishChangingStory: (ZoomStory*) story {
 	// For our pre-arranged stories, several IDs are possible, but more usually one
 	NSEnumerator* identEnum = [[story storyIDs] objectEnumerator];
 	ZoomStoryID* ident;
@@ -698,8 +711,6 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 					}
 				}
 			}
-		} else {
-			NSLog(@"Story move ignored");
 		}
 	}
 	

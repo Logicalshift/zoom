@@ -40,6 +40,8 @@
 	
 	BOOL needsUpdating;
 	
+	BOOL queuedUpdate;
+	
 	// Save game previews
 	ZoomSavePreviewView* previewView;
 	
