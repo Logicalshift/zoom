@@ -71,6 +71,9 @@ extern int  v6_get_cursor_y (void);
 extern void v6_set_caret    (void);
 extern void v6_set_mouse_win(int win);
 
+extern int  v6_get_fg_colour(void);
+extern int  v6_get_bg_colour(void);
+
 extern void v6_set_newline_function(int (*func)(const int * remaining,
 						int rem_len));
 

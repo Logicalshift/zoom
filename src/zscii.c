@@ -315,6 +315,8 @@ int* zscii_to_unicode(ZByte* string, int* len)
 		      
 		      goto onward; /* Blech */
 		    }
+#else
+		  buf[y++] = zchar;
 #endif
 		}
 	      break;

@@ -70,6 +70,10 @@ static struct v6_wind
   ZWord countdown;
   int style;
   ZUWord colour;
+
+  ZUWord fg_true;
+  ZUWord bg_true;
+
   int font_num;
   ZUWord font_size;
 
@@ -501,6 +505,42 @@ static void draw_statusbar_123(ZStack* stack)
   stream_buffering(1);
 }
 #endif
+
+inline static int true_colour(int col)
+{
+  switch (col)
+    {
+    case 0:
+      return 0x0000;
+    case 1:
+      return 0x001f;
+    case 2:
+      return 0x03e0;
+    case 3:
+      return 0x03ff;
+    case 4:
+      return 0x7c00;
+    case 5:
+      return 0x7c1f;
+    case 6:
+      return 0x7fe0;
+    case 7:
+      return 0x7fff;
+
+    case 8:
+      return 0x5ad6;
+    case 9:
+      return 0x4631;
+    case 10:
+      return 0x2d6b;
+      
+    case 13:
+      return -4;
+
+    default:
+      return 0x0000;
+    }
+}
 
 inline static int convert_colour(int col)
 {
@@ -1344,7 +1384,7 @@ void zcode_v6_initialise(void)
     {
       v6_set_window(x);
 
-      windows[x].wrapping   = 0;
+      windows[x].wrapping   = 1;
       windows[x].scrolling  = 1;
       windows[x].buffering  = 1;
       windows[x].transcript = 0;
@@ -1446,7 +1486,8 @@ static inline void zcode_setup_window(int window)
   v6_set_window(window);
   v6_define_window(window,
 		   windows[window].x, windows[window].y,
-		   windows[window].leftmar, windows[window].rightmar,
+		   (windows[window].wrapping!=0)?windows[window].leftmar:0, 
+		   (windows[window].wrapping!=0)?windows[window].rightmar:0,
 		   windows[window].xsize, windows[window].ysize);
   v6_set_scroll(windows[window].scrolling);
   v6_set_more(window, windows[window].scrolling);

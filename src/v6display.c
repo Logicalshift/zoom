@@ -455,10 +455,20 @@ void v6_set_colours(int fg, int bg)
   if (bg == -3)
     bg = display_get_pix_colour(ACTWIN.curx, ACTWIN.cury);
   if (fg == -3)
-    bg = display_get_pix_colour(ACTWIN.curx, ACTWIN.cury);
+    fg = display_get_pix_colour(ACTWIN.curx, ACTWIN.cury);
 
   ACTWIN.fore = fg;
   ACTWIN.back = bg;
+}
+
+int v6_get_fg_colour(void)
+{
+  return ACTWIN.fore;
+}
+
+int v6_get_bg_colour(void)
+{
+  return ACTWIN.back;
 }
 
 int v6_set_style(int style)

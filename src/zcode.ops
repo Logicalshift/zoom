@@ -2436,6 +2436,8 @@ OPCODE "set_colour"    2OP:0x1b REALLYVAR     VERSION 6
   int win = 0;
   int working;
 
+  int fg, bg;
+
   stream_flush_buffer();
 
   win = working = v6_get_window();
@@ -2444,13 +2446,69 @@ OPCODE "set_colour"    2OP:0x1b REALLYVAR     VERSION 6
       win = v6_get_window();
       v6_set_window(WinNum(argblock.arg[2]));
       working = WinNum(argblock.arg[2]);
+    }  
+
+  fg = convert_colour(arg1);
+  bg = convert_colour(arg2);
+
+  v6_set_colours(fg, bg);
+  if (fg >= 0)
+    {
+      windows[working].colour = (windows[working].colour&~0xff)|(fg+2);
+      windows[working].fg_true = true_colour(fg);
+    }
+  if (bg >= 0)
+    {
+      windows[working].colour = (windows[working].colour&~0xff00)|((bg+2)<<8);
+      windows[working].bg_true = true_colour(bg);
     }
   
-  v6_set_colours(convert_colour(arg1),
-		 convert_colour(arg2));
-  windows[working].colour = argblock.arg[0]|(argblock.arg[1]<<8);
-  
   v6_set_window(win);
+%}
+
+OPCODE "set_true_colour" EXT:0x0d VERSION 6
+%{
+#ifndef SPEC_11
+  zmachine_warning("set_true_colour has no effect before standard 1.1");
+#else
+  int fore, back;
+  int win, working;
+
+  stream_flush_buffer();
+
+  win = working = v6_get_window();
+  if (argblock.n_args > 2)
+    {
+      win = v6_get_window();
+      v6_set_window(WinNum(argblock.arg[2]));
+      working = WinNum(argblock.arg[2]);
+    }  
+
+  fore = argblock.arg[0];
+  back = argblock.arg[1];
+
+  if (fore >= 0)
+    fore += 16;
+  if (back >= 0)
+    back += 16;
+
+  v6_set_colours(fore, back);
+
+  windows[working].colour = 0x4040;
+
+  fore = v6_get_fg_colour();
+  back = v6_get_bg_colour();
+    
+  if (fore >= 16)
+    fore -= 16;
+  if (back >= 16)
+    back -= 16;
+
+  windows[working].fg_true = fore;
+  windows[working].bg_true = back;
+
+  v6_set_window(win);
+#endif
 %}
 
 OPCODE "pull"          VAR:0x09 ARGS:1 STORE  VERSION 6
@@ -2503,7 +2561,7 @@ OPCODE "erase_window"   VAR:0x0d ARGS:1               VERSION 6
         {
 	  v6_set_window(x);
 
-          windows[x].wrapping   = 0;
+          windows[x].wrapping   = 1;
           windows[x].scrolling  = 1;
           windows[x].buffering  = 1;
           windows[x].transcript = 0;
@@ -2537,6 +2595,8 @@ OPCODE "set_window"    VAR:0x0b ARGS:1        VERSION 6
   stream_flush_buffer();
 
   v6_set_window(WinNum(argblock.arg[0]));
+  machine.transcript_on = (machine.transcript_file!=NULL&&
+    (windows[WinNum(argblock.arg[0])].transcript != 0));
   stream_buffering(windows[WinNum(argblock.arg[0])].buffering);
 %}
 
@@ -2922,6 +2982,14 @@ OPCODE "get_wind_prop" EXT:0x13        STORE  VERSION 6
     case 15:
       store(stack, st,
 	    windows[argblock.arg[0]].line_count);
+      break;
+    case 16:
+      store(stack, st,
+            windows[argblock.arg[0]].fg_true);
+      break;
+    case 17:
+      store(stack, st,
+            windows[argblock.arg[0]].bg_true);
       break;
 
     default:
