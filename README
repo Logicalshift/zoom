@@ -43,8 +43,8 @@ Compiling Zoom
    zmark). No idea why at all - this effect is most marked with the
    new interpreter style.
 
-Using Zoom
-==========
+Using Zoom (X-Windows)
+======================
 
    Running Zoom is fairly simple - zoom <filename> should do the
    trick, where <filename> is a Z-Code file (modern files created by
@@ -183,6 +183,17 @@ Using Zoom
 
    An example .zoomrc file can be found in the source distribution as 
    'zoomrc'
+
+Xft problems
+============
+
+   XRender and Xft might well provide nice anti-aliased fonts, but 
+   unfortunately, Xft doesn't provide any 'font not found' mechanism,
+   instead choosing a default font. When Xft is not setup, in particular
+   when there is no XftConfig file, this can result in the same font
+   being used for anything. The troubleshooting section of the manual
+   describes how to create an XftConfig file. The poor man's solution
+   is simply to specify 'antialias no' in .zoomrc.
 
 Zoom and Windows
 ================

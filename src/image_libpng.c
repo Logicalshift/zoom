@@ -401,7 +401,8 @@ void image_resample(image_data* data, int n, int d)
       {  3,  4,  5,  4,  3 },
       {  2,  3,  4,  3,  2 },
       {  1,  2,  3,  2,  1 } };
-#else  int filter[3][3] =
+#else  
+  int filter[3][3] =
     { { 1, 2, 1 },
       { 2, 4, 2 },
       { 1, 2, 1 } };
