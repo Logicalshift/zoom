@@ -41,13 +41,13 @@ extern int     xfont_get_height    (xfont*);
 extern int     xfont_get_ascent    (xfont*);
 extern int     xfont_get_descent   (xfont*);
 extern int     xfont_get_text_width(xfont*,
-				    const char*,
+				    const int*,
 				    int);
 extern void    xfont_plot_string   (xfont*,
 				    Drawable,
 				    GC,
 				    int, int,
-				    const char*,
+				    const int*,
 				    int);
 
 #endif

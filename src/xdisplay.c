@@ -124,11 +124,11 @@ static int style_font[16] = {  0, 0, 0, 0, 3, 3, 3, 3,
 			      -1,-1,-1,-1,-1,-1,-1,-1 };
 static int reverse = 0;
 
-static int (*newline_func)(const char*, int) = NULL;
+static int (*newline_func)(const int*, int) = NULL;
 
 typedef struct history_item
 {
-  char* string;
+  int* string;
   struct history_item* next;
   struct history_item* last;
 } history_item;
@@ -158,11 +158,31 @@ struct window text_win[32];
 
 #define CURWIN text_win[cur_win]
 
-static int process_events(long int, char*, int);
+static int process_events(long int, int*, int);
 static void draw_window(void);
 static void display_more(void);
 
+int moretext[] = { 91, 77, 79, 82, 69, 93, 0 };
+
 /***                           ----// 888 \\----                           ***/
+
+static inline int istrlen(const int* string)
+{
+  int x = 0;
+
+  while (string[x] != 0) x++;
+  return x;
+}
+static inline void istrcpy(int* dest, const int* src)
+{
+  int x;
+
+  for (x=0; src[x] != 0; x++)
+    {
+      dest[x] = src[x];
+    }
+  dest[x] = 0;
+}
 
 static Atom x_prot[5];
 static Atom wmprots;
@@ -566,7 +586,7 @@ static void display_more(void)
  * Outputs a string - this must not contain newline characters
  * This function performs word wrapping
  */
-static int outputs(const char* string, int font, int len, int split)
+static int outputs(const int* string, int font, int len, int split)
 {
   int width, height;
   int oldheight;
@@ -728,18 +748,26 @@ void display_printf(const char* format, ...)
 {
   va_list* ap;
   char     string[512];
+  int x,len;
+  int      istr[512];
 
   va_start(ap, format);
   vsprintf(string, format, ap);
   va_end(ap);
 
-  display_prints(string);
+  len = strlen(string);
+  
+  for (x=0; x<=len; x++)
+    {
+      istr[x] = string[x];
+    }
+  display_prints(istr);
 }
 
 /*
  * prints - prints a string on the display
  */
-void display_prints(const char* string)
+void display_prints(const int* string)
 {
   int x, lp, ls, oldfont;
 
@@ -775,7 +803,7 @@ void display_prints(const char* string)
 	  if (newline_func != NULL)
 	    {
 	      more = (newline_func)(string + ls + lp + 1,
-				    strlen(string)-lp-ls-1);
+				    istrlen(string)-lp-ls-1);
 	    }
 
 	  new_line(more);
@@ -802,6 +830,20 @@ void display_prints(const char* string)
     oldfont = display_set_font(oldfont);
 }
 
+void display_prints_c(const char* string)
+{
+  int* txt;
+  int x, len;
+
+  txt = malloc((len=strlen(string))*sizeof(int)+sizeof(int));
+  for (x=0; x<=len; x++)
+    {
+      txt[x] = string[x];
+    }
+  display_prints(txt);
+  free(txt);
+}
+
 /*
  * Read a character from the console
  */
@@ -815,7 +857,7 @@ int display_readchar(long int timeout)
 /*
  * Read a line of text from the console
  */
-int display_readline(char* buf, int buflen, long int timeout)
+int display_readline(int* buf, int buflen, long int timeout)
 {
   int result;
   
@@ -883,7 +925,7 @@ static void draw_window(void)
     {
       int w;
 
-      w = xfont_get_text_width(x_fonts[3], "[MORE]", 6);
+      w = xfont_get_text_width(x_fonts[3], moretext, 6);
       XSetForeground(x_display, x_wingc,
 		     x_colour[FIRST_ZCOLOUR+6].pixel);
       XFillRectangle(x_display, x_mainwin, x_wingc,
@@ -898,19 +940,19 @@ static void draw_window(void)
 			x_wingc,
 			win_width-w-2,
 			win_height-xfont_get_descent(x_fonts[3])-2,
-			"[MORE]", 6);
+			moretext, 6);
     }
 }
 
 /*
  * Display the text we're currently editting
  */
-static void draw_input_text(char* buf, int inputpos)
+static void draw_input_text(int* buf, int inputpos)
 {
   int width;
   int len;
 
-  len = strlen(buf);
+  len = istrlen(buf);
 
   /* Hide the caret */
   if (caret)
@@ -945,7 +987,7 @@ static void draw_input_text(char* buf, int inputpos)
     }
   else
     {
-      int width_ell, width_l, width_r;
+      int width_l, width_r;
       XRectangle clip[1];
       GC tempgc;
 
@@ -953,7 +995,6 @@ static void draw_input_text(char* buf, int inputpos)
 
       xfont_set_colours(CURWIN.fore+FIRST_ZCOLOUR, CURWIN.back+FIRST_ZCOLOUR);
       
-      width_ell = xfont_get_text_width(x_fonts[font_num], "...", 3);
       width_l   = xfont_get_text_width(x_fonts[font_num], buf, inputpos);
       width_r   = xfont_get_text_width(x_fonts[font_num],
 				       buf+inputpos, len-inputpos);
@@ -1031,7 +1072,7 @@ void display_update(void)
 /*
  * Process X events
  */
-int process_events(long int to, char* buf, int buflen)
+int process_events(long int to, int* buf, int buflen)
 {
   static unsigned char keybuf[20];
   static int     bufsize = 0;
@@ -1053,8 +1094,7 @@ int process_events(long int to, char* buf, int buflen)
   XSetForeground(x_display, x_caretgc,
 		 x_colour[FIRST_ZCOLOUR+1].pixel^x_colour[FIRST_ZCOLOUR+CURWIN.back].pixel);
 
-  /* display_prints(" "); */
-  CURWIN.xpos = caret_x;
+  /* display_prints(" "); */  CURWIN.xpos = caret_x;
   do_redraw = 1;
       
   if (buf != NULL)
@@ -1064,7 +1104,7 @@ int process_events(long int to, char* buf, int buflen)
       input_sy = CURWIN.ypos;
       input_sh = CURWIN.line_height;
       
-      inputpos = strlen(buf);
+      inputpos = istrlen(buf);
       
       draw_input_text(buf, inputpos);
     }
@@ -1229,9 +1269,9 @@ int process_events(long int to, char* buf, int buflen)
 			      history = history->next;
 			  if (history != NULL)
 			    {
-			      if (strlen(history->string) < buflen)
-				strcpy(buf, history->string);
-			      inputpos = strlen(buf);
+			      if (istrlen(history->string) < buflen)
+				istrcpy(buf, history->string);
+			      inputpos = istrlen(buf);
 			    }
 			  break;
 
@@ -1241,9 +1281,9 @@ int process_events(long int to, char* buf, int buflen)
 			      history = history->last;
 			      if (history != NULL)
 				{
-				  if (strlen(history->string) < buflen)
-				    strcpy(buf, history->string);
-				  inputpos = strlen(buf);
+				  if (istrlen(history->string) < buflen)
+				    istrcpy(buf, history->string);
+				  inputpos = istrlen(buf);
 				}
 			      else
 				{
@@ -1262,7 +1302,7 @@ int process_events(long int to, char* buf, int buflen)
 			  break;
 
 			case XK_End:
-			  inputpos = strlen(buf);
+			  inputpos = istrlen(buf);
 			  break;
 
 			case XK_BackSpace:
@@ -1289,8 +1329,8 @@ int process_events(long int to, char* buf, int buflen)
 			    newhist->next = last_string;
 			    if (last_string)
 			      last_string->last = newhist;
-			    newhist->string = malloc(strlen(buf)+1);
-			    strcpy(newhist->string, buf);
+			    newhist->string = malloc(sizeof(int)*(istrlen(buf)+1));
+			    istrcpy(newhist->string, buf);
 			    last_string = newhist;
 			  }
 			  bufsize = 0;
@@ -1300,7 +1340,7 @@ int process_events(long int to, char* buf, int buflen)
 		  
 		  for (x=0; x<bufsize; x++)
 		    {
-		      if (strlen(buf) >= buflen)
+		      if (istrlen(buf) >= buflen)
 			break;
 		      
 		      if (keybuf[x]>31 && keybuf[x]<127)
@@ -1314,7 +1354,7 @@ int process_events(long int to, char* buf, int buflen)
 			    {
 			      if (insert_mode)
 				{
-				  for (y=strlen(buf)+1; y>inputpos; y--)
+				  for (y=istrlen(buf)+1; y>inputpos; y--)
 				    {
 				      buf[y] = buf[y-1];
 				    }
@@ -1472,7 +1512,7 @@ ZDisplay* display_get_info(void)
   info.italic = 1;
   info.fixed_space = 1;
   info.sound_effects = 0;
-  info.timed_input = 0;
+  info.timed_input = 1;
   info.lines = rc_get_ysize();
   info.columns = rc_get_xsize();
   info.width = win_x;
@@ -1740,7 +1780,7 @@ void display_window_define(int window,
  * display (the function must set things up so that the remainder of
  * the line is displayed at some point)
  */
-void display_set_newline_function(int (*func)(const char* remaining,
+void display_set_newline_function(int (*func)(const int* remaining,
 					      int rem_len))
 {
   newline_func = func;
@@ -1759,7 +1799,8 @@ int display_get_font_height(void)
  */
 int display_get_font_width(void)
 {
-  return xfont_get_text_width(x_fonts[font_num], "0", 1);
+  static int zero[] = { 48, 0 };
+  return xfont_get_text_width(x_fonts[font_num], zero, 1);
 }
 
 /*

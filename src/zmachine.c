@@ -134,7 +134,7 @@ void zmachine_fatal(char* format, ...)
       display_set_style(0);
       display_set_style(2);
       display_set_colour(7, 0);
-      display_prints("\n\n");
+      display_prints_c("\n\n");
       display_set_colour(3, 1);
       display_printf("INTERPRETER PANIC: %s", string);
 #ifdef GLOBAL_PC
@@ -142,7 +142,7 @@ void zmachine_fatal(char* format, ...)
 #endif
       display_set_colour(7, 0);
       display_set_style(0);
-      display_prints("\n\n[Press any key to exit]\n");
+      display_prints_c("\n\n[Press any key to exit]\n");
       display_readchar(0);
     }
   else
@@ -177,7 +177,7 @@ void zmachine_warning(char* format, ...)
 #ifdef GLOBAL_PC
       display_printf(" (PC = #%x)", machine.pc);
 #endif
-      display_prints(" ]\n");
+      display_prints_c(" ]\n");
     }
   else
     {
@@ -203,6 +203,9 @@ void zmachine_warning(char* format, ...)
 void zmachine_setup_header(void)
 {
   machine.dinfo = display_get_info();
+
+  if (machine.memory[0]<5)
+    machine.graphical = 0;
   
   switch (machine.memory[0])
     {
@@ -238,17 +241,30 @@ void zmachine_setup_header(void)
       Flag(1, 0, machine.dinfo->colours);
       machine.memory[ZH_deffore]    = machine.dinfo->fore+2;
       machine.memory[ZH_defback]    = machine.dinfo->back+2;
-      machine.memory[ZH_width]      = machine.dinfo->columns>>8;
-      machine.memory[ZH_width+1]    = machine.dinfo->columns;
-      machine.memory[ZH_height]     = machine.dinfo->lines>>8;
-      machine.memory[ZH_height+1]   = machine.dinfo->lines;
-      machine.memory[ZH_fontwidth]  = 1;
-      machine.memory[ZH_fontheight] = 1;
+
+      if (!machine.graphical)
+	{
+	  machine.memory[ZH_width]      = machine.dinfo->columns>>8;
+	  machine.memory[ZH_width+1]    = machine.dinfo->columns;
+	  machine.memory[ZH_height]     = machine.dinfo->lines>>8;
+	  machine.memory[ZH_height+1]   = machine.dinfo->lines;
+	  machine.memory[ZH_fontwidth]  = 1;
+	  machine.memory[ZH_fontheight] = 1;
+	}
+      else
+	{
+	  machine.memory[ZH_width]      = machine.dinfo->width>>8;
+	  machine.memory[ZH_width+1]    = machine.dinfo->width;
+	  machine.memory[ZH_height]     = machine.dinfo->height>>8;
+	  machine.memory[ZH_height+1]   = machine.dinfo->height;
+	  machine.memory[ZH_fontwidth]  = machine.dinfo->font_width;
+	  machine.memory[ZH_fontheight] = machine.dinfo->font_height;	  
+	}
     case 4:
       Flag(1, 2, machine.dinfo->boldface);
       Flag(1, 3, machine.dinfo->italic);
       Flag(1, 4, machine.dinfo->fixed_space);
-      Flag(1, 4, machine.dinfo->timed_input);
+      Flag(1, 7, machine.dinfo->timed_input);
 
       machine.memory[ZH_lines]     = machine.dinfo->lines;
       machine.memory[ZH_columns]   = machine.dinfo->columns;

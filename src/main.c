@@ -115,7 +115,7 @@ int main(int argc, char** argv)
   {
     int x;
 
-    display_prints("\nFont 3: ");
+    display_prints_c("\nFont 3: ");
     display_set_font(-1);
     for (x=32; x<128; x++)
       display_printf("%c", x);
@@ -124,40 +124,42 @@ int main(int argc, char** argv)
 #endif
   
   display_set_font(1);
-  display_prints("\n\nMaze\n");
+  display_prints_c("\n\nMaze\n");
   display_set_font(0);
-  display_prints("You are in a maze of twisty little software licences, all different.\nA warranty lurks in a corner.\n\n> read warranty\n");
-  display_prints("WELCOME, adventurer, to ");
+  display_prints_c("You are in a maze of twisty little software licences, all different.\nA warranty lurks in a corner.\n\n> read warranty\n");
+  display_prints_c("WELCOME, adventurer, to ");
   display_set_font(2);
-  display_prints("Zoom " VERSION " Copyright (C) Andrew Hunter, 2000\n");
+  display_prints_c("Zoom " VERSION " Copyright (C) Andrew Hunter, 2000\n");
   display_set_font(0);
   
-  display_prints("This program is free software; you can redistribute and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.\n\n");
-  display_prints("This program is distributed in the hope that it will be useful, but ");
+  display_prints_c("This program is free software; you can redistribute and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.\n\n");
+  display_prints_c("This program is distributed in the hope that it will be useful, but ");
   display_set_font(1);
-  display_prints("WITHOUT ANY WARRANTY");
+  display_prints_c("WITHOUT ANY WARRANTY");
   display_set_font(0);
-  display_prints("; without even the implied warranty of ");
+  display_prints_c("; without even the implied warranty of ");
   display_set_font(1);
-  display_prints("MERCHANTABILITY");
+  display_prints_c("MERCHANTABILITY");
   display_set_font(0);
-  display_prints(" or ");
+  display_prints_c(" or ");
   display_set_font(1);
-  display_prints("FITNESS FOR A PARTICULAR PURPOSE");
+  display_prints_c("FITNESS FOR A PARTICULAR PURPOSE");
   display_set_font(0);
-  display_prints(". See the GNU General Public Licence for more details.\n\n");
-  display_prints("You should have received a copy of the GNU General Public License along with this program. If not, write to the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.\n");
-  display_prints("\nThe Zoom homepage can be located at ");
+  display_prints_c(". See the GNU General Public Licence for more details.\n\n");
+  display_prints_c("You should have received a copy of the GNU General Public License along with this program. If not, write to the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.\n");
+  display_prints_c("\nThe Zoom homepage can be located at ");
   display_set_font(2);
-  display_prints("http://www.logicalshift.co.uk/unix/zoom/");
+  display_prints_c("http://www.logicalshift.co.uk/unix/zoom/");
   display_set_font(0);
-  display_prints(" - check this page for any updates\n\n\n");
+  display_prints_c(" - check this page for any updates\n\n\n");
   display_set_colour(0, 6);
-  display_prints("[ Press any key to begin ]");
+  display_prints_c("[ Press any key to begin ]");
   display_set_colour(0, 7);
   display_readchar(0);
   display_clear();
 
+  machine.graphical = args.graphical;
+  
   machine.display_active = 1;
 
   switch (machine.header[0])
@@ -204,9 +206,9 @@ int main(int argc, char** argv)
     }
 
   stream_flush_buffer();
-  display_prints("\n");
+  display_prints_c("\n");
   display_set_colour(7, 1);
-  display_prints("[ Press any key to exit ]");
+  display_prints_c("[ Press any key to exit ]");
   display_set_colour(7, 0);
   display_readchar(0);
   

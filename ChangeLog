@@ -1,3 +1,12 @@
+2000-11-21  Andrew Hunter    <andrew@logicalshift.co.uk>
+
+	* header flags now set (more?) correctly
+	
+2000-11-20  Andrew Hunter    <andrew@logicalshift.co.uk>
+
+	* graphics mode added for those version 5 games as support it -
+	not many.
+
 2000-11-19  Andrew Hunter    <andrew@logicalshift.co.uk>
 
 	* read_char timing implemented

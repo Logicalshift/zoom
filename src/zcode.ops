@@ -1592,7 +1592,12 @@ OPCODE "set_cursor"     VAR:0x0f ARGS:2               VERSION 4,5,7,8
   printf("Cursor moved to %i, %i\n", argblock.arg[1]-1, argblock.arg[0]-1);
 #endif
   if (display_get_window() == 2)
-    display_set_cursor(argblock.arg[1]-1, argblock.arg[0]-1);
+    { 
+      if (machine.graphical)
+        display_set_gcursor(argblock.arg[1]-1, argblock.arg[0]-1);
+      else
+        display_set_cursor(argblock.arg[1]-1, argblock.arg[0]-1);
+    }
 %}
 
 OPCODE "get_cursor"     VAR:0x10 ARGS:1               VERSION 4,5,7,8

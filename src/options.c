@@ -39,6 +39,7 @@ static char args_doc[] = "[story-file] [save-file]";
 static struct argp_option options[] = {
   { "warnings", 'w', 0, 0, "Display interpreter warnings" },
   { "fatal", 'W', 0, 0, "Warnings are fatal" },
+  { "graphical", 'g', 0, 0, "Use a graphical version 5 machine. Not all games support this option" },
 #ifdef TRACKING
   { "trackobjs", 'O', 0, 0, "Track object movement" },
   { "trackattrs", 'A', 0, 0, "Track attribute testing/setting" },
@@ -68,6 +69,11 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state)
       break;
     case 'P':
       args->track_props = 1;
+      break;
+      
+    case 'g':
+      args->graphical = 1;
+      break;
       
     case ARGP_KEY_ARG:
       if (state->arg_num >= 2)
@@ -93,6 +99,8 @@ void get_options(int argc, char** argv, arguments* args)
   args->arg[0] = NULL;
   args->arg[1] = NULL;
   args->warning_level = 0;
+
+  args->graphical = 0;
   
   args->track_objs  = 0;
   args->track_attr  = 0;
@@ -141,6 +149,13 @@ void get_options(int argc, char** argv, arguments* args)
       exit (1);
    }
 
+  args->warning_level = 0;
+  args->graphical = 0;
+  
+  args->track_objs  = 0;
+  args->track_attr  = 0;
+  args->track_props = 0;
+
   args->story_file = argv[optind];
 
   if ((optind-argc) == 2)
@@ -153,6 +168,13 @@ void get_options(int argc, char** argv, arguments* args)
 
 void get_options(int argc, char** argv, arguments* args)
 {
+  args->warning_level = 0;
+  args->graphical = 0;
+  
+  args->track_objs  = 0;
+  args->track_attr  = 0;
+  args->track_props = 0;
+
   if (argc == 1)
     {
       args->story_file = NULL;

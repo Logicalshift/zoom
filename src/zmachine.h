@@ -200,6 +200,8 @@ typedef struct ZMachine
   int display_active;
   ZDisplay* dinfo;
 
+  int graphical;
+
   /* Output streams */
   int    screen_on;
   int    transcript_on;

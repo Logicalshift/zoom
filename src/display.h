@@ -42,12 +42,13 @@ extern void display_poll        (void); /* Called frequently to keep the display
 
 /* Output functions */
 extern void display_clear (void);
-extern void display_prints(const char*);
-extern void display_printc(char);
+extern void display_prints(const int*);
+extern void display_prints_c(const char* string);
+extern void display_printc(int);
 extern void display_printf(const char*, ...);
 
 /* Input functions */
-extern int  display_readline(char*, int, long int);
+extern int  display_readline(int*, int, long int);
 extern int  display_readchar(long int timeout); /* Timeout is milliseconds */
 
 /* Information about this display module */
@@ -108,7 +109,7 @@ extern void display_window_define       (int window,
 					 int lmargin, int rmargin,
 					 int width, int height);
 extern void display_window_scroll       (int window, int pixels);
-extern void display_set_newline_function(int (*func)(const char* remaining,
+extern void display_set_newline_function(int (*func)(const int * remaining,
 						     int rem_len));
 extern int  display_get_font_width      (void);
 extern int  display_get_font_height     (void);

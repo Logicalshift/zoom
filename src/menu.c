@@ -38,7 +38,7 @@
 static void center(char* text, int columns)
 {
   display_set_cursor((columns>>1)-(strlen(text)>>1), display_get_cur_y());
-  display_prints(text);
+  display_prints_c(text);
 }
 
 struct game_struct {

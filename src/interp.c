@@ -425,7 +425,7 @@ static void draw_statusbar_123(ZStack* stack)
   display_set_window(1); display_set_font(3);
   display_set_colour(7, 0);
 
-  display_prints("\n ");
+  display_prints_c("\n ");
   display_set_cursor(2, 0);
   zcode_op_print_obj_123(stack, GetVar(16));
 

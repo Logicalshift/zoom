@@ -30,12 +30,12 @@
 #include "stream.h"
 #include "display.h"
 
-static int buffering = 1;
-static int buflen    = 0;
-static int bufpos    = 0;
-static ZByte* buffer = NULL;
+static int  buffering = 1;
+static int  buflen    = 0;
+static int  bufpos    = 0;
+static int* buffer = NULL;
 
-static void prints(const char* const s)
+static void prints(const int* const s)
 {
   if (machine.memory_on)
     {
@@ -77,7 +77,17 @@ static void prints(const char* const s)
 	}
     }
   if (machine.transcript_on == 1)
-    fputs(s, machine.transcript_file);
+    {
+      int x;
+
+      for (x=0; s[x] != 0; x++)
+	{
+	  if (s[x] > 255)
+	    fputc('?', machine.transcript_file);
+	  else
+	    fputc(s[x], machine.transcript_file);
+	}
+    }
 }
 
 void stream_prints(const char* s)
@@ -87,7 +97,15 @@ void stream_prints(const char* s)
   
   if (!buffering)
     {
-      prints(s);
+      int* txt;
+      int x;
+
+      txt = malloc(sizeof(int)*(strlen(s)+1));
+      for (x=0; s[x] != 0; x++)
+	txt[x] = s[x];
+      txt[x] = 0;
+      prints(txt);
+      free(txt);
       return;
     }
 
@@ -95,7 +113,7 @@ void stream_prints(const char* s)
   while (bufpos + len + 1 > buflen)
     {
       buflen += 1024;
-      buffer = realloc(buffer, buflen);
+      buffer = realloc(buffer, sizeof(int)*buflen);
     }
 
   for (x=0; x<len; x++)
@@ -126,7 +144,8 @@ void stream_input(const char* s)
 
 int stream_readline(char* buf, int len, long int timeout)
 {
-  int r;
+  int r,x;
+  int* realbuf;
 
   stream_flush_buffer();
 
@@ -170,7 +189,19 @@ int stream_readline(char* buf, int len, long int timeout)
     }
   else
     {
-      r = display_readline(buf, len, timeout);
+      realbuf = malloc(sizeof(int)*len);
+      for (x=0; x<len; x++)
+	realbuf[x] = buf[x];
+      
+      r = display_readline(realbuf, len, timeout);
+      for (x=0; x<len; x++)
+	{
+	  if (realbuf[x] > 127)
+	    buf[x] = '?';
+	  else
+	    buf[x] = realbuf[x];
+	}
+      
       if (r)
 	stream_input(buf);
     }

@@ -202,12 +202,21 @@ int xfont_get_descent(xfont* f)
   return -1;
 }
 
-int xfont_get_text_width(xfont* f, const char* text, int len)
+int xfont_get_text_width(xfont* f, const int* text, int len)
 {
+  static XChar2b* xtxt = NULL;
+  int x;
+  
   switch (f->type)
     {
     case XFONT_X:
-      return XTextWidth(f->data.X, text, len);
+      xtxt = realloc(xtxt, (len+1)*sizeof(int));
+      for (x=0; x<len; x++)
+	{
+	  xtxt[x].byte2 = text[x]&255;
+	  xtxt[x].byte1 = (text[x]>>8)&255;
+	}
+      return XTextWidth16(f->data.X, xtxt, len);
     case XFONT_FONT3:
       return len*xfont_x;
     }
@@ -220,14 +229,24 @@ void xfont_plot_string(xfont* f,
 		       Drawable draw,
 		       GC gc,
 		       int x, int y,
-		       const char* text, int len)
+		       const int* text, int len)
 {
+  static XChar2b* xtxt = NULL;
+  int i;
+  
   switch (f->type)
     {
     case XFONT_X:
+      xtxt = realloc(xtxt, (len+1)*sizeof(int));
+      for (i=0; i<len; i++)
+	{
+	  xtxt[i].byte2 = text[i]&255;
+	  xtxt[i].byte1 = (text[i]>>8)&255;
+	}
+
       XSetForeground(x_display, gc, x_colour[fore].pixel);
       XSetFont(x_display, gc, f->data.X->fid);
-      XDrawString(x_display, draw, gc, x, y, text, len);
+      XDrawString16(x_display, draw, gc, x, y, xtxt, len);
       break;
       
     case XFONT_FONT3:
