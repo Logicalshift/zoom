@@ -7,7 +7,6 @@
 	objects = {
 		4B1E3F47050F7AD000A8E303 = {
 			children = (
-				4B418F8F0597CE8E009C44DE,
 				4B1E3FD2050F7DFD00A8E303,
 				4B1E3FD3050F7E0800A8E303,
 				4B1E3FD4050F7E1000A8E303,
@@ -1430,20 +1429,6 @@
 			settings = {
 			};
 		};
-		4B418F8F0597CE8E009C44DE = {
-			fileEncoding = 10;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = doh.txt;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		4B418F900597CE8E009C44DE = {
-			fileRef = 4B418F8F0597CE8E009C44DE;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		4B4EF61C050FCEA600A8E303 = {
 			buildActionMask = 2147483647;
 			dstPath = "";
@@ -1653,7 +1638,6 @@
 				4B418DEA0594FC3B009C44DE,
 				4B418DEB0594FC3B009C44DE,
 				4B418E150594FCDB009C44DE,
-				4B418F900597CE8E009C44DE,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
