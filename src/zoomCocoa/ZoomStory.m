@@ -348,7 +348,7 @@ NSString* ZoomStoryDataHasChangedNotification = @"ZoomStoryDataHasChangedNotific
 		
 		if (rating < 0) return nil;
 		
-		return [NSString stringWithFormat: @"%.2f", rating];
+		return [NSString stringWithFormat: @"%05.2f", rating];
 	} else {
 		[NSException raise: @"ZoomKeyNotKnown" format: @"Metadata key '%@' is not known", key];
 		return nil;

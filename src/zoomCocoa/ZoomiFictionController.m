@@ -14,6 +14,7 @@
 #import "ZoomGameInfoController.h"
 #import "ZoomClient.h"
 #import "ZoomSavePreviewView.h"
+#import "ZoomRatingCell.h"
 
 #import "ifmetadata.h"
 
@@ -109,6 +110,11 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	[theTable setHeaderView:myHeader];
 	[theTable setCornerView:cornerImage];
 	
+	// The menu
+	[myHeader setMenu: [theTable menu]];
+	[headerText setMenu: [theTable menu]];
+	[imageView setMenu: [theTable menu]];
+	
 	[headerText release];
 	[imageView release];
 	[cornerImage release];
@@ -187,6 +193,16 @@ static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 	sortColumn = [@"group" retain];
 	
 	[mainTableView setAllowsColumnSelection: NO];
+	
+	// Add a 'ratings' column to the main table
+	NSTableColumn* newColumn = [[NSTableColumn alloc] initWithIdentifier: @"rating"];
+	
+	[newColumn setDataCell: [[[ZoomRatingCell alloc] init] autorelease]];
+	[newColumn setMinWidth: 84];
+	[newColumn setMaxWidth: 84];
+	[[newColumn headerCell] setStringValue: @"Rating"];
+	
+	[mainTableView addTableColumn: [newColumn autorelease]];
 	
 	[[NSNotificationCenter defaultCenter] addObserver: self
 											 selector: @selector(storyListChanged:)
@@ -820,9 +836,13 @@ int tableSorter(id a, id b, void* context) {
 		
 		ZoomStoryID* ident = [storyList objectAtIndex: rowIndex];
 		ZoomStory* story = [self storyForID: ident];		
-		
+				
 		// Return the value of the appropriate field
-		return [story objectForKey: rowID];
+		if ([rowID isEqualToString: @"rating"]) {
+			return [NSNumber numberWithFloat: [story rating]];
+		} else {
+			return [story objectForKey: rowID];
+		}
 	} else if (aTableView == filterTable1) {
 		if (rowIndex == 0) return [NSString stringWithFormat: @"All (%i items)", [filterSet1 count]];
 		return [filterSet1 objectAtIndex: rowIndex-1];
