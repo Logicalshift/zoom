@@ -51,7 +51,10 @@
 	
 	[self setWindowFrameAutosaveName: @"ZoomClientWindow"];
 
-    [zoomView setDelegate: self];
+	[[self window] setAlphaValue: 0.99];
+//	[[self window] invalidateShadow];
+    
+	[zoomView setDelegate: self];
     [zoomView runNewServer: nil];
 }
 

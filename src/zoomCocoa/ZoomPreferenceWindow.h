@@ -23,6 +23,7 @@
 	IBOutlet NSButton* speakGameText;	
 	IBOutlet NSButton* autosaveGames;
 	IBOutlet NSButton* keepGamesOrganised;
+	IBOutlet NSSlider* transparencySlider;
 	
 	IBOutlet NSPopUpButton* interpreter;
 	IBOutlet NSTextField* revision;
@@ -49,6 +50,7 @@
 - (IBAction) speakGameTextChanged: (id) sender;
 - (IBAction) keepOrganisedChanged: (id) sender;
 - (IBAction) autosaveChanged: (id) sender;
+- (IBAction) changeTransparency: (id)sender;
 
 - (IBAction) changeOrganiseDir: (id) sender;
 - (IBAction) resetOrganiseDir: (id) sender;

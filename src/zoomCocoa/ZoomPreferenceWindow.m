@@ -155,6 +155,12 @@ static NSDictionary*  itemDictionary = nil;
 	[keepGamesOrganised setState: [prefs keepGamesOrganised]?NSOnState:NSOffState];
 	[autosaveGames setState: [prefs autosaveGames]?NSOnState:NSOffState];
 	
+	// a kind of chessy way to get the current alpha setting
+	float red, green, blue, alpha;
+	NSColor * color = [[prefs colours] objectAtIndex:0];
+	[color getRed:&red green:&green blue:&blue alpha:&alpha];
+	[transparencySlider setFloatValue:(alpha * 100.0)];
+	
 	[interpreter selectItemAtIndex: [prefs interpreter]-1];
 	[revision setStringValue: [NSString stringWithFormat: @"%c", [prefs revision]]];
 	
@@ -314,14 +320,17 @@ static void appendStyle(NSMutableString* styleName,
 	[prefFonts release];
 }
 
-- (void)changeColor:(id)sender {
+- (void)changeColor:(id)sender {	
+
 	int selColour = [colours selectedRow];
 	
 	if (selColour < 0) {
 		return;
 	}
 	
-	NSColor* colour = [[NSColorPanel sharedColorPanel] color];
+	NSColor* selected_colour = [[NSColorPanel sharedColorPanel] color];
+	
+	NSColor* colour = [[selected_colour colorUsingColorSpaceName: NSCalibratedRGBColorSpace] colorWithAlphaComponent:(1 - ([transparencySlider floatValue] / 100.0))];
 	
 	NSMutableArray* cols = [[prefs colours] mutableCopy];
 	
@@ -334,6 +343,29 @@ static void appendStyle(NSMutableString* styleName,
 	}
 	
 	[cols release];
+}
+
+- (void)changeTransparency:(id)sender {
+
+	NSMutableArray* cols = [[prefs colours] mutableCopy];
+	
+	int i;
+	for(  i = 0; i < [cols count]; i++ )
+	{
+		NSColor * color = [cols objectAtIndex: i];
+	
+		NSColor*  transparent_color = [[color colorUsingColorSpaceName: NSCalibratedRGBColorSpace] colorWithAlphaComponent:([transparencySlider floatValue] / 100.0)];
+		
+		[cols replaceObjectAtIndex: i
+						withObject: transparent_color];
+	}
+
+	[prefs setColours: cols];
+		
+	[colours reloadData];
+	
+	[cols release];
+
 }
 
 // == Various actions ==

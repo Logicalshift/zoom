@@ -5,6 +5,7 @@
             ACTIONS = {
                 autosaveChanged = id; 
                 changeOrganiseDir = id; 
+                changeTransparency = id; 
                 displayWarningsChanged = id; 
                 fatalWarningsChanged = id; 
                 interpreterChanged = id; 
@@ -30,6 +31,7 @@
                 organiseDir = NSTextView; 
                 revision = NSTextField; 
                 speakGameText = NSButton; 
+                transparencySlider = NSSlider; 
             }; 
             SUPERCLASS = NSWindowController; 
         }
