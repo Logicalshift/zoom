@@ -189,8 +189,6 @@ if test "$MINGW32" != "yes"; then
     AC_DEFINE(WINDOW_SYSTEM, 1)
 
     AM_CONDITIONAL(WINDOWS_VERSION, false)
-
-    LIBS="$LIBS -lX11"
   fi
 fi
 fi
@@ -263,6 +261,10 @@ else
 fi
 
 AC_SUBST(BUILDERCC)
+
+if test "$WINDOW_SYSTEM" = "1"; then
+    LIBS="$LIBS -lX11"
+fi
 
 UTIL_DISPLAY_INFO(Generating files)
 
