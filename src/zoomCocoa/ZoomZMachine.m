@@ -305,6 +305,35 @@
 
 @end
 
+// = Fatal errors and warnings =
+void  zmachine_fatal(char* format, ...) {
+	char fatalBuf[512];
+	va_list  ap;
+	
+	va_start(ap, format);
+	vsnprintf(fatalBuf, 512, format, ap);
+	va_end(ap);
+	
+	fatalBuf[511] = 0;
+	
+	[[mainMachine display] displayFatalError: [NSString stringWithCString: fatalBuf]];
+	
+	display_exit(1);
+}
+
+void  zmachine_warning(char* format, ...) {
+	char fatalBuf[512];
+	va_list  ap;
+	
+	va_start(ap, format);
+	vsnprintf(fatalBuf, 512, format, ap);
+	va_end(ap);
+	
+	fatalBuf[511] = 0;
+	
+	[[mainMachine display] displayWarning: [NSString stringWithCString: fatalBuf]];
+}
+
 // Various Zoom C functions (not yet implemented elsewhere)
 #include "file.h"
 #include "display.h"
