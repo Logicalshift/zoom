@@ -212,8 +212,6 @@ void display_initialise(void)
 	{
 	  style_font[y] = style_font[8];
 	}
-
-      printf("style_font[%i] = %i\n", y, style_font[y]);
     }
     
   xfont_x = xfont_get_width(x_fonts[3]);
