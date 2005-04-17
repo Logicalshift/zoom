@@ -576,7 +576,6 @@
 				4B1E3F5A050F7B2500A8E303,
 			);
 			buildSettings = {
-				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				OPTIMIZATION_CFLAGS = "-O3";
 				OTHER_CFLAGS = "-I\"ProjectBuilder/etc\" -Ibuild -DWINDOW_SYSTEM=4 -I/usr/local/include";
 				OTHER_LDFLAGS = "";
