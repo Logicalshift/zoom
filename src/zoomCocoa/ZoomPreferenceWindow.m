@@ -442,7 +442,9 @@ static void appendStyle(NSMutableString* styleName,
 }
 
 - (IBAction) resetOrganiseDir: (id) sender {
-	[[ZoomStoryOrganiser sharedStoryOrganiser] reorganiseStoriesTo: [ZoomPreferences defaultOrganiserDirectory]];
+	if ([prefs keepGamesOrganised]) {
+		[[ZoomStoryOrganiser sharedStoryOrganiser] reorganiseStoriesTo: [ZoomPreferences defaultOrganiserDirectory]];
+	}
 	[prefs setOrganiserDirectory: nil];
 	[organiseDir setString: [prefs organiserDirectory]];
 }
