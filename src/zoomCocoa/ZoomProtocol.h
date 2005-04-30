@@ -54,7 +54,7 @@ enum ZValueTypeMasks {
 - (void) loadStoryFile: (in bycopy NSData*) storyFile;
 
 // Restoring game state (returns nil if successful)
-- (out bycopy NSString*) restoreSaveState: (in bycopy NSData*) gameSave;
+- (bycopy NSString*) restoreSaveState: (in bycopy NSData*) gameSave;
 
 // Running
 - (oneway void) startRunningInDisplay: (in byref NSObject<ZDisplay>*) display;
@@ -73,8 +73,8 @@ enum ZValueTypeMasks {
                           size: (int) size;
 
 // Obtaining game state
-- (out bycopy NSData*) createGameSave;
-- (out bycopy NSData*) storyFile;
+- (bycopy NSData*) createGameSave;
+- (bycopy NSData*) storyFile;
 
 // Debugging
 - (void) loadDebugSymbolsFrom: (NSString*) symbolFile
@@ -85,7 +85,7 @@ enum ZValueTypeMasks {
 - (void) stepIntoFromBreakpoint;
 - (void) finishFromBreakpoint;
 
-- (out bycopy NSData*) staticMemory;
+- (bycopy NSData*) staticMemory;
 - (int)    evaluateExpression: (NSString*) expression;
 - (void)   setBreakpointAt: (int) address;
 - (BOOL)   setBreakpointAtName: (NSString*) name;
@@ -103,7 +103,7 @@ enum ZValueTypeMasks {
 
 - (unsigned)			 typeMasksForValue: (unsigned) value;
 - (int)					 zRegion: (int) addr;
-- (out bycopy NSString*) descriptionForValue: (unsigned) value;
+- (bycopy NSString*) descriptionForValue: (unsigned) value;
 
 @end
 
@@ -112,7 +112,7 @@ enum ZValueTypeMasks {
 - (int)				   readByte;
 - (unsigned int)	   readWord;
 - (unsigned int)	   readDWord;
-- (out bycopy NSData*) readBlock: (int) length;
+- (bycopy NSData*) readBlock: (int) length;
 
 - (oneway void)		   seekTo: (int) pos;
 
@@ -122,7 +122,7 @@ enum ZValueTypeMasks {
 - (oneway void) writeBlock: (in bycopy NSData*) block;
 
 - (BOOL)					sufferedError;
-- (out bycopy NSString*)    errorMessage;
+- (bycopy NSString*)    errorMessage;
 
 - (int)			fileSize;
 - (BOOL)		endOfFile;
@@ -146,7 +146,7 @@ enum ZValueTypeMasks {
 
 // Setting the style that text should be input in
 - (oneway void) setInputStyle: (in bycopy ZStyle*) inputStyle;
-- (out bycopy ZStyle*) inputStyle;
+- (bycopy ZStyle*) inputStyle;
 
 @end
 
@@ -191,10 +191,10 @@ enum ZValueTypeMasks {
 				  height: (out float*) height
 				  ascent: (out float*) ascent
 				 descent: (out float*) descent;
-- (out bycopy NSDictionary*) attributesForStyle: (in bycopy ZStyle*) style;
+- (bycopy NSDictionary*) attributesForStyle: (in bycopy ZStyle*) style;
 
 // Reading information about the pixmap
-- (out bycopy NSColor*) colourAtPixel: (NSPoint) point;
+- (bycopy NSColor*) colourAtPixel: (NSPoint) point;
 
 // Scrolls a region of the screen
 - (void) scrollRegion: (in NSRect) region
@@ -228,9 +228,9 @@ enum ZValueTypeMasks {
 			height: (out int*) height;
 
 // Functions to create the standard windows
-- (out byref NSObject<ZLowerWindow>*) createLowerWindow;
-- (out byref NSObject<ZUpperWindow>*) createUpperWindow;
-- (out byref NSObject<ZPixmapWindow>*) createPixmapWindow;
+- (byref NSObject<ZLowerWindow>*) createLowerWindow;
+- (byref NSObject<ZUpperWindow>*) createUpperWindow;
+- (byref NSObject<ZPixmapWindow>*) createPixmapWindow;
 
 // Requesting user input
 - (void)		shouldReceiveCharacters;
@@ -408,5 +408,5 @@ extern NSString* ZStyleAttributeName;
 
 // Connecting to the client
 @protocol ZClient
-- (out byref id<ZDisplay>) connectToDisplay: (in byref id<ZMachine>) zMachine;
+- (byref id<ZDisplay>) connectToDisplay: (in byref id<ZMachine>) zMachine;
 @end

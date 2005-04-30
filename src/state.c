@@ -181,14 +181,14 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
   time_t now;
   ZByte version;
   
-  static inline void wblock(ZByte* x, int len)
+  inline void wblock(ZByte* x, int len)
     {
       flen += len;
       data = realloc(data, flen+16);
       memcpy(data + flen - len, x, len);
     }
   
-  static inline void wdword(ZDWord w)
+  inline void wdword(ZDWord w)
     {
       flen +=4;
       data = realloc(data, flen+16);
@@ -198,7 +198,7 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
       data[flen-1] = w;
     }
   
-  static inline void wword(ZUWord w)
+  inline void wword(ZUWord w)
     {
       flen += 2;
       data = realloc(data, flen+16);
@@ -206,7 +206,7 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
       data[flen-1] = w;
     }
   
-  static inline void wbyte(ZUWord w)
+  inline void wbyte(ZUWord w)
     {
       flen += 1;
       data = realloc(data, flen+16);
