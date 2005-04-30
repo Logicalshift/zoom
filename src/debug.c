@@ -460,6 +460,7 @@ int debug_set_breakpoint(int address,
 			 int funcbp)
 {
   debug_breakpoint* bp;
+  int pos;
 
   bp = debug_get_breakpoint(address);
   if (bp != NULL)
@@ -475,15 +476,32 @@ int debug_set_breakpoint(int address,
 #ifdef DEBUG
   printf_debug("Setting BP @ %04x\n", address);
 #endif
+  
+  pos = 0;
+  
+  /* Find the breakpoint we should insert this new one before */
+  while (pos < debug_nbps && debug_bplist[pos].address < address) {
+    pos++;
+  }
 
+  /* Add a new breakpoint */
   debug_bplist = realloc(debug_bplist,
 			 sizeof(debug_breakpoint)*(debug_nbps+1));
-  debug_bplist[debug_nbps].address   = address;
-  debug_bplist[debug_nbps].original  = machine.memory[address];
-  debug_bplist[debug_nbps].usage     = 1;
-  debug_bplist[debug_nbps].temporary = temporary;
-  debug_bplist[debug_nbps].funcbp    = funcbp;
+  
+  if (pos < debug_nbps) {
+    /* Move the breakpoints up */
+    memmove(debug_bplist + pos + 1, debug_bplist + pos,
+	    (debug_nbps-pos)*sizeof(debug_breakpoint));
+  }
 
+  /* Store the actual breakpoint */
+  debug_bplist[pos].address   = address;
+  debug_bplist[pos].original  = machine.memory[address];
+  debug_bplist[pos].usage     = 1;
+  debug_bplist[pos].temporary = temporary;
+  debug_bplist[pos].funcbp    = funcbp;
+
+  /* Add a breakpoint instruction (we use status_nop, as it's just one byte) */
   machine.memory[address] = 0xbc; /* status_nop, our breakpoint */
 
   debug_nbps++;
@@ -493,6 +511,28 @@ int debug_set_breakpoint(int address,
 
 debug_breakpoint* debug_get_breakpoint(int address)
 {
+  int top, middle, bottom;
+  
+  /* Binary search for the breakpoint (they are stored sorted by address) */
+  top = debug_nbps-1;
+  bottom = 0;
+  
+  while (top >= bottom) {
+    middle = (top + bottom) >> 1;
+    
+    if (debug_bplist[middle].address > address) {
+      /* Need to search the lower half */
+      top = middle-1;
+    } else if (debug_bplist[middle].address < address) {
+      /* Need to search the upper half */
+      bottom = middle + 1;
+    } else {
+      /* Just right */
+      return debug_bplist + middle;
+    }
+  }
+  
+  /*
   int x;
 
   for (x=0; x<debug_nbps; x++)
@@ -500,6 +540,7 @@ debug_breakpoint* debug_get_breakpoint(int address)
       if (debug_bplist[x].address == address)
 	return debug_bplist + x;
     }
+   */
 
   return NULL;
 }
