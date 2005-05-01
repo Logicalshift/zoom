@@ -389,7 +389,26 @@ static void finalizeViews(void) {
 }
 
 - (void) flushBuffer: (ZBuffer*) toFlush {
+	[[textView textStorage] beginEditing];
+	editingTextView = YES;
+
     [toFlush blat];
+	
+	// Cut down the scrollback if the user has requested it
+	float sb = [viewPrefs scrollbackLength];
+	if (sb < 100.0) {
+		// Number of characters to preserve (4096 -> 1 million)
+		int len = [[textView textStorage] length];
+		float preserve = 4096.0 + powf(sb*10.0, 2);
+		
+		if (len > ((int)preserve + 2048)) {
+			// Need to truncate
+			[[textView textStorage] deleteCharactersInRange: NSMakeRange(0, len - preserve)];
+		}
+	}
+	
+	[[textView textStorage] endEditing];
+	editingTextView = NO;
 }
 
 // Set whether or not we recieve certain types of data
@@ -826,7 +845,7 @@ static void finalizeViews(void) {
     }
 }
 
-- (NSTextView*) textView {
+- (ZoomTextView*) textView {
     return textView;
 }
 
@@ -1272,8 +1291,10 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 
 - (void) setUpperBuffer: (double) bufHeight {
     // Update the upper window buffer
+	if (editingTextView) [[textView textStorage] endEditing];
     NSSize contentSize = [textScroller contentSize];
     [upperWindowBuffer setContainerSize: NSMakeSize(contentSize.width*scaleFactor, bufHeight)];
+	if (editingTextView) [[textView textStorage] beginEditing];
 }
 
 - (double) upperBufferHeight {
@@ -1283,6 +1304,9 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 - (void) rearrangeUpperWindows {
     int newSize = [self upperWindowSize];
     if (newSize != lastUpperWindowSize) {
+		// Stop editing the text view (if we are editing it)
+		if (editingTextView) [[textView textStorage] endEditing];
+		
         // Lay things out
         lastUpperWindowSize = newSize;
 
@@ -1322,7 +1346,10 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 
         // The place where we need to put the more prompt may have changed
         [self updateMorePrompt];
-    }
+
+		// Restart editing the text view (if we are editing it)
+		if (editingTextView) [[textView textStorage] beginEditing];
+	}
 
     // Redraw the upper windows if necessary
     if (upperWindowNeedsRedrawing) {
@@ -1360,6 +1387,8 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     //
     // Er, right, the code:
     NSTextContainer* theContainer;
+	
+	if (editingTextView) [[textView textStorage] endEditing];
 
     if (upperWindowBuffer == nil) return;
 
@@ -1372,6 +1401,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
             NSMakeRange([[textView textStorage] length]-1, 1)
                                                     granularity: NSSelectByCharacter];
         if (endGlyph.location > 0xf0000000) {
+			if (editingTextView) [[textView textStorage] beginEditing];
             return; // Doesn't exist
         }
 
@@ -1384,6 +1414,8 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 
         // I suppose there's an outside chance of an infinite loop here
     } while (theContainer == upperWindowBuffer);
+
+	if (editingTextView) [[textView textStorage] beginEditing];
 }
 
 - (void) runNewServer: (NSString*) serverName {

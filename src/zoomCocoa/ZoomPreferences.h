@@ -26,9 +26,10 @@ extern NSString* ZoomPreferencesHaveChangedNotification;
 // Getting preferences
 + (NSString*) defaultOrganiserDirectory;
 
-- (BOOL) displayWarnings;
-- (BOOL) fatalWarnings;
-- (BOOL) speakGameText;
+- (BOOL)  displayWarnings;
+- (BOOL)  fatalWarnings;
+- (BOOL)  speakGameText;
+- (float) scrollbackLength;	// 0-100
 
 - (NSString*)     gameTitle;
 - (int)           interpreter;
@@ -36,6 +37,11 @@ extern NSString* ZoomPreferencesHaveChangedNotification;
 
 - (NSArray*)      fonts;   // 16 fonts
 - (NSArray*)      colours; // 13 colours
+
+- (NSString*) proportionalFontFamily;
+- (NSString*) fixedFontFamily;
+- (NSString*) symbolicFontFamily;
+- (float) fontSize;
 
 - (NSDictionary*) dictionary;
 
@@ -47,6 +53,7 @@ extern NSString* ZoomPreferencesHaveChangedNotification;
 - (void) setDisplayWarnings: (BOOL) flag;
 - (void) setFatalWarnings: (BOOL) flag;
 - (void) setSpeakGameText: (BOOL) flag;
+- (void) setScrollbackLength: (float) value;
 
 - (void) setGameTitle: (NSString*) title;
 - (void) setInterpreter: (int) interpreter;
@@ -54,6 +61,11 @@ extern NSString* ZoomPreferencesHaveChangedNotification;
 
 - (void) setFonts: (NSArray*) fonts;
 - (void) setColours: (NSArray*) colours;
+
+- (void) setProportionalFontFamily: (NSString*) fontFamily;
+- (void) setFixedFontFamily: (NSString*) fontFamily;
+- (void) setSymbolicFontFamily: (NSString*) fontFamily;
+- (void) setFontSize: (float) size;
 
 - (void) setOrganiserDirectory: (NSString*) directory;
 - (void) setKeepGamesOrganised: (BOOL) value;

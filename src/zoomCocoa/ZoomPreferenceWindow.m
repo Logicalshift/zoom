@@ -66,6 +66,54 @@ static NSDictionary*  itemDictionary = nil;
 	[super dealloc];
 }
 
+static int familyComparer(id a, id b, void* context) {
+	NSString* family1 = a;
+	NSString* family2 = b;
+	
+	return [family1 caseInsensitiveCompare: family2];
+}
+
+- (NSMenu*) fontMenu: (BOOL) fixed {
+	// Constructs a menu of fonts
+	// (Apple want us to use the font selection panel, but it feels clunky for the 'simple' view: there's no good way to associate
+	// it with the style we're selecting. Plus we want to select families, not individual fonts)
+	NSFontManager* mgr = [NSFontManager sharedFontManager];
+
+	NSMenu* result = [[NSMenu alloc] init];
+	
+	// Iterate through the available font families and create menu items
+	NSEnumerator* familyEnum = [[[mgr availableFontFamilies] sortedArrayUsingFunction: familyComparer
+																			  context: nil] objectEnumerator];
+	NSString* family;
+	
+	while (family = [familyEnum nextObject]) {
+		// Get the font
+		NSFont* sampleFont = [mgr fontWithFamily: family
+										  traits: 0
+										  weight: 5
+											size: 13.0];
+		
+		if (!sampleFont) continue;
+		if (fixed && ![sampleFont isFixedPitch]) {
+			// Skip this font
+			continue;
+		}
+		
+		// Construct the item
+		NSMenuItem* fontItem = [[NSMenuItem alloc] init];
+		[fontItem setAttributedTitle: 
+			[[[NSAttributedString alloc] initWithString: family
+											 attributes: [NSDictionary dictionaryWithObject: sampleFont
+																					 forKey: NSFontAttributeName]] autorelease]];
+		
+		// Add to the menu
+		[result addItem: [fontItem autorelease]];
+	}
+	
+	// Return the result
+	return [result autorelease];
+}
+
 - (void) windowDidLoad {
 	// Set the toolbar
 	toolbar = [[NSToolbar allocWithZone: [self zone]] initWithIdentifier: @"preferencesToolbar"];
@@ -84,10 +132,15 @@ static NSDictionary*  itemDictionary = nil;
 	[colours setDataSource: self];
 	[colours setDelegate: self];
 	
+	// Set up the various font menus
+	[proportionalFont setMenu: [self fontMenu: NO]];
+	[fixedFont setMenu: [self fontMenu: YES]];
+	[symbolicFont setMenu: [self fontMenu: NO]];
+	
 	[[NSNotificationCenter defaultCenter] addObserver: self
 											 selector: @selector(storyProgressChanged:)
 												 name: ZoomStoryOrganiserProgressNotification
-											   object: [ZoomStoryOrganiser sharedStoryOrganiser]];	
+											   object: [ZoomStoryOrganiser sharedStoryOrganiser]];
 }
 
 // == Setting the pane that's being displayed ==
@@ -155,6 +208,44 @@ static NSDictionary*  itemDictionary = nil;
 
 // == Setting the preferences that we're editing ==
 
+- (void) setButton: (NSPopUpButton*) button
+	  toFontFamily: (NSString*) family {
+	NSMenuItem* familyItem = nil;
+	NSEnumerator* itemEnum = [[[button menu] itemArray] objectEnumerator];
+	NSMenuItem* curItem;
+	
+	while (curItem = [itemEnum nextObject]) {
+		if ([[curItem title] caseInsensitiveCompare: family] == NSEqualToComparison) {
+			familyItem = curItem;
+			break;
+		}
+	}
+	
+	if (familyItem) {
+		[button selectItem: familyItem];
+	}
+}
+
+- (void) setSimpleFonts {
+	// Sets our display from the 'simple' fonts the user has selected
+	
+	// Select the fonts
+	[self setButton: proportionalFont 
+	   toFontFamily: [prefs proportionalFontFamily]];
+	[self setButton: fixedFont
+	   toFontFamily: [prefs fixedFontFamily]];
+	[self setButton: symbolicFont 
+	   toFontFamily: [prefs symbolicFontFamily]];
+	
+	// Set the size display
+	float fontSize = [prefs fontSize];
+	[fontSizeSlider setFloatValue: fontSize];
+	[fontSizeDisplay setStringValue: [NSString stringWithFormat: @"%.1fpt", fontSize]];
+	
+	// Set the font preview
+	[fontPreview setFont: [[prefs fonts] objectAtIndex: 0]];
+}
+
 - (void) setPreferences: (ZoomPreferences*) preferences {
 	if (prefs) [prefs release];
 	prefs = [preferences retain];
@@ -162,6 +253,7 @@ static NSDictionary*  itemDictionary = nil;
 	[displayWarnings setState: [prefs displayWarnings]?NSOnState:NSOffState];
 	[fatalWarnings setState: [prefs fatalWarnings]?NSOnState:NSOffState];
 	[speakGameText setState: [prefs speakGameText]?NSOnState:NSOffState];
+	[scrollbackLength setFloatValue: [prefs scrollbackLength]];
 	[keepGamesOrganised setState: [prefs keepGamesOrganised]?NSOnState:NSOffState];
 	[autosaveGames setState: [prefs autosaveGames]?NSOnState:NSOffState];
 	[reorganiseGames setEnabled: [prefs keepGamesOrganised]];
@@ -174,6 +266,8 @@ static NSDictionary*  itemDictionary = nil;
 	
 	[interpreter selectItemAtIndex: [prefs interpreter]-1];
 	[revision setStringValue: [NSString stringWithFormat: @"%c", [prefs revision]]];
+	
+	[self setSimpleFonts];
 	
 	[organiseDir setString: [prefs organiserDirectory]];
 }
@@ -329,6 +423,8 @@ static void appendStyle(NSMutableString* styleName,
 	}
 	
 	[prefFonts release];
+	
+	[self setSimpleFonts];
 }
 
 - (void)changeColor:(id)sender {	
@@ -378,6 +474,7 @@ static void appendStyle(NSMutableString* styleName,
 }
 
 // == Various actions ==
+
 - (IBAction) interpreterChanged: (id) sender {
 	[prefs setInterpreter: [interpreter indexOfSelectedItem]+1];
 }
@@ -398,6 +495,10 @@ static void appendStyle(NSMutableString* styleName,
 	[prefs setSpeakGameText: [sender state]==NSOnState];
 }
 
+- (IBAction) scrollbackChanged: (id) sender {
+	[prefs setScrollbackLength: [sender floatValue]];
+}
+
 - (IBAction) autosaveChanged: (id) sender {
 	[prefs setAutosaveGames: [sender state]==NSOnState];
 }
@@ -410,7 +511,6 @@ static void appendStyle(NSMutableString* styleName,
 		[prefs setAutosaveGames: NO];
 	}
 }
-
 
 - (void) changeOrganiserDirTo: (NSOpenPanel *)sheet
 				   returnCode: (int)returnCode
@@ -447,6 +547,27 @@ static void appendStyle(NSMutableString* styleName,
 	}
 	[prefs setOrganiserDirectory: nil];
 	[organiseDir setString: [prefs organiserDirectory]];
+}
+
+
+- (IBAction) simpleFontsChanged: (id) sender {
+	// This action applies to all the font controls
+	
+	// Set the size, if it has changed
+	float newSize = floorf([fontSizeSlider floatValue]);
+	if (newSize != [prefs fontSize]) [prefs setFontSize: newSize];
+	
+	// Set the families, if they've changed
+	NSString* propFamily = [[proportionalFont selectedItem] title];
+	NSString* fixedFamily = [[fixedFont selectedItem] title];
+	NSString* symbolicFamily = [[symbolicFont selectedItem] title];
+	
+	if (![propFamily isEqualToString: [prefs proportionalFontFamily]]) [prefs setProportionalFontFamily: propFamily];
+	if (![fixedFamily isEqualToString: [prefs fixedFontFamily]]) [prefs setFixedFontFamily: fixedFamily];
+	if (![symbolicFamily isEqualToString: [prefs symbolicFontFamily]]) [prefs setSymbolicFontFamily: symbolicFamily];
+	
+	// Update the display
+	[self setSimpleFonts];
 }
 
 // = Story progress meter =

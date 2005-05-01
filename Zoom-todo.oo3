@@ -2,8 +2,8 @@
 <!DOCTYPE outline PUBLIC "-//omnigroup.com//DTD OUTLINE 3.0//EN" "http://www.omnigroup.com/namespace/OmniOutliner/xmloutline-v3.dtd">
 <outline xmlns="http://www.omnigroup.com/namespace/OmniOutliner/v3">
   <style-attribute-registry>
-    <style-attribute version="0" key="font-fill" group="font" name="fill color" class="color">
-      <color catalog="System" name="textColor"/>
+    <style-attribute version="1" key="font-fill" group="font" name="fill color" class="color">
+      <color w="0"/>
     </style-attribute>
     <style-attribute version="0" key="font-italic" group="font" name="italic" class="bool">no</style-attribute>
     <style-attribute version="0" key="font-size" group="font" name="size" class="number">12</style-attribute>
@@ -16,9 +16,7 @@
   <editor should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="pW77mjO8jau"/>
-    <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{47, 0}"/>
+    <selected-rows ids="b2oX2vP-L4o"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -705,41 +703,6 @@
             </text>
           </note>
         </item>
-        <item id="b2oX2vP-L4o">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Gets slow after long play sessions</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-          <note>
-            <text>
-              <p>
-                <run>
-                  <lit>Is fine with DreamHold. Strongly suspect the status bar thing: not much I can do about this.</lit>
-                </run>
-              </p>
-              <p/>
-              <p>
-                <run>
-                  <lit>Depends on the game, I think. New games that like to fiddle with the status bar are particularly bad. Some seem fine (Dreamhold being an example of a game that runs fine).</lit>
-                </run>
-              </p>
-              <p/>
-              <p>
-                <run>
-                  <lit>Most of the &apos;03 comp games seem to suffer from this. (Noticed this myself, and it&apos;s not been reported independently. May be exacerbated by games that fiddle with the upper window a lot, for example, Curses.</lit>
-                </run>
-              </p>
-            </text>
-          </note>
-        </item>
         <item id="hG0bTrug_84">
           <values>
             <text>
@@ -839,7 +802,54 @@
             </text>
           </note>
         </item>
-        <item id="nTRyLrO671B">
+        <item id="b2oX2vP-L4o" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Gets slow after long play sessions</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+          <note>
+            <text>
+              <p>
+                <run>
+                  <lit>Is fine with DreamHold. Strongly suspect the status bar thing: not much I can do about this.</lit>
+                </run>
+              </p>
+              <p>
+                <run/>
+              </p>
+              <p>
+                <run>
+                  <lit>Depends on the game, I think. New games that like to fiddle with the status bar are particularly bad. Some seem fine (Dreamhold being an example of a game that runs fine).</lit>
+                </run>
+              </p>
+              <p>
+                <run/>
+              </p>
+              <p>
+                <run>
+                  <lit>Most of the &apos;03 comp games seem to suffer from this. (Noticed this myself, and it&apos;s not been reported independently. May be exacerbated by games that fiddle with the upper window a lot, for example, Curses.</lit>
+                </run>
+              </p>
+              <p>
+                <run/>
+              </p>
+              <p>
+                <run>
+                  <lit>Added a thing to restrict the scrollback to fix this.</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="nTRyLrO671B" state="checked">
           <values>
             <text>
               <p>

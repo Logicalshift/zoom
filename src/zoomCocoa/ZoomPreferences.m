@@ -15,18 +15,19 @@
 
 NSString* ZoomPreferencesHaveChangedNotification = @"ZoomPreferencesHaveChangedNotification";
 
-static NSString* displayWarnings = @"DisplayWarnings";
-static NSString* fatalWarnings   = @"FatalWarnings";
-static NSString* speakGameText   = @"SpeakGameText";
+static NSString* displayWarnings	= @"DisplayWarnings";
+static NSString* fatalWarnings		= @"FatalWarnings";
+static NSString* speakGameText		= @"SpeakGameText";
+static NSString* scrollbackLength	= @"ScrollbackLength";
 static NSString* keepGamesOrganised = @"KeepGamesOrganised";
-static NSString* autosaveGames = @"autosaveGames";
+static NSString* autosaveGames		= @"autosaveGames";
 
-static NSString* gameTitle       = @"GameTitle";
-static NSString* interpreter     = @"Interpreter";
-static NSString* revision        = @"Revision";
+static NSString* gameTitle			= @"GameTitle";
+static NSString* interpreter		= @"Interpreter";
+static NSString* revision			= @"Revision";
 
-static NSString* fonts           = @"Fonts";
-static NSString* colours		 = @"Colours";
+static NSString* fonts				= @"Fonts";
+static NSString* colours			= @"Colours";
 
 static NSString* organiserDirectory = @"organiserDirectory";
 
@@ -275,6 +276,20 @@ static NSArray* DefaultColours(void) {
 	return result;
 }
 
+- (float) scrollbackLength {
+	[prefLock lock];
+	
+	float result;
+	if ([prefs objectForKey: scrollbackLength] == nil)
+		result = 100.0;
+	else
+		result = [[prefs objectForKey: scrollbackLength] floatValue];
+	
+	[prefLock unlock];
+	
+	return result;
+}
+
 - (NSString*) gameTitle {
 	[prefLock lock];
 	NSString* result =  [prefs objectForKey: gameTitle];
@@ -315,6 +330,34 @@ static NSArray* DefaultColours(void) {
 	return result;
 }
 
+- (NSString*) proportionalFontFamily {
+	// Font 0 forms the prototype for this
+	NSFont* prototypeFont = [[self fonts] objectAtIndex: 0];
+	
+	return [prototypeFont familyName];
+}
+
+- (NSString*) fixedFontFamily {
+	// Font 4 forms the prototype for this
+	NSFont* prototypeFont = [[self fonts] objectAtIndex: 4];
+	
+	return [prototypeFont familyName];
+}
+
+- (NSString*) symbolicFontFamily {
+	// Font 8 forms the prototype for this
+	NSFont* prototypeFont = [[self fonts] objectAtIndex: 8];
+	
+	return [prototypeFont familyName];
+}
+
+- (float) fontSize {
+	// Font 0 forms the prototype for this
+	NSFont* prototypeFont = [[self fonts] objectAtIndex: 0];
+	
+	return [prototypeFont pointSize];
+}
+
 - (NSString*) organiserDirectory {
 	[prefLock lock];
 	NSString* res = [prefs objectForKey: organiserDirectory];
@@ -323,8 +366,6 @@ static NSArray* DefaultColours(void) {
 		NSArray* docDir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 		
 		res = [[docDir objectAtIndex: 0] stringByAppendingPathComponent: @"Interactive Fiction"];
-		
-		NSLog(@"Can't find organiser directory preference: using default");
 	}
 	[prefLock unlock];
 	
@@ -366,6 +407,12 @@ static NSArray* DefaultColours(void) {
 - (void) setSpeakGameText: (BOOL) flag {
 	[prefs setObject: [NSNumber numberWithBool: flag]
 			  forKey: speakGameText];
+	[self preferencesHaveChanged];
+}
+
+- (void) setScrollbackLength: (float) length {
+	[prefs setObject: [NSNumber numberWithFloat: length]
+			  forKey: scrollbackLength];
 	[self preferencesHaveChanged];
 }
 
@@ -419,6 +466,85 @@ static NSArray* DefaultColours(void) {
 	[prefs setObject: [NSNumber numberWithBool: value]
 			  forKey: autosaveGames];
 	[self preferencesHaveChanged];
+}
+
+- (void) setFontRange: (NSRange) fontRange
+			 toFamily: (NSString*) newFontFamily {
+	// Sets a given range of fonts to the given family
+	float size = [self fontSize];
+	
+	NSMutableArray* newFonts = [[[self fonts] mutableCopy] autorelease];
+	NSFontManager* mgr = [NSFontManager sharedFontManager];
+	
+	int x;
+	for (x=fontRange.location; x<fontRange.location+fontRange.length; x++) {
+		// Get the traits for this font
+		NSFontTraitMask traits = 0;
+		
+		if (x&1) traits |= NSBoldFontMask;
+		if (x&2) traits |= NSItalicFontMask;
+		if (x&4) traits |= NSFixedPitchFontMask;
+		
+		// Get a suitable font
+		NSFont* newFont = [mgr fontWithFamily: newFontFamily
+									   traits: traits
+									   weight: 5
+										 size: size];
+		
+		if (!newFont || [[newFont familyName] caseInsensitiveCompare: newFontFamily] != NSEqualToComparison) {
+			// Retry with simpler conditions if we fail to get a font for some reason
+			newFont = [mgr fontWithFamily: newFontFamily
+								   traits: (x&4)!=0?NSFixedPitchFontMask:0
+								   weight: 5
+									 size: size];
+		}
+		
+		// Store it
+		if (newFont) {
+			[newFonts replaceObjectAtIndex: x
+								withObject: newFont];
+		}
+	}
+	
+	[self setFonts: newFonts];
+}
+
+- (void) setProportionalFontFamily: (NSString*) fontFamily {
+	[self setFontRange: NSMakeRange(0,4)
+			  toFamily: fontFamily];
+}
+
+- (void) setFixedFontFamily: (NSString*) fontFamily {
+	[self setFontRange: NSMakeRange(4,4)
+			  toFamily: fontFamily];
+}
+
+- (void) setSymbolicFontFamily: (NSString*) fontFamily {
+	[self setFontRange: NSMakeRange(8,8)
+			  toFamily: fontFamily];
+}
+
+- (void) setFontSize: (float) size {
+	// Change the font size of all the fonts
+	NSMutableArray* newFonts = [NSMutableArray array];
+	
+	NSFontManager* mgr = [NSFontManager sharedFontManager];
+	NSEnumerator* fontEnum = [[self fonts] objectEnumerator];
+	NSFont* font;
+	
+	while (font = [fontEnum nextObject]) {
+		NSFont* newFont = [mgr convertFont: font
+									toSize: size];
+		
+		if (newFont) {
+			[newFonts addObject: newFont];
+		} else {
+			[newFonts addObject: font];
+		}
+	}
+	
+	// Store the results
+	[self setFonts: newFonts];
 }
 
 // = Notifications =

@@ -31,6 +31,7 @@ extern NSString* ZoomStyleAttributeName;
     NSObject<ZMachine>* zMachine;
 
     // Subviews
+	BOOL editingTextView;
     ZoomTextView* textView;
     NSTextContainer* upperWindowBuffer; // Things hidden under the upper window
     ZoomScrollView* textScroller;

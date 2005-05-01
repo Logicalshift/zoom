@@ -21,9 +21,17 @@
 	IBOutlet NSButton* displayWarnings;
 	IBOutlet NSButton* fatalWarnings;
 	IBOutlet NSButton* speakGameText;	
+	IBOutlet NSSlider* scrollbackLength;
 	IBOutlet NSButton* autosaveGames;
 	IBOutlet NSButton* keepGamesOrganised;
 	IBOutlet NSSlider* transparencySlider;
+	
+	IBOutlet NSPopUpButton* proportionalFont;
+	IBOutlet NSPopUpButton* fixedFont;
+	IBOutlet NSPopUpButton* symbolicFont;
+	IBOutlet NSSlider* fontSizeSlider;
+	IBOutlet NSTextField* fontSizeDisplay;
+	IBOutlet NSTextField* fontPreview;
 		
 	IBOutlet NSPopUpButton* interpreter;
 	IBOutlet NSTextField* revision;
@@ -51,9 +59,12 @@
 - (IBAction) displayWarningsChanged: (id) sender;
 - (IBAction) fatalWarningsChanged: (id) sender;
 - (IBAction) speakGameTextChanged: (id) sender;
+- (IBAction) scrollbackChanged: (id) sender;
 - (IBAction) keepOrganisedChanged: (id) sender;
 - (IBAction) autosaveChanged: (id) sender;
 - (IBAction) changeTransparency: (id)sender;
+
+- (IBAction) simpleFontsChanged: (id) sender;
 
 - (IBAction) changeOrganiseDir: (id) sender;
 - (IBAction) resetOrganiseDir: (id) sender;

@@ -89,6 +89,7 @@
 }
 
 // = Creating the document =
+
 - (void) makeWindowControllers {
     ZoomClientController* controller = [[ZoomClientController allocWithZone: [self zone]] init];
 
