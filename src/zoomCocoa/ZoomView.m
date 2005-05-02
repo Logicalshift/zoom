@@ -1487,6 +1487,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	[zoomTask setArguments: [NSArray arrayWithObjects: 
 		[NSString stringWithFormat: @"%i", getpid()], nil]];
     
+#if 0
     zoomTaskStdout = [[NSPipe allocWithZone: [self zone]] init];
     [[NSNotificationCenter defaultCenter] addObserver: self
                                              selector: @selector(zoomTaskNotification:)
@@ -1495,6 +1496,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     [[zoomTaskStdout fileHandleForReading] waitForDataInBackgroundAndNotify];
 
     [zoomTask setStandardOutput: zoomTaskStdout];
+#endif
     [[NSNotificationCenter defaultCenter] addObserver: self
                                              selector: @selector(zoomTaskFinished:)
                                                  name: NSTaskDidTerminateNotification
@@ -1609,25 +1611,15 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         [zoomTaskData appendString: [NSString stringWithCString: [inData bytes]
                                                          length: [inData length]]];
         
-		printf("%s", [[NSString stringWithCString: [inData bytes]
-										   length: [inData length]] cString]);
+		// Yeesh, it must have been REALLY late at night when I wrote this, umm, thing. Contender for most braindead code ever, I think.
+		//printf("%s", [[NSString stringWithCString: [inData bytes]
+		//								   length: [inData length]] cString]);
+		
+		[[zoomTaskStdout fileHandleForReading] waitForDataInBackgroundAndNotify];
     } else {
+		// No data is waiting (dead task/filehandle?)
     }
-
-    [[zoomTaskStdout fileHandleForReading] waitForDataInBackgroundAndNotify];
 }
-
-/*
-- (void) setZMachine: (NSObject<ZMachine>*) newMachine {
-	if (zMachine) {
-		NSLog(@"Programmer is a spoon: setZMachine called when a zmachine is already running in this view");
-		return;
-	}
-	
-	zMachine = [newMachine retain];
-	[zMachine startRunningInDisplay: self];
-}
-*/
 
 - (BOOL)panel:(id)sender shouldShowFilename:(NSString *)filename {
 	NSSavePanel* panel = sender;
