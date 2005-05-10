@@ -56,6 +56,14 @@ int main(int argc, char** argv) {
 											 selector: @selector(connectionDied:)
 												 name: NSConnectionDidDieNotification
 											   object: remoteConnection];
+	[[NSNotificationCenter defaultCenter] addObserver: mainMachine
+											 selector: @selector(connectionDied:)
+												 name: NSPortDidBecomeInvalidNotification
+											   object: [remoteConnection sendPort]];
+	[[NSNotificationCenter defaultCenter] addObserver: mainMachine
+											 selector: @selector(connectionDied:)
+												 name: NSPortDidBecomeInvalidNotification
+											   object: [remoteConnection receivePort]];
 	
 	NSLog(@"Server connected");
 
