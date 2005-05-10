@@ -130,7 +130,6 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	
 	if (trackingRects) [trackingRects release];
 
-	if (itemEditor) [itemEditor release];
 	if (itemToEdit) [itemToEdit release];
 	
 	if (trackedItem)   [trackedItem release];
@@ -844,16 +843,26 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 
 // = Editing items =
 
+- (void)textDidEndEditing:(NSNotification *)aNotification {
+	// Check if the user left the field before committing changes and end the edit.
+	BOOL success = [[[aNotification userInfo] objectForKey:@"NSTextMovement"] intValue] != NSIllegalTextMovement;
+	
+	if (success)
+		[self finishEditing: fieldEditor];				// Store the results
+	else
+		[self cancelEditing: fieldEditor];				// Abort the edit
+}
+
 - (void) finishEditing: (id) sender {
-	if (itemToEdit != nil && itemEditor != nil) {
+	if (itemToEdit != nil && fieldEditor != nil) {
 		ZoomSkeinItem* parent = [itemToEdit parent];
 		
 		// This will merge trees if the item gets the same name as a neighbouring item
 		[itemToEdit removeFromParent];
 		if (!editingAnnotation)
-			[itemToEdit setCommand: [itemEditor stringValue]];
+			[itemToEdit setCommand: [fieldEditor string]];
 		else
-			[itemToEdit setAnnotation: [itemEditor stringValue]];
+			[itemToEdit setAnnotation: [fieldEditor string]];
 		ZoomSkeinItem* newItem = [parent addChild: itemToEdit];
 		
 		// Change the active item if required
@@ -866,7 +875,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 
 		[self skeinNeedsLayout];
 
-		if (sender == itemEditor) [self scrollToItem: itemToEdit];
+		if (sender == fieldEditor) [self scrollToItem: itemToEdit];
 
 		[self cancelEditing: self];
 		[skein zoomSkeinChanged];
@@ -876,21 +885,17 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 }
 
 - (void) cancelEditing: (id) sender {
-	if (itemToEdit != nil && [[self window] firstResponder] == itemToEdit) {
-		NSLog(@"Killing first responder");
-		[[self window] makeFirstResponder: self];
-	}
+	if (fieldEditor == nil) return;
 	
-	if (itemToEdit != nil) {
-		[itemToEdit release];
-		itemToEdit = nil;
-	}
-
-	if (itemEditor != nil) {
-		[itemEditor removeFromSuperview];
-		[itemEditor release];
-		itemEditor = nil;
-	}
+	// Kill off the field editor
+	[fieldEditor removeFromSuperview];
+	[[self window] makeFirstResponder: self];
+	
+	fieldEditor = nil;
+	
+	[itemToEdit release]; itemToEdit = nil;
+	
+	[self setNeedsDisplay: YES];
 }
 
 - (void)controlTextDidEndEditing:(NSNotification *)aNotification {
@@ -918,14 +923,18 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 		return;
 	}
 	
-	// Allows you to edit an item's command
+	// Allows you to edit an item's command or label ('annotation')
 	ZoomSkeinLayoutItem* itemD = [layout dataForItem: skeinItem];
 	
 	if (itemD == nil) {
 		NSLog(@"ZoomSkeinView: Item not found for editing");
 		return;
 	}
-		
+	
+	// Get the text to edit
+	NSString* itemText = annotation?[skeinItem annotation]:[skeinItem command];
+	if (itemText == nil) itemText = @"";
+	
 	// Area of the text for this item
 	NSRect itemFrame = [layout textAreaForItem: skeinItem];
 	
@@ -942,28 +951,41 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	// 'overflow' border
 	itemFrame = NSInsetRect(itemFrame, -4.0, -4.0);	
 	
+	itemFrame.origin.x = floorf(itemFrame.origin.x);
+	itemFrame.origin.y = floorf(itemFrame.origin.y);
+	itemFrame.size.width = floorf(itemFrame.size.width);
+	itemFrame.size.height = floorf(itemFrame.size.height);
+	
 	itemToEdit = [skeinItem retain];
-	
-	itemEditor = [[NSTextField alloc] initWithFrame: itemFrame];
-	
-	[itemEditor setAllowsEditingTextAttributes: NO];
-	[itemEditor setFont: [NSFont systemFontOfSize: 10]];
-	
-	[itemEditor setAttributedStringValue: 
-		[[[NSAttributedString alloc] initWithString: annotation?[skeinItem annotation]:[skeinItem command]
-										 attributes: itemTextAttributes] autorelease]];
-		
-	[itemEditor setAlignment: NSCenterTextAlignment];
-	[itemEditor setAction: @selector(finishEditing:)];
-	[itemEditor setTarget: self];
-	[itemEditor setDelegate: self];
-
-	[self addSubview: itemEditor];
 	
 	editingAnnotation = annotation;
 	
-	[[self window] makeFirstResponder: itemEditor];
-	[[self window] makeKeyWindow];
+	// Construct the field editor
+	fieldEditor = (NSTextView*)[[self window] fieldEditor: YES
+												forObject: self];
+	
+	[fieldEditor setDelegate: self];
+	[fieldEditor setFrame: itemFrame];
+	
+	[[fieldEditor textStorage] setAttributedString: [[[NSAttributedString alloc] initWithString: itemText
+																					 attributes: itemTextAttributes] autorelease]];
+	[fieldEditor setAlignment: NSCenterTextAlignment];
+	
+	[fieldEditor setRichText:NO];
+	[fieldEditor setAllowsDocumentBackgroundColorChange:NO];
+	[fieldEditor setBackgroundColor:[NSColor whiteColor]];
+	
+	[[fieldEditor textContainer] setContainerSize: itemFrame.size];
+	[[fieldEditor textContainer] setWidthTracksTextView:NO];
+	[[fieldEditor textContainer] setHeightTracksTextView:NO];
+	[fieldEditor setHorizontallyResizable:YES];
+	[fieldEditor setVerticallyResizable:NO];
+	[fieldEditor setDrawsBackground: YES];
+	
+	// Activate it
+	[self addSubview: fieldEditor];
+	[[self window] makeFirstResponder: fieldEditor];
+	// [[self window] makeKeyWindow];
 }
 
 
