@@ -48,6 +48,7 @@ extern NSString* ZoomSkeinItemPboardType;
 	
 	// Editing things
 	ZoomSkeinItem* itemToEdit;
+	NSScrollView* fieldScroller;
 	NSTextView* fieldEditor;
 	
 	BOOL editingAnnotation;

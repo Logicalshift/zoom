@@ -313,7 +313,7 @@ static int currentScore = 1;
 	if (annotation) [annotation release];
 	if (![newAnnotation isEqualToString: annotation]) annotationSizeDidChange = YES;
 	annotation = nil;
-	if (newAnnotation) annotation = [newAnnotation copy];
+	if (newAnnotation && ![newAnnotation isEqualToString: @""]) annotation = [newAnnotation copy];
 }
 
 // = Taking part in a set =

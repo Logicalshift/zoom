@@ -131,6 +131,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	if (trackingRects) [trackingRects release];
 
 	if (itemToEdit) [itemToEdit release];
+	if (fieldScroller) [fieldScroller release];
 	
 	if (trackedItem)   [trackedItem release];
 	if (clickedItem)   [clickedItem release];
@@ -885,6 +886,9 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 }
 
 - (void) cancelEditing: (id) sender {
+	[self setNeedsDisplay: YES];
+	[fieldScroller removeFromSuperview];
+	
 	if (fieldEditor == nil) return;
 	
 	// Kill off the field editor
@@ -894,8 +898,6 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	fieldEditor = nil;
 	
 	[itemToEdit release]; itemToEdit = nil;
-	
-	[self setNeedsDisplay: YES];
 }
 
 - (void)controlTextDidEndEditing:(NSNotification *)aNotification {
@@ -916,6 +918,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	   annotation: (BOOL) annotation {
 	// Finish any existing editing
 	[self finishEditing: self];
+	[[self window] makeFirstResponder: self];
 	
 	if ([skeinItem parent] == nil) {
 		// Can't edit the root item
@@ -949,10 +952,10 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	}
 	
 	// 'overflow' border
-	itemFrame = NSInsetRect(itemFrame, -4.0, -4.0);	
+	itemFrame = NSInsetRect(itemFrame, -2.0, -2.0);	
 	
 	itemFrame.origin.x = floorf(itemFrame.origin.x);
-	itemFrame.origin.y = floorf(itemFrame.origin.y);
+	itemFrame.origin.y = floorf(itemFrame.origin.y)-1.0;
 	itemFrame.size.width = floorf(itemFrame.size.width);
 	itemFrame.size.height = floorf(itemFrame.size.height);
 	
@@ -960,12 +963,22 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	
 	editingAnnotation = annotation;
 	
+	// Construct the scroll view
+	if (fieldScroller == nil) {
+		fieldScroller = [[NSScrollView alloc] init];
+		
+		[fieldScroller setHasHorizontalScroller: NO];
+		[fieldScroller setHasVerticalScroller: NO];
+		[fieldScroller setBorderType: NSBezelBorder];
+	}
+	
 	// Construct the field editor
 	fieldEditor = (NSTextView*)[[self window] fieldEditor: YES
 												forObject: self];
 	
 	[fieldEditor setDelegate: self];
-	[fieldEditor setFrame: itemFrame];
+	[fieldScroller setFrame: itemFrame];
+	[fieldEditor setFrame: NSInsetRect(itemFrame, 2.0, 2.0)];
 	
 	[[fieldEditor textStorage] setAttributedString: [[[NSAttributedString alloc] initWithString: itemText
 																					 attributes: itemTextAttributes] autorelease]];
@@ -973,17 +986,18 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	
 	[fieldEditor setRichText:NO];
 	[fieldEditor setAllowsDocumentBackgroundColorChange:NO];
-	[fieldEditor setBackgroundColor:[NSColor whiteColor]];
+	[fieldEditor setBackgroundColor:[NSColor clearColor]];
 	
-	[[fieldEditor textContainer] setContainerSize: itemFrame.size];
+	[[fieldEditor textContainer] setContainerSize: NSMakeSize(NSInsetRect(itemFrame, 2.0, 2.0).size.width, 1e6)];
 	[[fieldEditor textContainer] setWidthTracksTextView:NO];
 	[[fieldEditor textContainer] setHeightTracksTextView:NO];
-	[fieldEditor setHorizontallyResizable:YES];
-	[fieldEditor setVerticallyResizable:NO];
-	[fieldEditor setDrawsBackground: YES];
+	[fieldEditor setHorizontallyResizable:NO];
+	[fieldEditor setVerticallyResizable:YES];
+	[fieldEditor setDrawsBackground: NO];
 	
 	// Activate it
-	[self addSubview: fieldEditor];
+	[fieldScroller setDocumentView: fieldEditor];
+	[self addSubview: fieldScroller];
 	[[self window] makeFirstResponder: fieldEditor];
 	// [[self window] makeKeyWindow];
 }
