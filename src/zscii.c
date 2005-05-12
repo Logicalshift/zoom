@@ -415,7 +415,8 @@ void pack_zscii(int* string, int strlen, ZByte* packed, int packlen)
 	int  strpos;
 	int  wordlen;
 	char zchr[40];
-	
+
+#define DEBUG
 #ifdef DEBUG
 	{
 		/* DOH! Found an ancient bug in the tables that prevented infix from working */
@@ -441,10 +442,10 @@ void pack_zscii(int* string, int strlen, ZByte* packed, int packlen)
 				}
 				else
 				{
-					if (convert_table[alpha-1][chr] != x)
+					if (convert[alpha-1][chr] != x)
 					{
 						printf_debug("  Character #%02x does not match up with its conversion (alphabet %i, character %i = %02x)\n",
-									 x, alpha, chr, convert_table[alpha-1][chr]);
+									 x, alpha, chr, convert[alpha-1][chr]);
 					}
 				}
 			}
@@ -498,18 +499,27 @@ void pack_zscii(int* string, int strlen, ZByte* packed, int packlen)
 				if (zscii_unicode[x] == string[strpos])
 				{
 					ch = x;
+				  break;
 				}
 			}
 			
 			if (ch != 0)
 			{
+			  printf("Unichar %i\n", ch);
 				zchr[x++] = 5;
 				zchr[x++] = 6;
 				zchr[x++] = ch>>5;
 				zchr[x] = ch&0x1f;
 			}
-			
+			else 
+			{			
 			/* FIXME: we could encode using the spec 1.1 unicode stuff here... */
+			  printf("*** FIXME - %x\n", string[strpos]);
+			  zchr[x++] = 5;
+			  zchr[x++] = 6;
+			  zchr[x++] = '?'>>5;
+			  zchr[x] = '?'&0x1f;
+			}
 			/* 
 				* (But, it'd be pretty pointless. 9 z-chars = 6 bytes, a maximum of 
 				   * 2 unicode characters. o'course, we only get 2 characters that
@@ -542,7 +552,6 @@ int zstrlen(ZByte* string)
 	 * the top bit of a packed word doesn't always indicate the end
 	 * of a string. Well, massively is relative, o'course. Practically
 	 * any increase is massive over two lines of code :-/. HUGE PITA.
-	 * Slow as shit, too.
 	 */
 	
 #ifdef ZSPEC_11
@@ -601,37 +610,55 @@ void zscii_install_alphabet(void)
 			static unsigned char* zsc = NULL;
 			ZByte* alpha;
 			int x, y;
+			int alphabet, character;
 			
 			alpha = Address(table);
 			
 			if (conv == NULL)
 			{
-				conv = malloc(sizeof(int*)*3);
-				for (x=0; x<3; x++)
-					conv[x] = malloc(sizeof(int)*32);
+			  conv = malloc(sizeof(int*)*3);
+			  for (x=0; x<3; x++) {
+				conv[x] = malloc(sizeof(int)*32);
+				
+				for (y=0; y<32; y++) conv[x][y] = 0;
+			  }
 			}
 			
 			zsc = realloc(zsc, sizeof(char)*256);
 			for (x=0; x<256; x++)
-				zsc[x] = 0;
+				zsc[x] = 0x0;
 			
-			for (y=0; y<3; y++)
+			for (alphabet=0; alphabet<3; alphabet++)
 			{
-				for (x=0; x<6; x++)
-					conv[y][x] = 0;
+			  /* First 6 characters are always 0 */
+				for (character=0; character<6; character++)
+					conv[alphabet][character] = 0;
 				
-				for (x=0; x<26; x++)
+			  /* Conversion mapping for the alphabet itself */
+			  for (character=0; character<26; character++)
 				{
-					conv[y][x+6]      = *(alpha++);
-					zsc[conv[y][x+6]] = (x+6)|((y+1)<<6);
+					conv[alphabet][character+6]      = *(alpha++);
+					zsc[conv[alphabet][character+6]] = (character+6)|((alphabet+1)<<6);
 				}
 			}
 			
+			/* These characters are always newline/space */
+			zsc[conv[2][7]] = 0;
+			zsc[conv[2][6]] = 0;
 			conv[2][7] = 10;
 			conv[2][6] = 32;
 			
-			zsc[10] = 7|(2<<6);
-			zsc[32] = 6|(2<<6);
+			zsc[10] = 7|(3<<6);
+			zsc[32] = 6|(3<<6);
+			
+			/* If these aren't the default values, then free them (they'll be malloced) */
+			/* if (zscii != zscii_table) {
+			  free(zscii);
+			}
+			if (convert != convert_table)  {
+			  for (x=0;x<3;x++) free(convert[x]);
+			  free(convert);
+			} */
 			
 			convert = conv;
 			zscii = zsc;

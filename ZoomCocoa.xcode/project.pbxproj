@@ -1305,7 +1305,7 @@
 			path = zscii.c;
 			refType = 4;
 			sourceTree = "<group>";
-			tabWidth = 8;
+			tabWidth = 4;
 		};
 		4B1E3FBB050F7DE200A8E303 = {
 			fileEncoding = 30;
