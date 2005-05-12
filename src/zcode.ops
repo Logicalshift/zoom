@@ -1880,7 +1880,7 @@ OPCODE "tokenise"       VAR:0x1b ARGS:4               VERSION 5,6,7,8
   text = Address((ZUWord)argblock.arg[0]);
   buf = malloc(sizeof(int)*(text[1]+1));
   for (x=0; x<text[1]; x++)
-    buf[x] = zscii_get_char(text[x+2]);
+    buf[x] = zscii_unicode[text[x+2]];
   buf[x] = 0;
   
   tokenise_string(buf,

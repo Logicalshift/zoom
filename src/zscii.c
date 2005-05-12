@@ -459,8 +459,9 @@ void pack_zscii(int* string, int strlen, ZByte* packed, int packlen)
 	
 	for (x=0; x<packlen; x++)
     {
-		if (strpos >= strlen)
+	    if (strpos >= strlen) {
 			zchr[x] = 5;
+  	    }
 		else if (string[strpos] < 256 && zscii[string[strpos]] != 0)
 		{
 			int alphabet, chr;
@@ -493,32 +494,29 @@ void pack_zscii(int* string, int strlen, ZByte* packed, int packlen)
 		else
 		{
 			int ch = 0;
+		    int table_ch;
 			
-			for (x=155; x<=251; x++)
+			for (table_ch=155; table_ch<=251; table_ch++)
 			{
-				if (zscii_unicode[x] == string[strpos])
+				if (zscii_unicode[table_ch] == string[strpos])
 				{
-					ch = x;
+					ch = table_ch;
 				  break;
 				}
 			}
 			
+			if (ch == 0) {
+			  ch = '?';
+
+			  /* FIXME: we could encode using the spec 1.1 unicode stuff here... */
+			}
+			
 			if (ch != 0)
 			{
-			  printf("Unichar %i\n", ch);
 				zchr[x++] = 5;
 				zchr[x++] = 6;
 				zchr[x++] = ch>>5;
 				zchr[x] = ch&0x1f;
-			}
-			else 
-			{			
-			/* FIXME: we could encode using the spec 1.1 unicode stuff here... */
-			  printf("*** FIXME - %x\n", string[strpos]);
-			  zchr[x++] = 5;
-			  zchr[x++] = 6;
-			  zchr[x++] = '?'>>5;
-			  zchr[x] = '?'&0x1f;
 			}
 			/* 
 				* (But, it'd be pretty pointless. 9 z-chars = 6 bytes, a maximum of 

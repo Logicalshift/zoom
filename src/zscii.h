@@ -40,7 +40,7 @@ extern void  zscii_install_alphabet(void);
 
 extern int* zscii_unicode;
 
-static inline char zscii_get_char(int unicode)
+static inline unsigned char zscii_get_char(int unicode)
 {
   if ((unicode >= 32 && unicode <= 127) ||
       (unicode == 10 || unicode == 13))
