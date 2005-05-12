@@ -748,7 +748,7 @@ ZFile* get_file_write(int* fsize,
 	stream_printf("That file already exists!\nAre you sure? (y/N) ");
 	stream_readline(yn, 1, 0);
 	
-	if (tolower(yn[0]) == 'y')
+	if (unicode_to_lower(yn[0]) == 'y')
 	  ok = 1;
 	else
 	  {
@@ -1021,7 +1021,7 @@ static void zcode_op_aread_5678(ZDWord* pc,
 				int st)
 {
   ZByte* mem;
-  int* buf;
+  unsigned int* buf;
   int x;
   
   mem = machine.memory + (ZUWord) args->arg[0];
@@ -1063,7 +1063,7 @@ static void zcode_op_aread_5678(ZDWord* pc,
 
   if (Word(ZH_termtable) != 0)
     {
-      char* table = NULL;
+      unsigned char* table = NULL;
       int pos, tablelen;
 
       tablelen = 0;
@@ -1137,7 +1137,7 @@ static void zcode_op_aread_5678(ZDWord* pc,
 	  for (x=0; buf[x] != 0; x++)
 	    {
 	      mem[1]++;
-	      buf[x] = tolower(buf[x]);
+	      buf[x] = unicode_to_lower(buf[x]);
 	      mem[x+2] = zscii_get_char(buf[x]);
 	    }
 
@@ -1183,7 +1183,7 @@ static void zcode_op_aread_5678(ZDWord* pc,
   for (x=0; buf[x] != 0; x++)
     {
       mem[1]++;
-      buf[x] = tolower(buf[x]);
+      buf[x] = unicode_to_lower(buf[x]);
       mem[x+2] = zscii_get_char(buf[x]);
     }
 
@@ -1293,8 +1293,8 @@ static void zcode_op_sread_4(ZDWord* pc,
 
 	  for (x=0; buf[x] != 0; x++)
 	    {
-	      buf[x] = tolower(buf[x]);
-	      mem[x+1] = tolower(x);
+	      buf[x] = unicode_to_lower(buf[x]);
+	      mem[x+1] = zscii_get_char(buf[x]);
 	    }
 	  mem[x+1] = 0;
 
@@ -1310,7 +1310,7 @@ static void zcode_op_sread_4(ZDWord* pc,
 
   for (x=0; buf[x] != 0; x++)
     {
-      buf[x] = tolower(buf[x]);
+      buf[x] = unicode_to_lower(buf[x]);
       mem[x+1] = zscii_get_char(buf[x]);
     }
   mem[x+1] = 0;

@@ -386,7 +386,7 @@ void stream_remove_buffer(const int* s)
 
   for (x=len-1; x>=0; x--)
     {
-      if (tolower(buffer[bufpos-1]) != tolower(s[x]))
+      if (unicode_to_lower(buffer[bufpos-1]) != unicode_to_lower(s[x]))
 	return;
       bufpos--;
     }

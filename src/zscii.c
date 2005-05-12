@@ -26,7 +26,7 @@
 #include "zmachine.h"
 #include "zscii.h"
 
-static int *buf  = NULL;
+static unsigned int *buf  = NULL;
 static int maxlen = 0;
 
 /* Default tables */
@@ -116,7 +116,7 @@ char* zscii_to_ascii(ZByte* string, int* len)
 /*
  * Convert a ZSCII string (packed) to Unicode (unpacked)
  */
-int* zscii_to_unicode(ZByte* string, int* len)
+unsigned int* zscii_to_unicode(ZByte* string, int* len)
 {
 	int abet = 0;
 	int x = 0;
@@ -413,35 +413,7 @@ static unsigned char zscii_table[256] =
 /* Table that maps 8-bit characters to packed characters. Lower 6 bits are the characters, the other bits are the alphabet */
 static unsigned char* zscii = zscii_table;
 
-static inline unsigned char unicode_to_zscii(unsigned int unichar) {
-  /* Function that converts a unicode character to a ZSCII one */
-  int ch;
-
-  /* 32-127 are standard ASCII */
-  if (unichar >= 32 && unichar < 127) return unichar;
-  
-
-  /* Possible input control characters */
-  if (unichar == 13 || unichar == 10) return 13;
-  if (unichar == 9 || unichar == 27) return unichar;
-
-  /* 155-251 are 'extra' chracters */
-  for (ch=155; ch<=251; ch++) {
-	if (zscii_unicode[ch] == unichar) return ch;
-  }
-  
-  /* 
-   * The 1.1 spec provides for directly encoding unicode characters, but this is rarely sensible
-   * in the context that a Z-Machine encodes characters (unless 2-character commands are ever
-   * sensible)
-   *
-   * Behaviour here seems to be undefined, however, frotz encodes unknown characters as '?', so
-   * that's also what we do
-   */
-  return '?';
-}
-
-void pack_zscii(int* string, int strlen, ZByte* packed, int packlen)
+void pack_zscii(unsigned int* string, int strlen, ZByte* packed, int packlen)
 {
 	int  zpos, byte;
 	int  strpos;
@@ -460,7 +432,7 @@ void pack_zscii(int* string, int strlen, ZByte* packed, int packlen)
 		int alphabet, chr;
 		
 		/* Convert the character to ZSCII */
-		zchar = unicode_to_zscii(string[strpos]);
+		zchar = zscii_get_char(string[strpos]);
 		
 		/* Encoding using an alphabet/character encoding if available */
 		alphabet = zscii[zchar]>>6;
@@ -624,16 +596,7 @@ void zscii_install_alphabet(void)
 			
 			zsc[10] = 7|(3<<6);
 			zsc[32] = 6|(3<<6);
-			
-			/* If these aren't the default values, then free them (they'll be malloced) */
-			/* if (zscii != zscii_table) {
-			  free(zscii);
-			}
-			if (convert != convert_table)  {
-			  for (x=0;x<3;x++) free(convert[x]);
-			  free(convert);
-			} */
-			
+						
 			convert = conv;
 			zscii = zsc;
 		}

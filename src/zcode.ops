@@ -1431,7 +1431,7 @@ OPCODE "sread"          VAR:0x04 ARGS:2               VERSION 1,2,3
   
   for (x=0; buf[x] != 0; x++)
     {
-      buf[x] = tolower(buf[x]);
+      buf[x] = unicode_to_lower(buf[x]);
       mem[x+1] = zscii_get_char(buf[x]);
     }
   mem[x+1] = 0;

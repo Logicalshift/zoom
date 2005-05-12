@@ -248,7 +248,7 @@ void tokenise_string(unsigned int* string,
 		     int    add)
 {
   ZDictionary*       dict;
-  int*               word;
+  unsigned int*      word;
   int                strpos, wordlen, wordstart;
   int                wordno, tokpos;
   ZUWord             ent;
