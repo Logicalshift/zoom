@@ -29,6 +29,7 @@
 static int *buf  = NULL;
 static int maxlen = 0;
 
+/* Default tables */
 static unsigned int alpha_a[32] =
 {
 	0,0,0,0,0,0,
@@ -49,6 +50,7 @@ static unsigned int alpha_c[32] =
 };
 static unsigned int* convert_table[3] = { alpha_a, alpha_b, alpha_c };
 
+/* Table that maps alphabet + character to ZSCII character */
 static unsigned int** convert = convert_table;
 
 int  zscii_unicode_table[256] =
@@ -87,6 +89,7 @@ int  zscii_unicode_table[256] =
 	0x3f,0x3f,0x3f,0x3f, 0x3f,0x3f,0x3f,0x3f  /* 248-255 */
 };
 
+/* Table that maps (8-bit) ZSCII to unicode */
 int* zscii_unicode = zscii_unicode_table;
 
 #ifdef DEBUG
@@ -407,132 +410,105 @@ static unsigned char zscii_table[256] =
 	0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00  /* 128 */
 };
 
+/* Table that maps 8-bit characters to packed characters. Lower 6 bits are the characters, the other bits are the alphabet */
 static unsigned char* zscii = zscii_table;
+
+static inline unsigned char unicode_to_zscii(unsigned int unichar) {
+  /* Function that converts a unicode character to a ZSCII one */
+  int ch;
+
+  /* 32-127 are standard ASCII */
+  if (unichar >= 32 && unichar < 127) return unichar;
+  
+
+  /* Possible input control characters */
+  if (unichar == 13 || unichar == 10) return 13;
+  if (unichar == 9 || unichar == 27) return unichar;
+
+  /* 155-251 are 'extra' chracters */
+  for (ch=155; ch<=251; ch++) {
+	if (zscii_unicode[ch] == unichar) return ch;
+  }
+  
+  /* 
+   * The 1.1 spec provides for directly encoding unicode characters, but this is rarely sensible
+   * in the context that a Z-Machine encodes characters (unless 2-character commands are ever
+   * sensible)
+   *
+   * Behaviour here seems to be undefined, however, frotz encodes unknown characters as '?', so
+   * that's also what we do
+   */
+  return '?';
+}
 
 void pack_zscii(int* string, int strlen, ZByte* packed, int packlen)
 {
-	int  x;
+	int  zpos, byte;
 	int  strpos;
 	int  wordlen;
 	char zchr[40];
-
-#define DEBUG
-#ifdef DEBUG
-	{
-		/* DOH! Found an ancient bug in the tables that prevented infix from working */
-		static int check = 1;
-		
-		if (check)
-		{
-			check = 0;
-			printf_debug("Checking ZSCII tables for sanity...\n");
-			
-			for (x=0; x<256; x++)
-			{
-				int alpha = zscii[x]>>6;
-				int chr   = zscii[x]&0x1f;
-				
-				if (alpha == 0)
-				{
-					/* Nothing to do - this character is not in the tables*/
-				}
-				else if (alpha > 3)
-				{
-					printf_debug("  Character #%02x has bad alphabet\n");
-				}
-				else
-				{
-					if (convert[alpha-1][chr] != x)
-					{
-						printf_debug("  Character #%02x does not match up with its conversion (alphabet %i, character %i = %02x)\n",
-									 x, alpha, chr, convert[alpha-1][chr]);
-					}
-				}
-			}
-			
-			printf_debug("OK\n");
-		}
-	}
-#endif
 	
 	strpos = 0;
 	
-	for (x=0; x<packlen; x++)
+	for (zpos=0; zpos<packlen;)
     {
-	    if (strpos >= strlen) {
-			zchr[x] = 5;
-  	    }
-		else if (string[strpos] < 256 && zscii[string[strpos]] != 0)
-		{
-			int alphabet, chr;
+	  if (strpos >= strlen) {
+		/* Add padding */
+		zchr[zpos++] = 5;
+	  } else {
+		unsigned char zchar;
+		int alphabet, chr;
+		
+		/* Convert the character to ZSCII */
+		zchar = unicode_to_zscii(string[strpos]);
+		
+		/* Encoding using an alphabet/character encoding if available */
+		alphabet = zscii[zchar]>>6;
+		chr = zscii[zchar]&0x1f;
+		
+		switch (alphabet) {
+		  case 0:
+			/* Encode directly */
+			zchr[zpos++] = 5;
+			zchr[zpos++] = 6;
+			zchr[zpos++] = zchar>>5;
+			zchr[zpos++] = zchar&0x1f;
+			break;
 			
-			alphabet = zscii[string[strpos]]>>6;
-			chr      = zscii[string[strpos]]&0x1f;
+		  case 1:
+			zchr[zpos++]= chr;
+			break;
 			
-			switch (alphabet)
-			{
-				case 2:
-					zchr[x] = 4;
-					x++;
-					break;
-					
-				case 3:
-					zchr[x] = 5;
-					x++;
-					break;
-			}
+		  case 2:
+			zchr[zpos++] = 4;
+			zchr[zpos++] = chr;
+			break;
 			
-			zchr[x] = chr;
-		}
-		else if (string[strpos] < 128)
-		{
-			zchr[x++] = 5;
-			zchr[x++] = 6;
-			zchr[x++] = string[strpos]>>5;
-			zchr[x]   = string[strpos]&0x1f;
-		}
-		else
-		{
-			int ch = 0;
-		    int table_ch;
+		  case 3:
+			zchr[zpos++] = 5;
+			zchr[zpos++] = chr;
+			break;
 			
-			for (table_ch=155; table_ch<=251; table_ch++)
-			{
-				if (zscii_unicode[table_ch] == string[strpos])
-				{
-					ch = table_ch;
-				  break;
-				}
-			}
-			
-			if (ch == 0) {
-			  ch = '?';
-
-			  /* FIXME: we could encode using the spec 1.1 unicode stuff here... */
-			}
-			
-			if (ch != 0)
-			{
-				zchr[x++] = 5;
-				zchr[x++] = 6;
-				zchr[x++] = ch>>5;
-				zchr[x] = ch&0x1f;
-			}
-			/* 
-				* (But, it'd be pretty pointless. 9 z-chars = 6 bytes, a maximum of 
-				   * 2 unicode characters. o'course, we only get 2 characters that
-				   * aren't in the standard alphabet in anyway)
-			 */
+			/* Other cases are impossible. IMPOSSIBLE I SAY. There is no spoon. */
 		}
 		
-		strpos++;
+		/* 
+		 * (In spec 1.1, it's possible to encode an arbitrary unicode character, but not
+		 * sensible unless two-character commands are demanded by the story, so we don't 
+		 * bother) 
+		 */
+	  }
+	  
+	  /* Next character in the string */
+	  strpos++;
     }
 	
+	/* Pack the Z-characters */
 	wordlen = packlen/3;
-	for (x=0; x<wordlen; x++)
+	for (byte=0; byte<wordlen; byte++)
     {
-		packed[x<<1] = (zchr[x*3]<<2)|(zchr[x*3+1]>>3);
-		packed[(x<<1)+1] = (zchr[x*3+1]<<5)|zchr[x*3+2];
+		packed[byte<<1] = (zchr[byte*3]<<2)|(zchr[byte*3+1]>>3);
+		packed[(byte<<1)+1] = (zchr[byte*3+1]<<5)|zchr[byte*3+2];
     }
 	packed[wordlen*2-2] |= 0x80;
 }
