@@ -151,6 +151,7 @@ static NSString* convertCommand(NSString* command) {
 		// Set certain flags to the same as the new item
 		if ([childItem result]) [oldChild setResult: [childItem result]];
 		if ([childItem annotation]) [oldChild setAnnotation: [childItem annotation]];
+		if ([childItem commentary]) [oldChild setCommentary: [childItem commentary]];
 		
 		if (![childItem temporary]) [oldChild setTemporary: NO];
 		[oldChild setPlayed: [childItem played]];
