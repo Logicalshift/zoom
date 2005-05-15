@@ -123,7 +123,7 @@
 	
 	if ([[self document] defaultView] != nil && [[self document] saveData] != nil) {
 		// Restore the save data
-		[[[self document] defaultView] restoreSaveState: [[self document] saveData]];
+		[[(ZoomClient*)[self document] defaultView] restoreSaveState: [[self document] saveData]];
 		[[self document] setSaveData: nil];
 	}
 }

@@ -316,6 +316,17 @@ static int currentScore = 1;
 	if (newAnnotation && ![newAnnotation isEqualToString: @""]) annotation = [newAnnotation copy];
 }
 
+// = Commentary =
+
+- (NSString*) commentary {
+	return commentary;
+}
+
+- (void) setCommentary: (NSString*) newCommentary {
+	[commentary release]; commentary = nil;
+	commentary = [newCommentary copy];
+}
+
 // = Taking part in a set =
 
 - (unsigned)hash {

@@ -112,6 +112,7 @@ static NSString* xmlEncode(NSString* str) {
 	//     <command/>
 	//     <result/>
 	//     <annotation/>
+	//	   <commentary/>
 	//     <played>YES/NO</played>
 	//     <changed>YES/NO</changed>
 	//     <temporary score="score">YES/NO</temporary>
@@ -164,6 +165,9 @@ static NSString* xmlEncode(NSString* str) {
 		if ([node annotation] != nil)
 			[result appendFormat: @"    <annotation xml:space=\"preserve\">%@</annotation>\n",
 				xmlEncode([node annotation])];
+		if ([node commentary] != nil)
+			[result appendFormat: @"    <commentary xml:space=\"preserve\">%@</commentary>\n",
+				xmlEncode([node commentary])];
 		
 		[result appendFormat: @"    <played>%@</played>\n",
 			[node played]?@"YES":@"NO"];
@@ -303,6 +307,8 @@ static NSString* xmlEncode(NSString* str) {
 																				 withName: @"result"]];
 		NSString* annotation = [inputParser innerTextForElement: [inputParser childForElement: item
 																					 withName: @"annotation"]];
+		NSString* commentary = [inputParser innerTextForElement: [inputParser childForElement: item
+																					 withName: @"commentary"]];
 		BOOL played = [[inputParser innerTextForElement: [inputParser childForElement: item
 																			 withName: @"played"]] isEqualToString: @"YES"];
 		BOOL changed = [[inputParser innerTextForElement: [inputParser childForElement: item
@@ -321,6 +327,7 @@ static NSString* xmlEncode(NSString* str) {
 		[newItem setCommand: command];
 		[newItem setResult: result];
 		[newItem setAnnotation: annotation];
+		[newItem setCommentary: commentary];
 		
 		[newItem setPlayed: played];
 		[newItem setChanged: changed];

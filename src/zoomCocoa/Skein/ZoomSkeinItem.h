@@ -22,6 +22,7 @@
 	BOOL played, changed;
 	
 	NSString* annotation;
+	NSString* commentary;
 	
 	// Cached layout items (text measuring is slow)
 	BOOL   commandSizeDidChange;
@@ -77,6 +78,13 @@
 // Each 'annotation' colours a new area of the skein.
 - (NSString*) annotation;
 - (void)      setAnnotation: (NSString*) newAnnotation;
+
+// Commentary
+
+// Could be used by an IDE to store commentary or perhaps the 'ideal' text the game should be
+// producing for this item
+- (NSString*) commentary;
+- (void)      setCommentary: (NSString*) commentary;
 
 // Drawing/sizing
 - (NSSize) commandSize;
