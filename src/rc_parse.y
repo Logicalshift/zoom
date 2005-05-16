@@ -197,7 +197,7 @@ RCDefn:		  DEFAULT STRING RCBlock
 			  *game = $3;
 			  game->name = $2;
 			  hash_store(rc_hash,
-				     "default",
+				     (unsigned char*)"default",
 				     7,
 				     game);
 			}
@@ -212,7 +212,7 @@ RCDefn:		  DEFAULT STRING RCBlock
 			  *game = $2;
 			  game->name = "%s";
 			  hash_store(rc_hash,
-				     "default",
+				     (unsigned char*)"default",
 				     7,
 				     game);
 			}
@@ -235,7 +235,7 @@ RCDefn:		  DEFAULT STRING RCBlock
 			      if (check_collision(next->string, game->name))
 			        {
 			          hash_store(rc_hash,
-					     next->string,
+					     (unsigned char*)next->string,
 					     strlen(next->string),
 					     game);
 			        }
@@ -264,7 +264,7 @@ RCDefn:		  DEFAULT STRING RCBlock
 			      if (check_collision(next->string, game->name))
 			        {
 			          hash_store(rc_hash,
-					     next->string,
+					     (unsigned char*)next->string,
 					     strlen(next->string),
 					     game);
 			        }

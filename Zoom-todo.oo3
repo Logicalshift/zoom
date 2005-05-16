@@ -13,9 +13,12 @@
     </style-attribute>
   </style-attribute-registry>
   <settings/>
-  <editor should-edit-text-folded="yes" is-spellchecking-enabled="yes">
+  <editor scroll-position="{0, 30}" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
-    <hoisted-rows ids="kzPdhsKinRx"/>
+    <hoisted-rows ids="gnoX6zDBav8"/>
+    <selected-rows ids="gVnNAkwzkQD"/>
+    <selected-columns ids=":078928d440f2709e21a6e303"/>
+    <selected-characters range="{18, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -384,20 +387,6 @@
             </item>
           </children>
         </item>
-        <item id="ndr85WjhAVw">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Run svn copy</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
         <item id="ksB-BbKSplq" expanded="yes">
           <values>
             <text>
@@ -499,6 +488,34 @@
               </children>
             </item>
           </children>
+        </item>
+        <item id="gVnNAkwzkQD">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Test under Panther</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="ndr85WjhAVw">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Run svn copy</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
         </item>
         <item id="p8b3pJHIjiH" expanded="yes">
           <values>
@@ -1865,7 +1882,7 @@
             </text>
           </note>
         </item>
-        <item id="eyVNyzpZE5J">
+        <item id="eyVNyzpZE5J" state="checked">
           <values>
             <text>
               <p>

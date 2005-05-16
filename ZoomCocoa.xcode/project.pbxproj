@@ -1080,6 +1080,7 @@
 			path = hash.h;
 			refType = 4;
 			sourceTree = "<group>";
+			tabWidth = 8;
 		};
 		4B1E3F9C050F7D5200A8E303 = {
 			fileRef = 4B1E3F89050F7D5200A8E303;

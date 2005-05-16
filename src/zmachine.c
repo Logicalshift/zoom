@@ -180,7 +180,7 @@ void zmachine_load_file(ZFile* file, ZMachine* machine) {
             int y;
 
             machine->abbrev_addr[x>>1] = ((abbrev[x]<<9)|(abbrev[x+1]<<1));
-            word = zscii_to_unicode(machine->memory +
+            word = zscii_to_unicode((ZByte*)machine->memory +
                                     ((abbrev[x]<<9)|(abbrev[x+1]<<1)), &len);
             for (y=0; word[y] != 0; y++);
             machine->abbrev[x>>1] = malloc(sizeof(int)*(y+1));

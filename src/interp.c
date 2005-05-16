@@ -515,7 +515,7 @@ static void draw_statusbar_123(ZStack* stack)
   display_erase_line(1);
   display_set_cursor(2, 0);
 
-  display_prints(zscii_to_unicode(prop, &len));
+  display_prints((int*)zscii_to_unicode(prop, &len));
 
   score = GetVar(17);
   moves = GetVar(18);
@@ -1054,7 +1054,7 @@ static void zcode_op_aread_5678(ZDWord* pc,
 	}
       buf[x] = 0;
 
-      stream_remove_buffer(buf);
+      stream_remove_buffer((int*)buf);
     }
   else
     buf[0] = 0;
@@ -1091,7 +1091,7 @@ static void zcode_op_aread_5678(ZDWord* pc,
     {
       int res;
       
-      res = stream_readline(buf, mem[0], 0);
+      res = stream_readline((int*)buf, mem[0], 0);
       display_terminating(NULL);
 
       if (res == 254 || res == 253)
@@ -1124,7 +1124,7 @@ static void zcode_op_aread_5678(ZDWord* pc,
     {
       int res;
 
-      res = stream_readline(buf, mem[0], args->arg[2]*100);
+      res = stream_readline((int*)buf, mem[0], args->arg[2]*100);
       display_terminating(NULL);
       store(stack, st, res);
       
@@ -1317,7 +1317,7 @@ static void zcode_op_sread_4(ZDWord* pc,
 
   if (args->n_args > 1)
     {
-      tokenise_string(buf,
+      tokenise_string((int*)buf,
 		      Word(ZH_dict),
 		      machine.memory + (ZUWord) args->arg[1],
 		      0,

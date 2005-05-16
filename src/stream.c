@@ -82,7 +82,7 @@ static void prints_reformat_width(int len)
   while (split != len);
 }
 
-static void prints(const int* const s)
+static void prints(const unsigned int* const s)
 {
   if (machine.memory_on)
     {
@@ -305,8 +305,8 @@ int stream_readline(int* buf, int len, long int timeout)
       }
 
       buf[pos++] = 0;
-      stream_prints(buf);
-      stream_prints(nl);
+      stream_prints((unsigned int*)buf);
+      stream_prints((unsigned int*)nl);
     }
   else
     {
@@ -359,7 +359,7 @@ void stream_printf(const char* const f, ...)
 {
   va_list  ap;
   char     string[512];
-  int*     buf;
+  unsigned int* buf;
   int      x;
 
   va_start(ap, f);

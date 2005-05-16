@@ -50,7 +50,7 @@ enum header_blocks
 
 static struct
 {
-  char* text;
+  unsigned char* text;
   enum header_blocks num;
 } blocks[N_BLOCKS] =
 {
@@ -385,9 +385,9 @@ int state_save(ZFile* f, ZStack* stack, ZDWord pc)
     return 0;
   
   /* Output the file itself */
-  write_block(f, "FORM", 4);
+  write_block(f, (unsigned char*)"FORM", 4);
   write_dword(f, flen+4);
-  write_block(f, "IFZS", 4);
+  write_block(f, (unsigned char*)"IFZS", 4);
   write_block(f, data, flen); 
   close_file(f);
 
@@ -402,7 +402,7 @@ int state_decompile(ZByte* st, ZStack* stack, ZDWord* pc, ZDWord len)
 {
   static struct
   {
-    char text[4];
+    unsigned char text[4];
     ZByte* pos;
     ZDWord len;
   } blocks[N_BLOCKS] =

@@ -43,13 +43,13 @@ extern void  hash_store_happy(hash  hash,
 			      void *data);
 extern void  hash_free       (hash hash);
 extern void  hash_iterate    (hash hash,
-			      int (*func)(char *key,
+			      int (*func)(unsigned char *key,
 					  int   keylen,
 					  void *data,
 					  void *arg),
 			      void *arg);
 extern void *hash_get        (hash  hash,
-			      char *key,
+			      unsigned char *key,
 			      int   keylen);
 extern void  hash_resize     (hash hash,
 			      int  n_buckets);

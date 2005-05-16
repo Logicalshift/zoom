@@ -120,7 +120,7 @@ char* menu_get_story(void)
 		  strcpy(game[n_games].filename, dent->d_name);
 		  
 		  game[n_games].storyname =
-		    rc_get_game_name(header + ZH_serial,
+		    rc_get_game_name((char*)(header + ZH_serial),
 				     GetWord(header, ZH_release));
 
 		  if (game[n_games].storyname == NULL)

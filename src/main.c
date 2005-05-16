@@ -320,7 +320,7 @@ int zoom_main(int argc, char** argv)
 	  
 	  debug_load_symbols(filename, pathname);
 	  
-	  start = hash_get(debug_syms.symbol, "main", 4);
+	  start = hash_get(debug_syms.symbol, (unsigned char*)"main", 4);
 	  if (start == NULL ||
 	      start->type != dbg_routine)
 	    {

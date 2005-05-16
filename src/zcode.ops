@@ -1073,7 +1073,7 @@ OPCODE "print"       0OP:0x02 STRING  VERSION all
 #ifdef DEBUG
   printf_debug(">%s<\n", string);
 #endif
-  stream_prints(string);
+  stream_prints((int*)string);
 %}
 
 OPCODE "print_ret"   0OP:0x03 CANJUMP STRING  VERSION all
@@ -1081,7 +1081,7 @@ OPCODE "print_ret"   0OP:0x03 CANJUMP STRING  VERSION all
 #ifdef DEBUG
   printf_debug(">%s<\n", string);
 #endif
-  stream_prints(string);
+  stream_prints((int*)string);
   stream_printf("\n");
   stream_flush_buffer();
   goto op_rtrue;
@@ -1438,7 +1438,7 @@ OPCODE "sread"          VAR:0x04 ARGS:2               VERSION 1,2,3
 
   if (argblock.n_args > 1)
     {
-      tokenise_string(buf,
+      tokenise_string((int*)buf,
 		      Word(ZH_dict),
 		      machine.memory + (ZUWord) argblock.arg[1],
 		      0,
@@ -1497,7 +1497,7 @@ OPCODE "print_char"     VAR:0x05 ARGS:1               VERSION all
     argblock.arg[0] = 32;
   ch[0] = zscii_unicode[argblock.arg[0]];
   ch[1] = 0;
-  stream_prints(ch);
+  stream_prints((int*)ch);
 %}
 
 OPCODE "print_num"      VAR:0x06 ARGS:1               VERSION all

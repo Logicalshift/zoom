@@ -99,10 +99,10 @@ unsigned long hash_hash(unsigned char *buf,
   return ~crc & 0xffffffff;     /* transmit complement, per CRC-32 spec */  
 }
 
-static struct bucket *hash_lookup(hash          hash,
-				  char*         key,
-				  int           keylen,
-				  unsigned long value)
+static struct bucket *hash_lookup(hash           hash,
+				  unsigned char* key,
+				  int            keylen,
+				  unsigned long  value)
 {
   struct bucket *next;
   struct bucket *match;
@@ -218,7 +218,7 @@ void hash_free(hash hash)
 }
 
 void hash_iterate(hash hash,
-			int (*func)(char *key,
+			int (*func)(unsigned char *key,
 				    int   keylen,
 				    void *data,
 				    void *arg),
@@ -248,7 +248,7 @@ void hash_iterate(hash hash,
 }
 
 void *hash_get(hash  hash,
-	       char* key,
+	       unsigned char* key,
 	       int   len)
 {
   unsigned long  value;
@@ -266,7 +266,7 @@ void *hash_get(hash  hash,
   return NULL;
 }
 
-static int resize_func(char *key,
+static int resize_func(unsigned char *key,
 		       int   keylen,
 		       void *data,
 		       void *new_hash)

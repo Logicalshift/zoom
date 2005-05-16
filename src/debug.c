@@ -594,14 +594,14 @@ static void debug_add_symbol(char* name,
     }
   storename[x] = 0;
 
-  if (hash_get(debug_syms.symbol, storename, strlen(name)) != NULL)
+  if (hash_get(debug_syms.symbol, (unsigned char*)storename, strlen(name)) != NULL)
     {
       display_printf("=? Symbol space clash - %s\n", name);
     }
   else
     debug_syms.nsymbols++;
   hash_store_happy(debug_syms.symbol,
-		   storename,
+		   (unsigned char*)storename,
 		   strlen(name),
 		   sym);
   
@@ -712,11 +712,11 @@ void debug_load_symbols(char* filename,
 	    fl = malloc(sizeof(debug_file));
 
 	    fl->number = db_file[pos+1];
-	    fl->name = malloc(sizeof(char)*(strlen(db_file + pos + 2) + 1));
-	    strcpy(fl->name, db_file + pos + 2);
+	    fl->name = malloc(sizeof(char)*(strlen((char*)(db_file + pos + 2)) + 1));
+	    strcpy(fl->name, (char*)(db_file + pos + 2));
 	    pos += 3 + strlen(fl->name);
-	    fl->realname = malloc(sizeof(char)*(strlen(db_file + pos) + 1));
-	    strcpy(fl->realname, db_file + pos);
+	    fl->realname = malloc(sizeof(char)*(strlen((char*)(db_file + pos)) + 1));
+	    strcpy(fl->realname, (char*)(db_file + pos));
 	    pos += strlen(fl->realname) + 1;
 
 	    fl->data   = NULL;
@@ -740,7 +740,7 @@ void debug_load_symbols(char* filename,
 		  {
 		    int x;
 
-		    fl->data = read_block(fl_load, 0, fl_len);
+		    fl->data = (char*)read_block(fl_load, 0, fl_len);
 		    close_file(fl_load);
 		    fl->data = realloc(fl->data, sizeof(char)*(fl_len+2));
 		    fl->data[fl_len] = 0;
@@ -795,7 +795,7 @@ void debug_load_symbols(char* filename,
 	    debug_syms.files[fl->number] = *fl;
 
 	    hash_store_happy(debug_syms.file,
-			     fl->name,
+			     (unsigned char*)fl->name,
 			     strlen(fl->name),
 			     fl);
 	  }

@@ -45,7 +45,7 @@ ZDictionary* dictionary_cache(const ZUWord dict_pos)
 
   /* See if we've already parsed this dictionary */
   dict = hash_get(machine.cached_dictionaries,
-		  (char*) &dict_pos,
+		  (unsigned char*) &dict_pos,
 		  sizeof(ZUWord));
   if (dict != NULL)
     {
@@ -145,7 +145,7 @@ ZDictionary* dictionary_cache(const ZUWord dict_pos)
   }
 
   hash_store_happy(machine.cached_dictionaries,
-		   (char*)&dict_pos,
+		   (unsigned char*)&dict_pos,
 		   sizeof(ZUWord),
 		   dict);
 

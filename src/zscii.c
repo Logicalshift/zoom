@@ -239,7 +239,7 @@ unsigned int* zscii_to_unicode(ZByte* string, int* len)
 						* Hack, this function was never designed to be called
 						 * recursively
 						 */
-						int* oldbuf;
+						unsigned int* oldbuf;
 						int oldmaxlen;
 						int ablen;
 						
@@ -249,7 +249,7 @@ unsigned int* zscii_to_unicode(ZByte* string, int* len)
 						buf = NULL;
 						
 						zlen = y;
-						abbrev = zscii_to_unicode(machine.memory +
+						abbrev = zscii_to_unicode((ZByte*)machine.memory +
 												  addr,
 												  &ablen);
 						
