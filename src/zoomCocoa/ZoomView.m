@@ -251,15 +251,25 @@ static void finalizeViews(void) {
 				  operation: NSCompositeSourceOver
 				   fraction: 1.0];
 		 */
-				
+		
+		/*
 		bounds.origin.y += bounds.size.height;
 		bounds.size.height = -bounds.size.height;
+		 */
+		
+		NSAffineTransform* invertTransform = [NSAffineTransform transform];
+		
+		[[NSGraphicsContext currentContext] saveGraphicsState];
+		[invertTransform invert];
+		[invertTransform set];
 
 		[pixmap drawInRect: bounds
 				  fromRect: NSMakeRect(0,0,pixSize.width, pixSize.height)
 				 operation: NSCompositeSourceOver
 				  fraction: 1.0];
 		
+		[[NSGraphicsContext currentContext] restoreGraphicsState];
+				
 		[pixmapCursor draw];
 		
 		if (inputLine) {

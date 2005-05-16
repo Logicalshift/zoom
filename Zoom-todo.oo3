@@ -13,12 +13,9 @@
     </style-attribute>
   </style-attribute-registry>
   <settings/>
-  <editor scroll-position="{0, 30}" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
+  <editor should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
-    <hoisted-rows ids="gnoX6zDBav8"/>
-    <selected-rows ids="gVnNAkwzkQD"/>
-    <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{18, 0}"/>
+    <hoisted-rows ids="kzPdhsKinRx"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -803,6 +800,20 @@
               </p>
             </text>
           </note>
+        </item>
+        <item id="lo3LT0PZvp1" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>v6 graphics are upside down under Tiger</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
         </item>
         <item id="pW77mjO8jau" state="checked">
           <values>
