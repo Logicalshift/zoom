@@ -10,6 +10,17 @@
 
 #import "ZoomSkeinItem.h"
 
+// Skein item notifications
+NSString* ZoomSkeinItemIsBeingReplaced = @"ZoomSkeinItemIsBeingReplaced";
+NSString* ZoomSkeinItemHasBeenRemovedFromTree = @"ZoomSkeinItemHasBeenRemovedFromTree";	
+NSString* ZoomSkeinItemHasChanged = @"ZoomSkeinItemHasChanged";
+NSString* ZoomSkeinItemHasNewChild = @"ZoomSkeinItemHasNewChild";
+
+// Skein item notification dictionary keys
+NSString* ZoomSIItem = @"ZoomSIItem";
+NSString* ZoomSIOldItem = @"ZoomSIOldItem";
+NSString* ZoomSIOldParent = @"ZoomSIOldParent";
+NSString* ZoomSIChild = @"ZoomSIChild";
 
 @implementation ZoomSkeinItem
 
@@ -97,6 +108,42 @@ static NSString* convertCommand(NSString* command) {
 	[super dealloc];
 }
 
+// **** Notification convienience functions ****
+
+- (void) itemIsBeingReplacedBy: (ZoomSkeinItem*) item {
+	[[NSNotificationCenter defaultCenter] postNotificationName: ZoomSkeinItemIsBeingReplaced
+														object: self
+													  userInfo: [NSDictionary dictionaryWithObjectsAndKeys: 
+														  item, ZoomSIItem,
+														  self, ZoomSIOldItem,
+														  nil]];
+}
+
+- (void) itemHasBeenRemovedFromTree {
+	[[NSNotificationCenter defaultCenter] postNotificationName: ZoomSkeinItemHasBeenRemovedFromTree
+														object: self
+													  userInfo: [NSDictionary dictionaryWithObjectsAndKeys: 
+														  self, ZoomSIItem,
+														  nil]];
+}
+
+- (void) itemHasNewChild: (ZoomSkeinItem*) newChild {
+	[[NSNotificationCenter defaultCenter] postNotificationName: ZoomSkeinItemHasNewChild
+														object: self
+													  userInfo: [NSDictionary dictionaryWithObjectsAndKeys: 
+														  self, ZoomSIItem,
+														  newChild, ZoomSIChild,
+														  nil]];
+}
+
+- (void) itemHasChanged {
+	[[NSNotificationCenter defaultCenter] postNotificationName: ZoomSkeinItemHasChanged
+														object: self
+													  userInfo: [NSDictionary dictionaryWithObjectsAndKeys: 
+														  self, ZoomSIItem,
+														  nil]];
+}
+
 // **** Data accessors ****
 
 // = Skein tree =
@@ -158,6 +205,8 @@ static NSString* convertCommand(NSString* command) {
 		[oldChild setChanged: [childItem changed]];
 		
 		// 'New' item is the old one
+		[childItem itemIsBeingReplacedBy: oldChild];
+		
 		return oldChild;
 	} else {
 		// Otherwise, just add the new item
@@ -165,6 +214,8 @@ static NSString* convertCommand(NSString* command) {
 		[children addObject: childItem];
 		
 		// 'new' item is the child item
+		[self itemHasNewChild: childItem];
+		
 		return childItem;
 	}
 }
@@ -172,8 +223,12 @@ static NSString* convertCommand(NSString* command) {
 - (void) removeChild: (ZoomSkeinItem*) childItem {
 	if ([childItem parent] != self) return;
 
+	[[childItem retain] autorelease];
+	
 	[childItem setParent: nil];
 	[children removeObject: childItem];
+
+	[childItem itemHasBeenRemovedFromTree];
 }
 
 - (void) removeFromParent {
@@ -227,6 +282,8 @@ static NSString* convertCommand(NSString* command) {
 	command = nil;
 	if (![newCommand isEqualToString: command]) commandSizeDidChange = YES;
 	if (newCommand) command = [convertCommand(newCommand) copy];
+	
+	[self itemHasChanged];
 }
 
 - (void) setResult: (NSString*) newResult {
@@ -239,6 +296,8 @@ static NSString* convertCommand(NSString* command) {
 	if (result) [result release];
 	result = nil;
 	if (newResult) result = [newResult copy];
+	
+	[self itemHasChanged];
 }
 
 // = Item state =
@@ -272,7 +331,8 @@ static NSString* convertCommand(NSString* command) {
 		}
 	}
 	
-	// FIXME: unsetting should apply to children, too
+	// FIXME: unsetting should apply to children, too	
+	[self itemHasChanged];
 }
 
 static int currentScore = 1;
@@ -298,10 +358,14 @@ static int currentScore = 1;
 
 - (void) setPlayed: (BOOL) newPlayed {
 	played = newPlayed;
+	
+	[self itemHasChanged];
 }
 
 - (void) setChanged: (BOOL) newChanged {
 	changed = newChanged;
+	
+	[self itemHasChanged];
 }
 
 // = Annotation =
@@ -315,6 +379,8 @@ static int currentScore = 1;
 	if (![newAnnotation isEqualToString: annotation]) annotationSizeDidChange = YES;
 	annotation = nil;
 	if (newAnnotation && ![newAnnotation isEqualToString: @""]) annotation = [newAnnotation copy];
+	
+	[self itemHasChanged];
 }
 
 // = Commentary =
@@ -326,6 +392,8 @@ static int currentScore = 1;
 - (void) setCommentary: (NSString*) newCommentary {
 	[commentary release]; commentary = nil;
 	commentary = [newCommentary copy];
+	
+	[self itemHasChanged];
 }
 
 // = Taking part in a set =

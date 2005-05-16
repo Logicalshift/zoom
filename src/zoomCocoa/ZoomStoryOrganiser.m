@@ -1240,8 +1240,8 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		
 		NSString* componentToMove = nil;
 		
-		NSString* moveFrom;
-		NSString* moveTo;
+		NSString* moveFrom = nil;
+		NSString* moveTo = nil;
 
 		while (component < [filenameComponents count]) {
 			componentToMove = [filenameComponents objectAtIndex: [originalComponents count]];

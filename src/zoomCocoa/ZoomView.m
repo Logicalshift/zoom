@@ -684,6 +684,22 @@ static void finalizeViews(void) {
 // = Utility functions =
 
 - (void) scrollToEnd {
+	if (editingTextView) {
+		// Re-queue for later
+		if (!willScrollToEnd) {
+			[[NSRunLoop currentRunLoop] performSelector: @selector(scrollToEnd)
+												 target: self
+											   argument: nil
+												  order: 64
+												  modes: [NSArray arrayWithObject: NSDefaultRunLoopMode]];
+			willScrollToEnd = YES;
+		}
+
+		return;
+	}
+	
+	willScrollToEnd = NO;
+	
     NSLayoutManager* mgr = [textView layoutManager];
 	
     NSRange endGlyph = [textView selectionRangeForProposedRange:
@@ -708,6 +724,21 @@ static void finalizeViews(void) {
 }
 
 - (void) displayMoreIfNecessary {
+	if (editingTextView) {
+		if (!willDisplayMore) {
+			[[NSRunLoop currentRunLoop] performSelector: @selector(displayMoreIfNecessary)
+												 target: self
+											   argument: nil
+												  order: 65
+												  modes: [NSArray arrayWithObject: NSDefaultRunLoopMode]];
+			willDisplayMore = YES;
+		}
+		
+		return;
+	}
+
+	willDisplayMore = NO;
+
     NSLayoutManager* mgr = [textView layoutManager];
 	
 	if (inputSource && [inputSource respondsToSelector: @selector(disableMorePrompt)]) {

@@ -32,6 +32,8 @@ extern NSString* ZoomStyleAttributeName;
 
     // Subviews
 	BOOL editingTextView;
+	BOOL willScrollToEnd;
+	BOOL willDisplayMore;
     ZoomTextView* textView;
     NSTextContainer* upperWindowBuffer; // Things hidden under the upper window
     ZoomScrollView* textScroller;

@@ -16,6 +16,9 @@
   <editor should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
+    <selected-rows ids="pjHJFJC09nQ"/>
+    <selected-columns ids=":078928d440f2709e21a6e303"/>
+    <selected-characters range="{83, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -624,6 +627,20 @@
               <p>
                 <run>
                   <lit>When saving (or autosaving) version 6 data, the v6 screen state is not saved. We need to retrieve this from the ZoomServer process and restore it as required</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="pjHJFJC09nQ">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Display &apos;flickering&apos; with v3 games, and some others (eg ConanKillEverything). Sigh.</lit>
                 </run>
               </p>
             </text>

@@ -8,7 +8,21 @@
 
 #import <Foundation/Foundation.h>
 
+// Skein item notifications
+extern NSString* ZoomSkeinItemIsBeingReplaced;				// One skein item is being replaced by another
+extern NSString* ZoomSkeinItemHasBeenRemovedFromTree;		// A skein item is being removed from the tree (may be associated with the previous)
+extern NSString* ZoomSkeinItemHasChanged;					// A skein item has been changed in some way
+extern NSString* ZoomSkeinItemHasNewChild;					// A skein item has gained a new child item
 
+// Skein item notification dictionary keys
+extern NSString* ZoomSIItem;								// Item the operation applies to
+extern NSString* ZoomSIOldItem;								// Previous item, if there is one
+extern NSString* ZoomSIOldParent;							// Parent item of an item that's been removed
+extern NSString* ZoomSIChild;								// Child item (if relevant)
+
+//
+// Represents a single 'knot' in the skein
+//
 @interface ZoomSkeinItem : NSObject<NSCoding> {
 	ZoomSkeinItem* parent;
 	NSMutableSet* children;
