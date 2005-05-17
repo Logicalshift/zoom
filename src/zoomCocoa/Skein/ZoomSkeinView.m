@@ -130,8 +130,9 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	
 	if (trackingRects) [trackingRects release];
 
-	if (itemToEdit) [itemToEdit release];
+	if (itemToEdit)    [itemToEdit release];
 	if (fieldScroller) [fieldScroller release];
+	if (fieldStorage)  [fieldStorage release];
 	
 	if (trackedItem)   [trackedItem release];
 	if (clickedItem)   [clickedItem release];
@@ -942,7 +943,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	NSRect itemFrame = [layout textAreaForItem: skeinItem];
 	
 	// (Or the annotation)
-	if (annotation) itemFrame.origin.y -= 20;
+	if (annotation) itemFrame.origin.y -= 18;
 	
 	// Make sure the item is the right size
 	float minItemWidth = itemWidth - 32.0;
@@ -976,24 +977,29 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	fieldEditor = (NSTextView*)[[self window] fieldEditor: YES
 												forObject: self];
 	
+	if (fieldStorage) [fieldStorage release];
+	fieldStorage = [[NSTextStorage alloc] initWithString: itemText
+											  attributes: itemTextAttributes];	
+	[fieldStorage addLayoutManager: [fieldEditor layoutManager]];
+	
 	[fieldEditor setDelegate: self];
 	[fieldScroller setFrame: itemFrame];
 	[fieldEditor setFrame: NSInsetRect(itemFrame, 2.0, 2.0)];
 	
-	[[fieldEditor textStorage] setAttributedString: [[[NSAttributedString alloc] initWithString: itemText
-																					 attributes: itemTextAttributes] autorelease]];
 	[fieldEditor setAlignment: NSCenterTextAlignment];
+	[fieldEditor setFont: [itemTextAttributes objectForKey: NSFontAttributeName]];
 	
 	[fieldEditor setRichText:NO];
 	[fieldEditor setAllowsDocumentBackgroundColorChange:NO];
-	[fieldEditor setBackgroundColor:[NSColor clearColor]];
+	[fieldEditor setBackgroundColor:[NSColor whiteColor]];
 	
 	[[fieldEditor textContainer] setContainerSize: NSMakeSize(NSInsetRect(itemFrame, 2.0, 2.0).size.width, 1e6)];
 	[[fieldEditor textContainer] setWidthTracksTextView:NO];
 	[[fieldEditor textContainer] setHeightTracksTextView:NO];
 	[fieldEditor setHorizontallyResizable:NO];
 	[fieldEditor setVerticallyResizable:YES];
-	[fieldEditor setDrawsBackground: NO];
+	[fieldEditor setDrawsBackground: YES];
+	[fieldEditor setEditable: YES];
 	
 	// Activate it
 	[fieldScroller setDocumentView: fieldEditor];
