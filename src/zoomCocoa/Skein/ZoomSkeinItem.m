@@ -76,7 +76,7 @@ static NSString* convertCommand(NSString* command) {
 		temporary = YES;
 		tempScore = 0;
 		played    = NO;
-		changed   = NO;
+		changed   = YES;
 		
 		annotation = nil;
 		
@@ -278,6 +278,8 @@ static NSString* convertCommand(NSString* command) {
 }
 
 - (void) setCommand: (NSString*) newCommand {
+	if ([newCommand isEqualToString: command]) return;			// Nothing to do
+	
 	if (command) [command release];
 	command = nil;
 	if (![newCommand isEqualToString: command]) commandSizeDidChange = YES;
@@ -291,6 +293,7 @@ static NSString* convertCommand(NSString* command) {
 		[self setChanged: YES];
 	} else {
 		[self setChanged: NO];
+		return;							// Nothing else to do
 	}
 	
 	if (result) [result release];
@@ -357,15 +360,17 @@ static int currentScore = 1;
 }
 
 - (void) setPlayed: (BOOL) newPlayed {
+	BOOL oldPlayed = played;
 	played = newPlayed;
 	
-	[self itemHasChanged];
+	if (oldPlayed != newPlayed) [self itemHasChanged];
 }
 
 - (void) setChanged: (BOOL) newChanged {
+	BOOL oldChanged = changed;
 	changed = newChanged;
 	
-	[self itemHasChanged];
+	if (oldChanged != newChanged) [self itemHasChanged];
 }
 
 // = Annotation =
@@ -375,8 +380,11 @@ static int currentScore = 1;
 }
 
 - (void) setAnnotation: (NSString*) newAnnotation {
+	if (annotation == nil || ![newAnnotation isEqualToString: annotation]) 
+		annotationSizeDidChange = YES;
+	else
+		return;					// Nothing to do
 	if (annotation) [annotation release];
-	if (![newAnnotation isEqualToString: annotation]) annotationSizeDidChange = YES;
 	annotation = nil;
 	if (newAnnotation && ![newAnnotation isEqualToString: @""]) annotation = [newAnnotation copy];
 	
@@ -390,6 +398,8 @@ static int currentScore = 1;
 }
 
 - (void) setCommentary: (NSString*) newCommentary {
+	if ([newCommentary isEqualToString: commentary]) return;				// Nothing to do
+	
 	[commentary release]; commentary = nil;
 	commentary = [newCommentary copy];
 	
