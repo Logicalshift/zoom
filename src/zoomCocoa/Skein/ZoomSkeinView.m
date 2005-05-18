@@ -862,13 +862,25 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	if (itemToEdit != nil && fieldEditor != nil) {
 		ZoomSkeinItem* parent = [itemToEdit parent];
 		
+		BOOL samename;		// Set to YES if we need to remove and re-add
+		
+		if (!editingAnnotation && [parent childWithCommand: [fieldEditor string]] != itemToEdit) 
+			samename = YES;
+		else
+			samename = NO;
+		
 		// This will merge trees if the item gets the same name as a neighbouring item
-		[itemToEdit removeFromParent];
+		if (samename) [itemToEdit removeFromParent];
 		if (!editingAnnotation)
 			[itemToEdit setCommand: [fieldEditor string]];
 		else
 			[itemToEdit setAnnotation: [fieldEditor string]];
-		ZoomSkeinItem* newItem = [parent addChild: itemToEdit];
+		ZoomSkeinItem* newItem;
+		
+		if (samename)
+			newItem = [parent addChild: itemToEdit];
+		else
+			newItem = itemToEdit;
 		
 		// Change the active item if required
 		if (itemToEdit == [skein activeItem]) {
