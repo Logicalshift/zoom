@@ -439,6 +439,9 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 		while (item = [itemEnum nextObject]) {
 			NSRect itemRect = [layout activeAreaForItem: item];
 			
+			if (!NSIntersectsRect(itemRect, visibleRect)) continue;
+			itemRect = NSIntersectionRect(itemRect, visibleRect);
+			
 			// Same reasoning as before
 			[trackingItems addObject: item];
 			inside = NO;
@@ -981,6 +984,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	fieldStorage = [[NSTextStorage alloc] initWithString: itemText
 											  attributes: itemTextAttributes];	
 	[fieldStorage addLayoutManager: [fieldEditor layoutManager]];
+	[fieldEditor setSelectedRange: NSMakeRange(0,0)];
 	
 	[fieldEditor setDelegate: self];
 	[fieldScroller setFrame: itemFrame];
