@@ -983,7 +983,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	if (fieldStorage) [fieldStorage release];
 	fieldStorage = [[NSTextStorage alloc] initWithString: itemText
 											  attributes: itemTextAttributes];	
-	[fieldStorage addLayoutManager: [fieldEditor layoutManager]];
+	[[fieldEditor textStorage] setAttributedString: fieldStorage];
 	[fieldEditor setSelectedRange: NSMakeRange(0,0)];
 	
 	[fieldEditor setDelegate: self];
