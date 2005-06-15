@@ -12,6 +12,7 @@
                 autosaveChanged = id; 
                 changeOrganiseDir = id; 
                 changeTransparency = id; 
+                confirmGameCloseChanged = id; 
                 displayWarningsChanged = id; 
                 fatalWarningsChanged = id; 
                 interpreterChanged = id; 
@@ -29,6 +30,7 @@
                 autosaveGames = NSButton; 
                 colourSettingsView = NSView; 
                 colours = NSTableView; 
+                confirmGameClose = NSButton; 
                 displayWarnings = NSButton; 
                 fatalWarnings = NSButton; 
                 fixedFont = NSPopUpButton; 

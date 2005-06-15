@@ -19,6 +19,7 @@ static NSString* displayWarnings	= @"DisplayWarnings";
 static NSString* fatalWarnings		= @"FatalWarnings";
 static NSString* speakGameText		= @"SpeakGameText";
 static NSString* scrollbackLength	= @"ScrollbackLength";
+static NSString* confirmGameClose   = @"ConfirmGameClose";
 static NSString* keepGamesOrganised = @"KeepGamesOrganised";
 static NSString* autosaveGames		= @"autosaveGames";
 
@@ -290,6 +291,19 @@ static NSArray* DefaultColours(void) {
 	return result;
 }
 
+- (BOOL) confirmGameClose {
+	BOOL result = YES;
+	
+	[prefLock lock];
+	
+	NSNumber* confirmValue = (NSNumber*)[prefs objectForKey: confirmGameClose];
+	if (confirmValue) result = [confirmValue boolValue];
+	
+	[prefLock unlock];
+	
+	return result;
+}
+
 - (NSString*) gameTitle {
 	[prefLock lock];
 	NSString* result =  [prefs objectForKey: gameTitle];
@@ -413,6 +427,12 @@ static NSArray* DefaultColours(void) {
 - (void) setScrollbackLength: (float) length {
 	[prefs setObject: [NSNumber numberWithFloat: length]
 			  forKey: scrollbackLength];
+	[self preferencesHaveChanged];
+}
+
+- (void) setConfirmGameClose: (BOOL) flag {
+	[prefs setObject: [NSNumber numberWithBool: flag]
+			  forKey: confirmGameClose];
 	[self preferencesHaveChanged];
 }
 

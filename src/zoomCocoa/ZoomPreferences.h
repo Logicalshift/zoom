@@ -29,6 +29,7 @@ extern NSString* ZoomPreferencesHaveChangedNotification;
 - (BOOL)  displayWarnings;
 - (BOOL)  fatalWarnings;
 - (BOOL)  speakGameText;
+- (BOOL)  confirmGameClose;
 - (float) scrollbackLength;	// 0-100
 
 - (NSString*)     gameTitle;
@@ -53,6 +54,7 @@ extern NSString* ZoomPreferencesHaveChangedNotification;
 - (void) setDisplayWarnings: (BOOL) flag;
 - (void) setFatalWarnings: (BOOL) flag;
 - (void) setSpeakGameText: (BOOL) flag;
+- (void) setConfirmGameClose: (BOOL) flag;
 - (void) setScrollbackLength: (float) value;
 
 - (void) setGameTitle: (NSString*) title;

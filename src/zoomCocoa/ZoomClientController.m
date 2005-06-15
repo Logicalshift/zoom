@@ -119,7 +119,7 @@
 
 - (void) zMachineStarted: (id) sender {
 	// A new Z-Machine has started (ZoomView delegate method)
-	[[self window] setDocumentEdited: YES];
+	[[self window] setDocumentEdited: [[ZoomPreferences globalPreferences] confirmGameClose]?YES:NO];
 	
 	finished = NO;
 	[self synchronizeWindowTitleWithDocumentName];
@@ -301,7 +301,7 @@
 
 - (BOOL) windowShouldClose: (id) sender {
 	// Get confirmation if required
-	if (!closeConfirmed && !finished) {
+	if (!closeConfirmed && !finished && [[ZoomPreferences globalPreferences] confirmGameClose]) {
 		BOOL autosave = [[ZoomPreferences globalPreferences] autosaveGames];
 		NSString* msg = @"Spoon will be terminated.";
 		

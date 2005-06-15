@@ -257,6 +257,7 @@ static int familyComparer(id a, id b, void* context) {
 	[keepGamesOrganised setState: [prefs keepGamesOrganised]?NSOnState:NSOffState];
 	[autosaveGames setState: [prefs autosaveGames]?NSOnState:NSOffState];
 	[reorganiseGames setEnabled: [prefs keepGamesOrganised]];
+	[confirmGameClose setState: [prefs confirmGameClose]?NSOnState:NSOffState];
 	
 	// a kind of chessy way to get the current alpha setting
 	float red, green, blue, alpha;
@@ -501,6 +502,10 @@ static void appendStyle(NSMutableString* styleName,
 
 - (IBAction) autosaveChanged: (id) sender {
 	[prefs setAutosaveGames: [sender state]==NSOnState];
+}
+
+- (IBAction) confirmGameCloseChanged: (id) sender {
+	[prefs setConfirmGameClose: [sender state]==NSOnState];
 }
 
 - (IBAction) keepOrganisedChanged: (id) sender {

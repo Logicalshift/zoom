@@ -24,6 +24,7 @@
 	IBOutlet NSSlider* scrollbackLength;
 	IBOutlet NSButton* autosaveGames;
 	IBOutlet NSButton* keepGamesOrganised;
+	IBOutlet NSButton* confirmGameClose;
 	IBOutlet NSSlider* transparencySlider;
 	
 	IBOutlet NSPopUpButton* proportionalFont;
@@ -62,6 +63,7 @@
 - (IBAction) scrollbackChanged: (id) sender;
 - (IBAction) keepOrganisedChanged: (id) sender;
 - (IBAction) autosaveChanged: (id) sender;
+- (IBAction) confirmGameCloseChanged: (id) sender;
 - (IBAction) changeTransparency: (id)sender;
 
 - (IBAction) simpleFontsChanged: (id) sender;
