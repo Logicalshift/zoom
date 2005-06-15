@@ -95,6 +95,23 @@
 	shownOnce = YES;
 }
 
+- (IBAction) reloadGame: (id) sender {
+	// Request from a menu item: close and re-open this file
+	[[self retain] autorelease];
+	
+	// Get the file we're going to re-open
+	NSString* filename = [[[[self document] fileName] retain] autorelease];
+	
+	// Close ourselves down
+	[[self document] close];
+	
+	// Reload the story
+	[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL: [[[NSURL alloc] initFileURLWithPath: filename] autorelease]
+																		   display: YES];
+	
+	// Done: now we can die happy
+}
+
 - (IBAction) restartZMachine: (id) sender {
 	// Request from (eg) a menu item
 	[zoomView runNewServer: nil];

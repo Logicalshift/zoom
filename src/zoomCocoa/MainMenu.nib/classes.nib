@@ -6,6 +6,7 @@
                 displayNoteWindow = id; 
                 displaySkein = id; 
                 playInFullScreen = id; 
+                reloadGame = id; 
                 restartZMachine = id; 
                 saveMetadata = id; 
                 showGamePreferences = id; 
