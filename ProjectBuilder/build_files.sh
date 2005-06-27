@@ -1,5 +1,8 @@
 #!/bin/bash
 
+env
+BUILDER=${TARGET_BUILD_DIR}/Builder
+
 if [ "x$1" = "xclean" ]; then
     echo Cleaning interpreter...
 
@@ -21,13 +24,13 @@ else
     
     if [ ./src/zcode.ops -nt build/interp_gen.h ]; then
         echo interp_gen.h
-        ./build/builder build/interp_gen.h -1 ./src/zcode.ops
+        ${BUILDER} build/interp_gen.h -1 ./src/zcode.ops
     fi
     
     for i in {3,4,5,6}; do
         if [ ./src/zcode.ops -nt build/interp_z${i}.h ]; then
             echo interp_z${i}.h
-            ./build/builder build/interp_z${i}.h $i ./src/zcode.ops
+            ${BUILDER} build/interp_z${i}.h $i ./src/zcode.ops
         fi
     done
     
