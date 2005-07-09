@@ -77,6 +77,8 @@ extern NSString* ZoomSkeinItemPboardType;
 - (void) setSelectedItem: (ZoomSkeinItem*) skeinItem;
 - (ZoomSkeinItem*) selectedItem;
 
+- (void) highlightSkeinLine: (ZoomSkeinItem*) itemOnLine;
+
 - (void) layoutSkein;
 
 @end

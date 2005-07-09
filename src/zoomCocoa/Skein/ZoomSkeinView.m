@@ -1049,6 +1049,11 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	return [layout selectedItem];
 }
 
+- (void) highlightSkeinLine: (ZoomSkeinItem*) itemOnLine {
+	[layout highlightSkeinLine: itemOnLine];
+	[self setNeedsDisplay: YES];
+}
+
 // = Playing the game =
 
 - (void) playToPoint: (ZoomSkeinItem*) item {

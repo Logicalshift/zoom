@@ -22,6 +22,10 @@
 	NSMutableArray* levels;
 	float globalOffset, globalWidth;
 	
+	// Highlighted skein line
+	ZoomSkeinItem* highlightedLineItem;
+	NSMutableSet*  highlightedSet;
+	
 	// Some extra status
 	ZoomSkeinItem* activeItem;
 	ZoomSkeinItem* selectedItem;

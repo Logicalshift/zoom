@@ -21,6 +21,7 @@
 
 @interface ZoomSkeinLayoutItem : NSObject {
 	ZoomSkeinItem* item;
+	BOOL		   onSkeinLine;
 	float          width;
 	float		   fullWidth;
 	float		   position;
@@ -43,6 +44,7 @@
 - (float)		   position;
 - (NSArray*)	   children;
 - (int)			   level;
+- (BOOL)		   onSkeinLine;
 
 - (void) setItem: (ZoomSkeinItem*) newItem;
 - (void) setWidth: (float) newWidth;
@@ -50,5 +52,6 @@
 - (void) setPosition: (float) newPosition;
 - (void) setChildren: (NSArray*) newChildren;
 - (void) setLevel: (int) newLevel;
+- (void) setOnSkeinLine: (BOOL) onSkeinLine;
 
 @end

@@ -69,6 +69,10 @@
 	return level;
 }
 
+- (BOOL) onSkeinLine {
+	return onSkeinLine;
+}
+
 // = Setting properties =
 
 - (void) setItem: (ZoomSkeinItem*) newItem {
@@ -95,6 +99,10 @@
 
 - (void) setLevel: (int) newLevel {
 	level = newLevel;
+}
+
+- (void) setOnSkeinLine: (BOOL) online {
+	onSkeinLine = online;
 }
 
 @end

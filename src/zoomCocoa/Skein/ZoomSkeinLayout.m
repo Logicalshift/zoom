@@ -148,6 +148,9 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 	if (tree) [tree release];
 	if (levels) [levels release];
 	
+	if (highlightedSet) [highlightedSet release];
+	if (highlightedLineItem) [highlightedLineItem release];
+	
 	[super dealloc];
 }
 
@@ -178,6 +181,56 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 
 - (ZoomSkeinItem*) selectedItem {
 	return selectedItem;
+}
+
+- (void) updateHighlightDetails {
+	// Update the set of items that use the 'transcript line' style
+	
+	// Clear the items that are currently marked as highlighted
+	if (highlightedSet != nil) {
+		NSEnumerator* oldHighlightEnum = [itemForItem objectEnumerator];
+		ZoomSkeinLayoutItem* layoutItem;
+		
+		while (layoutItem = [oldHighlightEnum nextObject])  {
+			[layoutItem setOnSkeinLine: NO];
+		}
+	}
+	
+	// This set is a set of NSValue pointers to zoomSkeinItems. It's used while drawing.
+	[highlightedSet release];
+	highlightedSet = [[NSMutableSet alloc] init];
+	
+	// Iterate up from the highlighted item
+	ZoomSkeinItem* currentItem = highlightedLineItem;
+	
+	while (currentItem != nil) {
+		// Store this item
+		[[itemForItem objectForKey: [NSValue valueWithPointer: currentItem]] setOnSkeinLine: YES];
+		
+		// Up the tree
+		currentItem = [currentItem parent];
+	}
+	
+	// Iterate down from the highlighted item, so long as there is only one child item
+	currentItem = highlightedLineItem;
+	
+	while ([[currentItem children] count] == 1) {
+		// Move down the tree
+		currentItem = [[[currentItem children] allObjects] objectAtIndex: 0];
+		
+		// Store this item
+		[[itemForItem objectForKey: [NSValue valueWithPointer: currentItem]] setOnSkeinLine: YES];
+	}
+}
+
+- (void) highlightSkeinLine: (ZoomSkeinItem*) itemOnLine {
+	// Do nothing if there's nothing to do
+	if (itemOnLine == highlightedLineItem) return;
+	
+	[highlightedLineItem release];
+	highlightedLineItem = [itemOnLine retain];
+	
+	[self updateHighlightDetails];
 }
 
 // = Performing layout =
@@ -310,6 +363,8 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 		[self fixPositions: tree
 				withOffset: 0];
 	}
+	
+	if (highlightedLineItem) [self updateHighlightDetails];
 }
 
 // = Getting layout data =
@@ -544,14 +599,27 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 				float childXPos = [child position] + globalOffset;
 				BOOL annotated = [[child item] annotation]!=nil;
 				
+				BOOL highlightLine = [child onSkeinLine];
+				
 				if ([[child item] temporary]) {
 					[tempChildLink set];
 				} else {
 					[permChildLink set];
 				}
 				
+				// Thicken the line if this is on the highlighted line
+				if (highlightLine) {
+					NSLog(@"highlightLine!");
+					[NSBezierPath setDefaultLineWidth: 3.0];
+				}
+				
 				[NSBezierPath strokeLineFromPoint: NSMakePoint(xpos, startYPos)
 										  toPoint: NSMakePoint(childXPos, annotated?endYPos-18:endYPos)];
+				
+				// Thin it out again afterwards
+				if (highlightLine) {
+					[NSBezierPath setDefaultLineWidth: 1.0];
+				}
 			}
 			
 			// Draw the annotation, if present
