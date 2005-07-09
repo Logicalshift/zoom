@@ -526,7 +526,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4BD2747808701E6700C1AE15 /* ZoomView */;
+			remoteGlobalIDString = 4BD2747808701E6700C1AE15;
 			remoteInfo = ZoomView;
 		};
 /* End PBXContainerItemProxy section */
