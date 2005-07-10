@@ -609,7 +609,6 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 				
 				// Thicken the line if this is on the highlighted line
 				if (highlightLine) {
-					NSLog(@"highlightLine!");
 					[NSBezierPath setDefaultLineWidth: 3.0];
 				}
 				
