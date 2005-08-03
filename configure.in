@@ -6,7 +6,7 @@ VERSION=1.0.3
 PACKAGE=zoom
 
 UTIL_DISPLAY_INIT()
-UTIL_DISPLAY_HEADER(Andrew Hunter, 2000-2004)
+UTIL_DISPLAY_HEADER(Andrew Hunter, 2000-2005)
 
 UTIL_DISPLAY_SECTION(automake)
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
@@ -257,7 +257,11 @@ AC_CHECK_HEADERS(sys/time.h)
 
 AC_MSG_CHECKING([for gettimeofday])
 AC_TRY_LINK(
-  [#include <sys/time.h>],
+  [
+  	#include <stdio.h>
+  	#include <stdlib.h>
+  	#include <sys/time.h>
+  ],
   [{struct timeval tv; gettimeofday(&tv, NULL);}],
   AC_MSG_RESULT([yes])
   AC_DEFINE(HAVE_GETTIMEOFDAY),
@@ -308,6 +312,7 @@ AC_SUBST(BUILDERCC)
 HAVE_T1LIB=0
 if test "$WINDOW_SYSTEM" = "1"; then
     LIBS="$LIBS $X_PRE_LIBS $X_LIBS $X_EXTRA_LIBS"
+    X_CFLAGS="$X_CFLAGS -I/usr/include/freetype2"
     CFLAGS="$CFLAGS $X_CFLAGS"
     LIBS="$LIBS -lX11"
 

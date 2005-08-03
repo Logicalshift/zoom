@@ -148,7 +148,7 @@ xfont* xfont_load_font(char* font)
 
   if (font[0] == '/')
     {
-#ifndef HAVE_T1LIB
+#if !defined(HAVE_T1LIB)
       zmachine_fatal("Font files are not supported in this version");
 #else
       char* name = NULL;
