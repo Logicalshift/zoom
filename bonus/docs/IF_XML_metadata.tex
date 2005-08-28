@@ -84,6 +84,15 @@ line. The namespace URI is http://www.logicalshift.org.uk/IF/metadata. The metad
 be extended by additional modules, which must have their own unique namespace. Parsers
 must always identify namespaces by URI and not by prefix.
 
+The metadata for a story may come from many different files. For example, an archive
+site may provide an index of games, a review site may provide reviews, the game author
+may provide 'feelies' (resources associated with the story), and the user may
+provide notes and comments. Modules are intended to be 'functionally unique', providing
+the data for one of these specific domains. Therefore, when an application fetches metadata
+from multiple locations, it might use the entire resources module from one place and the
+review module from another, but won't merge parts of the resources section from one site
+with those provided by another.
+
 \subsection{The root element: ifindex}
 
 This tag specifies the version of the IF metadata format with the 'version' attribute (0.9 for a
@@ -207,7 +216,6 @@ tags are defined:
 \item[<author>] The author of the story
 \item[<genre>] The genre of the story (Fantasy)
 \item[<published>] The date the story was first published in YYYYMMDD format (19810505)
-\\
 \item[<revision>] The revision number of the game
 \item[<headline>] The headline of the story (Infocom interactive fiction - a fantasy story)
 \item[<group>] The 'group' the story is in (for example, 'Infocom', 'Competition 1998', etc)
@@ -260,13 +268,14 @@ http://www.logicalshift.org.uk/IF/metadata/feelies
 The tags supported by this module are:
 
 \begin{description}
-\item[icon] A miniature picture associated with the game. This should be a base 64 encoded 
+\item[<icon>] A miniature picture associated with the game. This should be a base 64 encoded 
 PNG file of 128x128 size, and can be used by an interpreter to display an image associated with
 a game file.
-\item[image] A URL of an image associated with the game. Images should be of PNG or
+\item[<image>] A URL of an image associated with the game. Images should be of PNG or
 JPEG format.
-\item[pdf] A URL of a PDF document associated with the game. Can have an optional 'page' attribute to indicate that the
-pdf file should be opened to a particular page.
+\item[<pdf>] A URL of a PDF document associated with the game. Can have an optional 'page' attribute to indicate that the
+pdf file should be opened to a particular page (intended to be used with the masterpieces
+CD documentation).
 \end{description}
 
 All of these tags should have a 'title' attribute, indicating a name that should be displayed
@@ -287,8 +296,84 @@ The tags supported by this module are:
 
 \subsection{The resources module}
 
+Certain game formats allow for external resource files, and nearly all of them specify
+an external save game format. This module is used to describe the location of these files.
+
+The namespace URI for this module is http://www.logicalshift.org.uk/IF/metadata/resources
+
+The tags supported by this module are:
+
+\begin{description}
+\item[<story>] The URL of a file containing the story itself
+\item[<graphics>] The URL of a file containing graphics for the story (in the case of a format like blorb, may be identical to <sounds>)
+\item[<sounds>] The URL of a file containing sounds for the story (in the case of a format like blorb, may be identical to <graphics>)
+\item[<savegame tag="Something" date="savedate">] The URL of a savegame for the story 
+(multiple savegames are permitted.). The tag is a tag associated with the savegame
+(Zoom uses a summary of the status bar contents here), and the date specifies when the
+savegame was created.
+\end{description}
+
+Resources may be provided in an archive file, but are typically overridden by an interpreter
+to point to local versions of the resources (particularly savegames). Tags may appear multiple
+times if a story has many resources of a particular type.
+
 \subsection{The review module}
 
+Review sites may wish to provide review metadata. Reviews can be provided as plain text
+or as an embedded XHTML document. Implementors might want to consider providing
+an interface to switch between reviews when multiple sources provide them. 
+
+The namespace URI for this module is http://www.logicalshift.org.uk/IF/metadata/review
+
+The review tags are as follows:
+
+\begin{description}
+\item[<url>] A URL of a web page associated with this review.
+\item[<author>] The name of the author(s) of the review
+\item[<rating>] (Optional) A decimal value from 0-10 indicating the overall review rating
+\item[<text>] The text of the review
+\item[<xhtml>] (Optional replacement for text) The review as an XHTML format document
+\end{description}
+
 \section{Parsing notes}
+
+Zoom provides an implementation of this standard (actually, at present, the 0.9 standard) in
+the ifmetadata.c file provided as part of the source code. This can easily be used in other
+projects: it depends on the expat library but nothing else. In addition to parsing the metadata,
+it handles managing the results: adding new stories, saving the results, etc.
+
+(MORE TO DO)
+
+\section{Attaching metadata}
+
+\subsection{To z-code games}
+
+This section describes a technique by which XML metadata can be made part of a Z-Code
+game. Other file formats may already have methods for attaching metadata. This technique
+is similar to the ID3 tag method used with mp3 files.
+
+Z-Code files can be any length: file size limits are only imposed by the range of locations
+that can be addressed. As metadata does not need to be addressed by the game, it can be
+appended to a story file, even if that file is at the upper limit of the size permitted by the
+version (this is particularly important when large resources such as icons are provided).
+Some interpreters may not support this with large files however, and game authors should
+be made aware of this possibility (most I have inspected do, however).
+
+Metadata should be the last thing in a file. However, this format specifies lead-in and 
+lead-out so that it can appear elsewhere if necessary. It's expected that most implementations
+will only appear at the end. Metadata is preceded by a 12 byte lead-in, consisting of
+the 8-byte sequence 'IFMd0100' indicating metadata and the version number, followed
+by a 4 byte big-endian length. The XML metadata itself follows this, followed by a 12
+byte lead-out: the 4 byte big-endian length, followed by the sequence '0100IFMd'.
+Implementations can look for the '0100IFMd' sequence at the end of a file to determine
+if metadata is present.
+
+(TODO: metadata and the story checksum?)
+
+\subsection{In filesystem metadata}
+
+\subsection{To archive sites}
+
+\subsection{To review sites}
 
 \end{document}

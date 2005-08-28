@@ -1,0 +1,587 @@
+/*
+ *  ifmetabase.c
+ *  ZoomCocoa
+ *
+ *  Created by Andrew Hunter on 20/08/2005.
+ *  Copyright 2005 Andrew Hunter. All rights reserved.
+ *
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "ifmetabase.h"
+
+/* Concrete data structure definitions */
+
+typedef struct IFMetabaseIndexEntry {
+	IFMDKey key;
+	int entryNumber;
+} *IFMetabaseIndexEntry;
+
+struct IFMetabase {
+	IFMetabase parent;									/* The parent of this metabase */
+	
+	const int** modules;								/* Module names associated with this metabase */
+	int numModules;
+	int exclusive;										/* If 0, modules indicates the modules that are INCLUDED in this metabase, if 1, those that are excluded. Excluded modules are not represented in entries from this metabase */
+	
+	IFMDEntry* entries;									/* Unordered array of entries */
+	int numEntries;										/* Number of entries */
+	
+	int readOnly;										/* If 1, it's an error to do anything that alters this metabase or an entry in it */
+	
+	IFMetabaseIndexEntry keyIndex;						/* Ordered array mapping keys to entries */
+	int numKeys;										/* Number of keys */
+};
+
+struct IFMDKey {
+	/* Format of the game */
+	enum IFMDFormat format;
+	
+	/* ID for specific game types */
+	union
+	{
+		struct
+		{
+			int hasZCodeID;
+			
+			unsigned char serial[6];
+			int release;
+			int checksum;
+		} zcode;
+	} specific;
+	
+	/* General ID */
+	int hasMD5;
+	unsigned char md5[16];
+};
+
+typedef struct IFMDField IFMDField;
+struct IFMDField {
+	int*  name;								/* Name of this field. Root field has no name. */
+	int   isDataField;						/* 1 if this field actually contains binary data, 0 if a UCS-4 string */
+	void* data;								/* Data for this field, usually a string */
+	
+	IFMDField* subfields;					/* Subfields, if any, ordered by name */
+	int numSubfields;						/* Number of subfields for this field */
+	
+	int* flattened;							/* Cached version of what this field looks like with subfields flattened */
+	
+	IFMDField* parent;						/* The field that contains this field */
+	IFMDEntry  entry;						/* The entry that contains this field */
+};
+
+struct IFMDEntry {
+	IFMetabase belongsTo;					/* The metabase this entry belongs to */
+	IFMDEntry parent;						/* If this entry also exists in a parent metabase, contains a pointer to this entry */
+	
+	IFMDKey* keys;							/* The keys that refer to this entry */
+	int numKeys;							/* The number of keys that this entry contains */
+	
+	IFMDField field;						/* One single initial field, containing modules as sub-fields */
+};
+
+/* Initialisation */
+
+void metabase_init(void) {
+	/* Standard module namespaces */
+	int* base, *feelies, *comments, *resources, *review;
+	
+	base = metabase_ucs4("http://www.logicalshift.org.uk/IF/metadata/");
+	feelies = metabase_ucs4("http://www.logicalshift.org.uk/IF/metadata/feelies/");
+	comments = metabase_ucs4("http://www.logicalshift.org.uk/IF/metadata/comments/");
+	resources = metabase_ucs4("http://www.logicalshift.org.uk/IF/metadata/resources/");
+	review = metabase_ucs4("http://www.logicalshift.org.uk/IF/metadata/review/");
+	
+	metabase_associate_module(base, "base");
+	metabase_associate_module(feelies, "feelies");
+	metabase_associate_module(comments, "comments");
+	metabase_associate_module(resources, "resources");
+	metabase_associate_module(review, "review");
+	
+	/* Clean up */
+	metabase_free(base);
+	metabase_free(feelies);
+	metabase_free(comments);
+	metabase_free(resources);
+	metabase_free(review);
+}
+
+/* Metabase callbacks - implement elsewhere */
+
+void metabase_error(enum IFMDError errorCode, const char* simple_description, ...) {
+	printf("(FIXME: THIS ERROR SHOULD BE ELSEWHERE). Metabase error: %s\n", simple_description);
+	abort();
+}
+
+void metabase_caution(enum IFMDError errorCode, const char* simple_description, ...) {
+	printf("(FIXME: THIS ERROR SHOULD BE ELSEWHERE). Metabase warning: %s\n", simple_description);
+}
+
+/* Memory functions (re-implement these if you have a non-ANSI system) */
+
+void* metabase_alloc(size_t bytes) {
+	void* res;
+	
+	res = malloc(bytes);
+	if (res == NULL) metabase_error(IFMDE_FailedToAllocateMemory, "Failed to allocate memory");
+
+	return res;
+}
+
+void* metabase_realloc(void* ptr, size_t bytes) {
+	void* res;
+	
+	res = realloc(ptr, bytes);
+	if (res == NULL) metabase_error(IFMDE_FailedToAllocateMemory, "Failed to allocate memory");
+	
+	return res;
+}
+
+void metabase_free(void* ptr) {
+	free(ptr);
+}
+
+void metabase_memmove(void* dst, const void* src, size_t size) {
+	memmove(dst, src, size);
+}
+
+/* String convienience functions */
+
+int metabase_strlen(const int* string) {
+	int x = 0;
+	
+	while (string[x++] != 0);
+	
+	return x-1;
+}
+
+void metabase_strcpy(int* dst, const int* src) {
+	int x = 0;
+	
+	while (src[x] != 0) {
+		dst[x] = src[x];
+		x++;
+	}
+}
+
+int* metabase_strdup(const int* src) {
+	int* dst = metabase_alloc(sizeof(int)*metabase_strlen(src));
+	int x = 0;
+	
+	while (src[x] != 0) {
+		dst[x] = src[x];
+		x++;
+	}
+	
+	return dst;
+}
+
+int metabase_strcmp(const int* a, const int* b) {
+	int x = 0;
+	
+	while (a[x] != 0 && b[x] != 0 && a[x] == b[x]) x++;
+	
+	if (a[x] < b[x])
+		return -1;
+	else if (a[x] > b[x])
+		return 1;
+	else
+		return 0;
+}
+
+char* metabase_utf8(const int* string) {
+	char* res = NULL;
+	int pos = 0;
+	int len = 0;
+	int x;
+	
+#define add(c) if (pos <= len) { len += 32; res = metabase_realloc(res, sizeof(char)*(len)); } res[pos++] = c
+	
+	for (x=0; string[x] != 0; x++) {
+		int chr = string[x];
+		
+		if (chr < 0x20) {
+			/* These are for the most part invalid */
+			/* 
+			Actually, according to the XML spec, they are fine, but expat complains and pain often 
+			 results. This *will* prevent certain broken game files from indexing properly, and will
+			 generally result in duplicate entries in these cases.
+			 */
+		} else if (chr < 0x80) {
+			add(chr);
+		} else if (chr < 0x800) {
+			add(0xc0 | (chr>>6));
+			add(0x80 | (chr&0x3f));
+		} else if (chr < 0x10000) {
+			add(0xe0 | (chr>>12));
+			add(0x80 | ((chr>>6)&0x3f));
+			add(0x80 | (chr&0x3f));
+		} else if (chr < 0x200000) {
+			add(0xf0 | (chr>>18));
+			add(0x80 | ((chr>>12)&0x3f));
+			add(0x80 | ((chr>>6)&0x3f));
+			add(0x80 | (chr&0x3f));
+		} else {
+			/* These characters can't be represented by unicode anyway */
+		}
+	}
+				
+	add(0);
+	return res;
+}
+
+/* Number of bytes each individual UTF-8 character encodes across */
+static unsigned char bytesFromUTF8[256] = {
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5};
+
+int* metabase_ucs4(const char* utf8) {
+	int len = 0;
+	int* res = NULL;
+	int x = 0;
+	int pos = 0;
+	
+	for (len=0; utf8[len]!=0; len++);
+	res = metabase_alloc(sizeof(int)*len);
+	
+	for (x=0; x<len; x++) {
+		int chr = (unsigned char)utf8[x];
+		
+		if (chr < 127) {
+			res[pos++] = chr;
+		} else {
+			/* UTF-8 decode */
+			int bytes = bytesFromUTF8[chr];
+			int chrs[6];
+			int y;
+			int errorFlag;
+			
+			if (x+bytes >= len) break;
+			
+			/* Read+check the characters that make up this char */
+			errorFlag = 0;
+			for (y=0; y<=bytes; y++) {
+				chrs[y] = (unsigned char)utf8[x+y];
+				
+				if (chrs[y] < 127) errorFlag = 1;
+			}
+			if (errorFlag) continue; /* Ignore this character (error) */
+			
+			/* Get the UCS-4 character */
+			switch (bytes) {
+				case 1: chr = ((chrs[0]&~0xc0)<<6)|(chrs[1]&~0x80); break;
+				case 2: chr = ((chrs[0]&~0xe0)<<12)|((chrs[1]&~0x80)<<6)|(chrs[2]&~0x80); break;
+				case 3: chr = ((chrs[0]&~0xf0)<<18)|((chrs[1]&~0x80)<<12)|((chrs[2]&~0x80)<<6)|(chrs[3]&~0x80); break;
+				case 4: chr = ((chrs[0]&~0xf8)<<24)|((chrs[1]&~0x80)<<18)|((chrs[2]&~0x80)<<12)|((chrs[3]&~0x80)<<6)|(chrs[4]&~0x80); break;
+				case 5: chr = ((chrs[0]&~0xfc)<<28)|((chrs[1]&~0x80)<<24)|((chrs[2]&~0x80)<<18)|((chrs[3]&~0x80)<<12)|((chrs[4]&~0x80)<<6)|(chrs[5]&~0x80); break;
+			}
+			
+			x += bytes;
+			
+			res[pos++] = chr;
+		}
+	}
+	
+	res[x] = 0;
+	
+	return res;
+}
+
+/* Static utility functions */
+
+static int binary_search(void** array, const void* obj, int count, int(*compare)(const void* a, const void* b)) {
+	int top, middle, bottom;
+	
+	if (count <= 0) return -1;
+	
+	bottom = 0;
+	top = count-1;
+	
+	while (bottom >= top) {
+		int compareResult;
+		
+		/* Work out which object to compare */
+		middle = (top+bottom)>>1;
+		
+		/* Perform the comparison */
+		compareResult = compare(array[middle], obj);
+		
+		/* Return the result if equal, or move the top/bottom of the search range if not */
+		if (compareResult == 0) {
+			return middle;
+		} else if (compareResult < 0) {
+			bottom = middle+1;
+		} else {
+			top = middle-1;
+		}
+	}
+	
+	/* Return the first result that is larger than obj */
+	if (top < 0) top = 0;
+	
+	while (top < count && compare(array[top], obj) < 0) top++;
+	
+	return top;
+}
+
+/* Describing metadata structure */
+
+typedef struct IFMDModule {
+	const int* namespace;
+	const char* shortname;
+} IFMDModule;
+
+/* Indices, ordered */
+static IFMDModule** modules_by_namespace = NULL;
+static IFMDModule** modules_by_shortname = NULL;
+static int modules_count = 0;
+
+static int compare_module_namespace(const void* modA, const void* modB) {
+	return metabase_strcmp(((IFMDModule*)modA)->namespace, (const int*)modB);
+}
+
+static int compare_module_shortname(const void* modA, const void* modB) {
+	return strcmp(((IFMDModule*)modA)->shortname, (const char*)modB);
+}
+
+/* Associates a namespace with a module name */
+void metabase_associate_module(const int* namespace, const char* shortname) {
+	int namespace_storage_point = 0;
+	int shortname_storage_point = 0;
+	IFMDModule* new_module;
+	
+	if (namespace == NULL || shortname == NULL) {
+		metabase_error(IFMDE_NULLReference, "Either a NULL namespace or shortname passed to metabase_associate_module");
+		return;
+	}
+		
+	/* Store by namespace, and then by shortname */
+	namespace_storage_point = binary_search((void**)modules_by_namespace, namespace, modules_count, compare_module_namespace);
+	shortname_storage_point = binary_search((void**)modules_by_shortname, shortname, modules_count, compare_module_shortname);
+	
+	/*
+	 * Both the namespace and the shortname must not have been used before: anything else produces a caution, and results in
+	 * this module not being used
+	 */
+	if (namespace_storage_point < modules_count && compare_module_namespace(modules_by_namespace[namespace_storage_point], namespace) == 0) {
+		metabase_caution(IFMDE_NamespaceAlreadyInUse, "Namespace already in use: Each namespace may only be associated with one short name", namespace);
+		return;
+	}
+
+	if (shortname_storage_point < modules_count && compare_module_shortname(modules_by_shortname[shortname_storage_point], shortname) == 0) {
+		metabase_caution(IFMDE_ModuleNameAlreadyInUse, "Module name already in use: Each namespace may only be associated with one short name", shortname);
+		return;
+	}
+	
+	/* Make space for the new entry */
+	modules_by_namespace = metabase_realloc(modules_by_namespace, sizeof(IFMDModule*)*(modules_count+1));
+	modules_by_shortname = metabase_realloc(modules_by_shortname, sizeof(IFMDModule*)*(modules_count+1));
+	
+	if (namespace_storage_point < modules_count) {
+		metabase_memmove(modules_by_namespace + namespace_storage_point + 1, 
+						 modules_by_namespace + namespace_storage_point,
+						 sizeof(IFMDModule*)*(modules_count-namespace_storage_point));
+	}
+	if (shortname_storage_point < modules_count) {
+		metabase_memmove(modules_by_shortname + shortname_storage_point + 1, 
+						 modules_by_shortname + shortname_storage_point,
+						 sizeof(IFMDModule*)*(modules_count-shortname_storage_point));
+	}
+	
+	/* Store the new entry */
+	new_module = metabase_alloc(sizeof(IFMDModule));
+	new_module->namespace = metabase_strdup(namespace);
+	new_module->shortname = strdup(shortname);
+	
+	modules_by_namespace[namespace_storage_point] = modules_by_shortname[shortname_storage_point] = new_module;
+}
+
+/* Retrieves the module name to use for a specific namespace */
+const char* metabase_module_for_namespace(const int* namespace) {
+	int storage_point = 0;
+	
+	storage_point = binary_search((void**)modules_by_namespace, namespace, modules_count, compare_module_namespace);
+	if (storage_point < modules_count && compare_module_namespace(modules_by_namespace[storage_point], namespace) == 0) {
+		return NULL;
+	}
+	
+	return modules_by_namespace[storage_point]->shortname;
+}
+
+/* Retrieves a namespace for a specific module */
+const int* metabase_namespace_for_module(const char* module) {
+	int storage_point = 0;
+	
+	storage_point = binary_search((void**)modules_by_shortname, module, modules_count, compare_module_shortname);
+	if (storage_point < modules_count && compare_module_shortname(modules_by_shortname[storage_point], module) == 0) {
+		return NULL;
+	}
+	
+	return modules_by_shortname[storage_point]->namespace;
+}
+
+/* Creating metabases */
+
+/* Creates a new, empty metabase */
+IFMetabase metabase_create(IFMetabase parent) {
+	IFMetabase result = metabase_alloc(sizeof(struct IFMetabase));
+	
+	result->parent = parent;
+
+	result->modules = NULL;
+	result->numModules = 0;
+	result->exclusive = 1;
+	
+	result->entries = NULL;
+	result->numEntries = 0;
+	
+	result->readOnly = 0;
+	
+	result->keyIndex = NULL;
+	result->numKeys = 0;
+	
+	return result;
+}
+
+/* Destroys an old, unworthy metabase */
+void metabase_destroy(IFMetabase metabase) {
+	/* Destroy the entries and the keys (IMPLEMENT ME) */
+	
+	/* Finally, kill it off */
+	metabase_free(metabase);
+}
+
+/* Sets how a metabase is filtered (exclusive: modules are filtered out, inclusive: modules are filtered in) */
+void metabase_filter(IFMetabase metabase, enum IFMDFilter filter_style) {
+	if (filter_style == IFFilter_Exclusive) {
+		metabase->exclusive = 1;
+	} else {
+		metabase->exclusive = 0;
+	}
+}
+
+/* Adds a module to the list of filters for a metabase */
+
+static int compare_strings(const void*a, const void*b) {
+	return metabase_strcmp((const int*)a, (const int*)b);
+}
+
+/*
+ * If the filter style is IF_inclusive, then data for this module is now presented (you'll get results for data from
+ * this module in this metabase).
+ * If the filter style is IF_exclusive, then data for this module is removed (you'll no longer get results for data from
+ * this module)
+ */
+void metabase_add_filter(IFMetabase metabase, const char* module_name) {
+	const int* module_namespace;
+	int storage_pos = 0;
+	
+	module_namespace = metabase_namespace_for_module(module_name);
+	
+	/* Nothing to do if we've never heard about this namespace */
+	if (module_namespace == NULL) return;
+	
+	/* Find where to add in the list of filters */
+	storage_pos = binary_search((void**)metabase->modules, module_namespace, metabase->numModules, compare_strings);
+	
+	/* Duplicate modules are added multiple times (this is so that if we ever add a remove instruction, it'll match up with the number of adds) */
+	metabase->modules = metabase_realloc(metabase->modules, sizeof(int*)*(metabase->numModules+1));
+	
+	if (storage_pos < metabase->numModules) {
+		metabase_memmove(metabase->modules + storage_pos + 1, metabase->modules + storage_pos, sizeof(int*)*(metabase->numModules-storage_pos));
+	}
+	
+	metabase->modules[storage_pos] = module_namespace;
+}
+
+/* Returns 1 if a module is filtered from a particular metabase */
+int metabase_is_filtered(IFMetabase metabase, const char* module_name) {
+	const int* module_namespace;
+	int storage_pos = 0;
+	int found = 0;
+	
+	module_namespace = metabase_namespace_for_module(module_name);
+	
+	/* Nothing to do if we've never heard about this namespace */
+	if (module_namespace == NULL) return !metabase->exclusive;
+
+	/* Search for this module */
+	storage_pos = binary_search((void**)metabase->modules, module_namespace, metabase->numModules, compare_strings);
+	
+	if (storage_pos < 0 || storage_pos >= metabase->numModules) {
+		found = 0;
+	} else {
+		found = compare_strings(metabase->modules[storage_pos], module_namespace)==0;
+	}
+	
+	if (metabase->exclusive)
+		return found;
+	else
+		return !found;
+}
+
+/* Describing stories */
+
+/* Creates a reference to a story with a specific type and MD5 */
+extern IFMDKey metabase_story_with_md5(enum IFMDFormat format, const char* md5);
+
+/* Creates a reference to a story with a z-code identification. md5 can be NULL if unknown */
+extern IFMDKey metabase_story_with_zcode(const char* serial, unsigned int release, unsigned int checksum, const char* md5);
+
+/* Compares two IFMDKeys */
+extern int metabase_compare_keys(IFMDKey key1, IFMDKey key2);
+
+/* Storing metadata */
+
+/*
+ * Metadata strings are in null-terminated UCS-4. Fields can use '.' to indicate structure (eg foo.bar to indicate
+ * <foo><bar>Data</bar></foo>), and '@' to indicate attributes (eg foo@bar for <foo bar="Data"></foo>).
+ *
+ * Data fields should be otherwise unstructured. Not all XML structure can be represented: this is deliberate. The
+ * metabase is XML-like, not actual XML.
+ */
+
+/* Gets an entry for a specific key (entries may be created if they don't exist yet) */
+extern IFMDEntry metabase_entry_for_key(IFMetabase metabase, IFMDKey key);
+
+/* Associates an additional key with an entry */
+extern void metabase_add_key(IFMDEntry entry, IFMDKey newKey);
+
+/* Clones an entry, excepting metabase excluded modules, in a different metabase */
+extern IFMDEntry metabase_clone_entry(IFMetabase metabase, IFMDEntry lastEntry);
+
+/* Clears a specific field */
+extern void metabase_clear_field(IFMDEntry entry, const char* module, const char* field);
+
+/* Associate a string with a specific field (replacing all contents of that field) */
+extern void metabase_store_string(IFMDEntry entry, const char* module, const char* field, const int* string);
+
+/* Adds a string to the set associated with a specific field */
+extern void metabase_add_string(IFMDEntry entry, const char* module, const char* field, const int* string);
+
+/* Associate binary data with a specific field */
+extern void metabase_store_data(IFMDEntry entry, const char* module, const char* field, const unsigned char* bytes, int length);
+
+/* Adds some data to the set associated with the specified field */
+extern void metabase_add_data(IFMDEntry entry, const char* module, const char* field, const unsigned char* bytes, int length);
+
+/* Retrieve a string from a specific field (returns NULL if the field is data or if the field does not exist) */
+extern int* metabase_get_string(IFMDEntry entry, const char* module, const char* field);
+
+/* Retrieves all the strings associated with a specific field */
+extern int** metabase_get_strings(IFMDEntry entry, const char* module, const char* field, int* count_out);
+
+/* Retrieve data from a specific field */
+extern unsigned char* metabase_get_data(IFMDEntry entry, const char* module, const char* field);
+
+/* Retrieve all the data from a specific field */
+extern unsigned char** metabase_get_all_data(IFMDEntry entry, const char* module, const char* field, int* count_out);

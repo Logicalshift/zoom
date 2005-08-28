@@ -319,6 +319,8 @@
 		4BACEABE05B45C0500A9B6DC /* ZoomStoryID.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BACEABC05B45C0500A9B6DC /* ZoomStoryID.m */; };
 		4BAE0EF7062ADA1A009426D5 /* iFiction.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4BAE0EF6062ADA19009426D5 /* iFiction.icns */; };
 		4BB515B505BC615F00D00C96 /* iFiction.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4BB515B405BC615F00D00C96 /* iFiction.nib */; };
+		4BB8BED508B785B200D7D334 /* ifmetabase.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB8BED308B785B200D7D334 /* ifmetabase.h */; };
+		4BB8BED608B785B200D7D334 /* ifmetabase.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BB8BED408B785B200D7D334 /* ifmetabase.c */; settings = {COMPILER_FLAGS = "-pedantic -ansi"; }; };
 		4BBC1F6C062F41E300FE547F /* stars-grey.png in Resources */ = {isa = PBXBuildFile; fileRef = 4BBC1F69062F41E300FE547F /* stars-grey.png */; };
 		4BBC1F6D062F41E300FE547F /* stars-none.png in Resources */ = {isa = PBXBuildFile; fileRef = 4BBC1F6A062F41E300FE547F /* stars-none.png */; };
 		4BBC1F6E062F41E300FE547F /* stars-red.png in Resources */ = {isa = PBXBuildFile; fileRef = 4BBC1F6B062F41E300FE547F /* stars-red.png */; };
@@ -708,6 +710,8 @@
 		4BACEABC05B45C0500A9B6DC /* ZoomStoryID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomStoryID.m; sourceTree = "<group>"; };
 		4BAE0EF6062ADA19009426D5 /* iFiction.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = iFiction.icns; sourceTree = "<group>"; };
 		4BB515B405BC615F00D00C96 /* iFiction.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = iFiction.nib; sourceTree = "<group>"; };
+		4BB8BED308B785B200D7D334 /* ifmetabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ifmetabase.h; sourceTree = "<group>"; };
+		4BB8BED408B785B200D7D334 /* ifmetabase.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ifmetabase.c; sourceTree = "<group>"; };
 		4BBC1F69062F41E300FE547F /* stars-grey.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stars-grey.png"; sourceTree = "<group>"; };
 		4BBC1F6A062F41E300FE547F /* stars-none.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stars-none.png"; sourceTree = "<group>"; };
 		4BBC1F6B062F41E300FE547F /* stars-red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stars-red.png"; sourceTree = "<group>"; };
@@ -1156,6 +1160,8 @@
 			children = (
 				4BECA81B05B19CFB006840BA /* ifmetadata.h */,
 				4BECA80005B19BE1006840BA /* ifmetadata.c */,
+				4BB8BED308B785B200D7D334 /* ifmetabase.h */,
+				4BB8BED408B785B200D7D334 /* ifmetabase.c */,
 			);
 			name = Metadata;
 			sourceTree = "<group>";
@@ -1252,6 +1258,7 @@
 				4B4D512406E38951007FAD2B /* ZoomConnector.h in Headers */,
 				4BE5F51C0751220000C25A70 /* ZoomTextToSpeech.h in Headers */,
 				4BAADD7F079053050076ACC4 /* ZoomSkeinLayoutItem.h in Headers */,
+				4BB8BED508B785B200D7D334 /* ifmetabase.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1554,6 +1561,7 @@
 				4B5CBB7A069D656000C0AA88 /* ZoomStoryTableView.m in Sources */,
 				4BC5562306B83F4600F0DD4A /* ZoomResourceDrop.m in Sources */,
 				4B9E2D4A06E2217100783BE8 /* ZoomClientController.m in Sources */,
+				4BB8BED608B785B200D7D334 /* ifmetabase.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
