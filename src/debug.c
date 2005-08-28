@@ -31,7 +31,11 @@
 #include <signal.h>
 
 #define yylval debug_eval_lval
-#include "eval.h"
+#ifndef APPLE_IS_ARBITRARY
+# include "eval.h"
+#else
+# include "eval.tab.h"
+#endif
 
 debug_breakpoint* debug_bplist       = NULL;
 int               debug_nbps         = 0;

@@ -35,7 +35,11 @@
 #undef VERSION
 
 #include "operation.h"
-#include "gram.h"
+#ifndef APPLE_IS_ARBITRARY
+# include "gram.h"
+#else
+# include "gram.tab.h"
+#endif
 
 extern int    yyline;
 extern oplist zmachine;

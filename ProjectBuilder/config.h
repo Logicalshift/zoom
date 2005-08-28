@@ -4,7 +4,7 @@
 #define OPT_TYPE 1
 
 /* Which window system to use */
-// #define WINDOW_SYSTEM 3
+/* #define WINDOW_SYSTEM 3 */
 #define WINDOW_SYSTEM 4
 
 /* Do we have gettimeofday? */

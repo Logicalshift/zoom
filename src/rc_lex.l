@@ -4,7 +4,11 @@
 
 #include "rc.h"
 #include "rcp.h"
-#include "rc_parse.h"
+#ifndef APPLE_IS_ARBITRARY
+# include "rc_parse.h"
+#else
+# include "rc_parse.tab.h"
+#endif
 
 int _rc_line;
 %}
