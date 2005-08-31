@@ -303,7 +303,7 @@
 
 - (BOOL)loadFileWrapperRepresentation:(NSFileWrapper *)wrapper 
 							   ofType:(NSString *)docType {
-	if (![wrapper isDirectory]) {		
+	if (![[docType lowercaseString] isEqualToString: @"quetzal saved game"] && ![wrapper isDirectory]) {		
 		// Note that resources might come from elsewhere later on in the load process, too
 		[self findResourcesForFile: [self fileName]];
 		
@@ -312,16 +312,19 @@
 									 ofType: docType];
 	}
 
-	if (![[docType lowercaseString] isEqualToString: @"zoom savegame"]) {
+	if (![[docType lowercaseString] isEqualToString: @"zoom savegame"] &&
+		![[docType lowercaseString] isEqualToString: @"quetzal saved game"]) {
 		// Process only zoomSave files
 		return NO;
 	}
+	
+	BOOL isSingleFile = [[docType lowercaseString] isEqualToString: @"quetzal saved game"];
 	
 	// NOTE: a future version of Zoom will add a story type identifier to the zoomSave file format, to
 	// support various types of Glk games.
 	
 	// Read the IFhd section of the save data to find the story identifier
-	NSData* quetzal = [[[wrapper fileWrappers] objectForKey: @"save.qut"] regularFileContents];
+	NSData* quetzal = isSingleFile?[wrapper regularFileContents]:[[[wrapper fileWrappers] objectForKey: @"save.qut"] regularFileContents];
 	ZoomStoryID* storyID = nil;
 	
 	if (quetzal == nil) {
@@ -368,9 +371,15 @@
 	
 	if ((pos-4) > len) {
 		// Not a valid zoomSave file
-		NSBeginAlertSheet(@"Not a valid Zoom savegame package", 
-						  @"Cancel", nil, nil, nil, nil, nil, nil, nil,
-						  @"%@ does not contain a valid 'save.qut' file", [[wrapper filename] lastPathComponent]);
+		if (!isSingleFile) {
+			NSBeginAlertSheet(@"Not a valid Zoom savegame package", 
+							  @"Cancel", nil, nil, nil, nil, nil, nil, nil,
+							  @"%@ does not contain a valid 'save.qut' file", [[wrapper filename] lastPathComponent]);
+		} else {
+			NSBeginAlertSheet(@"Not a valid Quetzal file", 
+							  @"Cancel", nil, nil, nil, nil, nil, nil, nil,
+							  @"%@ is not a valid Quetzal file", [[wrapper filename] lastPathComponent]);
+		}
 		
 		return NO;
 	}
@@ -397,6 +406,18 @@
 						  gameFile);
 		
 		return NO;		
+	}
+	
+	if (isSingleFile) {
+		// No more to do
+		if (saveData) [saveData release];
+		saveData = [[NSData dataWithBytes: ((unsigned char*)[quetzal bytes])+12 length: [quetzal length]-12] retain];
+
+		wasRestored = YES;
+		
+		[self setFileName: gameFile];
+		return [self loadDataRepresentation: data
+									 ofType: @"ZCode story"];
 	}
 	
 	// Get the saved view state for this game

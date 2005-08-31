@@ -300,7 +300,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4BB8C0DC08C2452E00D7D334 /* Builder (Upgraded) */;
+			remoteGlobalIDString = 4BB8C0DC08C2452E00D7D334;
 			remoteInfo = "Builder (Upgraded)";
 		};
 		4BB8C12408C2497700D7D334 /* PBXContainerItemProxy */ = {
@@ -321,7 +321,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4BB8C12208C2497700D7D334 /* ZoomServer (Upgraded) */;
+			remoteGlobalIDString = 4BB8C12208C2497700D7D334;
 			remoteInfo = "ZoomServer (Upgraded)";
 		};
 		4BB8C18A08C249F400D7D334 /* PBXContainerItemProxy */ = {

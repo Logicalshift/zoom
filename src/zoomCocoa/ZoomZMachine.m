@@ -193,6 +193,8 @@
     // Setup the display, etc
     rc_set_game(zmachine_get_serial(), Word(ZH_release), Word(ZH_checksum));
     display_initialise();
+	
+	if (wasRestored) zmachine_setup_header();
 
     // Start running the machine
     switch (machine.header[0])

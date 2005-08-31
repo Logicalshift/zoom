@@ -142,6 +142,10 @@
 		// Restore the save data
 		[[(ZoomClient*)[self document] defaultView] restoreSaveState: [[self document] saveData]];
 		[[self document] setSaveData: nil];
+	} else if ([[self document] saveData] != nil) {
+		// Restore the save data without restoring the view
+		[zoomView restoreSaveState: [[self document] saveData]];
+		[[self document] setSaveData: nil];
 	}
 }
 
