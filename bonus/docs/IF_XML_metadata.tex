@@ -198,13 +198,25 @@ specifying the date of release, such as 030501.
 
 \subsubsection{MD5 identification}
 
-Any story format may have an MD5 section. This is a hexadecimal representation of the
+Any story format may have an MD5 section instead of a format-specific identification. 
+This is a hexadecimal representation of the
 MD5 checksum of a story file. In the case of a Blorb file, this is the MD5 checksum of
 the executable portion of the file (the Z-Code or Glulx code file that it contains) rather
 than the entire file. There are several utilities available for generating MD5 checksums,
-for example the 'md5' utility that comes with OpenSSL. Any story <format> may have
-an <md5> section, although the format-specific identification should be used for preference
-as it will be easier to write for a story author.
+for example the 'md5' utility that comes with OpenSSL.
+
+A story format that has a format-specific means of identification will probably want to
+provide both an MD5 and the format-specific ID tags.
+
+\subsubsection{Resource identification}
+
+A 'story' might be considered as spread across several files. Typically, IF systems that do
+this distribute files into a 'game' file containing the actual story data, and some kind of
+'resources' file containing additional information such as images and sounds. With modern
+graphical operating systems, it is desirable that a game resource can be associated with the
+game that created it. To enable this, this specification provides several extra identification
+formats that identify resources. The contents of the resources module can be used to find
+the actual resources associated with a game.
 
 \subsection{The metadata tags}
 

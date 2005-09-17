@@ -15,6 +15,8 @@
 
 /* Concrete data structure definitions */
 
+typedef struct IFMDRecord IFMDRecord;
+
 typedef struct IFMetabaseIndexEntry {
 	IFMDKey key;
 	int entryNumber;
@@ -27,7 +29,7 @@ struct IFMetabase {
 	int numModules;
 	int exclusive;										/* If 0, modules indicates the modules that are INCLUDED in this metabase, if 1, those that are excluded. Excluded modules are not represented in entries from this metabase */
 	
-	IFMDEntry* entries;									/* Unordered array of entries */
+	IFMDRecord* entries;								/* Unordered array of records */
 	int numEntries;										/* Number of entries */
 	
 	int readOnly;										/* If 1, it's an error to do anything that alters this metabase or an entry in it */
@@ -40,22 +42,31 @@ struct IFMDKey {
 	/* Format of the game */
 	enum IFMDFormat format;
 	
-	/* ID for specific game types */
+	enum {
+		IFMDKeyZCode,
+
+		IFMDKeyMD5,
+		IFMDKeyURI
+	} type;
+	
+	/* ID for specific key types */
 	union
 	{
 		struct
 		{
-			int hasZCodeID;
-			
 			unsigned char serial[6];
 			int release;
 			int checksum;
 		} zcode;
+		
+		struct {
+			unsigned char md5[16];
+		} md5;
+		
+		struct {
+			char* uri;
+		} uri;
 	} specific;
-	
-	/* General ID */
-	int hasMD5;
-	unsigned char md5[16];
 };
 
 typedef struct IFMDField IFMDField;
@@ -74,7 +85,14 @@ struct IFMDField {
 };
 
 struct IFMDEntry {
-	IFMetabase belongsTo;					/* The metabase this entry belongs to */
+	IFMetabase metabase;					/* Metabase this entry is from */
+	int record;								/* Record this entry refers to */
+	
+	IFMDEntry previous;						/* Entry in a previous metabase */
+};
+
+struct IFMDRecord {
+	IFMetabase belongsTo;					/* The metabase this record belongs to */
 	IFMDEntry parent;						/* If this entry also exists in a parent metabase, contains a pointer to this entry */
 	
 	IFMDKey* keys;							/* The keys that refer to this entry */
@@ -503,6 +521,12 @@ void metabase_add_filter(IFMetabase metabase, const char* module_name) {
 	metabase->modules[storage_pos] = module_namespace;
 }
 
+
+/* Marks a metabase as read-only */
+void metabase_set_readonly(IFMetabase metabase, int isReadOnly) {
+	metabase->readOnly = isReadOnly!=0;
+}
+
 /* Returns 1 if a module is filtered from a particular metabase */
 int metabase_is_filtered(IFMetabase metabase, const char* module_name) {
 	const int* module_namespace;
@@ -529,29 +553,161 @@ int metabase_is_filtered(IFMetabase metabase, const char* module_name) {
 		return !found;
 }
 
-/* Describing stories */
+/* Describing stories/story resources */
 
 /* Creates a reference to a story with a specific type and MD5 */
-extern IFMDKey metabase_story_with_md5(enum IFMDFormat format, const char* md5);
+IFMDKey metabase_story_with_md5(enum IFMDFormat format, const char* md5) {
+	IFMDKey res;
+	int x;
+	
+	res = metabase_alloc(sizeof(struct IFMDKey));
+	
+	res->type = IFMDKeyMD5;
+	res->format = format;
 
-/* Creates a reference to a story with a z-code identification. md5 can be NULL if unknown */
-extern IFMDKey metabase_story_with_zcode(const char* serial, unsigned int release, unsigned int checksum, const char* md5);
+	for (x=0; x<16; x++) {
+		res->specific.md5.md5[x] = md5[x];
+	}
+	
+	return res;
+}
+
+/* Creates a reference to a story existing at a specific URI */
+IFMDKey metabase_story_with_uri(enum IFMDFormat format, const char* uri) {
+	IFMDKey res;
+	
+	res = metabase_alloc(sizeof(struct IFMDKey));
+	
+	res->type = IFMDKeyURI;
+	res->format = format;
+	
+	res->specific.uri.uri = metabase_alloc(sizeof(char)*(strlen(uri)+1));
+	strcpy(res->specific.uri.uri, uri);
+	
+	return res;
+}
+
+/* Creates a reference to a story with a z-code identification. */
+IFMDKey metabase_story_with_zcode(const char* serial, unsigned int release, unsigned int checksum) {
+	IFMDKey res;
+	int x;
+
+	res = metabase_alloc(sizeof(struct IFMDKey));
+	
+	res->type = IFMDKeyURI;
+	res->format = IFFormat_ZCode;
+	
+	for (x=0; x<6; x++) {
+		res->specific.zcode.serial[x] = serial[x];
+	}
+	res->specific.zcode.release = release;
+	res->specific.zcode.checksum = checksum;
+	
+	return res;
+}
 
 /* Compares two IFMDKeys */
-extern int metabase_compare_keys(IFMDKey key1, IFMDKey key2);
+int metabase_compare_keys(IFMDKey key1, IFMDKey key2) {
+	int x;
+	
+	/* See if key types differ */
+	if (key1->type < key2->type) {
+		return -1;
+	} else if (key1->type > key2->type) {
+		return 1;
+	}
+	
+	/* Compare based on the data the key represents */
+	switch (key1->type) {
+		case IFMDKeyMD5:
+			for (x=0; x<16; x++) {
+				char k1 = key1->specific.md5.md5[x];
+				char k2 = key2->specific.md5.md5[x];
+				
+				if (k1 < k2) {
+					return -1;
+				} else if (k1 > k2) {
+					return 1;
+				}
+			}
+			break;
+			
+		case IFMDKeyZCode:
+			if (key1->specific.zcode.release < key2->specific.zcode.release) {
+				return -1;
+			} else if (key1->specific.zcode.release > key2->specific.zcode.release) {
+				return 1;
+			} else if (key1->specific.zcode.checksum < key2->specific.zcode.checksum) {
+				return -1;
+			} else if (key1->specific.zcode.checksum > key2->specific.zcode.checksum) {
+				return 1;
+			}
+			
+			for (x=0; x<6; x++) {
+				unsigned char k1 = key1->specific.zcode.serial[x];
+				unsigned char k2 = key2->specific.zcode.serial[x];
+				
+				if (k1 < k2) {
+					return -1;
+				} else if (k1 > k2) {
+					return 1;
+				}				
+			}
+			break;
+			
+		case IFMDKeyURI:
+			break;
+			
+		default:
+			metabase_error(IFMDE_InvalidMDKey, "A key of an unknown type was passed to metabase_compare_keys");
+	}
+	
+	return 0;
+}
+
+/* Gets the format associated with a key */
+enum IFMDFormat metabase_format_for_key(IFMDKey key) {
+	return key->format;
+}
 
 /* Storing metadata */
 
-/*
- * Metadata strings are in null-terminated UCS-4. Fields can use '.' to indicate structure (eg foo.bar to indicate
- * <foo><bar>Data</bar></foo>), and '@' to indicate attributes (eg foo@bar for <foo bar="Data"></foo>).
- *
- * Data fields should be otherwise unstructured. Not all XML structure can be represented: this is deliberate. The
- * metabase is XML-like, not actual XML.
- */
+/* Compares a IFMetabaseIndexEntry to a IFMDKey */
+static int key_index_to_key_compare(const void* a_indexEntry, const void* b_mdKey) {
+	const struct IFMetabaseIndexEntry* entry;
+	const struct IFMDKey* key;
+	
+	entry = a_indexEntry;
+	key = b_mdKey;
+	
+	return metabase_compare_keys(entry->key, (IFMDKey)key);
+}
+
+/* Makes a copy of an entry (used to copy entries out of the metabase) */
+void metabase_copy_entry(IFMDEntry dest, IFMDEntry src) {
+}
 
 /* Gets an entry for a specific key (entries may be created if they don't exist yet) */
-extern IFMDEntry metabase_entry_for_key(IFMetabase metabase, IFMDKey key);
+IFMDEntry metabase_entry_for_key(IFMetabase metabase, IFMDKey key) {
+	IFMDEntry result = NULL;
+	IFMDEntry thisResult = NULL;
+	int entryNumber = 0;
+	
+	/* Search for the entry in the entry index */
+	if (metabase->keyIndex != NULL) {
+		entryNumber = binary_search((void**)metabase->keyIndex, 
+									key,
+									metabase->numKeys,
+									key_index_to_key_compare);
+	}
+	
+	/* See if we've found */
+		
+	return NULL;
+}
+
+/* Given a key with an unknown (or uncertain) format and an entry indexed by that key, retrieves the format (which MAY still be unknown, but really shouldn't be) */
+extern enum IFMDFormat metabase_format_for_entry_key(IFMDEntry entry, IFMDKey unknownKey);
 
 /* Associates an additional key with an entry */
 extern void metabase_add_key(IFMDEntry entry, IFMDKey newKey);

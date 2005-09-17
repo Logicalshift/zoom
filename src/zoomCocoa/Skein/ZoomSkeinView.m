@@ -782,8 +782,12 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	ZoomSkeinItem* parent = [skein activeItem];
 	while (parent != nil) {
 		if (parent == skeinItem) {
-			// Can't delete an item that's the parent of the active item
-			NSBeep(); // Maybe need some better feedback
+			if (![delegate respondsToSelector: @selector(cantDeleteActiveBranch)]) {
+				// Can't delete an item that's the parent of the active item
+				NSBeep();
+			} else {
+				[delegate cantDeleteActiveBranch];
+			}
 			return;
 		}
 		
@@ -938,7 +942,12 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	
 	if ([skeinItem parent] == nil) {
 		// Can't edit the root item
-		NSBeep();
+		if (![delegate respondsToSelector: @selector(cantEditRootItem)]) {
+			NSBeep();
+		} else {
+			[delegate cantEditRootItem];
+		}
+
 		return;
 	}
 	

@@ -264,7 +264,7 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	[commentView setDelegate: self];
 	
 	[collapseView addSubview: previewView
-				   withTitle: @"Savegames"];
+				   withTitle: @"Saved games"];
 	[collapseView addSubview: teaserView
 				   withTitle: @"Teaser"];
 	[collapseView addSubview: commentView

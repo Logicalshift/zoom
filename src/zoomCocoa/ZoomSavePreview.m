@@ -221,7 +221,7 @@ static NSImage* saveBackground;
 	NSBeginAlertSheet(@"Are you sure?", 
 					  @"Keep", @"Delete", nil, nil, self, @selector(confirmDelete:returnCode:contextInfo:), 
 					  nil, nil,
-					  @"Are you sure you want to delete this savegame?");
+					  @"Are you sure you want to delete this saved game?");
 	
 	return;
 }
@@ -254,24 +254,24 @@ static NSImage* saveBackground;
 	
 	if (![[NSFileManager defaultManager] fileExistsAtPath: saveQut
 											  isDirectory: &isDir]) {
-		genuine = NO; reason = reason?reason:@"Contents do not look like a savegame";
+		genuine = NO; reason = reason?reason:@"Contents do not look like a saved game";
 	}
 	if (isDir) {
-		genuine = NO; reason = reason?reason:@"Contents do not look like a savegame";
+		genuine = NO; reason = reason?reason:@"Contents do not look like a saved game";
 	}
 	if (![[NSFileManager defaultManager] fileExistsAtPath: zPreview
 											  isDirectory: &isDir]) {
-		genuine = NO; reason = reason?reason:@"Contents do not look like a savegame";
+		genuine = NO; reason = reason?reason:@"Contents do not look like a saved game";
 	}
 	if (isDir) {
-		genuine = NO; reason = reason?reason:@"Contents do not look like a savegame";
+		genuine = NO; reason = reason?reason:@"Contents do not look like a saved game";
 	}
 	if (![[NSFileManager defaultManager] fileExistsAtPath: status
 											  isDirectory: &isDir]) {
-		genuine = NO; reason = reason?reason:@"Contents do not look like a savegame"; 
+		genuine = NO; reason = reason?reason:@"Contents do not look like a saved game"; 
 	}
 	if (isDir) {
-		genuine = NO; reason = reason?reason:@"Contents do not look like a savegame";
+		genuine = NO; reason = reason?reason:@"Contents do not look like a saved game";
 	}
 	
 	// Report a problem if not genuine

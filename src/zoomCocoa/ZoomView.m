@@ -1731,7 +1731,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 			}
             typeCode = 'IFZS';
             if (supportsMessage) {
-                [panel setMessage: [NSString stringWithFormat: @"%@ savegame (quetzal) file", saveOpen]];
+                [panel setMessage: [NSString stringWithFormat: @"%@ saved game (quetzal) file", saveOpen]];
                 [panel setAllowedFileTypes: [NSArray arrayWithObjects: usePackage?@"zoomSave":@"qut", nil]];
             }
             break;

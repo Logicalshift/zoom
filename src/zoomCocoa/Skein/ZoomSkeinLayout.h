@@ -38,6 +38,7 @@
 - (void) setRootItem: (ZoomSkeinItem*) item;
 - (void) setActiveItem: (ZoomSkeinItem*) item;
 - (void) setSelectedItem: (ZoomSkeinItem*) item;
+- (void) highlightSkeinLine: (ZoomSkeinItem*) itemOnLine;
 
 - (ZoomSkeinItem*) rootItem;
 - (ZoomSkeinItem*) activeItem;
@@ -47,7 +48,6 @@
 - (void) layoutSkein;
 
 // Getting layout data
-
 - (int) levels;
 - (NSArray*) itemsOnLevel: (int) level;
 - (NSArray*) dataForLevel: (int) level;

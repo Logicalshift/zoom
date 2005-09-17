@@ -31,7 +31,8 @@ enum IFMDError {
 	IFMDE_FailedToAllocateMemory,
 	IFMDE_NamespaceAlreadyInUse,
 	IFMDE_ModuleNameAlreadyInUse,
-	IFMDE_NULLReference
+	IFMDE_NULLReference,
+	IFMDE_InvalidMDKey
 };
 
 extern void metabase_error(enum IFMDError errorCode, const char* simple_description, ...);
@@ -93,15 +94,19 @@ extern void metabase_filter(IFMetabase metabase, enum IFMDFilter filter_style);
  */
 extern void metabase_add_filter(IFMetabase metabase, const char* module_name);
 
+/* Marks a metabase as read-only */
+extern void metabase_set_readonly(IFMetabase metabase, int isReadOnly);
+
 /* Describing stories */
 
 /* A key to an entry in the metabase */
 typedef struct IFMDKey* IFMDKey;
 
-/* Types of story */
+/* Types of story/resource */
 enum IFMDFormat {
 	IFFormat_Unknown = 0x0,
 	
+	/* Story types */
 	IFFormat_ZCode,
 	IFFormat_Glulx,
 	
@@ -112,7 +117,20 @@ enum IFMDFormat {
 	IFFormat_Level9,
 	IFFormat_AGT,
 	IFFormat_MagScrolls,
-	IFFormat_AdvSys
+	IFFormat_AdvSys,
+	
+	/* Resource types */
+	IFFormat_BlorbResourcesOnly = 0x100,	/* Blorb file containing only resources */
+	IFFormat_BlorbAndZCode,					/* Blorb file containing resources and a ZCode file */
+	IFFormat_BlorbAndGlulx,					/* Blorb file containing resources and a Glulx file */
+	IFFormat_BlorbAndUnknown,				/* Blorb file containing resources and some other executable file */
+
+	IFFormat_Image,							/* A single image file */
+	IFFormat_Sound,							/* A single sound file */
+	IFFormat_GameData,						/* A file containing miscellaneous game data (maybe some aggregate format other than Blorb) */
+	IFFormat_GameFeelie,					/* A file containing 'feelies' for a game, for example a PDF documentation file */
+	
+	IFFormat_SaveGame = 0x200				/* A file containing a save game for this story */
 };
 
 /* For z-code games with an unknown checksum */
@@ -121,11 +139,20 @@ enum IFMDFormat {
 /* Creates a reference to a story with a specific type and MD5 */
 extern IFMDKey metabase_story_with_md5(enum IFMDFormat format, const char* md5);
 
+/* Creates a reference to a story existing at a specific URI */
+extern IFMDKey metabase_story_with_uri(enum IFMDFormat format, const char* uri);
+
 /* Creates a reference to a story with a z-code identification. md5 can be NULL if unknown */
-extern IFMDKey metabase_story_with_zcode(const char* serial, unsigned int release, unsigned int checksum, const char* md5);
+extern IFMDKey metabase_story_with_zcode(const char* serial, unsigned int release, unsigned int checksum);
 
 /* Compares two IFMDKeys */
 extern int metabase_compare_keys(IFMDKey key1, IFMDKey key2);
+
+/* Gets the format associated with a key */
+extern enum IFMDFormat metabase_format_for_key(IFMDKey key);
+
+/* Destroys a key */
+extern void metabase_destroy_key(IFMDKey oldKey);
 
 /* Storing metadata */
 
@@ -141,6 +168,9 @@ typedef struct IFMDEntry* IFMDEntry;
 
 /* Gets an entry for a specific key (entries may be created if they don't exist yet) */
 extern IFMDEntry metabase_entry_for_key(IFMetabase metabase, IFMDKey key);
+
+/* Given a key with an unknown (or uncertain) format and an entry indexed by that key, retrieves the format (which MAY still be unknown, but really shouldn't be) */
+extern enum IFMDFormat metabase_format_for_entry_key(IFMDEntry entry, IFMDKey unknownKey);
 
 /* Associates an additional key with an entry */
 extern void metabase_add_key(IFMDEntry entry, IFMDKey newKey);
@@ -174,5 +204,8 @@ extern unsigned char* metabase_get_data(IFMDEntry entry, const char* module, con
 
 /* Retrieve all the data from a specific field */
 extern unsigned char** metabase_get_all_data(IFMDEntry entry, const char* module, const char* field, int* count_out);
+
+/* Destroys an entry object */
+extern void metabase_destroy_entry(IFMDEntry entry);
 
 #endif

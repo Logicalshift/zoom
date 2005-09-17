@@ -101,4 +101,8 @@ extern NSString* ZoomSkeinItemPboardType;
 // The transcript
 - (void) transcriptToPoint: (ZoomSkeinItem*) point;
 
+// Various types of possible error
+- (void) cantDeleteActiveBranch;										// User attempted to delete an item on the active skein branch (which can't be done)
+- (void) cantEditRootItem;												// User attemptted to edit the root skein item
+
 @end
