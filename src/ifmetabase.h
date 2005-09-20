@@ -136,14 +136,20 @@ enum IFMDFormat {
 /* For z-code games with an unknown checksum */
 #define IFMDChecksum_Unknown 0x10000
 
-/* Creates a reference to a story with a specific type and MD5 */
+/* Creates a reference to a story with a specific type and MD5 (128 bits - 16 bytes) */
 extern IFMDKey metabase_story_with_md5(enum IFMDFormat format, const char* md5);
 
 /* Creates a reference to a story existing at a specific URI */
 extern IFMDKey metabase_story_with_uri(enum IFMDFormat format, const char* uri);
 
+/* Creates a reference to a story with a specific UUID (128 bits - 16 bytes) */
+extern IFMDKey metabase_story_with_uuid(enum IFMDFormat format, const char* uuid);
+
 /* Creates a reference to a story with a z-code identification. md5 can be NULL if unknown */
 extern IFMDKey metabase_story_with_zcode(const char* serial, unsigned int release, unsigned int checksum);
+
+/* Creates a copy of an IFMDKey */
+extern IFMDKey metabase_copy_key(IFMDKey oldKey);
 
 /* Compares two IFMDKeys */
 extern int metabase_compare_keys(IFMDKey key1, IFMDKey key2);

@@ -29,12 +29,12 @@ struct IFMetabase {
 	int numModules;
 	int exclusive;										/* If 0, modules indicates the modules that are INCLUDED in this metabase, if 1, those that are excluded. Excluded modules are not represented in entries from this metabase */
 	
-	IFMDRecord* entries;								/* Unordered array of records */
-	int numEntries;										/* Number of entries */
+	IFMDRecord** records;								/* Unordered array of records */
+	int numRecords;										/* Number of records */
 	
 	int readOnly;										/* If 1, it's an error to do anything that alters this metabase or an entry in it */
 	
-	IFMetabaseIndexEntry keyIndex;						/* Ordered array mapping keys to entries */
+	IFMetabaseIndexEntry* keyIndex;						/* Ordered array mapping keys to records */
 	int numKeys;										/* Number of keys */
 };
 
@@ -46,7 +46,8 @@ struct IFMDKey {
 		IFMDKeyZCode,
 
 		IFMDKeyMD5,
-		IFMDKeyURI
+		IFMDKeyURI,
+		IFMDKeyUUID
 	} type;
 	
 	/* ID for specific key types */
@@ -66,6 +67,10 @@ struct IFMDKey {
 		struct {
 			char* uri;
 		} uri;
+		
+		struct {
+			char uuid[16];
+		} uuid;
 	} specific;
 };
 
@@ -81,7 +86,7 @@ struct IFMDField {
 	int* flattened;							/* Cached version of what this field looks like with subfields flattened */
 	
 	IFMDField* parent;						/* The field that contains this field */
-	IFMDEntry  entry;						/* The entry that contains this field */
+	IFMDRecord*  record;					/* The record that contains this field */
 };
 
 struct IFMDEntry {
@@ -93,7 +98,6 @@ struct IFMDEntry {
 
 struct IFMDRecord {
 	IFMetabase belongsTo;					/* The metabase this record belongs to */
-	IFMDEntry parent;						/* If this entry also exists in a parent metabase, contains a pointer to this entry */
 	
 	IFMDKey* keys;							/* The keys that refer to this entry */
 	int numKeys;							/* The number of keys that this entry contains */
@@ -459,8 +463,8 @@ IFMetabase metabase_create(IFMetabase parent) {
 	result->numModules = 0;
 	result->exclusive = 1;
 	
-	result->entries = NULL;
-	result->numEntries = 0;
+	result->records = NULL;
+	result->numRecords = 0;
 	
 	result->readOnly = 0;
 	
@@ -587,6 +591,22 @@ IFMDKey metabase_story_with_uri(enum IFMDFormat format, const char* uri) {
 	return res;
 }
 
+
+/* Creates a reference to a story with a specific UUID (128 bits - 16 bytes) */
+IFMDKey metabase_story_with_uuid(enum IFMDFormat format, const char* uuid) {
+	IFMDKey res;
+	int x;
+	
+	res = metabase_alloc(sizeof(struct IFMDKey));
+	
+	res->type = IFMDKeyUUID;
+	res->format = format;
+	
+	for (x=0; x<16; x++) {
+		res->specific.uuid.uuid[x] = uuid[x];
+	}
+}
+
 /* Creates a reference to a story with a z-code identification. */
 IFMDKey metabase_story_with_zcode(const char* serial, unsigned int release, unsigned int checksum) {
 	IFMDKey res;
@@ -594,7 +614,7 @@ IFMDKey metabase_story_with_zcode(const char* serial, unsigned int release, unsi
 
 	res = metabase_alloc(sizeof(struct IFMDKey));
 	
-	res->type = IFMDKeyURI;
+	res->type = IFMDKeyZCode;
 	res->format = IFFormat_ZCode;
 	
 	for (x=0; x<6; x++) {
@@ -606,9 +626,40 @@ IFMDKey metabase_story_with_zcode(const char* serial, unsigned int release, unsi
 	return res;
 }
 
+/* Creates a copy of an IFMDKey */
+IFMDKey metabase_copy_key(IFMDKey oldKey) {
+	IFMDKey res;
+	int x;
+	
+	res = metabase_alloc(sizeof(struct IFMDKey));
+	
+	res->type = oldKey->type;
+	res->format = oldKey->format;
+	
+	switch (res->type) {
+		case IFMDKeyMD5:
+		case IFMDKeyZCode:
+		case IFMDKeyUUID:
+			res->specific = oldKey->specific;
+			break;
+			
+		case IFMDKeyURI:
+			res->specific.uri.uri = metabase_alloc(sizeof(char)*(strlen(oldKey->specific.uri.uri)+1));
+			strcpy(res->specific.uri.uri, oldKey->specific.uri.uri);
+			break;
+		
+		default:
+			metabase_error(IFMDE_InvalidMDKey, "A key of an unknown type was passed to metabase_copy_keys");
+			break;
+	}
+	
+	return res;
+}
+
 /* Compares two IFMDKeys */
 int metabase_compare_keys(IFMDKey key1, IFMDKey key2) {
 	int x;
+	unsigned char k1, k2;
 	
 	/* See if key types differ */
 	if (key1->type < key2->type) {
@@ -621,8 +672,8 @@ int metabase_compare_keys(IFMDKey key1, IFMDKey key2) {
 	switch (key1->type) {
 		case IFMDKeyMD5:
 			for (x=0; x<16; x++) {
-				char k1 = key1->specific.md5.md5[x];
-				char k2 = key2->specific.md5.md5[x];
+				k1 = key1->specific.md5.md5[x];
+				k2 = key2->specific.md5.md5[x];
 				
 				if (k1 < k2) {
 					return -1;
@@ -644,8 +695,8 @@ int metabase_compare_keys(IFMDKey key1, IFMDKey key2) {
 			}
 			
 			for (x=0; x<6; x++) {
-				unsigned char k1 = key1->specific.zcode.serial[x];
-				unsigned char k2 = key2->specific.zcode.serial[x];
+				k1 = key1->specific.zcode.serial[x];
+				k2 = key2->specific.zcode.serial[x];
 				
 				if (k1 < k2) {
 					return -1;
@@ -656,6 +707,38 @@ int metabase_compare_keys(IFMDKey key1, IFMDKey key2) {
 			break;
 			
 		case IFMDKeyURI:
+			for (x=0; key1->specific.uri.uri[x] != 0 && key2->specific.uri.uri[x] != 0; x++) {
+				k1 = key1->specific.uri.uri[x];
+				k2 = key2->specific.uri.uri[x];
+				
+				if (k1 < k2) {
+					return -1;
+				} else if (k1 > k2) {
+					return 1;
+				}				
+			}
+
+			k1 = key1->specific.uri.uri[x];
+			k2 = key2->specific.uri.uri[x];
+			
+			if (k1 < k2) {
+				return -1;
+			} else if (k1 > k2) {
+				return 1;
+			}				
+			break;
+			
+		case IFMDKeyUUID:
+			for (x=0; x<16; x++) {
+				k1 = key1->specific.uuid.uuid[x];
+				k2 = key2->specific.uuid.uuid[x];
+				
+				if (k1 < k2) {
+					return -1;
+				} else if (k1 > k2) {
+					return 1;
+				}				
+			}
 			break;
 			
 		default:
@@ -690,8 +773,9 @@ void metabase_copy_entry(IFMDEntry dest, IFMDEntry src) {
 /* Gets an entry for a specific key (entries may be created if they don't exist yet) */
 IFMDEntry metabase_entry_for_key(IFMetabase metabase, IFMDKey key) {
 	IFMDEntry result = NULL;
-	IFMDEntry thisResult = NULL;
 	int entryNumber = 0;
+	
+	if (metabase == NULL) return NULL;
 	
 	/* Search for the entry in the entry index */
 	if (metabase->keyIndex != NULL) {
@@ -701,9 +785,56 @@ IFMDEntry metabase_entry_for_key(IFMetabase metabase, IFMDKey key) {
 									key_index_to_key_compare);
 	}
 	
-	/* See if we've found */
+	/* See if we've found a pre-existing entry */
+	if (entryNumber >= 0 && entryNumber < metabase->numKeys && key_index_to_key_compare(metabase->keyIndex[entryNumber], key) == 0) {
+		/* Allocate the result */
+		result = metabase_alloc(sizeof(struct IFMDEntry));
 		
-	return NULL;
+		result->metabase = metabase;
+		result->record = entryNumber;
+		result->previous = metabase_entry_for_key(metabase->parent, key);
+	} else if (!metabase->readOnly) {
+		/* Construct a record for this key */
+		IFMDRecord* newRecord = metabase_alloc(sizeof(IFMDRecord));
+		
+		newRecord->belongsTo = metabase;
+		newRecord->numKeys = 1;
+		newRecord->keys = metabase_alloc(sizeof(IFMDKey*));
+		newRecord->keys[0] = metabase_copy_key(key);
+		
+		newRecord->field.name = NULL;
+		newRecord->field.isDataField = 0;
+		newRecord->field.data = NULL;
+		newRecord->field.subfields = NULL;
+		newRecord->field.numSubfields = 0;
+		newRecord->field.flattened = NULL;
+		newRecord->field.parent = NULL;
+		newRecord->field.record = newRecord;
+		
+		metabase->numRecords++;
+		metabase->records = metabase_realloc(metabase->records, sizeof(IFMDRecord*)*metabase->numRecords);
+		metabase->records[metabase->numRecords-1] = newRecord;
+		
+		/* Insert an entry at the index we found with the binary search */
+		metabase->keyIndex = metabase_realloc(metabase->keyIndex, sizeof(IFMetabaseIndexEntry)*(metabase->numKeys+1));
+		metabase_memmove(metabase->keyIndex + entryNumber + 1, metabase->keyIndex + entryNumber, sizeof(IFMetabaseIndexEntry)*(metabase->numKeys - entryNumber));
+		
+		metabase->keyIndex[entryNumber] = metabase_alloc(sizeof(struct IFMetabaseIndexEntry));
+		metabase->keyIndex[entryNumber]->key = metabase_copy_key(key);
+		metabase->keyIndex[entryNumber]->entryNumber = metabase->numRecords-1;
+		
+		/* Allocate the result */
+		result = metabase_alloc(sizeof(struct IFMDEntry));
+		
+		result->metabase = metabase;
+		result->record = entryNumber;
+		result->previous = metabase_entry_for_key(metabase->parent, key);		
+	} else {
+		/* The key wasn't found, and this metabase was read-only: skip it */
+		return metabase_entry_for_key(metabase->parent, key);
+	}
+		
+	return result;
 }
 
 /* Given a key with an unknown (or uncertain) format and an entry indexed by that key, retrieves the format (which MAY still be unknown, but really shouldn't be) */
