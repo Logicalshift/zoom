@@ -19,7 +19,7 @@ typedef struct IFMDRecord IFMDRecord;
 
 typedef struct IFMetabaseIndexEntry {
 	IFMDKey key;
-	int entryNumber;
+	int recordNumber;
 } *IFMetabaseIndexEntry;
 
 struct IFMetabase {
@@ -86,7 +86,7 @@ struct IFMDField {
 	int* flattened;							/* Cached version of what this field looks like with subfields flattened */
 	
 	IFMDField* parent;						/* The field that contains this field */
-	IFMDRecord*  record;					/* The record that contains this field */
+	IFMDRecord* record;						/* The record that contains this field */
 };
 
 struct IFMDEntry {
@@ -753,6 +753,22 @@ enum IFMDFormat metabase_format_for_key(IFMDKey key) {
 	return key->format;
 }
 
+/* Frees up the memory associated with a metabase key */
+void metabase_destroy_key(IFMDKey oldKey) {
+	switch (oldKey->type) {
+		case IFMDKeyURI:
+			/* Have to destroy the URI string */
+			free(oldKey->specific.uri.uri);
+			break;
+		
+		default:
+			/* Nothing to do */
+			break;
+	}
+	
+	free(oldKey);
+}
+
 /* Storing metadata */
 
 /* Compares a IFMetabaseIndexEntry to a IFMDKey */
@@ -791,7 +807,7 @@ IFMDEntry metabase_entry_for_key(IFMetabase metabase, IFMDKey key) {
 		result = metabase_alloc(sizeof(struct IFMDEntry));
 		
 		result->metabase = metabase;
-		result->record = entryNumber;
+		result->record = metabase->keyIndex[entryNumber]->recordNumber;
 		result->previous = metabase_entry_for_key(metabase->parent, key);
 	} else if (!metabase->readOnly) {
 		/* Construct a record for this key */
@@ -821,13 +837,13 @@ IFMDEntry metabase_entry_for_key(IFMetabase metabase, IFMDKey key) {
 		
 		metabase->keyIndex[entryNumber] = metabase_alloc(sizeof(struct IFMetabaseIndexEntry));
 		metabase->keyIndex[entryNumber]->key = metabase_copy_key(key);
-		metabase->keyIndex[entryNumber]->entryNumber = metabase->numRecords-1;
+		metabase->keyIndex[entryNumber]->recordNumber = metabase->numRecords-1;
 		
 		/* Allocate the result */
 		result = metabase_alloc(sizeof(struct IFMDEntry));
 		
 		result->metabase = metabase;
-		result->record = entryNumber;
+		result->record = metabase->keyIndex[entryNumber]->recordNumber;
 		result->previous = metabase_entry_for_key(metabase->parent, key);		
 	} else {
 		/* The key wasn't found, and this metabase was read-only: skip it */
@@ -838,10 +854,151 @@ IFMDEntry metabase_entry_for_key(IFMetabase metabase, IFMDKey key) {
 }
 
 /* Given a key with an unknown (or uncertain) format and an entry indexed by that key, retrieves the format (which MAY still be unknown, but really shouldn't be) */
-extern enum IFMDFormat metabase_format_for_entry_key(IFMDEntry entry, IFMDKey unknownKey);
+enum IFMDFormat metabase_format_for_entry_key(IFMDEntry entry, IFMDKey unknownKey) {
+	int x;
+	
+	/* Scan for the key in the entry */
+	while (entry != NULL) {
+		/* Get the record */
+		IFMDRecord* rec = entry->metabase->records[entry->record];
+		
+		/* Go through the keys until we find one that matches */
+		for (x=0; x<rec->numKeys; x++) {
+			/* If this key matches, return its format */
+			if (metabase_compare_keys(unknownKey, rec->keys[x]) == 0) {
+				return rec->keys[x]->format;
+			}
+		}
+		
+		/* Next entry */
+		entry = entry->previous;
+	}
+	
+	/* Default is an unknown key */
+	return IFFormat_NoSuchKey;
+}
+
+/* Removes a key from the metabase (does not recurse) */
+void metabase_remove_key(IFMetabase metabase, IFMDKey oldKey) {
+	int entryNumber = 0;
+	int x;
+	IFMDRecord* rec;
+
+	if (metabase == NULL) return;
+	
+	if (metabase->readOnly) {
+		return;
+	}
+
+	/* Search for the entry in the entry index */
+	if (metabase->keyIndex != NULL) {
+		entryNumber = binary_search((void**)metabase->keyIndex, 
+									oldKey,
+									metabase->numKeys,
+									key_index_to_key_compare);
+	} else {
+		return;
+	}
+	
+	/* See if we've found a pre-existing entry */
+	if (entryNumber >= 0 && entryNumber < metabase->numKeys && key_index_to_key_compare(metabase->keyIndex[entryNumber], oldKey) == 0) {
+		/* Remove the key entry from the record */
+		rec = metabase->records[metabase->keyIndex[entryNumber]->recordNumber];
+		
+		for (x=0; x<rec->numKeys; x++) {
+			if (metabase_compare_keys(rec->keys[x], oldKey) == 0) {
+				/* This is equivalent to oldKey: destroy it */
+				metabase_destroy_key(rec->keys[x]);
+				
+				/* Remove the entry from the list of keys */
+				metabase_memmove(rec->keys + x, rec->keys + x+1, sizeof(IFMDKey)*(rec->numKeys-x-1));
+				rec->numKeys--;
+				
+				/* Continue loop starting from the following key */
+				x--;
+			}
+		}
+		
+		/* FIXME: a record with no keys can never be accessed, so remove the record in this case */
+		if (rec->numKeys <= 0) {
+		}
+		
+		/* Remove this entry from the database */
+		metabase_destroy_key(metabase->keyIndex[entryNumber]->key);
+		metabase_free(metabase->keyIndex[entryNumber]);
+		metabase->numKeys--;
+		metabase_memmove(metabase->keyIndex + entryNumber, metabase->keyIndex + entryNumber, sizeof(IFMetabaseIndexEntry)*(metabase->numKeys-entryNumber));
+	}
+}
 
 /* Associates an additional key with an entry */
-extern void metabase_add_key(IFMDEntry entry, IFMDKey newKey);
+void metabase_add_key(IFMDEntry entry, IFMDKey newKey) {
+	int x;
+	IFMDRecord* rec;
+	int entryNumber = 0;
+	IFMetabase metabase;
+	
+	if (entry == NULL) return;
+	metabase = entry->metabase;
+	
+	/* Make no changes to a readonly metabase. We also do nothing for the invalid case of an entry without a metabase. */
+	/* FIXME: maybe we should report the case of a metabase-less entry as an error */
+	if (metabase == NULL || metabase->readOnly) {
+		metabase_add_key(entry->previous, newKey);
+		return;
+	}
+	
+	/* If this key already exists in the index, then remove it from that record */
+	/* Note that this might result in 'orphan' records */	
+	metabase_remove_key(entry->metabase, newKey);
+	
+	/* Get the record associated with this entry */
+	rec = entry->metabase->records[entry->record];
+	
+	/* Go through the keys until we find one that matches */
+	for (x=0; x<rec->numKeys; x++) {
+		/* If this key matches, then replace it with the new one */
+		if (metabase_compare_keys(newKey, rec->keys[x]) == 0) {
+			metabase_destroy_key(rec->keys[x]);
+			rec->keys[x] = metabase_copy_key(newKey);
+			break;
+		}
+	}
+	
+	/* If no match is found, then add a new key and index entry */
+	if (x >= rec->numKeys) {
+		/* Add a new key to the record */
+		rec->numKeys++;
+		rec->keys = metabase_realloc(rec->keys, sizeof(IFMDKey*)*rec->numKeys);
+		rec->keys[rec->numKeys-1] = metabase_copy_key(newKey);
+		
+		/* Add a new index entry for this key */
+		entryNumber = 0;
+		if (metabase->keyIndex != NULL) {
+			entryNumber = binary_search((void**)metabase->keyIndex, 
+										newKey,
+										metabase->numKeys,
+										key_index_to_key_compare);
+		}
+		
+		/* See if we've found a pre-existing entry */
+		if (entryNumber >= 0 && entryNumber < metabase->numKeys && key_index_to_key_compare(metabase->keyIndex[entryNumber], newKey) == 0) {
+			/* Finding a pre-existing entry here is an error: it can happen for two reasons - metabase_remove_key failed to do what it says on the tin, or there were two entries in the index (which should never happen) */
+			metabase_error(IFMDE_AssertionFailed_FoundKeyThatShouldNotExist, "Assertion failed. Likely cause: metabase_remove_key failed to fully remove a key from the index, or a key appears multiple times in the index");
+		} else {
+			/* Add the entry at the position specified by entryNumber */
+			metabase->keyIndex = metabase_realloc(metabase->keyIndex, sizeof(IFMetabaseIndexEntry)*(metabase->numKeys+1));
+			metabase_memmove(metabase->keyIndex + entryNumber + 1, metabase->keyIndex + entryNumber, sizeof(IFMetabaseIndexEntry)*(metabase->numKeys - entryNumber));
+			
+			metabase->keyIndex[entryNumber] = metabase_alloc(sizeof(struct IFMetabaseIndexEntry));
+			metabase->keyIndex[entryNumber]->key = metabase_copy_key(newKey);
+			metabase->keyIndex[entryNumber]->recordNumber = entry->record;			
+		}
+	}
+	
+	/* Recurse to the entry in the parent metabase */
+	metabase_add_key(entry->previous, newKey);
+}
 
 /* Clones an entry, excepting metabase excluded modules, in a different metabase */
 extern IFMDEntry metabase_clone_entry(IFMetabase metabase, IFMDEntry lastEntry);

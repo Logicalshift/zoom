@@ -32,7 +32,10 @@ enum IFMDError {
 	IFMDE_NamespaceAlreadyInUse,
 	IFMDE_ModuleNameAlreadyInUse,
 	IFMDE_NULLReference,
-	IFMDE_InvalidMDKey
+	IFMDE_InvalidMDKey,
+
+	IFMDE_AssertionFailed = 0x1000,
+	IFMDE_AssertionFailed_FoundKeyThatShouldNotExist
 };
 
 extern void metabase_error(enum IFMDError errorCode, const char* simple_description, ...);
@@ -104,6 +107,7 @@ typedef struct IFMDKey* IFMDKey;
 
 /* Types of story/resource */
 enum IFMDFormat {
+	IFFormat_NoSuchKey = 0x7ffffff,
 	IFFormat_Unknown = 0x0,
 	
 	/* Story types */
