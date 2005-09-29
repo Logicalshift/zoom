@@ -104,7 +104,13 @@
 
 - (BOOL)loadDataRepresentation:(NSData *)data
 						ofType:(NSString *)type {
-	if ([[type lowercaseString] isEqualToString: @"blorb resource file"]) {
+	unsigned char* bytes = [data bytes];
+	BOOL isForm = NO;
+	
+	// See if this looks like a Blorb file (begins with 'FORM')
+	if (bytes[0] == 'F' && bytes[1] == 'O' && bytes[2] == 'R' && bytes[3] == 'M') isForm = YES;
+	
+	if ([[type lowercaseString] isEqualToString: @"blorb resource file"] || isForm) {
 		// Blorb files already have their resources pre-packaged: get the Z-Code chunk out of this file
 		if (gameData) [gameData release];
 		gameData = nil;
