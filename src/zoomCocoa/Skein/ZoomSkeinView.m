@@ -287,10 +287,14 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	skein = [sk retain];
 	[layout setRootItem: [sk rootItem]];
 	
-	[[NSNotificationCenter defaultCenter] addObserver: self
-											 selector: @selector(skeinDidChange:)
-												 name: ZoomSkeinChangedNotification
-											   object: skein];
+	if (skein) {
+		// Fixed by Collin Pieper: adding an observer for nil has somewhat unwanted side effects
+		[[NSNotificationCenter defaultCenter] addObserver: self
+												 selector: @selector(skeinDidChange:)
+													 name: ZoomSkeinChangedNotification
+												   object: skein];
+	}
+	
 	[self setSelectedItem: nil];
 	[self skeinNeedsLayout];
 	
