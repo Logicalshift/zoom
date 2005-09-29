@@ -104,7 +104,7 @@
 
 - (BOOL)loadDataRepresentation:(NSData *)data
 						ofType:(NSString *)type {
-	unsigned char* bytes = [data bytes];
+	const unsigned char* bytes = [data bytes];
 	BOOL isForm = NO;
 	
 	// See if this looks like a Blorb file (begins with 'FORM')
