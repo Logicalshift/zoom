@@ -26,6 +26,10 @@
 			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.zcode</string>
+			</array>
 			<key>NSDocumentClass</key>
 			<string>ZoomClient</string>
 		</dict>
@@ -104,6 +108,10 @@
 			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.blorb</string>
+			</array>
 			<key>NSDocumentClass</key>
 			<string>ZoomClient</string>
 		</dict>
@@ -118,6 +126,10 @@
 			<string>Z-Code blorb resource file</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.zcodeblorb</string>
+			</array>
 			<key>NSDocumentClass</key>
 			<string>ZoomClient</string>
 		</dict>
@@ -146,5 +158,78 @@
 	<string>MainMenu.nib</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+        <key>UTExportedTypeDeclarations</key>
+        <array>
+                <dict>
+                        <key>UTTypeConformsTo</key>
+                        <array>
+                                <string>public.data</string>
+                        </array>
+                        <key>UTTypeDescription</key>
+                        <string>ZCode Story</string>
+                        <key>UTTypeIconFile</key>
+                        <string>zoom-game.icns</string>
+                        <key>UTTypeIdentifier</key>
+                        <string>public.zcode</string>
+                        <key>UTTypeTagSpecification</key>
+                        <dict>
+                                <key>com.apple.ostype</key>
+                                <array>
+                                        <string>IFRS</string>
+                                </array>
+                                <key>public.filename-extension</key>
+                                <array>
+                                        <string>z3</string>
+                                        <string>z4</string>
+                                        <string>z5</string>
+                                        <string>z6</string>
+                                        <string>z7</string>
+                                        <string>z8</string>
+                                </array>
+                        </dict>
+                </dict>
+                <dict>
+                        <key>UTTypeConformsTo</key>
+                        <array>
+                                <string>public.data</string>
+                        </array>
+                        <key>UTTypeDescription</key>
+                        <string>Blorb resource file</string>
+                        <key>UTTypeIconFile</key>
+                        <string>Blorb.icns</string>
+                        <key>UTTypeIdentifier</key>
+                        <string>public.zcode</string>
+                        <key>UTTypeTagSpecification</key>
+                        <dict>
+                                <key>com.apple.ostype</key>
+                                <array>
+                                        <string>ZCOD</string>
+                                </array>
+                                <key>public.filename-extension</key>
+                                <array>
+                                        <string>blb</string>
+                                </array>
+                        </dict>
+                </dict>
+                <dict>
+                        <key>UTTypeConformsTo</key>
+                        <array>
+                                <string>public.data</string>
+                        </array>
+                        <key>UTTypeDescription</key>
+                        <string>Z-Code Blorb resource file</string>
+                        <key>UTTypeIconFile</key>
+                        <string>Blorb.icns</string>
+                        <key>UTTypeIdentifier</key>
+                        <string>public.zcodeblorb</string>
+                        <key>UTTypeTagSpecification</key>
+                        <dict>
+                                <key>public.filename-extension</key>
+                                <array>
+                                        <string>zlb</string>
+                                </array>
+                        </dict>
+                </dict>
+        </array>
 </dict>
 </plist>

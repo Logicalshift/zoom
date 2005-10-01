@@ -7,6 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4B39C94308EEF75600BA5E90 /* MetadataImporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B39C94108EEF75600BA5E90 /* MetadataImporter.m */; };
+		4B39C94408EEF75600BA5E90 /* schema.xml in Resources */ = {isa = PBXBuildFile; fileRef = 4B39C94208EEF75600BA5E90 /* schema.xml */; };
+		4B39C94508EEF78700BA5E90 /* ifmetadata.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BECA80005B19BE1006840BA /* ifmetadata.c */; };
+		4B39C94608EEF79100BA5E90 /* libexpat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BECA7F705B194AA006840BA /* libexpat.a */; };
+		4B39C94708EEF79300BA5E90 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BCF3F2B050F8E2400A8E303 /* Foundation.framework */; };
+		4B39C9C408EEF7C000BA5E90 /* ZoomMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BACEA9705B4597500A9B6DC /* ZoomMetadata.m */; };
+		4B39C9C508EEF7C000BA5E90 /* ZoomStory.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BACEAB605B45BF400A9B6DC /* ZoomStory.m */; };
+		4B39C9C608EEF7C000BA5E90 /* ZoomStoryID.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BACEABC05B45C0500A9B6DC /* ZoomStoryID.m */; };
+		4B39C9FD08EEF84D00BA5E90 /* infocom.iFiction in Resources */ = {isa = PBXBuildFile; fileRef = 4BACE9FA05B428C700A9B6DC /* infocom.iFiction */; };
+		4B39C9FE08EEF84D00BA5E90 /* archive.iFiction in Resources */ = {isa = PBXBuildFile; fileRef = 4B5983DA070F059E0078165F /* archive.iFiction */; };
+		4B39CA0708EEF8DE00BA5E90 /* ZoomMetadataImporter.mdimporter in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B39C92B08EEF63400BA5E90 /* ZoomMetadataImporter.mdimporter */; };
+		4B39CA8408EEFE8F00BA5E90 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B39CA8308EEFE8F00BA5E90 /* CoreServices.framework */; };
+		4B39CBCB08EF006E00BA5E90 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B39CBCA08EF006E00BA5E90 /* CoreFoundation.framework */; };
+		4BB65ACE08EF02D600E7E28E /* ZoomBlorbFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF1576406BAD034001A3C27 /* ZoomBlorbFile.m */; };
+		4BB65AD408EF02DF00E7E28E /* ZoomProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BCF3F29050F8E0000A8E303 /* ZoomProtocol.m */; };
 		4BB8C0DE08C2452E00D7D334 /* operation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1E3F82050F7CC500A8E303 /* operation.h */; };
 		4BB8C0E008C2452E00D7D334 /* gram.y in Sources */ = {isa = PBXBuildFile; fileRef = 4B1E3F83050F7CC500A8E303 /* gram.y */; };
 		4BB8C0E108C2452E00D7D334 /* lex.l in Sources */ = {isa = PBXBuildFile; fileRef = 4B1E3F81050F7CC500A8E303 /* lex.l */; };
@@ -296,6 +311,13 @@
 /* End PBXBuildStyle section */
 
 /* Begin PBXContainerItemProxy section */
+		4B39C93408EEF63E00BA5E90 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4B39C92A08EEF63400BA5E90;
+			remoteInfo = ZoomMetadataImporter;
+		};
 		4BB8C11808C248FF00D7D334 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
@@ -341,6 +363,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		4B39CA0408EEF8C600BA5E90 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = ../Library/Spotlight;
+			dstSubfolderSpec = 7;
+			files = (
+				4B39CA0708EEF8DE00BA5E90 /* ZoomMetadataImporter.mdimporter in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4BB8C1FE08C249F400D7D334 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -452,6 +484,13 @@
 		4B2EAF9905B056EC0021A5E6 /* GameInfo.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = GameInfo.nib; sourceTree = "<group>"; };
 		4B2EAFAD05B08D1E0021A5E6 /* ZoomGameInfoController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ZoomGameInfoController.h; sourceTree = "<group>"; };
 		4B2EAFAE05B08D1E0021A5E6 /* ZoomGameInfoController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = ZoomGameInfoController.m; sourceTree = "<group>"; };
+		4B39C92B08EEF63400BA5E90 /* ZoomMetadataImporter.mdimporter */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ZoomMetadataImporter.mdimporter; sourceTree = BUILT_PRODUCTS_DIR; };
+		4B39C92C08EEF63400BA5E90 /* ZoomMetadataImporter-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = "ZoomMetadataImporter-Info.plist"; path = "../../../ZoomMetadataImporter-Info.plist"; sourceTree = "<group>"; };
+		4B39C94008EEF75600BA5E90 /* MetadataImporter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MetadataImporter.h; sourceTree = "<group>"; };
+		4B39C94108EEF75600BA5E90 /* MetadataImporter.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = MetadataImporter.m; sourceTree = "<group>"; };
+		4B39C94208EEF75600BA5E90 /* schema.xml */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = schema.xml; sourceTree = "<group>"; };
+		4B39CA8308EEFE8F00BA5E90 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = /System/Library/Frameworks/CoreServices.framework; sourceTree = "<absolute>"; };
+		4B39CBCA08EF006E00BA5E90 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
 		4B3DA126068DAEA800B7090F /* Makefile.am */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = Makefile.am; path = src/Makefile.am; sourceTree = "<group>"; tabWidth = 8; };
 		4B3DA12F068DAF9E00B7090F /* ZoomInputLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomInputLine.h; sourceTree = "<group>"; };
 		4B3DA130068DAF9E00B7090F /* ZoomInputLine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomInputLine.m; sourceTree = "<group>"; };
@@ -583,6 +622,17 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		4B39C92908EEF63400BA5E90 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B39CA8408EEFE8F00BA5E90 /* CoreServices.framework in Frameworks */,
+				4B39C94708EEF79300BA5E90 /* Foundation.framework in Frameworks */,
+				4B39C94608EEF79100BA5E90 /* libexpat.a in Frameworks */,
+				4B39CBCB08EF006E00BA5E90 /* CoreFoundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4BB8C0E308C2452E00D7D334 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -664,6 +714,7 @@
 				4BB8C0E908C2452F00D7D334 /* Builder */,
 				4BB8C16A08C2497700D7D334 /* ZoomServer */,
 				4BB8C20808C249F400D7D334 /* Zoom.app */,
+				4B39C92B08EEF63400BA5E90 /* ZoomMetadataImporter.mdimporter */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -683,8 +734,10 @@
 		4B1E3F5F050F7B8100A8E303 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4B39CA8308EEFE8F00BA5E90 /* CoreServices.framework */,
 				4BECA7F705B194AA006840BA /* libexpat.a */,
 				4B5CBB9B069D671200C0AA88 /* Carbon.framework */,
+				4B39CBCA08EF006E00BA5E90 /* CoreFoundation.framework */,
 				4B1E3F60050F7BA000A8E303 /* Cocoa.framework */,
 				4BCF3F2B050F8E2400A8E303 /* Foundation.framework */,
 				4B0A32AE06A5966D00BB8878 /* WebKit.framework */,
@@ -792,6 +845,17 @@
 			name = Metadata;
 			sourceTree = "<group>";
 		};
+		4B39C93608EEF64C00BA5E90 /* Spotlight */ = {
+			isa = PBXGroup;
+			children = (
+				4B39C94008EEF75600BA5E90 /* MetadataImporter.h */,
+				4B39C94108EEF75600BA5E90 /* MetadataImporter.m */,
+				4B39C94208EEF75600BA5E90 /* schema.xml */,
+				4B39C92C08EEF63400BA5E90 /* ZoomMetadataImporter-Info.plist */,
+			);
+			path = Spotlight;
+			sourceTree = "<group>";
+		};
 		4B807B9E05BFEE0C00681653 /* iFiction */ = {
 			isa = PBXGroup;
 			children = (
@@ -868,6 +932,7 @@
 				4B807B9E05BFEE0C00681653 /* iFiction */,
 				4BDFA4E80535E9DE00A8E303 /* ZoomView */,
 				4BC5561D06B83EEB00F0DD4A /* Resources */,
+				4B39C93608EEF64C00BA5E90 /* Spotlight */,
 			);
 			name = ZoomClient;
 			path = src/zoomCocoa;
@@ -1130,6 +1195,70 @@
 /* End PBXLegacyTarget section */
 
 /* Begin PBXNativeTarget section */
+		4B39C92A08EEF63400BA5E90 /* ZoomMetadataImporter */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4B39C93008EEF63500BA5E90 /* Build configuration list for PBXNativeTarget "ZoomMetadataImporter" */;
+			buildPhases = (
+				4B39C92708EEF63400BA5E90 /* Resources */,
+				4B39C92808EEF63400BA5E90 /* Sources */,
+				4B39C92908EEF63400BA5E90 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			buildSettings = {
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = "ZoomMetadataImporter-Info.plist";
+				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
+				LIBRARY_STYLE = BUNDLE;
+				OPTIMIZATION_CFLAGS = "";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				OTHER_REZFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = ZoomMetadataImporter;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			dependencies = (
+			);
+			name = ZoomMetadataImporter;
+			productName = ZoomMetadataImporter;
+			productReference = 4B39C92B08EEF63400BA5E90 /* ZoomMetadataImporter.mdimporter */;
+			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>ZoomMetadataImporter</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.yourcompany.ZoomMetadataImporter</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>1.0</string>
+</dict>
+</plist>
+";
+			productType = "com.apple.product-type.bundle";
+		};
 		4BB8C0DC08C2452E00D7D334 /* Builder */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4BB8C0E508C2452E00D7D334 /* Build configuration list for PBXNativeTarget "Builder" */;
@@ -1216,6 +1345,7 @@
 				4BB8C1FD08C249F400D7D334 /* Rez */,
 				4BB8C1FE08C249F400D7D334 /* CopyFiles */,
 				4BB8C20108C249F400D7D334 /* CopyFiles */,
+				4B39CA0408EEF8C600BA5E90 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -1240,6 +1370,7 @@
 			dependencies = (
 				4BB8C18908C249F400D7D334 /* PBXTargetDependency */,
 				4BB8C18B08C249F400D7D334 /* PBXTargetDependency */,
+				4B39C93508EEF63E00BA5E90 /* PBXTargetDependency */,
 			);
 			name = Zoom;
 			productInstallPath = "$(USER_APPS_DIR)";
@@ -1318,11 +1449,22 @@
 				4BB8C0DC08C2452E00D7D334 /* Builder */,
 				4BB8C18808C249F400D7D334 /* Zoom */,
 				4BD2747808701E6700C1AE15 /* ZoomView */,
+				4B39C92A08EEF63400BA5E90 /* ZoomMetadataImporter */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		4B39C92708EEF63400BA5E90 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B39C9FD08EEF84D00BA5E90 /* infocom.iFiction in Resources */,
+				4B39C9FE08EEF84D00BA5E90 /* archive.iFiction in Resources */,
+				4B39C94408EEF75600BA5E90 /* schema.xml in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4BB8C1B708C249F400D7D334 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1419,6 +1561,20 @@
 /* End PBXRezBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		4B39C92808EEF63400BA5E90 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B39C94308EEF75600BA5E90 /* MetadataImporter.m in Sources */,
+				4B39C94508EEF78700BA5E90 /* ifmetadata.c in Sources */,
+				4B39C9C408EEF7C000BA5E90 /* ZoomMetadata.m in Sources */,
+				4B39C9C508EEF7C000BA5E90 /* ZoomStory.m in Sources */,
+				4B39C9C608EEF7C000BA5E90 /* ZoomStoryID.m in Sources */,
+				4BB65ACE08EF02D600E7E28E /* ZoomBlorbFile.m in Sources */,
+				4BB65AD408EF02DF00E7E28E /* ZoomProtocol.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4BB8C0DF08C2452E00D7D334 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1524,6 +1680,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		4B39C93508EEF63E00BA5E90 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4B39C92A08EEF63400BA5E90 /* ZoomMetadataImporter */;
+			targetProxy = 4B39C93408EEF63E00BA5E90 /* PBXContainerItemProxy */;
+		};
 		4BB8C11908C248FF00D7D334 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 4BB8C0DC08C2452E00D7D334 /* Builder */;
@@ -1677,6 +1838,131 @@
 				GCC_PREPROCESSOR_DEFINITIONS = APPLE_IS_ARBITRARY;
 				MACOSX_DEPLOYMENT_TARGET = 10.2;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+			};
+			name = Default;
+		};
+		4B39C93108EEF63500BA5E90 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(PREFIX_HEADER)";
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				INFOPLIST_FILE = "ZoomMetadataImporter-Info.plist";
+				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
+				LIBRARY_STYLE = BUNDLE;
+				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				OTHER_CFLAGS = (
+					"-DXMLCALL=",
+					"-DHAVE_COREFOUNDATION",
+					"-framework",
+					CoreServices,
+					"-framework",
+					Foundation,
+					"-framework",
+					CoreFoundation,
+				);
+				OTHER_LDFLAGS = (
+					"-framework",
+					CoreServices,
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+					"-L/usr/local/lib",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = ZoomMetadataImporter;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = mdimporter;
+			};
+			name = Development;
+		};
+		4B39C93208EEF63500BA5E90 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(PREFIX_HEADER)";
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				INFOPLIST_FILE = "ZoomMetadataImporter-Info.plist";
+				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
+				LIBRARY_STYLE = BUNDLE;
+				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				OTHER_CFLAGS = (
+					"-DXMLCALL=",
+					"-DHAVE_COREFOUNDATION",
+					"-framework",
+					CoreServices,
+					"-framework",
+					Foundation,
+					"-framework",
+					CoreFoundation,
+				);
+				OTHER_LDFLAGS = (
+					"-framework",
+					CoreServices,
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+					"-L/usr/local/lib",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = ZoomMetadataImporter;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = mdimporter;
+			};
+			name = Deployment;
+		};
+		4B39C93308EEF63500BA5E90 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(PREFIX_HEADER)";
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				INFOPLIST_FILE = "ZoomMetadataImporter-Info.plist";
+				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
+				LIBRARY_STYLE = BUNDLE;
+				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				OTHER_CFLAGS = (
+					"-DXMLCALL=",
+					"-DHAVE_COREFOUNDATION",
+					"-framework",
+					CoreServices,
+					"-framework",
+					Foundation,
+					"-framework",
+					CoreFoundation,
+				);
+				OTHER_LDFLAGS = (
+					"-framework",
+					CoreServices,
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+					"-L/usr/local/lib",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = ZoomMetadataImporter;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = mdimporter;
 			};
 			name = Default;
 		};
@@ -1962,6 +2248,15 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Default;
+		};
+		4B39C93008EEF63500BA5E90 /* Build configuration list for PBXNativeTarget "ZoomMetadataImporter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4B39C93108EEF63500BA5E90 /* Development */,
+				4B39C93208EEF63500BA5E90 /* Deployment */,
+				4B39C93308EEF63500BA5E90 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 		4BB8C0E508C2452E00D7D334 /* Build configuration list for PBXNativeTarget "Builder" */ = {
 			isa = XCConfigurationList;

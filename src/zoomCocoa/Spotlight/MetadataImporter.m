@@ -19,6 +19,8 @@
 #import "ZoomStory.h"
 #import "ZoomStoryID.h"
 
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
+
 // -----------------------------------------------------------------------------
 //	protos
 // -----------------------------------------------------------------------------
@@ -569,4 +571,10 @@ void * MetadataImporterPluginFactory( CFAllocatorRef allocator, CFUUIDRef typeID
 	
 	return NULL;
 }
+
+#else
+
+#error Oops, compiling for the wrong version of OS X
+
+#endif
 
