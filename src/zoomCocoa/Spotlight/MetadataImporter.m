@@ -280,42 +280,46 @@ ZoomStory * FindStory( ZoomStoryID * gameID )
 
 NSArray * GetGameIndices( void )
 {
-	NSMutableArray * game_indices = [[NSMutableArray alloc] init];
+	static NSMutableArray * game_indices = nil;
+	
+	if (game_indices == nil) {
+		game_indices = [[NSMutableArray alloc] init];
 
-	NSString * config_dir = GetZoomConfigDirectory();
-//	NSLog( @"config_dir = %@\n", config_dir );
-	
-	NSData * userData = [NSData dataWithContentsOfFile:[config_dir stringByAppendingPathComponent: @"metadata.iFiction"]];
+		NSString * config_dir = GetZoomConfigDirectory();
+	//	NSLog( @"config_dir = %@\n", config_dir );
+		
+		NSData * userData = [NSData dataWithContentsOfFile:[config_dir stringByAppendingPathComponent: @"metadata.iFiction"]];
 
-	NSBundle * bundle = [NSBundle bundleWithIdentifier:@"uk.org.logicalshift.ZoomMetadataImporter"];
-	
-//	NSLog( @"bundlePath = %@\n", [bundle bundlePath] );
-	
-	NSData * infocomData = [NSData dataWithContentsOfFile:[bundle pathForResource: @"infocom" ofType: @"iFiction"]];
-	NSData * archiveData = [NSData dataWithContentsOfFile:[bundle pathForResource: @"archive" ofType: @"iFiction"]];
+		NSBundle * bundle = [NSBundle bundleWithIdentifier:@"uk.org.logicalshift.ZoomMetadataImporter"];
+		
+	//	NSLog( @"bundlePath = %@\n", [bundle bundlePath] );
+		
+		NSData * infocomData = [NSData dataWithContentsOfFile:[bundle pathForResource: @"infocom" ofType: @"iFiction"]];
+		NSData * archiveData = [NSData dataWithContentsOfFile:[bundle pathForResource: @"archive" ofType: @"iFiction"]];
 
-//	NSLog( @"userData = 0x%08lx infocomData = 0x%08lx archiveData = 0x%08lx\n", userData, infocomData, archiveData );
-	
-	if( userData ) 
-	{
-		[game_indices addObject:[[[ZoomMetadata alloc] initWithData:userData] autorelease]];
+	//	NSLog( @"userData = 0x%08lx infocomData = 0x%08lx archiveData = 0x%08lx\n", userData, infocomData, archiveData );
+		
+		if( userData ) 
+		{
+			[game_indices addObject:[[[ZoomMetadata alloc] initWithData:userData] autorelease]];
+		}
+		else
+		{
+			[game_indices addObject:[[[ZoomMetadata alloc] init] autorelease]];
+		}
+		
+		if( infocomData ) 
+		{
+			[game_indices addObject:[[[ZoomMetadata alloc] initWithData: infocomData] autorelease]];
+		}
+		
+		if( archiveData ) 
+		{
+			[game_indices addObject:[[[ZoomMetadata alloc] initWithData: archiveData] autorelease]];
+		}
 	}
-	else
-	{
-		[game_indices addObject:[[[ZoomMetadata alloc] init] autorelease]];
-	}
 	
-	if( infocomData ) 
-	{
-		[game_indices addObject:[[[ZoomMetadata alloc] initWithData: infocomData] autorelease]];
-	}
-	
-	if( archiveData ) 
-	{
-		[game_indices addObject:[[[ZoomMetadata alloc] initWithData: archiveData] autorelease]];
-	}
-	
-	return [game_indices autorelease];
+	return game_indices;
 }
 
 // GetZoomConfigDirectory
