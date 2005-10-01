@@ -92,16 +92,16 @@ static int Xstrncpy(XML_Char* a, const XML_Char* b, int len) {
 	return x;
 }
 
-static int XCstrcmp(const XML_Char* a, const unsigned char* b) {
+static int XCstrcmp(const XML_Char* a, const char* b) {
 	int x;
 	
 	for (x=0; a[x] != 0 && b[x] != 0; x++) {
-		if (a[x] < b[x]) return -1;
-		if (a[x] > b[x]) return 1;
+		if (a[x] < (unsigned char)b[x]) return -1;
+		if (a[x] > (unsigned char)b[x]) return 1;
 	}
 	
-	if (a[x] < b[x]) return -1;
-	if (a[x] > b[x]) return 1;
+	if (a[x] < (unsigned char)b[x]) return -1;
+	if (a[x] > (unsigned char)b[x]) return 1;
 	
 	return 0;
 }
@@ -376,7 +376,7 @@ IFMetadata* IFMD_Parse(const IFMDByte* data, size_t length) {
 	XML_SetUserData(theParser, currentState);
 	
 	/* Go! */
-	status = XML_Parse(theParser, data, length, 1);
+	status = XML_Parse(theParser, (const char*)data, length, 1);
 	
 	if (status != XML_STATUS_OK) {
 		enum XML_Error error = XML_GetErrorCode(theParser);
@@ -1030,7 +1030,7 @@ char* IFStrnCpyC(char* dst, const IFMDChar* src, size_t sz) {
 static unsigned short int* GetUTF16(const IFMDChar* src, int* len) {
 	int pos, dpos;
 	int alloc;
-	short int* res;
+	unsigned short int* res;
 	
 	res = NULL;
 	alloc = 0;
@@ -1448,7 +1448,7 @@ int IFMD_Save(IFMetadata* data,
 	int story;
 	unsigned char* utf8;
 
-#define ws(s) if (writeFunction(s, strlen(s), userData) != 0) return 1;
+#define ws(s) if (writeFunction((const char*)s, strlen((const char*)s), userData) != 0) return 1;
 #define wutf(s) utf8 = makeutf8xml(s, 0); ws(utf8); free(utf8);
 #define wutfblock(s) utf8 = makeutf8xml(s, 1); ws(utf8); free(utf8);
 	
