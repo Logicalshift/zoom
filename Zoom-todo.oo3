@@ -15,10 +15,10 @@
   <settings/>
   <editor should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
-    <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="pjHJFJC09nQ"/>
+    <hoisted-rows ids="bnN6VeEFG6A"/>
+    <selected-rows ids="iimL6lniu2_"/>
     <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{83, 0}"/>
+    <selected-characters range="{20, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -89,6 +89,76 @@
               <p>
                 <run>
                   <lit>Can input commands</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="h7lREaDCL9j">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Can input commands in Border Zone</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="fz0J18T3T3S">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Can play sh2.blb</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="oKbRTDUKBiX">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Can load .zlb files</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="bIyu88trc52">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Scrollback works</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="iimL6lniu2_">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Blorb indexing works</lit>
                 </run>
               </p>
             </text>
@@ -817,6 +887,103 @@
               </p>
             </text>
           </note>
+        </item>
+        <item id="oWsvPWShTdI">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Input not being processed correctly in sh2.blb</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>(When asked for a &apos;difficulty&apos; level, the </lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="k4GSccvlw6b">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Input not being processed correctly in Border Zone</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>If too long is spent typing, the input position resets, so the input text is corrupted</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="f--C0YjpdmY">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>&apos;Invalid&apos; games: in particular quetzal files, seem to be being indexed by the iFiction window</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="o-C80zhqbhL">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Overlays appear upside down in 10.4</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>(grr, the way images work has changed)</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="mblRoY5ZENn">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Blorbs are not being indexed correctly in the iFiction window</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
         </item>
         <item id="lo3LT0PZvp1" state="checked">
           <values>
@@ -1748,7 +1915,7 @@
             </text>
           </values>
         </item>
-        <item id="o_3tx8Dh-b-" expanded="yes">
+        <item id="o_3tx8Dh-b-">
           <values>
             <text>
               <p>
@@ -1791,6 +1958,34 @@
               </values>
             </item>
           </children>
+        </item>
+        <item id="dyl865LFCwE">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Want &apos;language&apos; section</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="iUDuGDHOHYl" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Want &apos;contemporary fiction&apos; genre</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
         </item>
         <item id="d5VGR4xaf2H" state="checked">
           <values>

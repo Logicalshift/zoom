@@ -62,6 +62,7 @@
 		case 10: name = @"Speed-IF"; break;
 		case 11: name = @"Arcade"; break;
 		case 12: name = @"Interpreter abuse"; break;
+		case 13: name = @"Contemporary fiction"; break;
 	}
 	
 	if (name) {
