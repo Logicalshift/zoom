@@ -236,6 +236,10 @@ enum ZValueTypeMasks {
 - (void)		shouldReceiveCharacters;
 - (void)		shouldReceiveText: (in int) maxLength;
 - (void)        stopReceiving;
+- (bycopy NSString*) receivedTextToDate;
+
+// Ask the display to backtrack over some input that may already be on the screen
+- (bycopy NSString*) backtrackInputOver: (in bycopy NSString*) prefix;
 
 - (oneway void) setTerminatingCharacters: (in bycopy NSSet*) characters;
 

@@ -349,7 +349,7 @@ int display_readline(int* buf, int len, long int timeout) {
 	// Prefix
 	NSString* prefix = [@"" retain];
 	
-	if (buf[0] != nil) {
+	if (buf[0] != 0) {
 		unichar* prefixBuf = malloc(sizeof(unichar)*len);
 		int x;
 		
@@ -377,6 +377,11 @@ int display_readline(int* buf, int len, long int timeout) {
     
     [[mainMachine windowNumber: zDisplayCurrentWindow] setFocus];
     [display shouldReceiveText: len];
+	
+	if (prefix != nil && [prefix length] > 0) {
+		// Ask the display to backtrack input if possible
+		prefix = [display backtrackInputOver: prefix];
+	}
 
     NSDate* when;
 
@@ -406,12 +411,19 @@ int display_readline(int* buf, int len, long int timeout) {
     // Cycle the autorelease pool
     [displayPool release];
     displayPool = [[NSAutoreleasePool alloc] init];
-    
+
+	// If there was a timeout, get the text so far
+	NSString* inputToDate = nil;
+	if ([mainMachine terminatingCharacter] == 0 &&
+		[[mainMachine inputBuffer] length] == 0) {
+		inputToDate = [display receivedTextToDate];
+	}
+	
     // Finish up
     [display stopReceiving];
 	
     // Copy the data
-    NSMutableString* inputBuffer = [mainMachine inputBuffer];
+    NSMutableString* inputBuffer = inputToDate==nil?[mainMachine inputBuffer]:[[inputToDate mutableCopy] autorelease];
 	
 	// Add the prefix, if any
 	[inputBuffer insertString: prefix 

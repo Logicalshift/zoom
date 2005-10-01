@@ -16,9 +16,9 @@
   <editor should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="o-C80zhqbhL"/>
-    <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{35, 0}"/>
+    <selected-rows ids="oWsvPWShTdI"/>
+    <selected-columns ids=":941128d340f2709e21a6e303"/>
+    <selected-characters range="{42, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -911,7 +911,30 @@
             </text>
           </note>
         </item>
-        <item id="k4GSccvlw6b">
+        <item id="f--C0YjpdmY">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>&apos;Invalid&apos; games: in particular quetzal files, seem to be being indexed by the iFiction window</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>Might actually just be the Blorb bug again?</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="k4GSccvlw6b" state="checked">
           <values>
             <text>
               <p>
@@ -933,20 +956,6 @@
               </p>
             </text>
           </note>
-        </item>
-        <item id="f--C0YjpdmY">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>&apos;Invalid&apos; games: in particular quetzal files, seem to be being indexed by the iFiction window</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
         </item>
         <item id="o-C80zhqbhL" state="checked">
           <values>

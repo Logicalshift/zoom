@@ -2499,6 +2499,57 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	}
 }
 
+- (NSString*) receivedTextToDate {
+	if (inputLine != nil) {
+		return [inputLine inputLine];
+	} else {
+		NSString* str = [[textView textStorage] string];
+		
+		return [str substringWithRange: NSMakeRange(inputPos,
+													[str length]-inputPos)];
+	}
+}
+
+- (NSString*) backtrackInputOver: (NSString*) prefix {
+	if (prefix == nil) return nil;
+	
+	if (inputLine != nil) {
+		// Input lines currently are unable to backtrack, so the prefix remains unaltered
+		return prefix;
+	} else {
+		NSString* str = [[textView textStorage] string];
+		
+		// 'len' contains the amount of text we'll attempt to backtrack across
+		int len = [prefix length];
+		if (len > [str length]) len = [str length];
+		
+		// Cut out a substring according to the length
+		str = [str substringWithRange: NSMakeRange([str length]-len, len)];
+		
+		// We compare lowercase versions of the string: this allows for things like Beyond Zork which write 'EXAMINE' but add 'examine' to the buffer
+		NSString* lowerPrefix = [prefix lowercaseString];
+		str = [str lowercaseString];
+		
+		// See how far back we can go
+		int offset = len-1;
+		int prefixOffset = [lowerPrefix length]-1;
+		
+		while (offset >= 0 && prefixOffset >= 0 && [lowerPrefix characterAtIndex: prefixOffset] == [str characterAtIndex: offset]) {
+			offset--;
+			prefixOffset--;
+		}
+		
+		// offset, prefixOffset indicate the last character that wasn't matched
+		offset++;
+		
+		int matchLength = len-offset;
+		
+		inputPos -= matchLength;
+		
+		return [prefix substringToIndex: offset];
+	}
+}
+
 // = Output receivers =
 
 - (void) addOutputReceiver: (id) receiver {
