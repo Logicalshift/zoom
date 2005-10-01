@@ -366,7 +366,7 @@ BlorbImage* blorb_findimage(BlorbFile* blorb, int num) {
 	if (![disp containsImageWithNumber: num]) {
 		// Image not available: mark it as so
 		res->file_offset = -1;
-		res->in_use = NULL;
+		res->in_use = 0;
 		return NULL;
 	}
 	
