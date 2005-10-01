@@ -7,6 +7,7 @@
 //
 
 #import "ZoomStoryID.h"
+#import "ZoomBlorbFile.h"
 
 #include "ifmetadata.h"
 
@@ -19,10 +20,43 @@
 		const unsigned char* bytes = [gameData bytes];
 		
 		if ([gameData length] < 64) {
+			// Too little data for this to be a Z-Code file
 			[self release];
 			return nil;
 		}
+
+		if (bytes[0] == 'F' && bytes[1] == 'O' && bytes[2] == 'R' && bytes[3] == 'M') {
+			// This is not a Z-Code file; it's possibly a blorb file, though
+			
+			// Try to interpret as a blorb file
+			ZoomBlorbFile* blorbFile = [[ZoomBlorbFile alloc] initWithData: gameData];
+			
+			if (blorbFile == nil) {
+				[self release];
+				return nil;
+			}
+			
+			// See if we can get the ZCOD chunk
+			NSData* data = [blorbFile dataForChunkWithType: @"ZCOD"];
+			if (data == nil) {
+				[blorbFile release];
+				[self release];
+				return nil;
+			}
+			
+			if ([data length] < 64) {
+				// This file is too short to be a Z-Code file
+				[blorbFile release];
+				[self release];
+				return nil;
+			}
+			
+			// Change to using the blorb data instead
+			bytes = [[[data retain] autorelease] bytes];
+			[blorbFile release];
+		}
 		
+		// Interpret the Z-Code data into a identification
 		ident = IFID_Alloc();
 		needsFreeing = YES;
 		
@@ -48,12 +82,51 @@
 		[fh closeFile];
 		
 		if ([data length] < 64) {
+			// This file is too short to be a Z-Code file
 			[self release];
 			return nil;
 		}
 		
 		bytes = [data bytes];
 		
+		if (bytes[0] == 'F' && bytes[1] == 'O' && bytes[2] == 'R' && bytes[3] == 'M') {
+			// This is not a Z-Code file; it's possibly a blorb file, though
+						
+			// Try to interpret as a blorb file
+			ZoomBlorbFile* blorbFile = [[ZoomBlorbFile alloc] initWithContentsOfFile: zcodeFile];
+			
+			if (blorbFile == nil) {
+				[self release];
+				return nil;
+			}
+			
+			// See if we can get the ZCOD chunk
+			data = [blorbFile dataForChunkWithType: @"ZCOD"];
+			if (data == nil) {
+				[blorbFile release];
+				[self release];
+				return nil;
+			}
+			
+			if ([data length] < 64) {
+				// This file is too short to be a Z-Code file
+				[blorbFile release];
+				[self release];
+				return nil;
+			}
+			
+			// Change to using the blorb data instead
+			bytes = [[[data retain] autorelease] bytes];
+			[blorbFile release];
+		}
+		
+		if (bytes[0] > 8) {
+			// This cannot be a Z-Code file
+			[self release];
+			return nil;
+		}
+		
+		// Read the ID from the Z-Code data
 		ident = IFID_Alloc();
 		needsFreeing = YES;
 		
