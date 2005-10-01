@@ -1023,9 +1023,21 @@ static void zcode_op_aread_5678(ZDWord* pc,
   ZByte* mem;
   unsigned int* buf;
   int x;
+  int bufLen;
   
   mem = machine.memory + (ZUWord) args->arg[0];
-  buf = malloc(sizeof(int)*(mem[0]+1));
+
+  if (((ZUWord)args->arg[0]) < 64) {
+    zmachine_warning("zcode_op_aread called with a buffer in the header area!");
+    return;
+  }
+  
+  if (mem[0] <= 0) {
+    zmachine_fatal("zcode_op_aread called with the memory buffer size set to %i", mem[0]);
+  }
+  
+  bufLen = mem[0];
+  buf = malloc(sizeof(int)*(bufLen+1));
 
   if (args->arg[7] != 0)
     {
@@ -1039,7 +1051,6 @@ static void zcode_op_aread_5678(ZDWord* pc,
 	{
 	  mem[1] = 0;
 	  free(buf);
-	  return;
 	}
     }
   
@@ -1047,6 +1058,11 @@ static void zcode_op_aread_5678(ZDWord* pc,
     {
       /* zmachine_warning("aread: using existing buffer (display may
        * get messed up)"); */
+    
+      if (mem[1] > bufLen) {
+	zmachine_warning("aread: existing buffer size specified as larger than the total buffer size");
+	mem[1] = bufLen;
+      }
       
       for (x=0; x<mem[1]; x++)
 	{
@@ -1091,7 +1107,7 @@ static void zcode_op_aread_5678(ZDWord* pc,
     {
       int res;
       
-      res = stream_readline((int*)buf, mem[0], 0);
+      res = stream_readline((int*)buf, bufLen, 0);
       display_terminating(NULL);
 
       if (res == 254 || res == 253)
@@ -1124,7 +1140,7 @@ static void zcode_op_aread_5678(ZDWord* pc,
     {
       int res;
 
-      res = stream_readline((int*)buf, mem[0], args->arg[2]*100);
+      res = stream_readline((int*)buf, bufLen, args->arg[2]*100);
       display_terminating(NULL);
       store(stack, st, res);
       

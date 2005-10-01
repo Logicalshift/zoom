@@ -346,6 +346,11 @@ int display_readline(int* buf, int len, long int timeout) {
     
     NSObject<ZDisplay>* display = [mainMachine display];
 	
+	if (len <= 0) {
+		zmachine_fatal("display_readline called with a buffer length of %i", len);
+		return 0;
+	}
+	
 	// Prefix
 	NSString* prefix = [@"" retain];
 	

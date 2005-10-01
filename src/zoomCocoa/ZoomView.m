@@ -17,6 +17,10 @@
 #import "ZoomScrollView.h"
 #import "ZoomConnector.h"
 
+// Sets variables to force extreme memory checking in the Zoom task; this provides a fairly huge performance
+// decrease, but provides 'earliest possible' warning of heap corruption.
+#undef ZoomTaskMaximumMemoryDebug
+
 @implementation ZoomView
 
 static ZoomView** allocatedViews = nil;
@@ -1512,6 +1516,23 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	// Start a new machine
     zoomTask = [[NSTask allocWithZone: [self zone]] init];
     zoomTaskData = [[NSMutableString allocWithZone: [self zone]] init];
+	
+#ifdef ZoomTaskMaximumMemoryDebug
+	NSMutableDictionary* taskEnvironment = [[[NSProcessInfo processInfo] environment] mutableCopy];
+	
+	[taskEnvironment setObject: @"1"
+						forKey: @"MallocCheckHeapStart"];
+	[taskEnvironment setObject: @"1"
+						forKey: @"MallocCheckHeapEach"];
+	[taskEnvironment setObject: @"1"
+						forKey: @"MallocScribble"];
+	[taskEnvironment setObject: @"1"
+						forKey: @"MallocGuardEdges"];
+	[taskEnvironment setObject: @"YES"
+						forKey: @"NSZombieEnabled"];
+	
+	[zoomTask setEnvironment: [taskEnvironment autorelease]];
+#endif
 
     if (serverName == nil) {
         serverName = [[NSBundle mainBundle] pathForResource: @"ZoomServer"
