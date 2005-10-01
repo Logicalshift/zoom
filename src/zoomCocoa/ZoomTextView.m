@@ -83,6 +83,9 @@
     // Draw pasted lines
     NSEnumerator* lineEnum = [pastedLines objectEnumerator];
     NSArray* line;
+	
+	NSAffineTransform* invertTransform = [NSAffineTransform transform];
+	[invertTransform scaleXBy: 1.0 yBy: -1.0];
 
     while (line = [lineEnum nextObject]) {
         NSValue* rect = [line objectAtIndex: 0];
@@ -105,16 +108,23 @@
                 
                 fadeImage = [[NSImage alloc] initWithSize: lineRect.size];
 
+				[fadeImage setFlipped: NO];
                 [fadeImage setSize: lineRect.size];
                 [fadeImage lockFocus];
-                [str drawAtPoint: NSMakePoint(0,0)];
+
+				[[NSGraphicsContext currentContext] saveGraphicsState];					
+
+				// (Grr, under 10.4, the images come out upside-down, something that could be avoided under 10.3 by scaling the image)
+				[invertTransform concat];
+                
+				[str drawAtPoint: NSMakePoint(0, -lineRect.size.height)];
+				[[NSGraphicsContext currentContext] restoreGraphicsState];
                 [fadeImage unlockFocus];
 
-				[fadeImage setFlipped: [self isFlipped]];
 				[fadeImage drawInRect:NSMakeRect(lineRect.origin.x,
-												 lineRect.origin.y+lineRect.size.height,
+												 lineRect.origin.y,
 												 lineRect.size.width,
-												 -lineRect.size.height)
+												 lineRect.size.height)
 							 fromRect:NSMakeRect(0,0,
 												 lineRect.size.width,
 												 lineRect.size.height)
