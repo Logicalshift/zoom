@@ -198,7 +198,7 @@
                         <key>UTTypeIconFile</key>
                         <string>Blorb.icns</string>
                         <key>UTTypeIdentifier</key>
-                        <string>public.zcode</string>
+                        <string>public.blorb</string>
                         <key>UTTypeTagSpecification</key>
                         <dict>
                                 <key>com.apple.ostype</key>

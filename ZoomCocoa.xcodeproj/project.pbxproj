@@ -1815,7 +1815,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = ppc;
-				GCC_PREPROCESSOR_DEFINITIONS = APPLE_IS_ARBITRARY;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					APPLE_IS_ARBITRARY,
+					"XMLCALL=",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.2;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
@@ -1825,7 +1828,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = ppc;
-				GCC_PREPROCESSOR_DEFINITIONS = APPLE_IS_ARBITRARY;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					APPLE_IS_ARBITRARY,
+					"XMLCALL=",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.2;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
@@ -1835,7 +1841,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = ppc;
-				GCC_PREPROCESSOR_DEFINITIONS = APPLE_IS_ARBITRARY;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					APPLE_IS_ARBITRARY,
+					"XMLCALL=",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.2;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
