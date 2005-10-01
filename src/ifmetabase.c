@@ -76,11 +76,12 @@ struct IFMDKey {
 
 typedef struct IFMDField IFMDField;
 struct IFMDField {
+	const int* module;						/* The module URI for this field */
 	int*  name;								/* Name of this field. Root field has no name. */
 	int   isDataField;						/* 1 if this field actually contains binary data, 0 if a UCS-4 string */
 	void* data;								/* Data for this field, usually a string */
 	
-	IFMDField* subfields;					/* Subfields, if any, ordered by name */
+	IFMDField** subfields;					/* Subfields, if any, ordered by name */
 	int numSubfields;						/* Number of subfields for this field */
 	
 	int* flattened;							/* Cached version of what this field looks like with subfields flattened */
@@ -998,6 +999,61 @@ void metabase_add_key(IFMDEntry entry, IFMDKey newKey) {
 	
 	/* Recurse to the entry in the parent metabase */
 	metabase_add_key(entry->previous, newKey);
+}
+
+/* Compares a field with a module/name combination */
+struct field_description {
+	const int* module;
+	int* name;
+};
+
+static int field_to_description_compare(const void* a_mdField, const void* b_fieldDescription) {
+	const IFMDField* field = a_mdField;
+	const struct field_description* desc = b_fieldDescription;
+	
+	/* Compare modules first */
+	int moduleCompare = metabase_strcmp(field->module, desc->module);
+		
+	if (moduleCompare == 0) {
+		/* Modules are the same: the field name defines the ordering */
+		return metabase_strcmp(field->name, desc->name);
+	} else {
+		/* Modules are different: their names define the ordering */
+		return moduleCompare;
+	}
+}
+
+/* Finds the data for a specific field in a record */
+struct found_field {
+	IFMDField* parent;								/* Field that 'contains' the requested field */
+	int offset;										/* The offset of the actual found field*/
+};
+
+static struct found_field find_field(IFMDEntry entry, const char* module, const char* field) {
+	struct found_field result;
+	IFMDRecord* record;
+	const int* moduleURI;
+	int* ucs4name;
+	struct field_description fieldToFind;
+	
+	/* Standard result is no match */
+	result.parent = NULL;
+	result.offset = -1;
+	
+	/* Get the record associated with the entry */
+	record = entry->metabase->records[entry->record];
+	
+	/* Get the module URI associated with this module, and convert the field name into UCS-4 */
+	moduleURI = metabase_namespace_for_module(module);
+	ucs4name = metabase_ucs4(field);
+	
+	/* Fields have the format name.name.name@attribute or name.name.name */
+	
+	/* Tidy up */
+	metabase_free(ucs4name);
+	
+	/* Return result */
+	return result;
 }
 
 /* Clones an entry, excepting metabase excluded modules, in a different metabase */
