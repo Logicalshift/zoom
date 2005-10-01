@@ -315,7 +315,7 @@ NSArray * GetGameIndices( void )
 		[game_indices addObject:[[[ZoomMetadata alloc] initWithData: archiveData] autorelease]];
 	}
 	
-	return game_indices;
+	return [game_indices autorelease];
 }
 
 // GetZoomConfigDirectory
