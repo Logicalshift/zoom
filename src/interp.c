@@ -1029,11 +1029,15 @@ static void zcode_op_aread_5678(ZDWord* pc,
 
   if (((ZUWord)args->arg[0]) < 64) {
     zmachine_warning("zcode_op_aread called with a buffer in the header area!");
-    return;
   }
   
   if (mem[0] <= 0) {
     zmachine_fatal("zcode_op_aread called with the memory buffer size set to %i", mem[0]);
+  }
+  
+  if (mem[1] > mem[0]) {
+    zmachine_warning("zcode_op_aread called with an invalid buffer: the number of characters the buffer already contains must be less than the total length of the buffer");
+    return;
   }
   
   bufLen = mem[0];
@@ -1058,13 +1062,8 @@ static void zcode_op_aread_5678(ZDWord* pc,
     {
       /* zmachine_warning("aread: using existing buffer (display may
        * get messed up)"); */
-    
-      if (mem[1] > bufLen) {
-	zmachine_warning("aread: existing buffer size specified as larger than the total buffer size");
-	mem[1] = bufLen;
-      }
       
-      for (x=0; x<mem[1]; x++)
+      for (x=0; x<mem[1] && x<mem[0]; x++)
 	{
 	  buf[x] = zscii_unicode[mem[x+2]];
 	}
