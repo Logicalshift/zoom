@@ -3363,3 +3363,8 @@ OPCODE "print_timer"   EXT:0x83      	      VERSION 4,5,6,7,8
   stream_printf("%i.%02i secs", (signed int) (now/CLOCKS_PER_SEC),
 		(signed int) ((now*100)/CLOCKS_PER_SEC)%100);
 %}
+
+OPCODE "print_stack"   EXT:0x84      	      VERSION 5,7,8
+%{
+    zmachine_dump_stack(stack);
+%}

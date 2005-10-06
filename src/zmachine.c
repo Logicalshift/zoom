@@ -822,6 +822,32 @@ char* zmachine_get_serial(void)
   return serial;
 }
 
+void zmachine_dump_stack(ZStack* stack) {
+  int x;
+  ZWord* sp;
+  ZFrame* frame;
+  
+  /* This implements a request by Graham to dump the stack for debugging purposes */
+  display_printf("== Zoom debug: beginning stack dump\n");
+  
+  display_printf("Stack total size: %i words\n", stack->stack_total);
+  display_printf("Current stack usage: %i words\n", stack->stack_total-stack->stack_size);
+  display_printf("\nValues pushed to stack: (top) ");
+
+  sp = stack->stack_top;
+  for (x=stack->stack_size; x<stack->stack_total; x++) {
+    display_printf("0x%04x ", (ZUWord)*(--sp));
+  }
+  display_printf("(bottom)\n\nStack frames:\n");
+  
+  for (frame=stack->current_frame; frame != NULL; frame=frame->last_frame) {
+    display_printf("  Return address: 0x%08x. Frame stack size: %i. Number of locals: %i.\n",
+		   frame->ret, frame->frame_size, frame->nlocals);
+  }
+  
+  display_printf("== Dump finished\n");
+}
+
 #ifdef DEBUG
 ZWord debug_print_var(ZWord val, int var)
 {

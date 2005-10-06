@@ -310,6 +310,7 @@ extern void  zmachine_warning       (char* format, ...);
 extern void  zmachine_info          (char* format, ...);
 extern void  zmachine_mark_statusbar(void);
 extern char* zmachine_get_serial    (void);
+extern void  zmachine_dump_stack    (ZStack* stack);
 
 extern ZWord   pop         (ZStack*);
 extern ZWord   top         (ZStack*);
