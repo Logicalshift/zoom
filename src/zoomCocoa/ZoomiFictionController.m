@@ -22,6 +22,10 @@
 
 #import "ifmetadata.h"
 
+#ifndef NSAppKitVersionNumber10_2
+# define NSAppKitVersionNumber10_2 663
+#endif
+
 @implementation ZoomiFictionController
 
 static ZoomiFictionController* sharedController = nil;
@@ -79,7 +83,7 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	[myHeader setAutoresizesSubviews:YES];
 	
 	// Shadow creates an engraved look
-	NSShadow *shadow = [[NSShadow alloc] init];
+	NSObject *shadow = [[objc_lookUpClass("NSShadow") alloc] init];
 	[shadow setShadowOffset:NSMakeSize(1.1, -1.5)];
 	[shadow setShadowBlurRadius:0.2];
 	[shadow setShadowColor:[NSColor colorWithCalibratedWhite:1.0 alpha:0.6]];
@@ -143,7 +147,7 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 		NSTextField* titleView;
 
 		// Shadow creates an engraved look
-		NSShadow *shadow = [[NSShadow alloc] init];
+		NSObject *shadow = [[objc_lookUpClass("NSShadow") alloc] init];
 		[shadow setShadowOffset:NSMakeSize(1.1, -1.5)];
 		[shadow setShadowBlurRadius:0.2];
 		[shadow setShadowColor:[NSColor colorWithCalibratedWhite:1.0 alpha:0.6]];

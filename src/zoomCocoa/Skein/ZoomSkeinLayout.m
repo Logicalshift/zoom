@@ -47,10 +47,10 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 }
 
 + (void) initialize {
-	NSShadow* labelShadow = nil;
+	NSObject* labelShadow = nil;
 	
 	if (objc_lookUpClass("NSShadow") != nil) {
-		labelShadow = [[NSShadow alloc] init];
+		labelShadow = [[objc_lookUpClass("NSShadow") alloc] init];
 		[labelShadow setShadowOffset: NSMakeSize(0.4, -1)];
 		[labelShadow setShadowBlurRadius: 1.5];
 		[labelShadow setShadowColor: [NSColor colorWithCalibratedWhite:0.0 alpha:0.7]];

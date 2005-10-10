@@ -578,7 +578,7 @@ void * MetadataImporterPluginFactory( CFAllocatorRef allocator, CFUUIDRef typeID
 
 #else
 
-#error Oops, compiling for the wrong version of OS X
+/* #error Oops, compiling for the wrong version of OS X */
 
 #endif
 
