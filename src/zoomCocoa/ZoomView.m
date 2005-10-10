@@ -95,7 +95,8 @@ static void finalizeViews(void) {
 
         [textScroller setHasHorizontalScroller: NO];
         [textScroller setHasVerticalScroller: YES];
-		[textScroller setBackgroundColor: [NSColor clearColor]];
+		[textScroller setBackgroundColor: [NSColor whiteColor]];
+		[textScroller setDrawsBackground: YES];
         
         NSSize contentSize = [textScroller contentSize];
 
