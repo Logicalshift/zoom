@@ -69,6 +69,7 @@
 		NSRect upperFrame, sepFrame;
 		
 		//contentFrame.size = [self contentSize];
+		contentFrame.origin = [self bounds].origin;
 		contentFrame.size = [[self class] contentSizeForFrameSize: [self frame].size
 											hasHorizontalScroller: [self hasHorizontalScroller]
 											  hasVerticalScroller: [self hasVerticalScroller]
