@@ -38,9 +38,7 @@
         [win cutLines];
     }
     
-    [[[[zoomView textView] textStorage] mutableString] setString: @""];
-    [[zoomView textView] setBackgroundColor: [style reversed]?[zoomView foregroundColourForStyle: style]:[zoomView backgroundColourForStyle: style]];
-    [[zoomView textView] clearPastedLines]; 
+	[zoomView clearLowerWindowWithStyle: style];
 	//[zoomView rearrangeUpperWindows];
 	[zoomView retileUpperWindowIfRequired];
     [zoomView scrollToEnd];
@@ -63,9 +61,11 @@
 // Sending data to a window
 - (void) writeString: (NSString*) string
            withStyle: (ZStyle*) style {
-    [[[zoomView textView] textStorage] appendAttributedString:
-        [zoomView formatZString: string
-                      withStyle: style]];
+	[zoomView writeAttributedString: [zoomView formatZString: string
+												   withStyle: style]];
+    //[[[zoomView textView] textStorage] appendAttributedString:
+    //    [zoomView formatZString: string
+    //                  withStyle: style]];
     //[[zoomView buffer] appendAttributedString:
     //    [zoomView formatZString: string
     //                  withStyle: style]];

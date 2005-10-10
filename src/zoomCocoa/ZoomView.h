@@ -145,6 +145,8 @@ extern NSString* ZoomStyleAttributeName;
                             withStyle: (ZStyle*) style;
 
 - (ZoomTextView*) textView;
+- (void) writeAttributedString: (NSAttributedString*) string;
+- (void) clearLowerWindowWithStyle: (ZStyle*) style;
 
 // Setting the focused view
 - (void) setFocusedView: (NSObject<ZWindow>*) view;

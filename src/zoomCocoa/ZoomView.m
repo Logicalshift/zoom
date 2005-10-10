@@ -62,6 +62,7 @@ static void finalizeViews(void) {
 		
 		// Input source
 		inputSource = nil;
+		inputPos = 0;
 
         // No upper/lower windows
         upperWindows = [[NSMutableArray allocWithZone: [self zone]] init];
@@ -419,6 +420,7 @@ static void finalizeViews(void) {
 		if (len > ((int)preserve + 2048)) {
 			// Need to truncate
 			[[textView textStorage] deleteCharactersInRange: NSMakeRange(0, len - preserve)];
+			inputPos -= len-preserve;
 		}
 	}
 	
@@ -539,6 +541,8 @@ static void finalizeViews(void) {
 			[textView setEditable: YES];
 
 			[self resetMorePrompt];
+		} else {
+			[textView setEditable: NO];
 		}
 		
 		// If we're using the upper window, run using the inputLine system
@@ -549,7 +553,8 @@ static void finalizeViews(void) {
 		// Scroll, input
 		if (!isUpperWindow) {
 			[self scrollToEnd];
-			inputPos = [[textView textStorage] length];
+			// inputPos = [[textView textStorage] length];
+			[self textStorageDidProcessEditing: nil];
 		}
 	} else {
 		// == Version 6 pixmap entry routines ==
@@ -634,7 +639,6 @@ static void finalizeViews(void) {
 - (void) stopReceiving {
     receiving = NO;
     receivingCharacters = NO;
-    [textView setEditable: NO];
 	[[textScroller upperWindowView] setFlashCursor: NO]; 
 	[self resetMorePrompt];
 }
@@ -687,6 +691,22 @@ static void finalizeViews(void) {
 }
 
 // = Utility functions =
+
+- (void) writeAttributedString: (NSAttributedString*) string {
+	// Writes the given string to the lower window
+	[[textView textStorage] insertAttributedString: string
+										   atIndex: inputPos];
+	inputPos += [string length];
+}
+
+- (void) clearLowerWindowWithStyle: (ZStyle*) style {
+    [[[textView textStorage] mutableString] replaceCharactersInRange: NSMakeRange(0, inputPos)
+																	 withString: @""];
+    [textView setBackgroundColor: [style reversed]?[self foregroundColourForStyle: style]:[self backgroundColourForStyle: style]];
+    [textView clearPastedLines]; 
+	
+	inputPos = 0;
+}
 
 - (void) scrollToEnd {
 	if (editingTextView) {
@@ -1369,7 +1389,9 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         sepHeight -= [upperWindowBuffer containerSize].height;
 		
         if ([[textView textStorage] length] == 0) {
-            [[[textView textStorage] mutableString] appendString: @"\n"];
+            [[[textView textStorage] mutableString] insertString: @"\n"
+														 atIndex: inputPos];
+			inputPos++;
         }
 
         do {
@@ -1384,7 +1406,9 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
                                                                  inTextContainer: [textView textContainer]];
 
             if (NSMinY(endRect) < sepHeight) {
-                [[textView textStorage] appendAttributedString: newLine];
+                [[textView textStorage] insertAttributedString: newLine
+													   atIndex: inputPos];
+				inputPos += [newLine length];
             } else {
                 break;
             }
@@ -1439,7 +1463,9 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     if (upperWindowBuffer == nil) return;
 
     if ([[textView textStorage] length] == 0) {
-        [[[textView textStorage] mutableString] appendString: @"\n"];
+        [[[textView textStorage] mutableString] insertString: @"\n"
+													 atIndex: inputPos];
+		inputPos++;
     }
     
     do {
@@ -1455,7 +1481,9 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         theContainer = [[textView layoutManager] textContainerForGlyphAtIndex: endGlyph.location effectiveRange: &eRange];
 
         if (theContainer == upperWindowBuffer) {
-            [[[textView textStorage] mutableString] appendString: @"\n"];
+            [[[textView textStorage] mutableString] insertString: @"\n"
+														 atIndex: inputPos];
+			inputPos++;
         }
 
         // I suppose there's an outside chance of an infinite loop here
@@ -1617,6 +1645,8 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     [[textView textStorage] appendAttributedString: newline];
     [[textView textStorage] appendAttributedString: string];
     [[textView textStorage] appendAttributedString: newline];
+	inputPos = [[textView textStorage] length];
+	[textView setEditable: NO];
 
     // Update the windows
     [self rearrangeUpperWindows];
@@ -2227,6 +2257,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		
 		// Workaround for a Cocoa bug
 		[[textView textStorage] setAttributedString: [[[NSAttributedString alloc] initWithAttributedString: storage] autorelease]];
+		inputPos = [[textView textStorage] length];
 		
 		// Final setup
 		upperWindowsToRestore = [upperWindows count];
@@ -2264,6 +2295,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		
 		// Workaround for a Cocoa bug
 		[[textView textStorage] setAttributedString: [[[NSAttributedString alloc] initWithAttributedString: storage] autorelease]];
+		inputPos = [[textView textStorage] length];
 		
 		commandHistory = [[decoder decodeObject] retain];
 		if (autosaveVersion == 101) pixmapWindow = [[decoder decodeObject] retain];
@@ -2338,6 +2370,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 			[[textView textStorage] beginEditing];
 			// Workaround for a bug in Cocoa
 			[[textView textStorage] setAttributedString: [[[NSAttributedString alloc] initWithAttributedString: storage] autorelease]];
+			inputPos = [[textView textStorage] length];
 			
 			commandHistory = [[decoder decodeObject] retain];
 			
