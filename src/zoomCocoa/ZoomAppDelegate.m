@@ -76,6 +76,7 @@
 	if ([[[filename pathExtension] lowercaseString] isEqualToString: @"ifiction"]) {
 		// Load extra iFiction data
 		[[ZoomiFictionController sharediFictionController] mergeiFictionFromFile: filename];
+		return YES;
 	}
 	
 	return NO;
@@ -94,7 +95,7 @@
 
 - (IBAction) displayGameInfoWindow: (id) sender {
 	[[ZoomGameInfoController sharedGameInfoController] showWindow: self];
-
+	
 	// Blank out the game info window
 	if ([[ZoomGameInfoController sharedGameInfoController] infoOwner] == nil) {
 		[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];

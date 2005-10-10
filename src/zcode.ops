@@ -85,7 +85,7 @@ OPCODE "test_attr"     2OP:0x0a BRANCH VERSION 1,2,3
   int byte, bit;
 
   if (uarg1>255) /* || uarg1 == 0) HHGG bug */
-    zmachine_fatal("Object out of range");
+    zmachine_fatal("Object %i out of range", uarg1);
   if (uarg2>31)
     zmachine_fatal("Attribute out of range");
 
@@ -151,7 +151,7 @@ OPCODE "set_attr"      2OP:0x0b        VERSION 1,2,3
   int byte, bit;
 
   if (uarg1>255 || uarg1 == 0)
-    zmachine_fatal("Object out of range");
+    zmachine_fatal("Object %i out of range", uarg1);
   if (uarg2>31)
     zmachine_fatal("Attribute out of range");
 
@@ -201,7 +201,7 @@ OPCODE "clear_attr"    2OP:0x0c        VERSION 1,2,3
   int byte, bit;
 
   if (uarg1>255 || uarg1 == 0)
-    zmachine_fatal("Object out of range");
+    zmachine_fatal("Object %i out of range", uarg1);
   if (uarg2>31)
     zmachine_fatal("Attribute out of range");
 
@@ -252,9 +252,9 @@ OPCODE "insert_obj"    2OP:0x0e        VERSION 1,2,3
   ZByte* tmp;
   
   if (uarg1>255 || uarg1 == 0)
-    zmachine_fatal("Object out of range");  
+    zmachine_fatal("Object %i out of range", uarg1);  
   if (uarg2>255)
-    zmachine_fatal("Object out of range");
+    zmachine_fatal("Object %i out of range", uarg2);
 
   /* Get the address of the object */
   src_obj = Obj3(uarg1);
@@ -386,7 +386,7 @@ OPCODE "get_prop"      2OP:0x11 STORE  VERSION 1,2,3
   struct prop* p;
   
   if (uarg1>255 || uarg1 == 0)
-    zmachine_fatal("Object out of range");
+    zmachine_fatal("Object %i out of range", uarg1);
   arg2 &= 0x1f;
   if (uarg2>31 || uarg2 == 0)
     zmachine_fatal("Property %i out of range", uarg2);
@@ -455,8 +455,17 @@ OPCODE "get_prop_addr" 2OP:0x12 STORE  VERSION 1,2,3
   ZUWord prop_adr;
   ZByte  size;
 
-  if (uarg1 == 0 || uarg1>255)
-    zmachine_fatal("Object out of range");
+  if (uarg1>255)
+    zmachine_fatal("Object %i out of range", uarg1);
+
+  if (uarg1 == 0)
+    {
+      /* Zork 2 has an occasional bug that causes a crash here if we make this error fatal */
+      zmachine_warning("Attempt to get the address of invalid property number 0");
+      store(stack, st, 0);
+      goto loop;
+    }
+    
   arg2 &= 0x1f;
   if (uarg2 > 31 || uarg2 == 0)
     {
@@ -1351,7 +1360,7 @@ OPCODE "put_prop"       VAR:0x03 ARGS:3               VERSION 1,2,3
   struct prop* p;
   
   if (argblock.arg[0]>255 || argblock.arg[0] == 0)
-    zmachine_fatal("Object out of range");
+    zmachine_fatal("Object %i out of range", argblock.arg[0]);
   argblock.arg[1] &= 0x1f;
   if (argblock.arg[1]>31)
     zmachine_fatal("Property %i out of range", argblock.arg[1]);
