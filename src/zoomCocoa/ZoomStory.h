@@ -45,7 +45,7 @@ extern NSString* ZoomStoryDataHasChangedNotification;
 - (NSString*) comment;
 - (float)     rating;
 
-- (id) objectForKey: (NSString*) key; // Always returns an NSString (other objects are possible for other metadata)
+- (id) objectForKey: (id) key; // Always returns an NSString (other objects are possible for other metadata)
 
 // Setting data
 - (void) setTitle:    (NSString*) newTitle;
@@ -60,7 +60,7 @@ extern NSString* ZoomStoryDataHasChangedNotification;
 - (void) setRating:   (float) rating;
 
 - (void) setObject: (id) value
-			forKey: (NSString*) key;
+			forKey: (id) key;
 
 // Identifying and comparing stories
 - (NSArray*) storyIDs;									// Array of ZoomStoryIDs
