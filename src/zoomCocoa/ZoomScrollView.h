@@ -20,6 +20,9 @@
     NSBox* upperDivider;
 	
 	float scaleFactor;
+	
+	NSSize lastTileSize;
+	int lastUpperSize;
 }
 
 - (id) initWithFrame: (NSRect) frame

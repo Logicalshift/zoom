@@ -19,6 +19,9 @@
         upperDivider = [[NSBox allocWithZone: [self zone]] initWithFrame:
             NSMakeRect(0,0,2,2)];
         [upperDivider setBoxType: NSBoxSeparator];
+		
+		lastTileSize = NSMakeSize(-1,-1);
+		lastUpperSize = -1;
     }
     return self;
 }
@@ -43,78 +46,86 @@
 }
 
 - (void) tile {
-    [super tile];
-
-    int upperHeight  = [zoomView upperWindowSize];
-    NSSize fixedSize = [@"M" sizeWithAttributes:
-        [NSDictionary dictionaryWithObjectsAndKeys:
-            [zoomView fontWithStyle:ZFixedStyle], NSFontAttributeName, nil]];
-
-    double upperMargin = (upperHeight * fixedSize.height) / scaleFactor;
-
-    // Resize the content frame so that it doesn't cover the upper window
-    NSClipView* contentView = [self contentView];
-    NSRect contentFrame = [contentView frame];
-    NSRect upperFrame, sepFrame;
+	// Position the scroll view
+	NSSize thisTileSize = [self bounds].size;
 	
-	contentFrame.size = [self contentSize];
+    if (!NSEqualSizes(lastTileSize, thisTileSize)) {
+		[super tile];
+	}
 
-    contentFrame.size.height -= upperMargin;
-    contentFrame.origin.y    += upperMargin;
+	int upperHeight  = [zoomView upperWindowSize];
 
-    upperFrame.origin.x = contentFrame.origin.x;
-    upperFrame.origin.y = contentFrame.origin.y - upperMargin;
-    upperFrame.size.width = contentFrame.size.width;
-    upperFrame.size.height = upperMargin;
+	if (!NSEqualSizes(lastTileSize, thisTileSize) || lastUpperSize != upperHeight) {
+		// Move the content view to accomodate the upper window
+		NSSize fixedSize = [@"M" sizeWithAttributes:
+			[NSDictionary dictionaryWithObjectsAndKeys:
+				[zoomView fontWithStyle:ZFixedStyle], NSFontAttributeName, nil]];
 
-    double sepHeight = [upperDivider frame].size.height;
+		double upperMargin = (upperHeight * fixedSize.height) / scaleFactor;
 
-    // Actually resize the contentView
-    contentFrame.origin.y    += sepHeight;
-    contentFrame.size.height -= sepHeight;
-        
-	// Content view scaling
-	/* -- BLECH, darn cocoa. This doesn't work, as Cocoa is too thick to deal with a scaled NSClipView.
-	NSRect contentBounds;
-	contentBounds.origin = NSMakePoint(0,0);
-	contentBounds.size   = NSMakeSize(floor(contentFrame.size.width * scaleFactor),
-									  floor(contentFrame.size.height * scaleFactor));
-	
-	 [contentView setBounds: contentBounds];
-	*/
-    [contentView setFrame: contentFrame];
-
-    // The upper/lower view seperator
-    sepFrame = [upperDivider frame];
-    sepFrame = contentFrame;
-    sepFrame.origin.y -= sepHeight;
-    sepFrame.size.height = sepHeight;
-    [upperDivider setFrame: sepFrame];
-    if ([upperDivider superview] == nil) [self addSubview: upperDivider];
-    [upperDivider setNeedsDisplay: YES];
-
-    // The upper window view
-    [zoomView setUpperBuffer: (upperMargin*scaleFactor) + sepHeight];
-    
-    if (upperMargin > 0) {
-        // Resize the upper window
-        [upperView setFrame: upperFrame];
+		// Resize the content frame so that it doesn't cover the upper window
+		NSClipView* contentView = [self contentView];
+		NSRect contentFrame = [contentView frame];
+		NSRect upperFrame, sepFrame;
 		
-		// Scale it
-		NSRect upperBounds;
-		upperBounds.origin = NSMakePoint(0,0);
-		upperBounds.size = NSMakeSize(floor(upperFrame.size.width * scaleFactor),
-									  floor(upperFrame.size.height * scaleFactor));
-		[upperView setBounds: upperBounds];
+		//contentFrame.size = [self contentSize];
+		contentFrame.size = [[self class] contentSizeForFrameSize: [self frame].size
+											hasHorizontalScroller: [self hasHorizontalScroller]
+											  hasVerticalScroller: [self hasVerticalScroller]
+													   borderType: [self borderType]];
+
+		contentFrame.size.height -= upperMargin;
+		contentFrame.origin.y    += upperMargin;
+
+		upperFrame.origin.x = contentFrame.origin.x;
+		upperFrame.origin.y = contentFrame.origin.y - upperMargin;
+		upperFrame.size.width = contentFrame.size.width;
+		upperFrame.size.height = upperMargin;
+
+		double sepHeight = [upperDivider frame].size.height;
+
+		// Actually resize the contentView
+		contentFrame.origin.y    += sepHeight;
+		contentFrame.size.height -= sepHeight;
+			
+		[contentView setFrame: contentFrame];
+
+		// The upper/lower view seperator
+		sepFrame = [upperDivider frame];
+		sepFrame = contentFrame;
+		sepFrame.origin.y -= sepHeight;
+		sepFrame.size.height = sepHeight;
+		[upperDivider setFrame: sepFrame];
+		if ([upperDivider superview] == nil) [self addSubview: upperDivider];
+		[upperDivider setNeedsDisplay: YES];
+
+		// The upper window view
+		[zoomView setUpperBuffer: (upperMargin*scaleFactor) + sepHeight];
 		
-		// Add it to our view
-        if ([upperView superview] == nil) {
-            [self addSubview: upperView];
-            [upperView setNeedsDisplay: YES];
-        }
-    } else {
-        [upperView removeFromSuperview];
-    }
+		if (upperMargin > 0) {
+			// Resize the upper window
+			[upperView setFrame: upperFrame];
+			
+			// Scale it
+			NSRect upperBounds;
+			upperBounds.origin = NSMakePoint(0,0);
+			upperBounds.size = NSMakeSize(floor(upperFrame.size.width * scaleFactor),
+										  floor(upperFrame.size.height * scaleFactor));
+			[upperView setBounds: upperBounds];
+			
+			// Add it to our view
+			if ([upperView superview] == nil) {
+				[self addSubview: upperView];
+				[upperView setNeedsDisplay: YES];
+			}
+		} else {
+			[upperView removeFromSuperview];
+		}
+	}
+
+	// Update the cache of how we were last resized
+	lastTileSize = [self bounds].size;
+	lastUpperSize = upperHeight;
 }
 
 - (void) updateUpperWindows {
