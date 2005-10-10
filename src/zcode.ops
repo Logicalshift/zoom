@@ -461,7 +461,7 @@ OPCODE "get_prop_addr" 2OP:0x12 STORE  VERSION 1,2,3
   if (uarg1 == 0)
     {
       /* Zork 2 has an occasional bug that causes a crash here if we make this error fatal */
-      zmachine_warning("Attempt to get the address of invalid property number 0");
+      zmachine_warning("Attempt to get the address of a property for invalid object number 0");
       store(stack, st, 0);
       goto loop;
     }
