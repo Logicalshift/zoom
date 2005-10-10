@@ -249,7 +249,7 @@ static IFMDChar* Xmdchar(XML_Char* s) {
 		}
 	}
 	
-	res[x] = 0;
+	res[pos++] = 0;
 	
 	return res;
 }
