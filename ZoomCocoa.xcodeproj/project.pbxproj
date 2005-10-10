@@ -261,6 +261,57 @@
 		4BD274BD08701E6700C1AE15 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5CBB9B069D671200C0AA88 /* Carbon.framework */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXBuildRule section */
+		4B51A94B08FAC67700232D0B /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.gcc.3_3;
+			fileType = sourcecode.c;
+			isEditable = 1;
+			outputFiles = (
+			);
+		};
+		4B51A94D08FAC6B300232D0B /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.gcc.3_3;
+			fileType = sourcecode.asm;
+			isEditable = 1;
+			outputFiles = (
+			);
+		};
+		4B51A95108FAC71400232D0B /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.gcc.3_3;
+			fileType = sourcecode.c;
+			isEditable = 1;
+			outputFiles = (
+			);
+		};
+		4B51A95208FAC71D00232D0B /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.gcc.3_3;
+			fileType = sourcecode.asm;
+			isEditable = 1;
+			outputFiles = (
+			);
+		};
+		4B51A95B08FAC73B00232D0B /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.gcc.3_3;
+			fileType = sourcecode.c;
+			isEditable = 1;
+			outputFiles = (
+			);
+		};
+		4B51A95C08FAC74000232D0B /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.gcc.3_3;
+			fileType = sourcecode.c;
+			isEditable = 1;
+			outputFiles = (
+			);
+		};
+/* End PBXBuildRule section */
+
 /* Begin PBXBuildStyle section */
 		4B1E3F49050F7AD000A8E303 /* Development */ = {
 			isa = PBXBuildStyle;
@@ -1304,6 +1355,8 @@
 				4BB8C16508C2497700D7D334 /* Rez */,
 			);
 			buildRules = (
+				4B51A94D08FAC6B300232D0B /* PBXBuildRule */,
+				4B51A94B08FAC67700232D0B /* PBXBuildRule */,
 			);
 			buildSettings = {
 				OPTIMIZATION_CFLAGS = "-O3";
@@ -1348,6 +1401,8 @@
 				4B39CA0408EEF8C600BA5E90 /* CopyFiles */,
 			);
 			buildRules = (
+				4B51A95208FAC71D00232D0B /* PBXBuildRule */,
+				4B51A95108FAC71400232D0B /* PBXBuildRule */,
 			);
 			buildSettings = {
 				OPTIMIZATION_CFLAGS = "-O0";
@@ -1388,6 +1443,8 @@
 				4BD274B808701E6700C1AE15 /* Frameworks */,
 			);
 			buildRules = (
+				4B51A95C08FAC74000232D0B /* PBXBuildRule */,
+				4B51A95B08FAC73B00232D0B /* PBXBuildRule */,
 			);
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
