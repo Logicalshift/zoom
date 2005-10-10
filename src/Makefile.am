@@ -53,6 +53,9 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/Skein/ZoomSkeinXML.m \
 	zoomCocoa/ZoomStoryTableView.h    zoomCocoa/ZoomStoryTableView.m \
 	zoomCocoa/ZoomTextToSpeech.h	  zoomCocoa/ZoomTextToSpeech.m \
+	zoomCocoa/Spotlight/MetadataImporter.h \
+	zoomCocoa/Spotlight/MetadataImporter.m \
+	zoomCocoa/Spotlight/schema.xml \
 	zoomCocoa/MainMenu.nib/classes.nib zoomCocoa/MainMenu.nib/info.nib \
 	zoomCocoa/MainMenu.nib/keyedobjects.nib \
 	zoomCocoa/MainMenu.nib/objects.nib \
@@ -80,6 +83,7 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/Skein.nib/keyedobjects.nib \
 	zoomCocoa/Skein.nib/objects.nib \
 	infocom.iFiction archive.iFiction ifmetadata.c ifmetadata.h \
+	ifmetabase.c ifmetabase.h \
 	zoomCocoa/add-in.png 		zoomCocoa/add-out.png \
 	zoomCocoa/continue-in.png	zoomCocoa/continue-out.png \
 	zoomCocoa/colourSettings.png 	zoomCocoa/disabledButton.png \
