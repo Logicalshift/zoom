@@ -120,7 +120,12 @@ zoom_SOURCES = \
 	carbondisplay.h v6display.h debug.h blorb.h image.h image_ximage.h \
 	sound.h
 
-$(srcdir)/interp.c: interp_gen.h interp_z3.h interp_z4.h interp_z5.h interp_z6.h varop.h
+interp.o: interp_z3.h
+interp.o: interp_z4.h
+interp.o: interp_z5.h
+interp.o: interp_z6.h
+interp.o: interp_gen.h
+interp.o: varop.h
 
 WINDRES = @WINDRES@
 
