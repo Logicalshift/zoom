@@ -312,7 +312,6 @@ AC_SUBST(BUILDERCC)
 HAVE_T1LIB=0
 if test "$WINDOW_SYSTEM" = "1"; then
     LIBS="$LIBS $X_PRE_LIBS $X_LIBS $X_EXTRA_LIBS"
-    X_CFLAGS="$X_CFLAGS -I/usr/include/freetype2"
     CFLAGS="$CFLAGS $X_CFLAGS"
     LIBS="$LIBS -lX11"
 
@@ -354,6 +353,19 @@ if test "$WINDOW_SYSTEM" = "1"; then
       [
         AC_MSG_RESULT(no)
       ])
+      
+    # If Xft is installed, then there will be a xft-config file on the current path
+    AC_MSG_CHECKING([for xft-config])
+    XFTCONFIG=`which xft-config`
+    XFT_CFLAGS=""
+    XFT_LIBS=""
+    if test -x ${XFTCONFIG}; then
+    	AC_MSG_RESULT([$XFTCONFIG])
+    	XFT_CFLAGS=`${XFTCONFIG} --cflags`
+    	XFT_LIBS=`${XFTCONFIG} --libs`
+    else
+    	AC_MSG_RESULT(no)
+    fi
 
     # Had to move this, Xft 2 again
     AC_CHECK_LIB(Xrender, XRenderQueryExtension,
@@ -381,7 +393,8 @@ if test "$WINDOW_SYSTEM" = "1"; then
 
     AC_CHECK_LIB(Xft, XftInit,
       [
-        LIBS="$LIBS -lXft"
+        LIBS="$LIBS $XFT_LIBS"
+        CFLAGS="$CFLAGS $XFT_CFLAGS"
 	HAVE_XFT=1
       ])
     if test "$HAVE_XFT" = "1"; then
