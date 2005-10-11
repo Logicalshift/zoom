@@ -199,6 +199,9 @@ xfont* xfont_load_font(char* font)
       if (xft_drawable != NULL &&
 	  rc_get_antialias())
 	{
+#if XFT_MAJOR >= 2
+	  f->data.Xft = XftFontOpenXlfd(x_display, x_screen, font);		  
+#else
 	  XftPattern* pat, *match;
 	  XftResult   res;
 
@@ -223,6 +226,7 @@ xfont* xfont_load_font(char* font)
 	      }
 	    XftPatternDestroy(pat);
 	  }
+#endif
 	}
       else
 	{
