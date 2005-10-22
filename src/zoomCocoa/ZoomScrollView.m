@@ -54,12 +54,12 @@
 	}
 
 	int upperHeight  = [zoomView upperWindowSize];
-
-	if (!NSEqualSizes(lastTileSize, thisTileSize) || lastUpperSize != upperHeight) {
+	NSSize fixedSize = [@"M" sizeWithAttributes:
+		[NSDictionary dictionaryWithObjectsAndKeys:
+			[zoomView fontWithStyle:ZFixedStyle], NSFontAttributeName, nil]];	
+	
+	if (!NSEqualSizes(lastTileSize, thisTileSize) || lastUpperSize != upperHeight || !NSEqualSizes(lastFixedSize, fixedSize)) {
 		// Move the content view to accomodate the upper window
-		NSSize fixedSize = [@"M" sizeWithAttributes:
-			[NSDictionary dictionaryWithObjectsAndKeys:
-				[zoomView fontWithStyle:ZFixedStyle], NSFontAttributeName, nil]];
 
 		double upperMargin = (upperHeight * fixedSize.height) / scaleFactor;
 
@@ -127,6 +127,7 @@
 	// Update the cache of how we were last resized
 	lastTileSize = [self bounds].size;
 	lastUpperSize = upperHeight;
+	lastFixedSize = fixedSize;
 }
 
 - (void) updateUpperWindows {

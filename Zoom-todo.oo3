@@ -13,12 +13,12 @@
     </style-attribute>
   </style-attribute-registry>
   <settings/>
-  <editor should-edit-text-folded="yes" is-spellchecking-enabled="yes">
+  <editor scroll-position="{0, 1}" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="oWsvPWShTdI"/>
-    <selected-columns ids=":941128d340f2709e21a6e303"/>
-    <selected-characters range="{132, 0}"/>
+    <selected-rows ids="hG0bTrug_84"/>
+    <selected-columns ids=":078928d440f2709e21a6e303"/>
+    <selected-characters range="{32, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -69,7 +69,7 @@
         <color r="0.815686" g="0.870588" b="1"/>
       </value>
     </style>
-    <item id="bnN6VeEFG6A">
+    <item id="bnN6VeEFG6A" expanded="yes">
       <values>
         <text>
           <p>
@@ -677,7 +677,7 @@
         </item>
       </children>
     </item>
-    <item id="kzPdhsKinRx" state="indeterminate">
+    <item id="kzPdhsKinRx" expanded="yes" state="indeterminate">
       <values>
         <text>
           <p>
@@ -697,20 +697,6 @@
               <p>
                 <run>
                   <lit>When saving (or autosaving) version 6 data, the v6 screen state is not saved. We need to retrieve this from the ZoomServer process and restore it as required</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
-        <item id="pjHJFJC09nQ">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Display &apos;flickering&apos; with v3 games, and some others (eg ConanKillEverything). Sigh.</lit>
                 </run>
               </p>
             </text>
@@ -934,6 +920,52 @@
             </text>
           </note>
         </item>
+        <item id="aTNO4GoQBIj" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>T1lib initialised twice when using the menu under X11 (with T1Lib installed): sure this used to work, but evidently not now (it was wrong anyhow)</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p>
+                <run>
+                  <lit>??? See email ???</lit>
+                </run>
+              </p>
+            </text>
+          </values>
+        </item>
+        <item id="pjHJFJC09nQ" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Display &apos;flickering&apos; with v3 games, and some others (eg ConanKillEverything). Sigh.</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="bHNMMLBJuIQ" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Skeins aren&apos;t replaying properly (non-serious, it works in Inform)</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
         <item id="k4GSccvlw6b" state="checked">
           <values>
             <text>
@@ -952,6 +984,14 @@
               <p>
                 <run>
                   <lit>If too long is spent typing, the input position resets, so the input text is corrupted</lit>
+                </run>
+              </p>
+              <p>
+                <run/>
+              </p>
+              <p>
+                <run>
+                  <lit>(Whoops, broke this again prior to 1.0.4 release: fixed again now)</lit>
                 </run>
               </p>
             </text>
@@ -2048,6 +2088,154 @@
               <p>
                 <run>
                   <lit>Applescript support?</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="cZczk-BF51t" expanded="yes">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Look into changing the way transcript playback works: really want this to tie into the skeins: perhaps the behaviour should be merged.</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p>
+                <run>
+                  <lit>Eric Forgeot</lit>
+                </run>
+              </p>
+            </text>
+          </values>
+          <children>
+            <item id="mcmKTrk5d8A">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Presently, we do transcript playback in stream.c; we&apos;d need a way to abstract this to the UI layer</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="gUwIRndQnjQ">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Or maybe just allow the UI layer to report interrupts somehow? Though this would preclude tying things into the skeins. Would also need to disable [ MORE ] when replaying.</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+            <item id="lxtHMc_UkfR" expanded="yes">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Also need to catch places where script_on is set/reset...</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+              <children>
+                <item id="eR-biOw1tBc">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>@input_stream</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <text>
+                      <p/>
+                    </text>
+                  </values>
+                </item>
+                <item id="dWH2pgqX_gf">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>zmachine_load_file (turns it off only)</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <text>
+                      <p/>
+                    </text>
+                  </values>
+                </item>
+                <item id="joO6beRUuvJ">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>stream_readline (turns it off only)</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <text>
+                      <p/>
+                    </text>
+                  </values>
+                </item>
+              </children>
+            </item>
+            <item id="fxLbSoG5lGw">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Really want to rename script_on to stop it being so confusing with respect to transcript_on</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p/>
+                </text>
+              </values>
+            </item>
+          </children>
+        </item>
+        <item id="oHvN9jnTPkz">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Want a way to stop skein/transcript playback.</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
+        <item id="pjQXb-RL44r">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Need OS X version to accept .rec files as well as .txt files</lit>
                 </run>
               </p>
             </text>

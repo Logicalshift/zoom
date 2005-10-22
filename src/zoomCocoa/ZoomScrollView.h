@@ -21,6 +21,7 @@
 	
 	float scaleFactor;
 	
+	NSSize lastFixedSize;
 	NSSize lastTileSize;
 	int lastUpperSize;
 }

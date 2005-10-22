@@ -385,7 +385,7 @@ int display_readline(int* buf, int len, long int timeout) {
 	
 	if (prefix != nil && [prefix length] > 0) {
 		// Ask the display to backtrack input if possible
-		prefix = [display backtrackInputOver: prefix];
+		prefix = [[display backtrackInputOver: [prefix autorelease]] retain];
 	}
 
     NSDate* when;
@@ -431,8 +431,10 @@ int display_readline(int* buf, int len, long int timeout) {
     NSMutableString* inputBuffer = inputToDate==nil?[mainMachine inputBuffer]:[[inputToDate mutableCopy] autorelease];
 	
 	// Add the prefix, if any
-	[inputBuffer insertString: prefix 
-					  atIndex: 0];
+	if (prefix) {
+		[inputBuffer insertString: prefix 
+						  atIndex: 0];
+	}
 
 #ifdef DEBUG
 	NSLog(@"ZDisplay: display_readline = %@", inputBuffer);

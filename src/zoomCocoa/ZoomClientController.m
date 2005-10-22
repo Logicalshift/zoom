@@ -14,6 +14,7 @@
 #import "ZoomStoryOrganiser.h"
 #import "ZoomSkeinController.h"
 #import "ZoomConnector.h"
+#import "ZoomWindowThatCanBecomeKey.h"
 #import "ZoomAppDelegate.h"
 
 @implementation ZoomClientController
@@ -34,6 +35,9 @@
 - (void) dealloc {
     if (zoomView) [zoomView setDelegate: nil];
     if (zoomView) [zoomView killTask];
+	
+	if (fullscreenWindow) [fullscreenWindow release];
+	if (normalWindow) [normalWindow release];
     
     [super dealloc];
 }
@@ -427,18 +431,68 @@
 		[zoomView retain];
 		[zoomView removeFromSuperview];
 		
-		[[self window] setFrame: oldWindowFrame
-						display: YES
-						animate: YES];
-		[[self window] setShowsResizeIndicator: YES];
-		
 		[zoomView setScaleFactor: 1.0];
-		[zoomView setFrame: [[[self window] contentView] bounds]];
-		[[[self window] contentView] addSubview: zoomView];
+		[zoomView setFrame: [[normalWindow contentView] bounds]];
+		[[normalWindow contentView] addSubview: zoomView];
 		[zoomView release];
 		
+		// Swap windows back
+		if (normalWindow) {
+			[fullscreenWindow setDelegate: nil];
+			[fullscreenWindow setInitialFirstResponder: nil];
+			
+			[normalWindow setDelegate: self];
+			[normalWindow setWindowController: self];
+			[self setWindow: normalWindow];
+			[normalWindow setInitialFirstResponder: zoomView];
+			[normalWindow makeKeyAndOrderFront: self];
+
+			[fullscreenWindow orderOut: self];
+		}
+		
+		[self setWindowFrameAutosaveName: @"ZoomClientWindow"];
 		isFullscreen = NO;
 	} else {
+		// As of 10.4, we need to create a separate full-screen window (10.4 tries to be 'clever' with the window borders, which messes things up
+		if (!normalWindow) normalWindow = [[self window] retain];
+		if (!fullscreenWindow) {
+			fullscreenWindow = [[ZoomWindowThatCanBecomeKey alloc] initWithContentRect: [[[self window] contentView] bounds] 
+																				styleMask: NSBorderlessWindowMask
+																			   backing: NSBackingStoreBuffered
+																				 defer: YES];
+			
+			[fullscreenWindow setLevel: NSStatusWindowLevel];
+			[fullscreenWindow setHidesOnDeactivate: YES];
+			[fullscreenWindow setReleasedWhenClosed: NO];
+			
+			if (![fullscreenWindow canBecomeKeyWindow]) {
+				[NSException raise: @"ZoomProgrammerIsASpoon"
+							format: @"For some reason, the full screen window won't accept key"];
+			}
+		}
+		
+		// Swap the displayed windows over
+		[self setWindowFrameAutosaveName: @""];
+		[fullscreenWindow setFrame: [normalWindow frame]
+						   display: NO];
+		[fullscreenWindow makeKeyAndOrderFront: self];
+		
+		[zoomView retain];
+		[zoomView removeFromSuperview];
+		[[fullscreenWindow contentView] addSubview: zoomView];
+		[zoomView release];
+		
+		[normalWindow setInitialFirstResponder: nil];
+		[normalWindow setDelegate: nil];
+
+		[fullscreenWindow setInitialFirstResponder: zoomView];
+		[fullscreenWindow makeFirstResponder: zoomView];
+		[fullscreenWindow setDelegate: self];
+
+		[fullscreenWindow setWindowController: self];
+		[self setWindow: fullscreenWindow];
+		[normalWindow orderOut: self];
+		
 		// Start being fullscreen
 		[[self window] makeKeyAndOrderFront: self];
 		oldWindowFrame = [[self window] frame];
@@ -449,17 +503,17 @@
 		[zoomView retain];
 		[zoomView removeFromSuperviewWithoutNeedingDisplay];
 		
+		// Hide the menubar
+		[NSMenu setMenuBarVisible: NO];
+				
 		// Resize the window
 		NSRect frame = [[[self window] screen] frame];
 		[[self window] setShowsResizeIndicator: NO];
 		frame = [NSWindow frameRectForContentRect: frame
-										styleMask: [[self window] styleMask]];
+										styleMask: NSBorderlessWindowMask];
 		[[self window] setFrame: frame
 						display: YES
 						animate: YES];
-		
-		// Hide the menubar
-		[NSMenu setMenuBarVisible: NO];
 		
 		// Resize, reposition the zoomView
 		NSRect newZoomViewFrame = [[[self window] contentView] bounds];

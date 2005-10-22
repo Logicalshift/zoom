@@ -19,7 +19,7 @@
 
 // Sets variables to force extreme memory checking in the Zoom task; this provides a fairly huge performance
 // decrease, but provides 'earliest possible' warning of heap corruption.
-#undef ZoomTaskMaximumMemoryDebug
+#undef  ZoomTaskMaximumMemoryDebug
 
 @implementation ZoomView
 
@@ -240,6 +240,8 @@ static void finalizeViews(void) {
 	if (resources) [resources release];
 	
 	if (terminatingChars) [terminatingChars release];
+	
+	if (originalFonts) [originalFonts release];
 
     [super dealloc];
 }
@@ -291,15 +293,44 @@ static void finalizeViews(void) {
 // Scaling
 - (void) setScaleFactor: (float) scaling {
 	scaleFactor = scaling;
-	[textScroller setScaleFactor: scaling];
-		
-	NSRect tVF = [textView frame];
-	NSRect tVB = tVF;
-	tVB.origin.x = tVB.origin.y = 0;
-	tVB.size.width *= scaling;
-	tVB.size.height *= scaling;
 	
-	[textView setBounds: tVB];
+	// Scale up all the fonts
+	// Previously we used OS X scaling, but this is problematic (largely because NSLayoutManager is fragile)
+	
+	if (scaling == 1.0) {
+		// Scale factor of 1 is a special case: restore the standard fonts
+		if (originalFonts) {
+			[fonts release];
+			fonts = originalFonts;
+			originalFonts = nil;
+		}
+	} else {
+		// If we don't currently know the 'original' fonts, set them to the current fonts
+		// This will cause errors if somehow the scale factor gets set without the original
+		// fonts being copied
+		if (!originalFonts) {
+			originalFonts = [fonts copy];
+		}
+		
+		// Scale up all of the fonts
+		NSMutableArray* newFonts = [[NSMutableArray alloc] init];
+		NSEnumerator* fontEnum = [originalFonts objectEnumerator];
+		NSFont* origFont;
+		
+		while (origFont = [fontEnum nextObject]) {
+			NSFont* scaledFont = [[NSFontManager sharedFontManager] convertFont: origFont
+																		 toSize: [origFont pointSize] / scaleFactor];
+			
+			[newFonts addObject: scaledFont];
+		}
+		
+		// Done
+		[fonts release];
+		fonts = newFonts;
+	}
+	
+	[self reformatWindow];
+	[self scrollToEnd];
 	
 	if (zMachine) {
 		[zMachine displaySizeHasChanged];
@@ -1269,11 +1300,11 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     // FIXME: check that fonts is valid
 	// FIXME: better to do this with preferences now, but Inform still uses these calls
     
-    [fonts release];
-    fonts = [[NSArray allocWithZone: [self zone]] initWithArray: newFonts 
-                                                      copyItems: YES];
-	
-	[self reformatWindow];
+    [originalFonts release];
+    originalFonts = [[NSArray allocWithZone: [self zone]] initWithArray: newFonts 
+															  copyItems: YES];
+
+	[self setScaleFactor: scaleFactor];
 }
 
 - (void) setColours: (NSArray*) newColours {
@@ -1387,6 +1418,9 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 
         double sepHeight = fixedSize.height * (double)newSize;
         sepHeight -= [upperWindowBuffer containerSize].height;
+		
+		if (inputPos > [[textView textStorage] length])
+			inputPos = [[textView textStorage] length];
 		
         if ([[textView textStorage] length] == 0) {
             [[[textView textStorage] mutableString] insertString: @"\n"
@@ -2555,19 +2589,26 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 }
 
 - (NSString*) receivedTextToDate {
+	// Used to retrieve the text received in the view so far: for example, to find out what the user typed prior to a timeout
+	
 	if (inputLine != nil) {
 		return [inputLine inputLine];
 	} else {
 		NSString* str = [[textView textStorage] string];
 		
-		return [str substringWithRange: NSMakeRange(inputPos,
-													[str length]-inputPos)];
+		NSString* res = [str substringWithRange: NSMakeRange(inputPos,
+															 [str length]-inputPos)];
+		
+		// FIXME: might fail if there's an errant newline somewhere around
+		// Reset inputPos (accepting the input, but the z-machine allows the game to unaccept it later on, so that's alright)
+		inputPos = [str length];
+		return res;
 	}
 }
 
 - (NSString*) backtrackInputOver: (NSString*) prefix {
 	if (prefix == nil) return nil;
-	
+		
 	if (inputLine != nil) {
 		// Input lines currently are unable to backtrack, so the prefix remains unaltered
 		return prefix;
@@ -2578,8 +2619,9 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		int len = [prefix length];
 		if (len > [str length]) len = [str length];
 		
-		// Cut out a substring according to the length
-		str = [str substringWithRange: NSMakeRange([str length]-len, len)];
+		// Cut out a substring according to the length (and the current input position)
+		if (inputPos > [str length]) inputPos = [str length];
+		str = [str substringWithRange: NSMakeRange(inputPos-len, len)];
 		
 		// We compare lowercase versions of the string: this allows for things like Beyond Zork which write 'EXAMINE' but add 'examine' to the buffer
 		NSString* lowerPrefix = [prefix lowercaseString];

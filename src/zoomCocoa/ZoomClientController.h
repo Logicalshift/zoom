@@ -19,6 +19,9 @@
 	BOOL shownOnce;
 	
 	NSRect oldWindowFrame;
+	
+	NSWindow* fullscreenWindow;							// Alternative window used for full-screen view
+	NSWindow* normalWindow;								// The usual window
 }
 
 - (IBAction) recordGameInfo: (id) sender;

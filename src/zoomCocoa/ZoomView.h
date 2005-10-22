@@ -49,6 +49,7 @@ extern NSString* ZoomStyleAttributeName;
     ZoomMoreView* moreView;
 
     NSArray* fonts; // 16 entries
+	NSArray* originalFonts;			// As for fonts, used to cache the 'original' font definitions when scaling is in effect
     NSArray* colours; // 11 entries
 
     NSMutableArray* upperWindows;

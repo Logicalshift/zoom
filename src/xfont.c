@@ -120,14 +120,23 @@ static void plot_font_3(Drawable draw, GC gc, int chr, int xpos, int ypos)
 void xfont_initialise(void)
 {
 #ifdef HAVE_T1LIB
-  if (T1_InitLib(T1_AA_CACHING) == NULL)
-    zmachine_fatal("Unable to initialise t1lib");
-  T1_SetX11Params(x_display, DefaultVisual(x_display, x_screen),
-		  DefaultDepth(x_display, x_screen),
-		  DefaultColormap(x_display, x_screen));
-  T1_AASetBitsPerPixel(DefaultDepth(x_display, x_screen));
-  T1_AASetLevel(T1_AA_LOW);
-  T1_AASetSmartMode(T1_YES);
+  /* Whoops, this can be called twice if the menu is activated */
+  static int t1_initialised = 0;
+#endif
+
+#ifdef HAVE_T1LIB
+  if (!t1_initialised) {
+    t1_initialised = 1;
+
+    if (T1_InitLib(T1_AA_CACHING) == NULL)
+      zmachine_fatal("Unable to initialise t1lib");
+    T1_SetX11Params(x_display, DefaultVisual(x_display, x_screen),
+  		    DefaultDepth(x_display, x_screen),
+		    DefaultColormap(x_display, x_screen));
+    T1_AASetBitsPerPixel(DefaultDepth(x_display, x_screen));
+    T1_AASetLevel(T1_AA_LOW);
+    T1_AASetSmartMode(T1_YES);
+  }
 #endif
 }
 
