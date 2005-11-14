@@ -525,6 +525,76 @@ IFMDStory* IFMD_Find(IFMetadata* data, const IFMDIdent* id) {
 }
 
 /* == Parser functions == */
+
+struct IFMDUUID IFMD_ReadUUID(const char* uuidString) {
+    /* UUIDs have the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx */
+    
+    /*
+     * ... but this is slightly more generic, only paying attention to the hexadecimal bits until we reach the end of the 
+     * string or we get enough bytes to make a UUID.
+     */
+    struct IFMDUUID res;            /* The result */
+    int x;
+    
+    int hexValue;                   /* Hex characters read to date */
+    int hexCount;                   /* Number of hex characters read to date */
+    int uuidPos;                    /* Position in the uuid where we are at present */
+    
+    /* Zero the bytes in res */
+    for (x=0; x<16; x++) res.uuid[x] = 0;
+    
+    /* Read hexadecimal values from the string */
+    hexValue = 0;
+    hexCount = 0;
+    uuidPos = 0;
+    
+    for (x=0; uuidString[x] != 0 && x < 40; x++) {
+        unsigned char thisChar;
+        int thisVal = -1;
+        
+        /* Read the next character */        
+        thisChar = (unsigned char)uuidString[x];
+        
+        /* If this is a hex character, then add it to the accumulated value so far */
+        if (thisChar >= '0' && thisChar <= '9') {
+            thisVal = thisChar - '0';
+        } else if (thisChar >= 'a' && thisChar <= 'f') {
+            thisVal = thisChar - 'a' + 10;
+        } else if (thisChar >= 'A' && thisChar <= 'F') {
+            thisVal = thisChar - 'A' + 10;
+        }
+        
+        /* Add to the accumulated value */
+        if (thisVal >= 0) {
+            hexValue <<= 4;
+            hexValue |= thisVal;
+            
+            hexCount++;
+            
+            if (hexCount >= 2) {
+                /* We have a byte */
+                if (uuidPos < 16) {
+                    res.uuid[uuidPos] = hexValue;
+                }
+                
+                uuidPos++;
+
+                /* Reset for the next byte */
+                hexValue = 0;
+                hexCount = 0;
+            }
+        }
+    }
+    
+    if (uuidPos != 16) {
+        /* Not a valid UUID */
+        for (x=0; x<16; x++) res.uuid[x] = 0;
+    }
+    
+    /* Return the result */
+    return res;
+}
+
 static XMLCALL void startElement(void *userData,
 								 const XML_Char *name,
 								 const XML_Char **atts) {
@@ -629,6 +699,8 @@ static XMLCALL void startElement(void *userData,
 			}
 		} else if (XCstrcmp(current, "glulx") == 0) {
 			/* Glulx data */
+		} else if (XCstrcmp(current, "uuid") == 0) {
+			/* UUID data */
 		} else {
 			/* Unrecognised ID tag */
 			addError(state, IFMDErrorUnknownTag, "Unrecognised tag");
@@ -650,6 +722,8 @@ static XMLCALL void startElement(void *userData,
 			/* Unrecognised tag */
 			addError(state, IFMDErrorUnknownTag, "Unrecognised tag");
 		}
+    } else if (XCstrcmp(parent, "uuid") == 0) {
+        /* UUID data */
 	} else {
 		/* Unknown data */
 	}
@@ -732,7 +806,9 @@ static XMLCALL void endElement(void *userData,
 					/* File format specifier <identification><format> */
 					XML_Char* format = Xlower(Xchomp(currentText));
 					
-					if (XCstrcmp(format, "zcode") == 0) {
+                    if (XCstrcmp(format, "uuid") == 0) {
+                        state->ident->format = IFFormat_UUID;
+					} else if (XCstrcmp(format, "zcode") == 0) {
 						state->ident->format = IFFormat_ZCode;
 					} else if (XCstrcmp(format, "glulx") == 0) {
 						state->ident->format = IFFormat_Glulx;
@@ -759,6 +835,15 @@ static XMLCALL void endElement(void *userData,
 					
 					free(format);
 				}
+            } else if (XCstrcmp(parent, "uuid") == 0) {
+                /* UUID idenfication section */
+				XML_Char* text = Xlower(Xchomp(currentText));
+
+                state->ident->dataFormat = IFFormat_UUID;
+                
+				if (XCstrcmp(current, "uuid") == 0) {
+                    state->ident->data.uuid = IFMD_ReadUUID(Xascii(text));
+                }
 			} else if (XCstrcmp(parent, "zcode") == 0) {
 				/* zcode identification section */
 				XML_Char* text = Xlower(Xchomp(currentText));
@@ -889,6 +974,7 @@ static XMLCALL void endElement(void *userData,
 	if (XCstrcmp(current, "identification") == 0 || XCstrcmp(current, "id") == 0) {
 		/* Verify the identification for errors */
 		if (state->ident->dataFormat != IFFormat_Unknown &&
+            state->ident->dataFormat != IFFormat_UUID &&
 			state->ident->dataFormat != state->ident->format) {
 			/* Specified one format with <format>, but gave data for another */
 			addError(state, IFMDErrorMismatchedFormats, "Specified one format with <format>, but gave data for another");
@@ -924,13 +1010,21 @@ int IFID_Compare(const IFMDIdent* a, const IFMDIdent* b) {
 	if (a->format > b->format) return 1;
 	if (a->format < b->format) return -1;
 	
-	if (a->dataFormat > b->dataFormat) return 1;  /* (ERROR) */
-	if (a->dataFormat < b->dataFormat) return -1; /* (ERROR) */
+	if (a->dataFormat > b->dataFormat) return 1;
+	if (a->dataFormat < b->dataFormat) return -1;
 	
 	/* Format-specific comparison */
 	switch (a->dataFormat) { /* (Must be the same as b->dataFormat) */
+        case IFFormat_UUID:
+            for (x=0; x<16; x++) {
+                if (a->data.uuid.uuid[x] > b->data.uuid.uuid[x]) return 1;
+                if (a->data.uuid.uuid[x] < b->data.uuid.uuid[x]) return -1;
+            }
+            
+            return 0;
+        
 		case IFFormat_ZCode:
-			/* ZCode comparison is considered desisive: skip any future tests */
+			/* ZCode comparison is considered decisive: skip any future tests */
 			
 			/* Serial number */
 			for (x=0; x<6; x++) {
@@ -1475,7 +1569,7 @@ int IFMD_Save(IFMetadata* data,
 
 			/* Data format */
 			ws("   <format>");
-			switch (thisIdent->dataFormat) {
+			switch (thisIdent->format) {
 				case IFFormat_ZCode: ws("zcode"); break;
 				case IFFormat_Glulx: ws("glulx"); break;
 				
@@ -1493,6 +1587,37 @@ int IFMD_Save(IFMetadata* data,
 			
 			/* Format-specific data */
 			switch (thisIdent->dataFormat) {
+                case IFFormat_UUID:
+                {
+                    char buf[40];
+                    int x;
+                    
+                    ws("    <uuid>\n");
+                    ws("      <uuid>");
+                    
+                    int bufPos = 0;
+                    for (x=0; x<16; x++) {
+                        char thisByte[4];
+                        
+                        snprintf(thisByte, 4, "%02x", thisIdent->data.uuid.uuid[x]);
+                        
+                        buf[bufPos++] = thisByte[0];
+                        buf[bufPos++] = thisByte[1];
+                        
+                        if (x == 4 || x == 6 || x == 8 || x == 10) {
+                            buf[bufPos++] = '-';
+                        }
+                    }
+                    
+                    buf[bufPos++] = 0;
+                    
+                    ws(buf);
+                    
+                    ws("</uuid>\n");
+                    ws("    </uuid>\n");
+                    break;
+                }
+                
 				case IFFormat_ZCode:
 				{
 					char buf[16];

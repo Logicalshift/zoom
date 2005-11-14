@@ -93,6 +93,10 @@ struct IFMDGlulx {
 	unsigned int release;
 };
 
+struct IFMDUUID {
+	IFMDByte uuid[16];
+};
+
 enum IFMDFormat {
 	IFFormat_Unknown = 0x0,
 	
@@ -106,16 +110,19 @@ enum IFMDFormat {
 	IFFormat_Level9,
 	IFFormat_AGT,
 	IFFormat_MagScrolls,
-	IFFormat_AdvSys
+	IFFormat_AdvSys,
+	
+	IFFormat_UUID,			/* 'Special' format used for games identified by a UUID */
 };
 
 struct IFMDIdent {
 	enum IFMDFormat format;
 	
-	enum IFMDFormat dataFormat; /* May be different to format (but only if the XML is poorly written) */
+	enum IFMDFormat dataFormat; /* May be different to format (usually if there's a UUID involved) */
 	union {
 		struct IFMDZCode zcode;
 		struct IFMDGlulx glulx;
+		struct IFMDUUID  uuid;
 	} data;
 	
 	IFMDByte usesMd5;
@@ -182,6 +189,8 @@ struct IFMDError {
 extern IFMetadata* IFMD_Parse		(const IFMDByte* data, size_t length);
 extern void        IFMD_Free		(IFMetadata* oldData);
 extern IFMDStory*  IFMD_Find		(IFMetadata* data, const IFMDIdent* id);
+
+extern struct IFMDUUID IFMD_ReadUUID(const char* uuidString);
 
 /* ID functions */
 extern int         IFID_Compare		(const IFMDIdent* a,

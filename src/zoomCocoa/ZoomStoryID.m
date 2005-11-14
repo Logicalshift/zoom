@@ -18,6 +18,7 @@
 	
 	if (self) {
 		const unsigned char* bytes = [gameData bytes];
+		int length = [gameData length];
 		
 		if ([gameData length] < 64) {
 			// Too little data for this to be a Z-Code file
@@ -53,6 +54,7 @@
 			
 			// Change to using the blorb data instead
 			bytes = [[[data retain] autorelease] bytes];
+			length = [data length];
 			[blorbFile release];
 		}
 		
@@ -66,6 +68,38 @@
 		ident->data.zcode.release  = (((int)bytes[0x2])<<8)|((int)bytes[0x3]);
 		ident->data.zcode.checksum = (((int)bytes[0x1c])<<8)|((int)bytes[0x1d]);
 		ident->usesMd5 = 0;
+		
+		// Scan for the string 'UUID://' - use this as an ident for preference if it exists (and represents a valid UUID)
+		struct IFMDUUID uuid;
+		int x;
+		BOOL gotUUID = NO;
+		
+		for (x=0; x<16; x++) uuid.uuid[x] = 0;
+		
+		for (x=0; x<length-48; x++) {
+			if (bytes[x] == 'U' && bytes[x+1] == 'U' && bytes[x+2] == 'I' && bytes[x+3] == 'D' &&
+				bytes[x+4] == ':' && bytes[x+5] == '/' && bytes[x+6] == '/') {
+				// This might be a UUID section
+				uuid = IFMD_ReadUUID((char*)(bytes + x + 7));
+				
+				// Check to see if we've got a UUID
+				int y;
+				gotUUID = NO;
+				
+				for (y=0; y<16; y++) {
+					if (uuid.uuid[y] != 0) gotUUID = YES;
+				}
+				
+				if (gotUUID) break;
+			}
+		}
+		
+		if (gotUUID) {
+			// We've got a UUID to use
+			ident->dataFormat = IFFormat_UUID;
+			ident->data.uuid = uuid;
+			ident->usesMd5 = 0;
+		}
 	}
 	
 	return self;
@@ -76,9 +110,10 @@
 	
 	if (self) {
 		const unsigned char* bytes;
+		int length;
 		
 		NSFileHandle* fh = [NSFileHandle fileHandleForReadingAtPath: zcodeFile];
-		NSData* data = [fh readDataOfLength: 64];
+		NSData* data = [fh readDataToEndOfFile];
 		[fh closeFile];
 		
 		if ([data length] < 64) {
@@ -88,6 +123,7 @@
 		}
 		
 		bytes = [data bytes];
+		length = [data length];
 		
 		if (bytes[0] == 'F' && bytes[1] == 'O' && bytes[2] == 'R' && bytes[3] == 'M') {
 			// This is not a Z-Code file; it's possibly a blorb file, though
@@ -117,6 +153,7 @@
 			
 			// Change to using the blorb data instead
 			bytes = [[[data retain] autorelease] bytes];
+			length = [data length];
 			[blorbFile release];
 		}
 		
@@ -136,7 +173,38 @@
 		ident->data.zcode.release  = (((int)bytes[0x2])<<8)|((int)bytes[0x3]);
 		ident->data.zcode.checksum = (((int)bytes[0x1c])<<8)|((int)bytes[0x1d]);
 		ident->usesMd5 = 0;
-
+		
+		// Scan for the string 'UUID://' - use this as an ident for preference if it exists (and represents a valid UUID)
+		struct IFMDUUID uuid;
+		int x;
+		BOOL gotUUID = NO;
+		
+		for (x=0; x<16; x++) uuid.uuid[x] = 0;
+		
+		for (x=0; x<length-48; x++) {
+			if (bytes[x] == 'U' && bytes[x+1] == 'U' && bytes[x+2] == 'I' && bytes[x+3] == 'D' &&
+				bytes[x+4] == ':' && bytes[x+5] == '/' && bytes[x+6] == '/') {
+				// This might be a UUID section
+				uuid = IFMD_ReadUUID((char*)(bytes + x + 7));
+				
+				// Check to see if we've got a UUID
+				int y;
+				gotUUID = NO;
+				
+				for (y=0; y<16; y++) {
+					if (uuid.uuid[y] != 0) gotUUID = YES;
+				}
+				
+				if (gotUUID) break;
+			}
+		}
+		
+		if (gotUUID) {
+			// We've got a UUID to use
+			ident->dataFormat = IFFormat_UUID;
+			ident->data.uuid = uuid;
+			ident->usesMd5 = 0;
+		}
 	}
 	
 	return self;
@@ -215,7 +283,14 @@
 			[encoder encodeValueOfObjCType: @encode(int)
 										at: &ident->data.zcode.checksum];
 			break;
-		
+			
+		case IFFormat_UUID:
+			[encoder encodeArrayOfObjCType: @encode(unsigned char)
+									 count: 16
+										at: ident->data.uuid.uuid];
+			break;
+			
+			
 		default:
 			/* No other formats are supported yet */
 			break;
@@ -264,6 +339,13 @@
 											at: &ident->data.zcode.release];
 				[decoder decodeValueOfObjCType: @encode(int)
 											at: &ident->data.zcode.checksum];
+				break;
+				
+			case IFFormat_UUID:
+				ident->format = IFFormat_ZCode;
+				[decoder decodeArrayOfObjCType: @encode(unsigned char)
+										 count: 16
+											at: ident->data.uuid.uuid];
 				break;
 				
 			default:

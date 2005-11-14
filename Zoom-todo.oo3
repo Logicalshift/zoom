@@ -13,12 +13,12 @@
     </style-attribute>
   </style-attribute-registry>
   <settings/>
-  <editor scroll-position="{0, 1}" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
+  <editor should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="hG0bTrug_84"/>
+    <selected-rows ids="n5azxE7Q5je"/>
     <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{32, 0}"/>
+    <selected-characters range="{43, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -691,6 +691,20 @@
         </text>
       </values>
       <children>
+        <item id="gy0KHDYsyo7">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>With &apos;Keep game organised&apos; OFF, when you load a game from a location, then replace it with a new game (eg, by recompiling), what happens?</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p/>
+            </text>
+          </values>
+        </item>
         <item id="fPtw9vJC0Fq">
           <values>
             <text>

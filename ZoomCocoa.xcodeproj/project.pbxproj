@@ -2334,6 +2334,7 @@
 				4B39C93308EEF63500BA5E90 /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
 		};
 		4BB8C0E508C2452E00D7D334 /* Build configuration list for PBXNativeTarget "Builder" */ = {
 			isa = XCConfigurationList;
