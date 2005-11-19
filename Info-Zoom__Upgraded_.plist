@@ -119,6 +119,7 @@
 			<key>CFBundleTypeExtensions</key>
 			<array>
 				<string>zlb</string>
+				<string>zblorb</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>Blorb.icns</string>
@@ -227,6 +228,7 @@
                                 <key>public.filename-extension</key>
                                 <array>
                                         <string>zlb</string>
+                                        <string>zblorb</string>
                                 </array>
                         </dict>
                 </dict>

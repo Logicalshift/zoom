@@ -297,10 +297,15 @@
 		if (![self checkResourceFile: fileToCheck]) {
 			// foo.zlb
 			fileToCheck = [[resPath stringByAppendingPathComponent: resPrefix] stringByAppendingPathExtension: @"zlb"];
+
 			if (![self checkResourceFile: fileToCheck]) {
-				// resources.blb
-				fileToCheck = [resPath stringByAppendingPathComponent: @"resources.blb"];
-				[self checkResourceFile: fileToCheck];
+				// foo.zblorb
+				fileToCheck = [[resPath stringByAppendingPathComponent: resPrefix] stringByAppendingPathExtension: @"zblorb"];
+				if (![self checkResourceFile: fileToCheck]) {
+					// resources.blb
+					fileToCheck = [resPath stringByAppendingPathComponent: @"resources.blb"];
+					[self checkResourceFile: fileToCheck];
+				}
 			}
 		}
 	}

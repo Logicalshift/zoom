@@ -154,7 +154,9 @@ static NSImage* blorbImage;
 		
 		if (!([[filename pathExtension] isEqualToString: @"blb"] || 
 			  [[filename pathExtension] isEqualToString: @"zlb"] ||
-			  [[filename pathExtension] isEqualToString: @"glb"])) {
+			  [[filename pathExtension] isEqualToString: @"glb"] ||
+			  [[filename pathExtension] isEqualToString: @"zblorb"] ||
+			  [ZoomBlorbFile fileContentsIsBlorb: filename])) {
 			// MAYBE IMPLEMENT ME: check if this is a blorb file anyway (look for an IFRS file?)
 			goto notAFilename;
 		}
