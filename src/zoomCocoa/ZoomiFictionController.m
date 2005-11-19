@@ -641,12 +641,16 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	if (filename == nil) filename = @"No filename";
 	
 	if (story == nil) {
+#if 0
 		story = [[[ZoomStory alloc] init] autorelease];
 		[story setTitle: [[filename lastPathComponent] stringByDeletingPathExtension]];
 
 		// If we ever support more formats (Z-Code blorb is probable, GLULX is likely, other are possible)
 		// we need to do this in a more intelligent way.
 		[story addID: [[[ZoomStoryID alloc] initWithZCodeFile: filename] autorelease]];
+#else
+		story = [ZoomStory defaultMetadataForFile: filename]; 
+#endif
 		
 		// Store this in the user metadata for later
 		NSLog(@"Failed to find story for ID: %@", ident);
@@ -1504,12 +1508,10 @@ int tableSorter(id a, id b, void* context) {
 }
 
 // = Loading iFiction data =
-- (void) mergeiFictionFromFile: (NSString*) filename {
+
+- (NSArray*) mergeiFictionFromMetabase: (ZoomMetadata*) newData {
 	// Show our window
 	[[self window] makeKeyAndOrderFront: self];
-	
-	// Read the file
-	ZoomMetadata* newData = [[[ZoomMetadata alloc] initWithContentsOfFile: filename] autorelease];
 	
 	if (newData == nil) {
 		// Doh!
@@ -1537,7 +1539,7 @@ int tableSorter(id a, id b, void* context) {
 	while (story = [storyEnum nextObject]) {
 		// Find if the story already exists in our index
 		ZoomStory* oldStory = nil;
-
+		
 		ZoomStoryID* ident;
 		NSEnumerator* identEnum = [[story storyIDs] objectEnumerator];
 		
@@ -1557,9 +1559,20 @@ int tableSorter(id a, id b, void* context) {
 	
 	// Store and reflect any changes
 	[[[NSApp delegate] userMetadata] writeToDefaultFile];
-
+	
 	[self reloadTableData];
 	[self configureFromMainTableSelection];
+	
+	// The return value is the set of things that would be replaced
+	return replacements;
+}
+
+- (void) mergeiFictionFromFile: (NSString*) filename {
+	// Read the file
+	ZoomMetadata* newData = [[[ZoomMetadata alloc] initWithContentsOfFile: filename] autorelease];
+	
+	// Perform the merge
+	NSArray* replacements = [self mergeiFictionFromMetabase: newData];
 	
 	// If there's anything to query about, ask!
 	if ([replacements count] > 0) {

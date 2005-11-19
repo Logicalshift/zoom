@@ -24,6 +24,8 @@ extern NSString* ZoomStoryDataHasChangedNotification;
 + (NSString*) keyForTag: (int) tag;
 
 // Initialisation
++ (ZoomStory*) defaultMetadataForFile: (NSString*) filename;
+
 - (id) init;								// New story
 - (id) initWithStory: (struct IFMDStory*) story;   // Existing story (not freed)
 

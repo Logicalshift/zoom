@@ -153,8 +153,7 @@
 		story = [[NSApp delegate] findStory: storyId];
 		
 		if (story == nil) {
-			story = [[ZoomStory alloc] init];
-			[story setTitle: [[[self fileName] lastPathComponent] stringByDeletingPathExtension]];
+			story = [[ZoomStory defaultMetadataForFile: [self fileName]] retain];
 		} else {
 			[story retain];
 		}

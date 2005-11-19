@@ -9,6 +9,10 @@
 #import "ZoomStory.h"
 #import "ZoomStoryID.h"
 
+#import "ZoomMetadata.h"
+#import "ZoomBlorbFile.h"
+#import "ZoomPreferences.h"
+
 #include "ifmetadata.h"
 
 NSString* ZoomStoryDataHasChangedNotification = @"ZoomStoryDataHasChangedNotification";
@@ -68,7 +72,89 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	return nil;
 }
 
++ (ZoomStory*) defaultMetadataForFile: (NSString*) filename {
+	// Gets the standard metadata for the given file
+	BOOL isDir;
+	
+	if (![[NSFileManager defaultManager] fileExistsAtPath: filename
+											  isDirectory: &isDir]) return nil;
+	if (isDir) return nil;
+	
+	// Get the ID for this file
+	NSData* fileData = [NSData dataWithContentsOfFile: filename];
+	ZoomStoryID* fileID = [[ZoomStoryID alloc] initWithZCodeStory: fileData];
+	ZoomMetadata* fileMetadata = nil;
+	
+	// If this file is a blorb file, then extract the IFmd chunk
+	const unsigned char* bytes = [fileData bytes];
+	
+	if (bytes[0] == 'F' && bytes[1] == 'O' && bytes[2] == 'R' && bytes[3] == 'M') {
+		ZoomBlorbFile* blorb = [[ZoomBlorbFile alloc] initWithData: fileData];
+		NSData* ifMD = [blorb dataForChunkWithType: @"IFmd"];
+		
+		if (ifMD != nil) {
+			fileMetadata = [[ZoomMetadata alloc] initWithData: ifMD];
+		} else {
+			NSLog(@"Warning: found a game with an IFmd chunk, but was not able to parse it");
+		}
+		
+		[blorb release];
+	}
+	
+	// If we've got an ifMD chunk, then see if we can extract the story from it
+	ZoomStory* result = nil;
+	
+	if (fileMetadata) {
+		result = [[fileMetadata findStory: fileID] copy];
+		
+		if (result == nil) {
+			NSLog(@"Warning: found a game with an IFmd chunk, but which did not appear to contain any relevant metadata"); 
+		}
+	}
+	
+	// If there's no result, then make up the data from the filename
+	if (result == nil) {
+		result = [[ZoomStory alloc] init];
+		
+		// Add the ID
+		[result addID: fileID];
+		
+		// Behaviour is different for stories that are organised
+		NSString* orgDir = [[[ZoomPreferences globalPreferences] organiserDirectory] stringByStandardizingPath];
+		BOOL storyIsOrganised = NO;
+		
+		NSString* mightBeOrgDir = [[[filename stringByDeletingLastPathComponent] stringByDeletingLastPathComponent] stringByDeletingLastPathComponent];
+		mightBeOrgDir = [mightBeOrgDir stringByStandardizingPath];
+		
+		if ([orgDir caseInsensitiveCompare: mightBeOrgDir] == NSOrderedSame) storyIsOrganised = YES;
+		if (![[[[filename lastPathComponent] stringByDeletingPathExtension] lowercaseString] isEqualToString: @"game"]) storyIsOrganised = NO;
+		
+		// Build the metadata
+		NSString* groupName;
+		NSString* gameName;
+		
+		if (storyIsOrganised) {
+			gameName = [[filename stringByDeletingLastPathComponent] lastPathComponent];
+			groupName = [[[filename stringByDeletingLastPathComponent] stringByDeletingLastPathComponent] lastPathComponent];
+		} else {
+			gameName = [[filename stringByDeletingPathExtension] lastPathComponent];
+			groupName = @"";
+		}
+		
+		[result setTitle: gameName];
+		[result setGroup: groupName];
+	}
+	
+	// Clean up
+	[fileID release];
+	[fileMetadata release];
+	
+	// Return the result
+	return [result autorelease];
+}
+
 // = Initialisation =
+
 - (id) init {
 	self = [super init];
 	
@@ -467,7 +553,7 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	} else if ([key isEqualToString: @"group"]) {
 		[self setGroup: value];
 	} else if ([key isEqualToString: @"year"]) {
-		if (value == nil || [value length] == 0) [self setYear: 0];
+		if (value == nil || [(NSString*)value length] == 0) [self setYear: 0];
 		else [self setYear: atoi([value cString])];
 	} else if ([key isEqualToString: @"zarfian"]) {
 		// IMPLEMENT ME
@@ -476,7 +562,7 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	} else if ([key isEqualToString: @"comment"]) {
 		[self setComment: value];
 	} else if ([key isEqualToString: @"rating"]) {
-		if (value == nil || [value length] == 0) [self setRating: -1];
+		if (value == nil || [(NSString*)value length] == 0) [self setRating: -1];
 		else [self setRating: atof([value cString])];
 	} else {
 		[self loadExtraMetadata];
@@ -507,7 +593,7 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 		int num;
 		
 		for (num=0; num<[words count]; num++) {
-			if ([[words objectAtIndex: num] length] == 0 || 
+			if ([(NSString*)[words objectAtIndex: num] length] == 0 || 
 				[string rangeOfString: [words objectAtIndex: num]
 							  options: NSCaseInsensitiveSearch].location != NSNotFound) {
 				// Found this word

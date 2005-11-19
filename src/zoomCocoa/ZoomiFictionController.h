@@ -14,6 +14,7 @@
 #import "ZoomCollapsingSplitView.h"
 #import "ZoomResourceDrop.h"
 #import "ZoomStoryTableView.h"
+#import "ZoomMetadata.h"
 
 @interface ZoomiFictionController : NSWindowController {
 	IBOutlet ZoomiFButton* addButton;
@@ -83,6 +84,7 @@
 - (void) reloadTableData;
 
 - (void) mergeiFictionFromFile: (NSString*) filename;
+- (NSArray*) mergeiFictionFromMetabase: (ZoomMetadata*) newData;
 
 - (void) addFiles: (NSArray *)filenames;
 

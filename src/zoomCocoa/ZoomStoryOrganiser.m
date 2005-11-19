@@ -254,7 +254,7 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 }
 
 - (void) foundFileNotInDatabase: (NSArray*) info {
-	// Called from the preferenceThread when a story not in the database is found
+	// Called from the preferenceThread (on the main thread) when a story not in the database is found
 	NSString* groupName = [info objectAtIndex: 0];
 	NSString* gameName = [info objectAtIndex: 1];
 	NSString* gameFile = [info objectAtIndex: 2];
@@ -292,12 +292,16 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 	if (oldStory == nil) {
 		NSLog(@"Creating metadata entry for story '%@'", gameName);
 		
+#if 0
 		ZoomStory* newStory = [[ZoomStory alloc] init];
 		
 		[newStory setTitle: gameName];
 		if (![groupName isEqualToString: @"Ungrouped"]);
 		[newStory setGroup: groupName];
 		[newStory addID: newID];
+#else
+		ZoomStory* newStory = [[ZoomStory defaultMetadataForFile: gameFile] retain];
+#endif
 		
 		[data storeStory: newStory];
 		[data writeToDefaultFile];

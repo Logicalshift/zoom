@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4B0105B2092FADD800955BCB /* ZoomPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B418ED905961D2C009C44DE /* ZoomPreferences.m */; };
 		4B39C94308EEF75600BA5E90 /* MetadataImporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B39C94108EEF75600BA5E90 /* MetadataImporter.m */; };
 		4B39C94408EEF75600BA5E90 /* schema.xml in Resources */ = {isa = PBXBuildFile; fileRef = 4B39C94208EEF75600BA5E90 /* schema.xml */; };
 		4B39C94508EEF78700BA5E90 /* ifmetadata.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BECA80005B19BE1006840BA /* ifmetadata.c */; };
@@ -1636,6 +1637,7 @@
 				4B39C9C608EEF7C000BA5E90 /* ZoomStoryID.m in Sources */,
 				4BB65ACE08EF02D600E7E28E /* ZoomBlorbFile.m in Sources */,
 				4BB65AD408EF02DF00E7E28E /* ZoomProtocol.m in Sources */,
+				4B0105B2092FADD800955BCB /* ZoomPreferences.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
