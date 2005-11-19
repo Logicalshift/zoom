@@ -88,7 +88,7 @@
 }
 
 - (NSString*) description {
-    return @"Zoom 1.0.4 ZMachine object";
+    return @"Zoom 1.0.5 ZMachine object";
 }
 
 - (void) connectionDied: (NSNotification*) notification {
