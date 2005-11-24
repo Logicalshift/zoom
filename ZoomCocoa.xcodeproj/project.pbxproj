@@ -283,7 +283,7 @@
 /* Begin PBXBuildRule section */
 		4B51A94B08FAC67700232D0B /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
-			compilerSpec = com.apple.compilers.gcc.3_3;
+			compilerSpec = com.apple.compilers.gcc;
 			fileType = sourcecode.c;
 			isEditable = 1;
 			outputFiles = (
@@ -291,7 +291,7 @@
 		};
 		4B51A94D08FAC6B300232D0B /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
-			compilerSpec = com.apple.compilers.gcc.3_3;
+			compilerSpec = com.apple.compilers.gcc;
 			fileType = sourcecode.asm;
 			isEditable = 1;
 			outputFiles = (
@@ -299,7 +299,7 @@
 		};
 		4B51A95108FAC71400232D0B /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
-			compilerSpec = com.apple.compilers.gcc.3_3;
+			compilerSpec = com.apple.compilers.gcc;
 			fileType = sourcecode.c;
 			isEditable = 1;
 			outputFiles = (
@@ -307,7 +307,7 @@
 		};
 		4B51A95208FAC71D00232D0B /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
-			compilerSpec = com.apple.compilers.gcc.3_3;
+			compilerSpec = com.apple.compilers.gcc;
 			fileType = sourcecode.asm;
 			isEditable = 1;
 			outputFiles = (
@@ -315,7 +315,7 @@
 		};
 		4B51A95B08FAC73B00232D0B /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
-			compilerSpec = com.apple.compilers.gcc.3_3;
+			compilerSpec = com.apple.compilers.gcc;
 			fileType = sourcecode.c;
 			isEditable = 1;
 			outputFiles = (
@@ -323,7 +323,7 @@
 		};
 		4B51A95C08FAC74000232D0B /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
-			compilerSpec = com.apple.compilers.gcc.3_3;
+			compilerSpec = com.apple.compilers.gcc;
 			fileType = sourcecode.c;
 			isEditable = 1;
 			outputFiles = (
@@ -385,7 +385,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4B1888CF0935F863003AF62A /* Expat */;
+			remoteGlobalIDString = 4B1888CF0935F863003AF62A;
 			remoteInfo = Expat;
 		};
 		4B39C93408EEF63E00BA5E90 /* PBXContainerItemProxy */ = {
@@ -497,25 +497,25 @@
 		4B1885B50698B867004D8501 /* Skein-unchanged.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Skein-unchanged.png"; path = "Skein/Skein-unchanged.png"; sourceTree = "<group>"; };
 		4B1885B60698B867004D8501 /* Skein-changed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Skein-changed.png"; path = "Skein/Skein-changed.png"; sourceTree = "<group>"; };
 		4B1888D00935F863003AF62A /* libExpat.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libExpat.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		4B1888D80935F912003AF62A /* ascii.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ascii.h; path = "../expat-1.95.8/lib/ascii.h"; sourceTree = "<group>"; };
-		4B1888D90935F912003AF62A /* asciitab.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = asciitab.h; path = "../expat-1.95.8/lib/asciitab.h"; sourceTree = "<group>"; };
-		4B1888DA0935F912003AF62A /* expat_external.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = expat_external.h; path = "../expat-1.95.8/lib/expat_external.h"; sourceTree = "<group>"; };
-		4B1888DB0935F912003AF62A /* expat.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = expat.h; path = "../expat-1.95.8/lib/expat.h"; sourceTree = "<group>"; };
-		4B1888DC0935F912003AF62A /* iasciitab.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = iasciitab.h; path = "../expat-1.95.8/lib/iasciitab.h"; sourceTree = "<group>"; };
-		4B1888DD0935F912003AF62A /* internal.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = internal.h; path = "../expat-1.95.8/lib/internal.h"; sourceTree = "<group>"; };
-		4B1888DE0935F912003AF62A /* latin1tab.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = latin1tab.h; path = "../expat-1.95.8/lib/latin1tab.h"; sourceTree = "<group>"; };
-		4B1888DF0935F912003AF62A /* macconfig.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = macconfig.h; path = "../expat-1.95.8/lib/macconfig.h"; sourceTree = "<group>"; };
-		4B1888E00935F912003AF62A /* nametab.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = nametab.h; path = "../expat-1.95.8/lib/nametab.h"; sourceTree = "<group>"; };
-		4B1888E10935F912003AF62A /* utf8tab.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = utf8tab.h; path = "../expat-1.95.8/lib/utf8tab.h"; sourceTree = "<group>"; };
-		4B1888E20935F912003AF62A /* winconfig.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = winconfig.h; path = "../expat-1.95.8/lib/winconfig.h"; sourceTree = "<group>"; };
-		4B1888E30935F912003AF62A /* xmlparse.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = xmlparse.c; path = "../expat-1.95.8/lib/xmlparse.c"; sourceTree = "<group>"; };
-		4B1888E40935F912003AF62A /* xmlrole.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = xmlrole.c; path = "../expat-1.95.8/lib/xmlrole.c"; sourceTree = "<group>"; };
-		4B1888E50935F912003AF62A /* xmlrole.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = xmlrole.h; path = "../expat-1.95.8/lib/xmlrole.h"; sourceTree = "<group>"; };
-		4B1888E60935F912003AF62A /* xmltok_impl.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = xmltok_impl.c; path = "../expat-1.95.8/lib/xmltok_impl.c"; sourceTree = "<group>"; };
-		4B1888E70935F912003AF62A /* xmltok_impl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = xmltok_impl.h; path = "../expat-1.95.8/lib/xmltok_impl.h"; sourceTree = "<group>"; };
-		4B1888E80935F912003AF62A /* xmltok_ns.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = xmltok_ns.c; path = "../expat-1.95.8/lib/xmltok_ns.c"; sourceTree = "<group>"; };
-		4B1888E90935F912003AF62A /* xmltok.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = xmltok.c; path = "../expat-1.95.8/lib/xmltok.c"; sourceTree = "<group>"; };
-		4B1888EA0935F912003AF62A /* xmltok.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = xmltok.h; path = "../expat-1.95.8/lib/xmltok.h"; sourceTree = "<group>"; };
+		4B1888D80935F912003AF62A /* ascii.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ascii.h; path = lib/ascii.h; sourceTree = "<group>"; };
+		4B1888D90935F912003AF62A /* asciitab.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = asciitab.h; path = lib/asciitab.h; sourceTree = "<group>"; };
+		4B1888DA0935F912003AF62A /* expat_external.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = expat_external.h; path = lib/expat_external.h; sourceTree = "<group>"; };
+		4B1888DB0935F912003AF62A /* expat.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = expat.h; path = lib/expat.h; sourceTree = "<group>"; };
+		4B1888DC0935F912003AF62A /* iasciitab.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = iasciitab.h; path = lib/iasciitab.h; sourceTree = "<group>"; };
+		4B1888DD0935F912003AF62A /* internal.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = internal.h; path = lib/internal.h; sourceTree = "<group>"; };
+		4B1888DE0935F912003AF62A /* latin1tab.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = latin1tab.h; path = lib/latin1tab.h; sourceTree = "<group>"; };
+		4B1888DF0935F912003AF62A /* macconfig.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = macconfig.h; path = lib/macconfig.h; sourceTree = "<group>"; };
+		4B1888E00935F912003AF62A /* nametab.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = nametab.h; path = lib/nametab.h; sourceTree = "<group>"; };
+		4B1888E10935F912003AF62A /* utf8tab.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = utf8tab.h; path = lib/utf8tab.h; sourceTree = "<group>"; };
+		4B1888E20935F912003AF62A /* winconfig.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = winconfig.h; path = lib/winconfig.h; sourceTree = "<group>"; };
+		4B1888E30935F912003AF62A /* xmlparse.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = xmlparse.c; path = lib/xmlparse.c; sourceTree = "<group>"; };
+		4B1888E40935F912003AF62A /* xmlrole.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = xmlrole.c; path = lib/xmlrole.c; sourceTree = "<group>"; };
+		4B1888E50935F912003AF62A /* xmlrole.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = xmlrole.h; path = lib/xmlrole.h; sourceTree = "<group>"; };
+		4B1888E60935F912003AF62A /* xmltok_impl.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = xmltok_impl.c; path = lib/xmltok_impl.c; sourceTree = "<group>"; };
+		4B1888E70935F912003AF62A /* xmltok_impl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = xmltok_impl.h; path = lib/xmltok_impl.h; sourceTree = "<group>"; };
+		4B1888E80935F912003AF62A /* xmltok_ns.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = xmltok_ns.c; path = lib/xmltok_ns.c; sourceTree = "<group>"; };
+		4B1888E90935F912003AF62A /* xmltok.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = xmltok.c; path = lib/xmltok.c; sourceTree = "<group>"; };
+		4B1888EA0935F912003AF62A /* xmltok.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = xmltok.h; path = lib/xmltok.h; sourceTree = "<group>"; };
 		4B1C13F905C5A94300E5796D /* English */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = English; path = English.lproj/Credits.rtf; sourceTree = "<group>"; };
 		4B1C14D205C69CAD00E5796D /* iFiction-10.2.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = "iFiction-10.2.nib"; sourceTree = "<group>"; };
 		4B1E3F60050F7BA000A8E303 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
@@ -658,7 +658,7 @@
 		4BB8C0E908C2452F00D7D334 /* Builder */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Builder; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BB8C16A08C2497700D7D334 /* ZoomServer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ZoomServer; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BB8C20708C249F400D7D334 /* Info-Zoom__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Info-Zoom__Upgraded_.plist"; sourceTree = "<group>"; };
-		4BB8C20808C249F400D7D334 /* Zoom.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Zoom.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4BB8C20808C249F400D7D334 /* Zoom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Zoom.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BBC1F69062F41E300FE547F /* stars-grey.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stars-grey.png"; sourceTree = "<group>"; };
 		4BBC1F6A062F41E300FE547F /* stars-none.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stars-none.png"; sourceTree = "<group>"; };
 		4BBC1F6B062F41E300FE547F /* stars-red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stars-red.png"; sourceTree = "<group>"; };
@@ -2030,6 +2030,7 @@
 					APPLE_IS_ARBITRARY,
 					"XMLCALL=",
 				);
+				GCC_WARN_ABOUT_POINTER_SIGNEDNESS = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.3;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
@@ -2046,6 +2047,7 @@
 					APPLE_IS_ARBITRARY,
 					"XMLCALL=",
 				);
+				GCC_WARN_ABOUT_POINTER_SIGNEDNESS = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.3;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
@@ -2062,6 +2064,7 @@
 					APPLE_IS_ARBITRARY,
 					"XMLCALL=",
 				);
+				GCC_WARN_ABOUT_POINTER_SIGNEDNESS = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.3;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
@@ -2306,6 +2309,7 @@
 		4BB8C0E608C2452E00D7D334 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				HEADER_SEARCH_PATHS = (
 					ProjectBuilder/etc,
 					build,
@@ -2318,6 +2322,7 @@
 		4BB8C0E708C2452E00D7D334 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				HEADER_SEARCH_PATHS = (
 					ProjectBuilder/etc,
 					build,
@@ -2330,6 +2335,7 @@
 		4BB8C0E808C2452E00D7D334 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				HEADER_SEARCH_PATHS = (
 					ProjectBuilder/etc,
 					build,

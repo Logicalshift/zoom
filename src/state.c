@@ -172,47 +172,54 @@ static inline void xor_memory(void)
     }
 }
 
+struct save_state {
+  int flen;
+  ZByte* data;
+};
+
+static inline void wblock(ZByte* x, int len, struct save_state* state)
+{
+  state->flen += len;
+  state->data = realloc(state->data, state->flen+16);
+  memcpy(state->data + state->flen - len, x, len);
+}
+
+static inline void wdword(ZDWord w, struct save_state* state)
+{
+  state->flen +=4;
+  state->data = realloc(state->data, state->flen+16);
+  state->data[state->flen-4] = w>>24;
+  state->data[state->flen-3] = w>>16;
+  state->data[state->flen-2] = w>>8;
+  state->data[state->flen-1] = w;
+}
+
+static inline void wword(ZUWord w, struct save_state* state)
+{
+  state->flen += 2;
+  state->data = realloc(state->data, state->flen+16);
+  state->data[state->flen-2] = w>>8;
+  state->data[state->flen-1] = w;
+}
+
+static inline void wbyte(ZUWord w, struct save_state* state)
+{
+  state->flen += 1;
+  state->data = realloc(state->data, state->flen+16);
+  state->data[state->flen-1] = w;
+}
+
 ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
 {
-  ZByte* data = NULL;
-  ZDWord flen = 0;
+  struct save_state state;
   int size;
   char anno[256];
   time_t now;
   ZByte version;
   
-  inline void wblock(ZByte* x, int len)
-    {
-      flen += len;
-      data = realloc(data, flen+16);
-      memcpy(data + flen - len, x, len);
-    }
+  state.data = NULL;
+  state.flen = 0;
   
-  inline void wdword(ZDWord w)
-    {
-      flen +=4;
-      data = realloc(data, flen+16);
-      data[flen-4] = w>>24;
-      data[flen-3] = w>>16;
-      data[flen-2] = w>>8;
-      data[flen-1] = w;
-    }
-  
-  inline void wword(ZUWord w)
-    {
-      flen += 2;
-      data = realloc(data, flen+16);
-      data[flen-2] = w>>8;
-      data[flen-1] = w;
-    }
-  
-  inline void wbyte(ZUWord w)
-    {
-      flen += 1;
-      data = realloc(data, flen+16);
-      data[flen-1] = w;
-    }
-
   *len = -1;
   version = ReadByte(0);
 
@@ -231,19 +238,19 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
 #endif
   
   /* header */
-  wblock(blocks[IFhd].text, 4);
-  wdword(13);
-  wword(Word(ZH_release));
-  wblock(Address(ZH_serial), 6);
-  wword(Word(ZH_checksum));
+  wblock(blocks[IFhd].text, 4, &state);
+  wdword(13, &state);
+  wword(Word(ZH_release), &state);
+  wblock(Address(ZH_serial), 6, &state);
+  wword(Word(ZH_checksum), &state);
 #ifdef DEBUG
   printf_debug("Save: release %i, checksum %i\n", Word(ZH_release), Word(ZH_checksum));
 #endif
-  wbyte(pc>>16);
-  wbyte(pc>>8);
-  wbyte(pc);
+  wbyte(pc>>16, &state);
+  wbyte(pc>>8, &state);
+  wbyte(pc, &state);
 
-  wbyte(0);
+  wbyte(0, &state);
 
   /* Dynamic memory */
   if (compress)
@@ -301,12 +308,12 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
 	    }
 	}
 
-      wblock(blocks[CMem].text, 4);
-      wdword(clen);
-      wblock(comp, clen);
+      wblock(blocks[CMem].text, 4, &state);
+      wdword(clen, &state);
+      wblock(comp, clen, &state);
 
       if (clen&1)
-	wbyte(0);
+	wbyte(0, &state);
 
       free(comp);
       
@@ -317,27 +324,27 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
 #ifdef DEBUG
       printf_debug("Compile: storing memory from 0 to %x\n", machine.dynamic_ceiling);
 #endif
-      wblock(blocks[UMem].text, 4);
-      wdword(machine.dynamic_ceiling);
-      wblock(Address(0), machine.dynamic_ceiling);
+      wblock(blocks[UMem].text, 4, &state);
+      wdword(machine.dynamic_ceiling, &state);
+      wblock(Address(0), machine.dynamic_ceiling, &state);
 
       if (machine.dynamic_ceiling&1)
-	wbyte(0);
+	wbyte(0, &state);
     }
 
   /* Stack frames */
   stackpos = stack->stack;
   size = format_stacks(stack, stack->current_frame);
-  wblock(blocks[Stks].text, 4);
-  wdword(size);
-  wblock(stacks, size);
+  wblock(blocks[Stks].text, 4, &state);
+  wdword(size, &state);
+  wblock(stacks, size, &state);
 
   free(stacks);
   stacks = NULL;
 
   /* Annotations */
   now = time(NULL);
-  wblock(blocks[ANNO].text, 4);
+  wblock(blocks[ANNO].text, 4, &state);
   if (version <= 3)
     {
       char score[64];
@@ -360,13 +367,13 @@ ZByte* state_compile(ZStack* stack, ZDWord pc, ZDWord* len, int compress)
       sprintf(anno, "Version %i game, saved from Zoom version "
 	      VERSION " @%s", version, ctime(&now));
     }
-  wdword(strlen(anno));
-  wblock(anno, strlen(anno));
+  wdword(strlen(anno), &state);
+  wblock(anno, strlen(anno), &state);
   if (strlen(anno)&1)
-    wbyte(0);
+    wbyte(0, &state);
   
-  *len = flen;
-  return data;
+  *len = state.flen;
+  return state.data;
 }
   
 int state_save(ZFile* f, ZStack* stack, ZDWord pc)
