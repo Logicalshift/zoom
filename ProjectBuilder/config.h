@@ -84,7 +84,7 @@
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "1.0.5dev1"
+#define VERSION "1.0.5dev2"
 
 /* Define if the X Window System is missing or not being used. */
 /* #undef X_DISPLAY_MISSING */
