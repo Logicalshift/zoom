@@ -410,105 +410,105 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4B1888CF0935F863003AF62A /* Expat */;
+			remoteGlobalIDString = 4B1888CF0935F863003AF62A;
 			remoteInfo = Expat;
 		};
 		4B7CB03B09360A6D00F3B8F6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4B1888CF0935F863003AF62A /* Expat */;
+			remoteGlobalIDString = 4B1888CF0935F863003AF62A;
 			remoteInfo = Expat;
 		};
 		4B7CB04809360AC800F3B8F6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4B1888CF0935F863003AF62A /* Expat */;
+			remoteGlobalIDString = 4B1888CF0935F863003AF62A;
 			remoteInfo = Expat;
 		};
 		4B7CB08B09362A4600F3B8F6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4B1888CF0935F863003AF62A /* Expat */;
+			remoteGlobalIDString = 4B1888CF0935F863003AF62A;
 			remoteInfo = Expat;
 		};
 		4B7CB08E09362A5300F3B8F6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4BD2747808701E6700C1AE15 /* ZoomView */;
+			remoteGlobalIDString = 4BD2747808701E6700C1AE15;
 			remoteInfo = ZoomView;
 		};
 		4B7CB0A809362A6A00F3B8F6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4B7CB08009362A3B00F3B8F6 /* ZoomPlugIns */;
+			remoteGlobalIDString = 4B7CB08009362A3B00F3B8F6;
 			remoteInfo = ZoomPlugIns;
 		};
 		4B7CB1C2093634DD00F3B8F6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090 /* CocoaGlk.app */;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
 			remoteInfo = CocoaGlk;
 		};
 		4B7CB1C4093634DD00F3B8F6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 4B51AA4707E8770600576AB9 /* GlkView.framework */;
+			remoteGlobalIDString = 4B51AA4707E8770600576AB9;
 			remoteInfo = GlkView;
 		};
 		4B7CB1C6093634DD00F3B8F6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 4B51AA5607E877C900576AB9 /* GlkClient.framework */;
+			remoteGlobalIDString = 4B51AA5607E877C900576AB9;
 			remoteInfo = GlkClient;
 		};
 		4B7CB1C8093634DD00F3B8F6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 4B0459F107EA20F1002D7C88 /* multiwin */;
+			remoteGlobalIDString = 4B0459F107EA20F1002D7C88;
 			remoteInfo = multiwin;
 		};
 		4B7CB1CA093634DD00F3B8F6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 4B0459F607EA20FE002D7C88 /* glulxe */;
+			remoteGlobalIDString = 4B0459F607EA20FE002D7C88;
 			remoteInfo = glulxe;
 		};
 		4B7CB1CC093634DD00F3B8F6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 4BBC40F808A7AABD00B790B5 /* imagetest */;
+			remoteGlobalIDString = 4BBC40F808A7AABD00B790B5;
 			remoteInfo = imagetest;
 		};
 		4B7CB1EE093635B800F3B8F6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 4B51AA4607E8770600576AB9 /* GlkView */;
+			remoteGlobalIDString = 4B51AA4607E8770600576AB9;
 			remoteInfo = GlkView;
 		};
 		4B7CB1F1093635C400F3B8F6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 4B51AA4607E8770600576AB9 /* GlkView */;
+			remoteGlobalIDString = 4B51AA4607E8770600576AB9;
 			remoteInfo = GlkView;
 		};
 		4B7CB1F3093635C400F3B8F6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 4B51AA5507E877C900576AB9 /* GlkClient */;
+			remoteGlobalIDString = 4B51AA5507E877C900576AB9;
 			remoteInfo = GlkClient;
 		};
 		4BB8C11808C248FF00D7D334 /* PBXContainerItemProxy */ = {
@@ -1754,12 +1754,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4BB8C20308C249F400D7D334 /* Build configuration list for PBXNativeTarget "Zoom" */;
 			buildPhases = (
+				4B43DA6209363A4000F03009 /* ShellScript */,
+				4BB8C20108C249F400D7D334 /* CopyFiles */,
 				4BB8C18D08C249F400D7D334 /* Headers */,
 				4BB8C1B708C249F400D7D334 /* Resources */,
 				4BB8C1E008C249F400D7D334 /* Sources */,
 				4BB8C1F708C249F400D7D334 /* Frameworks */,
 				4BB8C1FD08C249F400D7D334 /* Rez */,
-				4BB8C20108C249F400D7D334 /* CopyFiles */,
 				4B39CA0408EEF8C600BA5E90 /* CopyFiles */,
 			);
 			buildRules = (
@@ -2043,6 +2044,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXRezBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4B43DA6209363A4000F03009 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# XCode is too stupid to work out that CocoaGlk binaries live in the CocoaGlk directory. Sigh.\nrm -rf ${TARGET_BUILD_DIR}/GlkView.framework\nrm -rf ${TARGET_BUILD_DIR}/GlkClient.framework\n\ncp -R ${PROJECT_DIR}/../CocoaGlk/build/${BUILD_STYLE}/GlkView.framework ${TARGET_BUILD_DIR}/GlkView.framework || exit 1\ncp -R ${PROJECT_DIR}/../CocoaGlk/build/${BUILD_STYLE}/GlkClient.framework ${TARGET_BUILD_DIR}/GlkClient.framework || exit 1\n#cp -R ${PROJECT_DIR}/../CocoaGlk/build/${BUILD_STYLE}/glulxe ${TARGET_BUILD_DIR}/glulxe || exit 1\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		4B1888CD0935F863003AF62A /* Sources */ = {
