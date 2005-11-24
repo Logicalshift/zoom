@@ -8,6 +8,23 @@
 
 /* Begin PBXBuildFile section */
 		4B0105B2092FADD800955BCB /* ZoomPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B418ED905961D2C009C44DE /* ZoomPreferences.m */; };
+		4B1888EB0935F912003AF62A /* ascii.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888D80935F912003AF62A /* ascii.h */; };
+		4B1888EC0935F912003AF62A /* asciitab.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888D90935F912003AF62A /* asciitab.h */; };
+		4B1888ED0935F912003AF62A /* expat_external.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888DA0935F912003AF62A /* expat_external.h */; };
+		4B1888EE0935F912003AF62A /* expat.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888DB0935F912003AF62A /* expat.h */; };
+		4B1888EF0935F912003AF62A /* iasciitab.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888DC0935F912003AF62A /* iasciitab.h */; };
+		4B1888F00935F912003AF62A /* internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888DD0935F912003AF62A /* internal.h */; };
+		4B1888F10935F912003AF62A /* latin1tab.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888DE0935F912003AF62A /* latin1tab.h */; };
+		4B1888F20935F912003AF62A /* macconfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888DF0935F912003AF62A /* macconfig.h */; };
+		4B1888F30935F912003AF62A /* nametab.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888E00935F912003AF62A /* nametab.h */; };
+		4B1888F40935F912003AF62A /* utf8tab.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888E10935F912003AF62A /* utf8tab.h */; };
+		4B1888F50935F912003AF62A /* winconfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888E20935F912003AF62A /* winconfig.h */; };
+		4B1888F60935F912003AF62A /* xmlparse.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B1888E30935F912003AF62A /* xmlparse.c */; };
+		4B1888F70935F912003AF62A /* xmlrole.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B1888E40935F912003AF62A /* xmlrole.c */; };
+		4B1888F80935F912003AF62A /* xmlrole.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888E50935F912003AF62A /* xmlrole.h */; };
+		4B1888FC0935F912003AF62A /* xmltok.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B1888E90935F912003AF62A /* xmltok.c */; };
+		4B1888FD0935F912003AF62A /* xmltok.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888EA0935F912003AF62A /* xmltok.h */; };
+		4B18890D0935FB4F003AF62A /* libExpat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B1888D00935F863003AF62A /* libExpat.a */; };
 		4B39C94308EEF75600BA5E90 /* MetadataImporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B39C94108EEF75600BA5E90 /* MetadataImporter.m */; };
 		4B39C94408EEF75600BA5E90 /* schema.xml in Resources */ = {isa = PBXBuildFile; fileRef = 4B39C94208EEF75600BA5E90 /* schema.xml */; };
 		4B39C94508EEF78700BA5E90 /* ifmetadata.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BECA80005B19BE1006840BA /* ifmetadata.c */; };
@@ -194,7 +211,6 @@
 		4BB8C1F608C249F400D7D334 /* ifmetabase.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BB8BED408B785B200D7D334 /* ifmetabase.c */; settings = {COMPILER_FLAGS = "-pedantic -ansi"; }; };
 		4BB8C1F808C249F400D7D334 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B1E3F60050F7BA000A8E303 /* Cocoa.framework */; };
 		4BB8C1F908C249F400D7D334 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BCF3F2B050F8E2400A8E303 /* Foundation.framework */; };
-		4BB8C1FA08C249F400D7D334 /* libexpat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BECA7F705B194AA006840BA /* libexpat.a */; };
 		4BB8C1FB08C249F400D7D334 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5CBB9B069D671200C0AA88 /* Carbon.framework */; };
 		4BB8C1FC08C249F400D7D334 /* ZoomView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BD274C508701E6800C1AE15 /* ZoomView.framework */; };
 		4BB8C1FF08C249F400D7D334 /* archive.iFiction in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B5983DA070F059E0078165F /* archive.iFiction */; };
@@ -365,6 +381,13 @@
 /* End PBXBuildStyle section */
 
 /* Begin PBXContainerItemProxy section */
+		4B18890B0935FB46003AF62A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4B1888CF0935F863003AF62A /* Expat */;
+			remoteInfo = Expat;
+		};
 		4B39C93408EEF63E00BA5E90 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
@@ -473,6 +496,26 @@
 		4B1885B40698B867004D8501 /* Skein-active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Skein-active.png"; path = "Skein/Skein-active.png"; sourceTree = "<group>"; };
 		4B1885B50698B867004D8501 /* Skein-unchanged.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Skein-unchanged.png"; path = "Skein/Skein-unchanged.png"; sourceTree = "<group>"; };
 		4B1885B60698B867004D8501 /* Skein-changed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Skein-changed.png"; path = "Skein/Skein-changed.png"; sourceTree = "<group>"; };
+		4B1888D00935F863003AF62A /* libExpat.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libExpat.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		4B1888D80935F912003AF62A /* ascii.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ascii.h; path = "../expat-1.95.8/lib/ascii.h"; sourceTree = "<group>"; };
+		4B1888D90935F912003AF62A /* asciitab.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = asciitab.h; path = "../expat-1.95.8/lib/asciitab.h"; sourceTree = "<group>"; };
+		4B1888DA0935F912003AF62A /* expat_external.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = expat_external.h; path = "../expat-1.95.8/lib/expat_external.h"; sourceTree = "<group>"; };
+		4B1888DB0935F912003AF62A /* expat.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = expat.h; path = "../expat-1.95.8/lib/expat.h"; sourceTree = "<group>"; };
+		4B1888DC0935F912003AF62A /* iasciitab.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = iasciitab.h; path = "../expat-1.95.8/lib/iasciitab.h"; sourceTree = "<group>"; };
+		4B1888DD0935F912003AF62A /* internal.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = internal.h; path = "../expat-1.95.8/lib/internal.h"; sourceTree = "<group>"; };
+		4B1888DE0935F912003AF62A /* latin1tab.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = latin1tab.h; path = "../expat-1.95.8/lib/latin1tab.h"; sourceTree = "<group>"; };
+		4B1888DF0935F912003AF62A /* macconfig.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = macconfig.h; path = "../expat-1.95.8/lib/macconfig.h"; sourceTree = "<group>"; };
+		4B1888E00935F912003AF62A /* nametab.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = nametab.h; path = "../expat-1.95.8/lib/nametab.h"; sourceTree = "<group>"; };
+		4B1888E10935F912003AF62A /* utf8tab.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = utf8tab.h; path = "../expat-1.95.8/lib/utf8tab.h"; sourceTree = "<group>"; };
+		4B1888E20935F912003AF62A /* winconfig.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = winconfig.h; path = "../expat-1.95.8/lib/winconfig.h"; sourceTree = "<group>"; };
+		4B1888E30935F912003AF62A /* xmlparse.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = xmlparse.c; path = "../expat-1.95.8/lib/xmlparse.c"; sourceTree = "<group>"; };
+		4B1888E40935F912003AF62A /* xmlrole.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = xmlrole.c; path = "../expat-1.95.8/lib/xmlrole.c"; sourceTree = "<group>"; };
+		4B1888E50935F912003AF62A /* xmlrole.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = xmlrole.h; path = "../expat-1.95.8/lib/xmlrole.h"; sourceTree = "<group>"; };
+		4B1888E60935F912003AF62A /* xmltok_impl.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = xmltok_impl.c; path = "../expat-1.95.8/lib/xmltok_impl.c"; sourceTree = "<group>"; };
+		4B1888E70935F912003AF62A /* xmltok_impl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = xmltok_impl.h; path = "../expat-1.95.8/lib/xmltok_impl.h"; sourceTree = "<group>"; };
+		4B1888E80935F912003AF62A /* xmltok_ns.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = xmltok_ns.c; path = "../expat-1.95.8/lib/xmltok_ns.c"; sourceTree = "<group>"; };
+		4B1888E90935F912003AF62A /* xmltok.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = xmltok.c; path = "../expat-1.95.8/lib/xmltok.c"; sourceTree = "<group>"; };
+		4B1888EA0935F912003AF62A /* xmltok.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = xmltok.h; path = "../expat-1.95.8/lib/xmltok.h"; sourceTree = "<group>"; };
 		4B1C13F905C5A94300E5796D /* English */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = English; path = English.lproj/Credits.rtf; sourceTree = "<group>"; };
 		4B1C14D205C69CAD00E5796D /* iFiction-10.2.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = "iFiction-10.2.nib"; sourceTree = "<group>"; };
 		4B1E3F60050F7BA000A8E303 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
@@ -615,7 +658,7 @@
 		4BB8C0E908C2452F00D7D334 /* Builder */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Builder; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BB8C16A08C2497700D7D334 /* ZoomServer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ZoomServer; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BB8C20708C249F400D7D334 /* Info-Zoom__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Info-Zoom__Upgraded_.plist"; sourceTree = "<group>"; };
-		4BB8C20808C249F400D7D334 /* Zoom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Zoom.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4BB8C20808C249F400D7D334 /* Zoom.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Zoom.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BBC1F69062F41E300FE547F /* stars-grey.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stars-grey.png"; sourceTree = "<group>"; };
 		4BBC1F6A062F41E300FE547F /* stars-none.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stars-none.png"; sourceTree = "<group>"; };
 		4BBC1F6B062F41E300FE547F /* stars-red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stars-red.png"; sourceTree = "<group>"; };
@@ -678,6 +721,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		4B1888CE0935F863003AF62A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4B39C92908EEF63400BA5E90 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -712,9 +762,9 @@
 			files = (
 				4BB8C1F808C249F400D7D334 /* Cocoa.framework in Frameworks */,
 				4BB8C1F908C249F400D7D334 /* Foundation.framework in Frameworks */,
-				4BB8C1FA08C249F400D7D334 /* libexpat.a in Frameworks */,
 				4BB8C1FB08C249F400D7D334 /* Carbon.framework in Frameworks */,
 				4BB8C1FC08C249F400D7D334 /* ZoomView.framework in Frameworks */,
+				4B18890D0935FB4F003AF62A /* libExpat.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -733,6 +783,33 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4B1888D10935F870003AF62A /* Expat */ = {
+			isa = PBXGroup;
+			children = (
+				4B1888D80935F912003AF62A /* ascii.h */,
+				4B1888D90935F912003AF62A /* asciitab.h */,
+				4B1888DA0935F912003AF62A /* expat_external.h */,
+				4B1888DB0935F912003AF62A /* expat.h */,
+				4B1888DC0935F912003AF62A /* iasciitab.h */,
+				4B1888DD0935F912003AF62A /* internal.h */,
+				4B1888DE0935F912003AF62A /* latin1tab.h */,
+				4B1888DF0935F912003AF62A /* macconfig.h */,
+				4B1888E00935F912003AF62A /* nametab.h */,
+				4B1888E10935F912003AF62A /* utf8tab.h */,
+				4B1888E20935F912003AF62A /* winconfig.h */,
+				4B1888E30935F912003AF62A /* xmlparse.c */,
+				4B1888E40935F912003AF62A /* xmlrole.c */,
+				4B1888E50935F912003AF62A /* xmlrole.h */,
+				4B1888E60935F912003AF62A /* xmltok_impl.c */,
+				4B1888E70935F912003AF62A /* xmltok_impl.h */,
+				4B1888E80935F912003AF62A /* xmltok_ns.c */,
+				4B1888E90935F912003AF62A /* xmltok.c */,
+				4B1888EA0935F912003AF62A /* xmltok.h */,
+			);
+			name = Expat;
+			path = ../expat;
+			sourceTree = "<group>";
+		};
 		4B1E3F47050F7AD000A8E303 = {
 			isa = PBXGroup;
 			children = (
@@ -752,6 +829,7 @@
 				4BCF3F42050FB1D800A8E303 /* Resources */,
 				4B1E3F5F050F7B8100A8E303 /* Frameworks */,
 				4B1E3F55050F7B0E00A8E303 /* Products */,
+				4B1888D10935F870003AF62A /* Expat */,
 				4BD274C408701E6700C1AE15 /* Info-ZoomView__Upgraded_.plist */,
 				4BB8C20708C249F400D7D334 /* Info-Zoom__Upgraded_.plist */,
 			);
@@ -771,6 +849,7 @@
 				4BB8C16A08C2497700D7D334 /* ZoomServer */,
 				4BB8C20808C249F400D7D334 /* Zoom.app */,
 				4B39C92B08EEF63400BA5E90 /* ZoomMetadataImporter.mdimporter */,
+				4B1888D00935F863003AF62A /* libExpat.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1101,6 +1180,26 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		4B1888CC0935F863003AF62A /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B1888EB0935F912003AF62A /* ascii.h in Headers */,
+				4B1888EC0935F912003AF62A /* asciitab.h in Headers */,
+				4B1888ED0935F912003AF62A /* expat_external.h in Headers */,
+				4B1888EE0935F912003AF62A /* expat.h in Headers */,
+				4B1888EF0935F912003AF62A /* iasciitab.h in Headers */,
+				4B1888F00935F912003AF62A /* internal.h in Headers */,
+				4B1888F10935F912003AF62A /* latin1tab.h in Headers */,
+				4B1888F20935F912003AF62A /* macconfig.h in Headers */,
+				4B1888F30935F912003AF62A /* nametab.h in Headers */,
+				4B1888F40935F912003AF62A /* utf8tab.h in Headers */,
+				4B1888F50935F912003AF62A /* winconfig.h in Headers */,
+				4B1888F80935F912003AF62A /* xmlrole.h in Headers */,
+				4B1888FD0935F912003AF62A /* xmltok.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4BB8C0DD08C2452E00D7D334 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -1254,6 +1353,31 @@
 /* End PBXLegacyTarget section */
 
 /* Begin PBXNativeTarget section */
+		4B1888CF0935F863003AF62A /* Expat */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4B1888D20935F870003AF62A /* Build configuration list for PBXNativeTarget "Expat" */;
+			buildPhases = (
+				4B1888CC0935F863003AF62A /* Headers */,
+				4B1888CD0935F863003AF62A /* Sources */,
+				4B1888CE0935F863003AF62A /* Frameworks */,
+			);
+			buildRules = (
+			);
+			buildSettings = {
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = Expat;
+				ZERO_LINK = YES;
+			};
+			dependencies = (
+			);
+			name = Expat;
+			productName = Expat;
+			productReference = 4B1888D00935F863003AF62A /* libExpat.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		4B39C92A08EEF63400BA5E90 /* ZoomMetadataImporter */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4B39C93008EEF63500BA5E90 /* Build configuration list for PBXNativeTarget "ZoomMetadataImporter" */;
@@ -1434,6 +1558,7 @@
 				4BB8C18908C249F400D7D334 /* PBXTargetDependency */,
 				4BB8C18B08C249F400D7D334 /* PBXTargetDependency */,
 				4B39C93508EEF63E00BA5E90 /* PBXTargetDependency */,
+				4B18890C0935FB46003AF62A /* PBXTargetDependency */,
 			);
 			name = Zoom;
 			productInstallPath = "$(USER_APPS_DIR)";
@@ -1515,6 +1640,7 @@
 				4BB8C18808C249F400D7D334 /* Zoom */,
 				4BD2747808701E6700C1AE15 /* ZoomView */,
 				4B39C92A08EEF63400BA5E90 /* ZoomMetadataImporter */,
+				4B1888CF0935F863003AF62A /* Expat */,
 			);
 		};
 /* End PBXProject section */
@@ -1626,6 +1752,16 @@
 /* End PBXRezBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		4B1888CD0935F863003AF62A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B1888F60935F912003AF62A /* xmlparse.c in Sources */,
+				4B1888F70935F912003AF62A /* xmlrole.c in Sources */,
+				4B1888FC0935F912003AF62A /* xmltok.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4B39C92808EEF63400BA5E90 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1747,6 +1883,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		4B18890C0935FB46003AF62A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4B1888CF0935F863003AF62A /* Expat */;
+			targetProxy = 4B18890B0935FB46003AF62A /* PBXContainerItemProxy */;
+		};
 		4B39C93508EEF63E00BA5E90 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 4B39C92A08EEF63400BA5E90 /* ZoomMetadataImporter */;
@@ -1881,12 +2022,15 @@
 		4B11039708606E2600253E87 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = ppc;
+				ARCHS = (
+					ppc,
+					i386,
+				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					APPLE_IS_ARBITRARY,
 					"XMLCALL=",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				MACOSX_DEPLOYMENT_TARGET = 10.3;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
 			name = Development;
@@ -1894,12 +2038,15 @@
 		4B11039808606E2600253E87 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = ppc;
+				ARCHS = (
+					ppc,
+					i386,
+				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					APPLE_IS_ARBITRARY,
 					"XMLCALL=",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				MACOSX_DEPLOYMENT_TARGET = 10.3;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
 			name = Deployment;
@@ -1907,13 +2054,127 @@
 		4B11039908606E2600253E87 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = ppc;
+				ARCHS = (
+					ppc,
+					i386,
+				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					APPLE_IS_ARBITRARY,
 					"XMLCALL=",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				MACOSX_DEPLOYMENT_TARGET = 10.3;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+			};
+			name = Default;
+		};
+		4B1888D30935F870003AF62A /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"PTRCALL=",
+					"BYTEORDER=4321",
+					"HAVE_BCOPY=1",
+					"HAVE_DLFCN_H=1",
+					"HAVE_FCNTL_H=1",
+					"HAVE_GETPAGESIZE=1",
+					"HAVE_INTTYPES_H=1",
+					"HAVE_MEMMOVE=1",
+					"HAVE_STDINT_H=1",
+					"HAVE_SYS_TYPES_H=1",
+					"HAVE_UNISTD_H=1",
+					"XML_NS=1",
+					"XML_DTD=1",
+					"XML_CONTEXT_BYTES=1024",
+					"WORDS_BIGENDIAN=1",
+					"STDC_HEADERS=1",
+					"HAVE_SYS_STAT_H=1",
+					"HAVE_STRING_H=1",
+					"HAVE_STRINGS_H=1",
+					"HAVE_MEMORY_H=1",
+					"$(GCC_PREPROCESSOR_DEFINITIONS)",
+				);
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = Expat;
+				ZERO_LINK = YES;
+			};
+			name = Development;
+		};
+		4B1888D40935F870003AF62A /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"PTRCALL=",
+					"BYTEORDER=4321",
+					"HAVE_BCOPY=1",
+					"HAVE_DLFCN_H=1",
+					"HAVE_FCNTL_H=1",
+					"HAVE_GETPAGESIZE=1",
+					"HAVE_INTTYPES_H=1",
+					"HAVE_MEMMOVE=1",
+					"HAVE_STDINT_H=1",
+					"HAVE_SYS_TYPES_H=1",
+					"HAVE_UNISTD_H=1",
+					"XML_NS=1",
+					"XML_DTD=1",
+					"XML_CONTEXT_BYTES=1024",
+					"WORDS_BIGENDIAN=1",
+					"STDC_HEADERS=1",
+					"HAVE_SYS_STAT_H=1",
+					"HAVE_STRING_H=1",
+					"HAVE_STRINGS_H=1",
+					"HAVE_MEMORY_H=1",
+					"$(GCC_PREPROCESSOR_DEFINITIONS)",
+				);
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = Expat;
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		4B1888D50935F870003AF62A /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"PTRCALL=",
+					"BYTEORDER=4321",
+					"HAVE_BCOPY=1",
+					"HAVE_DLFCN_H=1",
+					"HAVE_FCNTL_H=1",
+					"HAVE_GETPAGESIZE=1",
+					"HAVE_INTTYPES_H=1",
+					"HAVE_MEMMOVE=1",
+					"HAVE_STDINT_H=1",
+					"HAVE_SYS_TYPES_H=1",
+					"HAVE_UNISTD_H=1",
+					"XML_NS=1",
+					"XML_DTD=1",
+					"XML_CONTEXT_BYTES=1024",
+					"WORDS_BIGENDIAN=1",
+					"STDC_HEADERS=1",
+					"HAVE_SYS_STAT_H=1",
+					"HAVE_STRING_H=1",
+					"HAVE_STRINGS_H=1",
+					"HAVE_MEMORY_H=1",
+					"$(GCC_PREPROCESSOR_DEFINITIONS)",
+				);
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = Expat;
+				ZERO_LINK = YES;
 			};
 			name = Default;
 		};
@@ -2324,6 +2585,16 @@
 				4B11039708606E2600253E87 /* Development */,
 				4B11039808606E2600253E87 /* Deployment */,
 				4B11039908606E2600253E87 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		4B1888D20935F870003AF62A /* Build configuration list for PBXNativeTarget "Expat" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4B1888D30935F870003AF62A /* Development */,
+				4B1888D40935F870003AF62A /* Deployment */,
+				4B1888D50935F870003AF62A /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Default;
