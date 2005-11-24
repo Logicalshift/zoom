@@ -213,8 +213,6 @@
 		4BB8C1F908C249F400D7D334 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BCF3F2B050F8E2400A8E303 /* Foundation.framework */; };
 		4BB8C1FB08C249F400D7D334 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5CBB9B069D671200C0AA88 /* Carbon.framework */; };
 		4BB8C1FC08C249F400D7D334 /* ZoomView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BD274C508701E6800C1AE15 /* ZoomView.framework */; };
-		4BB8C1FF08C249F400D7D334 /* archive.iFiction in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B5983DA070F059E0078165F /* archive.iFiction */; };
-		4BB8C20008C249F400D7D334 /* infocom.iFiction in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BACE9FA05B428C700A9B6DC /* infocom.iFiction */; };
 		4BB8C20208C249F400D7D334 /* ZoomView.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BD274C508701E6800C1AE15 /* ZoomView.framework */; };
 		4BD2747C08701E6700C1AE15 /* ZoomView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B4EF623050FDC6800A8E303 /* ZoomView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BD2747D08701E6700C1AE15 /* ZoomLowerWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7D1DAD0534999E00A8E303 /* ZoomLowerWindow.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -450,17 +448,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4BB8C1FE08C249F400D7D334 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 7;
-			files = (
-				4BB8C1FF08C249F400D7D334 /* archive.iFiction in CopyFiles */,
-				4BB8C20008C249F400D7D334 /* infocom.iFiction in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4BB8C20108C249F400D7D334 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -658,7 +645,7 @@
 		4BB8C0E908C2452F00D7D334 /* Builder */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Builder; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BB8C16A08C2497700D7D334 /* ZoomServer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ZoomServer; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BB8C20708C249F400D7D334 /* Info-Zoom__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Info-Zoom__Upgraded_.plist"; sourceTree = "<group>"; };
-		4BB8C20808C249F400D7D334 /* Zoom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Zoom.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4BB8C20808C249F400D7D334 /* Zoom.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Zoom.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BBC1F69062F41E300FE547F /* stars-grey.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stars-grey.png"; sourceTree = "<group>"; };
 		4BBC1F6A062F41E300FE547F /* stars-none.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stars-none.png"; sourceTree = "<group>"; };
 		4BBC1F6B062F41E300FE547F /* stars-red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stars-red.png"; sourceTree = "<group>"; };
@@ -1528,7 +1515,6 @@
 				4BB8C1E008C249F400D7D334 /* Sources */,
 				4BB8C1F708C249F400D7D334 /* Frameworks */,
 				4BB8C1FD08C249F400D7D334 /* Rez */,
-				4BB8C1FE08C249F400D7D334 /* CopyFiles */,
 				4BB8C20108C249F400D7D334 /* CopyFiles */,
 				4B39CA0408EEF8C600BA5E90 /* CopyFiles */,
 			);
@@ -1670,7 +1656,6 @@
 				4BB8C1BF08C249F400D7D334 /* colourSettings.png in Resources */,
 				4BB8C1C008C249F400D7D334 /* Preferences.nib in Resources */,
 				4BB8C1C108C249F400D7D334 /* GameInfo.nib in Resources */,
-				4BB8C1C208C249F400D7D334 /* infocom.iFiction in Resources */,
 				4BB8C1C308C249F400D7D334 /* iFiction.nib in Resources */,
 				4BB8C1C408C249F400D7D334 /* add-out.png in Resources */,
 				4BB8C1C508C249F400D7D334 /* add-in.png in Resources */,
@@ -1699,6 +1684,7 @@
 				4BB8C1DC08C249F400D7D334 /* zcode.ops in Resources */,
 				4BB8C1DD08C249F400D7D334 /* Blorb.icns in Resources */,
 				4BB8C1DE08C249F400D7D334 /* NeedDrop.png in Resources */,
+				4BB8C1C208C249F400D7D334 /* infocom.iFiction in Resources */,
 				4BB8C1DF08C249F400D7D334 /* archive.iFiction in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

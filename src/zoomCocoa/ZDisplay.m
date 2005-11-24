@@ -246,7 +246,7 @@ void display_erase_window(void) {
 void display_erase_line(int val) {
 	NOTE(@"display_erase_line");
 	
-    [[mainMachine buffer] eraseLineInWindow: [mainMachine windowNumber: zDisplayCurrentWindow]
+    [[mainMachine buffer] eraseLineInWindow: (NSObject<ZUpperWindow>*)[mainMachine windowNumber: zDisplayCurrentWindow]
                                   withStyle: zDisplayCurrentStyle];
 }
 
@@ -681,7 +681,7 @@ void display_split(int lines, int window) {
 	NSLog(@"ZDisplay: display_split(%i, %i)", lines, window);
 #endif
 
-    [[mainMachine buffer] setWindow: [mainMachine windowNumber: window]
+    [[mainMachine buffer] setWindow: (NSObject<ZUpperWindow>*)[mainMachine windowNumber: window]
                           startLine: 0
                             endLine: lines];
 }
@@ -691,7 +691,7 @@ void display_join(int win1, int win2) {
 	NSLog(@"ZDisplay: display_join(%i, %i)", win1, win2);
 #endif
 	
-    [[mainMachine buffer] setWindow: [mainMachine windowNumber: win2]
+    [[mainMachine buffer] setWindow: (NSObject<ZUpperWindow>*)[mainMachine windowNumber: win2]
                           startLine: 0
                             endLine: 0];
 }
@@ -723,7 +723,7 @@ void display_set_cursor(int x, int y) {
 
     if (zDisplayCurrentWindow > 0) {
         [[mainMachine buffer] moveTo: NSMakePoint(x,y)
-                            inWindow: [mainMachine windowNumber: zDisplayCurrentWindow]];
+                            inWindow: (NSObject<ZUpperWindow>*)[mainMachine windowNumber: zDisplayCurrentWindow]];
     }
 }
 

@@ -85,7 +85,7 @@ extern void  display_plot_rect(int x, int y,
 							   int width, int height) { 
 	[[mainMachine buffer] plotRect: NSMakeRect(x, y, width, height)
 						 withStyle: zDisplayCurrentStyle
-						  inWindow: [mainMachine windowNumber: 0]];
+						  inWindow: (NSObject<ZPixmapWindow>*)[mainMachine windowNumber: 0]];
 	
 #ifdef DEBUG
 	NSLog(@"display_plot_rect(%i, %i, %i, %i)", x, y, width, height);
@@ -114,7 +114,7 @@ void  display_plot_gtext(const int* buf, int len,
 	[[mainMachine buffer] plotText: str
 						   atPoint: NSMakePoint(x, y)
 						 withStyle: zDisplayCurrentStyle
-						  inWindow: [mainMachine windowNumber: 0]];
+						  inWindow: (NSObject<ZPixmapWindow>*)[mainMachine windowNumber: 0]];
 
 #ifdef DEBUG
 	NSLog(@"display_plot_gtext(%@, %i, %i, %i, %i)", str, len, style, x, y);
@@ -134,7 +134,7 @@ void display_scroll_region(int x, int y,
 						   int xoff, int yoff) {
 	[[mainMachine buffer] scrollRegion: NSMakeRect(x, y, width, height)
 							   toPoint: NSMakePoint(x+xoff, y+yoff)
-							  inWindow: [mainMachine windowNumber: 0]];
+							  inWindow: (NSObject<ZPixmapWindow>*)[mainMachine windowNumber: 0]];
 }
 
 // Measuring
@@ -304,7 +304,7 @@ void display_flush(void) {
 void display_plot_image(BlorbImage* img, int x, int y) {
 	[[mainMachine buffer] plotImage: img->number
 							atPoint: NSMakePoint(x, y)
-						   inWindow: [mainMachine windowNumber: 0]];
+						   inWindow: (NSObject<ZPixmapWindow>*)[mainMachine windowNumber: 0]];
 }
 
 // = Blorb =
