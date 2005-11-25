@@ -38,7 +38,7 @@
 		4B39CA8408EEFE8F00BA5E90 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B39CA8308EEFE8F00BA5E90 /* CoreServices.framework */; };
 		4B39CBCB08EF006E00BA5E90 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B39CBCA08EF006E00BA5E90 /* CoreFoundation.framework */; };
 		4B43DA8409364C7400F03009 /* GlkWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4B43DA8309364C7400F03009 /* GlkWindow.nib */; };
-		4B43DAB109364CD700F03009 /* ZoomGlkWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B43DAAD09364CD100F03009 /* ZoomGlkWindowController.h */; };
+		4B43DAB109364CD700F03009 /* ZoomGlkWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B43DAAD09364CD100F03009 /* ZoomGlkWindowController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B43DAB209364CD800F03009 /* ZoomGlkWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B43DAAE09364CD100F03009 /* ZoomGlkWindowController.m */; };
 		4B7CB03D09360A7900F3B8F6 /* libExpat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B1888D00935F863003AF62A /* libExpat.a */; };
 		4B7CB03E09360A7C00F3B8F6 /* libExpat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B1888D00935F863003AF62A /* libExpat.a */; };
