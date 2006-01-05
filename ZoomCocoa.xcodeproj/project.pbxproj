@@ -25,6 +25,16 @@
 		4B1888FC0935F912003AF62A /* xmltok.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B1888E90935F912003AF62A /* xmltok.c */; };
 		4B1888FD0935F912003AF62A /* xmltok.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888EA0935F912003AF62A /* xmltok.h */; };
 		4B18890D0935FB4F003AF62A /* libExpat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B1888D00935F863003AF62A /* libExpat.a */; };
+		4B36C4100955E7EB00874F9F /* GlkView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B7CB1C5093634DD00F3B8F6 /* GlkView.framework */; };
+		4B36C4440955EC2600874F9F /* GlkView.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B7CB1C5093634DD00F3B8F6 /* GlkView.framework */; };
+		4B36C45F0955ED5400874F9F /* Glulxe.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B36C4540955ED1700874F9F /* Glulxe.bundle */; };
+		4B36C46A0955EDB600874F9F /* ZoomGlulxe.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B36C4680955EDB600874F9F /* ZoomGlulxe.m */; };
+		4B36C5000955EDD800874F9F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BCF3F2B050F8E2400A8E303 /* Foundation.framework */; };
+		4B36C5010955EDD800874F9F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B1E3F60050F7BA000A8E303 /* Cocoa.framework */; };
+		4B36C5020955EDD800874F9F /* ZoomView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BD274C508701E6800C1AE15 /* ZoomView.framework */; };
+		4B36C5030955EDD800874F9F /* libExpat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B1888D00935F863003AF62A /* libExpat.a */; };
+		4B36C5040955EDD800874F9F /* GlkView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B7CB1C5093634DD00F3B8F6 /* GlkView.framework */; };
+		4B36C50E0955EE6F00874F9F /* ZoomPlugIns.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B7CB08109362A3B00F3B8F6 /* ZoomPlugIns.framework */; };
 		4B39C94308EEF75600BA5E90 /* MetadataImporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B39C94108EEF75600BA5E90 /* MetadataImporter.m */; };
 		4B39C94408EEF75600BA5E90 /* schema.xml in Resources */ = {isa = PBXBuildFile; fileRef = 4B39C94208EEF75600BA5E90 /* schema.xml */; };
 		4B39C94508EEF78700BA5E90 /* ifmetadata.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BECA80005B19BE1006840BA /* ifmetadata.c */; };
@@ -61,7 +71,6 @@
 		4B7CB15809362DFB00F3B8F6 /* ZoomMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BACEA9705B4597500A9B6DC /* ZoomMetadata.m */; };
 		4B7CB1B10936345D00F3B8F6 /* ZoomGlkPlugIn.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7CB1AF0936345D00F3B8F6 /* ZoomGlkPlugIn.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B7CB1B20936345D00F3B8F6 /* ZoomGlkPlugIn.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7CB1B00936345D00F3B8F6 /* ZoomGlkPlugIn.m */; };
-		4B7CB1CF0936350E00F3B8F6 /* GlkView.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B7CB1C5093634DD00F3B8F6 /* GlkView.framework */; };
 		4B7CB1D00936350E00F3B8F6 /* GlkClient.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B7CB1C7093634DD00F3B8F6 /* GlkClient.framework */; };
 		4B7CB1E90936357900F3B8F6 /* ZoomPlugIn.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7CB0790936294B00F3B8F6 /* ZoomPlugIn.m */; };
 		4B7CB1EA0936357900F3B8F6 /* ZoomPlugIn.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7CB0780936294B00F3B8F6 /* ZoomPlugIn.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -402,6 +411,27 @@
 			remoteGlobalIDString = 4B1888CF0935F863003AF62A;
 			remoteInfo = Expat;
 		};
+		4B36C45A0955ED3B00874F9F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4B36C4530955ED1700874F9F /* Glulxe */;
+			remoteInfo = Glulxe;
+		};
+		4B36C4620955ED7A00874F9F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4B0459F507EA20FE002D7C88 /* glulxe */;
+			remoteInfo = glulxe;
+		};
+		4B36C46B0955EDC900874F9F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4B7CB08009362A3B00F3B8F6 /* ZoomPlugIns */;
+			remoteInfo = ZoomPlugIns;
+		};
 		4B39C93408EEF63E00BA5E90 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
@@ -559,6 +589,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		4B36C45C0955ED3F00874F9F /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				4B36C45F0955ED5400874F9F /* Glulxe.bundle in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4B39CA0408EEF8C600BA5E90 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -575,7 +615,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				4B7CB1CF0936350E00F3B8F6 /* GlkView.framework in CopyFiles */,
+				4B36C4440955EC2600874F9F /* GlkView.framework in CopyFiles */,
 				4B7CB1D00936350E00F3B8F6 /* GlkClient.framework in CopyFiles */,
 				4B7CB0AA09362A7200F3B8F6 /* ZoomPlugIns.framework in CopyFiles */,
 				4BB8C20208C249F400D7D334 /* ZoomView.framework in CopyFiles */,
@@ -692,6 +732,10 @@
 		4B2EAF9905B056EC0021A5E6 /* GameInfo.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = GameInfo.nib; sourceTree = "<group>"; };
 		4B2EAFAD05B08D1E0021A5E6 /* ZoomGameInfoController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ZoomGameInfoController.h; sourceTree = "<group>"; };
 		4B2EAFAE05B08D1E0021A5E6 /* ZoomGameInfoController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = ZoomGameInfoController.m; sourceTree = "<group>"; };
+		4B36C4540955ED1700874F9F /* Glulxe.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Glulxe.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		4B36C4550955ED1700874F9F /* Glulxe-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = "Glulxe-Info.plist"; path = "../../../Glulxe-Info.plist"; sourceTree = "<group>"; };
+		4B36C4670955EDB600874F9F /* ZoomGlulxe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomGlulxe.h; sourceTree = "<group>"; };
+		4B36C4680955EDB600874F9F /* ZoomGlulxe.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomGlulxe.m; sourceTree = "<group>"; };
 		4B39C92B08EEF63400BA5E90 /* ZoomMetadataImporter.mdimporter */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ZoomMetadataImporter.mdimporter; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B39C92C08EEF63400BA5E90 /* ZoomMetadataImporter-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = "ZoomMetadataImporter-Info.plist"; path = "../../../ZoomMetadataImporter-Info.plist"; sourceTree = "<group>"; };
 		4B39C94008EEF75600BA5E90 /* MetadataImporter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MetadataImporter.h; sourceTree = "<group>"; };
@@ -850,6 +894,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4B36C4520955ED1700874F9F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B36C5000955EDD800874F9F /* Foundation.framework in Frameworks */,
+				4B36C5010955EDD800874F9F /* Cocoa.framework in Frameworks */,
+				4B36C5020955EDD800874F9F /* ZoomView.framework in Frameworks */,
+				4B36C5030955EDD800874F9F /* libExpat.a in Frameworks */,
+				4B36C50E0955EE6F00874F9F /* ZoomPlugIns.framework in Frameworks */,
+				4B36C5040955EDD800874F9F /* GlkView.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4B39C92908EEF63400BA5E90 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -899,6 +956,7 @@
 				4BB8C1FB08C249F400D7D334 /* Carbon.framework in Frameworks */,
 				4BB8C1FC08C249F400D7D334 /* ZoomView.framework in Frameworks */,
 				4B7CB0AB09362A7900F3B8F6 /* ZoomPlugIns.framework in Frameworks */,
+				4B36C4100955E7EB00874F9F /* GlkView.framework in Frameworks */,
 				4B18890D0935FB4F003AF62A /* libExpat.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -988,6 +1046,7 @@
 				4B39C92B08EEF63400BA5E90 /* ZoomMetadataImporter.mdimporter */,
 				4B1888D00935F863003AF62A /* libExpat.a */,
 				4B7CB08109362A3B00F3B8F6 /* ZoomPlugIns.framework */,
+				4B36C4540955ED1700874F9F /* Glulxe.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1118,6 +1177,16 @@
 			name = Metadata;
 			sourceTree = "<group>";
 		};
+		4B36C44F0955ECDD00874F9F /* Glulxe */ = {
+			isa = PBXGroup;
+			children = (
+				4B36C4550955ED1700874F9F /* Glulxe-Info.plist */,
+				4B36C4670955EDB600874F9F /* ZoomGlulxe.h */,
+				4B36C4680955EDB600874F9F /* ZoomGlulxe.m */,
+			);
+			name = Glulxe;
+			sourceTree = "<group>";
+		};
 		4B39C93608EEF64C00BA5E90 /* Spotlight */ = {
 			isa = PBXGroup;
 			children = (
@@ -1132,6 +1201,7 @@
 		4B7CB0730936276B00F3B8F6 /* PlugIns */ = {
 			isa = PBXGroup;
 			children = (
+				4B36C44F0955ECDD00874F9F /* Glulxe */,
 				4B7CB0740936278500F3B8F6 /* README */,
 				4B7CB0780936294B00F3B8F6 /* ZoomPlugIn.h */,
 				4B7CB0790936294B00F3B8F6 /* ZoomPlugIn.m */,
@@ -1555,6 +1625,65 @@
 			productReference = 4B1888D00935F863003AF62A /* libExpat.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		4B36C4530955ED1700874F9F /* Glulxe */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4B36C4560955ED1700874F9F /* Build configuration list for PBXNativeTarget "Glulxe" */;
+			buildPhases = (
+				4B36C5080955EE2900874F9F /* ShellScript */,
+				4B36C4500955ED1700874F9F /* Resources */,
+				4B36C4510955ED1700874F9F /* Sources */,
+				4B36C4520955ED1700874F9F /* Frameworks */,
+			);
+			buildRules = (
+			);
+			buildSettings = {
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = "Glulxe-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = Glulxe;
+				WRAPPER_EXTENSION = bundle;
+				ZERO_LINK = YES;
+			};
+			dependencies = (
+				4B36C46C0955EDC900874F9F /* PBXTargetDependency */,
+				4B36C4630955ED7A00874F9F /* PBXTargetDependency */,
+			);
+			name = Glulxe;
+			productName = Glulxe;
+			productReference = 4B36C4540955ED1700874F9F /* Glulxe.bundle */;
+			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>${EXECUTABLE_NAME}</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.yourcompany.Glulxe</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundlePackageType</key>
+	<string>BNDL</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>1.0</string>
+</dict>
+</plist>
+";
+			productType = "com.apple.product-type.bundle";
+		};
 		4B39C92A08EEF63400BA5E90 /* ZoomMetadataImporter */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4B39C93008EEF63500BA5E90 /* Build configuration list for PBXNativeTarget "ZoomMetadataImporter" */;
@@ -1772,6 +1901,7 @@
 				4BB8C1F708C249F400D7D334 /* Frameworks */,
 				4BB8C1FD08C249F400D7D334 /* Rez */,
 				4B39CA0408EEF8C600BA5E90 /* CopyFiles */,
+				4B36C45C0955ED3F00874F9F /* CopyFiles */,
 			);
 			buildRules = (
 				4B51A95208FAC71D00232D0B /* PBXBuildRule */,
@@ -1798,6 +1928,7 @@
 			dependencies = (
 				4BB8C18908C249F400D7D334 /* PBXTargetDependency */,
 				4B7CB0A909362A6A00F3B8F6 /* PBXTargetDependency */,
+				4B36C45B0955ED3B00874F9F /* PBXTargetDependency */,
 				4BB8C18B08C249F400D7D334 /* PBXTargetDependency */,
 				4B39C93508EEF63E00BA5E90 /* PBXTargetDependency */,
 				4B18890C0935FB46003AF62A /* PBXTargetDependency */,
@@ -1893,6 +2024,7 @@
 				4B39C92A08EEF63400BA5E90 /* ZoomMetadataImporter */,
 				4B1888CF0935F863003AF62A /* Expat */,
 				4B7CB08009362A3B00F3B8F6 /* ZoomPlugIns */,
+				4B36C4530955ED1700874F9F /* Glulxe */,
 			);
 		};
 /* End PBXProject section */
@@ -1943,6 +2075,13 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		4B36C4500955ED1700874F9F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4B39C92708EEF63400BA5E90 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2057,6 +2196,19 @@
 /* End PBXRezBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		4B36C5080955EE2900874F9F /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#\n# Fix for xcode thickness\n#\n\ncp -R ${PROJECT_DIR}/../CocoaGlk/build/${BUILD_STYLE}/glulxe ${TARGET_BUILD_DIR}/glulxe-client || exit 1\n\ncp -R ${TARGET_BUILD_DIR}/glulxe-client ${TARGET_BUILD_DIR}/Glulxe.bundle/Contents/MacOS";
+		};
 		4B43DA6209363A4000F03009 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2080,6 +2232,14 @@
 				4B1888F60935F912003AF62A /* xmlparse.c in Sources */,
 				4B1888F70935F912003AF62A /* xmlrole.c in Sources */,
 				4B1888FC0935F912003AF62A /* xmltok.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4B36C4510955ED1700874F9F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B36C46A0955EDB600874F9F /* ZoomGlulxe.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2218,6 +2378,21 @@
 			isa = PBXTargetDependency;
 			target = 4B1888CF0935F863003AF62A /* Expat */;
 			targetProxy = 4B18890B0935FB46003AF62A /* PBXContainerItemProxy */;
+		};
+		4B36C45B0955ED3B00874F9F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4B36C4530955ED1700874F9F /* Glulxe */;
+			targetProxy = 4B36C45A0955ED3B00874F9F /* PBXContainerItemProxy */;
+		};
+		4B36C4630955ED7A00874F9F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = glulxe;
+			targetProxy = 4B36C4620955ED7A00874F9F /* PBXContainerItemProxy */;
+		};
+		4B36C46C0955EDC900874F9F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4B7CB08009362A3B00F3B8F6 /* ZoomPlugIns */;
+			targetProxy = 4B36C46B0955EDC900874F9F /* PBXContainerItemProxy */;
 		};
 		4B39C93508EEF63E00BA5E90 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -2575,6 +2750,81 @@
 			};
 			name = Default;
 		};
+		4B36C4570955ED1700874F9F /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = "Glulxe-Info.plist";
+				INSTALL_PATH = "@executable_path/../Bundles";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = Glulxe;
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = bundle;
+				ZERO_LINK = YES;
+			};
+			name = Development;
+		};
+		4B36C4580955ED1700874F9F /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = "Glulxe-Info.plist";
+				INSTALL_PATH = "@executable_path/../Bundles";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = Glulxe;
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = bundle;
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		4B36C4590955ED1700874F9F /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = "Glulxe-Info.plist";
+				INSTALL_PATH = "@executable_path/../Bundles";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = Glulxe;
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = bundle;
+				ZERO_LINK = YES;
+			};
+			name = Default;
+		};
 		4B39C93108EEF63500BA5E90 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2714,6 +2964,7 @@
 					"$(GCC_PREPROCESSOR_DEFINITIONS)",
 				);
 				INFOPLIST_FILE = "ZoomPlugIns-Info.plist";
+				INSTALL_PATH = "@executable_path/../Frameworks";
 				OTHER_LDFLAGS = (
 					"-seg1addr",
 					0x2e000000,
@@ -2724,6 +2975,7 @@
 				);
 				PREBINDING = YES;
 				PRODUCT_NAME = ZoomPlugIns;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = YES;
 			};
 			name = Development;
@@ -2742,6 +2994,7 @@
 					"$(GCC_PREPROCESSOR_DEFINITIONS)",
 				);
 				INFOPLIST_FILE = "ZoomPlugIns-Info.plist";
+				INSTALL_PATH = "@executable_path/../Frameworks";
 				OTHER_LDFLAGS = (
 					"-seg1addr",
 					0x2e000000,
@@ -2752,6 +3005,7 @@
 				);
 				PREBINDING = YES;
 				PRODUCT_NAME = ZoomPlugIns;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = NO;
 			};
 			name = Deployment;
@@ -2770,6 +3024,7 @@
 					"$(GCC_PREPROCESSOR_DEFINITIONS)",
 				);
 				INFOPLIST_FILE = "ZoomPlugIns-Info.plist";
+				INSTALL_PATH = "@executable_path/../Frameworks";
 				OTHER_LDFLAGS = (
 					"-seg1addr",
 					0x2e000000,
@@ -2780,6 +3035,7 @@
 				);
 				PREBINDING = YES;
 				PRODUCT_NAME = ZoomPlugIns;
+				SKIP_INSTALL = YES;
 				ZERO_LINK = YES;
 			};
 			name = Default;
@@ -3091,6 +3347,16 @@
 				4B1888D30935F870003AF62A /* Development */,
 				4B1888D40935F870003AF62A /* Deployment */,
 				4B1888D50935F870003AF62A /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		4B36C4560955ED1700874F9F /* Build configuration list for PBXNativeTarget "Glulxe" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4B36C4570955ED1700874F9F /* Development */,
+				4B36C4580955ED1700874F9F /* Deployment */,
+				4B36C4590955ED1700874F9F /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Default;
