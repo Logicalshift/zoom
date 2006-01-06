@@ -415,21 +415,21 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4B36C4530955ED1700874F9F /* Glulxe */;
+			remoteGlobalIDString = 4B36C4530955ED1700874F9F;
 			remoteInfo = Glulxe;
 		};
 		4B36C4620955ED7A00874F9F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 4B0459F507EA20FE002D7C88 /* glulxe */;
+			remoteGlobalIDString = 4B0459F507EA20FE002D7C88;
 			remoteInfo = glulxe;
 		};
 		4B36C46B0955EDC900874F9F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4B7CB08009362A3B00F3B8F6 /* ZoomPlugIns */;
+			remoteGlobalIDString = 4B7CB08009362A3B00F3B8F6;
 			remoteInfo = ZoomPlugIns;
 		};
 		4B39C93408EEF63E00BA5E90 /* PBXContainerItemProxy */ = {
@@ -522,20 +522,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = 4BBC40F808A7AABD00B790B5;
 			remoteInfo = imagetest;
-		};
-		4B7CB1EE093635B800F3B8F6 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 4B51AA4607E8770600576AB9;
-			remoteInfo = GlkView;
-		};
-		4B7CB1F1093635C400F3B8F6 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 4B51AA4607E8770600576AB9;
-			remoteInfo = GlkView;
 		};
 		4B7CB1F3093635C400F3B8F6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1629,10 +1615,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4B36C4560955ED1700874F9F /* Build configuration list for PBXNativeTarget "Glulxe" */;
 			buildPhases = (
-				4B36C5080955EE2900874F9F /* ShellScript */,
 				4B36C4500955ED1700874F9F /* Resources */,
 				4B36C4510955ED1700874F9F /* Sources */,
 				4B36C4520955ED1700874F9F /* Frameworks */,
+				4B36C5080955EE2900874F9F /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1783,7 +1769,6 @@
 			dependencies = (
 				4B7CB08C09362A4600F3B8F6 /* PBXTargetDependency */,
 				4B7CB08F09362A5300F3B8F6 /* PBXTargetDependency */,
-				4B7CB1EF093635B800F3B8F6 /* PBXTargetDependency */,
 			);
 			name = ZoomPlugIns;
 			productName = ZoomPlugIns;
@@ -1932,7 +1917,6 @@
 				4BB8C18B08C249F400D7D334 /* PBXTargetDependency */,
 				4B39C93508EEF63E00BA5E90 /* PBXTargetDependency */,
 				4B18890C0935FB46003AF62A /* PBXTargetDependency */,
-				4B7CB1F2093635C400F3B8F6 /* PBXTargetDependency */,
 				4B7CB1F4093635C400F3B8F6 /* PBXTargetDependency */,
 			);
 			name = Zoom;
@@ -2207,7 +2191,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#\n# Fix for xcode thickness\n#\n\ncp -R ${PROJECT_DIR}/../CocoaGlk/build/${BUILD_STYLE}/glulxe ${TARGET_BUILD_DIR}/glulxe-client || exit 1\n\ncp -R ${TARGET_BUILD_DIR}/glulxe-client ${TARGET_BUILD_DIR}/Glulxe.bundle/Contents/MacOS";
+			shellScript = "#\n# Fix for xcode thickness\n#\n\ncp -R ${PROJECT_DIR}/../CocoaGlk/build/${BUILD_STYLE}/glulxe ${TARGET_BUILD_DIR}/glulxe-client || exit 1\n\ncp -R ${TARGET_BUILD_DIR}/glulxe-client ${TARGET_BUILD_DIR}/Glulxe.bundle/Contents/MacOS/glulxe-client";
 		};
 		4B43DA6209363A4000F03009 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2428,16 +2412,6 @@
 			isa = PBXTargetDependency;
 			target = 4B7CB08009362A3B00F3B8F6 /* ZoomPlugIns */;
 			targetProxy = 4B7CB0A809362A6A00F3B8F6 /* PBXContainerItemProxy */;
-		};
-		4B7CB1EF093635B800F3B8F6 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = GlkView;
-			targetProxy = 4B7CB1EE093635B800F3B8F6 /* PBXContainerItemProxy */;
-		};
-		4B7CB1F2093635C400F3B8F6 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = GlkView;
-			targetProxy = 4B7CB1F1093635C400F3B8F6 /* PBXContainerItemProxy */;
 		};
 		4B7CB1F4093635C400F3B8F6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
