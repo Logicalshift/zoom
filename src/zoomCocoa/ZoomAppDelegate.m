@@ -31,11 +31,17 @@
 		NSString* configDir = [self zoomConfigDirectory];
 
 		NSData* userData = [NSData dataWithContentsOfFile: [configDir stringByAppendingPathComponent: @"metadata.iFiction"]];
+		NSData* gameData = [NSData dataWithContentsOfFile: [configDir stringByAppendingPathComponent: @"gamedata.iFiction"]];
 		NSData* infocomData = [NSData dataWithContentsOfFile: [[NSBundle mainBundle] pathForResource: @"infocom" ofType: @"iFiction"]];
 		NSData* archiveData = [NSData dataWithContentsOfFile: [[NSBundle mainBundle] pathForResource: @"archive" ofType: @"iFiction"]];
 		
 		if (userData) 
 			[gameIndices addObject: [[[ZoomMetadata alloc] initWithData: userData] autorelease]];
+		else
+			[gameIndices addObject: [[[ZoomMetadata alloc] init] autorelease]];
+
+		if (gameData) 
+			[gameIndices addObject: [[[ZoomMetadata alloc] initWithData: gameData] autorelease]];
 		else
 			[gameIndices addObject: [[[ZoomMetadata alloc] init] autorelease]];
 		

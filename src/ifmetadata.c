@@ -56,9 +56,10 @@ typedef struct IFMDState IFMDState;
 struct IFMDState {
 	XML_Parser parser;
 	
-	IFMetadata* data;
-	IFMDStory*  story;
-	IFMDIdent*  ident;
+	IFMetadata*   data;
+	IFMDStory*    story;
+	IFMDIdent*    ident;
+    IFMDAuxiliary* aux;
 	
 	int level;
 	XML_Char** tagStack;
@@ -364,6 +365,7 @@ IFMetadata* IFMD_Parse(const IFMDByte* data, size_t length) {
 	currentState->data  = res;
 	currentState->story = NULL;
 	currentState->ident = NULL;
+    currentState->aux   = NULL;
 	currentState->level = 0;
 	currentState->tagStack = NULL;
 	currentState->tagText  = NULL;
@@ -639,6 +641,10 @@ static XMLCALL void startElement(void *userData,
 			newStory.data.comment = NULL;
 			newStory.data.rating = -1.0;
 			
+            newStory.data.coverpicture = 0;
+            newStory.data.description = NULL;
+            newStory.data.auxiliary = NULL;
+            
 			state->data->numberOfStories++;
 			state->data->stories = realloc(state->data->stories, sizeof(IFMDStory*)*state->data->numberOfStories);
 			state->data->stories[state->data->numberOfStories-1] = IFStory_Alloc();
@@ -678,8 +684,20 @@ static XMLCALL void startElement(void *userData,
 		} else if (XCstrcmp(current, "teaser") == 0) {
 		} else if (XCstrcmp(current, "comment") == 0) {
 		} else if (XCstrcmp(current, "rating") == 0) {
+        } else if (XCstrcmp(current, "description") == 0) {
+        } else if (XCstrcmp(current, "coverpicture") == 0) {
+        } else if (XCstrcmp(current, "auxiliary") == 0) {
+            /* Begin a new auxiliary section */
+            state->aux = malloc(sizeof(IFMDAuxiliary));
+            
+            state->aux->leafname = NULL;
+            state->aux->description = NULL;
+            state->aux->next = state->story->data.auxiliary;
+
+            state->story->data.auxiliary = state->aux;
 		} else {
 			/* Unrecognised tag */
+            printf("Bad tag: %s\n", Xascii(current));
 			addError(state, IFMDErrorUnknownTag, "Unrecognised tag");
 		}
 	} else if (XCstrcmp(parent, "identification") == 0 || XCstrcmp(parent, "id") == 0) {
@@ -954,14 +972,30 @@ static XMLCALL void endElement(void *userData,
 					state->story->data.rating = atof(rating);
 					
 					free(rating);
-				}
+                } else if (XCstrcmp(current, "description") == 0) {
+                    state->story->data.description = Xmdchar(text);
+                } else if (XCstrcmp(current, "coverpicture") == 0) {
+                    char* coverpicture = Xascii(text);
+                    
+                    state->story->data.coverpicture = atoi(coverpicture);
+                } else if (XCstrcmp(current, "auxiliary") == 0) {
+                }
 				
 				free(text);
-			}
+			} else if (XCstrcmp(parent, "auxiliary") == 0) {
+                /* Auxiliary metadata */
+				XML_Char* text = Xchomp(currentText);
+
+                if (XCstrcmp(current, "leafname")) {
+                    state->aux->leafname = Xmdchar(text);
+                } else if (XCstrcmp(current, "description")) {
+                    state->aux->description = Xmdchar(text);
+                }
+            }
 		}
 	}
 	
-	if (parent && (XCstrcmp(parent, "teaser") == 0 || XCstrcmp(parent, "comment") == 0) &&
+	if (parent && (XCstrcmp(parent, "teaser") == 0 || XCstrcmp(parent, "comment") == 0 || XCstrcmp(parent, "description") == 0) &&
 		XCstrcmp(current, "br") == 0) {
 		/* <br> is allowed: this is a bit of a hack */
 		XML_Char newLine[2] = { 1, 0 };
@@ -1096,6 +1130,18 @@ void IFStory_Free(IFMDStory* oldStory) {
 	if (oldStory->data.group)    free(oldStory->data.group);
 	if (oldStory->data.teaser)   free(oldStory->data.teaser);
 	if (oldStory->data.comment)  free(oldStory->data.comment);
+    
+    if (oldStory->data.description) free(oldStory->data.description);
+
+    while (oldStory->data.auxiliary) {
+        IFMDAuxiliary* oldAux = oldStory->data.auxiliary;
+        
+        if (oldAux->leafname)    free(oldAux->leafname);
+        if (oldAux->description) free(oldAux->description);
+        
+        oldStory->data.auxiliary = oldAux->next;
+        free(oldAux);
+    }
 	
 	free(oldStory->idents);
 }
@@ -1256,6 +1302,10 @@ IFMDStory* IFStory_Alloc(void) {
 	st->data.teaser = NULL;
 	st->data.comment = NULL;
 	st->data.rating = -1.0;
+    
+    st->data.description = NULL;
+    st->data.coverpicture = -1;
+    st->data.auxiliary = NULL;
 	
 	return st;
 }
@@ -1309,6 +1359,10 @@ void IFStory_Copy(IFMDStory* dst, const IFMDStory* src) {
 	dst->data.year = src->data.year;
 	dst->data.zarfian = src->data.zarfian;
 	dst->data.rating = src->data.rating;
+    
+    dst->data.coverpicture = src->data.coverpicture;
+    dst->data.description = Xcopy(src->data.description);
+    dst->data.auxiliary = NULL; /* FIXME */
 }
 
 /* = Modification functions = */
@@ -1743,6 +1797,47 @@ int IFMD_Save(IFMetadata* data,
 			ws(buf);
 			ws("</rating>\n");
 		}
+        
+        /* Inform 7 fields */
+        
+        if (thisStory->data.coverpicture >= 0) {
+			char buf[16];
+			
+			snprintf(buf, 16, "%i", thisStory->data.coverpicture);
+			
+			ws("  <coverpicture>");
+			ws(buf);
+			ws("</coverpicture>\n");
+        }
+        if (thisStory->data.description != NULL) {
+			ws("  <description>\n");
+			wutfblock(thisStory->data.description);
+			ws("\n  </description>\n");
+        }
+        
+        if (thisStory->data.auxiliary != NULL) {
+            IFMDAuxiliary* aux = thisStory->data.auxiliary;
+            
+            while (aux != NULL) {
+                ws("  <auxiliary>\n");
+                
+                if (aux->leafname) {
+                    ws("   <leafname>");
+                    wutf(aux->leafname);
+                    ws("</leafname>\n");
+                }
+                
+                if (aux->description) {
+                    ws("   <description>");
+                    wutf(aux->description);
+                    ws("</description>\n");
+                }
+                
+                ws("  </auxiliary>\n");
+                
+                aux = aux->next;
+            }
+        }
 		
 		ws(" </story>\n");
 	}

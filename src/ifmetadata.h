@@ -55,6 +55,7 @@ typedef struct IFMetadata     IFMetadata;
 typedef struct IFMDStory      IFMDStory;
 typedef struct IFMDIdent      IFMDIdent;
 typedef struct IFMDData       IFMDData;
+typedef struct IFMDAuxiliary  IFMDAuxiliary;
 typedef struct IFMDIndexEntry IFMDIndexEntry;
 
 typedef struct IFMDError      IFMDError;
@@ -80,6 +81,18 @@ struct IFMDData {
 	IFMDChar* teaser;
 	IFMDChar* comment;
 	float rating;
+	
+	/* Inform 7 additions */
+	int coverpicture;
+	IFMDChar* description;
+	IFMDAuxiliary* auxiliary;
+};
+
+struct IFMDAuxiliary {
+	IFMDChar* leafname;
+	IFMDChar* description;
+	
+	IFMDAuxiliary* next;
 };
 
 struct IFMDZCode {
