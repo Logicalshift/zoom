@@ -1519,7 +1519,7 @@ int tableSorter(id a, id b, void* context) {
 						  nil, [self window], nil, nil,
 						  nil,nil,
 						  @"Zoom encountered an error while trying to load an iFiction file.");
-		return;
+		return nil;
 	}
 	
 	if ([[newData errors] count] > 0) {
@@ -1528,7 +1528,7 @@ int tableSorter(id a, id b, void* context) {
 						  nil,nil,
 						  @"Zoom encountered an error (%@) while trying to load an iFiction file.",
 						  [[newData errors] objectAtIndex: 0]);
-		return;		
+		return nil;
 	}
 	
 	// Merge any new descriptions found there
@@ -1570,6 +1570,8 @@ int tableSorter(id a, id b, void* context) {
 - (void) mergeiFictionFromFile: (NSString*) filename {
 	// Read the file
 	ZoomMetadata* newData = [[[ZoomMetadata alloc] initWithContentsOfFile: filename] autorelease];
+	
+	if (newData == nil) return;
 	
 	// Perform the merge
 	NSArray* replacements = [self mergeiFictionFromMetabase: newData];
