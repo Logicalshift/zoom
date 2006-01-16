@@ -35,6 +35,10 @@
 	return NO;
 }
 
++ (BOOL) canRunPath: (NSString*) path {
+	return NO;
+}
+
 // = Designated initialiser =
 
 - (id) init {

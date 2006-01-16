@@ -47,19 +47,25 @@ extern NSString* ZoomStoryDataHasChangedNotification;
 - (NSString*) comment;
 - (float)     rating;
 
+- (int)		  coverPicture;
+- (NSString*) description;
+
 - (id) objectForKey: (id) key; // Always returns an NSString (other objects are possible for other metadata)
 
 // Setting data
-- (void) setTitle:    (NSString*) newTitle;
-- (void) setHeadline: (NSString*) newHeadline;
-- (void) setAuthor:   (NSString*) newAuthor;
-- (void) setGenre:    (NSString*) genre;
-- (void) setYear:     (int) year;
-- (void) setGroup:    (NSString*) group;
-- (void) setZarfian:  (unsigned) zarfian;
-- (void) setTeaser:   (NSString*) teaser;
-- (void) setComment:  (NSString*) comment;
-- (void) setRating:   (float) rating;
+- (void) setTitle:		  (NSString*) newTitle;
+- (void) setHeadline:	  (NSString*) newHeadline;
+- (void) setAuthor:		  (NSString*) newAuthor;
+- (void) setGenre:		  (NSString*) genre;
+- (void) setYear:		  (int) year;
+- (void) setGroup:		  (NSString*) group;
+- (void) setZarfian:	  (unsigned) zarfian;
+- (void) setTeaser:		  (NSString*) teaser;
+- (void) setComment:	  (NSString*) comment;
+- (void) setRating:		  (float) rating;
+
+- (void) setCoverPicture: (int) picture;
+- (void) setDescription:  (NSString*) description;
 
 - (void) setObject: (id) value
 			forKey: (id) key;

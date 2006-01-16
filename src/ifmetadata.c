@@ -708,7 +708,7 @@ static XMLCALL void startElement(void *userData,
 			/* MD5 data */
 		} else if (XCstrcmp(current, "zcode") == 0) {
 			/* ZCode data */
-			if (state->ident) {
+			if (state->ident && state->ident->dataFormat != IFFormat_UUID) {
 				int x;
 				
 				state->ident->data.zcode.checksum = 0x10000; /* == No checksum */
@@ -859,70 +859,74 @@ static XMLCALL void endElement(void *userData,
 
                 state->ident->dataFormat = IFFormat_UUID;
                 
-				if (XCstrcmp(current, "uuid") == 0) {
+                if (XCstrcmp(current, "uuid") == 0) {
                     state->ident->data.uuid = IFMD_ReadUUID(Xascii(text));
                 }
 			} else if (XCstrcmp(parent, "zcode") == 0) {
 				/* zcode identification section */
 				XML_Char* text = Xlower(Xchomp(currentText));
 				
-				state->ident->dataFormat = IFFormat_ZCode;
-				
-				if (XCstrcmp(current, "serial") == 0) {
-					int x;
-					
-					for (x=0; x<6 && text[x] != 0; x++) {
-						state->ident->data.zcode.serial[x] = text[x];
-					}
-				} else if (XCstrcmp(current, "release") == 0) {
-					char* release = Xascii(text);
-					
-					state->ident->data.zcode.release = atoi(release);
-					
-					free(release);
-				} else if (XCstrcmp(current, "checksum") == 0) {
-					char* checksum = Xascii(text);
-					int x, val;
-					
-					val = 0;
-					for (x=0; x<4 && checksum[x] != 0; x++) {
-						int hex = 0;
-						
-						val <<= 4;
-						
-						if (checksum[x] >= '0' && checksum[x] <= '9') hex = checksum[x]-'0';
-						else if (checksum[x] >= 'A' && checksum[x] <= 'F') hex = checksum[x]-'A'+10;
-						else if (checksum[x] >= 'a' && checksum[x] <= 'f') hex = checksum[x]-'a'+10;
-						else break;
-						
-						val |= hex;
-					}
-					
-					state->ident->data.zcode.checksum = val;
-					
-					free(checksum);
-				}
+                if (state->ident->dataFormat != IFFormat_UUID) {
+                    state->ident->dataFormat = IFFormat_ZCode;
+                    
+                    if (XCstrcmp(current, "serial") == 0) {
+                        int x;
+                        
+                        for (x=0; x<6 && text[x] != 0; x++) {
+                            state->ident->data.zcode.serial[x] = text[x];
+                        }
+                    } else if (XCstrcmp(current, "release") == 0) {
+                        char* release = Xascii(text);
+                        
+                        state->ident->data.zcode.release = atoi(release);
+                        
+                        free(release);
+                    } else if (XCstrcmp(current, "checksum") == 0) {
+                        char* checksum = Xascii(text);
+                        int x, val;
+                        
+                        val = 0;
+                        for (x=0; x<4 && checksum[x] != 0; x++) {
+                            int hex = 0;
+                            
+                            val <<= 4;
+                            
+                            if (checksum[x] >= '0' && checksum[x] <= '9') hex = checksum[x]-'0';
+                            else if (checksum[x] >= 'A' && checksum[x] <= 'F') hex = checksum[x]-'A'+10;
+                            else if (checksum[x] >= 'a' && checksum[x] <= 'f') hex = checksum[x]-'a'+10;
+                            else break;
+                            
+                            val |= hex;
+                        }
+                        
+                        state->ident->data.zcode.checksum = val;
+                        
+                        free(checksum);
+                    }
+                }
 				
 				free(text);
 			} else if (XCstrcmp(parent, "glulx") == 0) {
 				/* glulx identification section */
 				XML_Char* text = Xlower(Xchomp(currentText));
 				
-				state->ident->dataFormat = IFFormat_Glulx;
-				
-				if (XCstrcmp(current, "serial") == 0) {
-					int x;
-					
-					for (x=0; x<6 && text[x] != 0; x++) {
-						state->ident->data.glulx.serial[x] = text[x];
-					}
-				} else if (XCstrcmp(current, "release") == 0) {
-					char* release = Xascii(text);
-					
-					state->ident->data.glulx.release = atoi(release);
-					
-					free(release);
-				}
+                if (state->ident->dataFormat != IFFormat_UUID) {
+                    state->ident->dataFormat = IFFormat_Glulx;
+                    
+                    if (XCstrcmp(current, "serial") == 0) {
+                        int x;
+                        
+                        for (x=0; x<6 && text[x] != 0; x++) {
+                            state->ident->data.glulx.serial[x] = text[x];
+                        }
+                    } else if (XCstrcmp(current, "release") == 0) {
+                        char* release = Xascii(text);
+                        
+                        state->ident->data.glulx.release = atoi(release);
+                        
+                        free(release);
+                    }
+                }
 				
 				free(text);
 			}
@@ -1007,7 +1011,8 @@ static XMLCALL void endElement(void *userData,
 	
 	if (XCstrcmp(current, "identification") == 0 || XCstrcmp(current, "id") == 0) {
 		/* Verify the identification for errors */
-		if (state->ident->dataFormat != IFFormat_Unknown &&
+		if (state->ident != NULL &&
+            state->ident->dataFormat != IFFormat_Unknown &&
             state->ident->dataFormat != IFFormat_UUID &&
 			state->ident->dataFormat != state->ident->format) {
 			/* Specified one format with <format>, but gave data for another */
@@ -1658,7 +1663,7 @@ int IFMD_Save(IFMetadata* data,
                         buf[bufPos++] = thisByte[0];
                         buf[bufPos++] = thisByte[1];
                         
-                        if (x == 4 || x == 6 || x == 8 || x == 10) {
+                        if (x == 3 || x == 5 || x == 7 || x == 9) {
                             buf[bufPos++] = '-';
                         }
                     }

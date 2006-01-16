@@ -15,6 +15,8 @@
 #import "ZoomMetadata.h"
 #import "ZoomiFictionController.h"
 
+#import "ZoomPlugIn.h"
+
 @implementation ZoomAppDelegate
 
 // = Initialisation =
@@ -30,6 +32,7 @@
 
 		NSString* configDir = [self zoomConfigDirectory];
 
+		// Load the metadata
 		NSData* userData = [NSData dataWithContentsOfFile: [configDir stringByAppendingPathComponent: @"metadata.iFiction"]];
 		NSData* gameData = [NSData dataWithContentsOfFile: [configDir stringByAppendingPathComponent: @"gamedata.iFiction"]];
 		NSData* infocomData = [NSData dataWithContentsOfFile: [[NSBundle mainBundle] pathForResource: @"infocom" ofType: @"iFiction"]];
@@ -49,6 +52,32 @@
 			[gameIndices addObject: [[[ZoomMetadata alloc] initWithData: infocomData] autorelease]];
 		if (archiveData) 
 			[gameIndices addObject: [[[ZoomMetadata alloc] initWithData: archiveData] autorelease]];
+		
+		// Load the plugins
+		pluginBundles = [[NSMutableArray alloc] init];
+		pluginClasses = [[NSMutableArray alloc] init];
+		
+		NSString* pluginPath = [[NSBundle mainBundle] builtInPlugInsPath];
+		NSEnumerator* pluginEnum = [[[NSFileManager defaultManager] directoryContentsAtPath: pluginPath] objectEnumerator];
+		
+		NSString* plugin;
+		while (plugin = [pluginEnum nextObject]) {
+			if ([[plugin pathExtension] isEqualToString: @"bundle"]) {
+				NSBundle* pluginBundle = [NSBundle bundleWithPath: [pluginPath stringByAppendingPathComponent: plugin]];
+				
+				if (pluginBundle != nil) {
+					if ([pluginBundle load]) {
+						NSLog(@"Loaded %@", [plugin stringByDeletingPathExtension]);
+						[pluginBundles addObject: pluginBundle];
+						
+						NSString* primaryClassName = [[pluginBundle infoDictionary] objectForKey: @"ZoomPluginClass"];
+						Class primaryClass = [pluginBundle classNamed: primaryClassName];
+						
+						[pluginClasses addObject: primaryClass];
+					}
+				}
+			}
+		}
 	}
 	
 	return self;
@@ -62,6 +91,7 @@
 }
 
 // = Opening files =
+
 - (BOOL) applicationShouldOpenUntitledFile: (NSApplication*) sender {
     return YES;
 }
@@ -74,17 +104,38 @@
 
 - (BOOL)application: (NSApplication *)theApplication 
 		   openFile: (NSString *)filename {
+	// See if there's a plug-in that can handle this file. This gives plug-ins first shot at handling blorb files.
+	NSEnumerator* pluginClassEnum = [pluginClasses objectEnumerator];
+	Class pluginClass;
+	
+	while (pluginClass = [pluginClassEnum nextObject]) {
+		if ([pluginClass canRunPath: filename]) {
+			// TODO: work out when to release this class
+			ZoomPlugIn* pluginInstance = [[pluginClass alloc] initWithFilename: filename];
+			
+			if (pluginInstance) {
+				// ... we've managed to load this file with the given plug-in, so display it
+				NSWindowController* pluginController = [pluginInstance gameWindowController];
+				[[pluginController window] orderFront: self];
+				
+				return YES;
+			}
+		}
+	}
+
+	// See if there's a built-in document handler for this file type (basically, this means z-code files)
+	// TODO: we should probably do this with a plug-in now
 	if ([[NSDocumentController sharedDocumentController] openDocumentWithContentsOfFile: filename
 																				display: YES]) {
 		return YES;
 	}
 	
 	if ([[[filename pathExtension] lowercaseString] isEqualToString: @"ifiction"]) {
-		// Load extra iFiction data
+		// Load extra iFiction data (not a 'real' file in that it's displayed in the iFiction window)
 		[[ZoomiFictionController sharediFictionController] mergeiFictionFromFile: filename];
 		return YES;
 	}
-	
+		
 	return NO;
 }
 

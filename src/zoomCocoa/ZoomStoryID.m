@@ -385,6 +385,26 @@
 				ident->data.zcode.checksum];
 			break;
 			
+		case IFFormat_UUID:
+			return [NSString stringWithFormat: @"ZoomStoryID (UUID): %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+				ident->data.uuid.uuid[0],
+				ident->data.uuid.uuid[1],
+				ident->data.uuid.uuid[2],
+				ident->data.uuid.uuid[3],
+				ident->data.uuid.uuid[4],
+				ident->data.uuid.uuid[5],
+				ident->data.uuid.uuid[6],
+				ident->data.uuid.uuid[7],
+				ident->data.uuid.uuid[8],
+				ident->data.uuid.uuid[9],
+				ident->data.uuid.uuid[10],
+				ident->data.uuid.uuid[11],
+				ident->data.uuid.uuid[12],
+				ident->data.uuid.uuid[13],
+				ident->data.uuid.uuid[14],
+				ident->data.uuid.uuid[15]];
+			break;
+			
 		default:
 			if (ident->usesMd5) {
 				int x;

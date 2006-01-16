@@ -19,6 +19,9 @@
 	ZoomPreferenceWindow* preferencePanel;
 	
 	NSMutableArray* gameIndices;
+	
+	NSMutableArray* pluginBundles;
+	NSMutableArray* pluginClasses;
 }
 
 - (NSArray*) gameIndices;

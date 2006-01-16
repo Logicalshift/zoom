@@ -23,6 +23,9 @@
 - (void) startRearranging;
 - (void) finishRearranging;
 - (void) rearrangeSubviews;
+- (void) removeAllSubviews;
+- (void) setSubview: (NSView*) subview
+		   isHidden: (BOOL) isHidden;
 - (void) subviewFrameChanged: (NSNotification*) not;
 
 @end

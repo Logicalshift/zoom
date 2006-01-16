@@ -24,12 +24,18 @@
 	IBOutlet ZoomiFButton* infoButton;
 	
 	IBOutlet ZoomCollapsableView* collapseView;
+
+	IBOutlet NSWindow* picturePreview;
+	IBOutlet NSImageView* picturePreviewView;
 	
 	IBOutlet NSProgressIndicator* progressIndicator;
 	int indicatorCount;
 	
 	NSTextView*   commentView;
 	NSTextView*   teaserView;
+	NSTextView*	  descriptionView;
+	
+	NSImageView*  pictureView;
 	
 	IBOutlet NSDrawer* drawer;
 	IBOutlet NSView*   drawerView;

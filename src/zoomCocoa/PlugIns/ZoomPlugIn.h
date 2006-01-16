@@ -15,7 +15,8 @@
 /// Base class for deriving Zoom plugins for playing new game types.
 ///
 /// Note that plugins can be initialised in two circumstances: when retrieving game metadata, or when actually playing
-/// the game.
+/// the game. Game metadata might be requested from a seperate thread, notably when Zoom refreshes the
+/// iFiction window on startup.
 ///
 @interface ZoomPlugIn : NSObject {
 @private
@@ -29,6 +30,8 @@
 + (NSString*) pluginAuthor;										// The author of this plugin
 
 + (BOOL) canLoadSavegames;										// YES if this plugin can load savegames as well as game files
+
++ (BOOL) canRunPath: (NSString*) path;							// YES if the specified file is one that the plugin can run
 
 // Designated initialiser
 - (id) initWithFilename: (NSString*) gameFile;					// Initialises this plugin to play a specific game

@@ -19,6 +19,7 @@
 #import "ZoomClient.h"
 #import "ZoomSavePreviewView.h"
 #import "ZoomRatingCell.h"
+#import "ZoomHQImageView.h"
 
 #import "ifmetadata.h"
 
@@ -240,6 +241,8 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	[mainTableView reloadData];
 	
 	// Add to the collapsable view
+	descriptionView = [[NSTextView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
+	pictureView = [[ZoomHQImageView alloc] initWithFrame: NSMakeRect(0,0, 100, 1)];
 	commentView = [[NSTextView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
 	teaserView = [[NSTextView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
 	previewView = [[ZoomSavePreviewView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
@@ -263,12 +266,33 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
     [[commentView textContainer] setWidthTracksTextView: YES];
     [[commentView textContainer] setContainerSize: NSMakeSize(1e8, 1e8)];	
 	//[[commentView layoutManager] setBackgroundLayoutEnabled: NO];
+
+	[descriptionView setMaxSize: NSMakeSize(1e8, 1e8)];
+    [descriptionView setHorizontallyResizable: NO];
+    [descriptionView setVerticallyResizable: YES];
+	[descriptionView setRichText: NO];
+    [[descriptionView textContainer] setWidthTracksTextView: YES];
+    [[descriptionView textContainer] setContainerSize: NSMakeSize(1e8, 1e8)];	
 	
 	[teaserView setDelegate: self];
 	[commentView setDelegate: self];
+	[descriptionView setDelegate: self];
+	
+	[pictureView setTarget: picturePreview];
+	[pictureView setAction: @selector(orderFront:)];
+	[pictureView setImageFrameStyle: NSImageFramePhoto];
+	[pictureView setPostsFrameChangedNotifications: YES];
+	[[NSNotificationCenter defaultCenter] addObserver: self
+											 selector: @selector(pictureViewFrameChanged:)
+												 name: NSViewFrameDidChangeNotification
+											   object: pictureView];
 	
 	[collapseView addSubview: previewView
 				   withTitle: @"Saved games"];
+	[collapseView addSubview: pictureView
+				   withTitle: @"Cover picture"];
+	[collapseView addSubview: descriptionView
+				   withTitle: @"Description"];
 	[collapseView addSubview: teaserView
 				   withTitle: @"Teaser"];
 	[collapseView addSubview: commentView
@@ -365,8 +389,7 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 
 - (void) addFilesFromPanel: (NSOpenPanel *)sheet
 				returnCode: (int)returnCode
-			   contextInfo: (void *)contextInfo 
-{
+			   contextInfo: (void *)contextInfo {
 	if (returnCode != NSOKButton) return;
 	
 	// Store the defaults
@@ -377,8 +400,7 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	[self addFiles:filenames];
 }
 
-- (void) addFiles: (NSArray *)filenames
-{
+- (void) addFiles: (NSArray *)filenames {
 	NSArray* fileTypes = [NSArray arrayWithObjects: @"z3", @"z4", @"z5", @"z6", @"z7", @"z8", nil];
 
 	// Add all the files we can
@@ -575,6 +597,7 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 }
 
 // = Notifications =
+
 - (void) queueStoryUpdate {
 	// Queues an update to run next time through the run loop
 	if (!queuedUpdate) {
@@ -599,6 +622,24 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	
 	//[self queueStoryUpdate];
 	[self finishUpdatingStoryList: self];
+}
+
+- (void) pictureViewFrameChanged: (NSNotification*) not {
+	// Retrieve the picture that we're displaying
+	NSImage* coverPicture = [pictureView image];
+	if (coverPicture == nil) return;
+	
+	// Calculate the new height
+	NSSize pictureSize = [pictureView frame].size;
+	NSSize imageSize = [coverPicture size];
+	
+	float ratio = imageSize.height/imageSize.width;
+	float newHeight = floorf(pictureSize.width*ratio);
+	
+	if (newHeight != pictureSize.height) {
+		pictureSize.height = newHeight;
+		[pictureView setFrameSize: pictureSize];
+	}
 }
 
 - (void) storyProgressChanged: (NSNotification*) not {
@@ -974,8 +1015,11 @@ int tableSorter(id a, id b, void* context) {
 		}
 	}
 	
+	NSImage* coverPicture = nil;
+	
 	NSString* comment;
 	NSString* teaser;
+	NSString* description;
 	
 	[collapseView startRearranging];
 	
@@ -987,18 +1031,44 @@ int tableSorter(id a, id b, void* context) {
 			[[ZoomGameInfoController sharedGameInfoController] setGameInfo: story];
 		}
 
+		// Set up the comment, teaser and description views
 		comment = [story comment];
 		teaser = [story teaser];
+		description = [story description];
 		
 		[teaserView setEditable: YES];
 		[commentView setEditable: YES];
+		[descriptionView setEditable: YES];
 		
+		// Set up the save preview view
 		NSString* dir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: ident 
 																			  create: NO];
 		[previewView setDirectoryToUse: [dir stringByAppendingPathComponent: @"Saves"]];
 		
+		// Set up the extra blorb resources display
 		[resourceDrop setDroppedFilename: [story objectForKey: @"ResourceFilename"]];
 		[resourceDrop setEnabled: YES];
+		
+		// Set up the cover picture
+		int coverPictureNumber = [story coverPicture];
+		
+		if (coverPicture >= 0) {
+			NSString* filename = [org filenameForIdent: ident];
+			
+			// Try to load the file as a blorb file
+			ZoomBlorbFile* decodedFile = [[ZoomBlorbFile alloc] initWithContentsOfFile: filename];
+			
+			// Attempt to retrieve the cover picture image
+			if (decodedFile != nil) {
+				NSData* coverPictureData = [decodedFile imageDataWithNumber: coverPictureNumber];
+				
+				if (coverPictureData) {
+					coverPicture = [[[NSImage alloc] initWithData: coverPictureData] autorelease];
+				}
+			}
+			
+			[decodedFile release];
+		}
 	} else {
 		if ([[self window] isMainWindow] && [[ZoomGameInfoController sharedGameInfoController] infoOwner] == self) {
 			[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
@@ -1006,9 +1076,11 @@ int tableSorter(id a, id b, void* context) {
 		
 		comment = @"";
 		teaser = @"";
+		description = @"";
 		
 		[teaserView setEditable: NO];
 		[commentView setEditable: NO];
+		[descriptionView setEditable: NO];
 
 		[previewView setDirectoryToUse: nil];
 		
@@ -1018,6 +1090,7 @@ int tableSorter(id a, id b, void* context) {
 	
 	if (comment == nil) comment = @"";
 	if (teaser == nil) teaser = @"";
+	if (description == nil) description = @"";
 	
 	if (![[commentView string] isEqualToString: comment]) {
 		//[commentView setString: @""];
@@ -1036,7 +1109,59 @@ int tableSorter(id a, id b, void* context) {
 
 		[teaserView setString: teaser];
 	}
+	if (![[descriptionView string] isEqualToString: description]) {
+		NSSize sz = [descriptionView frame].size;
+		sz.height = 2;
+		[descriptionView setFrameSize: sz];
 		
+		[descriptionView setString: description];
+	}
+	
+	NSSize pictureSize = [pictureView frame].size;
+	if (coverPicture) {
+		NSSize imageSize = [coverPicture size];
+		
+		float ratio = imageSize.height/imageSize.width;
+		pictureSize.height = floorf(pictureSize.width*ratio);
+
+		[pictureView setFrameSize: pictureSize];
+		[pictureView setImage: coverPicture];
+
+		[collapseView setSubview: pictureView
+						isHidden: NO];
+		
+		// Setup the picture preview window
+		[picturePreviewView setImage: coverPicture];
+		
+		NSSize previewSize = [coverPicture size];
+		NSSize screenSize = [[picturePreview screen] frame].size;
+		
+		if (previewSize.width > screenSize.width-128.0) {
+			float ratio = (screenSize.width-128.0)/previewSize.width;
+
+			previewSize.width = floorf(previewSize.width*ratio);
+			previewSize.height = floorf(previewSize.height*ratio);
+		}
+		
+		if (previewSize.height > screenSize.height-128.0) {
+			float ratio = (screenSize.height-128.0)/previewSize.height;
+			
+			previewSize.width = floorf(previewSize.width*ratio);
+			previewSize.height = floorf(previewSize.height*ratio);
+		}
+		
+		[picturePreview setContentSize: previewSize];
+	} else {
+		[pictureView setImage: nil];
+
+		pictureSize.height = 1;
+		[pictureView setFrameSize: pictureSize];
+		
+		[picturePreview orderOut: self];
+		[collapseView setSubview: pictureView
+						isHidden: YES];
+	}
+	
 	[collapseView finishRearranging];
 }
 
@@ -1075,8 +1200,7 @@ int tableSorter(id a, id b, void* context) {
 	[[[NSApp delegate] userMetadata] writeToDefaultFile];
 }
 
-- (BOOL)tableView:(NSTableView *)tv writeRows:(NSArray*)rows toPasteboard:(NSPasteboard*)pboard
-{
+- (BOOL)tableView:(NSTableView *)tv writeRows:(NSArray*)rows toPasteboard:(NSPasteboard*)pboard {
 	if(tv != mainTableView )
 		return NO;
 		
@@ -1110,9 +1234,7 @@ int tableSorter(id a, id b, void* context) {
 - (NSDragOperation)tableView:(NSTableView *)tv
                 validateDrop:(id <NSDraggingInfo>)sender
                  proposedRow:(int)row
-       proposedDropOperation:(NSTableViewDropOperation)op
-
-{
+       proposedDropOperation:(NSTableViewDropOperation)op {
     NSPasteboard * pasteboard = [sender draggingPasteboard];
     NSArray * types = [pasteboard types];
 	
@@ -1139,8 +1261,7 @@ int tableSorter(id a, id b, void* context) {
 - (BOOL)tableView:(NSTableView *)tv 
 	acceptDrop:(id <NSDraggingInfo>)sender 
 	row:(int)row
-    dropOperation:(NSTableViewDropOperation)op
-{
+    dropOperation:(NSTableViewDropOperation)op {
     NSPasteboard * pasteboard = [sender draggingPasteboard];
     NSArray * filenames = [pasteboard propertyListForType:NSFilenamesPboardType];
 	[self addFiles:filenames];
@@ -1158,8 +1279,7 @@ int tableSorter(id a, id b, void* context) {
 //
 //
 
-- (void) setupSplitView
-{
+- (void) setupSplitView {
 	NSNumber * split_view_percent_number = [[NSUserDefaults standardUserDefaults] objectForKey:@"iFictionSplitViewPercentage"];
 	NSNumber * split_view_collapsed_number = [[NSUserDefaults standardUserDefaults] objectForKey:@"iFictionSplitViewCollapsed"];
 	
@@ -1188,8 +1308,7 @@ int tableSorter(id a, id b, void* context) {
 //
 //
 
-- (void)splitViewDidResizeSubviews:(NSNotification *)notification
-{
+- (void)splitViewDidResizeSubviews:(NSNotification *)notification {
 	float pos = [splitView getSplitPercentage];
 	
 	if( pos == 0.0 )
@@ -1220,8 +1339,7 @@ int tableSorter(id a, id b, void* context) {
 //
 //
 
-- (void)splitViewDoubleClickedOnDivider:(NSSplitView *)aSplitView 
-{
+- (void)splitViewDoubleClickedOnDivider:(NSSplitView *)aSplitView {
     float pos = [splitView getSplitPercentage];
 	
     if (pos == 0.0) 
@@ -1239,8 +1357,7 @@ int tableSorter(id a, id b, void* context) {
 //
 //
 
-- (void)collapseSplitView
-{	
+- (void)collapseSplitView {
 	splitViewCollapsed = YES;
 
 	[[NSUserDefaults standardUserDefaults] setObject: [NSNumber numberWithFloat:splitViewPercentage] forKey:@"iFictionSplitViewPercentage"];
@@ -1364,6 +1481,8 @@ int tableSorter(id a, id b, void* context) {
 		[story setComment: [commentView string]];
 	} else if (textView == teaserView) {
 		[story setTeaser: [teaserView string]];
+	} else if (textView == descriptionView) {
+		[story setDescription: [descriptionView string]];
 	} else {
 		NSLog(@"Unknown text view");
 	}

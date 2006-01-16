@@ -41,10 +41,14 @@
                 filterTable1 = NSTableView; 
                 filterTable2 = NSTableView; 
                 infoButton = ZoomiFButton; 
-                mainTableView = NSTableView; 
+                mainTableView = ZoomStoryTableView; 
                 newgameButton = ZoomiFButton; 
+                picturePreview = NSWindow; 
+                picturePreviewView = NSImageView; 
+                progressIndicator = NSProgressIndicator; 
                 saveMenu = NSMenu; 
                 searchField = NSTextField; 
+                splitView = ZoomCollapsingSplitView; 
                 storyMenu = NSMenu; 
             }; 
             SUPERCLASS = NSWindowController; 

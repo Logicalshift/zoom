@@ -51,6 +51,8 @@
                 infoButton = ZoomiFButton; 
                 mainTableView = ZoomStoryTableView; 
                 newgameButton = ZoomiFButton; 
+                picturePreview = NSWindow; 
+                picturePreviewView = NSImageView; 
                 progressIndicator = NSProgressIndicator; 
                 saveMenu = NSMenu; 
                 searchField = NSTextField; 

@@ -73,9 +73,11 @@
 	int x;
 	
 	for (x=0; x<[views count]; x++) {
+		BOOL shown = [[states objectAtIndex: x] boolValue];
 		NSView* thisView = [views objectAtIndex: x];
 		NSString* thisTitle = [titles objectAtIndex: x];
-		//BOOL visible = [[states objectAtIndex: x] boolValue];
+		
+		if (!shown) continue;
 		
 		NSSize titleSize = [thisTitle sizeWithAttributes: titleAttributes];
 		NSRect thisFrame = [thisView frame];
@@ -101,6 +103,33 @@
 }
 
 // = Management =
+
+- (void) removeAllSubviews {
+	NSView* subview;
+	NSEnumerator* viewEnum = [views objectEnumerator];
+	
+	while (subview = [viewEnum nextObject]) {
+		[subview removeFromSuperview];
+	}
+	
+	[views removeAllObjects];
+	[titles removeAllObjects];
+	[states removeAllObjects];
+	
+	[self rearrangeSubviews];
+}
+
+- (void) setSubview: (NSView*) subview
+		   isHidden: (BOOL) isHidden {
+	int subviewIndex = [views indexOfObjectIdenticalTo: subview];
+	
+	if (subviewIndex != NSNotFound) {
+		[states replaceObjectAtIndex: subviewIndex
+						  withObject: [NSNumber numberWithBool: !isHidden]];
+	}
+	
+	[self rearrangeSubviews];
+}
 
 - (void) addSubview: (NSView*) subview
 		  withTitle: (NSString*) title {
@@ -141,6 +170,7 @@
 	NSRect newBounds = [self bounds];;
 	
 	NSEnumerator* viewEnum;
+	NSEnumerator* stateEnum;
 	NSView* subview;
 	
 	float bestWidth;
@@ -155,11 +185,13 @@
 	bestWidth = oldBounds.size.width - (BORDER*4);
 	
 	viewEnum = [views objectEnumerator];
-	
+	stateEnum = [states objectEnumerator];
+
 	while (subview = [viewEnum nextObject]) {
 		NSRect viewFrame = [subview frame];
+		BOOL shown = [[stateEnum nextObject] boolValue];
 		
-		if (viewFrame.size.width != bestWidth) {
+		if (shown && viewFrame.size.width != bestWidth) {
 			needsRedrawing = YES;
 			viewFrame.size.width = bestWidth;
 			[subview setFrameSize: viewFrame.size];
@@ -171,13 +203,17 @@
 	newHeight = BORDER;
 	
 	viewEnum = [views objectEnumerator];
+	stateEnum = [states objectEnumerator];
 	
 	while (subview = [viewEnum nextObject]) {
 		NSRect viewFrame = [subview frame];
+		BOOL shown = [[stateEnum nextObject] boolValue];
 		
-		newHeight += titleHeight * 1.2;
-		newHeight += viewFrame.size.height;
-		newHeight += BORDER*2;
+		if (shown) {
+			newHeight += titleHeight * 1.2;
+			newHeight += viewFrame.size.height;
+			newHeight += BORDER*2;
+		}
 	}
 	
 	oldBounds.size.height = floor(newHeight);
@@ -190,29 +226,33 @@
 	float ypos = BORDER;
 	
 	viewEnum = [views objectEnumerator];
+	stateEnum = [states objectEnumerator];
 	
 	while (subview = [viewEnum nextObject]) {
 		NSRect viewFrame = [subview frame];
+		BOOL shown = [[stateEnum nextObject] boolValue];
 		
-		ypos += titleHeight * 1.2;
+		if (shown) ypos += titleHeight * 1.2;
 		
-		if ([subview superview] != self) {
+		if ([subview superview] != self || !shown) {
 			if ([subview superview] != nil) [subview removeFromSuperview];
-			[self addSubview: subview];
-		}		
-		
-		if (viewFrame.origin.x != BORDER*2 ||
-			viewFrame.origin.y != floor(ypos)) {
-			viewFrame.origin.x = BORDER*2;
-			viewFrame.origin.y = floor(ypos);
-		
-			[subview setFrameOrigin: viewFrame.origin];
-			[subview setNeedsDisplay: YES];
-			needsRedrawing = YES;
+			if (shown) [self addSubview: subview];
 		}
 		
-		ypos += viewFrame.size.height;
-		ypos += BORDER*2;
+		if (shown) {
+			if (viewFrame.origin.x != BORDER*2 ||
+				viewFrame.origin.y != floor(ypos)) {
+				viewFrame.origin.x = BORDER*2;
+				viewFrame.origin.y = floor(ypos);
+			
+				[subview setFrameOrigin: viewFrame.origin];
+				[subview setNeedsDisplay: YES];
+				needsRedrawing = YES;
+			}
+
+			ypos += viewFrame.size.height;
+			ypos += BORDER*2;
+		}
 	}
 	
 	if (reiterate) {

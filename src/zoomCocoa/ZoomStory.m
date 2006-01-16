@@ -47,6 +47,8 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 			@"Teaser", @"teaser",
 			@"Comments", @"comment",
 			@"My Rating", @"rating",
+			@"Description", @"description",
+			@"Cover picture number", @"coverpicture",
 			nil];
 		
 		[keyNameDict retain];
@@ -67,6 +69,8 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 		case 7: return @"teaser";
 		case 8: return @"comment";
 		case 9: return @"rating";
+		case 10: return @"description";
+		case 11: return @"coverpicture";
 	}
 	
 	return nil;
@@ -304,6 +308,18 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	return -1;
 }
 
+- (int) coverPicture {
+	if (story) return story->data.coverpicture;
+	return -1;
+}
+
+- (NSString*) description {
+	if (story && story->data.description) {
+		return [(NSString*)IFStrCpyCF(story->data.description) autorelease];
+	}
+	return NULL;
+}
+
 // = Setting data =
 
 // Setting data
@@ -416,6 +432,25 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	[self heyLookThingsHaveChangedOohShiney];
 }
 
+- (void) setCoverPicture: (int) coverpicture {
+	story->data.coverpicture = coverpicture;
+	
+	[self heyLookThingsHaveChangedOohShiney];
+}
+
+- (void) setDescription: (NSString*) description {
+	if (story->data.description) {
+		free(story->data.description);
+		story->data.description = NULL;
+	}
+	
+	if (description) {
+		story->data.description = IFMakeStrCF((CFStringRef)description);
+	}
+	
+	[self heyLookThingsHaveChangedOohShiney];
+}
+
 // = NSCopying =
 - (id) copyWithZone: (NSZone*) zone {
 	IFMDStory* newStory = IFStory_Alloc();
@@ -520,6 +555,10 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 		if (rating < 0) return nil;
 		
 		return [NSString stringWithFormat: @"%05.2f", rating];
+	} else if ([key isEqualToString: @"description"]) {
+		return [self description];
+	} else if ([key isEqualToString: @"coverpicture"]) {
+		return [NSNumber numberWithInt: [self coverPicture]];
 	} else {
 		[self loadExtraMetadata];
 		return [extraMetadata objectForKey: key];
@@ -564,6 +603,10 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	} else if ([key isEqualToString: @"rating"]) {
 		if (value == nil || [(NSString*)value length] == 0) [self setRating: -1];
 		else [self setRating: atof([value cString])];
+	} else if ([key isEqualToString: @"description"]) {
+		[self setDescription: value];
+	} else if ([key isEqualToString: @"coverpicture"]) {
+		[self setCoverPicture: [value intValue]];
 	} else {
 		[self loadExtraMetadata];
 		if (value == nil) {
