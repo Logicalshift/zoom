@@ -87,6 +87,8 @@ static NSString* xmlEncode(NSString* str) {
 			appendStr(@"&amp;", &state);
 		} else if (chr == '<') {
 			appendStr(@"&lt;", &state);
+		} else if (chr == '>') {
+			appendStr(@"&gt;", &state);
 		} else if (chr == '"') {
 			appendStr(@"&quot;", &state);
 		} else if (chr == '\'') {
