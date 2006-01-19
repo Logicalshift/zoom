@@ -10,12 +10,13 @@
 
 #import <ZoomPlugIns/ZoomPlugIn.h>
 #import <ZoomPlugIns/ZoomGlkWindowController.h>
+#import <ZoomPlugIns/ZoomGlkDocument.h>
 
 ///
 /// Base class for plugins that provide a Glk-based interpreter.
 ///
 @interface ZoomGlkPlugIn : ZoomPlugIn {
-	ZoomGlkWindowController* windowController;						// Constructed on demand
+	ZoomGlkDocument* document;										// Constructed on demand
 	
 	NSString* clientPath;											// Path to the client application
 }

@@ -82,9 +82,9 @@
 
 // = The game window =
 
-- (NSWindowController*) gameWindowController {
-	[NSException raise: @"ZoomNoPlugInWindow" 
-				format: @"An attempt was made to load a game whose plugin does not provide a window"];
+- (NSDocument*) gameDocument {
+	[NSException raise: @"ZoomNoPlugInInterface" 
+				format: @"An attempt was made to load a game whose plugin does not provide an interface"];
 	
 	return nil;
 }

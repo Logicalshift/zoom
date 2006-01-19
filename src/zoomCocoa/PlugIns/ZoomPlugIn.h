@@ -40,8 +40,8 @@
 - (NSString*) gameFilename;										// Gets the game associated with this plugin
 - (NSData*) gameData;											// Gets the data for the game associated with this plugin
 
-// The game window
-- (NSWindowController*) gameWindowController;					// Retrieves/creates a window to play this game (subclasses should override)
+// The game document + windows
+- (NSDocument*) gameDocument;									// Retrieves/creates the document associated with this game (should not create window controllers immediately)
 
 // Dealing with game metadata
 - (ZoomStoryID*) idForStory;									// Retrieves the unique ID for this story (UUIDs are preferred, or MD5s if the game format does not support that)

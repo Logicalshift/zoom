@@ -115,8 +115,13 @@
 			
 			if (pluginInstance) {
 				// ... we've managed to load this file with the given plug-in, so display it
-				NSWindowController* pluginController = [pluginInstance gameWindowController];
-				[[pluginController window] orderFront: self];
+				NSDocument* pluginDocument = [pluginInstance gameDocument];
+				
+				[[NSDocumentController sharedDocumentController] addDocument: pluginDocument];
+				[pluginDocument makeWindowControllers];
+				[pluginDocument showWindows];
+				
+				[pluginInstance autorelease];
 				
 				return YES;
 			}

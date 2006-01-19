@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		4B0105B2092FADD800955BCB /* ZoomPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B418ED905961D2C009C44DE /* ZoomPreferences.m */; };
+		4B0CAB69097F0CBB00867EF4 /* ZoomGlkDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B0CAB4D097F07C000867EF4 /* ZoomGlkDocument.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B0CAB6A097F0CBB00867EF4 /* ZoomGlkDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B0CAB4E097F07C000867EF4 /* ZoomGlkDocument.m */; };
 		4B1888EB0935F912003AF62A /* ascii.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888D80935F912003AF62A /* ascii.h */; };
 		4B1888EC0935F912003AF62A /* asciitab.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888D90935F912003AF62A /* asciitab.h */; };
 		4B1888ED0935F912003AF62A /* expat_external.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888DA0935F912003AF62A /* expat_external.h */; };
@@ -616,6 +618,8 @@
 		4B0A32AE06A5966D00BB8878 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = /System/Library/Frameworks/WebKit.framework; sourceTree = "<absolute>"; };
 		4B0A32B506A596DB00BB8878 /* ZoomSkeinWeb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomSkeinWeb.m; sourceTree = "<group>"; };
 		4B0A32E406A59ADA00BB8878 /* ZoomSkeinViewWeb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomSkeinViewWeb.m; sourceTree = "<group>"; };
+		4B0CAB4D097F07C000867EF4 /* ZoomGlkDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomGlkDocument.h; sourceTree = "<group>"; };
+		4B0CAB4E097F07C000867EF4 /* ZoomGlkDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomGlkDocument.m; sourceTree = "<group>"; };
 		4B0DC63C05C0A0EB000B96A3 /* continue-in.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "continue-in.png"; sourceTree = "<group>"; };
 		4B0DC63D05C0A0EB000B96A3 /* continue-out.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "continue-out.png"; sourceTree = "<group>"; };
 		4B0DC63E05C0A0EB000B96A3 /* newgame-in.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "newgame-in.png"; sourceTree = "<group>"; };
@@ -1199,6 +1203,8 @@
 				4B7CB1B00936345D00F3B8F6 /* ZoomGlkPlugIn.m */,
 				4B43DAAD09364CD100F03009 /* ZoomGlkWindowController.h */,
 				4B43DAAE09364CD100F03009 /* ZoomGlkWindowController.m */,
+				4B0CAB4D097F07C000867EF4 /* ZoomGlkDocument.h */,
+				4B0CAB4E097F07C000867EF4 /* ZoomGlkDocument.m */,
 			);
 			path = PlugIns;
 			sourceTree = "<group>";
@@ -1441,6 +1447,7 @@
 				4B7CB1B10936345D00F3B8F6 /* ZoomGlkPlugIn.h in Headers */,
 				4B7CB1EA0936357900F3B8F6 /* ZoomPlugIn.h in Headers */,
 				4B43DAB109364CD700F03009 /* ZoomGlkWindowController.h in Headers */,
+				4B0CAB69097F0CBB00867EF4 /* ZoomGlkDocument.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2261,6 +2268,7 @@
 				4B7CB1B20936345D00F3B8F6 /* ZoomGlkPlugIn.m in Sources */,
 				4B7CB1E90936357900F3B8F6 /* ZoomPlugIn.m in Sources */,
 				4B43DAB209364CD800F03009 /* ZoomGlkWindowController.m in Sources */,
+				4B0CAB6A097F0CBB00867EF4 /* ZoomGlkDocument.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

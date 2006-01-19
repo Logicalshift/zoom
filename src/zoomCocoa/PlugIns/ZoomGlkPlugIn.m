@@ -25,8 +25,8 @@
 - (void) dealloc {
 	[clientPath release]; clientPath = nil;
 	
-	if (windowController) [windowController release];
-	windowController = nil;
+	if (document) [document release];
+	document = nil;
 	
 	[super dealloc];
 }
@@ -37,17 +37,18 @@
 	return NO;
 }
 
-- (NSWindowController*) gameWindowController {
-	if (!windowController) {
-		// Start up the window controller
-		windowController = [[ZoomGlkWindowController alloc] init];
-		
-		// Give it some suitably juicy details about what we want the controller to do
-		[windowController setClientPath: clientPath];
-		[windowController setInputFilename: [self gameFilename]];
+- (NSDocument*) gameDocument {
+	if (!document) {
+		// Set up the document for this game
+		document = [[ZoomGlkDocument alloc] init];
+
+		// Tell it what it needs to know
+		[document setClientPath: clientPath];
+		[document setInputFilename: [self gameFilename]];
 	}
 	
-	return windowController;
+	// Return it
+	return document;
 }
 
 // = Configuring the client =
