@@ -41,6 +41,8 @@
 - (void) setInputFilename: (NSString*) newInputPath {
 	[inputPath release];
 	inputPath = [newInputPath copy];
+	
+	[self setFileName: newInputPath];
 }
 
 // = Constructing the window controllers =
