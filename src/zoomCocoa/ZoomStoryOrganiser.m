@@ -1029,8 +1029,14 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	[filenamesToIdents setObject: ident
 						  forKey: filename];
 	
-	[storyFilenames removeObject: oldFilename];
+	int filenameIndex = [storyFilenames indexOfObject: oldFilename];
+	if (filenameIndex != NSNotFound) {
+		[storyFilenames removeObjectAtIndex: filenameIndex];
+		[storyIdents removeObjectAtIndex: filenameIndex];
+	}
+	
 	[storyFilenames addObject: filename];
+	[storyIdents	addObject: ident];
 	
 	// Organise the story's resources
 	NSString* resources = [story objectForKey: @"ResourceFilename"];
@@ -1570,8 +1576,15 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 			}
 			
 			// Change the storyFilenames array
-			[storyFilenames removeObject: filename];
+			int oldIndex = [storyFilenames indexOfObject: filename];
+			
+			if (oldIndex != NSNotFound) {
+				[storyFilenames removeObjectAtIndex: oldIndex];
+				[storyIdents removeObjectAtIndex: oldIndex];
+			}
+			
 			[storyFilenames addObject: [titleDirectory stringByAppendingPathComponent: [filename lastPathComponent]]];
+			[storyIdents addObject: storyID];
 
 			[storyLock unlock];
 			
