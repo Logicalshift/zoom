@@ -17,9 +17,9 @@
   <editor should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="d4dIn82q4rK"/>
-    <selected-rows ids="ddCJZmy28Zz"/>
+    <selected-rows ids="joPVPiO3clv"/>
     <selected-columns ids="bJSTis5k9jH"/>
-    <selected-characters range="{13, 0}"/>
+    <selected-characters range="{0, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -79,9 +79,7 @@
             </run>
           </p>
         </text>
-        <text>
-          <p/>
-        </text>
+        <null/>
       </values>
       <children>
         <item id="cX1ERxGuRmJ">
@@ -93,9 +91,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="h7lREaDCL9j">
@@ -107,9 +103,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="fz0J18T3T3S">
@@ -121,9 +115,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="oKbRTDUKBiX">
@@ -135,9 +127,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="bIyu88trc52">
@@ -149,9 +139,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="iimL6lniu2_">
@@ -163,9 +151,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="btW6FfOgszw">
@@ -177,9 +163,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="asQxOYMaNdB" expanded="yes">
@@ -191,9 +175,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <children>
             <item id="co8i2g2Uh1c">
@@ -205,9 +187,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="cS3fNvJkZs-">
@@ -219,9 +199,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
           </children>
@@ -235,9 +213,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="dVKcRp7v-1q">
@@ -249,9 +225,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="gwkaK3AtzQE">
@@ -263,9 +237,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="fjkK3hjN1OQ">
@@ -277,9 +249,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
       </children>
@@ -293,9 +263,7 @@
             </run>
           </p>
         </text>
-        <text>
-          <p/>
-        </text>
+        <null/>
       </values>
       <children>
         <item id="dtT7Hxkdg01">
@@ -307,9 +275,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="n2AYaW1NWJO" expanded="yes">
@@ -321,9 +287,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <children>
             <item id="iXJNFzK2E-k">
@@ -335,9 +299,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="m-SM77DX85J">
@@ -349,9 +311,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
           </children>
@@ -365,9 +325,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <children>
             <item id="e5U-RC5kuFx">
@@ -379,9 +337,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="pKo1tNW0Jwg">
@@ -393,9 +349,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="eksw0iFErpr" expanded="yes">
@@ -407,9 +361,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
               <children>
                 <item id="lVYQMdIjnin">
@@ -421,9 +373,7 @@
                         </run>
                       </p>
                     </text>
-                    <text>
-                      <p/>
-                    </text>
+                    <null/>
                   </values>
                 </item>
                 <item id="e8k3ZXYCzMV">
@@ -435,9 +385,7 @@
                         </run>
                       </p>
                     </text>
-                    <text>
-                      <p/>
-                    </text>
+                    <null/>
                   </values>
                 </item>
                 <item id="gMepCX64Q0p">
@@ -449,9 +397,7 @@
                         </run>
                       </p>
                     </text>
-                    <text>
-                      <p/>
-                    </text>
+                    <null/>
                   </values>
                 </item>
               </children>
@@ -467,9 +413,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <children>
             <item id="mzCrN9iZ-5K">
@@ -481,9 +425,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="cvJbKqozPIB">
@@ -495,9 +437,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="kXpQVxsOvqL" expanded="yes">
@@ -509,9 +449,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
               <children>
                 <item id="fxaG5Qeun6L">
@@ -523,9 +461,7 @@
                         </run>
                       </p>
                     </text>
-                    <text>
-                      <p/>
-                    </text>
+                    <null/>
                   </values>
                 </item>
                 <item id="evlGj5aXwdZ">
@@ -537,9 +473,7 @@
                         </run>
                       </p>
                     </text>
-                    <text>
-                      <p/>
-                    </text>
+                    <null/>
                   </values>
                 </item>
                 <item id="dqE3e1lcPN2">
@@ -551,9 +485,7 @@
                         </run>
                       </p>
                     </text>
-                    <text>
-                      <p/>
-                    </text>
+                    <null/>
                   </values>
                 </item>
               </children>
@@ -569,9 +501,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="ndr85WjhAVw">
@@ -583,9 +513,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="p8b3pJHIjiH" expanded="yes">
@@ -597,9 +525,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <children>
             <item id="gS4dXVX2k1e">
@@ -611,9 +537,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="cPUgpV6iBLu">
@@ -625,9 +549,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
           </children>
@@ -641,9 +563,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <children>
             <item id="eJI45oszJZD">
@@ -655,9 +575,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="o8eJFUtxrKe">
@@ -669,9 +587,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
           </children>
@@ -687,9 +603,7 @@
             </run>
           </p>
         </text>
-        <text>
-          <p/>
-        </text>
+        <null/>
       </values>
       <children>
         <item id="gy0KHDYsyo7">
@@ -701,9 +615,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="fPtw9vJC0Fq">
@@ -715,9 +627,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="fgwd2Q8V1Hj">
@@ -729,9 +639,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note expanded="yes">
             <text>
@@ -752,9 +660,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note expanded="yes">
             <text>
@@ -775,9 +681,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note>
             <text>
@@ -799,9 +703,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note expanded="yes">
             <text>
@@ -834,9 +736,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="m9hL7srSzjO">
@@ -875,9 +775,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note expanded="yes">
             <text>
@@ -898,9 +796,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note expanded="yes">
             <text>
@@ -921,9 +817,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note expanded="yes">
             <text>
@@ -962,9 +856,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="bHNMMLBJuIQ" state="checked">
@@ -976,9 +868,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="k4GSccvlw6b" state="checked">
@@ -990,9 +880,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note expanded="yes">
             <text>
@@ -1021,9 +909,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note expanded="yes">
             <text>
@@ -1044,9 +930,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="lo3LT0PZvp1" state="checked">
@@ -1058,9 +942,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="pW77mjO8jau" state="checked">
@@ -1072,9 +954,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="b2oX2vP-L4o" state="checked">
@@ -1086,9 +966,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note>
             <text>
@@ -1133,9 +1011,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note expanded="yes">
             <text>
@@ -1156,9 +1032,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note expanded="yes">
             <text>
@@ -1185,9 +1059,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="jQG-R3T8GU5" state="checked">
@@ -1199,9 +1071,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="j4c53wmQtbS" state="checked">
@@ -1213,9 +1083,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="jJMBXeb7ZyL" state="checked">
@@ -1227,9 +1095,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <children>
             <item id="cHLZB4o_ai2" state="checked">
@@ -1241,9 +1107,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="oT5FWMDPl-G" state="checked">
@@ -1255,9 +1119,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="gVVi72GTiUQ" state="checked">
@@ -1269,9 +1131,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="mqWj9eCE5o7" state="checked">
@@ -1283,9 +1143,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="jOXCxfJLojv" state="checked">
@@ -1297,9 +1155,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="nVRfjqe-Kzi" state="checked">
@@ -1311,9 +1167,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="f899YDFVn7y" state="checked">
@@ -1325,9 +1179,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
               <note expanded="yes">
                 <text>
@@ -1348,9 +1200,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="dg44Q4Z-9Kj" state="checked">
@@ -1362,9 +1212,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
               <note expanded="yes">
                 <text>
@@ -1385,9 +1233,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
               <note>
                 <text>
@@ -1408,9 +1254,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
               <note>
                 <text>
@@ -1431,9 +1275,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
               <note>
                 <text>
@@ -1466,9 +1308,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="ne0BD-AlzHR" state="checked">
@@ -1480,9 +1320,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="kh6jp8i6CnS" state="checked">
@@ -1494,9 +1332,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
               <note>
                 <text>
@@ -1517,9 +1353,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
               <note>
                 <text>
@@ -1540,9 +1374,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="gFqoEqjI-mB" state="checked">
@@ -1554,9 +1386,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
               <note>
                 <text>
@@ -1589,9 +1419,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
               <note>
                 <text>
@@ -1612,9 +1440,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="dN-YtvxCqII" state="checked">
@@ -1626,9 +1452,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="gQ-Z8LZBP-X" state="checked">
@@ -1640,9 +1464,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="dLfdx_zNEBY" state="checked">
@@ -1654,9 +1476,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="kxrnzw7H6Eg" state="checked">
@@ -1668,9 +1488,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="cTv3eO13qs1" state="checked">
@@ -1682,9 +1500,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="lCRnH2kYnF9" state="checked">
@@ -1696,9 +1512,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="nkL0EOcNQ6_" state="checked">
@@ -1710,9 +1524,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="bQj78BtAQc9" state="checked">
@@ -1724,9 +1536,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
           </children>
@@ -1740,9 +1550,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <children>
             <item id="bVLHTzQZCjp" state="checked">
@@ -1754,9 +1562,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
               <note expanded="yes">
                 <text>
@@ -1783,9 +1589,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
               <note expanded="yes">
                 <text>
@@ -1806,9 +1610,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
               <note expanded="yes">
                 <text>
@@ -1829,9 +1631,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
               <note expanded="yes">
                 <text>
@@ -1867,9 +1667,7 @@
             </run>
           </p>
         </text>
-        <text>
-          <p/>
-        </text>
+        <null/>
       </values>
       <children>
         <item id="ghrosIJchxh">
@@ -1881,543 +1679,58 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
-        <item id="ddCJZmy28Zz">
+        <item id="d8HJO9eUQK0" expanded="yes">
           <values>
             <text>
               <p>
                 <run>
-                  <lit>Saviour-faire metadata failing to load</lit>
+                  <lit>Want a &apos;game-provided&apos; metadata repository</lit>
                 </run>
               </p>
             </text>
-            <text>
-              <p>
-                <run>
-                  <lit>Graham Nelson</lit>
-                </run>
-              </p>
-            </text>
+            <null/>
           </values>
-          <note expanded="yes">
+          <children>
+            <item id="c_s5lhhWUXZ">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Copy metadata into user repository on demand only</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="jXe2k7LPgbW">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Blorbed metadata goes into the game-provided metadata, not the general area</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+          </children>
+        </item>
+        <item id="joPVPiO3clv">
+          <values>
             <text>
               <p>
                 <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>(a) Metadata into Zoom...</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>Still having problems, I&apos;m afraid. My latest version of Zoom can&apos;t</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>get at the metadata in the blorb attached; the text is -</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>&lt;ifindex version=&quot;0.9&quot;&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>&lt;!-- Metadata output generated by Inform 7 build 3E63 --&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>&lt;story&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>  &lt;id&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>   &lt;format&gt;zcode&lt;/format&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>   &lt;uuid&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>    &lt;uuid&gt;731F0480-5CB5-4340-B65B-384FC6B1F5B4&lt;/uuid&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>   &lt;/uuid&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>  &lt;/id&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>  &lt;id&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>   &lt;format&gt;zcode&lt;/format&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>   &lt;zcode&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>    &lt;serial&gt;040205&lt;/serial&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>    &lt;release&gt;8&lt;/release&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>    &lt;checksum&gt;6630&lt;/checksum&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>   &lt;/zcode&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>  &lt;/id&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>  &lt;title&gt;Savoir-Faire&lt;/title&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>  &lt;headline&gt;An Interactive Search for Loot&lt;/headline&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>  &lt;author&gt;Emily Short&lt;/author&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>  &lt;genre&gt;Fantasy&lt;/genre&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>  &lt;description&gt;The beautiful life is always damned, they say. As for you, you&apos;ve overexpended yourself: fifteen years of prominence, champagne, carriage rides in the Tuileries, having your name whispered behind manicured hands, getting elegant ladies out of elegant fixes -- and you&apos;re in debt. Bound by oath and honor to a pack of scoundrels. Your father, old peasant that he was, could have warned you against their type.&lt;/description&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>  &lt;year&gt;2002&lt;/year&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>  &lt;coverpicture&gt;1&lt;/coverpicture&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>  &lt;group&gt;Inform&lt;/group&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>&lt;/story&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>&lt;/ifindex&gt;</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>...which, as you see, does have the format element in both</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>blocks. So far as I can see, the serial number, release number</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>and checksum match perfectly. Zoom loads the blorb and</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>starts playing the game, but the iFiction window lists only</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>the title, presumably made by stripping the file extension</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>from the filename.</lit>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                </run>
-              </p>
-              <p>
-                <run>
-                  <style>
-                    <value key="font-family">Monaco</value>
-                    <value key="font-fill">
-                      <color w="0"/>
-                    </value>
-                    <value key="font-italic">no</value>
-                  </style>
-                  <lit>Could you possibly look into this?</lit>
+                  <lit>Some cblorbed games showing up twice the first time they&apos;re loaded? Metadata merge problem?</lit>
                 </run>
               </p>
             </text>
-          </note>
+            <null/>
+          </values>
         </item>
         <item id="dCvn-8cOzUS">
           <values>
@@ -2428,9 +1741,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note>
             <text>
@@ -2451,9 +1762,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="iJm2x5sTedH">
@@ -2465,9 +1774,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="p49wlwhTJYh">
@@ -2479,9 +1786,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="i90YaNlNqoG">
@@ -2493,9 +1798,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="hY1PnAqpUtp">
@@ -2507,9 +1810,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="o_3tx8Dh-b-">
@@ -2521,9 +1822,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <children>
             <item id="jZql8eaNC6t">
@@ -2535,9 +1834,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="kxjr6mLid09">
@@ -2549,9 +1846,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
           </children>
@@ -2565,23 +1860,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
-          </values>
-        </item>
-        <item id="iUDuGDHOHYl" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Want &apos;contemporary fiction&apos; genre</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="d5VGR4xaf2H" state="checked">
@@ -2593,11 +1872,577 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <children>
+            <item id="iUDuGDHOHYl" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Want &apos;contemporary fiction&apos; genre</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="ddCJZmy28Zz" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Saviour-faire metadata failing to load</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Graham Nelson</lit>
+                    </run>
+                  </p>
+                </text>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>(Fixed?)</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>(a) Metadata into Zoom...</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>Still having problems, I&apos;m afraid. My latest version of Zoom can&apos;t</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>get at the metadata in the blorb attached; the text is -</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>&lt;ifindex version=&quot;0.9&quot;&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>&lt;!-- Metadata output generated by Inform 7 build 3E63 --&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>&lt;story&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>  &lt;id&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>   &lt;format&gt;zcode&lt;/format&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>   &lt;uuid&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>    &lt;uuid&gt;731F0480-5CB5-4340-B65B-384FC6B1F5B4&lt;/uuid&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>   &lt;/uuid&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>  &lt;/id&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>  &lt;id&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>   &lt;format&gt;zcode&lt;/format&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>   &lt;zcode&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>    &lt;serial&gt;040205&lt;/serial&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>    &lt;release&gt;8&lt;/release&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>    &lt;checksum&gt;6630&lt;/checksum&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>   &lt;/zcode&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>  &lt;/id&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>  &lt;title&gt;Savoir-Faire&lt;/title&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>  &lt;headline&gt;An Interactive Search for Loot&lt;/headline&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>  &lt;author&gt;Emily Short&lt;/author&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>  &lt;genre&gt;Fantasy&lt;/genre&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>  &lt;description&gt;The beautiful life is always damned, they say. As for you, you&apos;ve overexpended yourself: fifteen years of prominence, champagne, carriage rides in the Tuileries, having your name whispered behind manicured hands, getting elegant ladies out of elegant fixes -- and you&apos;re in debt. Bound by oath and honor to a pack of scoundrels. Your father, old peasant that he was, could have warned you against their type.&lt;/description&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>  &lt;year&gt;2002&lt;/year&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>  &lt;coverpicture&gt;1&lt;/coverpicture&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>  &lt;group&gt;Inform&lt;/group&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>&lt;/story&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>&lt;/ifindex&gt;</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>...which, as you see, does have the format element in both</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>blocks. So far as I can see, the serial number, release number</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>and checksum match perfectly. Zoom loads the blorb and</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>starts playing the game, but the iFiction window lists only</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>the title, presumably made by stripping the file extension</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>from the filename.</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>Could you possibly look into this?</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
             <item id="l0FkrJM0w6I" state="checked">
               <values>
                 <text>
@@ -2607,9 +2452,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
           </children>
@@ -2625,9 +2468,7 @@
             </run>
           </p>
         </text>
-        <text>
-          <p/>
-        </text>
+        <null/>
       </values>
       <children>
         <item id="iami8oTCV2w">
@@ -2639,9 +2480,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="cZczk-BF51t" expanded="yes">
@@ -2671,9 +2510,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="gUwIRndQnjQ">
@@ -2685,9 +2522,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="lxtHMc_UkfR" expanded="yes">
@@ -2699,9 +2534,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
               <children>
                 <item id="eR-biOw1tBc">
@@ -2713,9 +2546,7 @@
                         </run>
                       </p>
                     </text>
-                    <text>
-                      <p/>
-                    </text>
+                    <null/>
                   </values>
                 </item>
                 <item id="dWH2pgqX_gf">
@@ -2727,9 +2558,7 @@
                         </run>
                       </p>
                     </text>
-                    <text>
-                      <p/>
-                    </text>
+                    <null/>
                   </values>
                 </item>
                 <item id="joO6beRUuvJ">
@@ -2741,9 +2570,7 @@
                         </run>
                       </p>
                     </text>
-                    <text>
-                      <p/>
-                    </text>
+                    <null/>
                   </values>
                 </item>
               </children>
@@ -2757,9 +2584,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
           </children>
@@ -2773,9 +2598,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="pjQXb-RL44r">
@@ -2787,9 +2610,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="dGwB5uicp4a">
@@ -2801,9 +2622,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note>
             <text>
@@ -2830,9 +2649,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note>
             <text>
@@ -2859,9 +2676,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note>
             <text>
@@ -2882,9 +2697,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note>
             <text>
@@ -2905,9 +2718,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note>
             <text>
@@ -2928,9 +2739,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note>
             <text>
@@ -2952,9 +2761,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="oPAqEhMoZG8" state="checked">
@@ -2966,9 +2773,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="jCsCwpJQjhv" expanded="yes" state="indeterminate">
@@ -2980,9 +2785,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <children>
             <item id="hgEtVIb7pyZ" state="checked">
@@ -2994,9 +2797,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="jduliF3tIUR" state="checked">
@@ -3008,9 +2809,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="jBDXx7-3tOn">
@@ -3022,9 +2821,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
             <item id="aNH4YjrDe8w">
@@ -3036,9 +2833,7 @@
                     </run>
                   </p>
                 </text>
-                <text>
-                  <p/>
-                </text>
+                <null/>
               </values>
             </item>
           </children>
@@ -3052,9 +2847,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note>
             <text>
@@ -3089,9 +2882,7 @@
             </run>
           </p>
         </text>
-        <text>
-          <p/>
-        </text>
+        <null/>
       </values>
       <children>
         <item id="hy0Gf2_NIxR">
@@ -3103,9 +2894,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="ib30HqKDQ3x">
@@ -3117,9 +2906,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="flUCzke2NRG">
@@ -3131,9 +2918,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note>
             <text>
@@ -3154,9 +2939,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="gxgCA4Nu-qI">
@@ -3168,9 +2951,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note>
             <text>
@@ -3192,9 +2973,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note>
             <text>
@@ -3216,9 +2995,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note>
             <text>
@@ -3246,9 +3023,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="oqK_cIRyJuH" state="checked">
@@ -3260,9 +3035,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="pec1lh_e8Z9" state="checked">
@@ -3274,9 +3047,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note>
             <text>
@@ -3297,9 +3068,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
       </children>
@@ -3313,9 +3082,7 @@
             </run>
           </p>
         </text>
-        <text>
-          <p/>
-        </text>
+        <null/>
       </values>
       <children>
         <item id="ba6SlZMJ-CJ">
@@ -3327,9 +3094,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="iry7leqj68J">
@@ -3341,9 +3106,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
           <note>
             <text>
@@ -3364,9 +3127,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
         <item id="p6UmtOpMs-2">
@@ -3378,9 +3139,7 @@
                 </run>
               </p>
             </text>
-            <text>
-              <p/>
-            </text>
+            <null/>
           </values>
         </item>
       </children>

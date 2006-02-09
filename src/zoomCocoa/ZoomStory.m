@@ -112,7 +112,7 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 		result = [[fileMetadata findStory: fileID] copy];
 		
 		if (result == nil) {
-			NSLog(@"Warning: found a game with an IFmd chunk, but which did not appear to contain any relevant metadata"); 
+			NSLog(@"Warning: found a game with an IFmd chunk, but which did not appear to contain any relevant metadata (looked for ID: %@)", fileID); 
 		}
 	}
 	
