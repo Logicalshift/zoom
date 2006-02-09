@@ -2,6 +2,7 @@
 <!DOCTYPE outline PUBLIC "-//omnigroup.com//DTD OUTLINE 3.0//EN" "http://www.omnigroup.com/namespace/OmniOutliner/xmloutline-v3.dtd">
 <outline xmlns="http://www.omnigroup.com/namespace/OmniOutliner/v3">
   <style-attribute-registry>
+    <style-attribute version="0" key="font-family" group="font" name="family" class="string">Helvetica</style-attribute>
     <style-attribute version="1" key="font-fill" group="font" name="fill color" class="color">
       <color w="0"/>
     </style-attribute>
@@ -15,10 +16,10 @@
   <settings/>
   <editor should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
-    <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="n5azxE7Q5je"/>
-    <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{43, 0}"/>
+    <hoisted-rows ids="d4dIn82q4rK"/>
+    <selected-rows ids="ddCJZmy28Zz"/>
+    <selected-columns ids="bJSTis5k9jH"/>
+    <selected-characters range="{13, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -283,7 +284,7 @@
         </item>
       </children>
     </item>
-    <item id="gnoX6zDBav8" expanded="yes" state="indeterminate">
+    <item id="gnoX6zDBav8" expanded="yes">
       <values>
         <text>
           <p>
@@ -297,7 +298,7 @@
         </text>
       </values>
       <children>
-        <item id="dtT7Hxkdg01" state="checked">
+        <item id="dtT7Hxkdg01">
           <values>
             <text>
               <p>
@@ -311,7 +312,7 @@
             </text>
           </values>
         </item>
-        <item id="n2AYaW1NWJO" expanded="yes" state="checked">
+        <item id="n2AYaW1NWJO" expanded="yes">
           <values>
             <text>
               <p>
@@ -325,7 +326,7 @@
             </text>
           </values>
           <children>
-            <item id="iXJNFzK2E-k" state="checked">
+            <item id="iXJNFzK2E-k">
               <values>
                 <text>
                   <p>
@@ -339,7 +340,7 @@
                 </text>
               </values>
             </item>
-            <item id="m-SM77DX85J" state="checked">
+            <item id="m-SM77DX85J">
               <values>
                 <text>
                   <p>
@@ -1884,6 +1885,539 @@
               <p/>
             </text>
           </values>
+        </item>
+        <item id="ddCJZmy28Zz">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Saviour-faire metadata failing to load</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p>
+                <run>
+                  <lit>Graham Nelson</lit>
+                </run>
+              </p>
+            </text>
+          </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>(a) Metadata into Zoom...</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>Still having problems, I&apos;m afraid. My latest version of Zoom can&apos;t</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>get at the metadata in the blorb attached; the text is -</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>&lt;ifindex version=&quot;0.9&quot;&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>&lt;!-- Metadata output generated by Inform 7 build 3E63 --&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>&lt;story&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>  &lt;id&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>   &lt;format&gt;zcode&lt;/format&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>   &lt;uuid&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>    &lt;uuid&gt;731F0480-5CB5-4340-B65B-384FC6B1F5B4&lt;/uuid&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>   &lt;/uuid&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>  &lt;/id&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>  &lt;id&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>   &lt;format&gt;zcode&lt;/format&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>   &lt;zcode&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>    &lt;serial&gt;040205&lt;/serial&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>    &lt;release&gt;8&lt;/release&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>    &lt;checksum&gt;6630&lt;/checksum&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>   &lt;/zcode&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>  &lt;/id&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>  &lt;title&gt;Savoir-Faire&lt;/title&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>  &lt;headline&gt;An Interactive Search for Loot&lt;/headline&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>  &lt;author&gt;Emily Short&lt;/author&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>  &lt;genre&gt;Fantasy&lt;/genre&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>  &lt;description&gt;The beautiful life is always damned, they say. As for you, you&apos;ve overexpended yourself: fifteen years of prominence, champagne, carriage rides in the Tuileries, having your name whispered behind manicured hands, getting elegant ladies out of elegant fixes -- and you&apos;re in debt. Bound by oath and honor to a pack of scoundrels. Your father, old peasant that he was, could have warned you against their type.&lt;/description&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>  &lt;year&gt;2002&lt;/year&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>  &lt;coverpicture&gt;1&lt;/coverpicture&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>  &lt;group&gt;Inform&lt;/group&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>&lt;/story&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>&lt;/ifindex&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>...which, as you see, does have the format element in both</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>blocks. So far as I can see, the serial number, release number</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>and checksum match perfectly. Zoom loads the blorb and</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>starts playing the game, but the iFiction window lists only</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>the title, presumably made by stripping the file extension</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>from the filename.</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>Could you possibly look into this?</lit>
+                </run>
+              </p>
+            </text>
+          </note>
         </item>
         <item id="dCvn-8cOzUS">
           <values>
