@@ -411,7 +411,8 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		  organise: NO];
 }
 
-- (void) removeStoryWithIdent: (ZoomStoryID*) ident {
+- (void) removeStoryWithIdent: (ZoomStoryID*) ident
+		   deleteFromMetadata: (BOOL) delete {
 	[storyLock lock];
 	
 	NSString* filename = [identsToFilenames objectForKey: ident];
@@ -421,6 +422,10 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		[identsToFilenames removeObjectForKey: ident];
 		[storyIdents removeObjectIdenticalTo: ident];
 		[storyFilenames removeObject: filename];
+	}
+	
+	if (delete) {
+		// IMPLEMENT ME
 	}
 	
 	[storyLock unlock];
@@ -1029,14 +1034,16 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	[filenamesToIdents setObject: ident
 						  forKey: filename];
 	
+	/* --??
 	int filenameIndex = [storyFilenames indexOfObject: oldFilename];
 	if (filenameIndex != NSNotFound) {
 		[storyFilenames removeObjectAtIndex: filenameIndex];
 		[storyIdents removeObjectAtIndex: filenameIndex];
 	}
+	*/
 	
 	[storyFilenames addObject: filename];
-	[storyIdents	addObject: ident];
+	/* [storyIdents	addObject: ident]; */
 	
 	// Organise the story's resources
 	NSString* resources = [story objectForKey: @"ResourceFilename"];
@@ -1576,15 +1583,17 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 			}
 			
 			// Change the storyFilenames array
+			/* -- ??
 			int oldIndex = [storyFilenames indexOfObject: filename];
 			
 			if (oldIndex != NSNotFound) {
 				[storyFilenames removeObjectAtIndex: oldIndex];
 				[storyIdents removeObjectAtIndex: oldIndex];
 			}
+			 */
 			
 			[storyFilenames addObject: [titleDirectory stringByAppendingPathComponent: [filename lastPathComponent]]];
-			[storyIdents addObject: storyID];
+			//[storyIdents addObject: storyID];
 
 			[storyLock unlock];
 			

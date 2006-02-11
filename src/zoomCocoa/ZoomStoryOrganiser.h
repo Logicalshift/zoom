@@ -49,7 +49,8 @@ extern NSString* ZoomStoryOrganiserProgressNotification;
 		withIdent: (ZoomStoryID*) ident
 		 organise: (BOOL) organise;
 
-- (void) removeStoryWithIdent: (ZoomStoryID*) ident;
+- (void) removeStoryWithIdent: (ZoomStoryID*) ident
+		   deleteFromMetadata: (BOOL) delete;
 
 // Sending notifications
 - (void) organiserChanged;
