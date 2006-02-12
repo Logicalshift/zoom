@@ -425,7 +425,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	}
 	
 	if (delete) {
-		// IMPLEMENT ME
+		[[[NSApp delegate] userMetadata] removeIdent: ident];
 	}
 	
 	[storyLock unlock];

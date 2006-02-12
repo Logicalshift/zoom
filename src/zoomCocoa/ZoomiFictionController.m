@@ -1572,7 +1572,8 @@ int tableSorter(id a, id b, void* context) {
 															tag: &tag];
 			
 			// (make sure it's gone from the organiser)
-			[[ZoomStoryOrganiser sharedStoryOrganiser] removeStoryWithIdent: ident];
+			[[ZoomStoryOrganiser sharedStoryOrganiser] removeStoryWithIdent: ident
+														 deleteFromMetadata: YES];
 		}
 	}
 }
@@ -1591,7 +1592,8 @@ int tableSorter(id a, id b, void* context) {
 	NSEnumerator* rowEnum = [storiesToDelete objectEnumerator];
 	
 	while (ident = [rowEnum nextObject]) {
-		[[ZoomStoryOrganiser sharedStoryOrganiser] removeStoryWithIdent: ident];
+		[[ZoomStoryOrganiser sharedStoryOrganiser] removeStoryWithIdent: ident
+													 deleteFromMetadata: YES];
 	}
 	
 	if ([[ZoomPreferences globalPreferences] keepGamesOrganised]) {

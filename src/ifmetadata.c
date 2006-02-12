@@ -1371,6 +1371,7 @@ void IFStory_Copy(IFMDStory* dst, const IFMDStory* src) {
 }
 
 /* = Modification functions = */
+
 void IFMD_AddStory(IFMetadata* data, IFMDStory* storyToAdd) {
 	int x;
 	IFMDStory* newEntry;
@@ -1523,6 +1524,73 @@ void IFMD_AddStory(IFMetadata* data, IFMDStory* storyToAdd) {
 	}
 	
 	return;
+}
+
+void IFMD_DeleteStory(IFMetadata* data, IFMDIdent* id) {
+    /* Find the entry to delete */
+    int x;
+    int freeID;
+    int top, bottom, res, cmp;
+    IFMDStory* story;
+    
+    bottom = 0;
+    top = data->numberOfIndexEntries-1;
+    res = 0;
+    cmp = -1;
+    
+    while (bottom < top) {
+        int middle = (bottom + top)>>1;
+        cmp = IFID_Compare(data->index[middle].ident, id);
+        
+        if (cmp == 0) { res = middle; break; }
+        else if (cmp < 0) bottom = middle+1;
+        else if (cmp > 0) top    = middle-1;
+    }
+    
+    /* If cmp is 0, then we haven't found anythiung interesting */
+    if (cmp != 0) return;
+    
+    /* Delete this ID from the list of IDs supported by the story*/
+    story = data->index[res].story;
+    
+    freeID = 0;
+    for (x=0; x<story->numberOfIdents; x++) {
+        if (IFID_Compare(story->idents[x], id) == 0) {
+            /* Delete this ident (might cause id to be freed as well!) */
+            if (story->idents[x] != id)
+                IFID_Free(story->idents[x]);
+            else
+                freeID = 1;
+            
+            story->numberOfIdents--;
+            memmove(story->idents + x, story->idents + x + 1, sizeof(IFMDIdent*)*(story->numberOfIdents-x));
+            
+            x--;
+        }
+    }
+    
+    if (freeID) {
+        /* One of the IDs we would have freed is the ID that was passed as a parameter */
+        IFID_Free(id);
+    }
+    
+    /* Delete the story itself if necessary */
+    if (story->numberOfIdents <= 0) {
+        for (x=0; x<data->numberOfStories; x++) {
+            if (data->stories[x] == story) {
+                data->numberOfStories--;
+                memmove(data->stories + x, data->stories + x + 1, sizeof(IFMDStory*)*(data->numberOfStories-x));
+                
+                x--;
+            }
+        }
+        
+        IFStory_Free(story);
+    }
+    
+    /* Delete res from the index */
+    data->numberOfIndexEntries--;
+    memmove(data->index + res, data->index + res + 1, sizeof(IFMDIndexEntry)*(data->numberOfIndexEntries-res));
 }
 
 /* Saving metadata */
@@ -1956,8 +2024,6 @@ void IFMD_testrepository(IFMetadata* data) {
 	
 	for (iter = 0; iter<4; iter++) {
 		for (x=0; x<data->numberOfStories; x++) {
-			int y;
-		
 			IFMD_AddStory(newData, data->stories[x]);
 			indexCheck(newData);
 		}

@@ -236,6 +236,7 @@ extern IFMDChar*   IFMakeStrCF(const CFStringRef src);
 
 /* Modification functions */
 extern void IFMD_AddStory(IFMetadata* data, IFMDStory* newStory); /* newStory can already exist, replaces any story with the same ID */
+extern void IFMD_DeleteStory(IFMetadata* data, IFMDIdent* storyID);
 
 /* Saving metadata */
 extern int IFMD_Save(IFMetadata* data, int(*writeFunction)(const char* bytes, int length, void* userData), void* userData);

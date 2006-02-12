@@ -136,6 +136,19 @@
 	[dataLock unlock];
 }
 
+- (void) removeIdent: (ZoomStoryID*) ident {
+	[dataLock lock];
+	
+	IFMD_DeleteStory(metadata, [ident ident]);
+	
+#ifdef IFMD_ALLOW_TESTING
+	// Test, if available
+	IFMD_testrepository(metadata);
+#endif
+	
+	[dataLock unlock];
+}
+
 // = Saving the file =
 static int dataWrite(const char* bytes, int length, void* userData) {
 	NSMutableData* data = userData;

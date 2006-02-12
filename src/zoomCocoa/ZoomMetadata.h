@@ -13,7 +13,8 @@
 
 // Cocoa interface to the C ifmetadata class
 // Yes, Panther now has a SAX parser. No, I'm not using it: I need Jaguar support.
-// (Plus I want to be able to port all of Zoom's backend to other platforms)
+// (Plus I want to be able to port all of Zoom's backend to other platforms. Also,
+// SAX is pretty slow)
 
 @interface ZoomMetadata : NSObject {
 	NSString* filename;
@@ -36,6 +37,7 @@
 
 // Storing information
 - (void) storeStory: (ZoomStory*) story;
+- (void) removeIdent: (ZoomStoryID*) ident;
 
 // Saving the file
 - (NSData*) xmlData;
