@@ -2,220 +2,99 @@
  *  ifmetabase.h
  *  ZoomCocoa
  *
- *  Created by Andrew Hunter on 20/08/2005.
+ *  Created by Andrew Hunter on 14/03/2005
  *  Copyright 2005 Andrew Hunter. All rights reserved.
- *
  */
 
 #ifndef __IFMETABASE_H
 #define __IFMETABASE_H
 
 /*
- * The IF metabase: an abstract place we can store and retrieve metadata.
- *
- * The metabase has a fairly complex structure to reflect the nature of metadata. It is hierarchical: it can represent many
- * sources of metadata. It is modular: different sources of metadata can provide different types of metadata, which can add up
- * to the complete set (for example, an archive site can provide details like game titles, and a review site can provide things
- * like game reviews).
- *
- * This is to support the IF XML metadata format specification 1.0.
+ * The metabase is a set of functions designed for creating and manipulating metadata in the
+ * 'iFiction' format. It deals with the metadata in an abstract sense: this library does not
+ * define the external format of the data.
  */
 
-/* Startup */
+/* Data structures */
 
-extern void metabase_init(void);
+typedef unsigned short IFChar;						/* A UTF-16 character */
 
-/* Metabase callbacks - implement elsewhere */
+typedef struct IFMetabase* IFMetabase;				/* A metabase */
+typedef struct IFID* IFID;							/* A story identifier */
+typedef struct IFStory* IFStory;					/* A story entry in the metabase */
 
-enum IFMDError {
-	IFMDE_FailedToAllocateMemory,
-	IFMDE_NamespaceAlreadyInUse,
-	IFMDE_ModuleNameAlreadyInUse,
-	IFMDE_NULLReference,
-	IFMDE_InvalidMDKey,
+typedef struct IFStoryIterator* IFStoryIterator;	/* An iterator that covers all stories */
+typedef struct IFValueIterator* IFValueIterator;	/* An iterator that covers the values set for a story */
 
-	IFMDE_AssertionFailed = 0x1000,
-	IFMDE_AssertionFailed_FoundKeyThatShouldNotExist
-};
+/* Functions - general metabase manipulation */
 
-extern void metabase_error(enum IFMDError errorCode, const char* simple_description, ...);
-extern void metabase_caution(enum IFMDError errorCode, const char* simple_description, ...);
+/* Constructs a new, empty metabase */
+extern IFMetabase IFMB_Create();
 
-/* Memory functions (re-implement these if you have a non-ANSI system) */
+/* Frees up all the memory associated with a metabase */
+extern void IFMB_Free(IFMetabase meta);
 
-extern void* metabase_alloc(size_t bytes);
-extern void* metabase_realloc(void* ptr, size_t bytes);
-extern void  metabase_free(void* ptr);
-extern void  metabase_memmove(void* dst, const void* src, size_t size);
+/* Functions - IFIDs */
 
-/* String convienience functions */
+/* Takes an ID string and produces a corresponding IFID structure, or NULL if the string is invalid */
+extern IFID IFMB_IdFromString(const char* idString);
 
-extern int   metabase_strlen(const int* src);
-extern void  metabase_strcpy(int* dst, const int* src);
-extern int*  metabase_strdup(const int* src);
-extern int   metabase_strcmp(const int* a, const int* b);
-extern char* metabase_utf8(const int* string);
-extern int*  metabase_ucs4(const char* utf8);
+/* Returns an IFID based on the 16-byte UUID passed as an argument */
+extern IFID IFMB_UUID(const char* uuid);
 
-/* Describing metadata structure */
+/* Returns an IFID based on a Z-Code legacy identifier */
+extern IFID IFMB_ZcodeId(int release, const char* serial, int checksum);
 
-/* Associates a namespace with a module name */
-extern void metabase_associate_module(const int* namespace, const char* module);
+/* Merges a set of IFIDs into a single ID */
+extern IFID IFMB_CompoundId(int count, IFID identifiers);
 
-/* Retrieves the module name to use for a specific namespace */
-extern const char* metabase_module_for_namespace(const int* namespace);
+/* Compares two IDs */
+extern int IFMB_CompareIds(IFID a, IFID b);
 
-/* Retrieves a namespace for a specific module */
-extern const int* metabase_namespace_for_module(const char* module);
+/* Frees an ID */
+extern void IFMB_FreeId(IFID ident);
 
-/* Creating metabases */
+/* Copies an ID */
+extern IFID IFMB_CopyId(IFID ident);
 
-/* The metabase structure */
-typedef struct IFMetabase* IFMetabase;
+/* Functions - stories */
 
-/* How data from a metabase is filtered */
-enum IFMDFilter {
-	IFFilter_Inclusive,
-	IFFilter_Exclusive
-};
+/* Retrieves the story in the metabase with the given ID */
+extern IFStory IFMB_GetStoryWithId(IFMetabase meta, IFID ident);
 
-/* Creates a new, empty metabase */
-extern IFMetabase metabase_create(IFMetabase parent);
+/* Retrieves the ID associated with a given story object */
+extern IFID IFMB_IdForStory(IFStory story);
 
-/* Destroys an old, unworthy metabase */
-extern void metabase_destroy(IFMetabase metabase);
+/* Removes a story with the given ID from the metabase */
+extern IFID IFMB_RemoveStoryWithId(IFID ident);
 
-/* Sets how a metabase is filtered (exclusive: modules are filtered out, inclusive: modules are filtered in) */
-extern void metabase_filter(IFMetabase metabase, enum IFMDFilter filter_style);
+/* Returns non-zero if the metabase contains a story with a given ID */
+extern int IFMB_ContainsStoryWithId(IFID ident);
 
-/* Adds a module to the list of filters for a metabase */
-/*
- * If the filter style is IF_inclusive, then data for this module is now presented (you'll get results for data from
- * this module in this metabase).
- * If the filter style is IF_exclusive, then data for this module is removed (you'll no longer get results for data from
- * this module)
- */
-extern void metabase_add_filter(IFMetabase metabase, const char* module_name);
+/* Returns a UTF-16 string for a given parameter in a story, or NULL if none was found */
+/* Copy this value away if you intend to retain it: it may be destroyed on the next IFMB_ call */
+extern IFChar* IFMB_GetValue(IFStory story, const char* valueKey);
 
-/* Marks a metabase as read-only */
-extern void metabase_set_readonly(IFMetabase metabase, int isReadOnly);
+/* Sets the UTF-16 string for a given parameter in the story (NULL to unset the parameter) */
+extern void IFMB_SetValue(IFStory story, const char* valueKey, IFChar* utf16value);
 
-/* Describing stories */
+/* Functions - iterating */
 
-/* A key to an entry in the metabase */
-typedef struct IFMDKey* IFMDKey;
+/* Gets an iterator covering all the stories in the given metabase */
+extern IFStoryIterator IFMB_GetStoryIterator(IFMetabase meta);
 
-/* Types of story/resource */
-enum IFMDFormat {
-	IFFormat_NoSuchKey = 0x7ffffff,
-	IFFormat_Unknown = 0x0,
-	
-	/* Story types */
-	IFFormat_ZCode,
-	IFFormat_Glulx,
-	
-	IFFormat_TADS,
-	IFFormat_HUGO,
-	IFFormat_Alan,
-	IFFormat_Adrift,
-	IFFormat_Level9,
-	IFFormat_AGT,
-	IFFormat_MagScrolls,
-	IFFormat_AdvSys,
-	
-	/* Resource types */
-	IFFormat_BlorbResourcesOnly = 0x100,	/* Blorb file containing only resources */
-	IFFormat_BlorbAndZCode,					/* Blorb file containing resources and a ZCode file */
-	IFFormat_BlorbAndGlulx,					/* Blorb file containing resources and a Glulx file */
-	IFFormat_BlorbAndUnknown,				/* Blorb file containing resources and some other executable file */
+/* Gets an iterator covering all the values set in a story */
+extern IFValueIterator IFMB_GetValueIterator(IFStory story);
 
-	IFFormat_Image,							/* A single image file */
-	IFFormat_Sound,							/* A single sound file */
-	IFFormat_GameData,						/* A file containing miscellaneous game data (maybe some aggregate format other than Blorb) */
-	IFFormat_GameFeelie,					/* A file containing 'feelies' for a game, for example a PDF documentation file */
-	
-	IFFormat_SaveGame = 0x200				/* A file containing a save game for this story */
-};
+/* Gets the next story defined in the metabase */
+extern IFStory IFMB_NextStory(IFStoryIterator iter);
 
-/* For z-code games with an unknown checksum */
-#define IFMDChecksum_Unknown 0x10000
+/* Gets the next value set in a story */
+extern char* IFMB_NextValue(IFValueIterator iter);
 
-/* Creates a reference to a story with a specific type and MD5 (128 bits - 16 bytes) */
-extern IFMDKey metabase_story_with_md5(enum IFMDFormat format, const char* md5);
+/* Functions - basic UTF-16 string manipulation */
 
-/* Creates a reference to a story existing at a specific URI */
-extern IFMDKey metabase_story_with_uri(enum IFMDFormat format, const char* uri);
-
-/* Creates a reference to a story with a specific UUID (128 bits - 16 bytes) */
-extern IFMDKey metabase_story_with_uuid(enum IFMDFormat format, const char* uuid);
-
-/* Creates a reference to a story with a z-code identification. md5 can be NULL if unknown */
-extern IFMDKey metabase_story_with_zcode(const char* serial, unsigned int release, unsigned int checksum);
-
-/* Creates a copy of an IFMDKey */
-extern IFMDKey metabase_copy_key(IFMDKey oldKey);
-
-/* Compares two IFMDKeys */
-extern int metabase_compare_keys(IFMDKey key1, IFMDKey key2);
-
-/* Gets the format associated with a key */
-extern enum IFMDFormat metabase_format_for_key(IFMDKey key);
-
-/* Destroys a key */
-extern void metabase_destroy_key(IFMDKey oldKey);
-
-/* Storing metadata */
-
-/*
- * Metadata strings are in null-terminated UCS-4. Fields can use '.' to indicate structure (eg foo.bar to indicate
- * <foo><bar>Data</bar></foo>), and '@' to indicate attributes (eg foo@bar for <foo bar="Data"></foo>).
- *
- * Data fields should be otherwise unstructured. Not all XML structure can be represented: this is deliberate. The
- * metabase is XML-like, not actual XML.
- */
-
-typedef struct IFMDEntry* IFMDEntry;
-
-/* Gets an entry for a specific key (entries may be created if they don't exist yet) */
-extern IFMDEntry metabase_entry_for_key(IFMetabase metabase, IFMDKey key);
-
-/* Given a key with an unknown (or uncertain) format and an entry indexed by that key, retrieves the format (which MAY still be unknown, but really shouldn't be) */
-extern enum IFMDFormat metabase_format_for_entry_key(IFMDEntry entry, IFMDKey unknownKey);
-
-/* Associates an additional key with an entry */
-extern void metabase_add_key(IFMDEntry entry, IFMDKey newKey);
-
-/* Clones an entry, excepting metabase excluded modules, in a different metabase */
-extern IFMDEntry metabase_clone_entry(IFMetabase metabase, IFMDEntry lastEntry);
-
-/* Clears a specific field */
-extern void metabase_clear_field(IFMDEntry entry, const char* module, const char* field);
-
-/* Associate a string with a specific field (replacing all contents of that field) */
-extern void metabase_store_string(IFMDEntry entry, const char* module, const char* field, const int* string);
-
-/* Adds a string to the set associated with a specific field */
-extern void metabase_add_string(IFMDEntry entry, const char* module, const char* field, const int* string);
-
-/* Associate binary data with a specific field */
-extern void metabase_store_data(IFMDEntry entry, const char* module, const char* field, const unsigned char* bytes, int length);
-
-/* Adds some data to the set associated with the specified field */
-extern void metabase_add_data(IFMDEntry entry, const char* module, const char* field, const unsigned char* bytes, int length);
-
-/* Retrieve a string from a specific field (returns NULL if the field is data or if the field does not exist) */
-extern int* metabase_get_string(IFMDEntry entry, const char* module, const char* field);
-
-/* Retrieves all the strings associated with a specific field */
-extern int** metabase_get_strings(IFMDEntry entry, const char* module, const char* field, int* count_out);
-
-/* Retrieve data from a specific field */
-extern unsigned char* metabase_get_data(IFMDEntry entry, const char* module, const char* field);
-
-/* Retrieve all the data from a specific field */
-extern unsigned char** metabase_get_all_data(IFMDEntry entry, const char* module, const char* field, int* count_out);
-
-/* Destroys an entry object */
-extern void metabase_destroy_entry(IFMDEntry entry);
+extern int IFMB_StrCmp(const IFChar* a, const IFChar* b);
+extern void IFMB_StrCpy(IFChar* a, const IFChar* b);
 
 #endif
