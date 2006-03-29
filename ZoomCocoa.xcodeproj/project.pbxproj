@@ -67,7 +67,7 @@
 		4B7CB0AF09362A8E00F3B8F6 /* ZoomStoryID.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BACEABC05B45C0500A9B6DC /* ZoomStoryID.m */; };
 		4B7CB0B309362AA600F3B8F6 /* ifmetadata.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BECA80005B19BE1006840BA /* ifmetadata.c */; };
 		4B7CB0B409362AA600F3B8F6 /* ifmetadata.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BECA81B05B19CFB006840BA /* ifmetadata.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B7CB0B509362AA700F3B8F6 /* ifmetabase.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BB8BED408B785B200D7D334 /* ifmetabase.c */; };
+		4B7CB0B509362AA700F3B8F6 /* ifmetabase.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BB8BED408B785B200D7D334 /* ifmetabase.c */; settings = {COMPILER_FLAGS = "-pedantic -ansi"; }; };
 		4B7CB0B609362AA700F3B8F6 /* ifmetabase.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB8BED308B785B200D7D334 /* ifmetabase.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B7CB0D409362DDB00F3B8F6 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B1E3F60050F7BA000A8E303 /* Cocoa.framework */; };
 		4B7CB0D709362DDD00F3B8F6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BCF3F2B050F8E2400A8E303 /* Foundation.framework */; };
@@ -79,6 +79,7 @@
 		4B7CB1E90936357900F3B8F6 /* ZoomPlugIn.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7CB0790936294B00F3B8F6 /* ZoomPlugIn.m */; };
 		4B7CB1EA0936357900F3B8F6 /* ZoomPlugIn.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7CB0780936294B00F3B8F6 /* ZoomPlugIn.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B7CB2130936361800F3B8F6 /* GlkView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B7CB1C5093634DD00F3B8F6 /* GlkView.framework */; };
+		4B87BA7309C9AB13005D6722 /* ifmetabase-internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B87BA7109C9AAE1005D6722 /* ifmetabase-internal.h */; };
 		4BA66B2C0906538F000A3852 /* ZoomWindowThatCanBecomeKey.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA66B2A0906538F000A3852 /* ZoomWindowThatCanBecomeKey.h */; };
 		4BA66B2D0906538F000A3852 /* ZoomWindowThatCanBecomeKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA66B2B0906538F000A3852 /* ZoomWindowThatCanBecomeKey.m */; };
 		4BB65ACE08EF02D600E7E28E /* ZoomBlorbFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF1576406BAD034001A3C27 /* ZoomBlorbFile.m */; };
@@ -793,6 +794,7 @@
 		4B807BD905BFF74600681653 /* drawer-in.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "drawer-in.png"; sourceTree = "<group>"; };
 		4B807BEA05C009ED00681653 /* ZoomiFButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomiFButton.h; sourceTree = "<group>"; };
 		4B807BEB05C009ED00681653 /* ZoomiFButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomiFButton.m; sourceTree = "<group>"; };
+		4B87BA7109C9AAE1005D6722 /* ifmetabase-internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ifmetabase-internal.h"; sourceTree = "<group>"; };
 		4B926F8805E7F9DA00E5C0EA /* ZoomCollapsableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomCollapsableView.h; sourceTree = "<group>"; };
 		4B926F8905E7F9DA00E5C0EA /* ZoomCollapsableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomCollapsableView.m; sourceTree = "<group>"; };
 		4B9ED9CF0602977C0049E468 /* Metal-Title.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Metal-Title.png"; sourceTree = "<group>"; };
@@ -1406,6 +1408,7 @@
 			children = (
 				4BECA81B05B19CFB006840BA /* ifmetadata.h */,
 				4BECA80005B19BE1006840BA /* ifmetadata.c */,
+				4B87BA7109C9AAE1005D6722 /* ifmetabase-internal.h */,
 				4BB8BED308B785B200D7D334 /* ifmetabase.h */,
 				4BB8BED408B785B200D7D334 /* ifmetabase.c */,
 			);
@@ -1448,6 +1451,7 @@
 				4B7CB1EA0936357900F3B8F6 /* ZoomPlugIn.h in Headers */,
 				4B43DAB109364CD700F03009 /* ZoomGlkWindowController.h in Headers */,
 				4B0CAB69097F0CBB00867EF4 /* ZoomGlkDocument.h in Headers */,
+				4B87BA7309C9AB13005D6722 /* ifmetabase-internal.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
