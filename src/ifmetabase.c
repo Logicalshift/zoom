@@ -16,11 +16,35 @@
 
 /* Functions - general metabase manipulation */
 
+static void FreeStory(IFStory story) {
+	IFMB_FreeId(story->id);
+	free(story);
+}
+
 /* Constructs a new, empty metabase */
-extern IFMetabase IFMB_Create();
+IFMetabase IFMB_Create() {
+	IFMetabase result = malloc(sizeof(struct IFMetabase));
+	
+	result->numStories = 0;
+	result->numIndexEntries = 0;
+	result->stories = NULL;
+	result->index = NULL;
+	
+	return result;
+}
 
 /* Frees up all the memory associated with a metabase */
-extern void IFMB_Free(IFMetabase meta);
+void IFMB_Free(IFMetabase meta) {
+	int x;
+	
+	for (x=0; x<meta->numStories; x++) {
+		FreeStory(meta->stories[x]);
+	}
+	
+	free(meta->index);
+	free(meta->stories);
+	free(meta);
+}
 
 /* Functions - IFIDs */
 
@@ -119,14 +143,14 @@ IFID IFMB_IdFromString(const char* idString) {
 	
 	/* Convert the start of the string to lowercase */
 	for (x=0; x<10 && idString[x] != 0; x++) {
-		lowerPrefix[x] = lowerPrefix[x];
+		lowerPrefix[x] = tolower(idString[x]);
 	}
 	
 	/* Record the length of the string */
 	idLen = strlen(idString);
 	
 	/* Try to parse a UUID */
-	if (idLen >= 39 && lowerPrefix[0] == 'u' && lowerPrefix[1] == 'u' && lowerPrefix[2] == 'i' && lowerPrefix[3] == 'd' && idString[4] == ':' && idString[5]) {
+	if (idLen >= 39 && lowerPrefix[0] == 'u' && lowerPrefix[1] == 'u' && lowerPrefix[2] == 'i' && lowerPrefix[3] == 'd' && idString[4] == ':' && idString[5] == '/' && idString[6] == '/') {
 		/* String begins with UUID://, characters 7 onwards make up the UUID itself, we're fairly casual about the parsing */
 		unsigned char uuid[16];			/* The that we've retrieved */
 		int uuidPos = 0;				/* The nibble that we're currently reading */
@@ -150,7 +174,8 @@ IFID IFMB_IdFromString(const char* idString) {
 			if (hexValue < -1) return NULL;
 			
 			/* Or it into the uuid value */
-			uuid[uuidPos>>1] |= hexValue<<(4*(uuidPos&1));
+			uuid[uuidPos>>1] |= hexValue<<(4*(1-(uuidPos&1)));
+			uuidPos++;
 		}
 		
 		/* If we haven't got 32 nibbles, then this is not a UUID */
@@ -158,7 +183,7 @@ IFID IFMB_IdFromString(const char* idString) {
 		
 		/* Remaining characters must be '/' or whitespace only */
 		for (; chrNum < idLen; chrNum++) {
-			if (!whitespace(idString[chrNum]) || idString[chrNum] != '/') return NULL;
+			if (!whitespace(idString[chrNum]) && idString[chrNum] != '/') return NULL;
 		}
 		
 		/* This is a UUID: return a suitable ID structure */
@@ -310,11 +335,13 @@ IFID IFMB_IdFromString(const char* idString) {
 		hexValue = hex(idString[pos]);
 		if (hexValue < 0) return NULL;
 		
-		md5[x>>1] |= hexValue<<(4*(x&1));
+		if (x >= 32) break;
+		md5[x>>1] |= hexValue<<(4*(1-(x&1)));
 
 		x++;
-		if (x >= 32) break;
 	}
+	
+	if (x < 32) return NULL;
 	
 	for (; idString[pos] != 0; pos++) {
 		if (!whitespace(idString[pos])) return NULL;
@@ -397,7 +424,7 @@ static int countIds(IFID compoundId) {
 		
 		count = 0;
 		for (x=0; x<compoundId->data.compound.count; x++) {
-			count += countIds(compoundId->data.compound.ids);
+			count += countIds(compoundId->data.compound.ids[x]);
 		}
 		
 		return count;
@@ -484,6 +511,27 @@ int IFMB_CompareIds(IFID a, IFID b) {
 			}
 			break;
 			
+		case ID_GLULX:
+			if (a->data.glulx.checksum > b->data.glulx.checksum) return 1;
+			if (a->data.glulx.checksum < b->data.glulx.checksum) return -1;
+				
+			if (a->data.glulx.release > b->data.glulx.release) return 1;
+			if (b->data.glulx.release < b->data.glulx.release) return -1;
+						
+			for (x=0; x<6; x++) {
+				if (a->data.glulx.serial[x] > b->data.glulx.serial[x]) return 1;
+				if (a->data.glulx.serial[x] < b->data.glulx.serial[x]) return -1;
+			}
+			break;
+			
+		case ID_GLULXNOTINFORM:
+			if (a->data.glulxNotInform.memsize > b->data.glulxNotInform.memsize) return 1;
+			if (a->data.glulxNotInform.memsize < b->data.glulxNotInform.memsize) return -1;
+			
+			if (a->data.glulxNotInform.checksum > b->data.glulxNotInform.checksum) return 1;
+			if (a->data.glulxNotInform.checksum < b->data.glulxNotInform.checksum) return -1;
+			break;
+			
 		case ID_COMPOUND:
 			if (a->data.compound.count > b->data.compound.count) return 1;
 			if (b->data.compound.count < b->data.compound.count) return -1;
@@ -540,17 +588,190 @@ IFID IFMB_CopyId(IFID ident) {
 
 /* Functions - stories */
 
-/* Retrieves the story in the metabase with the given ID */
-extern IFStory IFMB_GetStoryWithId(IFMetabase meta, IFID ident);
+/* Perform a binary search in the given metabase for a story with an ID 'close to' the specified identifier - returns the number of the index entry */
+static int NearestIndexNumber(IFMetabase meta, IFID ident) {
+	int top, bottom, compare;
+	
+	bottom = 0;
+	top = meta->numIndexEntries-1;
+	
+	while (top > bottom) {
+		int middle;
+		
+		middle = (top+bottom)>>1;
+		
+		compare = IFMB_CompareIds(ident, meta->index[middle].id);
+		
+		if (compare == 0) return middle;
+		if (compare == -1) bottom = middle + 1;
+		if (compare == 1) top = middle - 1;
+	}
+	
+	/* Return the first value that is less than the specified ID */
+	if (top >= meta->numIndexEntries) top--;
+	if (top >= 0) {
+		compare = IFMB_CompareIds(ident, meta->index[top].id);
+		
+		while (compare > 0 && top >= 0) {
+			top--;
+			if (top >= 0) compare = IFMB_CompareIds(ident, meta->index[top].id);
+		}
+	}
+	
+	return top;
+}
+
+/* Searches for an existing story with the specified identifier, returns NULL if none is found */
+static IFStory ExistingStoryWithId(IFMetabase meta, IFID ident) {
+	if (ident->type == ID_COMPOUND) {
+		/* For a compound ID, find the first story that matches any of the contained IDs */
+		int x;
+		
+		for (x=0; x<ident->data.compound.count; x++) {
+			IFStory story;
+			
+			story = ExistingStoryWithId(meta, ident->data.compound.ids[x]);
+			if (story != NULL) return story;
+		}
+		
+		/* Otherwise, return NULL */
+		return NULL;
+	} else {
+		/* For all others, just search for the ID */
+		int index;
+		
+		index = NearestIndexNumber(meta, ident);
+		if (index < 0 || index >= meta->numIndexEntries) return NULL;
+		
+		if (IFMB_CompareIds(ident, meta->index[index].id) == 0) 
+			return meta->stories[meta->index[index].storyNumber];
+		else
+			return NULL;
+	}
+}
+
+/* Indexes the specified story number using the specified identifier */
+/* If a compound ID, any IDs that could not be indexed (due to them already existing in the metabase) are set to ID_NULL as a side-effect */
+static int IndexStory(IFMetabase meta, int storyNum, IFID ident) {
+	if (ident->type == ID_NULL) {
+		return 0;
+	} else if (ident->type == ID_COMPOUND) {
+		/* Compound IDs are indexed according to their contents */
+		int x;
+		int indexed;
+		
+		indexed = 0;
+		for (x=0; x<ident->data.compound.count; x++) {
+			int indexedEntry;
+			
+			indexedEntry = IndexStory(meta, storyNum, ident->data.compound.ids[x]);
+			
+			if (indexedEntry) {
+				indexed = 1;
+			} else {
+				/* Got a story ID that does not identify a new story - set it to NULL */
+				ident->data.compound.ids[x]->type = ID_NULL;
+			}
+		}
+	} else {
+		int index;
+
+		/* Find the index entry after which to place this story */
+		index = NearestIndexNumber(meta, ident);
+		
+		/* Nothing to do if there's already an entry with this ID */
+		if (index >= 0 && IFMB_CompareIds(ident, meta->index[index].id) == 0) return 0;
+		
+		index++;
+		
+		/* Expand the index array */
+		meta->numIndexEntries++;
+		meta->index = realloc(meta->index, sizeof(IFIndexEntry)*meta->numIndexEntries);
+		
+		if (index < meta->numIndexEntries-1)
+			memmove(meta->index + index + 1, meta->index + index, sizeof(IFIndexEntry)*(meta->numIndexEntries-1-index));
+		
+		/* Add the new entry */
+		meta->index[index].id = ident;
+		meta->index[index].storyNumber = storyNum;
+		
+		return 1;
+	}
+}
+
+/* Retrieves the story in the metabase with the given ID (the story is created if it does not already exist) */
+IFStory IFMB_GetStoryWithId(IFMetabase meta, IFID ident) {
+	IFStory story;
+
+	/* Return the existing story if there's already an entry for this ID in the metabase */
+	story = ExistingStoryWithId(meta, ident);
+	if (story != NULL) return story;
+	
+	/* Otherwise, create a new story entry */
+	story = malloc(sizeof(struct IFStory));
+	story->id = IFMB_CopyId(ident);
+	story->number = meta->numStories;
+	
+	/* Add this story to the index */
+	meta->numStories++;
+	meta->stories = realloc(meta->stories, sizeof(IFStory)*meta->numStories);
+	meta->stories[meta->numStories-1] = story;
+	
+	IndexStory(meta, meta->numStories-1, story->id);
+	
+	return story;
+}
 
 /* Retrieves the ID associated with a given story object */
-extern IFID IFMB_IdForStory(IFStory story);
+IFID IFMB_IdForStory(IFStory story) {
+	return story->id;
+}
+
+/* Removes the story with the specified number from the index */
+static void UnindexStory(IFMetabase meta, int storyNum, IFID ident) {
+	if (ident->type == ID_NULL) {
+		/* NULL stories are never indexed */
+		return;
+	} else if (ident->type == ID_COMPOUND) {
+		int x;
+		
+		/* Compound stories are indexed by component - unindex those */
+		for (x=0; x<ident->data.compound.count; x++) {
+			UnindexStory(meta, storyNum, ident->data.compound.ids[x]);
+		}
+	} else {
+		int index;
+		
+		/* Find this entry in the index */
+		index = NearestIndexNumber(meta, ident);
+		if (index >= 0 && IFMB_CompareIds(ident, meta->index[index].id) != 0) return;
+		
+		/* Remove this entry from the index */
+		memmove(meta->index + index, meta->index + index + 1, sizeof(IFIndexEntry)*(meta->numIndexEntries - index - 1));
+		meta->numIndexEntries--;
+	}
+}
 
 /* Removes a story with the given ID from the metabase */
-extern IFID IFMB_RemoveStoryWithId(IFID ident);
+void IFMB_RemoveStoryWithId(IFMetabase meta, IFID ident) {
+	/* Get the story with this ID */
+	IFStory story = ExistingStoryWithId(meta, ident);
+	if (story == NULL) return;
+	
+	/* Remove this story from the indexes */
+	UnindexStory(meta, story->number, ident);
+	
+	/* Remove the story from the metabase list of stories (a stub always remains, a bit memory inefficient, but required for our index) */
+	meta->stories[story->number] = NULL;
+
+	/* Destroy the story itself */
+	FreeStory(story);
+}
 
 /* Returns non-zero if the metabase contains a story with a given ID */
-extern int IFMB_ContainsStoryWithId(IFID ident);
+int IFMB_ContainsStoryWithId(IFMetabase meta, IFID ident) {
+	return ExistingStoryWithId(meta, ident)!=NULL;
+}
 
 /* Returns a UTF-16 string for a given parameter in a story, or NULL if none was found */
 /* Copy this value away if you intend to retain it: it may be destroyed on the next IFMB_ call */

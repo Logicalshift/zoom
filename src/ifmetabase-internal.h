@@ -16,20 +16,38 @@
 
 #include "ifmetabase.h"
 
+/* IFMetabase index entry structure */
+
+typedef struct IFIndexEntry IFIndexEntry;
+
+struct IFIndexEntry {
+	IFID id;
+	int storyNumber;
+};
+
 /* The IFMetabase structure */
 
 struct IFMetabase {
+	int numStories;
+	IFStory* stories;
+	
+	int numIndexEntries;
+	IFIndexEntry* index;
 };
 
 /* The IFStory structure */
 
 struct IFStory {
+	int number;
+	IFID id;
 };
 
 /* IFID structure */
 
 struct IFID {
 	enum {
+		ID_NULL,
+		
 		ID_UUID,
 		ID_ZCODE,
 		ID_GLULX,

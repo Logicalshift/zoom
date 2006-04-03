@@ -13,6 +13,19 @@
  * The metabase is a set of functions designed for creating and manipulating metadata in the
  * 'iFiction' format. It deals with the metadata in an abstract sense: this library does not
  * define the external format of the data.
+ *
+ * A note on 'compound' IDs: these are intended for a story that has multiple possible IDs.
+ * The searching routines will return a story that contains any one of the IDs. So if you
+ * have a story with ID ZCODE-01-010101 and you search for a compound ID with 
+ * (ZCODE-02-020202, ZCODE-01-010101) you will get that story. BUT if no story exists with
+ * either ID yet, you will get a new story that has both IDs. Searching for either ID will
+ * produce the same story.
+ *
+ * Compound IDs are searched for in left-to-right order, so when using them, put the most
+ * relevant identifier first. (Eg, if using an MD5 identifier on a ZCode story, put it
+ * last, after the Zcode identifier). This ensures that the metabase always makes some
+ * sort of sense: doing this the other way round means that it's possible an entry won't
+ * be found for the zcode identifier, but will for the md5 one.
  */
 
 /* Data structures */
@@ -75,10 +88,10 @@ extern IFStory IFMB_GetStoryWithId(IFMetabase meta, IFID ident);
 extern IFID IFMB_IdForStory(IFStory story);
 
 /* Removes a story with the given ID from the metabase */
-extern IFID IFMB_RemoveStoryWithId(IFID ident);
+extern void IFMB_RemoveStoryWithId(IFMetabase meta, IFID ident);
 
 /* Returns non-zero if the metabase contains a story with a given ID */
-extern int IFMB_ContainsStoryWithId(IFID ident);
+extern int IFMB_ContainsStoryWithId(IFMetabase meta, IFID ident);
 
 /* Returns a UTF-16 string for a given parameter in a story, or NULL if none was found */
 /* Copy this value away if you intend to retain it: it may be destroyed on the next IFMB_ call */
