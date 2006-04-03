@@ -40,13 +40,22 @@ extern void IFMB_Free(IFMetabase meta);
 extern IFID IFMB_IdFromString(const char* idString);
 
 /* Returns an IFID based on the 16-byte UUID passed as an argument */
-extern IFID IFMB_UUID(const char* uuid);
+extern IFID IFMB_UUID(const unsigned char* uuid);
 
 /* Returns an IFID based on a Z-Code legacy identifier */
 extern IFID IFMB_ZcodeId(int release, const char* serial, int checksum);
 
+/* Returns an IFID based on a glulx identifier from an Inform-created game */
+extern IFID IFMB_GlulxId(int release, const char* serial, unsigned int checksum);
+
+/* Returns an IFID based on a generic glulx identifier */
+extern IFID IFMB_GlulxIdNotInform(unsigned int memsize, unsigned int checksum);
+
+/* Returns an IFID based on a MD5 identifier */
+extern IFID IFMB_Md5Id(const unsigned char* md5);
+
 /* Merges a set of IFIDs into a single ID */
-extern IFID IFMB_CompoundId(int count, IFID identifiers);
+extern IFID IFMB_CompoundId(int count, IFID* identifiers);
 
 /* Compares two IDs */
 extern int IFMB_CompareIds(IFID a, IFID b);

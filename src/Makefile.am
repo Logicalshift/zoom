@@ -53,6 +53,19 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/Skein/ZoomSkeinXML.m \
 	zoomCocoa/ZoomStoryTableView.h    zoomCocoa/ZoomStoryTableView.m \
 	zoomCocoa/ZoomTextToSpeech.h	  zoomCocoa/ZoomTextToSpeech.m \
+	zoomCocoa/ZoomHQImageView.h	  zoomCocoa/ZoomHQImageView.m \
+	zoomCocoa/PlugIns/ZoomGlkDocument.h \
+	zoomCocoa/PlugIns/ZoomGlkDocument.m \
+	zoomCocoa/PlugIns/ZoomGlkPlugIn.h \
+	zoomCocoa/PlugIns/ZoomGlkPlugIn.m \
+	zoomCocoa/PlugIns/ZoomGlkWindowController.h \
+	zoomCocoa/PlugIns/ZoomGlkWindowController.m \
+	zoomCocoa/PlugIns/ZoomGlulxe.h \
+	zoomCocoa/PlugIns/ZoomGlulxe.m \
+	zoomCocoa/PlugIns/ZoomPlugIn.h \
+	zoomCocoa/PlugIns/ZoomPlugIn.m \
+	zoomCocoa/ZoomWindowThatCanBecomeKey.h \
+	zoomCocoa/ZoomWindowThatCanBecomeKey.m \
 	zoomCocoa/Spotlight/MetadataImporter.h \
 	zoomCocoa/Spotlight/MetadataImporter.m \
 	zoomCocoa/Spotlight/schema.xml \
@@ -82,6 +95,10 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/Skein.nib/info.nib \
 	zoomCocoa/Skein.nib/keyedobjects.nib \
 	zoomCocoa/Skein.nib/objects.nib \
+	zoomCocoa/PlugIns/English.lproj/GlkWindow.nib/classes.nib \
+	zoomCocoa/PlugIns/English.lproj/GlkWindow.nib/info.nib \
+	zoomCocoa/PlugIns/English.lproj/GlkWindow.nib/keyedobjects.nib \
+	zoomCocoa/PlugIns/English.lproj/GlkWindow.nib/objects.nib \
 	infocom.iFiction archive.iFiction ifmetadata.c ifmetadata.h \
 	ifmetabase.c ifmetabase.h \
 	zoomCocoa/add-in.png 		zoomCocoa/add-out.png \

@@ -32,19 +32,32 @@ struct IFID {
 	enum {
 		ID_UUID,
 		ID_ZCODE,
+		ID_GLULX,
+		ID_GLULXNOTINFORM,
 		ID_MD5,
 		ID_COMPOUND
 	} type;
 	
 	union {
-		char uuid[16];
-		char md5[16];
+		unsigned char uuid[16];
+		unsigned char md5[16];
 		
 		struct {
 			int release;
 			char serial[6];
 			int checksum;
 		} zcode;
+		
+		struct {
+			int release;
+			char serial[6];
+			unsigned int checksum;
+		} glulx;
+		
+		struct {
+			unsigned int memsize;
+			unsigned int checksum;
+		} glulxNotInform;
 		
 		struct {
 			int count;
