@@ -16,7 +16,20 @@
 
 /* Functions - general metabase manipulation */
 
+static void FreeValue(IFValue value) {
+	int x;
+	
+	for (x=0; x<value->childCount; x++) {
+		FreeValue(value->children[x]);
+	}
+	
+	if (value->children != NULL) free(value->children);
+	if (value->value != NULL) free(value->value);
+	if (value->key != NULL) free(value->key);
+}
+
 static void FreeStory(IFStory story) {
+	FreeValue(story->root);
 	IFMB_FreeId(story->id);
 	free(story);
 }
@@ -41,8 +54,8 @@ void IFMB_Free(IFMetabase meta) {
 		FreeStory(meta->stories[x]);
 	}
 	
-	free(meta->index);
-	free(meta->stories);
+	if (meta->index != NULL) free(meta->index);
+	if (meta->stories != NULL) free(meta->stories);
 	free(meta);
 }
 
@@ -894,23 +907,55 @@ void IFMB_SetValue(IFStory story, const char* valueKey, IFChar* utf16value) {
 	
 	if (value->value != NULL) free(value->value);
 	
-	value->value = malloc(sizeof(IFChar)*(IFMB_StrLen(utf16value)+1));
-	IFMB_StrCpy(value->value, utf16value);
+	if (utf16value == NULL) {
+		value->value = NULL;
+	} else {
+		value->value = malloc(sizeof(IFChar)*(IFMB_StrLen(utf16value)+1));
+		IFMB_StrCpy(value->value, utf16value);
+	}
 }
 
 /* Functions - iterating */
 
 /* Gets an iterator covering all the stories in the given metabase */
-extern IFStoryIterator IFMB_GetStoryIterator(IFMetabase meta);
+IFStoryIterator IFMB_GetStoryIterator(IFMetabase meta) {
+	IFStoryIterator result = malloc(sizeof(struct IFStoryIterator));
+	
+	result->metabase = meta;
+	result->count = -1;
+}
 
 /* Gets an iterator covering all the values set in a story */
 extern IFValueIterator IFMB_GetValueIterator(IFStory story);
 
-/* Gets the next story defined in the metabase */
-extern IFStory IFMB_NextStory(IFStoryIterator iter);
+/* Gets the next story defined in the metabase (or NULL if there are no more) */
+IFStory IFMB_NextStory(IFStoryIterator iter) {
+	iter->count++;
+	
+	while (iter->count < iter->metabase->numStories && iter->metabase->stories[iter->count] == NULL) {
+		iter->count++;
+	}
+	
+	if (iter->count >= iter->metabase->numStories) return NULL;
+	
+	return iter->metabase->stories[iter->count];
+}
 
-/* Gets the next value set in a story */
-extern char* IFMB_NextValue(IFValueIterator iter);
+/* Moves to the next (or first) value: returns 0 if finished */
+extern int IFMB_NextValue(IFValueIterator iter);
+
+/* Retrieves the key from a value iterator */
+extern char* IFMB_KeyFromIterator(IFValueIterator iter);
+
+/* Retrieves the string value from a value iterator */
+extern IFChar* IFMB_ValueFromIterator(IFValueIterator iter);
+
+/* Frees the two types of iterator */
+void IFMB_FreeStoryIterator(IFStoryIterator iter) {
+	free(iter);
+}
+
+extern void IFMB_FreeValueIterator(IFValueIterator iter);
 
 /* Functions - basic UTF-16 string manipulation */
 
@@ -922,10 +967,22 @@ int IFMB_StrLen(const IFChar* a) {
 	return x;
 }
 
-extern int IFMB_StrCmp(const IFChar* a, const IFChar* b);
+int IFMB_StrCmp(const IFChar* a, const IFChar* b) {
+	int x;
+	
+	for (x=0; ; x++) {
+		if (a[x] > b[x]) return 1;
+		if (a[x] < b[x]) return -1;
+		
+		if (a[x] == 0) break;
+	}
+	
+	return 0;
+}
 
 void IFMB_StrCpy(IFChar* a, const IFChar* b) {
 	int x;
 	
 	for (x=0; b[x] != 0; x++) a[x] = b[x];
+	a[x] = 0;
 }

@@ -100,6 +100,11 @@ struct IFID {
 	} data;
 };
 
-/*  */
+/* Iterators */
+
+struct IFStoryIterator {
+	IFMetabase metabase;
+	int count;
+};
 
 #endif

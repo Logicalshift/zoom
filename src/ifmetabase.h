@@ -26,6 +26,10 @@
  * last, after the Zcode identifier). This ensures that the metabase always makes some
  * sort of sense: doing this the other way round means that it's possible an entry won't
  * be found for the zcode identifier, but will for the md5 one.
+ *
+ * These functions are not thread-safe, but should be re-entrant. That is, you can use
+ * this in multi-threaded applications provided that you use locks when individual 
+ * metabases.
  */
 
 /* Data structures */
@@ -111,8 +115,18 @@ extern IFValueIterator IFMB_GetValueIterator(IFStory story);
 /* Gets the next story defined in the metabase */
 extern IFStory IFMB_NextStory(IFStoryIterator iter);
 
-/* Gets the next value set in a story */
-extern char* IFMB_NextValue(IFValueIterator iter);
+/* Moves to the next (or first) value: returns 0 if finished */
+extern int IFMB_NextValue(IFValueIterator iter);
+
+/* Retrieves the key from a value iterator */
+extern char* IFMB_KeyFromIterator(IFValueIterator iter);
+
+/* Retrieves the string value from a value iterator */
+extern IFChar* IFMB_ValueFromIterator(IFValueIterator iter);
+
+/* Frees the two types of iterator */
+extern void IFMB_FreeStoryIterator(IFStoryIterator iter);
+extern void IFMB_FreeValueIterator(IFValueIterator iter);
 
 /* Functions - basic UTF-16 string manipulation */
 
