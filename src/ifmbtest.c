@@ -45,7 +45,7 @@ int main() {
 		
 		if (lastId != NULL) IFMB_FreeId(lastId);
 		
-		printf("OK\n");
+		printf("OK (%s)\n", IFMB_IdToString(id));
 		lastId = id;
 	}
 	

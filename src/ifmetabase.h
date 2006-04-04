@@ -56,6 +56,9 @@ extern void IFMB_Free(IFMetabase meta);
 /* Takes an ID string and produces a corresponding IFID structure, or NULL if the string is invalid */
 extern IFID IFMB_IdFromString(const char* idString);
 
+/* Takes an IFID and returns a string representation (the caller must free this) */
+extern char* IFMB_IdToString(IFID id);
+
 /* Returns an IFID based on the 16-byte UUID passed as an argument */
 extern IFID IFMB_UUID(const unsigned char* uuid);
 

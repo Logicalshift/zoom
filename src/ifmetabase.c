@@ -387,6 +387,71 @@ IFID IFMB_IdFromString(const char* idString) {
 	return IFMB_Md5Id(md5);
 }
 
+static char* Append(char* string, char* toAppend) {
+	string = realloc(string, sizeof(char)*(strlen(string)+strlen(toAppend)+1));
+	strcat(string, toAppend);
+	
+	return string;
+}
+
+/* Takes an IFID and returns a string representation (the caller must free this) */
+char* IFMB_IdToString(IFID id) {
+	char buffer[128];
+	char* result = malloc(sizeof(char));
+	unsigned char* code;
+	int x;
+	
+	result[0] = 0;
+	
+	switch (id->type) {
+		case ID_UUID:
+			result = Append(result, "UUID://");
+			
+			code = id->data.uuid;
+			snprintf(buffer, 128, "%02X%02X%02X%02X-%02X%02X-%02X%02X-%02X%02X-%02X%02X%02X%02X%02X%02X",
+					 code[0], code[1], code[2], code[3], code[4], code[5], code[6], code[7], 
+					 code[8], code[9], code[10], code[11], code[12], code[13], code[14], code[15]);
+			result = Append(result, buffer);
+			
+			result = Append(result, "//");
+			break;
+		
+		case ID_ZCODE:
+			if (id->data.zcode.checksum >= 0) {
+				snprintf(buffer, 128, "ZCODE-%i-%.6s-%04X", id->data.zcode.release, id->data.zcode.serial, id->data.zcode.checksum);
+			} else {
+				snprintf(buffer, 128, "ZCODE-%i-%.6s", id->data.zcode.release, id->data.zcode.serial);
+			}
+			
+			result = Append(result, buffer);
+			break;
+			
+		case ID_GLULX:
+			snprintf(buffer, 128, "GLULX-%i-%.6s-%08X", id->data.glulx.release, id->data.glulx.serial, id->data.glulx.checksum);
+			result = Append(result, buffer);
+			break;
+			
+		case ID_GLULXNOTINFORM:
+			snprintf(buffer, 128, "GLULX-%08X-%08X", id->data.glulxNotInform.memsize, id->data.glulxNotInform.checksum);
+			result = Append(result, buffer);
+			break;
+			
+		case ID_MD5:
+			for (x=0; x<16; x++) {
+				snprintf(buffer, 128, "%02X", id->data.md5[x]);
+				result = Append(result, buffer);
+			}
+			break;
+			
+		case ID_COMPOUND:
+		case ID_NULL:
+			result = Append(result, "NULL");
+			break;
+	}
+	
+	return result;
+}
+
 /* Returns an IFID based on the 16-byte UUID passed as an argument */
 IFID IFMB_UUID(const unsigned char* uuid) {
 	IFID result;
