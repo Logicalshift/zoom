@@ -25,6 +25,20 @@ struct IFIndexEntry {
 	int storyNumber;
 };
 
+/* IFStory value structure */
+
+typedef struct IFValue* IFValue;
+
+struct IFValue {
+	char* key;
+	IFChar* value;
+	
+	int childCount;
+	IFValue* children;
+	
+	IFValue parent;
+};
+
 /* The IFMetabase structure */
 
 struct IFMetabase {
@@ -40,6 +54,8 @@ struct IFMetabase {
 struct IFStory {
 	int number;
 	IFID id;
+	
+	IFValue root;
 };
 
 /* IFID structure */

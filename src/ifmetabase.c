@@ -712,6 +712,13 @@ IFStory IFMB_GetStoryWithId(IFMetabase meta, IFID ident) {
 	story->id = IFMB_CopyId(ident);
 	story->number = meta->numStories;
 	
+	story->root = malloc(sizeof(struct IFValue));
+	story->root->key = NULL;
+	story->root->value = NULL;
+	story->root->childCount = 0;
+	story->root->children = NULL;
+	story->root->parent = NULL;
+	
 	/* Add this story to the index */
 	meta->numStories++;
 	meta->stories = realloc(meta->stories, sizeof(IFStory)*meta->numStories);
@@ -773,12 +780,123 @@ int IFMB_ContainsStoryWithId(IFMetabase meta, IFID ident) {
 	return ExistingStoryWithId(meta, ident)!=NULL;
 }
 
+/* Finds the index of a value with the specified key */
+static int IndexForKey(IFValue parent, const char* key) {
+	int top, bottom, compare;
+	
+	/* Binary search for the key */
+	top = parent->childCount;
+	bottom = 0;
+	
+	while (top > bottom) {
+		int middle;
+		int compare;
+		
+		middle = (top+bottom)>>1;
+		
+		compare = strcmp(key, parent->children[middle]->key);
+		
+		if (compare == 0) return middle;
+		if (compare < 0) bottom = middle + 1;
+		if (compare > 0) top = middle - 1;
+	}
+	
+	/* Find the first value that's less than the key */
+	if (top >= 0 && top < parent->childCount) {
+		compare = strcmp(key, parent->children[top]->key);
+		
+		while (top >= 0 && compare > 0) {
+			top--;
+			
+			if (top >= 0) compare = strcmp(key, parent->children[top]->key);
+		}
+	}
+	
+	return top;
+}
+
+/* Finds a value using the specified path, from the specified value, optionally creating a new entry */
+static IFValue FindValue(IFValue root, const char* path, int createEntry) {
+	char* key;
+	int x, dividerPos;
+	IFValue childValue;
+	int index;
+	int found;
+	
+	/* Base case: no path */
+	if (path == NULL || path[0] == 0) return root;
+	
+	/* Get the key for this stage of the path */
+	for (x=0; path[x] != '.' && path[x] != '@' && path[x] != 0; x++);
+	dividerPos = x;
+	
+	key = malloc(sizeof(char)*dividerPos+1);
+	for (x=0; x<dividerPos; x++) key[x] = tolower(path[x]);
+	key[x] = 0;
+	
+	/* Set childValue to the value for this part of the key */
+	index = IndexForKey(root, key);
+	
+	found = 1;
+	if (index < 0 || strcmp(key, root->children[index]->key) != 0) found = 0;
+	
+	/* Return NULL if the key is not found and we're not creating a new entry */
+	if (!found && !createEntry) {
+		free(key);
+		return NULL;
+	}
+	
+	if (!found) {
+		/* If createEntry is true, and the entry is not found, create a new entry */
+		childValue = malloc(sizeof(struct IFValue));
+		
+		childValue->key = malloc(sizeof(char)*(strlen(key)+1));
+		strcpy(childValue->key, key);
+		childValue->value = NULL;
+		childValue->childCount = 0;
+		childValue->children = NULL;
+		childValue->parent = root;
+		
+		/* Add it to the list of entries for this node */
+		root->childCount++;
+		root->children = realloc(root->children, sizeof(IFValue)*root->childCount);
+		
+		index++;
+		memmove(root->children + index + 1, root->children + index,  sizeof(IFValue)*(root->childCount - 1 - index));
+		
+		root->children[index] = childValue;
+	} else {
+		childValue = root->children[index];
+	}
+	
+	/* Continue to the next branch */
+	if (path[dividerPos] == '.') dividerPos++;
+	
+	free(key);
+	return FindValue(childValue, path + dividerPos, createEntry);
+}
+
 /* Returns a UTF-16 string for a given parameter in a story, or NULL if none was found */
 /* Copy this value away if you intend to retain it: it may be destroyed on the next IFMB_ call */
-extern IFChar* IFMB_GetValue(IFStory story, const char* valueKey);
+IFChar* IFMB_GetValue(IFStory story, const char* valueKey) {
+	IFValue value = FindValue(story->root, valueKey, 0);
+	
+	if (value != NULL) {
+		return value->value;
+	} else {
+		return NULL;
+	}
+}
 
 /* Sets the UTF-16 string for a given parameter in the story (NULL to unset the parameter) */
-extern void IFMB_SetValue(IFStory story, const char* valueKey, IFChar* utf16value);
+void IFMB_SetValue(IFStory story, const char* valueKey, IFChar* utf16value) {
+	IFValue value = FindValue(story->root, valueKey, 1);
+	
+	if (value->value != NULL) free(value->value);
+	
+	value->value = malloc(sizeof(IFChar)*(IFMB_StrLen(utf16value)+1));
+	IFMB_StrCpy(value->value, utf16value);
+}
 
 /* Functions - iterating */
 
@@ -796,5 +914,18 @@ extern char* IFMB_NextValue(IFValueIterator iter);
 
 /* Functions - basic UTF-16 string manipulation */
 
+int IFMB_StrLen(const IFChar* a) {
+	int x;
+	
+	for (x=0; a[x] != 0; x++);
+	
+	return x;
+}
+
 extern int IFMB_StrCmp(const IFChar* a, const IFChar* b);
-extern void IFMB_StrCpy(IFChar* a, const IFChar* b);
+
+void IFMB_StrCpy(IFChar* a, const IFChar* b) {
+	int x;
+	
+	for (x=0; b[x] != 0; x++) a[x] = b[x];
+}

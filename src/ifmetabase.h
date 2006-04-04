@@ -116,6 +116,7 @@ extern char* IFMB_NextValue(IFValueIterator iter);
 
 /* Functions - basic UTF-16 string manipulation */
 
+extern int IFMB_StrLen(const IFChar* a);
 extern int IFMB_StrCmp(const IFChar* a, const IFChar* b);
 extern void IFMB_StrCpy(IFChar* a, const IFChar* b);
 
