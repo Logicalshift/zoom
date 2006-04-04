@@ -28,6 +28,29 @@ static void FreeValue(IFValue value) {
 	if (value->key != NULL) free(value->key);
 }
 
+static IFValue CopyValue(IFValue value) {
+	int x;
+	IFValue result;
+	
+	result = malloc(sizeof(struct IFValue));
+	
+	result->key = malloc(sizeof(char)*(strlen(value->key)+1));
+	result->value = malloc(sizeof(IFChar)*(IFMB_StrLen(value->value)+1));
+	result->childCount = value->childCount;
+	result->children = malloc(sizeof(IFValue)*value->childCount);
+	result->parent = NULL;
+	
+	strcpy(result->key, value->key);
+	IFMB_StrCpy(result->value, value->value);
+	
+	for (x=0; x<value->childCount; x++) {
+		result->children[x] = CopyValue(value->children[x]);
+		result->children[x]->parent = result;
+	}
+	
+	return result;
+}
+
 static void FreeStory(IFStory story) {
 	FreeValue(story->root);
 	IFMB_FreeId(story->id);
@@ -823,13 +846,50 @@ void IFMB_RemoveStoryWithId(IFMetabase meta, IFID ident) {
 	if (story == NULL) return;
 	
 	/* Remove this story from the indexes */
-	UnindexStory(meta, story->number, ident);
+	UnindexStory(meta, story->number, story->id);
 	
-	/* Remove the story from the metabase list of stories (a stub always remains, a bit memory inefficient, but required for our index) */
+	/* Remove the story from the metabase list of stories (a stub always remains - a bit memory inefficient, but required for our index) */
 	meta->stories[story->number] = NULL;
 
 	/* Destroy the story itself */
 	FreeStory(story);
+}
+
+/* Copies a story, optionally from another metabase, optionally to a new ID. id can be NULL to create the copy with the same ID as the original */
+void IFMB_CopyStory(IFMetabase meta, IFStory story, IFID id) {
+	IFStory oldStory;
+	IFStory newStory;
+	
+	if (id == NULL) id = story->id;
+	
+	/* Remove any stories that have the supplied ID */
+	oldStory = ExistingStoryWithId(meta, id);
+	while (oldStory != NULL) {
+		/* If oldStory is the same as the current story, reindex it with the new ID */
+		if (oldStory == story) {
+			UnindexStory(meta, oldStory->number, oldStory->id);
+			
+			IFMB_FreeId(oldStory->id);
+			oldStory->id = IFMB_CopyId(id);
+			
+			IndexStory(meta, oldStory->number, oldStory->id);
+			
+			return;
+		}
+		
+		/* Otherwise, remove oldStory from the metabase */
+		IFMB_RemoveStoryWithId(meta, oldStory->id);
+		
+		/* Get any other stories that match this ID */
+		oldStory = ExistingStoryWithId(meta, id);
+	}
+	
+	/* Get the story that we're going to write the values for the old story to */
+	newStory = IFMB_GetStoryWithId(meta, id);
+	
+	/* Copy the values */
+	FreeValue(newStory->root);
+	newStory->root = CopyValue(story->root);
 }
 
 /* Returns non-zero if the metabase contains a story with a given ID */

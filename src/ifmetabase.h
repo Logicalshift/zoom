@@ -97,6 +97,9 @@ extern IFID IFMB_IdForStory(IFStory story);
 /* Removes a story with the given ID from the metabase */
 extern void IFMB_RemoveStoryWithId(IFMetabase meta, IFID ident);
 
+/* Copies a story, optionally from another metabase, optionally to a new ID. id can be NULL to create the copy with the same ID as the original */
+extern void IFMB_CopyStory(IFMetabase meta, IFStory story, IFID id);
+
 /* Returns non-zero if the metabase contains a story with a given ID */
 extern int IFMB_ContainsStoryWithId(IFMetabase meta, IFID ident);
 
