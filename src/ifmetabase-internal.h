@@ -96,6 +96,8 @@ struct IFID {
 		struct {
 			int count;
 			IFID* ids;
+			
+			IFID* idsNotNull;
 		} compound;
 	} data;
 };
@@ -105,6 +107,14 @@ struct IFID {
 struct IFStoryIterator {
 	IFMetabase metabase;
 	int count;
+};
+
+struct IFValueIterator {
+	IFValue root;
+	int count;
+	
+	char* path;
+	char* pathBuf;
 };
 
 #endif

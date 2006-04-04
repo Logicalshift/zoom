@@ -432,7 +432,9 @@ IFID IFMB_Md5Id(const unsigned char* md5) {
 /* Merges a set of IFIDs into a single ID */
 static int countIds(IFID compoundId) {
 	/* Count the number of IDs in the flattened version of compoundId */
-	if (compoundId->type == ID_COMPOUND) {
+	if (compoundId->type == ID_NULL) {
+		return 0;
+	} else if (compoundId->type == ID_COMPOUND) {
 		int x, count;
 		
 		count = 0;
@@ -448,7 +450,9 @@ static int countIds(IFID compoundId) {
 
 static IFID* flattenIds(IFID compoundId, IFID* start) {
 	/* Flatten out the IDs in the compound ID into start (copies the IDs) */
-	if (compoundId->type == ID_COMPOUND) {
+	if (compoundId->type == ID_NULL) {
+		return start;
+	} else if (compoundId->type == ID_COMPOUND) {
 		int x;
 		IFID* pos = start;
 		
@@ -478,6 +482,7 @@ IFID IFMB_CompoundId(int count, IFID* identifiers) {
 
 	result->data.compound.count = numIds;
 	result->data.compound.ids = malloc(sizeof(IFID)*numIds);
+	result->data.compound.idsNotNull = NULL;
 	
 	lastId = result->data.compound.ids;
 	for (x=0; x < count; x++) {
@@ -485,6 +490,37 @@ IFID IFMB_CompoundId(int count, IFID* identifiers) {
 	}
 	
 	return result;
+}
+
+
+/* Retrieves the IDs that make up a compound ID: number is returned in count. Returns NULL if the ID is not compound */
+IFID* IFMB_SplitId(IFID id, int* count) {
+	*count = 1;
+	if (id->type != ID_COMPOUND) return NULL;
+	
+	if (id->data.compound.idsNotNull == NULL) {
+		int start, end, x;
+		
+		/* idsNotNull contains the IDs in this compound ID with the ID_NULL ones moved to the end */
+		id->data.compound.idsNotNull = malloc(sizeof(IFID)*id->data.compound.count);
+		
+		start = 0;
+		end = id->data.compound.count-1;
+		
+		for (x=0; x<id->data.compound.count; x++) {
+			IFID thisID = id->data.compound.ids[x];
+			
+			if (thisID->type == ID_NULL) {
+				id->data.compound.idsNotNull[end--] = thisID;
+			} else {
+				id->data.compound.idsNotNull[start++] = thisID;
+			}
+		}
+	}
+	
+	for (*count=0; *count < id->data.compound.count && id->data.compound.idsNotNull[*count]->type != ID_NULL; *count++);
+	
+	return id->data.compound.idsNotNull;
 }
 
 /* Compares two IDs */
@@ -575,6 +611,8 @@ void IFMB_FreeId(IFID ident) {
 		}
 		
 		free(ident->data.compound.ids);
+		
+		if (ident->data.compound.idsNotNull) free(ident->data.compound.idsNotNull);
 	}
 	
 	free(ident);
@@ -590,6 +628,7 @@ IFID IFMB_CopyId(IFID ident) {
 		int x;
 		
 		result->data.compound.ids = malloc(sizeof(IFID)*ident->data.compound.count);
+		result->data.compound.idsNotNull = NULL;
 		
 		for (x=0; x<ident->data.compound.count; x++) {
 			result->data.compound.ids[x] = IFMB_CopyId(ident->data.compound.ids[x]);
@@ -684,6 +723,11 @@ static int IndexStory(IFMetabase meta, int storyNum, IFID ident) {
 			} else {
 				/* Got a story ID that does not identify a new story - set it to NULL */
 				ident->data.compound.ids[x]->type = ID_NULL;
+				
+				if (ident->data.compound.idsNotNull) {
+					free(ident->data.compound.idsNotNull);
+					ident->data.compound.idsNotNull = NULL;
+				}
 			}
 		}
 	} else {
@@ -926,7 +970,21 @@ IFStoryIterator IFMB_GetStoryIterator(IFMetabase meta) {
 }
 
 /* Gets an iterator covering all the values set in a story */
-extern IFValueIterator IFMB_GetValueIterator(IFStory story);
+IFValueIterator IFMB_GetValueIterator(IFStory story) {
+	IFValueIterator result;
+	
+	result = malloc(sizeof(struct IFValueIterator));
+	
+	result->root = story->root;
+	result->count = -1;
+	
+	result->path = malloc(sizeof(char));
+	result->path[0] = 0;
+	
+	result->pathBuf = NULL;
+	
+	return result;
+}
 
 /* Gets the next story defined in the metabase (or NULL if there are no more) */
 IFStory IFMB_NextStory(IFStoryIterator iter) {
@@ -942,21 +1000,79 @@ IFStory IFMB_NextStory(IFStoryIterator iter) {
 }
 
 /* Moves to the next (or first) value: returns 0 if finished */
-extern int IFMB_NextValue(IFValueIterator iter);
+int IFMB_NextValue(IFValueIterator iter) {
+	iter->count++;
+	
+	if (iter->count < iter->root->childCount)
+		return 1;
+	else
+		return 0;
+}
 
 /* Retrieves the key from a value iterator */
-extern char* IFMB_KeyFromIterator(IFValueIterator iter);
+char* IFMB_KeyFromIterator(IFValueIterator iter) {
+	char* key;
+	
+	key = iter->root->children[iter->count]->key;
+	
+	/* Just return the key if this is the root iterator */
+	if (iter->path[0] == 0) return key;
+	
+	/* Otherwise build the full path to this key */
+	iter->pathBuf = realloc(iter->pathBuf, sizeof(char)*(strlen(key)+strlen(iter->path)+2));
+
+	strcpy(iter->pathBuf, iter->path);
+	if (key[0] != '@') strcat(iter->pathBuf, ".");
+	strcat(iter->pathBuf, key);
+	
+	return iter->pathBuf;
+}
+
+/* Retrieves the last part of the key from a value iterator */
+char* IFMB_SubkeyFromIterator(IFValueIterator iter) {
+	return iter->root->children[iter->count]->key;
+}
 
 /* Retrieves the string value from a value iterator */
-extern IFChar* IFMB_ValueFromIterator(IFValueIterator iter);
+IFChar* IFMB_ValueFromIterator(IFValueIterator iter) {
+	return iter->root->children[iter->count]->value;
+}
+
+/* Retrieves an iterator for the nodes underneath a given value (or NULL if there are none) */
+IFValueIterator IFMB_ChildrenFromIterator(IFValueIterator iter) {
+	IFValueIterator result;
+	IFValue newRoot;
+	
+	/* Get the new root of this iterator */
+	newRoot = iter->root->children[iter->count];
+	if (newRoot->childCount <= 0) return NULL;
+	
+	/* Construct a new value iterator for the children of this iterator */
+	result = malloc(sizeof(struct IFValueIterator));
+	
+	result->root = newRoot;
+	result->count = -1;
+	
+	result->path = malloc(sizeof(char));
+	result->path[0] = 0;
+	
+	result->pathBuf = NULL;
+	
+	return result;	
+}
 
 /* Frees the two types of iterator */
 void IFMB_FreeStoryIterator(IFStoryIterator iter) {
 	free(iter);
 }
 
-extern void IFMB_FreeValueIterator(IFValueIterator iter);
-
+void IFMB_FreeValueIterator(IFValueIterator iter) {
+	if (iter->path) free(iter->path);
+	if (iter->pathBuf) free(iter->pathBuf);
+	
+	free(iter);
+}
+	
 /* Functions - basic UTF-16 string manipulation */
 
 int IFMB_StrLen(const IFChar* a) {

@@ -74,6 +74,9 @@ extern IFID IFMB_Md5Id(const unsigned char* md5);
 /* Merges a set of IFIDs into a single ID */
 extern IFID IFMB_CompoundId(int count, IFID* identifiers);
 
+/* Retrieves the IDs that make up a compound ID: number is returned in count. Returns NULL if the ID is not compound */
+extern IFID* IFMB_SplitId(IFID id, int* count);
+
 /* Compares two IDs */
 extern int IFMB_CompareIds(IFID a, IFID b);
 
@@ -121,8 +124,14 @@ extern int IFMB_NextValue(IFValueIterator iter);
 /* Retrieves the key from a value iterator */
 extern char* IFMB_KeyFromIterator(IFValueIterator iter);
 
+/* Retrieves the last part of the key from a value iterator */
+extern char* IFMB_SubkeyFromIterator(IFValueIterator iter);
+
 /* Retrieves the string value from a value iterator */
 extern IFChar* IFMB_ValueFromIterator(IFValueIterator iter);
+
+/* Retrieves an iterator for the nodes underneath a given value (or NULL if there are none) */
+extern IFValueIterator IFMB_ChildrenFromIterator(IFValueIterator iter);
 
 /* Frees the two types of iterator */
 extern void IFMB_FreeStoryIterator(IFStoryIterator iter);
