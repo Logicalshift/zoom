@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 #include "ifmetabase.h"
+#include "ifmetaxml.h"
 
 int main() {
 	int x;
@@ -103,6 +104,17 @@ int main() {
 		
 		IFMB_FreeId(id);
 	}
+	
+	printf("\nReading iFiction...\n\n");
+	
+	FILE* iFiction = fopen("infocom.iFiction", "r");
+	char data[1024*512];
+	
+	size_t length = fread(data, 1, 1024*512, iFiction);
+	
+	printf("Parsing ... ");
+	IF_ReadIfiction(mb, data, length);
+	printf("OK\n");
 	
 	return 0;
 }

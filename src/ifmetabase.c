@@ -189,7 +189,7 @@ IFID IFMB_IdFromString(const char* idString) {
 	if (idLen >= 39 && lowerPrefix[0] == 'u' && lowerPrefix[1] == 'u' && lowerPrefix[2] == 'i' && lowerPrefix[3] == 'd' && idString[4] == ':' && idString[5] == '/' && idString[6] == '/') {
 		/* String begins with UUID://, characters 7 onwards make up the UUID itself, we're fairly casual about the parsing */
 		unsigned char uuid[16];			/* The that we've retrieved */
-		int uuidPos = 0;				/* The nibble that we're currently reading */
+		int uuidPos = 0;				/* The nybble that we're currently reading */
 		int chrNum;
 		
 		/* Clear the UUID */
@@ -214,7 +214,7 @@ IFID IFMB_IdFromString(const char* idString) {
 			uuidPos++;
 		}
 		
-		/* If we haven't got 32 nibbles, then this is not a UUID */
+		/* If we haven't got 32 nybbles, then this is not a UUID */
 		if (uuidPos != 32) return NULL;
 		
 		/* Remaining characters must be '/' or whitespace only */

@@ -130,7 +130,7 @@ static XML_Char* Xchomp(const XML_Char* a) {
 	 * Sequences of spaces are replaced with a single space
 	 * Spaces are removed from the beginning and end of the string
 	 *
-	 * The returned string should be released with free(), and is always as long as or shoter than a.
+	 * The returned string should be released with free(), and is always as long as or shorter than a.
 	 */
 	
 	XML_Char* result = malloc(sizeof(XML_Char)*(Xstrlen(a)+1));
