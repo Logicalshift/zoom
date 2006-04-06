@@ -24,7 +24,11 @@ typedef enum IFXmlError {
 	IFXmlVersionIsTooRecent,
 	
 	IFXmlMismatchedTags,
-	IFXmlUnrecognisedTag
+	IFXmlUnrecognisedTag,
+	
+	IFXmlBadId,
+	IFXmlBadZcodeSection,
+	IFXmlStoryWithNoId,
 } IFXmlError;
 
 /* Load the records contained in the specified */

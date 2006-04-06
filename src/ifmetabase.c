@@ -26,22 +26,33 @@ static void FreeValue(IFValue value) {
 	if (value->children != NULL) free(value->children);
 	if (value->value != NULL) free(value->value);
 	if (value->key != NULL) free(value->key);
+	
+	free(value);
 }
 
 static IFValue CopyValue(IFValue value) {
 	int x;
 	IFValue result;
 	
+	if (value == NULL) return NULL;
+	
 	result = malloc(sizeof(struct IFValue));
 	
-	result->key = malloc(sizeof(char)*(strlen(value->key)+1));
-	result->value = malloc(sizeof(IFChar)*(IFMB_StrLen(value->value)+1));
+	result->key = NULL;
+	result->value = NULL;
 	result->childCount = value->childCount;
 	result->children = malloc(sizeof(IFValue)*value->childCount);
 	result->parent = NULL;
 	
-	strcpy(result->key, value->key);
-	IFMB_StrCpy(result->value, value->value);
+	if (value->key != NULL) {
+		result->key = malloc(sizeof(char)*(strlen(value->key)+1));
+		strcpy(result->key, value->key);
+	}
+	
+	if (value->value != NULL) {
+		result->value = malloc(sizeof(IFChar)*(IFMB_StrLen(value->value)+1));
+		IFMB_StrCpy(result->value, value->value);
+	}
 	
 	for (x=0; x<value->childCount; x++) {
 		result->children[x] = CopyValue(value->children[x]);
@@ -74,7 +85,7 @@ void IFMB_Free(IFMetabase meta) {
 	int x;
 	
 	for (x=0; x<meta->numStories; x++) {
-		FreeStory(meta->stories[x]);
+		if (meta->stories[x] != NULL) FreeStory(meta->stories[x]);
 	}
 	
 	if (meta->index != NULL) free(meta->index);
@@ -636,16 +647,19 @@ int IFMB_CompareIds(IFID a, IFID b) {
 			break;
 			
 		case ID_ZCODE:
-			if (a->data.zcode.checksum > b->data.zcode.checksum) return 1;
-			if (a->data.zcode.checksum < b->data.zcode.checksum) return -1;
-			
 			if (a->data.zcode.release > b->data.zcode.release) return 1;
-			if (b->data.zcode.release < b->data.zcode.release) return -1;
+			if (a->data.zcode.release < b->data.zcode.release) return -1;
 				
 			for (x=0; x<6; x++) {
 				if (a->data.zcode.serial[x] > b->data.zcode.serial[x]) return 1;
 				if (a->data.zcode.serial[x] < b->data.zcode.serial[x]) return -1;
 			}
+
+			if (a->data.zcode.checksum >= 0 && b->data.zcode.checksum >= 0) {
+				if (a->data.zcode.checksum > b->data.zcode.checksum) return 1;
+				if (a->data.zcode.checksum < b->data.zcode.checksum) return -1;
+			}
+				
 			break;
 			
 		case ID_GLULX:
@@ -748,7 +762,8 @@ static int NearestIndexNumber(IFMetabase meta, IFID ident) {
 	}
 	
 	/* Return the first value that is less than the specified ID */
-	if (top >= meta->numIndexEntries) top--;
+	top++;
+	if (top >= meta->numIndexEntries) top = meta->numIndexEntries - 1;
 	if (top >= 0) {
 		compare = IFMB_CompareIds(ident, meta->index[top].id);
 		
@@ -757,6 +772,33 @@ static int NearestIndexNumber(IFMetabase meta, IFID ident) {
 			if (top >= 0) compare = IFMB_CompareIds(ident, meta->index[top].id);
 		}
 	}
+	
+#ifdef INDEXCHECK
+	if (top >= 0 && top < meta->numIndexEntries) {
+		compare = IFMB_CompareIds(ident, meta->index[top].id);		
+		if (compare > 0) {
+			printf("BAD FIND! %i\n", compare);
+			abort();
+		}
+	}
+	
+	if (top+1 < meta->numIndexEntries) {
+		compare = IFMB_CompareIds(ident, meta->index[top+1].id);		
+		if (compare != 1) {
+			printf("BAD FIND! %i\n", compare);
+			abort();
+		}
+	}
+	
+	for (bottom=1; bottom<meta->numIndexEntries; bottom++) {
+		compare = IFMB_CompareIds(meta->index[bottom-1].id, meta->index[bottom].id);
+		
+		if (compare != 1) {
+			printf("CORRUPTED! %i\n", compare);
+			abort();
+		}
+	}
+#endif
 	
 	return top;
 }
@@ -839,6 +881,11 @@ static int IndexStory(IFMetabase meta, int storyNum, IFID ident) {
 		/* Add the new entry */
 		meta->index[index].id = ident;
 		meta->index[index].storyNumber = storyNum;
+
+#ifdef INDEXCHECK
+		index = NearestIndexNumber(meta, ident);
+		if (index < 0 || IFMB_CompareIds(ident, meta->index[index].id) != 0) abort();
+#endif
 		
 		return 1;
 	}
@@ -896,11 +943,17 @@ static void UnindexStory(IFMetabase meta, int storyNum, IFID ident) {
 		
 		/* Find this entry in the index */
 		index = NearestIndexNumber(meta, ident);
+		if (index < 0) return;
 		if (index >= 0 && IFMB_CompareIds(ident, meta->index[index].id) != 0) return;
 		
 		/* Remove this entry from the index */
 		memmove(meta->index + index, meta->index + index + 1, sizeof(IFIndexEntry)*(meta->numIndexEntries - index - 1));
 		meta->numIndexEntries--;
+		
+#ifdef INDEXCHECK
+		index = NearestIndexNumber(meta, ident);
+		if (index >= 0 && IFMB_CompareIds(ident, meta->index[index].id) == 0) abort();
+#endif
 	}
 }
 
@@ -993,6 +1046,8 @@ static int IndexForKey(IFValue parent, const char* key) {
 			if (top >= 0) compare = strcmp(key, parent->children[top]->key);
 		}
 	}
+	
+	if (top >= parent->childCount) top--;
 	
 	return top;
 }

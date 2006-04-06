@@ -46,7 +46,9 @@ int main() {
 		
 		if (lastId != NULL) IFMB_FreeId(lastId);
 		
-		printf("OK (%s)\n", IFMB_IdToString(id));
+		char* string = IFMB_IdToString(id);
+		printf("OK (%s)\n", string);
+		free(string);
 		lastId = id;
 	}
 	
@@ -115,6 +117,19 @@ int main() {
 	printf("Parsing ... ");
 	IF_ReadIfiction(mb, data, length);
 	printf("OK\n");
+	
+	IFID zork1Id = IFMB_IdFromString("ZCODE-76-840509");
+	IFStory zork1 = IFMB_GetStoryWithId(mb, zork1Id);
+	IFChar* title = IFMB_GetValue(zork1, "bibliographic.title");
+	
+	printf("Should be Zork I title: ");
+	for (x=0; title[x] != 0; x++) {
+		printf("%c", title[x]);
+	}
+	printf("\n");
+	
+	IFMB_FreeId(zork1Id);
+	IFMB_Free(mb);
 	
 	return 0;
 }
