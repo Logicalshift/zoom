@@ -113,6 +113,10 @@ extern IFChar* IFMB_GetValue(IFStory story, const char* valueKey);
 /* Sets the UTF-16 string for a given parameter in the story (NULL to unset the parameter) */
 extern void IFMB_SetValue(IFStory story, const char* valueKey, IFChar* utf16value);
 
+/* Adds a duplicate value key. This duplicate key is the one that is accessed by the Set/Get value operators: iteration functions can be used to access the other values */
+/* Use this before calling IFMB_SetValue to set multiple values for the same key */
+extern void IFMB_AddValue(IFStory story, const char* valueKey);
+
 /* Functions - iterating */
 
 /* Gets an iterator covering all the stories in the given metabase */
@@ -120,6 +124,9 @@ extern IFStoryIterator IFMB_GetStoryIterator(IFMetabase meta);
 
 /* Gets an iterator covering all the values set in a story */
 extern IFValueIterator IFMB_GetValueIterator(IFStory story);
+
+/* Gets an iterator for all the values sharing a key */
+extern IFValueIterator IFMB_GetValueIteratorForKey(IFStory story, const char* valueKey);
 
 /* Gets the next story defined in the metabase */
 extern IFStory IFMB_NextStory(IFStoryIterator iter);
@@ -135,6 +142,12 @@ extern char* IFMB_SubkeyFromIterator(IFValueIterator iter);
 
 /* Retrieves the string value from a value iterator */
 extern IFChar* IFMB_ValueFromIterator(IFValueIterator iter);
+
+/* Deletes the value pointed to by this iterator (and any subvalues) */
+extern void IFMB_DeleteIteratorValue(IFValueIterator iter);
+
+/* Sets the value for an iterator */
+extern void IFMB_SetIteratorValue(IFValueIterator iter, IFChar* utf16value);
 
 /* Retrieves an iterator for the nodes underneath a given value (or NULL if there are none) */
 extern IFValueIterator IFMB_ChildrenFromIterator(IFValueIterator iter);

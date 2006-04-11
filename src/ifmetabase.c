@@ -1139,6 +1139,11 @@ void IFMB_SetValue(IFStory story, const char* valueKey, IFChar* utf16value) {
 	}
 }
 
+/* Adds a duplicate value key. This duplicate key is the one that is accessed by the Set/Get value operators: iteration functions can be used to access the other values */
+/* Use this before calling IFMB_SetValue to set multiple values for the same key */
+void IFMB_AddValue(IFStory story, const char* valueKey) {
+}
+
 /* Functions - iterating */
 
 /* Gets an iterator covering all the stories in the given metabase */
@@ -1239,6 +1244,24 @@ IFValueIterator IFMB_ChildrenFromIterator(IFValueIterator iter) {
 	result->pathBuf = NULL;
 	
 	return result;	
+}
+
+/* Gets an iterator for all the values sharing a key */
+IFValueIterator IFMB_GetValueIteratorForKey(IFStory story, const char* valueKey) {
+	return NULL;
+}
+
+/* Retrieves the string value from a value iterator */
+IFChar* IFMB_ValueFromIterator(IFValueIterator iter) {
+	return NULL;
+}
+
+/* Deletes the value pointed to by this iterator (and any subvalues) */
+void IFMB_DeleteIteratorValue(IFValueIterator iter) {
+}
+
+/* Sets the value for an iterator */
+void IFMB_SetIteratorValue(IFValueIterator iter, IFChar* utf16value) {
 }
 
 /* Frees the two types of iterator */
