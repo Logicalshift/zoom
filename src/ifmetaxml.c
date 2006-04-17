@@ -16,6 +16,8 @@
 
 #include "ifmetaxml.h"
 
+/* == Reading ifiction records == */
+
 #ifndef XMLCALL
 /* Not always defined? */
 # define XMLCALL
@@ -36,6 +38,8 @@ typedef struct IFXmlTag {
 	IFChar* value;
 	XML_Char* name;
 	int failed;
+	
+	char* path;
 	
 	struct IFXmlTag* parent;
 } IFXmlTag;
@@ -240,6 +244,7 @@ static XMLCALL void StartElement(void *userData,
 	tag->value = malloc(sizeof(IFChar));
 	tag->value[0] = 0;
 	tag->name = malloc(sizeof(char)*(strlen(name)+1));
+	tag->path = NULL;
 	strcpy(tag->name, name);
 	
 	tag->parent = state->tag;
@@ -360,6 +365,71 @@ static XMLCALL void StartElement(void *userData,
 		
 		/* == Version 1.0 identification and data format == */
 		
+		if (XCstrcmp(parent, "ifindex") == 0 && XCstrcmp(name, "story") == 0) {
+			
+			/* Start of a story tag */
+			
+			if (state->storyId != NULL) {
+				IFMB_FreeId(state->storyId);
+				state->storyId = NULL;
+			}
+			
+			IFMB_RemoveStoryWithId(state->tempMetabase, state->tempId);
+			state->story = IFMB_GetStoryWithId(state->tempMetabase, state->tempId);
+
+		} else if (XCstrcmp(name, "identification") == 0 || XCstrcmp(name, "id") == 0) {
+			/* Version 1.0 identification section (handled when closing the tag) */
+		} else if (XCstrcmp(parent, "identification") == 0 || XCstrcmp(parent, "id") == 0) {
+			/* Tag within a version 1.0 identification section (handled when closing the tag) */
+		} else if (state->story != NULL) {
+			
+			char* lastPath;
+			char* fullPath;
+			
+			/* Tag within a story */
+			
+			/* Concatenate the path with the path of the previous tag */
+			if (state->tag->parent->path == NULL) {
+				lastPath = "";
+			} else {
+				lastPath = state->tag->parent->path;
+			}
+			
+			fullPath = malloc(sizeof(XML_Char)*(strlen(lastPath) + 2 + strlen(name)));
+			
+			if (lastPath[0] != 0) {
+				strcpy(fullPath, lastPath);
+				strcat(fullPath, ".");
+				strcat(fullPath, name);
+			} else {
+				strcpy(fullPath, name);
+			}
+			
+			state->tag->path = fullPath;
+			
+			/* Add a key for this path */
+			IFMB_AddValue(state->story, fullPath);
+			
+			/* Add any attributes that were set */
+			for (x=0; atts[x] != NULL; x += 2) {
+				char* attributePath;
+				IFChar* attributeValue;
+				
+				/* Get the path for this attribute */
+				attributePath = malloc(strlen(fullPath)+strlen(atts[x])+2);
+				strcpy(attributePath, fullPath);
+				strcat(attributePath, "@");
+				strcat(attributePath, atts[x]);
+				
+				attributeValue = Xmdchar(atts[x+1], strlen(atts[x+1]));
+				
+				/* Set the value */
+				IFMB_SetValue(state->story, attributePath, attributeValue);
+				
+				/* Tidy up */
+				free(attributePath);
+			}
+		}
 	}
 }
 
@@ -535,6 +605,72 @@ static XMLCALL void EndElement(void *userData,
 		} else {
 			
 			/* == Handle version 1.00 tags == */
+			
+			if (XCstrcmp(parent, "identification") == 0 || XCstrcmp(parent, "id") == 0) {
+				
+				if (XCstrcmp(name, "ifid") == 0) {
+					IFID newId;
+					char* idValue;
+					int x;
+					
+					/* Construct the IFID used here */
+					idValue = malloc(sizeof(char)*(IFMB_StrLen(value)+1));
+					for (x=0; value[x] != 0; x++) {
+						idValue[x] = value[x];
+					}
+					idValue[x] = 0;
+					
+					newId = IFMB_IdFromString(idValue);
+					free(idValue);
+					
+					if (newId != NULL) {
+						
+						/* Merge with the story ID that we're building at the moment */
+						
+						if (state->storyId == NULL) {
+							state->storyId = newId;
+						} else {
+							IFID ids[2];
+							IFID compoundId;
+							
+							ids[0] = newId;
+							ids[1] = state->storyId;
+							
+							compoundId = IFMB_CompoundId(2, ids);
+							
+							IFMB_FreeId(newId);
+							IFMB_FreeId(state->storyId);
+							
+							state->storyId = compoundId;
+						}
+
+					} else {
+						
+						/* This ID is invalid */
+						Error(state, IFXmlBadId, NULL);
+						
+					}
+				}
+				
+			} else if (state->tag->path != NULL) {
+
+				/* Set the value for the current tag */
+				IFMB_SetValue(state->story, state->tag->path, value);
+
+			} else if (XCstrcmp(name, "story") == 0) {
+				
+				/* Store the story we've just finished building */
+				if (state->storyId != NULL) {
+					IFMB_CopyStory(state->meta, state->story, state->storyId);
+					
+					IFMB_FreeId(state->storyId);
+					state->storyId = NULL;
+					state->story = NULL;
+				} else {
+					Error(state, IFXmlStoryWithNoId, NULL);
+				}
+				
+			}
 		}
 	}
 	
@@ -542,6 +678,7 @@ static XMLCALL void EndElement(void *userData,
 	tag = state->tag;
 	state->tag = tag->parent;
 	
+	if (tag->path != NULL) free(tag->path);
 	free(tag->value);
 	free(tag->name);
 	free(tag);
@@ -582,4 +719,219 @@ static XMLCALL void CharData(void *userData,
 	
 	/* Tidy up after ourselves */
 	free(charData);
+}
+
+/* == Writing ifiction records == */
+
+static unsigned char* MakeUtf8Xml(IFChar* string, int allowNewlines) {
+	unsigned char* res = NULL;
+	int len = 0;
+	int pos = 0;
+	int x;
+	
+#define add(c) if (len <= pos) { len += 256; res = realloc(res, sizeof(unsigned char)*len); } res[pos++] = c
+	
+	for (x=0; string[x] != 0; x++) {
+		IFChar chr = string[x];
+		
+		switch (chr) {
+			case '<':
+				add('&'); add('l'); add('t'); add(';');
+				break;
+			case '>':
+				add('&'); add('g'); add('t'); add(';');
+				break;
+			case '&':
+				add('&'); add('a'); add('m'); add('p'); add(';');
+				break;
+			case '\'':
+				add('&'); add('a'); add('p'); add('o'); add('s'); add(';');
+				break;
+			case '\"':
+				add('&'); add('q'); add('u'); add('o'); add('t'); add(';');
+				break;
+			case '\n':
+				if (allowNewlines) {
+					add('<'); add('b'); add('r'); add('/'); add('>');
+				}
+				break;
+				
+			default:
+                if (chr < 0x20) {
+                    /* These are for the most part invalid */
+                    /* 
+					Actually, according to the XML spec, they are fine, but expat complains and pain often 
+					 results. This *will* prevent certain broken game files from indexing properly, and will
+					 generally result in duplicate entries in these cases.
+					 */
+				} else if (chr < 0x80) {
+					add(chr);
+				} else if (chr < 0x800) {
+					add(0xc0 | (chr>>6));
+					add(0x80 | (chr&0x3f));
+				} else if (chr < 0x10000) {
+					add(0xe0 | (chr>>12));
+					add(0x80 | ((chr>>6)&0x3f));
+					add(0x80 | (chr&0x3f));
+				} else if (chr < 0x200000) {
+					add(0xf0 | (chr>>18));
+					add(0x80 | ((chr>>12)&0x3f));
+					add(0x80 | ((chr>>6)&0x3f));
+					add(0x80 | (chr&0x3f));
+				} else {
+					/* These characters can't be represented by unicode anyway */
+				}
+		}
+	}
+	
+	add(0);
+	return res;
+}
+
+/* Stack of iterators that are being processed */
+typedef struct ValueStackItem {
+	IFValueIterator iterator;
+	struct ValueStackItem* previous;
+} ValueStackItem;
+
+void IF_WriteIfiction(IFMetabase meta, int(*writeFunction)(const char* bytes, int length, void* userData), void* userData) {
+#define w(s) { unsigned char* res = s; writeFunction(res, strlen(res), userData); }
+#define wu(s) { unsigned char* res; res = MakeUtf8Xml(s, 1); writeFunction(res, strlen(res), userData); free(res); }
+#define wun(s) { unsigned char* res; res = MakeUtf8Xml(s, 0); writeFunction(res, strlen(res), userData); free(res); }
+	
+	IFStoryIterator stories;
+	ValueStackItem* values;
+	
+	IFStory story;
+	int x;
+	
+	/* Write out the header */
+	w("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+	w("<ifindex version=\"1.0\">\n");
+	
+	/* Iterate through the stories */
+	stories = IFMB_GetStoryIterator(meta);
+	
+	while (story = IFMB_NextStory(stories)) {
+		int idCount;
+		IFID singleId[1];
+		IFID* storyIds;
+		
+		w(" <story>\n");
+		
+		/* Write out the IDs for the story */
+		/* TODO: <format>, <bafn>, etc */
+		
+		/* Get the IDs that apply to this story */
+		storyIds = IFMB_SplitId(IFMB_IdForStory(story), &idCount);
+		if (storyIds == NULL) {
+			singleId[0] = IFMB_IdForStory(story);
+			storyIds = singleId;
+			idCount = 1;
+		}
+		
+		/* Write them out in identification sections */
+		for (x=0; x<idCount; x++) {
+			char* idString;
+			
+			idString = IFMB_IdToString(storyIds[x]);
+			
+			w("  <identification><ifid>");
+			w(idString);
+			w("</ifid></identification>\n");
+		}
+		
+		/* Iterate through the values for this story */
+		values = malloc(sizeof(ValueStackItem));
+		
+		values->iterator = IFMB_GetValueIterator(story);
+		values->previous = NULL;
+		
+		while (values != NULL) {
+			if (IFMB_NextValue(values->iterator)) {
+				IFValueIterator subValues;
+				char* key;
+				
+				key = IFMB_SubkeyFromIterator(values->iterator);
+				
+				/* Ignore attribute keys */
+				if (key[0] == '@') continue;
+				
+				/* Open the tag for this value */
+				w("  <");
+				w(key);
+				
+				/* Write out any attributes that this tag might have */
+				subValues = IFMB_ChildrenFromIterator(values->iterator);
+				
+				while (subValues != NULL && IFMB_NextValue(subValues)) {
+					char* subKey;
+					
+					subKey = IFMB_SubkeyFromIterator(subValues);
+
+					if (subKey[0] == '@') {
+						w(" ");
+						w(subKey+1);
+						w("=\"");
+						wun(IFMB_ValueFromIterator(subValues));
+						w("\"");
+					}
+				}
+				
+				IFMB_FreeValueIterator(subValues);
+				
+				/* End of the opening tag */
+				w(">\n");
+				
+				/* Write the value itself */
+				w("   ");
+				wu(IFMB_ValueFromIterator(values->iterator));
+				w("\n");
+				
+				/* Get an iterator for any values underneath this one */
+				subValues = IFMB_ChildrenFromIterator(values->iterator);
+				
+				if (subValues == NULL) {
+					/* No child values */
+					w("  </");
+					w(IFMB_SubkeyFromIterator(values->iterator));
+					w(">\n");
+				} else {
+					/* Push this iterator onto the stack */
+					ValueStackItem* newValues;
+					
+					newValues = malloc(sizeof(ValueStackItem));
+					
+					newValues->iterator = subValues;
+					newValues->previous = values;
+					
+					values = newValues;
+				}
+				
+			} else {
+				
+				ValueStackItem* previousValues;
+				
+				/* Finished this iterator, move back to the last one */
+				previousValues = values->previous;
+				
+				IFMB_FreeValueIterator(values->iterator);
+				free(values);
+				
+				values = previousValues;
+				
+				/* Close the tag that we were writing */
+				if (values != NULL) {
+					w("  </");
+					w(IFMB_SubkeyFromIterator(values->iterator));
+					w(">\n");
+				}
+			}
+		}
+		
+		w(" </story>\n");
+	}
+	
+	/* Write out the footer */
+	w("</ifindex>\n");
 }

@@ -31,7 +31,10 @@ typedef enum IFXmlError {
 	IFXmlStoryWithNoId,
 } IFXmlError;
 
-/* Load the records contained in the specified */
+/* Load the records contained in the specified string into the specified metabase */
 extern void IF_ReadIfiction(IFMetabase meta, const unsigned char* xml, size_t size);
+
+/* Save the records contained in the specified metabase using the specified function */
+extern void IF_WriteIfiction(IFMetabase meta, int(*writeFunction)(const char* bytes, int length, void* userData), void* userData);
 
 #endif

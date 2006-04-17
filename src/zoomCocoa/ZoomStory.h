@@ -13,7 +13,7 @@ extern NSString* ZoomStoryDataHasChangedNotification;
 
 @class ZoomStoryID;
 @interface ZoomStory : NSObject<NSCopying> {
-	struct IFMDStory* story;
+	struct IFStory* story;
 	BOOL   needsFreeing;
 	
 	NSMutableDictionary* extraMetadata;
@@ -26,10 +26,10 @@ extern NSString* ZoomStoryDataHasChangedNotification;
 // Initialisation
 + (ZoomStory*) defaultMetadataForFile: (NSString*) filename;
 
-- (id) init;								// New story
-- (id) initWithStory: (struct IFMDStory*) story;   // Existing story (not freed)
+- (id) init;								// New story (DEPRECATED)
+- (id) initWithStory: (struct IFStory*) story;   // Existing story (not freed)
 
-- (struct IFMDStory*) story;
+- (struct IFStory*) story;
 - (void) addID: (ZoomStoryID*) newID;
 
 // Searching

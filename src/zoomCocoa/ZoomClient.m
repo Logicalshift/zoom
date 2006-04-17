@@ -13,7 +13,7 @@
 
 #import "ZoomAppDelegate.h"
 
-#import "ifmetadata.h"
+#import "ifmetabase.h"
 
 // This deserves a note by itself: the autosave system is a bit weird. Strange bits are
 // handled by strange objects for strange reasons. This is because we have:

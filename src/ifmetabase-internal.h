@@ -113,6 +113,7 @@ struct IFValueIterator {
 	IFValue root;
 	int count;
 	
+	char* key;
 	char* path;
 	char* pathBuf;
 };

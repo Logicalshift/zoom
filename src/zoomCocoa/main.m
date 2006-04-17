@@ -13,7 +13,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "ifmetadata.h"
+#include "ifmetabase.h"
 
 #ifdef DEBUG_BUILD
 static void reportLeaks(void) {

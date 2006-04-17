@@ -13,7 +13,7 @@
 #import "ZoomBlorbFile.h"
 #import "ZoomPreferences.h"
 
-#include "ifmetadata.h"
+#include "ifmetabase.h"
 
 NSString* ZoomStoryDataHasChangedNotification = @"ZoomStoryDataHasChangedNotification";
 NSString* ZoomStoryExtraMetadata = @"ZoomStoryExtraMetadata";
@@ -160,10 +160,13 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 // = Initialisation =
 
 - (id) init {
+	[NSException raise: @"ZoomCannotInitialiseStoryException"
+				format: @"Cannot initialise a ZoomStory object without a corresponding metabase"];
+	
 	self = [super init];
 	
 	if (self) {
-		story = IFStory_Alloc();
+		story = nil;
 		needsFreeing = YES;
 		
 		extraMetadata = nil;
@@ -177,7 +180,7 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	return self;
 }
 
-- (id) initWithStory: (IFMDStory*) s {
+- (id) initWithStory: (IFStory) s {
 	self = [super init];
 	
 	if (self) {
@@ -209,7 +212,7 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 }
 
 // = Accessors =
-- (struct IFMDStory*) story {
+- (struct IFStory*) story {
 	return story;
 }
 

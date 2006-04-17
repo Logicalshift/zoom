@@ -9,7 +9,7 @@
 #import "ZoomStoryID.h"
 #import "ZoomBlorbFile.h"
 
-#include "ifmetadata.h"
+#include "ifmetabase.h"
 
 @implementation ZoomStoryID
 
@@ -220,7 +220,7 @@
 	return self;
 }
 
-- (id) initWithIdent: (struct IFMDIdent*) idt {
+- (id) initWithIdent: (struct IFID*) idt {
 	self = [super init];
 	
 	if (self) {

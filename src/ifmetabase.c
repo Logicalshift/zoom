@@ -1031,7 +1031,14 @@ static int IndexForKey(IFValue parent, const char* key) {
 		
 		compare = strcmp(key, parent->children[middle]->key);
 		
-		if (compare == 0) return middle;
+		if (compare == 0) {
+			/* Have found the value: if there is more than one with the same key, then return the very last one */
+			while (middle+1 < parent->childCount && strcmp(key, parent->children[middle+1]->key) == 0)
+				middle++;
+			
+			return middle;
+		}
+		
 		if (compare < 0) bottom = middle + 1;
 		if (compare > 0) top = middle - 1;
 	}
@@ -1078,13 +1085,13 @@ static IFValue FindValue(IFValue root, const char* path, int createEntry) {
 	if (index < 0 || strcmp(key, root->children[index]->key) != 0) found = 0;
 	
 	/* Return NULL if the key is not found and we're not creating a new entry */
-	if (!found && !createEntry) {
+	if (!found && createEntry == 0) {
 		free(key);
 		return NULL;
 	}
 	
-	if (!found) {
-		/* If createEntry is true, and the entry is not found, create a new entry */
+	if (!found || (createEntry == 2 && path[dividerPos] == 0)) {
+		/* If createEntry is true, and the entry is not found (or this is the last entry and createEntry is 2), create a new entry */
 		childValue = malloc(sizeof(struct IFValue));
 		
 		childValue->key = malloc(sizeof(char)*(strlen(key)+1));
@@ -1116,7 +1123,9 @@ static IFValue FindValue(IFValue root, const char* path, int createEntry) {
 /* Returns a UTF-16 string for a given parameter in a story, or NULL if none was found */
 /* Copy this value away if you intend to retain it: it may be destroyed on the next IFMB_ call */
 IFChar* IFMB_GetValue(IFStory story, const char* valueKey) {
-	IFValue value = FindValue(story->root, valueKey, 0);
+	IFValue value;
+	
+	value = FindValue(story->root, valueKey, 0);
 	
 	if (value != NULL) {
 		return value->value;
@@ -1127,7 +1136,9 @@ IFChar* IFMB_GetValue(IFStory story, const char* valueKey) {
 
 /* Sets the UTF-16 string for a given parameter in the story (NULL to unset the parameter) */
 void IFMB_SetValue(IFStory story, const char* valueKey, IFChar* utf16value) {
-	IFValue value = FindValue(story->root, valueKey, 1);
+	IFValue value;
+	
+	value = FindValue(story->root, valueKey, 1);
 	
 	if (value->value != NULL) free(value->value);
 	
@@ -1142,6 +1153,7 @@ void IFMB_SetValue(IFStory story, const char* valueKey, IFChar* utf16value) {
 /* Adds a duplicate value key. This duplicate key is the one that is accessed by the Set/Get value operators: iteration functions can be used to access the other values */
 /* Use this before calling IFMB_SetValue to set multiple values for the same key */
 void IFMB_AddValue(IFStory story, const char* valueKey) {
+	FindValue(story->root, valueKey, 2);
 }
 
 /* Functions - iterating */
@@ -1163,6 +1175,7 @@ IFValueIterator IFMB_GetValueIterator(IFStory story) {
 	result->root = story->root;
 	result->count = -1;
 	
+	result->key = NULL;
 	result->path = malloc(sizeof(char));
 	result->path[0] = 0;
 	
@@ -1188,10 +1201,18 @@ IFStory IFMB_NextStory(IFStoryIterator iter) {
 int IFMB_NextValue(IFValueIterator iter) {
 	iter->count++;
 	
-	if (iter->count < iter->root->childCount)
-		return 1;
-	else
+	if (iter->count < iter->root->childCount) {
+		if (iter->key != NULL && strcmp(iter->root->children[iter->count]->key, iter->key) != 0) {
+			/* Return 0 if we've finished matching all the values with a given key */
+			return 0;
+		} else {
+			/* There are still more values in the iterator */
+			return 1; 
+		}
+	} else {
+		/* We've finished all of the values in this iterator */
 		return 0;
+	}
 }
 
 /* Retrieves the key from a value iterator */
@@ -1238,6 +1259,7 @@ IFValueIterator IFMB_ChildrenFromIterator(IFValueIterator iter) {
 	result->root = newRoot;
 	result->count = -1;
 	
+	result->key = NULL;
 	result->path = malloc(sizeof(char));
 	result->path[0] = 0;
 	
@@ -1248,20 +1270,116 @@ IFValueIterator IFMB_ChildrenFromIterator(IFValueIterator iter) {
 
 /* Gets an iterator for all the values sharing a key */
 IFValueIterator IFMB_GetValueIteratorForKey(IFStory story, const char* valueKey) {
-	return NULL;
-}
-
-/* Retrieves the string value from a value iterator */
-IFChar* IFMB_ValueFromIterator(IFValueIterator iter) {
-	return NULL;
+	char* path;
+	char* key;
+	int keyPos, x, valueKeyLen;
+	
+	IFValue root;
+	int keyIndex;
+	
+	IFValueIterator result;
+	
+	if (valueKey == NULL || valueKey[0] == 0) {
+		/* No key: this is the root iterator */
+		return IFMB_GetValueIterator(story);
+	}
+	
+	/* Find the location of the last divider character */
+	keyPos = 0;
+	
+	for (x=0; valueKey[x] != 0; x++) {
+		if (valueKey[x] == '.') {
+			keyPos = x;
+		}
+		
+		if (x>0 && valueKey[x] == '@') {
+			keyPos = x-1;
+		}
+	}
+	valueKeyLen = x;
+	
+	/* Split up the key into the path (which describes the location we iterate across) and the key (which describes which values we find) */
+	path = malloc(sizeof(char)*(keyPos+1));
+	key = malloc(sizeof(char)*(valueKeyLen-keyPos));
+	
+	for (x=0; x<keyPos; x++) {
+		path[x] = valueKey[x];
+	}
+	path[x] = 0;
+	
+	for (x=keyPos+1; valueKey[x] != 0; x++) {
+		key[x-(keyPos+1)] = valueKey[x];
+	}
+	key[x-(keyPos+1)] = 0;
+	
+	/* Locate the root value */
+	root = FindValue(story->root, path, 0);
+	
+	if (root == NULL) {
+		free(path);
+		free(key);
+		return NULL;
+	}
+	
+	/* Find the index for the key value */
+	keyIndex = IndexForKey(root, key);
+	
+	if (keyIndex < 0 || keyIndex >= root->childCount || strcmp(root->children[keyIndex]->key, key) != 0) {
+		free(path);
+		free(key);
+		return NULL;
+	}
+	
+	/* Move to the value before the first one with this key */
+	while (keyIndex >= 0 && strcmp(root->children[keyIndex]->key, key) == 0) {
+		keyIndex--;
+	}
+	
+	/* Create the iterator */
+	result = malloc(sizeof(struct IFValueIterator));
+	
+	result->root = root;
+	result->count = keyIndex;
+	
+	result->key = key;
+	result->path = path;
+	result->pathBuf = NULL;
+	
+	return result;
 }
 
 /* Deletes the value pointed to by this iterator (and any subvalues) */
 void IFMB_DeleteIteratorValue(IFValueIterator iter) {
+	IFValue root;
+	IFValue oldValue;
+	
+	/* Remember the value that we're going to delete */
+	root = iter->root;
+	oldValue = root->children[iter->count];
+	
+	/* Remove it from the list of values */
+	memmove(root->children + iter->count, root->children + iter->count + 1, root->childCount - iter->count - 1);
+	root->childCount--;
+	
+	FreeValue(oldValue);
+	
+	/* Move the iterator backwards, so the next value is correct */
+	iter->count--;
 }
 
 /* Sets the value for an iterator */
 void IFMB_SetIteratorValue(IFValueIterator iter, IFChar* utf16value) {
+	/* Free the old value for the key pointed to by the iterator */
+	if (iter->root->children[iter->count]->value != NULL) {
+		free(iter->root->children[iter->count]->value);
+		iter->root->children[iter->count]->value = NULL;
+	}
+	
+	/* Set the new value */
+	if (utf16value != NULL) {
+		iter->root->children[iter->count]->value = malloc(sizeof(IFChar)*(IFMB_StrLen(utf16value)+1));
+		IFMB_StrCpy(iter->root->children[iter->count]->value, utf16value);
+	}
 }
 
 /* Frees the two types of iterator */
@@ -1270,6 +1388,7 @@ void IFMB_FreeStoryIterator(IFStoryIterator iter) {
 }
 
 void IFMB_FreeValueIterator(IFValueIterator iter) {
+	if (iter->key) free(iter->key);
 	if (iter->path) free(iter->path);
 	if (iter->pathBuf) free(iter->pathBuf);
 	

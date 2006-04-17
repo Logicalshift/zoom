@@ -10,14 +10,14 @@
 
 
 @interface ZoomStoryID : NSObject<NSCopying, NSCoding> {
-	struct IFMDIdent* ident;
+	struct IFID* ident;
 	BOOL needsFreeing;
 }
 
 - (id) initWithZCodeStory: (NSData*) gameData;
 - (id) initWithZCodeFile: (NSString*) zcodeFile;
 - (id) initWithData: (NSData*) genericGameData;
-- (id) initWithIdent: (struct IFMDIdent*) ident;
+- (id) initWithIdent: (struct IFID*) ident;
 
 - (struct IFMDIdent*) ident;
 

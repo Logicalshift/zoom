@@ -21,7 +21,7 @@
 #import "ZoomRatingCell.h"
 #import "ZoomHQImageView.h"
 
-#import "ifmetadata.h"
+#import "ifmetabase.h"
 
 #ifndef NSAppKitVersionNumber10_2
 # define NSAppKitVersionNumber10_2 663
