@@ -19,6 +19,6 @@
 - (id) initWithData: (NSData*) genericGameData;
 - (id) initWithIdent: (struct IFID*) ident;
 
-- (struct IFMDIdent*) ident;
+- (struct IFID*) ident;
 
 @end

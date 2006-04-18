@@ -220,241 +220,186 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	int ident;
 	int foundID = -1;
 	
-	for (ident = 0; ident<story->numberOfIdents; ident++) {
-		if (IFID_Compare(story->idents[ident], [newID ident]) == 0) {
-			foundID = ident; break;
-		}
-	}
+	IFID oldId = IFMB_IdForStory(story);
 	
-	if (foundID >= 0) {
-		if (story->idents[foundID]->dataFormat == IFFormat_ZCode) {
-			if (story->idents[foundID]->data.zcode.checksum == 0x10000) {
-				story->idents[foundID]->data.zcode.checksum = [newID ident]->data.zcode.checksum;
-			}
-		}
-	} else {
-		story->numberOfIdents++;
-		story->idents = realloc(story->idents, sizeof(IFMDIdent)*story->numberOfIdents);
-		story->idents[story->numberOfIdents-1] = IFID_Alloc();
-		IFIdent_Copy(story->idents[story->numberOfIdents-1], [newID ident]);
+	if (IFMB_CompareIds(oldId, [newID ident]) != 0) {
+		IFID newIdArray[2] = { oldId, [newID ident] };
+		IFID newStoryId = IFMB_CompoundId(2, newIdArray);
+		
+		IFMB_CopyStory(NULL, story, newStoryId);
+		IFMB_FreeId(newStoryId);
 	}
 }
 
 - (NSString*) title {
-	if (story && story->data.title) {
-		return [(NSString*)IFStrCpyCF(story->data.title) autorelease];
-	}
-	
-	return @"";
+	return [self objectForKey: @"title"];
 }
 
 - (NSString*) headline {
-	if (story && story->data.headline) {
-		return [(NSString*)IFStrCpyCF(story->data.headline) autorelease];
-	}
-	
-	return @"";
+	return [self objectForKey: @"headline"];
 }
 
 - (NSString*) author {
-	if (story && story->data.author) {
-		return [(NSString*)IFStrCpyCF(story->data.author) autorelease];
-	}
-	
-	return @"";
+	return [self objectForKey: @"author"];
 }
 
 - (NSString*) genre {
-	if (story && story->data.genre) {
-		return [(NSString*)IFStrCpyCF(story->data.genre) autorelease];
-	}
-	
-	return @"";
+	return [self objectForKey: @"genre"];
 }
 
 - (int) year {
-	if (story) return story->data.year;
-	return 0;
+	NSString* stringYear = [self objectForKey: @"year"];
+	
+	if (stringYear)
+		return [stringYear intValue];
+	else
+		return 0;
 }
 
 - (NSString*) group {
-	if (story && story->data.group) {
-		return [(NSString*)IFStrCpyCF(story->data.group) autorelease];
-	}
-	
-	return @"";
+	return [self objectForKey: @"group"];
 }
 
 - (unsigned) zarfian {
-	if (story) return story->data.zarfian;
+	NSString* zarfian = [[self objectForKey: @"zarfian"] lowercaseString];
+	
+	if ([zarfian isEqualToString: @"merciful"]) {
+		return IFMD_Merciful;
+	} else if ([zarfian isEqualToString: @"polite"]) {
+		return IFMD_Polite;
+	} else if ([zarfian isEqualToString: @"tough"]) {
+		return IFMD_Tough;
+	} else if ([zarfian isEqualToString: @"nasty"]) {
+		return IFMD_Nasty;
+	} else if ([zarfian isEqualToString: @"cruel"]) {
+		return IFMD_Cruel;
+	}
+
 	return IFMD_Unrated;
 }
 
 - (NSString*) teaser {
-	if (story && story->data.teaser) {
-		return [(NSString*)IFStrCpyCF(story->data.teaser) autorelease];
-	}
-	
-	return @"";
+	return [self objectForKey: @"teaser"];
 }
 
 - (NSString*) comment {
-	if (story && story->data.comment) {
-		return [(NSString*)IFStrCpyCF(story->data.comment) autorelease];
-	}
-	
-	return @"";
+	return [self objectForKey: @"comment"];
 }
 
 - (float)     rating {
-	if (story) return story->data.rating;
-	return -1;
+	NSString* rating = [self objectForKey: @"rating"];
+	
+	if (rating) {
+		return [rating floatValue];
+	} else {
+		return -1;
+	}
 }
 
 - (int) coverPicture {
-	if (story) return story->data.coverpicture;
-	return -1;
+	NSString* coverPicture = [self objectForKey: @"coverpicture"];
+	
+	if (coverPicture) {
+		return [coverPicture intValue];
+	} else {
+		return -1;
+	}
 }
 
 - (NSString*) description {
-	if (story && story->data.description) {
-		return [(NSString*)IFStrCpyCF(story->data.description) autorelease];
-	}
-	return NULL;
+	return [self objectForKey: @"description"];
 }
 
 // = Setting data =
 
 // Setting data
 - (void) setTitle: (NSString*) newTitle {
-	if (story->data.title) {
-		free(story->data.title);
-		story->data.title = NULL;
-	}
-	
-	if (newTitle) {
-		story->data.title = IFMakeStrCF((CFStringRef)newTitle);
-	}
-	
-	[self heyLookThingsHaveChangedOohShiney];
+	[self setObject: newTitle
+			 forKey: @"title"];
 }
 
 - (void) setHeadline: (NSString*) newHeadline {
-	if (story->data.headline) {
-		free(story->data.headline);
-		story->data.headline = NULL;
-	}
-	
-	if (newHeadline) {
-		story->data.headline = IFMakeStrCF((CFStringRef)newHeadline);
-	}
-	
-	[self heyLookThingsHaveChangedOohShiney];
+	[self setObject: newHeadline
+			 forKey: @"headline"];
 }
 
 - (void) setAuthor: (NSString*) newAuthor {
-	if (story->data.author) {
-		free(story->data.author);
-		story->data.author = NULL;
-	}
-	
-	if (newAuthor) {
-		story->data.author = IFMakeStrCF((CFStringRef)newAuthor);
-	}
-	
-	[self heyLookThingsHaveChangedOohShiney];
+	[self setObject: newAuthor
+			 forKey: @"author"];
 }
 
 - (void) setGenre: (NSString*) genre {
-	if (story->data.genre) {
-		free(story->data.genre);
-		story->data.genre = NULL;
-	}
-	
-	if (genre) {
-		story->data.genre = IFMakeStrCF((CFStringRef)genre);
-	}
-	
-	[self heyLookThingsHaveChangedOohShiney];
+	[self setObject: genre
+			 forKey: @"genre"];
 }
 
 - (void) setYear: (int) year {
-	story->data.year = year;
-	
-	[self heyLookThingsHaveChangedOohShiney];
+	if (year > 0) {
+		[self setObject: [NSString stringWithFormat: @"%i", year]
+				 forKey: @"year"];
+	} else {
+		[self setObject: nil
+				 forKey: @"year"];
+	}
 }
 
 - (void) setGroup: (NSString*) group {
-	if (story->data.group) {
-		free(story->data.group);
-		story->data.group = NULL;
-	}
-	
-	if (group) {
-		story->data.group = IFMakeStrCF((CFStringRef)group);
-	}
-	
-	[self heyLookThingsHaveChangedOohShiney];
+	[self setObject: group
+			 forKey: @"group"];
 }
 
 - (void) setZarfian: (unsigned) zarfian {
-	story->data.zarfian = zarfian;
+	NSString* narf = nil; /* Are you pondering what I'm pondering? */
 	
-	[self heyLookThingsHaveChangedOohShiney];
+	switch (zarfian) {
+		case IFMD_Merciful: narf = @"Merciful"; break;
+		case IFMD_Polite: narf = @"Polite"; break;
+		case IFMD_Tough: narf = @"Tough"; break;
+		case IFMD_Nasty: narf = @"Nasty"; break;
+		case IFMD_Cruel: narf = @"Cruel"; break;
+	}
+	
+	[self setValue: narf
+			forKey: @"zarfian"];
 }
 
 - (void) setTeaser: (NSString*) teaser {
-	if (story->data.teaser) {
-		free(story->data.teaser);
-		story->data.teaser = NULL;
-	}
-	
-	if (teaser) {
-		story->data.teaser = IFMakeStrCF((CFStringRef)teaser);
-	}
-	
-	[self heyLookThingsHaveChangedOohShiney];
+	[self setObject: teaser
+			 forKey: @"teaser"];
 }
 
 - (void) setComment: (NSString*) comment {
-	if (story->data.comment) {
-		free(story->data.comment);
-		story->data.comment = NULL;
-	}
-	
-	if (comment) {
-		story->data.comment = IFMakeStrCF((CFStringRef)comment);
-	}
-	
-	[self heyLookThingsHaveChangedOohShiney];
+	[self setObject: comment
+			 forKey: @"comment"];
 }
 
 - (void) setRating: (float) rating {
-	story->data.rating = rating;
-	
-	[self heyLookThingsHaveChangedOohShiney];
+	if (rating >= 0) {
+		[self setObject: [NSString stringWithFormat: @"%g", rating]
+				 forKey: @"rating"];
+	} else {
+		[self setObject: nil
+				 forKey: @"rating"];
+	}
 }
 
 - (void) setCoverPicture: (int) coverpicture {
-	story->data.coverpicture = coverpicture;
-	
-	[self heyLookThingsHaveChangedOohShiney];
+	if (coverpicture >= 0) {
+		[self setObject: [NSString stringWithFormat: @"%i", coverpicture]
+				 forKey: @"coverpicture"];
+	} else {
+		[self setObject: nil
+				 forKey: @"coverpicture"];
+	}
 }
 
 - (void) setDescription: (NSString*) description {
-	if (story->data.description) {
-		free(story->data.description);
-		story->data.description = NULL;
-	}
-	
-	if (description) {
-		story->data.description = IFMakeStrCF((CFStringRef)description);
-	}
-	
-	[self heyLookThingsHaveChangedOohShiney];
+	[self setObject: description
+			 forKey: @"description"];
 }
 
 // = NSCopying =
+/*
 - (id) copyWithZone: (NSZone*) zone {
 	IFMDStory* newStory = IFStory_Alloc();
 	IFStory_Copy(newStory, story);
@@ -466,6 +411,7 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	
 	return res;
 }
+*/
 
 // = Story pseudo-dictionary methods =
 - (void) loadExtraMetadata {
@@ -523,45 +469,64 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	}
 }
 
+- (NSString*) newKeyForOld: (NSString*) key {
+	if ([key isEqualToString: @"title"]) {
+		return @"bibliographic.title";
+	} else if ([key isEqualToString: @"headline"])  {
+		return @"bibliographic.headline";
+	} else if ([key isEqualToString: @"author"]) {
+		return @"bibliographic.author";
+	} else if ([key isEqualToString: @"genre"]) {
+		return @"bibliographic.genre";
+	} else if ([key isEqualToString: @"group"]) {
+		return @"bibliographic.group";
+	} else if ([key isEqualToString: @"year"]) {
+		return @"bibliographic.firstpublished";
+	} else if ([key isEqualToString: @"zarfian"]) {
+		return @"bibliographic.forgiveness";
+	} else if ([key isEqualToString: @"teaser"]) {
+		return @"zoom.teaser";
+	} else if ([key isEqualToString: @"comment"]) {
+		return @"zoom.comment";
+	} else if ([key isEqualToString: @"rating"]) {
+		return @"zoom.rating";
+	} else if ([key isEqualToString: @"description"]) {
+		return @"bibliographic.description";
+	} else if ([key isEqualToString: @"coverpicture"]) {
+		return @"zcode.coverpicture";
+	}
+
+	int x;
+	
+	for (x=0; x<[key length]; x++) {
+		if ([key characterAtIndex: x] == '.') return key;
+	}
+	
+	return [NSString stringWithFormat: @"zoom.extra.%@", key];
+}
+
 - (id) objectForKey: (id) key {
 	if (![key isKindOfClass: [NSString class]]) {
-		[NSException raise: @"ZoomKeyNotString" format: @"Metadata key is not a string"];
+		[NSException raise: @"ZoomKeyNotString" 
+					format: @"Metadata key is not a string"];
 		return nil;
 	}
 	
-	if ([key isEqualToString: @"title"]) {
-		return [self title];
-	} else if ([key isEqualToString: @"headline"])  {
-		return [self headline];
-	} else if ([key isEqualToString: @"author"]) {
-		return [self author];
-	} else if ([key isEqualToString: @"genre"]) {
-		return [self genre];
-	} else if ([key isEqualToString: @"group"]) {
-		return [self group];
-	} else if ([key isEqualToString: @"year"]) {
-		int year = [self year];
+	id newKey = [self newKeyForOld: key];
+	IFChar* value = IFMB_GetValue(story, [newKey UTF8String]);
+	
+	if (value != nil) {
+		int len = IFMB_StrLen(value);
+		unichar* characters = malloc(sizeof(unichar)*len);
+		int x;
 		
-		if (year <= 0) return nil;
+		for (x=0; x<len; x++) characters[x] = value[x];
 		
-		return [NSString stringWithFormat: @"%i", year];
-	} else if ([key isEqualToString: @"zarfian"]) {
-		//return [self zarfian];
-		return @"IMPLEMENT ME";
-	} else if ([key isEqualToString: @"teaser"]) {
-		return [self teaser];
-	} else if ([key isEqualToString: @"comment"]) {
-		return [self comment];
-	} else if ([key isEqualToString: @"rating"]) {
-		float rating = [self rating];
+		NSString* result = [NSString stringWithCharacters: characters
+												   length: len];
 		
-		if (rating < 0) return nil;
-		
-		return [NSString stringWithFormat: @"%05.2f", rating];
-	} else if ([key isEqualToString: @"description"]) {
-		return [self description];
-	} else if ([key isEqualToString: @"coverpicture"]) {
-		return [NSNumber numberWithInt: [self coverPicture]];
+		free(characters);
+		return result;
 	} else {
 		[self loadExtraMetadata];
 		return [extraMetadata objectForKey: key];
@@ -583,43 +548,28 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 		[NSException raise: @"ZoomKeyNotString" format: @"Metadata key is not a string"];
 		return;
 	}
-
-	if ([key isEqualToString: @"title"]) {
-		[self setTitle: value];
-	} else if ([key isEqualToString: @"headline"])  {
-		[self setHeadline: value];
-	} else if ([key isEqualToString: @"author"]) {
-		[self setAuthor: value];
-	} else if ([key isEqualToString: @"genre"]) {
-		[self setGenre: value];
-	} else if ([key isEqualToString: @"group"]) {
-		[self setGroup: value];
-	} else if ([key isEqualToString: @"year"]) {
-		if (value == nil || [(NSString*)value length] == 0) [self setYear: 0];
-		else [self setYear: atoi([value cString])];
-	} else if ([key isEqualToString: @"zarfian"]) {
-		// IMPLEMENT ME
-	} else if ([key isEqualToString: @"teaser"]) {
-		[self setTeaser: value];
-	} else if ([key isEqualToString: @"comment"]) {
-		[self setComment: value];
-	} else if ([key isEqualToString: @"rating"]) {
-		if (value == nil || [(NSString*)value length] == 0) [self setRating: -1];
-		else [self setRating: atof([value cString])];
-	} else if ([key isEqualToString: @"description"]) {
-		[self setDescription: value];
-	} else if ([key isEqualToString: @"coverpicture"]) {
-		[self setCoverPicture: [value intValue]];
-	} else {
-		[self loadExtraMetadata];
-		if (value == nil) {
-			[extraMetadata removeObjectForKey: key];
-		} else {
-			[extraMetadata setObject: value
-							  forKey: key];
+	
+	IFChar* metaValue = nil;
+	
+	if (value != nil) {
+		metaValue = malloc(sizeof(IFChar)*([value length]+1));
+		
+		unichar* characters = malloc(sizeof(unichar)*[value length]);
+		int x;
+		
+		[value getCharacters: characters];
+		
+		for (x=0; x<[value length]; x++) {
+			metaValue[x] = characters[x];
 		}
-		[self storeExtraMetadata];
+		
+		free(characters);
 	}
+	
+	IFMB_SetValue(story, [key UTF8String], metaValue);
+	if (metaValue) free(metaValue);
+	
+	[self heyLookThingsHaveChangedOohShiney];
 }
 
 // Searching
@@ -671,9 +621,18 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	NSMutableArray* idArray = [NSMutableArray array];
 	
 	int ident;
+	int count;
 	
-	for (ident = 0; ident < story->numberOfIdents; ident++) {
-		ZoomStoryID* theId = [[ZoomStoryID alloc] initWithIdent: story->idents[ident]];
+	IFID singleId[1] = { IFMB_IdForStory(story) };
+	IFID* ids = IFMB_SplitId(singleId[0], &count);
+	
+	if (ids == NULL) {
+		ids = singleId;
+		count = 1;
+	}
+	
+	for (ident = 0; ident < count; ident++) {
+		ZoomStoryID* theId = [[ZoomStoryID alloc] initWithIdent: ids[ident]];
 		if (theId) {
 			[idArray addObject: theId];
 			[theId release];

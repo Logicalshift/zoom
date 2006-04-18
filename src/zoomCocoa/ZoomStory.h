@@ -11,8 +11,17 @@
 // Notifications
 extern NSString* ZoomStoryDataHasChangedNotification;
 
+enum IFMB_Zarfian {
+	IFMD_Unrated = 0x0,
+	IFMD_Merciful,
+	IFMD_Polite,
+	IFMD_Tough,
+	IFMD_Nasty,
+	IFMD_Cruel
+};
+
 @class ZoomStoryID;
-@interface ZoomStory : NSObject<NSCopying> {
+@interface ZoomStory : NSObject {
 	struct IFStory* story;
 	BOOL   needsFreeing;
 	
