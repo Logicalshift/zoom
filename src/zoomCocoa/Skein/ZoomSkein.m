@@ -93,7 +93,51 @@ NSString* ZoomSkeinChangedNotification = @"ZoomSkeinChangedNotification";
 }
 
 - (void) inputCharacter: (NSString*) character {
-	// We treat these the same
+	// We convert characters to their ZSCII equivalent (codes 129-144 and 252-254 for mouse clicks)
+	unichar key;
+	
+	key = 0;
+	switch ([character characterAtIndex: 0]) {
+		// Arrow keys
+		case NSUpArrowFunctionKey: key = 129; break;
+		case NSDownArrowFunctionKey: key = 130; break;
+		case NSLeftArrowFunctionKey: key = 131; break;
+		case NSRightArrowFunctionKey: key = 132; break;
+			
+			// Delete/return
+		case NSDeleteFunctionKey: key = 8; break;
+			
+			// Function keys
+		case NSF1FunctionKey: key = 133; break;
+		case NSF2FunctionKey: key = 134; break;
+		case NSF3FunctionKey: key = 135; break;
+		case NSF4FunctionKey: key = 136; break;
+		case NSF5FunctionKey: key = 137; break;
+		case NSF6FunctionKey: key = 138; break;
+		case NSF7FunctionKey: key = 139; break;
+		case NSF8FunctionKey: key = 140; break;
+		case NSF9FunctionKey: key = 141; break;
+		case NSF10FunctionKey: key = 142; break;
+		case NSF11FunctionKey: key = 143; break;
+		case NSF12FunctionKey: key = 144; break;
+			
+			// Mouse buttons (we use fake function keys for this)
+		case NSF33FunctionKey: key = 252; break;
+		case NSF34FunctionKey: key = 254; break;
+		case NSF35FunctionKey: key = 253; break;
+	}
+	
+	if (key != 0) {
+		NSMutableString* newCharacter = [character mutableCopy];
+		
+		[newCharacter replaceCharactersInRange: NSMakeRange(0,1)
+									withString: [NSString stringWithCharacters: &key
+																		length: 1]];
+		
+		character = [newCharacter autorelease];
+	}
+	
+	
 	[self inputCommand: character];
 }
 

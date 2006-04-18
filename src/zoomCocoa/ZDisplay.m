@@ -43,33 +43,33 @@ static int cocoa_to_zscii(int theChar) {
 	// Deal with special keys (ie, convert to ZSCII)
 	switch (theChar) {
 		// Arrow keys
-		case NSUpArrowFunctionKey: key = 129; break;
-		case NSDownArrowFunctionKey: key = 130; break;
-		case NSLeftArrowFunctionKey: key = 131; break;
-		case NSRightArrowFunctionKey: key = 132; break;
+		case NSUpArrowFunctionKey: case 129: key = 129; break;
+		case NSDownArrowFunctionKey: case 130: key = 130; break;
+		case NSLeftArrowFunctionKey: case 131: key = 131; break;
+		case NSRightArrowFunctionKey: case 132: key = 132; break;
 			
 			// Delete/return
 		case 10: key = 13; break;
 		case NSDeleteFunctionKey: key = 8; break;
 			
 			// Function keys
-		case NSF1FunctionKey: key = 133; break;
-		case NSF2FunctionKey: key = 134; break;
-		case NSF3FunctionKey: key = 135; break;
-		case NSF4FunctionKey: key = 136; break;
-		case NSF5FunctionKey: key = 137; break;
-		case NSF6FunctionKey: key = 138; break;
-		case NSF7FunctionKey: key = 139; break;
-		case NSF8FunctionKey: key = 140; break;
-		case NSF9FunctionKey: key = 141; break;
-		case NSF10FunctionKey: key = 142; break;
-		case NSF11FunctionKey: key = 143; break;
-		case NSF12FunctionKey: key = 144; break;
+		case NSF1FunctionKey: case 133: key = 133; break;
+		case NSF2FunctionKey: case 134: key = 134; break;
+		case NSF3FunctionKey: case 135: key = 135; break;
+		case NSF4FunctionKey: case 136: key = 136; break;
+		case NSF5FunctionKey: case 137: key = 137; break;
+		case NSF6FunctionKey: case 138: key = 138; break;
+		case NSF7FunctionKey: case 139: key = 139; break;
+		case NSF8FunctionKey: case 140: key = 140; break;
+		case NSF9FunctionKey: case 141: key = 141; break;
+		case NSF10FunctionKey: case 142: key = 142; break;
+		case NSF11FunctionKey: case 143: key = 143; break;
+		case NSF12FunctionKey: case 144: key = 144; break;
 			
 			// Mouse buttons (we use fake function keys for this)
-		case NSF33FunctionKey: key = 252; break;
-		case NSF34FunctionKey: key = 254; break;
-		case NSF35FunctionKey: key = 253; break;
+		case NSF33FunctionKey: case 252: key = 252; break;
+		case NSF34FunctionKey: case 254: key = 254; break;
+		case NSF35FunctionKey: case 253: key = 253; break;
 			
 			// Numeric keypad
 		case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
