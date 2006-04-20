@@ -10,6 +10,7 @@
 #import "ZoomAppDelegate.h"
 
 #include "ifmetabase.h"
+#include "ifmetaxml.h"
 
 #define ReportErrors
 
@@ -21,16 +22,7 @@
 	self = [super init];
 	
 	if (self) {
-		metadata = malloc(sizeof(IFMetadata));
-		
-		metadata->numberOfStories = 0;
-		metadata->numberOfErrors = 0;
-		metadata->numberOfIndexEntries = 0;
-		
-		metadata->stories = NULL;
-		metadata->error   = NULL;
-		metadata->index   = NULL;
-		
+		metadata = IFMB_Create();
 		dataLock = [[NSLock alloc] init];
 	}
 	
@@ -44,10 +36,11 @@
 	if (self) {
 		filename = [fname copy];
 		
-		metadata = IFMD_Parse([xmlData bytes], [xmlData length]);
+		metadata = IFMB_Create();
+		IF_ReadIfiction(metadata, [xmlData bytes], [xmlData length]);
 		dataLock = [[NSLock alloc] init];
 		
-#ifdef ReportErrors
+#if 0
 		if (metadata->numberOfErrors > 0) {
 			NSLog(@"ZoomMetadata: encountered errors in file %@", filename!=nil?[filename lastPathComponent]:@"(memory)");
 			
@@ -92,11 +85,11 @@
 // = Finding information =
 
 - (ZoomStory*) findStory: (ZoomStoryID*) ident {
-	IFMDStory* story;
+	IFStory story;
 	
 	[dataLock lock];
 	
-	story = IFMD_Find(metadata, [ident ident]);
+	story = IFMB_GetStoryWithId(metadata, [ident ident]);
 	
 	if (story) {
 		ZoomStory* res = [[ZoomStory alloc] initWithStory: story];
@@ -112,13 +105,15 @@
 - (NSArray*) stories {
 	NSMutableArray* res = [NSMutableArray array];
 	
-	int x;
-	for (x=0; x<metadata->numberOfStories; x++) {
-		ZoomStory* story = [[ZoomStory alloc] initWithStory: metadata->stories[x]];
+	IFStoryIterator iter;
+	IFStory story;
+	for (iter=IFMB_GetStoryIterator(metadata); story=IFMB_NextStory(iter);) {
+		ZoomStory* zStory = [[ZoomStory alloc] initWithStory: story];
 		
-		[res addObject: story];
-		[story release];
+		[res addObject: zStory];
+		[zStory release];
 	}
+	IFMB_FreeStoryIterator(iter);
 	
 	return res;
 }
@@ -183,6 +178,7 @@ static int dataWrite(const char* bytes, int length, void* userData) {
 
 // = Errors =
 - (NSArray*) errors {
+#if 0
 	int x;
 	NSMutableArray* array = [NSMutableArray array];
 	
@@ -237,6 +233,9 @@ static int dataWrite(const char* bytes, int length, void* userData) {
 	}
 	
 	return array;
+#else
+	return [NSArray array];
+#endif
 }
 
 @end
