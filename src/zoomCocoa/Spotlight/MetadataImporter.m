@@ -264,9 +264,8 @@ ZoomStory * FindStory( ZoomStoryID * gameID )
 	NSEnumerator * enumerator = [game_indices objectEnumerator];
 	ZoomMetadata * repository;
 	
-	while( (repository = [enumerator nextObject]) ) 
-	{
-		story = [repository findStory:gameID];
+	while( (repository = [enumerator nextObject]) ) {
+		story = [repository containsStoryWithIdent: gameID]?[repository findOrCreateStory:gameID]:nil;
 		if( story ) 
 			break;
 	}

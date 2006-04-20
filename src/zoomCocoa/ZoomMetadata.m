@@ -96,7 +96,8 @@
 	story = IFMB_GetStoryWithId(metadata, [ident ident]);
 	
 	if (story) {
-		ZoomStory* res = [[ZoomStory alloc] initWithStory: story];
+		ZoomStory* res = [[ZoomStory alloc] initWithStory: story
+												 metadata: self];
 		
 		[dataLock unlock];
 		return [res autorelease];
@@ -112,7 +113,8 @@
 	IFStoryIterator iter;
 	IFStory story;
 	for (iter=IFMB_GetStoryIterator(metadata); story=IFMB_NextStory(iter);) {
-		ZoomStory* zStory = [[ZoomStory alloc] initWithStory: story];
+		ZoomStory* zStory = [[ZoomStory alloc] initWithStory: story
+													metadata: self];
 		
 		[res addObject: zStory];
 		[zStory release];
@@ -149,7 +151,7 @@ static int dataWrite(const char* bytes, int length, void* userData) {
 	[dataLock lock];
 	NSMutableData* res = [[NSMutableData alloc] init];
 	
-	IFMD_Save(metadata, dataWrite, res);
+	IF_WriteIfiction(metadata, dataWrite, res);
 	
 	[dataLock unlock];
 	return [res autorelease];

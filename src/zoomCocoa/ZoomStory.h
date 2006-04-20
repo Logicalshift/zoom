@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class ZoomMetadata;
+
 // Notifications
 extern NSString* ZoomStoryDataHasChangedNotification;
 
@@ -25,6 +27,8 @@ enum IFMB_Zarfian {
 	struct IFStory* story;
 	BOOL   needsFreeing;
 	
+	ZoomMetadata* metadata;
+	
 	NSMutableDictionary* extraMetadata;
 }
 
@@ -35,8 +39,8 @@ enum IFMB_Zarfian {
 // Initialisation
 + (ZoomStory*) defaultMetadataForFile: (NSString*) filename;
 
-- (id) init;								// New story (DEPRECATED)
-- (id) initWithStory: (struct IFStory*) story;   // Existing story (not freed)
+- (id) initWithStory: (struct IFStory*) story
+			metadata: (ZoomMetadata*) metadataContainer;
 
 - (struct IFStory*) story;
 - (void) addID: (ZoomStoryID*) newID;
@@ -87,4 +91,8 @@ enum IFMB_Zarfian {
 // Sending notifications
 - (void) heyLookThingsHaveChangedOohShiney; // Sends ZoomStoryDataHasChangedNotification
 
+- (id) init;								// New story (DEPRECATED)
+
 @end
+
+#import "ZoomMetadata.h"

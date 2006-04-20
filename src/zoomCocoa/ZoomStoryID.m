@@ -253,8 +253,7 @@
 
 - (void) dealloc {
 	if (needsFreeing) {
-		IFID_Free(ident);
-		free(ident);
+		IFMB_FreeId(ident);
 	}
 	
 	[super dealloc];
@@ -396,7 +395,7 @@ typedef unsigned char IFMDByte;
 	if ([anObject isKindOfClass: [ZoomStoryID class]]) {
 		ZoomStoryID* compareWith = anObject;
 		
-		if (IFID_Compare(ident, [compareWith ident]) == 0) {
+		if (IFMB_CompareIds(ident, [compareWith ident]) == 0) {
 			return YES;
 		} else {
 			return NO;

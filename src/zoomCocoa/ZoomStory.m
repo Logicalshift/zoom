@@ -182,12 +182,14 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	return self;
 }
 
-- (id) initWithStory: (IFStory) s {
+- (id) initWithStory: (IFStory) s
+			metadata: (ZoomMetadata*) metadataContainer {
 	self = [super init];
 	
 	if (self) {
 		story = s;
 		needsFreeing = NO;
+		metadata = [metadataContainer retain];
 		
 		extraMetadata = nil;
 		
@@ -204,6 +206,7 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	if (needsFreeing && story) {
 	}
 	
+	if (metadata) [metadata release];
 	if (extraMetadata) [extraMetadata release];
 	
 	[[NSNotificationCenter defaultCenter] removeObserver: self];
