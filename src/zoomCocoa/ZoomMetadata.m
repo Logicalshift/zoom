@@ -74,7 +74,7 @@
 }
 
 - (void) dealloc {
-	IFMD_Free(metadata);
+	IFMB_Free(metadata);
 	[dataLock release];
 	
 	if (filename) [filename release];
@@ -84,7 +84,11 @@
 
 // = Finding information =
 
-- (ZoomStory*) findStory: (ZoomStoryID*) ident {
+- (BOOL) containsStoryWithIdent: (ZoomStoryID*) ident {
+	return IFMB_ContainsStoryWithId(metadata, [ident ident]);
+}
+
+- (ZoomStory*) findOrCreateStory: (ZoomStoryID*) ident {
 	IFStory story;
 	
 	[dataLock lock];
@@ -119,22 +123,11 @@
 }
 
 // = Storing information =
-- (void) storeStory: (ZoomStory*) story {
-	[dataLock lock];
-	IFMD_AddStory(metadata, [story story]);
-	
-#ifdef IFMD_ALLOW_TESTING
-	// Test, if available
-	IFMD_testrepository(metadata);
-#endif
 
-	[dataLock unlock];
-}
-
-- (void) removeIdent: (ZoomStoryID*) ident {
+- (void) removeStoryWithIdent: (ZoomStoryID*) ident {
 	[dataLock lock];
 	
-	IFMD_DeleteStory(metadata, [ident ident]);
+	IFMB_RemoveStoryWithId(metadata, [ident ident]);
 	
 #ifdef IFMD_ALLOW_TESTING
 	// Test, if available

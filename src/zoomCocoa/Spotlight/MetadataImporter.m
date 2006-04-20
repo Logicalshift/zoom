@@ -13,7 +13,7 @@
 #import <CoreServices/CoreServices.h>
 #import <Foundation/Foundation.h>
 
-#import "ifmetadata.h"
+#import "ifmetabase.h"
 
 #import "ZoomMetadata.h"
 #import "ZoomStory.h"

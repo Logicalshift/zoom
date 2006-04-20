@@ -13,6 +13,8 @@
 #import "ZoomBlorbFile.h"
 #import "ZoomPreferences.h"
 
+#import "ZoomAppDelegate.h"
+
 #include "ifmetabase.h"
 
 NSString* ZoomStoryDataHasChangedNotification = @"ZoomStoryDataHasChangedNotification";
@@ -108,8 +110,8 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	// If we've got an ifMD chunk, then see if we can extract the story from it
 	ZoomStory* result = nil;
 	
-	if (fileMetadata) {
-		result = [[fileMetadata findStory: fileID] copy];
+	if (fileMetadata && [fileMetadata containsStoryWithIdent: fileID]) {
+		result = [[fileMetadata findOrCreateStory: fileID] copy];
 		
 		if (result == nil) {
 			NSLog(@"Warning: found a game with an IFmd chunk, but which did not appear to contain any relevant metadata (looked for ID: %@)", fileID); 
@@ -118,7 +120,7 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	
 	// If there's no result, then make up the data from the filename
 	if (result == nil) {
-		result = [[ZoomStory alloc] init];
+		result = [[(ZoomAppDelegate*)[NSApp delegate] userMetadata] findOrCreateStory: fileID];
 		
 		// Add the ID
 		[result addID: fileID];
@@ -199,9 +201,7 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 }
 
 - (void) dealloc {
-	if (needsFreeing) {
-		IFStory_Free(story);
-		free(story);
+	if (needsFreeing && story) {
 	}
 	
 	if (extraMetadata) [extraMetadata release];
@@ -216,10 +216,7 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	return story;
 }
 
-- (void) addID: (ZoomStoryID*) newID {
-	int ident;
-	int foundID = -1;
-	
+- (void) addID: (ZoomStoryID*) newID {	
 	IFID oldId = IFMB_IdForStory(story);
 	
 	if (IFMB_CompareIds(oldId, [newID ident]) != 0) {

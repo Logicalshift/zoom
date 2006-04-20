@@ -29,12 +29,12 @@
 - (NSArray*) errors;
 
 // Retrieving information
-- (ZoomStory*) findStory: (ZoomStoryID*) ident;
+- (BOOL) containsStoryWithIdent: (ZoomStoryID*) ident;
+- (ZoomStory*) findOrCreateStory: (ZoomStoryID*) ident;
 - (NSArray*)   stories;
 
 // Storing information
-- (void) storeStory: (ZoomStory*) story;
-- (void) removeIdent: (ZoomStoryID*) ident;
+- (void) removeStoryWithIdent: (ZoomStoryID*) ident;
 
 // Saving the file
 - (NSData*) xmlData;

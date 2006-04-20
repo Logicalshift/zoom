@@ -39,7 +39,6 @@
 		4B36C50E0955EE6F00874F9F /* ZoomPlugIns.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B7CB08109362A3B00F3B8F6 /* ZoomPlugIns.framework */; };
 		4B39C94308EEF75600BA5E90 /* MetadataImporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B39C94108EEF75600BA5E90 /* MetadataImporter.m */; };
 		4B39C94408EEF75600BA5E90 /* schema.xml in Resources */ = {isa = PBXBuildFile; fileRef = 4B39C94208EEF75600BA5E90 /* schema.xml */; };
-		4B39C94508EEF78700BA5E90 /* ifmetadata.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BECA80005B19BE1006840BA /* ifmetadata.c */; };
 		4B39C94708EEF79300BA5E90 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BCF3F2B050F8E2400A8E303 /* Foundation.framework */; };
 		4B39C9C408EEF7C000BA5E90 /* ZoomMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BACEA9705B4597500A9B6DC /* ZoomMetadata.m */; };
 		4B39C9C508EEF7C000BA5E90 /* ZoomStory.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BACEAB605B45BF400A9B6DC /* ZoomStory.m */; };
@@ -82,6 +81,8 @@
 		4B7CB1EA0936357900F3B8F6 /* ZoomPlugIn.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7CB0780936294B00F3B8F6 /* ZoomPlugIn.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B7CB2130936361800F3B8F6 /* GlkView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B7CB1C5093634DD00F3B8F6 /* GlkView.framework */; };
 		4B87BA7309C9AB13005D6722 /* ifmetabase-internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B87BA7109C9AAE1005D6722 /* ifmetabase-internal.h */; };
+		4B9B643F09F8455700B6E2DF /* ifmetabase.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BB8BED408B785B200D7D334 /* ifmetabase.c */; };
+		4B9B644009F8455800B6E2DF /* ifmetaxml.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B71AB5F09E300EF00E27876 /* ifmetaxml.c */; };
 		4BA66B2C0906538F000A3852 /* ZoomWindowThatCanBecomeKey.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA66B2A0906538F000A3852 /* ZoomWindowThatCanBecomeKey.h */; };
 		4BA66B2D0906538F000A3852 /* ZoomWindowThatCanBecomeKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA66B2B0906538F000A3852 /* ZoomWindowThatCanBecomeKey.m */; };
 		4BB65ACE08EF02D600E7E28E /* ZoomBlorbFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF1576406BAD034001A3C27 /* ZoomBlorbFile.m */; };
@@ -2257,13 +2258,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				4B39C94308EEF75600BA5E90 /* MetadataImporter.m in Sources */,
-				4B39C94508EEF78700BA5E90 /* ifmetadata.c in Sources */,
 				4B39C9C408EEF7C000BA5E90 /* ZoomMetadata.m in Sources */,
 				4B39C9C508EEF7C000BA5E90 /* ZoomStory.m in Sources */,
 				4B39C9C608EEF7C000BA5E90 /* ZoomStoryID.m in Sources */,
 				4BB65ACE08EF02D600E7E28E /* ZoomBlorbFile.m in Sources */,
 				4BB65AD408EF02DF00E7E28E /* ZoomProtocol.m in Sources */,
 				4B0105B2092FADD800955BCB /* ZoomPreferences.m in Sources */,
+				4B9B643F09F8455700B6E2DF /* ifmetabase.c in Sources */,
+				4B9B644009F8455800B6E2DF /* ifmetaxml.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
