@@ -251,6 +251,19 @@
 	return self;
 }
 
+- (id) initWithZcodeRelease: (int) release
+					 serial: (const unsigned char*) serial
+				   checksum: (int) checksum {
+	self = [super init];
+	
+	if (self) {
+		ident = IFMB_ZcodeId(release, serial, checksum);
+		needsFreeing = YES;
+	}
+	
+	return self;
+}
+
 - (void) dealloc {
 	if (needsFreeing) {
 		IFMB_FreeId(ident);

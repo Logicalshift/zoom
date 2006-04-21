@@ -139,7 +139,18 @@
 	[dataLock unlock];
 }
 
+- (void) copyStory: (ZoomStory*) story {
+	IFMB_CopyStory(metadata, [story story], NULL);
+}
+
+- (void) copyStory: (ZoomStory*) story
+			  toId: (ZoomStoryID*) copyID {
+	IFMB_CopyStory(metadata, [story story], [copyID ident]);
+}
+	
+
 // = Saving the file =
+
 static int dataWrite(const char* bytes, int length, void* userData) {
 	NSMutableData* data = userData;
 	[data appendBytes: bytes

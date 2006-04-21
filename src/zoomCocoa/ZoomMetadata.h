@@ -34,6 +34,9 @@
 - (NSArray*)   stories;
 
 // Storing information
+- (void) copyStory: (ZoomStory*) story;
+- (void) copyStory: (ZoomStory*) story
+			  toId: (ZoomStoryID*) copyID;
 - (void) removeStoryWithIdent: (ZoomStoryID*) ident;
 
 // Saving the file

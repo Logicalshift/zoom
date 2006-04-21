@@ -146,7 +146,9 @@
 		return NO;
 	}
 	
-	story = [[[NSApp delegate] userMetadata] findStory: storyId];
+	ZoomMetadata* userMetadata = [[NSApp delegate] userMetadata];
+	
+	story = [userMetadata containsStoryWithIdent: storyId]?[userMetadata findOrCreateStory: storyId]:nil;
 	
 	if (!story) {
 		// If there is no metadata, then make some up
@@ -160,15 +162,11 @@
 		
 		[story addID: storyId];
 		
-		[[[NSApp delegate] userMetadata] storeStory: [[story copy] autorelease]];
+		[[[NSApp delegate] userMetadata] copyStory: story];
 		[story release];
 		
-		story = [[[NSApp delegate] userMetadata] findStory: storyId];
-		if (story == nil) {
-			story = [[ZoomStory alloc] init];
-		} else {
-			[story retain];
-		}
+		story = [[[NSApp delegate] userMetadata] findOrCreateStory: storyId];
+		[story retain];
 	} else {
 		// If there is some metadata, then keep it around
 		[story retain];
@@ -361,16 +359,9 @@
 				unsigned int checksum = (bytes[pos+12]<<8)|bytes[pos+13];
 				
 				// Set up the ZoomStoryID object for this savegame
-				struct IFMDIdent ident;
-				
-				ident.format = IFFormat_ZCode;
-				ident.usesMd5 = 0;
-				ident.dataFormat = IFFormat_ZCode;
-				ident.data.zcode.release = release;
-				ident.data.zcode.checksum = checksum;
-				memcpy(ident.data.zcode.serial, serial, 6);
-				
-				storyID = [[ZoomStoryID alloc] initWithIdent: &ident];
+				storyID = [[ZoomStoryID alloc] initWithZcodeRelease: release
+															 serial: serial
+														   checksum: checksum];
 				[storyID autorelease];
 			}
 		}

@@ -358,31 +358,8 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 		return nil;
 	}
 	
-	// When editing story data, we need to work on a copy in the user metadata area.
-	// By default, we just use the first version we find, which might be in one of the
-	// files loaded from our own application (and hence won't get saved when we finish
-	// up)
-	if ([theStory story]->numberOfIdents <= 0) {
-		NSLog(@"Story has no identification");
-		
-		return nil;
-	}
-
-	ZoomStoryID* theId = [[[ZoomStoryID alloc] initWithIdent: [theStory story]->idents[0]] autorelease];
-	ZoomStory* newStory = [[[NSApp delegate] userMetadata] findStory: theId];
-	if (newStory) return newStory;
-	
-	[[[NSApp delegate] userMetadata] storeStory: [[theStory copy] autorelease]];
-	
-	newStory = [[[NSApp delegate] userMetadata] findStory: theId];
-	
-	if (newStory) {
-		needsUpdating = YES;
-	} else {
-		NSLog(@"Failed to create story copy");
-	}
-	
-	return newStory;
+	[[[NSApp delegate] userMetadata] copyStory: theStory];
+	return [[[NSApp delegate] userMetadata] findOrCreateStory: [theStory storyID]];
 }
 
 // = Panel actions =
@@ -682,21 +659,14 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	if (filename == nil) filename = @"No filename";
 	
 	if (story == nil) {
-#if 0
-		story = [[[ZoomStory alloc] init] autorelease];
-		[story setTitle: [[filename lastPathComponent] stringByDeletingPathExtension]];
-
-		// If we ever support more formats (Z-Code blorb is probable, GLULX is likely, other are possible)
-		// we need to do this in a more intelligent way.
-		[story addID: [[[ZoomStoryID alloc] initWithZCodeFile: filename] autorelease]];
-#else
 		story = [ZoomStory defaultMetadataForFile: filename]; 
-#endif
 		
 		// Store this in the user metadata for later
 		NSLog(@"Failed to find story for ID: %@", ident);
-		[[[NSApp delegate] userMetadata] storeStory: story];
+		[[[NSApp delegate] userMetadata] copyStory: story];
 		[[[NSApp delegate] userMetadata] writeToDefaultFile];
+		
+		story = [[[NSApp delegate] userMetadata] findOrCreateStory: [story storyID]];
 	}
 	
 	return story;
@@ -1675,7 +1645,7 @@ int tableSorter(id a, id b, void* context) {
 		}
 		
 		// Add this story to the userMetadata
-		[[[NSApp delegate] userMetadata] storeStory: [[story copy] autorelease]];
+		[[[NSApp delegate] userMetadata] copyStory: story];
 	}
 	
 	// Store and reflect any changes
@@ -1719,7 +1689,7 @@ int tableSorter(id a, id b, void* context) {
 	NSEnumerator* storyEnum = [replacements objectEnumerator];
 	
 	while (story = [storyEnum nextObject]) {
-		[[[NSApp delegate] userMetadata] storeStory: story];
+		[[[NSApp delegate] userMetadata] copyStory: story];
 	}
 	
 	// Store and reflect any changes
@@ -1761,7 +1731,7 @@ int tableSorter(id a, id b, void* context) {
 		ZoomStory* story = [[NSApp delegate] findStory: ident];
 		
 		if (story != nil) {
-			[newMetadata storeStory: [[story copy] autorelease]];
+			[newMetadata copyStory: story];
 		}
 	}
 	

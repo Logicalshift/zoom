@@ -18,6 +18,9 @@
 - (id) initWithZCodeFile: (NSString*) zcodeFile;
 - (id) initWithData: (NSData*) genericGameData;
 - (id) initWithIdent: (struct IFID*) ident;
+- (id) initWithZcodeRelease: (int) release
+					 serial: (const unsigned char*) serial
+				   checksum: (int) checksum;
 
 - (struct IFID*) ident;
 

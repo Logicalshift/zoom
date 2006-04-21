@@ -292,18 +292,9 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 	if (oldStory == nil) {
 		NSLog(@"Creating metadata entry for story '%@'", gameName);
 		
-#if 0
-		ZoomStory* newStory = [[ZoomStory alloc] init];
-		
-		[newStory setTitle: gameName];
-		if (![groupName isEqualToString: @"Ungrouped"]);
-		[newStory setGroup: groupName];
-		[newStory addID: newID];
-#else
 		ZoomStory* newStory = [[ZoomStory defaultMetadataForFile: gameFile] retain];
-#endif
 		
-		[data storeStory: newStory];
+		[data copyStory: newStory];
 		[data writeToDefaultFile];
 		oldStory = [newStory autorelease];
 	} else {
@@ -323,7 +314,7 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 			[oldStory setObject: possibleResource
 						 forKey: @"ResourceFilename"];
 
-			[data storeStory: oldStory];
+			[data copyStory: oldStory];
 			[data writeToDefaultFile];
 		}
 	}
@@ -425,7 +416,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	}
 	
 	if (delete) {
-		[[[NSApp delegate] userMetadata] removeIdent: ident];
+		[[[NSApp delegate] userMetadata] removeStoryWithIdent: ident];
 	}
 	
 	[storyLock unlock];
@@ -448,12 +439,9 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	
 	// If there's no story registered, then we need to create one
 	if (theStory == nil) {
-		theStory = [[ZoomStory alloc] init];
-		
-		[theStory addID: ident];
+		theStory = [[[NSApp delegate] userMetadata] findOrCreateStory: ident];
 		[theStory setTitle: [[filename lastPathComponent] stringByDeletingPathExtension]];
 		
-		[[[NSApp delegate] userMetadata] storeStory: [theStory autorelease]];
 		[[[NSApp delegate] userMetadata] writeToDefaultFile];
 	}
 		

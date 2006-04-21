@@ -84,6 +84,7 @@ enum IFMB_Zarfian {
 			forKey: (id) key;
 
 // Identifying and comparing stories
+- (ZoomStoryID*) storyID;								// Compound ID
 - (NSArray*) storyIDs;									// Array of ZoomStoryIDs
 - (BOOL)     hasID: (ZoomStoryID*) storyID;				// Story answers to this ID
 - (BOOL)     isEquivalentToStory: (ZoomStory*) story;   // Stories share an ID

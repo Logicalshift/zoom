@@ -189,9 +189,10 @@
 	ZoomMetadata* repository;
 	
 	while (repository = [indexEnum nextObject]) {
-		ZoomStory* res = [repository findStory: gameID];
+		if (![repository containsStoryWithIdent: gameID]) continue;
 		
-		if (res) return res;
+		ZoomStory* res = [repository findOrCreateStory: gameID];
+		return res;
 	}
 	
 	return nil;

@@ -617,6 +617,11 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 }
 
 // Identifying and comparing stories
+
+- (ZoomStoryID*) storyID {
+	return [[[ZoomStoryID alloc] initWithIdent: IFMB_IdForStory(story)] autorelease];
+}
+
 - (NSArray*) storyIDs {
 	NSMutableArray* idArray = [NSMutableArray array];
 	
