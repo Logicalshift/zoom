@@ -80,6 +80,7 @@ void IF_ReadIfiction(IFMetabase meta, const unsigned char* xml, size_t size) {
 		
 	currentState->storyId = NULL;
 	currentState->story = NULL;
+	currentState->tag = NULL;
 	
 	currentState->tempMetabase = IFMB_Create();
 	currentState->tempId = IFMB_GlulxIdNotInform(0, 0);
@@ -807,7 +808,7 @@ void IF_WriteIfiction(IFMetabase meta, int(*writeFunction)(const char* bytes, in
 	
 	/* Write out the header */
 	w("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-	w("<ifindex version=\"1.0\">\n");
+	w("<ifindex version=\"1.0\" xmlns=\"http://babel.ifarchive.org/protocol/iFiction/\">\n");
 	
 	/* Iterate through the stories */
 	stories = IFMB_GetStoryIterator(meta);
@@ -851,19 +852,26 @@ void IF_WriteIfiction(IFMetabase meta, int(*writeFunction)(const char* bytes, in
 			if (IFMB_NextValue(values->iterator)) {
 				IFValueIterator subValues;
 				char* key;
+				IFChar* value;
 				
 				key = IFMB_SubkeyFromIterator(values->iterator);
+				value = IFMB_ValueFromIterator(values->iterator);
+				subValues = IFMB_ChildrenFromIterator(values->iterator);
 				
 				/* Ignore attribute keys */
-				if (key[0] == '@') continue;
+				if (key[0] == '@') {
+					if (subValues != NULL) IFMB_FreeValueIterator(subValues);
+					continue;
+				}
+				
+				/* Ignore empty keys */
+				if (value == NULL && subValues == NULL) continue;
 				
 				/* Open the tag for this value */
 				w("  <");
 				w(key);
 				
 				/* Write out any attributes that this tag might have */
-				subValues = IFMB_ChildrenFromIterator(values->iterator);
-				
 				while (subValues != NULL && IFMB_NextValue(subValues)) {
 					char* subKey;
 					
@@ -878,15 +886,17 @@ void IF_WriteIfiction(IFMetabase meta, int(*writeFunction)(const char* bytes, in
 					}
 				}
 				
-				IFMB_FreeValueIterator(subValues);
+				if (subValues != NULL) IFMB_FreeValueIterator(subValues);
 				
 				/* End of the opening tag */
 				w(">\n");
 				
 				/* Write the value itself */
-				w("   ");
-				wu(IFMB_ValueFromIterator(values->iterator));
-				w("\n");
+				if (value != NULL) {
+					w("   ");
+					wu(IFMB_ValueFromIterator(values->iterator));
+					w("\n");
+				}
 				
 				/* Get an iterator for any values underneath this one */
 				subValues = IFMB_ChildrenFromIterator(values->iterator);
