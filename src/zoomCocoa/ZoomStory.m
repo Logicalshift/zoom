@@ -553,11 +553,12 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 		for (x=0; x<[value length]; x++) {
 			metaValue[x] = characters[x];
 		}
+		metaValue[x] = 0;
 		
 		free(characters);
 	}
 	
-	IFMB_SetValue(story, [key UTF8String], metaValue);
+	IFMB_SetValue(story, [[self newKeyForOld: key] UTF8String], metaValue);
 	if (metaValue) free(metaValue);
 	
 	[metadata unlock];
