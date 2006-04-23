@@ -244,8 +244,8 @@
 	self = [super init];
 	
 	if (self) {
-		ident = idt;
-		needsFreeing = NO;
+		ident = IFMB_CopyId(idt);
+		needsFreeing = YES;
 	}
 	
 	return self;

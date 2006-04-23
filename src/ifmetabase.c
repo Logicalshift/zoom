@@ -981,6 +981,7 @@ void IFMB_CopyStory(IFMetabase meta, IFStory story, IFID id) {
 	IFStory oldStory;
 	IFStory newStory;
 	
+	if (id == NULL && IFMB_GetStoryWithId(meta, story->id) == story) return;
 	if (id == NULL) id = story->id;
 	
 	/* Remove any stories that have the supplied ID */
