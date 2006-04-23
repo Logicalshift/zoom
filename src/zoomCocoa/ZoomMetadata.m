@@ -82,6 +82,16 @@
 	[super dealloc];
 }
 
+// = Locking =
+
+- (void) lock {
+	[dataLock lock];
+}
+
+- (void) unlock {
+	[dataLock unlock];
+}
+
 // = Finding information =
 
 - (BOOL) containsStoryWithIdent: (ZoomStoryID*) ident {

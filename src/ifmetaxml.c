@@ -348,6 +348,7 @@ static XMLCALL void StartElement(void *userData,
 				state->checksum = -1;
 				
 			} else if (XCstrcmp(name, "format") == 0) {
+			} else if (XCstrcmp(name, "uuid") == 0) {
 			} else {
 				Error(state, IFXmlUnrecognisedTag, NULL);
 				state->tag->failed = 1;
@@ -552,6 +553,56 @@ static XMLCALL void EndElement(void *userData,
 					state->checksum = val;
 					
 					free(checksum);
+				}
+			} else if (XCstrcmp(parent, "uuid") == 0) {
+				/* UUID identification section */
+				if (XCstrcmp(name, "uuid") == 0) {
+					unsigned char uuid[16];
+					int uuidPos;
+					int x;
+					IFID newId;
+					
+					for (x=0; x<16; x++) uuid[x] = 0;
+					
+					/* Work out the UUID data */
+					uuidPos = 0;
+					for (x=0; value[x] != 0; x++) {
+						int digitVal = -1;
+						
+						if (value[x] == '\n' || value[x] == ' ' || value[x] == '-') continue;
+						
+						if (value[x] >= '0' && value[x] <= '9') {
+							digitVal = value[x] - '0';
+						} else if (value[x] >= 'a' && value[x] <= 'f') {
+							digitVal = value[x] - 'a' + 10;
+						} else if (value[x] >= 'A' && value[x] <= 'F') {
+							digitVal = value[x] - 'A' + 10;
+						}
+						
+						uuid[uuidPos>>1] |= digitVal << ((1-(uuidPos&1))*4);
+						uuidPos++;
+						if (uuidPos >= 32) break;
+					}
+					
+					/* Merge with the currently generated IDs */
+					newId = IFMB_UUID(uuid);
+					
+					if (state->storyId == NULL) {
+						state->storyId = newId;
+					} else {
+						IFID ids[2];
+						IFID compoundId;
+						
+						ids[0] = newId;
+						ids[1] = state->storyId;
+						
+						compoundId = IFMB_CompoundId(2, ids);
+						
+						IFMB_FreeId(newId);
+						IFMB_FreeId(state->storyId);
+						
+						state->storyId = compoundId;
+					}
 				}
 			} else if (XCstrcmp(parent, "story") == 0) {
 				/* Story data (or identification, which we ignore) */

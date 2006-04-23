@@ -92,6 +92,13 @@
 				 from: self];
 }
 
+static NSString* stringOrEmpty(NSString* str) {
+	if (str == nil)
+		return @"";
+	else
+		return str;
+}
+
 - (void) setGameInfo: (ZoomStory*) info {
 	[self window]; // (Make sure the window is loaded)
 	
@@ -118,10 +125,10 @@
 		if (gameInfo) [gameInfo release];
 		gameInfo = [info retain];
 
-		[gameName setEnabled: YES];		[gameName setStringValue: [info title]];
-		[headline setEnabled: YES];		[headline setStringValue: [info headline]];
-		[author setEnabled: YES];		[author setStringValue: [info author]];
-		[genre setEnabled: YES];		[genre setStringValue: [info genre]];
+		[gameName setEnabled: YES];		[gameName setStringValue: stringOrEmpty([info title])];
+		[headline setEnabled: YES];		[headline setStringValue: stringOrEmpty([info headline])];
+		[author setEnabled: YES];		[author setStringValue: stringOrEmpty([info author])];
+		[genre setEnabled: YES];		[genre setStringValue: stringOrEmpty([info genre])];
 		[year setEnabled: YES];			
 		
 		int yr = [info year];
@@ -131,10 +138,9 @@
 			[year setStringValue: @""];
 		}
 		
-		[group setEnabled: YES];		[group setStringValue: [info group]];
-		
-		[comments setEditable: YES];	[comments setString: [info comment]];
-		[teaser setEditable: YES];		[teaser setString: [info teaser]];
+		[group setEnabled: YES];		[group setStringValue: stringOrEmpty([info group])];
+		[comments setEditable: YES];	[comments setString: stringOrEmpty([info comment])];
+		[teaser setEditable: YES];		[teaser setString: stringOrEmpty([info teaser])];
 		
 		[zarfRating setEnabled: YES];   [zarfRating selectItemAtIndex: [info zarfian]];
 		

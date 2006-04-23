@@ -1641,7 +1641,7 @@ int tableSorter(id a, id b, void* context) {
 		
 		if (oldStory != nil) {
 			// Add this story to the list of stories to query about replacing
-			[replacements addObject: [[story copy] autorelease]];
+			[replacements addObject: story];
 		}
 		
 		// Add this story to the userMetadata

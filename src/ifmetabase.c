@@ -118,7 +118,6 @@ static int num(char c) {
 static int number(const char* val, int* len) {
 	int number = 0;
 	int x;
-	int valLen;
 	
 	for (x=0; val[x] != 0; x++) {
 		int digitVal;
@@ -140,7 +139,6 @@ static int number(const char* val, int* len) {
 static unsigned int hexnumber(const char* val, int* len) {
 	unsigned int number = 0;
 	int x;
-	int valLen;
 	
 	for (x=0; val[x] != 0; x++) {
 		int digitVal;
@@ -458,6 +456,9 @@ char* IFMB_IdToString(IFID id) {
 		case ID_NULL:
 			result = Append(result, "NULL");
 			break;
+		
+		default:
+			result = Append(result, "-UNKNOWN-");
 	}
 	
 	return result;
@@ -696,7 +697,7 @@ int IFMB_CompareIds(IFID a, IFID b) {
 			break;
 			
 		default:
-			fprintf(stderr, "ifmetabase - warning: IFMB_CompareIds was passed an ID it does not understand");
+			fprintf(stderr, "ifmetabase - warning: IFMB_CompareIds was passed an ID it does not understand (%i)\n", a->type);
 	}
 	
 	/* No further distinguishing marks: return 0 */
@@ -860,6 +861,8 @@ static int IndexStory(IFMetabase meta, int storyNum, IFID ident) {
 				}
 			}
 		}
+		
+		return indexed;
 	} else {
 		int index;
 
@@ -1164,6 +1167,8 @@ IFStoryIterator IFMB_GetStoryIterator(IFMetabase meta) {
 	
 	result->metabase = meta;
 	result->count = -1;
+	
+	return result;
 }
 
 /* Gets an iterator covering all the values set in a story */

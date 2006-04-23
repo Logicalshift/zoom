@@ -25,6 +25,10 @@
 - (id) initWithContentsOfFile: (NSString*) filename;	// Calls initWithData
 - (id) initWithData: (NSData*) xmlData;					// Designated initialiser
 
+// Thread safety [called by ZoomStory]
+- (void) lock;
+- (void) unlock;
+	
 // Information about the parse
 - (NSArray*) errors;
 

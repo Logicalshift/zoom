@@ -870,7 +870,8 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 
 - (void) finishChangingStory: (ZoomStory*) story {
 	// For our pre-arranged stories, several IDs are possible, but more usually one
-	NSEnumerator* identEnum = [[story storyIDs] objectEnumerator];
+	NSArray* storyIDs = [story storyIDs];
+	NSEnumerator* identEnum = [storyIDs objectEnumerator];
 	ZoomStoryID* ident;
 	BOOL changed = NO;
 	

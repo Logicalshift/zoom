@@ -111,7 +111,7 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	ZoomStory* result = nil;
 	
 	if (fileMetadata && [fileMetadata containsStoryWithIdent: fileID]) {
-		result = [[fileMetadata findOrCreateStory: fileID] copy];
+		result = [[fileMetadata findOrCreateStory: fileID] retain];
 		
 		if (result == nil) {
 			NSLog(@"Warning: found a game with an IFmd chunk, but which did not appear to contain any relevant metadata (looked for ID: %@)", fileID); 
@@ -120,7 +120,7 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	
 	// If there's no result, then make up the data from the filename
 	if (result == nil) {
-		result = [[(ZoomAppDelegate*)[NSApp delegate] userMetadata] findOrCreateStory: fileID];
+		result = [[[(ZoomAppDelegate*)[NSApp delegate] userMetadata] findOrCreateStory: fileID] retain];
 		
 		// Add the ID
 		[result addID: fileID];
@@ -164,22 +164,7 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 - (id) init {
 	[NSException raise: @"ZoomCannotInitialiseStoryException"
 				format: @"Cannot initialise a ZoomStory object without a corresponding metabase"];
-	
-	self = [super init];
-	
-	if (self) {
-		story = nil;
-		needsFreeing = YES;
-		
-		extraMetadata = nil;
-		
-		[[NSNotificationCenter defaultCenter] addObserver: self
-												 selector: @selector(extraDataChanged:)
-													 name: ZoomStoryExtraMetadataChangedNotification
-												   object: nil];		
-	}
-	
-	return self;
+	return nil;
 }
 
 - (id) initWithStory: (IFStory) s
@@ -512,6 +497,8 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 		return nil;
 	}
 	
+	[metadata lock];
+	
 	id newKey = [self newKeyForOld: key];
 	IFChar* value = IFMB_GetValue(story, [newKey UTF8String]);
 	
@@ -526,8 +513,10 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 												   length: len];
 		
 		free(characters);
+		[metadata unlock];
 		return result;
 	} else {
+		[metadata unlock];
 		[self loadExtraMetadata];
 		return [extraMetadata objectForKey: key];
 	}
@@ -549,6 +538,8 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 		return;
 	}
 	
+	[metadata lock];
+	
 	IFChar* metaValue = nil;
 	
 	if (value != nil) {
@@ -568,6 +559,8 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	
 	IFMB_SetValue(story, [key UTF8String], metaValue);
 	if (metaValue) free(metaValue);
+	
+	[metadata unlock];
 	
 	[self heyLookThingsHaveChangedOohShiney];
 }
@@ -625,6 +618,8 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 - (NSArray*) storyIDs {
 	NSMutableArray* idArray = [NSMutableArray array];
 	
+	[metadata lock];
+	
 	int ident;
 	int count;
 	
@@ -644,6 +639,8 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 		}
 	}
 	
+	[metadata unlock];
+	
 	return idArray;
 }
 
@@ -659,12 +656,16 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	NSArray* theirIds = [eqStory storyIDs];
 	NSArray* ourIds = [self storyIDs];
 	
+	[metadata lock];
+	
 	NSEnumerator* idEnum = [theirIds objectEnumerator];
 	ZoomStoryID* thisId;
 	
 	while (thisId = [idEnum nextObject]) {
 		if ([ourIds containsObject: thisId]) return YES;
 	}
+	
+	[metadata unlock];
 	
 	return NO;
 }
