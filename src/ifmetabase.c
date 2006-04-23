@@ -166,6 +166,7 @@ IFID IFMB_IdFromString(const char* idString) {
 	/* 
 	 * IFIDs have the following possible forms: 
 	 *
+	 * 1974A053-7DB0-4103-93A1-767C1382C0B7 (a uuid - GLULX/ZCODE, possibly others later?)
 	 * UUID://1974A053-7DB0-4103-93A1-767C1382C0B7// (a uuid - GLULX/ZCODE, possibly others later?)
 	 * ZCODE-11-271781 (zcode, release + serial)
 	 * ZCODE-11------- (zcode, release no serial)
@@ -195,17 +196,21 @@ IFID IFMB_IdFromString(const char* idString) {
 	idLen = strlen(idString);
 	
 	/* Try to parse a UUID */
-	if (idLen >= 39 && lowerPrefix[0] == 'u' && lowerPrefix[1] == 'u' && lowerPrefix[2] == 'i' && lowerPrefix[3] == 'd' && idString[4] == ':' && idString[5] == '/' && idString[6] == '/') {
+	if ((idLen >= 39 && lowerPrefix[0] == 'u' && lowerPrefix[1] == 'u' && lowerPrefix[2] == 'i' && lowerPrefix[3] == 'd' && idString[4] == ':' && idString[5] == '/' && idString[6] == '/')
+		|| (idLen == 36 && lowerPrefix[8] == '-')) {
 		/* String begins with UUID://, characters 7 onwards make up the UUID itself, we're fairly casual about the parsing */
 		unsigned char uuid[16];			/* The that we've retrieved */
 		int uuidPos = 0;				/* The nybble that we're currently reading */
 		int chrNum;
+		int uuidStart = 7;
+		
+		if (idLen == 36) uuidStart = 0;
 		
 		/* Clear the UUID */
 		for (chrNum=0; chrNum<16; chrNum++) uuid[chrNum] = 0;
 		
 		/* Iterate through the IFID string */
-		for (chrNum=7; uuidPos < 32 && chrNum < idLen; chrNum++) {
+		for (chrNum=uuidStart; uuidPos < 32 && chrNum < idLen; chrNum++) {
 			char uuidChar;
 			int hexValue;
 			

@@ -216,8 +216,30 @@ static IFChar* Xmdchar(const XML_Char* s, int len) {
 
 /* Error handling/reporting */
 
+char* IF_StringForError(IFXmlError errorCode) {
+	switch (errorCode) {
+		case IFXmlNotIfiction: return "IFXmlNotIfiction";
+		case IFXmlNoVersionSupplied: return "IFXmlNoVersionSupplied";
+		case IFXmlVersionIsTooRecent: return "IFXmlVersionIsTooRecent";
+		
+		case IFXmlMismatchedTags: return "IFXmlMismatchedTags";
+		case IFXmlUnrecognisedTag: return "IFXmlUnrecognisedTag";
+		
+		case IFXmlBadId: return "IFXmlBadId";
+		case IFXmlBadZcodeSection: return "IFXmlBadZcodeSection";
+		case IFXmlStoryWithNoId: return "IFXmlStoryWithNoId";
+	}
+	
+	return "IFXMLUnknownError";
+}
+
 static void Error(IFXmlState* state, IFXmlError errorType, void* errorData) {
-	printf("**** ERROR: %i\n", errorType);
+	int line, column;
+	
+	line = XML_GetCurrentLineNumber(state->parser);
+	column = XML_GetCurrentColumnNumber(state->parser);
+	
+	printf("**** Ifiction ERROR: %s <%i> (line=%i, column=%i)\n", IF_StringForError(errorType), errorType, line, column);
 }
 
 /* The XML parser itself */

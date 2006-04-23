@@ -72,7 +72,7 @@
 			if (bytes[x] == 'U' && bytes[x+1] == 'U' && bytes[x+2] == 'I' && bytes[x+3] == 'D' &&
 				bytes[x+4] == ':' && bytes[x+5] == '/' && bytes[x+6] == '/') {
 				// This might be a UUID section
-				char uuidText[49];
+				char uuidText[50];
 				
 				// Check to see if we've got a UUID
 				int y;
@@ -95,6 +95,7 @@
 					gotUUID = NO;
 					break;
 				}
+				uuidText[y] = 0;
 				
 				if (gotUUID) {
 					IFID uuidId = IFMB_IdFromString(uuidText);
@@ -187,7 +188,7 @@
 			if (bytes[x] == 'U' && bytes[x+1] == 'U' && bytes[x+2] == 'I' && bytes[x+3] == 'D' &&
 				bytes[x+4] == ':' && bytes[x+5] == '/' && bytes[x+6] == '/') {
 				// This might be a UUID section
-				char uuidText[49];
+				char uuidText[50];
 				
 				// Check to see if we've got a UUID
 				int y;
@@ -210,6 +211,7 @@
 					gotUUID = NO;
 					break;
 				}
+				uuidText[y] = 0;
 				
 				if (gotUUID) {
 					IFID uuidId = IFMB_IdFromString(uuidText);
