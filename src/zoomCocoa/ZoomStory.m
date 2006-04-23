@@ -337,8 +337,8 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 		case IFMD_Cruel: narf = @"Cruel"; break;
 	}
 	
-	[self setValue: narf
-			forKey: @"zarfian"];
+	[self setObject: narf
+			 forKey: @"zarfian"];
 }
 
 - (void) setTeaser: (NSString*) teaser {
