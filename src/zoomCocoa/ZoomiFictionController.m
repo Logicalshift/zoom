@@ -597,8 +597,8 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 - (void) storyListChanged: (NSNotification*) not {
 	needsUpdating = YES;
 	
-	//[self queueStoryUpdate];
-	[self finishUpdatingStoryList: self];
+	[self queueStoryUpdate];
+	//[self finishUpdatingStoryList: self];
 }
 
 - (void) pictureViewFrameChanged: (NSNotification*) not {

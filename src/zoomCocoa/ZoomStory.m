@@ -177,11 +177,6 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 		metadata = [metadataContainer retain];
 		
 		extraMetadata = nil;
-		
-		[[NSNotificationCenter defaultCenter] addObserver: self
-												 selector: @selector(extraDataChanged:)
-													 name: ZoomStoryExtraMetadataChangedNotification
-												   object: nil];
 	}
 	
 	return self;
@@ -193,9 +188,7 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	
 	if (metadata) [metadata release];
 	if (extraMetadata) [extraMetadata release];
-	
-	[[NSNotificationCenter defaultCenter] removeObserver: self];
-	
+		
 	[super dealloc];
 }
 
