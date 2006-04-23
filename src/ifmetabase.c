@@ -623,7 +623,8 @@ IFID* IFMB_SplitId(IFID id, int* count) {
 		}
 	}
 	
-	for (*count=0; *count < id->data.compound.count && id->data.compound.idsNotNull[*count]->type != ID_NULL; *count++);
+	for ((*count)=0; *count < id->data.compound.count && id->data.compound.idsNotNull[*count]->type != ID_NULL;)
+		 (*count)++;
 	
 	return id->data.compound.idsNotNull;
 }
