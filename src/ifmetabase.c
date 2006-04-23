@@ -910,6 +910,7 @@ IFStory IFMB_GetStoryWithId(IFMetabase meta, IFID ident) {
 	
 	/* Otherwise, create a new story entry */
 	story = malloc(sizeof(struct IFStory));
+	story->metabase = meta;
 	story->id = IFMB_CopyId(ident);
 	story->number = meta->numStories;
 	
@@ -987,6 +988,7 @@ void IFMB_CopyStory(IFMetabase meta, IFStory story, IFID id) {
 	IFStory oldStory;
 	IFStory newStory;
 	
+	if (meta == NULL) meta = story->metabase;
 	if (id == NULL && IFMB_GetStoryWithId(meta, story->id) == story) return;
 	if (id == NULL) id = story->id;
 	

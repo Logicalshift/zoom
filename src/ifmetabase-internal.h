@@ -52,6 +52,8 @@ struct IFMetabase {
 /* The IFStory structure */
 
 struct IFStory {
+	IFMetabase metabase;
+	
 	int number;
 	IFID id;
 	
