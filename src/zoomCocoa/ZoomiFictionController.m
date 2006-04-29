@@ -1022,12 +1022,18 @@ int tableSorter(id a, id b, void* context) {
 		// Set up the cover picture
 		int coverPictureNumber = [story coverPicture];
 		
-		if (coverPicture >= 0) {
-			NSString* filename = [org filenameForIdent: ident];
+		NSString* filename = [org filenameForIdent: ident];
+		ZoomBlorbFile* decodedFile = [[ZoomBlorbFile alloc] initWithContentsOfFile: filename];
+		
+		// Try to retrieve the frontispiece tag (overrides metadata if present)
+		NSData* front = [decodedFile dataForChunkWithType: @"Fspc"];
+		if (front != nil && [front length] >= 4) {
+			const unsigned char* fpc = [front bytes];
 			
-			// Try to load the file as a blorb file
-			ZoomBlorbFile* decodedFile = [[ZoomBlorbFile alloc] initWithContentsOfFile: filename];
-			
+			coverPictureNumber = (((int)fpc[0])<<24)|(((int)fpc[1])<<16)|(((int)fpc[2])<<8)|(((int)fpc[3])<<0);
+		}
+		
+		if (coverPicture >= 0) {			
 			// Attempt to retrieve the cover picture image
 			if (decodedFile != nil) {
 				NSData* coverPictureData = [decodedFile imageDataWithNumber: coverPictureNumber];
@@ -1036,9 +1042,9 @@ int tableSorter(id a, id b, void* context) {
 					coverPicture = [[[NSImage alloc] initWithData: coverPictureData] autorelease];
 				}
 			}
-			
-			[decodedFile release];
 		}
+		
+		[decodedFile release];
 	} else {
 		if ([[self window] isMainWindow] && [[ZoomGameInfoController sharedGameInfoController] infoOwner] == self) {
 			[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
