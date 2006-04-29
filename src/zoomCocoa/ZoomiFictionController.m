@@ -1110,7 +1110,20 @@ int tableSorter(id a, id b, void* context) {
 		sz.height = 2;
 		[descriptionView setFrameSize: sz];
 		
+		[[descriptionView textStorage] beginEditing];
 		[descriptionView setString: description];
+		
+		// Description needs to have its paragraph spacing messed with
+		NSMutableParagraphStyle* paragraphSpacing = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+		[paragraphSpacing setParagraphSpacing: 3];
+		[paragraphSpacing setParagraphSpacingBefore: 4];
+		
+		[[descriptionView textStorage] addAttribute: NSParagraphStyleAttributeName
+											  value: [paragraphSpacing autorelease]
+											  range: NSMakeRange(0, [description length])];
+		
+		// Done
+		[[descriptionView textStorage] endEditing];
 	}
 	
 	NSSize pictureSize = [pictureView frame].size;

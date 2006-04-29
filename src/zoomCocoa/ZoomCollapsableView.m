@@ -83,15 +83,17 @@
 		NSRect thisFrame = [thisView frame];
 		
 		float ypos = thisFrame.origin.y;
+		float titleHeight;
 		
 		if (![thisTitle isEqualToString: @""]) 
-			ypos -= (titleSize.height*1.2);
+			titleHeight = (titleSize.height*1.2);
 		else
-			ypos -= titleSize.height*0.2;
+			titleHeight = titleSize.height*0.2;
+		ypos -= titleHeight;
 		
 		// Draw the border rect
 		NSRect borderRect = NSMakeRect(floor(BORDER)+0.5, floor(ypos)+0.5, 
-									   bounds.size.width-(BORDER*2), thisFrame.size.height + (titleSize.height * 1.2) + (BORDER));
+									   bounds.size.width-(BORDER*2), thisFrame.size.height + titleHeight + (BORDER));
 		[frameColour set];
 		[NSBezierPath strokeRect: borderRect];
 		
