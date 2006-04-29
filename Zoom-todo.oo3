@@ -17,9 +17,7 @@
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="d4dIn82q4rK"/>
-    <selected-rows ids="mMqQ_9wi_Ca"/>
-    <selected-columns ids=":941128d340f2709e21a6e303"/>
-    <selected-characters range="{331, 0}"/>
+    <selected-rows ids="fQe1hqV_UwT"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -1715,12 +1713,12 @@
                 </text>
               </note>
             </item>
-            <item id="iYidsRWMgGv" state="checked">
+            <item id="fQe1hqV_UwT">
               <values>
                 <text>
                   <p>
                     <run>
-                      <lit>Use frontispiece in Blorb</lit>
+                      <lit>Renaming a stories group in the iFiction window doesn&apos;t move its directory</lit>
                     </run>
                   </p>
                 </text>
@@ -1733,6 +1731,18 @@
                   <p>
                     <run>
                       <lit>Get rid of resources panel for games (like blorbs) that already have resources</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="iYidsRWMgGv" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Use frontispiece in Blorb</lit>
                     </run>
                   </p>
                 </text>

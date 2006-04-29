@@ -102,6 +102,8 @@ void IF_ReadIfiction(IFMetabase meta, const unsigned char* xml, size_t size) {
 	IFMB_Free(currentState->tempMetabase);
 	
 	free(currentState);
+	
+	XML_ParserFree(theParser);
 }
 
 /* Some string utility functions */
@@ -913,6 +915,8 @@ void IF_WriteIfiction(IFMetabase meta, int(*writeFunction)(const char* bytes, in
 			w("  <identification><ifid>");
 			w(idString);
 			w("</ifid></identification>\n");
+			
+			free(idString);
 		}
 		
 		/* Iterate through the values for this story */
@@ -1014,6 +1018,8 @@ void IF_WriteIfiction(IFMetabase meta, int(*writeFunction)(const char* bytes, in
 		
 		w(" </story>\n");
 	}
+	
+	IFMB_FreeStoryIterator(stories);
 	
 	/* Write out the footer */
 	w("</ifindex>\n");
