@@ -17,9 +17,9 @@
   <editor should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="d4dIn82q4rK"/>
-    <selected-rows ids="jqNveBpunoH"/>
+    <selected-rows ids="mMqQ_9wi_Ca"/>
     <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{78, 0}"/>
+    <selected-characters range="{13, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -1682,7 +1682,7 @@
             <null/>
           </values>
         </item>
-        <item id="cMghiufVeEh" expanded="yes">
+        <item id="cMghiufVeEh" expanded="yes" state="indeterminate">
           <values>
             <text>
               <p>
@@ -1715,24 +1715,12 @@
                 </text>
               </note>
             </item>
-            <item id="hwlSfUQukF2">
+            <item id="iYidsRWMgGv">
               <values>
                 <text>
                   <p>
                     <run>
-                      <lit>Make panel title font smaller</lit>
-                    </run>
-                  </p>
-                </text>
-                <null/>
-              </values>
-            </item>
-            <item id="mrMVY5tY823">
-              <values>
-                <text>
-                  <p>
-                    <run>
-                      <lit>Make drawer wider by default</lit>
+                      <lit>Use frontispiece in Blorb</lit>
                     </run>
                   </p>
                 </text>
@@ -1749,42 +1737,6 @@
                   </p>
                 </text>
                 <null/>
-              </values>
-            </item>
-            <item id="d2BhCdTZV-j">
-              <values>
-                <text>
-                  <p>
-                    <run>
-                      <lit>Might not be organising games sometimes?</lit>
-                    </run>
-                  </p>
-                </text>
-                <text>
-                  <p>
-                    <run>
-                      <lit>Graham Nelson</lit>
-                    </run>
-                  </p>
-                </text>
-              </values>
-            </item>
-            <item id="hoaWzpU92hU">
-              <values>
-                <text>
-                  <p>
-                    <run>
-                      <lit>Sometimes forgets metadata from games?</lit>
-                    </run>
-                  </p>
-                </text>
-                <text>
-                  <p>
-                    <run>
-                      <lit>Graham Nelson/Me</lit>
-                    </run>
-                  </p>
-                </text>
               </values>
             </item>
             <item id="icJf42c0dwA">
@@ -1804,192 +1756,6 @@
                   </p>
                 </text>
               </values>
-            </item>
-            <item id="fXcFXIKSA3K">
-              <values>
-                <text>
-                  <p>
-                    <run>
-                      <lit>Sometimes games are disappearing from the iFiction window</lit>
-                    </run>
-                  </p>
-                </text>
-                <text>
-                  <p>
-                    <run>
-                      <lit>Graham Nelson</lit>
-                    </run>
-                  </p>
-                </text>
-              </values>
-              <note expanded="yes">
-                <text>
-                  <p>
-                    <run>
-                      <style>
-                        <value key="font-family">Monaco</value>
-                        <value key="font-fill">
-                          <color w="0"/>
-                        </value>
-                        <value key="font-italic">no</value>
-                      </style>
-                      <lit>a) There&apos;s no way to import a blorb except by starting it running,</lit>
-                    </run>
-                  </p>
-                  <p>
-                    <run>
-                      <style>
-                        <value key="font-family">Monaco</value>
-                        <value key="font-fill">
-                          <color w="0"/>
-                        </value>
-                        <value key="font-italic">no</value>
-                      </style>
-                      <lit>so I tried to double-click the whole set of 51. Sensibly, Zoom</lit>
-                    </run>
-                  </p>
-                  <p>
-                    <run>
-                      <style>
-                        <value key="font-family">Monaco</value>
-                        <value key="font-fill">
-                          <color w="0"/>
-                        </value>
-                        <value key="font-italic">no</value>
-                      </style>
-                      <lit>refused to go beyond 10, but in an off-by-one error, an 11th</lit>
-                    </run>
-                  </p>
-                  <p>
-                    <run>
-                      <style>
-                        <value key="font-family">Monaco</value>
-                        <value key="font-fill">
-                          <color w="0"/>
-                        </value>
-                        <value key="font-italic">no</value>
-                      </style>
-                      <lit>game window - blank - appeared too.</lit>
-                    </run>
-                  </p>
-                </text>
-              </note>
-            </item>
-            <item id="dxhzBlVsljt">
-              <values>
-                <text>
-                  <p>
-                    <run>
-                      <lit>Browser window not refreshing automatically sometimes?</lit>
-                    </run>
-                  </p>
-                </text>
-                <text>
-                  <p>
-                    <run>
-                      <lit>Graham Nelson</lit>
-                    </run>
-                  </p>
-                </text>
-              </values>
-              <note expanded="yes">
-                <text>
-                  <p>
-                    <run>
-                      <style>
-                        <value key="font-family">Monaco</value>
-                        <value key="font-fill">
-                          <color w="0"/>
-                        </value>
-                        <value key="font-italic">no</value>
-                      </style>
-                      <lit>b) The browser window doesn&apos;t refresh automatically when a</lit>
-                    </run>
-                  </p>
-                  <p>
-                    <run>
-                      <style>
-                        <value key="font-family">Monaco</value>
-                        <value key="font-fill">
-                          <color w="0"/>
-                        </value>
-                        <value key="font-italic">no</value>
-                      </style>
-                      <lit>new game adds.</lit>
-                    </run>
-                  </p>
-                </text>
-              </note>
-            </item>
-            <item id="dPKApKjUtNS">
-              <values>
-                <text>
-                  <p>
-                    <run>
-                      <lit>Deletion not working when a search is active?</lit>
-                    </run>
-                  </p>
-                </text>
-                <text>
-                  <p>
-                    <run>
-                      <lit>Graham Nelson</lit>
-                    </run>
-                  </p>
-                </text>
-              </values>
-              <note expanded="yes">
-                <text>
-                  <p>
-                    <run>
-                      <style>
-                        <value key="font-family">Monaco</value>
-                        <value key="font-fill">
-                          <color w="0"/>
-                        </value>
-                        <value key="font-italic">no</value>
-                      </style>
-                      <lit>c) If one tries to delete a set of games simultaneously when</lit>
-                    </run>
-                  </p>
-                  <p>
-                    <run>
-                      <style>
-                        <value key="font-family">Monaco</value>
-                        <value key="font-fill">
-                          <color w="0"/>
-                        </value>
-                        <value key="font-italic">no</value>
-                      </style>
-                      <lit>there&apos;s a dynamic search, well, they seem to go but don&apos;t</lit>
-                    </run>
-                  </p>
-                  <p>
-                    <run>
-                      <style>
-                        <value key="font-family">Monaco</value>
-                        <value key="font-fill">
-                          <color w="0"/>
-                        </value>
-                        <value key="font-italic">no</value>
-                      </style>
-                      <lit>really. The metadata seems to lurk inside even though the</lit>
-                    </run>
-                  </p>
-                  <p>
-                    <run>
-                      <style>
-                        <value key="font-family">Monaco</value>
-                        <value key="font-fill">
-                          <color w="0"/>
-                        </value>
-                        <value key="font-italic">no</value>
-                      </style>
-                      <lit>titles aren&apos;t shown any more.</lit>
-                    </run>
-                  </p>
-                </text>
-              </note>
             </item>
             <item id="mMqQ_9wi_Ca">
               <values>
@@ -2068,6 +1834,324 @@
                         <value key="font-italic">no</value>
                       </style>
                       <lit>Zoom hangs, and has to be force quit.</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="hwlSfUQukF2" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Make panel title font smaller</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="mrMVY5tY823" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Make drawer wider by default</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="d2BhCdTZV-j" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Might not be organising games sometimes?</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Graham Nelson</lit>
+                    </run>
+                  </p>
+                </text>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <lit>Think I&apos;ve fixed this. storyIdents/storyFilenames in ZoomStoryOrganiser could get out of sync if a story got duplicated in the iFiction window. (ie, two entries for the same filename)</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run/>
+                  </p>
+                  <p>
+                    <run>
+                      <lit>Now prints a warning on the console if this happens; think this was a bug in earlier versions of Zoom</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="hoaWzpU92hU" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Sometimes forgets metadata from games?</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Graham Nelson/Me</lit>
+                    </run>
+                  </p>
+                </text>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <lit>Several causes. Delete bug was one, various exceptions that could thrown while organising stories was another</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="fXcFXIKSA3K" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Sometimes games are disappearing from the iFiction window</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Graham Nelson</lit>
+                    </run>
+                  </p>
+                </text>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>a) There&apos;s no way to import a blorb except by starting it running,</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>so I tried to double-click the whole set of 51. Sensibly, Zoom</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>refused to go beyond 10, but in an off-by-one error, an 11th</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>game window - blank - appeared too.</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>(These exceptions sure do get around)</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="dxhzBlVsljt" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Browser window not refreshing automatically sometimes?</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Graham Nelson</lit>
+                    </run>
+                  </p>
+                </text>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>b) The browser window doesn&apos;t refresh automatically when a</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>new game adds.</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>(I think this is related to the exception bugs I&apos;ve just fixed)</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="dPKApKjUtNS" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Deletion not working when a search is active?</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Graham Nelson</lit>
+                    </run>
+                  </p>
+                </text>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>c) If one tries to delete a set of games simultaneously when</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>there&apos;s a dynamic search, well, they seem to go but don&apos;t</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>really. The metadata seems to lurk inside even though the</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>titles aren&apos;t shown any more.</lit>
                     </run>
                   </p>
                 </text>

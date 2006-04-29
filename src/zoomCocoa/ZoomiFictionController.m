@@ -903,7 +903,7 @@ int tableSorter(id a, id b, void* context) {
 	objectValueForTableColumn: (NSTableColumn *) aTableColumn 
 						  row: (int) rowIndex {
 		
-	if (needsUpdating) [self reloadTableData];
+	// if (needsUpdating) [self reloadTableData];
 
 	if (aTableView == mainTableView) {
 		// Retrieve row details
@@ -1155,7 +1155,7 @@ int tableSorter(id a, id b, void* context) {
    setObjectValue:(id)anObject 
    forTableColumn:(NSTableColumn*)aTableColumn 
 			  row:(int)rowIndex {
-	if (needsUpdating) [self reloadTableData];
+	//if (needsUpdating) [self reloadTableData];
 
 	if (tableView == mainTableView) {		
 		ZoomStoryID* ident = [storyList objectAtIndex: [mainTableView selectedRow]];
