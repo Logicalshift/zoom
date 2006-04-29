@@ -101,6 +101,8 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/PlugIns/English.lproj/GlkWindow.nib/objects.nib \
 	infocom.iFiction archive.iFiction ifmetadata.c ifmetadata.h \
 	ifmetabase.c ifmetabase.h \
+	ifmetaxml.c ifmetaxml.h \
+	ifmetabase-internal.h \
 	zoomCocoa/add-in.png 		zoomCocoa/add-out.png \
 	zoomCocoa/continue-in.png	zoomCocoa/continue-out.png \
 	zoomCocoa/colourSettings.png 	zoomCocoa/disabledButton.png \
