@@ -18,6 +18,8 @@
     <drawer display="sections"/>
     <hoisted-rows ids="d4dIn82q4rK"/>
     <selected-rows ids="fQe1hqV_UwT"/>
+    <selected-columns ids=":941128d340f2709e21a6e303"/>
+    <selected-characters range="{31, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -1724,6 +1726,15 @@
                 </text>
                 <null/>
               </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <lit>(Seems to have fixed itself???)</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
             </item>
             <item id="jqNveBpunoH">
               <values>
