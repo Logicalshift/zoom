@@ -16,6 +16,7 @@
 	
 	BOOL rearranging;
 	BOOL reiterate;
+	int iterationCount;
 }
 
 - (void) addSubview: (NSView*) subview

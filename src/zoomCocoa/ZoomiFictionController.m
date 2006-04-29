@@ -1040,6 +1040,15 @@ int tableSorter(id a, id b, void* context) {
 				
 				if (coverPictureData) {
 					coverPicture = [[[NSImage alloc] initWithData: coverPictureData] autorelease];
+					
+					// Sometimes the image size and pixel size do not match up
+					NSImageRep* coverRep = [[coverPicture representations] objectAtIndex: 0];
+					NSSize pixSize = NSMakeSize([coverRep pixelsWide], [coverRep pixelsHigh]);
+					
+					if (!NSEqualSizes(pixSize, [coverPicture size])) {
+						[coverPicture setScalesWhenResized: YES];
+						[coverPicture setSize: pixSize];
+					}
 				}
 			}
 		}

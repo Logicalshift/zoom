@@ -17,9 +17,9 @@
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="d4dIn82q4rK"/>
-    <selected-rows ids="kqBK8QVxArg"/>
-    <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{54, 0}"/>
+    <selected-rows ids="mMqQ_9wi_Ca"/>
+    <selected-columns ids=":941128d340f2709e21a6e303"/>
+    <selected-characters range="{331, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -1739,7 +1739,7 @@
                 <null/>
               </values>
             </item>
-            <item id="icJf42c0dwA">
+            <item id="icJf42c0dwA" state="checked">
               <values>
                 <text>
                   <p>
@@ -1757,7 +1757,7 @@
                 </text>
               </values>
             </item>
-            <item id="mMqQ_9wi_Ca">
+            <item id="mMqQ_9wi_Ca" state="checked">
               <values>
                 <text>
                   <p>
@@ -1834,6 +1834,29 @@
                         <value key="font-italic">no</value>
                       </style>
                       <lit>Zoom hangs, and has to be force quit.</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>Eep! Cover pictures resize in the opposite direction to text.</lit>
                     </run>
                   </p>
                 </text>

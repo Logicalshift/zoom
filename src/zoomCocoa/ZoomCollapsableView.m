@@ -161,9 +161,29 @@
 - (void) rearrangeSubviews {
 	reiterate = YES;
 	if (rearranging) return;
+	
+	// Mark as rearranging (stop re-entrance)
 	rearranging = YES;
 	reiterate = NO;
 	
+	// If we iterate deeply, then the scrollbar becomes mandatory
+	NSView* parentView = [self superview];
+	NSScrollView* scrollView = nil;
+	while (parentView != nil && ![parentView isKindOfClass: [NSScrollView class]]) {
+		parentView = [parentView superview];
+	}
+
+	// Find the containing scroll view
+	if (parentView != nil) {
+		scrollView = (NSScrollView*)parentView;
+		[scrollView setAutohidesScrollers: NO];
+	}
+	
+	if (parentView == nil) parentView = self;
+	[parentView setNeedsDisplay: NO];
+	[self setNeedsDisplay: NO];
+	
+	// Rearrange the views as necessary
 	BOOL needsRedrawing = NO;
 	
 	NSRect oldBounds;
@@ -195,7 +215,7 @@
 			needsRedrawing = YES;
 			viewFrame.size.width = bestWidth;
 			[subview setFrameSize: viewFrame.size];
-			[subview setNeedsDisplay: YES];
+			[subview setNeedsDisplay: NO];
 		}
 	}
 	
@@ -246,12 +266,50 @@
 				viewFrame.origin.y = floor(ypos);
 			
 				[subview setFrameOrigin: viewFrame.origin];
-				[subview setNeedsDisplay: YES];
+				[subview setNeedsDisplay: NO];
 				needsRedrawing = YES;
 			}
 
 			ypos += viewFrame.size.height;
 			ypos += BORDER*2;
+		}
+	}
+	
+	// Show/hide the vertical scroll bar as necessary
+	if (scrollView != nil && !reiterate) {
+		BOOL showVerticalBar = NO;
+		BOOL barVisible = [scrollView hasVerticalScroller];
+		
+		// Decide if we need to show a scrollbar or not
+		NSView* docView = [scrollView contentView];
+		float maxHeight = [docView bounds].size.height;
+		
+		if (newHeight > maxHeight || iterationCount > 1)
+			showVerticalBar = YES;
+		else
+			showVerticalBar = NO;
+		
+		if (showVerticalBar != barVisible) {
+			// If iteration count goes high, then only ever show the bar, never hide it
+			if (!showVerticalBar) {
+				// Hide the scrollbar
+				[scrollView setHasVerticalScroller: NO];
+				
+				iterationCount++;
+				rearranging = NO;
+				[self rearrangeSubviews];
+				iterationCount--;
+				return;
+			} else {
+				// Show the scrollbar
+				[scrollView setHasVerticalScroller: YES];
+				
+				iterationCount++;
+				rearranging = NO;
+				[self rearrangeSubviews];
+				iterationCount--;
+				return;
+			}
 		}
 	}
 	
@@ -263,7 +321,7 @@
 	}
 	
 	// Final stage: tidy up, redraw if necessary
-	[self display];
+	[parentView display];
 	
 	[self setNeedsDisplay: NO];
 	viewEnum = [views objectEnumerator];
