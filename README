@@ -14,21 +14,25 @@ by Andrew Hunter
    revealed later in the year, the recent development focus has been
    on producing a Cocoa interface.
 
-   Send any bug reports to bugs@logicalshift.demon.co.uk, and anything
-   else to andrew@logicalshift.demon.co.uk. Zoom's homepage can be
-   located at http://www.logicalshift.demon.co.uk/unix/zoom/
+   Send any bug reports to andrew@logicalshift.co.uk, and anything
+   else to andrew@logicalshift.co.uk. Zoom's homepage can be
+   located at http://www.logicalshift.co.uk/unix/zoom/
    
 Versions
 ========
 
-   This is version 1.0.5dev2 of Zoom. As the components have gained an increasing
+   This is version 1.0.5 of Zoom. As the components have gained an increasing
    tendency to change at different rates, I've given them seperate versions:
    
-   Zoom interpreter core: 1.0.5dev2
-   X11 interface: 1.0.5dev2
+   Zoom interpreter core: 1.0.5
+   X11 interface: 1.0.5
    Windows interface: 0.9.99beta5
    Carbon interface: 1.0.1
-   Cocoa interface: 2.0.3dev2
+   Cocoa interface: 2.0.4
+   ZoomPlugins: 1.0.5
+   Spotlight importer: 1.2
+   CocoaGlk version: 1.0.0alpha1
+   Glulxe version: 0.3.5
    
    Note that Zoom's display system underwent a fairly major change
    between 1.0.0 and 1.0.1 due to the addition of version 6 support. This
