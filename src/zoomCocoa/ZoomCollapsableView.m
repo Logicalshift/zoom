@@ -143,7 +143,7 @@
 	NSRect viewFrame = [subview frame];
 	
 	viewFrame.size.width = bounds.size.width - (BORDER*4);
-	[subview setAutoresizingMask: NSViewWidthSizable];
+	[subview setAutoresizingMask: 0];
 	[subview setFrame: viewFrame];
 	[subview setNeedsDisplay: YES];
 	
@@ -263,10 +263,12 @@
 	}
 	
 	// Final stage: tidy up, redraw if necessary
-	//if (needsRedrawing) {
-		[self setNeedsDisplay: YES];
-	//}
+	[self display];
 	
+	[self setNeedsDisplay: NO];
+	viewEnum = [views objectEnumerator];
+	while (subview = [viewEnum nextObject]) [subview setNeedsDisplay: NO];
+		
 	rearranging = NO;
 }
 
@@ -278,13 +280,16 @@
 	reiterate = YES;
 	if (rearranging) return;
 	
-	rearranging = YES;
-
-	[[NSRunLoop currentRunLoop] performSelector: @selector(finishChangingFrames:)
-										 target: self
-									   argument: self
-										  order: 32
-										  modes: [NSArray arrayWithObjects: NSDefaultRunLoopMode, NSModalPanelRunLoopMode, nil]];
+	if ([[[NSRunLoop currentRunLoop] currentMode] isEqualToString: NSEventTrackingRunLoopMode]) {
+		[self rearrangeSubviews];
+	} else {
+		rearranging = YES;
+		[[NSRunLoop currentRunLoop] performSelector: @selector(finishChangingFrames:)
+											 target: self
+										   argument: self
+											  order: 32
+											  modes: [NSArray arrayWithObjects: NSDefaultRunLoopMode, NSModalPanelRunLoopMode, NSEventTrackingRunLoopMode, nil]];
+	}
 }
 
 - (void) finishChangingFrames: (id) sender {

@@ -1106,6 +1106,8 @@ int tableSorter(id a, id b, void* context) {
 		[collapseView setSubview: pictureView
 						isHidden: NO];
 		
+		[self pictureViewFrameChanged: nil];
+		
 		// Setup the picture preview window
 		[picturePreviewView setImage: coverPicture];
 		
