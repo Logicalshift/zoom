@@ -663,10 +663,12 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 		
 		// Store this in the user metadata for later
 		NSLog(@"Failed to find story for ID: %@", ident);
-		[[[NSApp delegate] userMetadata] copyStory: story];
-		[[[NSApp delegate] userMetadata] writeToDefaultFile];
-		
-		story = [[[NSApp delegate] userMetadata] findOrCreateStory: [story storyID]];
+		if (story != nil) {
+			[[[NSApp delegate] userMetadata] copyStory: story];
+			[[[NSApp delegate] userMetadata] writeToDefaultFile];
+			
+			story = [[[NSApp delegate] userMetadata] findOrCreateStory: [story storyID]];
+		}
 	}
 	
 	return story;
