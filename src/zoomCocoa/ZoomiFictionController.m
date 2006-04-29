@@ -288,7 +288,7 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 											   object: pictureView];
 	
 	[collapseView addSubview: pictureView
-				   withTitle: @"Art"];
+				   withTitle: @""];
 	[collapseView addSubview: previewView
 				   withTitle: @"Saved games"];
 	[collapseView addSubview: descriptionView
@@ -1078,6 +1078,15 @@ int tableSorter(id a, id b, void* context) {
 	if (comment == nil) comment = @"";
 	if (teaser == nil) teaser = @"";
 	if (description == nil) description = @"";
+	
+	// The teaser is obsolete: do not show it if it is not present
+	if (teaser == nil || [teaser isEqualToString: @""]) {
+		[collapseView setSubview: teaserView
+						isHidden: YES];
+	} else {
+		[collapseView setSubview: teaserView
+						isHidden: NO];
+	}
 	
 	if (![[commentView string] isEqualToString: comment]) {
 		//[commentView setString: @""];

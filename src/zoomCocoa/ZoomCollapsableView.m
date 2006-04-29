@@ -82,7 +82,12 @@
 		NSSize titleSize = [thisTitle sizeWithAttributes: titleAttributes];
 		NSRect thisFrame = [thisView frame];
 		
-		float ypos = thisFrame.origin.y - (titleSize.height*1.2);
+		float ypos = thisFrame.origin.y;
+		
+		if (![thisTitle isEqualToString: @""]) 
+			ypos -= (titleSize.height*1.2);
+		else
+			ypos -= titleSize.height*0.2;
 		
 		// Draw the border rect
 		NSRect borderRect = NSMakeRect(floor(BORDER)+0.5, floor(ypos)+0.5, 
@@ -93,8 +98,10 @@
 		// IMPLEMENT ME: draw the show/hide triangle (or maybe add this as a view?)
 		
 		// Draw the title
-		[thisTitle drawAtPoint: NSMakePoint(BORDER*2, ypos + 2 + titleSize.height * 0.1)
-				withAttributes: titleAttributes];
+		if (![thisTitle isEqualToString: @""]) {
+			[thisTitle drawAtPoint: NSMakePoint(BORDER*2, ypos + 2 + titleSize.height * 0.1)
+					withAttributes: titleAttributes];
+		}
 	}
 	
 	
@@ -191,6 +198,7 @@
 	
 	NSEnumerator* viewEnum;
 	NSEnumerator* stateEnum;
+	NSEnumerator* titleEnum;
 	NSView* subview;
 	
 	float bestWidth;
@@ -224,13 +232,18 @@
 	
 	viewEnum = [views objectEnumerator];
 	stateEnum = [states objectEnumerator];
+	titleEnum = [titles objectEnumerator];
 	
 	while (subview = [viewEnum nextObject]) {
 		NSRect viewFrame = [subview frame];
 		BOOL shown = [[stateEnum nextObject] boolValue];
+		NSString* title = [titleEnum nextObject];
 		
 		if (shown) {
-			newHeight += titleHeight * 1.2;
+			if (![title isEqualToString: @""])
+				newHeight += titleHeight * 1.2;
+			else
+				newHeight += titleHeight * 0.2;
 			newHeight += viewFrame.size.height;
 			newHeight += BORDER*2;
 		}
@@ -247,12 +260,19 @@
 	
 	viewEnum = [views objectEnumerator];
 	stateEnum = [states objectEnumerator];
+	titleEnum = [titles objectEnumerator];
 	
 	while (subview = [viewEnum nextObject]) {
 		NSRect viewFrame = [subview frame];
 		BOOL shown = [[stateEnum nextObject] boolValue];
+		NSString* title = [titleEnum nextObject];
 		
-		if (shown) ypos += titleHeight * 1.2;
+		if (shown) {
+			if (![title isEqualToString: @""])
+				ypos += titleHeight * 1.2;
+			else
+				ypos += titleHeight * 0.2;
+		}
 		
 		if ([subview superview] != self || !shown) {
 			if ([subview superview] != nil) [subview removeFromSuperview];
