@@ -99,13 +99,21 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 			
 			// Remove old entries
 			if (oldFilename) {
+				int index = [storyFilenames indexOfObject: oldFilename];
+				
 				[identsToFilenames removeObjectForKey: fileID];
-				[storyFilenames removeObject: oldFilename];
+				
+				[storyFilenames removeObjectAtIndex: index];
+				[storyIdents removeObjectAtIndex: index];
 			}
 			
 			if (oldIdent) {
+				int index = [storyIdents indexOfObject: oldIdent];
+
 				[filenamesToIdents removeObjectForKey: filename];
-				[storyIdents removeObject: oldIdent];
+				
+				[storyFilenames removeObjectAtIndex: index];
+				[storyIdents removeObjectAtIndex: index];
 			}
 			
 			// Add this entry
@@ -117,7 +125,7 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 			
 			[identsToFilenames setObject: newFilename forKey: newIdent];
 			[filenamesToIdents setObject: newIdent forKey: newFilename];
-			
+
 			[storyLock unlock];
 		}
 		
@@ -440,7 +448,9 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	
 	// If there's no story registered, then we need to create one
 	if (theStory == nil) {
-		theStory = [[[NSApp delegate] userMetadata] findOrCreateStory: ident];
+		// theStory = [[[NSApp delegate] userMetadata] findOrCreateStory: ident];
+		theStory = [ZoomStory defaultMetadataForFile: filename];
+		[[[NSApp delegate] userMetadata] copyStory: theStory];
 		[theStory setTitle: [[filename lastPathComponent] stringByDeletingPathExtension]];
 		
 		[[[NSApp delegate] userMetadata] writeToDefaultFile];
@@ -929,7 +939,9 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		NSLog(@"WARNING: Attempted to organise a story with no filename");
 		return;
 	}
-		
+	
+	[storyLock lock];
+	
 	NSString* oldFilename = [[filename retain] autorelease];
 	
 	// Copy to a standard directory, change the filename we're using
@@ -1045,6 +1057,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		
 		if (dir == nil) {
 			NSLog(@"No organised directory for game: cannot store resources");
+			[storyLock unlock];
 			return;
 		}
 		
@@ -1071,6 +1084,8 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		[story setObject: nil
 				  forKey: @"ResourceFilename"];
 	}
+
+	[storyLock unlock];
 }
 
 - (void) organiseStory: (ZoomStory*) story {
