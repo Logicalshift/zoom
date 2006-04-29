@@ -17,9 +17,9 @@
   <editor should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="d4dIn82q4rK"/>
-    <selected-rows ids="aqc17OT5y9W"/>
-    <selected-columns ids="bJSTis5k9jH"/>
-    <selected-characters range="{13, 0}"/>
+    <selected-rows ids="jqNveBpunoH"/>
+    <selected-columns ids=":078928d440f2709e21a6e303"/>
+    <selected-characters range="{78, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -1682,77 +1682,396 @@
             <null/>
           </values>
         </item>
-        <item id="aqc17OT5y9W">
+        <item id="cMghiufVeEh" expanded="yes">
           <values>
             <text>
               <p>
                 <run>
-                  <lit>Probably want to delete metadata along with a game</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p>
-                <run>
-                  <lit>Graham Nelson</lit>
-                </run>
-              </p>
-            </text>
-          </values>
-          <note expanded="yes">
-            <text>
-              <p>
-                <run>
-                  <lit>(What to do when someone drags a game out of the trash?)</lit>
-                </run>
-              </p>
-            </text>
-          </note>
-        </item>
-        <item id="d8HJO9eUQK0" expanded="yes">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Want a &apos;game-provided&apos; metadata repository</lit>
+                  <lit>Babel bugs</lit>
                 </run>
               </p>
             </text>
             <null/>
           </values>
-          <note expanded="yes">
-            <text>
-              <p>
-                <run>
-                  <lit>(Creates &apos;magic&apos; metadata updates)</lit>
-                </run>
-              </p>
-            </text>
-          </note>
           <children>
-            <item id="c_s5lhhWUXZ">
+            <item id="gXxFFUwOe6z">
               <values>
                 <text>
                   <p>
                     <run>
-                      <lit>Copy metadata into user repository on demand only</lit>
+                      <lit>Remove infocom metadata?</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <lit>Unwilling to do this; people without a newly blorbed version of these files will notice</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="hwlSfUQukF2">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Make panel title font smaller</lit>
                     </run>
                   </p>
                 </text>
                 <null/>
               </values>
             </item>
-            <item id="jXe2k7LPgbW">
+            <item id="mrMVY5tY823">
               <values>
                 <text>
                   <p>
                     <run>
-                      <lit>Blorbed metadata goes into the game-provided metadata, not the general area</lit>
+                      <lit>Make drawer wider by default</lit>
                     </run>
                   </p>
                 </text>
                 <null/>
               </values>
+            </item>
+            <item id="jqNveBpunoH">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Get rid of resources panel for games (like blorbs) that already have resources</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="d2BhCdTZV-j">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Might not be organising games sometimes?</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Graham Nelson</lit>
+                    </run>
+                  </p>
+                </text>
+              </values>
+            </item>
+            <item id="hoaWzpU92hU">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Sometimes forgets metadata from games?</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Graham Nelson/Me</lit>
+                    </run>
+                  </p>
+                </text>
+              </values>
+            </item>
+            <item id="icJf42c0dwA">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Cover art with a DPI rating is displayed at the wrong size</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Graham Nelson</lit>
+                    </run>
+                  </p>
+                </text>
+              </values>
+            </item>
+            <item id="fXcFXIKSA3K">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Sometimes games are disappearing from the iFiction window</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Graham Nelson</lit>
+                    </run>
+                  </p>
+                </text>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>a) There&apos;s no way to import a blorb except by starting it running,</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>so I tried to double-click the whole set of 51. Sensibly, Zoom</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>refused to go beyond 10, but in an off-by-one error, an 11th</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>game window - blank - appeared too.</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="dxhzBlVsljt">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Browser window not refreshing automatically sometimes?</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Graham Nelson</lit>
+                    </run>
+                  </p>
+                </text>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>b) The browser window doesn&apos;t refresh automatically when a</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>new game adds.</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="dPKApKjUtNS">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Deletion not working when a search is active?</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Graham Nelson</lit>
+                    </run>
+                  </p>
+                </text>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>c) If one tries to delete a set of games simultaneously when</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>there&apos;s a dynamic search, well, they seem to go but don&apos;t</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>really. The metadata seems to lurk inside even though the</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>titles aren&apos;t shown any more.</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="mMqQ_9wi_Ca">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Crash on cover art reorganisation sometimes</lit>
+                    </run>
+                  </p>
+                </text>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Graham Nelson</lit>
+                    </run>
+                  </p>
+                </text>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>d) More serious bug: in the browser window, if the drawer is</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>open and showing cover art, and one presses cursor down</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>to go to the next game; and if, furthermore, the game gone</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>from has square art and the game gone to doesn&apos;t; then</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <style>
+                        <value key="font-family">Monaco</value>
+                        <value key="font-fill">
+                          <color w="0"/>
+                        </value>
+                        <value key="font-italic">no</value>
+                      </style>
+                      <lit>Zoom hangs, and has to be force quit.</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
             </item>
           </children>
         </item>
@@ -1837,7 +2156,19 @@
             <null/>
           </values>
         </item>
-        <item id="hY1PnAqpUtp">
+        <item id="dyl865LFCwE">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Want &apos;language&apos; section</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
+        <item id="hY1PnAqpUtp" state="checked">
           <values>
             <text>
               <p>
@@ -1849,7 +2180,7 @@
             <null/>
           </values>
         </item>
-        <item id="o_3tx8Dh-b-">
+        <item id="o_3tx8Dh-b-" state="checked">
           <values>
             <text>
               <p>
@@ -1861,7 +2192,7 @@
             <null/>
           </values>
           <children>
-            <item id="jZql8eaNC6t">
+            <item id="jZql8eaNC6t" state="checked">
               <values>
                 <text>
                   <p>
@@ -1873,7 +2204,7 @@
                 <null/>
               </values>
             </item>
-            <item id="kxjr6mLid09">
+            <item id="kxjr6mLid09" state="checked">
               <values>
                 <text>
                   <p>
@@ -1887,17 +2218,79 @@
             </item>
           </children>
         </item>
-        <item id="dyl865LFCwE">
+        <item id="aqc17OT5y9W" state="checked">
           <values>
             <text>
               <p>
                 <run>
-                  <lit>Want &apos;language&apos; section</lit>
+                  <lit>Probably want to delete metadata along with a game</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p>
+                <run>
+                  <lit>Graham Nelson</lit>
+                </run>
+              </p>
+            </text>
+          </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>(What to do when someone drags a game out of the trash?)</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="d8HJO9eUQK0" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Want a &apos;game-provided&apos; metadata repository</lit>
                 </run>
               </p>
             </text>
             <null/>
           </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>(Creates &apos;magic&apos; metadata updates)</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+          <children>
+            <item id="c_s5lhhWUXZ" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Copy metadata into user repository on demand only</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="jXe2k7LPgbW" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Blorbed metadata goes into the game-provided metadata, not the general area</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+          </children>
         </item>
         <item id="d5VGR4xaf2H" state="checked">
           <values>

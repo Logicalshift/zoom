@@ -287,10 +287,10 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 												 name: NSViewFrameDidChangeNotification
 											   object: pictureView];
 	
+	[collapseView addSubview: pictureView
+				   withTitle: @"Art"];
 	[collapseView addSubview: previewView
 				   withTitle: @"Saved games"];
-	[collapseView addSubview: pictureView
-				   withTitle: @"Cover picture"];
 	[collapseView addSubview: descriptionView
 				   withTitle: @"Description"];
 	[collapseView addSubview: teaserView
@@ -378,7 +378,7 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 }
 
 - (void) addFiles: (NSArray *)filenames {
-	NSArray* fileTypes = [NSArray arrayWithObjects: @"z3", @"z4", @"z5", @"z6", @"z7", @"z8", nil];
+	NSArray* fileTypes = [NSArray arrayWithObjects: @"z3", @"z4", @"z5", @"z6", @"z7", @"z8", @"blorb", @"zblorb", @"blb", @"zlb", nil];
 
 	// Add all the files we can
 	NSMutableArray* selectedFiles = [filenames mutableCopy];

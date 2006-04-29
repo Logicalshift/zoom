@@ -417,6 +417,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	
 	if (delete) {
 		[[[NSApp delegate] userMetadata] removeStoryWithIdent: ident];
+		[[[NSApp delegate] userMetadata] writeToDefaultFile];
 	}
 	
 	[storyLock unlock];

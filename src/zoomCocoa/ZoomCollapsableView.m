@@ -12,7 +12,7 @@
 @implementation ZoomCollapsableView
 
 #define BORDER 4.0
-#define FONTSIZE 20
+#define FONTSIZE 14
 
 // = Init/housekeeping =
 
