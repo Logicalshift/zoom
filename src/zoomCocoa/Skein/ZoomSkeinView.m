@@ -546,6 +546,10 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	return YES;
 }
 
+- (BOOL) acceptsFirstResponder {
+	return YES;
+}
+
 // = Mouse handling =
 
 - (void) mouseDown: (NSEvent*) event {
