@@ -253,6 +253,9 @@ static void finalizeViews(void) {
 		NSImage* pixmap = [pixmapWindow pixmap];
 		NSSize pixSize = [pixmap size];
 		
+		NSRect realFrame = [self convertRect: bounds 
+									  toView: [[self window] contentView]];
+		
 		/*
 		[pixmap drawAtPoint: NSMakePoint(floor(bounds.origin.x + (bounds.size.width-pixSize.width)/2.0), floor(bounds.origin.y + (bounds.size.height-pixSize.height)/2.0))
 				   fromRect: NSMakeRect(0,0,pixSize.width, pixSize.height)
@@ -269,6 +272,8 @@ static void finalizeViews(void) {
 		
 		[[NSGraphicsContext currentContext] saveGraphicsState];
 		[invertTransform invert];
+		[invertTransform translateXBy: realFrame.origin.x
+								  yBy: realFrame.origin.y];
 		[invertTransform set];
 
 		[pixmap drawInRect: bounds
