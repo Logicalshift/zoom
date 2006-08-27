@@ -238,6 +238,9 @@
             break;
     }
 
+	stream_flush_buffer();
+	display_flush();
+
     display_finalise();
     [mainPool release];
 	
@@ -783,6 +786,9 @@ void zmachine_fatal(char* format, ...) {
 	
 	fatalBuf[511] = 0;
 	
+	stream_flush_buffer();
+	display_flush();
+	
 	[[mainMachine display] displayFatalError: [NSString stringWithFormat: @"%s (PC=#%x)", fatalBuf, machine.zpc]];
 	
 	display_exit(1);
@@ -801,6 +807,9 @@ void zmachine_warning(char* format, ...) {
 #ifdef DEBUG
 	NSLog(@"Warning: %s", fatalBuf);
 #endif
+	
+	stream_flush_buffer();
+	display_flush();
 	
 	[[mainMachine display] displayWarning: [NSString stringWithFormat: @"%s (PC=#%x)", fatalBuf, machine.zpc]];
 }
