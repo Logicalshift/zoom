@@ -77,6 +77,10 @@ static void prints_reformat_width(int len)
 	  
 	  mem[0] = len>>8;
 	  mem[1] = len;
+
+#ifdef DEBUG
+	  printf_debug("Stream: memory stream length is now %i (reformatting width)\n", len);
+#endif
 	}
     }
   while (split != len);
@@ -105,6 +109,14 @@ static void prints(const unsigned int* const s)
 
 	  mem[0] = len>>8;
 	  mem[1] = len;
+	  
+#ifdef DEBUG
+	  printf_debug("Stream: memory stream length is now %i (>", len);
+	  for (x=0; x<len; x++) {
+	    printf_debug("%c", mem[x]);
+	  }
+	  printf("<)\n");
+#endif
 	}
       else
 	{
@@ -136,6 +148,10 @@ static void prints(const unsigned int* const s)
 
 	  mem[0] = len>>8;
 	  mem[1] = len;
+	  
+#ifdef DEBUG
+	  printf_debug("Stream: memory stream length is now %i\n", len);
+#endif
 
 	  prints_reformat_width(len);
 	}

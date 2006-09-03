@@ -1075,6 +1075,13 @@ int main(int argc, char** argv)
 	  fprintf(stderr, "Couldn't open input file\n");
 	  return 1;
 	}
+	  
+	  printf("Zoom interpreter builder");
+#ifndef HAVE_COMPUTED_GOTOS
+	  printf(" (using giant switch statement)\n");
+#else
+	  printf(" (using computed GOTOs)\n");
+#endif
 
       yyline          = 1;
       zmachine.numops = 0;

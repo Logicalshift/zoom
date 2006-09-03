@@ -111,13 +111,16 @@ static inline void push(ZStack* stack, const ZWord word)
   
   if (stack->stack_size <= 0)
     {
+      int stack_offset = stack->stack_top - stack->stack;
+    
       stack->stack_total += 2048;
       if (!(stack->stack = realloc(stack->stack,
 				   stack->stack_total*sizeof(ZWord))))
 	{
 	  zmachine_fatal("Stack overflow");
 	}
-      stack->stack_size = 2048;
+      stack->stack_top = stack->stack + stack_offset;
+      stack->stack_size += 2048;
     }
 
 #ifdef DEBUG

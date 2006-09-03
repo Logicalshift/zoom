@@ -806,6 +806,7 @@ void zmachine_warning(char* format, ...) {
 	
 #ifdef DEBUG
 	NSLog(@"Warning: %s", fatalBuf);
+	zmachine_fatal(fatalBuf);
 #endif
 	
 	stream_flush_buffer();
