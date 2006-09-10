@@ -16,10 +16,10 @@
   <settings/>
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
-    <hoisted-rows ids="d4dIn82q4rK"/>
-    <selected-rows ids="fQe1hqV_UwT"/>
-    <selected-columns ids=":941128d340f2709e21a6e303"/>
-    <selected-characters range="{31, 0}"/>
+    <hoisted-rows ids="kzPdhsKinRx"/>
+    <selected-rows ids="fa_t76WcCUm"/>
+    <selected-columns ids=":078928d440f2709e21a6e303"/>
+    <selected-characters range="{19, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -629,6 +629,816 @@
             </text>
             <null/>
           </values>
+        </item>
+        <item id="fa_t76WcCUm">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>split_window does not work properly: the cursor position is not preserved</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>The interpreter built into I7 for OS X has a problem with V6 games:</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>after displaying the prompt for the first time, the cursor goes up to</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>the top of the window, so any new commands will overwrite the banner</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>and start room description that have already been displayed. The</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>cursor is fine after that first time. After much investigation, I&apos;ve</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>tracked it down to Zoom&apos;s handling of the cursor position after</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>splitting a window.</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>Here&apos;s the source code for the attached file &quot;V6 cursor test.z6&quot;:</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>[ Main x;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>	print &quot;^^^^^before splitting...^&quot;;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>	@split_window 50;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>	@set_window 1;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>	print &quot;status line goes here^&quot;;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>	@set_window 0;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>	print &quot;window 0^&quot;;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>	@read_char 1 -&gt; x;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>];</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>Under Windows Frotz, I see this:</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>&lt;output&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>status line goes here</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>.</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>.</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>.</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>.</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>.</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>before splitting...</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>window 0</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>&lt;/output&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>But under Zoom, I get this:</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>&lt;output&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>status line goes here</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>.</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>.</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>.</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>window 0</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>.</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>before splitting...</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>&lt;/output&gt;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>That is, Zoom forgets that the cursor had already moved before</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>splitting the window, and after @set_window 0, the new text is</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>displayed at the *top* of window 0, not after the &quot;before splitting&quot;</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>line.</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>StatusLineHeight seems to try to correct for this by saving the cursor</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>position (relative to the old window origin) and restoring it after</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>splitting (relative to the new window origin), but now we run into</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>another problem: it uses @get_wind_prop to find the original cursor</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>position, and the value returned by that opcode is incorrect.</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>@get_cursor returns the right one, but that leads to yet another</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>problem: @get_cursor operates on the current window (AFAICT), and we</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>don&apos;t know for sure that StatusLineHeight is being called when window</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>0 is the current one. If I explicitly use @set_window 0 first to force</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>it, @get_cursor returns the wrong position!</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>So, I think the main fix we need is for @get_wind_prop to return the</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>same values for properties 4 and 5 as those returned by @get_cursor.</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>Remembering the cursor position after a split would be nice, but isn&apos;t</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>required by the I6 library.</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>Jesse</lit>
+                </run>
+              </p>
+            </text>
+          </note>
         </item>
         <item id="fgwd2Q8V1Hj">
           <values>
@@ -3052,7 +3862,7 @@
             <null/>
           </values>
         </item>
-        <item id="cZczk-BF51t" expanded="yes">
+        <item id="cZczk-BF51t">
           <values>
             <text>
               <p>

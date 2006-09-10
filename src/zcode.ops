@@ -2352,10 +2352,20 @@ OPCODE "aread"          VAR:0x04 ARGS:4 STORE CANJUMP VERSION 6
 OPCODE "split_window"   VAR:0x0a ARGS:1               VERSION 6
 %{
   int owin;
+  int oldx0, oldy0;
+  int oldx1, oldy1;
 
   stream_flush_buffer();
 
   owin = v6_get_window();
+  
+  v6_set_window(0);
+  oldx0 = v6_get_cursor_x();
+  oldy0 = v6_get_cursor_y();
+
+  v6_set_window(1);
+  oldx1 = v6_get_cursor_x();
+  oldy1 = v6_get_cursor_y();
 
   windows[0].x      = 0;
   windows[0].y      = argblock.arg[0]+1;
@@ -2368,6 +2378,12 @@ OPCODE "split_window"   VAR:0x0a ARGS:1               VERSION 6
   windows[1].ysize  = argblock.arg[0];
   zcode_setup_window(0);
   zcode_setup_window(1);
+  
+  v6_set_window(0);
+  v6_set_cursor(oldx0, oldy0);
+
+  v6_set_window(1);
+  v6_set_cursor(oldx1, oldy1);
 
 #ifdef DEBUG
   printf_debug("Defining windows as a result of split_window\n");
@@ -3038,6 +3054,7 @@ OPCODE "get_wind_prop" EXT:0x13        STORE  VERSION 6
 %{
   int win;
 
+  stream_flush_buffer();
   win = v6_get_window();
 
   argblock.arg[0] = v6_window(argblock.arg[0]);
