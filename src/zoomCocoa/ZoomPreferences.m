@@ -106,10 +106,14 @@ static NSArray* DefaultFonts(void) {
 	
 	NSMutableArray* defaultFonts = [[NSMutableArray alloc] init];
 	
-	NSFont* variableFont = [NSFont fontWithName: defaultFontName
-										   size: 12];
-	NSFont* fixedFont = [NSFont fontWithName: fixedFontName
-										size: 12];
+	NSFont* variableFont = [mgr fontWithFamily: defaultFontName
+										traits: NSUnboldFontMask
+										weight: 5
+										  size: 12];
+	NSFont* fixedFont = [mgr fontWithFamily: fixedFontName
+									 traits: NSUnboldFontMask
+									 weight: 5
+									   size: 12];
 	
 	if (variableFont == nil) variableFont = [NSFont systemFontOfSize: 12];
 	if (fixedFont == nil) fixedFont = [NSFont userFixedPitchFontOfSize: 12];
