@@ -1259,10 +1259,12 @@ int tableSorter(id a, id b, void* context) {
 	
 	// Flip any views that need flipping
 	if (flipToDescription) {
+		[[gameDetailView layoutManager] setBackgroundLayoutEnabled: NO];
 		[infoView setFrame: [topPanelView frame]];
 		[flipView animateTo: infoView
 					  style: ZoomAnimateFade];
 		topPanelView = infoView;
+		[[gameDetailView layoutManager] setBackgroundLayoutEnabled: YES];
 	}
 }
 
