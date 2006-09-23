@@ -11,15 +11,20 @@
             LANGUAGE = ObjC; 
             SUPERCLASS = NSObject; 
         }, 
+        {CLASS = NSObject; LANGUAGE = ObjC; }, 
         {CLASS = NSSplitView; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
         {CLASS = ZoomCollapsableView; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
         {CLASS = ZoomCollapsingSplitView; LANGUAGE = ObjC; SUPERCLASS = NSSplitView; }, 
+        {CLASS = ZoomFadeView; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
+        {CLASS = ZoomFlipView; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
+        {CLASS = ZoomHQImageView; LANGUAGE = ObjC; SUPERCLASS = NSImageView; }, 
         {
             ACTIONS = {editSelectedCell = id; }; 
             CLASS = ZoomStoryTableView; 
             LANGUAGE = ObjC; 
             SUPERCLASS = NSTableView; 
         }, 
+        {CLASS = ZoomWhiteView; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
         {
             CLASS = ZoomiFButton; 
             LANGUAGE = ObjC; 
@@ -33,6 +38,9 @@
                 changeFilter2 = id; 
                 deleteSavegame = id; 
                 drawerButtonPressed = id; 
+                flipToFilter = id; 
+                flipToInfo = id; 
+                flipToSaves = id; 
                 restoreAutosave = id; 
                 searchFieldChanged = id; 
                 startNewGame = id; 
@@ -48,7 +56,12 @@
                 drawerView = NSView; 
                 filterTable1 = NSTableView; 
                 filterTable2 = NSTableView; 
+                filterView = NSView; 
+                flipView = ZoomFlipView; 
+                gameDetailView = NSTextView; 
+                gameImageView = NSImageView; 
                 infoButton = ZoomiFButton; 
+                infoView = NSView; 
                 mainTableView = ZoomStoryTableView; 
                 newgameButton = ZoomiFButton; 
                 picturePreview = NSWindow; 
@@ -58,6 +71,7 @@
                 searchField = NSTextField; 
                 splitView = ZoomCollapsingSplitView; 
                 storyMenu = NSMenu; 
+                topPanelView = NSView; 
             }; 
             SUPERCLASS = NSWindowController; 
         }

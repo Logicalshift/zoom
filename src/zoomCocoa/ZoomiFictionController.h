@@ -15,6 +15,7 @@
 #import "ZoomResourceDrop.h"
 #import "ZoomStoryTableView.h"
 #import "ZoomMetadata.h"
+#import "ZoomFlipView.h"
 
 @interface ZoomiFictionController : NSWindowController {
 	IBOutlet ZoomiFButton* addButton;
@@ -24,12 +25,20 @@
 	IBOutlet ZoomiFButton* infoButton;
 	
 	IBOutlet ZoomCollapsableView* collapseView;
+	
+	IBOutlet ZoomFlipView* flipView;
+	IBOutlet NSView* topPanelView;
+	IBOutlet NSView* filterView;
+	IBOutlet NSView* infoView;
 
 	IBOutlet NSWindow* picturePreview;
 	IBOutlet NSImageView* picturePreviewView;
 	
 	IBOutlet NSProgressIndicator* progressIndicator;
 	int indicatorCount;
+	
+	IBOutlet NSTextView* gameDetailView;
+	IBOutlet NSImageView* gameImageView;
 	
 	NSTextView*   commentView;
 	NSTextView*   teaserView;
@@ -40,7 +49,7 @@
 	IBOutlet NSDrawer* drawer;
 	IBOutlet NSView*   drawerView;
 
-	IBOutlet ZoomCollapsingSplitView * splitView;
+	IBOutlet ZoomCollapsingSplitView* splitView;
 
 	float splitViewPercentage;
 	BOOL splitViewCollapsed;
@@ -84,6 +93,10 @@
 - (IBAction) changeFilter1: (id) sender;
 - (IBAction) changeFilter2: (id) sender;
 - (IBAction) deleteSavegame: (id) sender;
+
+- (IBAction) flipToFilter: (id) sender;
+- (IBAction) flipToInfo: (id) sender;
+- (IBAction) flipToSaves: (id) sender;
 
 - (ZoomStory*) storyForID: (ZoomStoryID*) ident;
 - (void) configureFromMainTableSelection;

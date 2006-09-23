@@ -10,6 +10,13 @@
 		4B0105B2092FADD800955BCB /* ZoomPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B418ED905961D2C009C44DE /* ZoomPreferences.m */; };
 		4B0CAB69097F0CBB00867EF4 /* ZoomGlkDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B0CAB4D097F07C000867EF4 /* ZoomGlkDocument.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B0CAB6A097F0CBB00867EF4 /* ZoomGlkDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B0CAB4E097F07C000867EF4 /* ZoomGlkDocument.m */; };
+		4B0D80DB0AC590A4003E8CCA /* ZoomFlipView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B0D80D90AC590A4003E8CCA /* ZoomFlipView.h */; };
+		4B0D80DC0AC590A4003E8CCA /* ZoomFlipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B0D80DA0AC590A4003E8CCA /* ZoomFlipView.m */; };
+		4B0D81C60AC59C79003E8CCA /* ZoomWhiteView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B0D81C40AC59C79003E8CCA /* ZoomWhiteView.h */; };
+		4B0D81C70AC59C79003E8CCA /* ZoomWhiteView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B0D81C50AC59C79003E8CCA /* ZoomWhiteView.m */; };
+		4B0D81DD0AC59F3F003E8CCA /* ZoomFadeView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B0D81DB0AC59F3F003E8CCA /* ZoomFadeView.h */; };
+		4B0D81DE0AC59F3F003E8CCA /* ZoomFadeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B0D81DC0AC59F3F003E8CCA /* ZoomFadeView.m */; };
+		4B0D81E20AC5A3C0003E8CCA /* top-shading.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B0D81E10AC5A3C0003E8CCA /* top-shading.png */; };
 		4B1888EB0935F912003AF62A /* ascii.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888D80935F912003AF62A /* ascii.h */; };
 		4B1888EC0935F912003AF62A /* asciitab.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888D90935F912003AF62A /* asciitab.h */; };
 		4B1888ED0935F912003AF62A /* expat_external.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888DA0935F912003AF62A /* expat_external.h */; };
@@ -374,7 +381,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 4B51AA4607E8770600576AB9 /* GlkView */;
+			remoteGlobalIDString = 4B51AA4607E8770600576AB9;
 			remoteInfo = GlkView;
 		};
 		4B36C45A0955ED3B00874F9F /* PBXContainerItemProxy */ = {
@@ -582,6 +589,13 @@
 		4B0A32E406A59ADA00BB8878 /* ZoomSkeinViewWeb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomSkeinViewWeb.m; sourceTree = "<group>"; };
 		4B0CAB4D097F07C000867EF4 /* ZoomGlkDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomGlkDocument.h; sourceTree = "<group>"; };
 		4B0CAB4E097F07C000867EF4 /* ZoomGlkDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomGlkDocument.m; sourceTree = "<group>"; };
+		4B0D80D90AC590A4003E8CCA /* ZoomFlipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomFlipView.h; sourceTree = "<group>"; };
+		4B0D80DA0AC590A4003E8CCA /* ZoomFlipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomFlipView.m; sourceTree = "<group>"; };
+		4B0D81C40AC59C79003E8CCA /* ZoomWhiteView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomWhiteView.h; sourceTree = "<group>"; };
+		4B0D81C50AC59C79003E8CCA /* ZoomWhiteView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomWhiteView.m; sourceTree = "<group>"; };
+		4B0D81DB0AC59F3F003E8CCA /* ZoomFadeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomFadeView.h; sourceTree = "<group>"; };
+		4B0D81DC0AC59F3F003E8CCA /* ZoomFadeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomFadeView.m; sourceTree = "<group>"; };
+		4B0D81E10AC5A3C0003E8CCA /* top-shading.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "top-shading.png"; sourceTree = "<group>"; };
 		4B0DC63C05C0A0EB000B96A3 /* continue-in.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "continue-in.png"; sourceTree = "<group>"; };
 		4B0DC63D05C0A0EB000B96A3 /* continue-out.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "continue-out.png"; sourceTree = "<group>"; };
 		4B0DC63E05C0A0EB000B96A3 /* newgame-in.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "newgame-in.png"; sourceTree = "<group>"; };
@@ -935,6 +949,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4B0D80D40AC58D9E003E8CCA /* FlipView */ = {
+			isa = PBXGroup;
+			children = (
+				4B0D80D90AC590A4003E8CCA /* ZoomFlipView.h */,
+				4B0D80DA0AC590A4003E8CCA /* ZoomFlipView.m */,
+				4B0D81C40AC59C79003E8CCA /* ZoomWhiteView.h */,
+				4B0D81C50AC59C79003E8CCA /* ZoomWhiteView.m */,
+				4B0D81DB0AC59F3F003E8CCA /* ZoomFadeView.h */,
+				4B0D81DC0AC59F3F003E8CCA /* ZoomFadeView.m */,
+			);
+			name = FlipView;
+			sourceTree = "<group>";
+		};
 		4B1888D10935F870003AF62A /* Expat */ = {
 			isa = PBXGroup;
 			children = (
@@ -1190,6 +1217,7 @@
 		4B807B9E05BFEE0C00681653 /* iFiction */ = {
 			isa = PBXGroup;
 			children = (
+				4B0D80D40AC58D9E003E8CCA /* FlipView */,
 				4B807BA905BFEE7200681653 /* ZoomStoryOrganiser.h */,
 				4B807BAA05BFEE7200681653 /* ZoomStoryOrganiser.m */,
 				4B807BA305BFEE2700681653 /* ZoomiFictionController.h */,
@@ -1277,6 +1305,7 @@
 		4BCF3F42050FB1D800A8E303 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				4B0D81E10AC5A3C0003E8CCA /* top-shading.png */,
 				4B5CBC59069D9EB700C0AA88 /* SkeinAdd.png */,
 				4B5CBC5E069D9EB700C0AA88 /* SkeinDelete.png */,
 				4B5CBC5B069D9EB700C0AA88 /* SkeinLocked.png */,
@@ -1508,6 +1537,9 @@
 				4BB8C1B508C249F400D7D334 /* ZoomSkeinLayoutItem.h in Headers */,
 				4BA66B2C0906538F000A3852 /* ZoomWindowThatCanBecomeKey.h in Headers */,
 				4B65B3A10979B981002D5534 /* ZoomHQImageView.h in Headers */,
+				4B0D80DB0AC590A4003E8CCA /* ZoomFlipView.h in Headers */,
+				4B0D81C60AC59C79003E8CCA /* ZoomWhiteView.h in Headers */,
+				4B0D81DD0AC59F3F003E8CCA /* ZoomFadeView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1878,6 +1910,7 @@
 				4BB8C1DE08C249F400D7D334 /* NeedDrop.png in Resources */,
 				4BB8C1C208C249F400D7D334 /* infocom.iFiction in Resources */,
 				4BB8C1DF08C249F400D7D334 /* archive.iFiction in Resources */,
+				4B0D81E20AC5A3C0003E8CCA /* top-shading.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2076,6 +2109,9 @@
 				4BB8C1F508C249F400D7D334 /* ZoomClientController.m in Sources */,
 				4BA66B2D0906538F000A3852 /* ZoomWindowThatCanBecomeKey.m in Sources */,
 				4B65B3A20979B981002D5534 /* ZoomHQImageView.m in Sources */,
+				4B0D80DC0AC590A4003E8CCA /* ZoomFlipView.m in Sources */,
+				4B0D81C70AC59C79003E8CCA /* ZoomWhiteView.m in Sources */,
+				4B0D81DE0AC59F3F003E8CCA /* ZoomFadeView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

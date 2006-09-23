@@ -175,6 +175,18 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	}
 }
 
+- (void) flipTo: (NSView*) view {
+	NSRect viewFrame = [topPanelView bounds];
+	viewFrame.origin = NSMakePoint(0,0);
+	
+	[view setFrame: viewFrame];
+	[flipView prepareToAnimateView: topPanelView];
+	[flipView animateTo: view
+				  style: ZoomAnimateFade];
+	
+	topPanelView = view;
+}
+
 - (void) windowDidLoad {
 	[addButton setPushedImage: [NSImage imageNamed: @"add-in"]];
 	[newgameButton setPushedImage: [NSImage imageNamed: @"newgame-in"]];
@@ -189,6 +201,8 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	[[self window] setFrameUsingName: @"iFiction"];
 	[[self window] setExcludedFromWindowsMenu: YES];
 
+	[gameDetailView setTextContainerInset: NSMakeSize(6.0, 6.0)];
+	[self flipTo: filterView];
 	[self setupSplitView];
 		
 	// Set up the filter table headers (panther only)
@@ -1126,6 +1140,72 @@ int tableSorter(id a, id b, void* context) {
 		[[descriptionView textStorage] endEditing];
 	}
 	
+	// Set the game details
+	BOOL flipToDescription = NO;
+	NSMutableAttributedString* gameDetails = [[NSMutableAttributedString alloc] init];
+	
+	NSFont* titleFont = [NSFont boldSystemFontOfSize: 14];
+	NSFont* yearFont = [NSFont systemFontOfSize: 10];
+	NSFont* descFont = [NSFont systemFontOfSize: 11];
+	
+	if (numSelected >= 1) {
+		// Get the story and ident
+		NSEnumerator* rowEnum = [mainTableView selectedRowEnumerator];
+		NSNumber* row;
+		BOOL extraNewline = NO;
+		
+		while (row = [rowEnum nextObject]) {
+			ZoomStoryID* ident = [storyList objectAtIndex: [row intValue]];
+			ZoomStory* story = [self storyForID: ident];
+			
+			// Append the title
+			NSString* title = [story title];
+			if (title == nil) title = @"Untitled";
+			title = [NSString stringWithFormat: @"%@%@\n", extraNewline?@"\n\n":@"", title];
+			[gameDetails appendAttributedString: [[[NSAttributedString alloc] initWithString: title
+																				  attributes: [NSDictionary dictionaryWithObjectsAndKeys: titleFont, NSFontAttributeName, nil]] autorelease]];
+				
+			// Append the year of publication
+			int year = [story year];
+			if (year > 0) {
+				NSString* yearText = [NSString stringWithFormat: @"%i\n", year];
+				[gameDetails appendAttributedString: [[[NSAttributedString alloc] initWithString: yearText
+																					  attributes: [NSDictionary dictionaryWithObjectsAndKeys: yearFont, NSFontAttributeName, nil]] autorelease]];			
+			}
+			
+			// Append the description
+			NSString* descText = [story description];
+			if (descText == nil) descText = [story teaser];
+			if (descText != nil) {
+				descText = [NSString stringWithFormat: @"\n%@", descText];
+				[gameDetails appendAttributedString: [[[NSAttributedString alloc] initWithString: descText
+																					  attributes: [NSDictionary dictionaryWithObjectsAndKeys: descFont, NSFontAttributeName, nil]] autorelease]];
+				
+				flipToDescription = YES;
+			}
+			extraNewline = YES;
+		}
+	} else {
+		// Note that there are multiple or no games selected
+		NSString* desc = @"Multiple games selected";
+		if (numSelected == 0) desc = @"No game selected";
+		[gameDetails appendAttributedString: [[[NSAttributedString alloc] initWithString: desc
+																			  attributes: [NSDictionary dictionaryWithObjectsAndKeys: descFont, NSFontAttributeName, nil]] autorelease]];
+	}
+	
+	if (![[gameDetailView string] isEqualToString: [gameDetails string]]) {
+		if (flipToDescription) [flipView prepareToAnimateView: topPanelView];
+		[[gameDetailView textStorage] setAttributedString: gameDetails];
+	} else {
+		flipToDescription = NO;
+	}
+	
+	if (coverPicture == nil) {
+		// TODO: set this to a suitable picture for the game format
+		coverPicture = [NSImage imageNamed: @"zoom-app"];
+	}
+	
+	// Set the cover picture
 	NSSize pictureSize = [pictureView frame].size;
 	if (coverPicture) {
 		NSSize imageSize = [coverPicture size];
@@ -1135,6 +1215,7 @@ int tableSorter(id a, id b, void* context) {
 
 		[pictureView setFrameSize: pictureSize];
 		[pictureView setImage: coverPicture];
+		[gameImageView setImage: coverPicture];
 
 		[collapseView setSubview: pictureView
 						isHidden: NO];
@@ -1164,6 +1245,7 @@ int tableSorter(id a, id b, void* context) {
 		[picturePreview setContentSize: previewSize];
 	} else {
 		[pictureView setImage: nil];
+		[gameImageView setImage: nil];
 
 		pictureSize.height = 1;
 		[pictureView setFrameSize: pictureSize];
@@ -1174,6 +1256,14 @@ int tableSorter(id a, id b, void* context) {
 	}
 	
 	[collapseView finishRearranging];
+	
+	// Flip any views that need flipping
+	if (flipToDescription) {
+		[infoView setFrame: [topPanelView frame]];
+		[flipView animateTo: infoView
+					  style: ZoomAnimateFade];
+		topPanelView = infoView;
+	}
 }
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification {
@@ -1784,6 +1874,18 @@ int tableSorter(id a, id b, void* context) {
 	[[NSUserDefaults standardUserDefaults] setObject: [panel directory]
                                               forKey: @"ZoomiFictionSavePath"];
 }	
+
+- (IBAction) flipToFilter: (id) sender {
+	[self flipTo: filterView];
+}
+
+- (IBAction) flipToInfo: (id) sender {
+	[self flipTo: infoView];
+}
+
+- (IBAction) flipToSaves: (id) sender {
+	
+}
 
 // = ResourceDrop delegate =
 
