@@ -488,9 +488,13 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 		
 		// FIXME: multiple selections?
 		if (filename) {
+			[[NSApp delegate] application: NSApp
+								 openFile: filename];
+			/*
 			[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfFile: filename
 																					display: YES];
-			
+		*/
+			 
 			[self configureFromMainTableSelection];
 		}
 	}
