@@ -13,8 +13,13 @@
 
 // = Loading a plugin =
 
+static NSLock* pluginLock = nil;
 static NSMutableArray* pluginBundles = nil;
 static NSMutableArray* pluginClasses = nil;
+
++ (void) initialize {
+	if (pluginLock == nil) pluginLock = [[NSLock alloc] init];
+}
 
 + (Class) pluginForFile: (NSString*) filename {
 	if (pluginBundles == nil) {
@@ -58,10 +63,18 @@ static NSMutableArray* pluginClasses = nil;
 }
 
 + (ZoomPlugIn*) instanceForFile: (NSString*) filename {
-	Class pluginClass = [ZoomPlugIn pluginForFile: filename];
-	if (pluginClass == nil) return nil;
+	[pluginLock lock];
 	
-	return [[[pluginClass alloc] initWithFilename: filename] autorelease];
+	Class pluginClass = [ZoomPlugIn pluginForFile: filename];
+	if (pluginClass == nil) {
+		[pluginLock unlock];
+		return nil;
+	}
+	
+	ZoomPlugIn* instance = [[[pluginClass alloc] initWithFilename: filename] autorelease];
+	
+	[pluginLock unlock];
+	return instance;
 }
 
 // = Informational functions (subclasses should normally override) =

@@ -43,10 +43,6 @@
 		result = [[[ZoomStoryID alloc] initWithZCodeFile: filename] autorelease];
 	}
 	
-	if (result == nil) {
-		result = [[[ZoomStoryID alloc] initWithData: [NSData dataWithContentsOfFile: filename]] autorelease];
-	}
-	
 	return result;
 }
 
@@ -407,6 +403,9 @@
 	
 	if (self) {
 		// IMPLEMENT ME: take MD5 of file
+		
+		[self release];
+		return nil;
 	}
 	
 	return self;

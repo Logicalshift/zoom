@@ -181,12 +181,31 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 				// Must be a directory
 				if (gEnt->d_type != DT_DIR) continue;
 				
-				// See if there's a game.z5 there
+				// See if there's a story file there
 				NSString* gameDir = [newDir stringByAppendingPathComponent: gameName];
-				NSString* gameFile = [gameDir stringByAppendingPathComponent: @"game.z5"];
+				NSString* gameFile = nil;
+				ZoomStoryID* gameFileID = nil;
+				
+				// Iterate through the files in this directory
+				DIR* gameD = opendir([gameDir UTF8String]);
+				struct dirent* gameEnt;
+				
+				while (gameD && (gameEnt = readdir(gameD))) {
+					NSString* gameFileName = [NSString stringWithUTF8String: gameEnt->d_name];
+					if ([gameFileName isEqualToString: @".."] ||
+						[gameFileName hasPrefix: @"."]) {
+						continue;
+					}
+					
+					gameFileID = [ZoomStoryID idForFile: [gameDir stringByAppendingPathComponent: gameFileName]];
+					if (gameFileID != nil) {
+						gameFile = [gameDir stringByAppendingPathComponent: gameFileName];
+						break;
+					}
+				}
 				
 				struct stat sb;
-				if (stat([gameFile UTF8String], &sb) != 0) continue;
+				if (gameFile == nil || stat([gameFile UTF8String], &sb) != 0) continue;
 				
 				// See if it's already in our database
 				[storyLock lock];
@@ -273,7 +292,7 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 	}
 	
 	// Check for story metadata first
-	ZoomStoryID* newID = [[[ZoomStoryID alloc] initWithZCodeFile: gameFile] autorelease];
+	ZoomStoryID* newID = [ZoomStoryID idForFile: gameFile];
 	
 	if (newID == nil) {
 		NSLog(@"Found unindexed game at %@, but failed to obtain an ID. Not indexing", gameFile);
@@ -893,9 +912,10 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 			// Get the old location of the game
 			ZoomStoryID* realID = [storyIdents objectAtIndex: identID];
 			
-			NSString* oldGameFile = [self directoryForIdent: ident create: NO];
-			oldGameFile = [oldGameFile stringByAppendingPathComponent: @"game.z5"];
+			NSString* oldGameFile = [self directoryForIdent: ident
+													 create: NO];
 			NSString* oldGameLoc = [storyFilenames objectAtIndex: identID];
+			oldGameFile = [oldGameFile stringByAppendingPathComponent: [oldGameLoc lastPathComponent]];
 			
 			oldGameFile = [oldGameFile stringByStandardizingPath];
 			oldGameLoc = [oldGameLoc stringByStandardizingPath];
@@ -906,7 +926,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 			
 				// Store the new location of the game, if necessary
 				if ([oldGameLoc isEqualToString: oldGameFile]) {
-					NSString* newGameFile = [[self directoryForIdent: ident create: NO] stringByAppendingPathComponent: @"game.z5"];
+					NSString* newGameFile = [[self directoryForIdent: ident create: NO] stringByAppendingPathComponent: [oldGameLoc lastPathComponent]];
 					newGameFile = [newGameFile stringByStandardizingPath];
 
 					if (![oldGameFile isEqualToString: newGameFile]) {
@@ -948,7 +968,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	filename = [filename stringByStandardizingPath];
 		
 	NSString* fileDir = [self directoryForIdent: ident create: YES];
-	NSString* destFile = [fileDir stringByAppendingPathComponent: @"game.z5"];
+	NSString* destFile = [fileDir stringByAppendingPathComponent: [oldFilename lastPathComponent]];
 	destFile = [destFile stringByStandardizingPath];
 		
 	if (![filename isEqualToString: destFile]) {
