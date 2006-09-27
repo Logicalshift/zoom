@@ -41,4 +41,16 @@
 	return self;
 }
 
+// = Metadata =
+
+- (ZoomStoryID*) idForStory {
+	// Generate an MD5-based ID
+	return [[[ZoomStoryID alloc] initWithGlulxFile: [self gameFilename]] autorelease];
+}
+
+- (ZoomStory*) defaultMetadata {
+	// Just use the default metadata-establishing routine
+	return [ZoomStory defaultMetadataForFile: [self gameFilename]]; 
+}
+
 @end

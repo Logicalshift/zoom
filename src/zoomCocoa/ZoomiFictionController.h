@@ -30,6 +30,7 @@
 	IBOutlet NSView* topPanelView;
 	IBOutlet NSView* filterView;
 	IBOutlet NSView* infoView;
+	IBOutlet NSView* saveGameView;
 
 	IBOutlet NSWindow* picturePreview;
 	IBOutlet NSImageView* picturePreviewView;
@@ -70,7 +71,7 @@
 	BOOL queuedUpdate;
 	
 	// Save game previews
-	ZoomSavePreviewView* previewView;
+	IBOutlet ZoomSavePreviewView* previewView;
 	
 	// Resource drop zone
 	ZoomResourceDrop* resourceDrop;

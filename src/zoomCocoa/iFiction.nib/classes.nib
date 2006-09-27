@@ -18,6 +18,7 @@
         {CLASS = ZoomFadeView; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
         {CLASS = ZoomFlipView; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
         {CLASS = ZoomHQImageView; LANGUAGE = ObjC; SUPERCLASS = NSImageView; }, 
+        {CLASS = ZoomSavePreviewView; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
         {
             ACTIONS = {editSelectedCell = id; }; 
             CLASS = ZoomStoryTableView; 
@@ -66,7 +67,9 @@
                 newgameButton = ZoomiFButton; 
                 picturePreview = NSWindow; 
                 picturePreviewView = NSImageView; 
+                previewView = ZoomSavePreviewView; 
                 progressIndicator = NSProgressIndicator; 
+                saveGameView = NSView; 
                 saveMenu = NSMenu; 
                 searchField = NSTextField; 
                 splitView = ZoomCollapsingSplitView; 

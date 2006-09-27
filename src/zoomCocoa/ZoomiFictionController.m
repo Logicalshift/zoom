@@ -259,11 +259,11 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	pictureView = [[ZoomHQImageView alloc] initWithFrame: NSMakeRect(0,0, 100, 1)];
 	commentView = [[NSTextView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
 	teaserView = [[NSTextView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
-	previewView = [[ZoomSavePreviewView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
+	//previewView = [[ZoomSavePreviewView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
 	resourceDrop = [[ZoomResourceDrop alloc] initWithFrame: NSMakeRect(0, 0, 100, 100)];
 
 	[resourceDrop setDelegate: self];
-	[previewView setMenu: saveMenu];
+	//[previewView setMenu: saveMenu];
 	
 	[teaserView setMaxSize: NSMakeSize(1e8, 1e8)];
     [teaserView setHorizontallyResizable: NO];
@@ -303,8 +303,8 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	
 	[collapseView addSubview: pictureView
 				   withTitle: @""];
-	[collapseView addSubview: previewView
-				   withTitle: @"Saved games"];
+	//[collapseView addSubview: previewView
+	//			   withTitle: @"Saved games"];
 	[collapseView addSubview: descriptionView
 				   withTitle: @"Description"];
 	[collapseView addSubview: teaserView
@@ -1886,7 +1886,7 @@ int tableSorter(id a, id b, void* context) {
 }
 
 - (IBAction) flipToSaves: (id) sender {
-	
+	[self flipTo: saveGameView];	
 }
 
 // = ResourceDrop delegate =

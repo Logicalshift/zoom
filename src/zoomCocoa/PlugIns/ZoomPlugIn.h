@@ -24,6 +24,10 @@
 	NSData* gameData;											// The game data (loaded on demand)
 }
 
+// General purpose plugin function
++ (Class) pluginForFile: (NSString*) filename;
++ (ZoomPlugIn*) instanceForFile: (NSString*) filename;
+
 // Informational functions (subclasses should normally override)
 + (NSString*) pluginVersion;									// The version of this plugin
 + (NSString*) pluginDescription;								// The description of this plugin

@@ -87,15 +87,18 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	if (isDir) return nil;
 	
 	// Get the ID for this file
-	NSData* fileData = [NSData dataWithContentsOfFile: filename];
-	ZoomStoryID* fileID = [[ZoomStoryID alloc] initWithZCodeStory: fileData];
+	// NSData* fileData = [NSData dataWithContentsOfFile: filename];
+	ZoomStoryID* fileID = [[ZoomStoryID idForFile: filename] retain];
 	ZoomMetadata* fileMetadata = nil;
 	
 	// If this file is a blorb file, then extract the IFmd chunk
-	const unsigned char* bytes = [fileData bytes];
+	NSFileHandle* fh = [NSFileHandle fileHandleForReadingAtPath: filename];
+	NSData* data = [[[fh readDataOfLength: 64] retain] autorelease];
+	const unsigned char* bytes = [data bytes];
+	[fh closeFile];
 	
 	if (bytes[0] == 'F' && bytes[1] == 'O' && bytes[2] == 'R' && bytes[3] == 'M') {
-		ZoomBlorbFile* blorb = [[ZoomBlorbFile alloc] initWithData: fileData];
+		ZoomBlorbFile* blorb = [[ZoomBlorbFile alloc] initWithContentsOfFile: filename];
 		NSData* ifMD = [blorb dataForChunkWithType: @"IFmd"];
 		
 		if (ifMD != nil) {

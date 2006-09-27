@@ -124,6 +124,10 @@
 	[self setNeedsDisplay: YES];
 }
 
+- (BOOL) isFlipped {
+	return YES;
+}
+
 - (void) previewMouseUp: (NSEvent*) evt
 				 inView: (ZoomSavePreview*) view {
 	int clicked = [upperWindowViews indexOfObjectIdenticalTo: view];

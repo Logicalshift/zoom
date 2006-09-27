@@ -16,6 +16,7 @@
 #import "ZoomiFictionController.h"
 
 #import "ZoomPlugIn.h"
+#import "ZoomStoryOrganiser.h"
 
 @implementation ZoomAppDelegate
 
@@ -52,32 +53,6 @@
 			[gameIndices addObject: [[[ZoomMetadata alloc] initWithData: infocomData] autorelease]];
 		if (archiveData) 
 			[gameIndices addObject: [[[ZoomMetadata alloc] initWithData: archiveData] autorelease]];
-		
-		// Load the plugins
-		pluginBundles = [[NSMutableArray alloc] init];
-		pluginClasses = [[NSMutableArray alloc] init];
-		
-		NSString* pluginPath = [[NSBundle mainBundle] builtInPlugInsPath];
-		NSEnumerator* pluginEnum = [[[NSFileManager defaultManager] directoryContentsAtPath: pluginPath] objectEnumerator];
-		
-		NSString* plugin;
-		while (plugin = [pluginEnum nextObject]) {
-			if ([[plugin pathExtension] isEqualToString: @"bundle"]) {
-				NSBundle* pluginBundle = [NSBundle bundleWithPath: [pluginPath stringByAppendingPathComponent: plugin]];
-				
-				if (pluginBundle != nil) {
-					if ([pluginBundle load]) {
-						NSLog(@"Loaded %@", [plugin stringByDeletingPathExtension]);
-						[pluginBundles addObject: pluginBundle];
-						
-						NSString* primaryClassName = [[pluginBundle infoDictionary] objectForKey: @"ZoomPluginClass"];
-						Class primaryClass = [pluginBundle classNamed: primaryClassName];
-						
-						[pluginClasses addObject: primaryClass];
-					}
-				}
-			}
-		}
 	}
 	
 	return self;
@@ -105,26 +80,38 @@
 - (BOOL)application: (NSApplication *)theApplication 
 		   openFile: (NSString *)filename {
 	// See if there's a plug-in that can handle this file. This gives plug-ins first shot at handling blorb files.
-	NSEnumerator* pluginClassEnum = [pluginClasses objectEnumerator];
-	Class pluginClass;
+	Class pluginClass = [ZoomPlugIn pluginForFile: filename];
 	
-	while (pluginClass = [pluginClassEnum nextObject]) {
-		if ([pluginClass canRunPath: filename]) {
-			// TODO: work out when to release this class
-			ZoomPlugIn* pluginInstance = [[pluginClass alloc] initWithFilename: filename];
-			
-			if (pluginInstance) {
-				// ... we've managed to load this file with the given plug-in, so display it
-				NSDocument* pluginDocument = [pluginInstance gameDocument];
+	if (pluginClass) {
+		// TODO: work out when to release this class
+		ZoomPlugIn* pluginInstance = [[pluginClass alloc] initWithFilename: filename];
+		
+		if (pluginInstance) {
+			// Register this game with iFiction
+			ZoomStoryID* ident = [pluginInstance idForStory];
+			ZoomStory* story = [pluginInstance defaultMetadata];
 				
-				[[NSDocumentController sharedDocumentController] addDocument: pluginDocument];
-				[pluginDocument makeWindowControllers];
-				[pluginDocument showWindows];
+			if (ident != nil && story != nil) {
+				if ([self findStory: ident] == nil) {
+					[[self userMetadata] copyStory: story
+											  toId: ident];
+				} 
 				
-				[pluginInstance autorelease];
-				
-				return YES;
+				[[ZoomStoryOrganiser sharedStoryOrganiser] addStory: filename
+														  withIdent: ident
+														   organise: [[ZoomPreferences globalPreferences] keepGamesOrganised]];					
 			}
+			
+			// ... we've managed to load this file with the given plug-in, so display it
+			NSDocument* pluginDocument = [pluginInstance gameDocument];
+			
+			[[NSDocumentController sharedDocumentController] addDocument: pluginDocument];
+			[pluginDocument makeWindowControllers];
+			[pluginDocument showWindows];
+			
+			[pluginInstance autorelease];
+			
+			return YES;
 		}
 	}
 

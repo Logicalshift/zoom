@@ -14,8 +14,11 @@
 	BOOL needsFreeing;
 }
 
++ (ZoomStoryID*) idForFile: (NSString*) filename;
+
 - (id) initWithZCodeStory: (NSData*) gameData;
 - (id) initWithZCodeFile: (NSString*) zcodeFile;
+- (id) initWithGlulxFile: (NSString*) glulxFile;
 - (id) initWithData: (NSData*) genericGameData;
 - (id) initWithIdent: (struct IFID*) ident;
 - (id) initWithZcodeRelease: (int) release

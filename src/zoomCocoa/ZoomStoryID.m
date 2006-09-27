@@ -8,10 +8,47 @@
 
 #import "ZoomStoryID.h"
 #import "ZoomBlorbFile.h"
+#import "ZoomPlugIn.h"
 
 #include "ifmetabase.h"
 
 @implementation ZoomStoryID
+
++ (ZoomStoryID*) idForFile: (NSString*) filename {
+	ZoomStoryID* result = nil;
+
+#ifndef BUILDING_SPOTLIGHT
+	ZoomPlugIn* plugin = [ZoomPlugIn instanceForFile: filename];
+
+	if (plugin != nil) {
+		// Try asking the plugin for the type of this file
+		result = [plugin idForStory];
+	}
+	
+	if (result != nil) return result;
+#endif
+	
+	// If this is a z-code or blorb file, then try the Z-Code ID
+	NSString* extension = [[filename pathExtension] lowercaseString];
+	
+	if ([extension isEqualToString: @"z3"]
+		|| [extension isEqualToString: @"z4"]
+		|| [extension isEqualToString: @"z5"]
+		|| [extension isEqualToString: @"z6"]
+		|| [extension isEqualToString: @"z7"]
+		|| [extension isEqualToString: @"z8"]
+		|| [extension isEqualToString: @"blb"]
+		|| [extension isEqualToString: @"zlb"]
+		|| [extension isEqualToString: @"zblorb"]) {
+		result = [[[ZoomStoryID alloc] initWithZCodeFile: filename] autorelease];
+	}
+	
+	if (result == nil) {
+		result = [[[ZoomStoryID alloc] initWithData: [NSData dataWithContentsOfFile: filename]] autorelease];
+	}
+	
+	return result;
+}
 
 - (id) initWithZCodeStory: (NSData*) gameData {
 	self = [super init];
@@ -226,6 +263,139 @@
 				
 				if (gotUUID) break;
 			}
+		}
+	}
+	
+	return self;
+}
+
+- (id) initWithGlulxFile: (NSString*) glulxFile {
+	self = [super init];
+	
+	if (self) {
+		// Read the header of this file
+		const unsigned char* bytes;
+		int length;
+		
+		NSFileHandle* fh = [NSFileHandle fileHandleForReadingAtPath: glulxFile];
+		NSData* data = [[[fh readDataOfLength: 64] retain] autorelease];
+		[fh closeFile];
+		
+		if ([data length] < 64) {
+			// This file is too short to be a Glulx file
+			[self release];
+			return nil;
+		}
+		
+		bytes = [data bytes];
+		length = [data length];
+		
+		if (bytes[0] == 'F' && bytes[1] == 'O' && bytes[2] == 'R' && bytes[3] == 'M') {
+			// This is not a Z-Code file; it's possibly a blorb file, though
+			
+			// Try to interpret as a blorb file
+			ZoomBlorbFile* blorbFile = [[ZoomBlorbFile alloc] initWithContentsOfFile: glulxFile];
+			
+			if (blorbFile == nil) {
+				[self release];
+				return nil;
+			}
+			
+			// See if we can get the ZCOD chunk
+			data = [blorbFile dataForChunkWithType: @"GLUL"];
+			if (data == nil) {
+				[blorbFile release];
+				[self release];
+				return nil;
+			}
+			
+			if ([data length] < 64) {
+				// This file is too short to be a Z-Code file
+				[blorbFile release];
+				[self release];
+				return nil;
+			}
+			
+			// Change to using the blorb data instead
+			bytes = [[[data retain] autorelease] bytes];
+			length = [data length];
+			[blorbFile release];
+		} else if (bytes[0] == 'G' && bytes[1] == 'l' && bytes[2] == 'u' && bytes[3] == 'l') {
+			data = [NSData dataWithContentsOfFile: glulxFile];
+			bytes = [data bytes];
+			
+			if ([data length] < 64) {
+				[self release];
+				return nil;
+			}
+		} else {
+			// Not a Glulx file
+			[self release];
+			return nil;
+		}
+		
+		// bytes now contains the Glulx file we want the ID for
+		int memsize = (bytes[16]<<24) | (bytes[17]<<16) | (bytes[18]<<8) | (bytes[19]<<0);
+		if (memsize > [data length]) memsize = [data length];
+		
+		// Scan for a UUID
+		int x;
+		BOOL gotUUID = NO;
+		
+		for (x=0; x<memsize-48; x++) {
+			if (bytes[x] == 'U' && bytes[x+1] == 'U' && bytes[x+2] == 'I' && bytes[x+3] == 'D' &&
+				bytes[x+4] == ':' && bytes[x+5] == '/' && bytes[x+6] == '/') {
+				// This might be a UUID section
+				char uuidText[50];
+				
+				// Check to see if we've got a UUID
+				int y;
+				int digitCount = 0;
+				gotUUID = YES;
+				
+				for (y=0; y<7; y++) uuidText[y] = bytes[x+y];
+				for (y=7; y<48; y++) {
+					uuidText[y] = bytes[x+y];
+					
+					if (bytes[x+y-1] == '/' && bytes[x+y] == '/') break;
+					if (bytes[x+y] == '-' || bytes[x+y] == '/') continue;
+					if ((bytes[x+y] >= '0' && bytes[x+y] <= '9') ||
+						(bytes[x+y] >= 'a' && bytes[x+y] <= 'f') ||
+						(bytes[x+y] >= 'A' && bytes[x+y] <= 'F')) {
+						digitCount++;
+						continue;
+					}
+					
+					gotUUID = NO;
+					break;
+				}
+				uuidText[y] = 0;
+				
+				if (gotUUID) {
+					IFID uuidId = IFMB_IdFromString(uuidText);
+					
+					if (uuidId == NULL) {
+						gotUUID = false;
+					} else {
+						ident = uuidId;
+						return self;
+					}
+				}
+				
+				if (gotUUID) break;
+			}
+		}
+		
+		// Legacy mode: check if this is an Inform file
+		if (bytes[36] == 'I' && bytes[37] == 'n' && bytes[38] == 'f' && bytes[39] == 'o') {
+			int release = (bytes[52]<<8) | (bytes[53]);
+			int checksum = (bytes[32]<<24) | (bytes[33]<<16) | (bytes[34]<<8) | (bytes[35]<<0);
+			
+			ident = IFMB_GlulxId(release, bytes + 54, checksum);
+		} else {
+			int checksum = (bytes[32]<<24) | (bytes[33]<<16) | (bytes[34]<<8) | (bytes[35]<<0);
+
+			ident = IFMB_GlulxIdNotInform(memsize, checksum);
 		}
 	}
 	

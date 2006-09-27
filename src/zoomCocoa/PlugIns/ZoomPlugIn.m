@@ -11,6 +11,59 @@
 
 @implementation ZoomPlugIn
 
+// = Loading a plugin =
+
+static NSMutableArray* pluginBundles = nil;
+static NSMutableArray* pluginClasses = nil;
+
++ (Class) pluginForFile: (NSString*) filename {
+	if (pluginBundles == nil) {
+		// Load the plugins
+		pluginBundles = [[NSMutableArray alloc] init];
+		pluginClasses = [[NSMutableArray alloc] init];
+		
+		NSString* pluginPath = [[NSBundle mainBundle] builtInPlugInsPath];
+		NSEnumerator* pluginEnum = [[[NSFileManager defaultManager] directoryContentsAtPath: pluginPath] objectEnumerator];
+		
+		NSString* plugin;
+		while (plugin = [pluginEnum nextObject]) {
+			if ([[plugin pathExtension] isEqualToString: @"bundle"]) {
+				NSBundle* pluginBundle = [NSBundle bundleWithPath: [pluginPath stringByAppendingPathComponent: plugin]];
+				
+				if (pluginBundle != nil) {
+					if ([pluginBundle load]) {
+						NSLog(@"== Plugin loaded: %@", [plugin stringByDeletingPathExtension]);
+						[pluginBundles addObject: pluginBundle];
+						
+						NSString* primaryClassName = [[pluginBundle infoDictionary] objectForKey: @"ZoomPluginClass"];
+						Class primaryClass = [pluginBundle classNamed: primaryClassName];
+						
+						[pluginClasses addObject: primaryClass];
+					}
+				}
+			}
+		}
+	}
+	
+	NSEnumerator* pluginClassEnum = [pluginClasses objectEnumerator];
+	Class pluginClass;
+	
+	while (pluginClass = [pluginClassEnum nextObject]) {
+		if ([pluginClass canRunPath: filename]) {
+			return pluginClass;
+		}
+	}
+	
+	return nil;
+}
+
++ (ZoomPlugIn*) instanceForFile: (NSString*) filename {
+	Class pluginClass = [ZoomPlugIn pluginForFile: filename];
+	if (pluginClass == nil) return nil;
+	
+	return [[[pluginClass alloc] initWithFilename: filename] autorelease];
+}
+
 // = Informational functions (subclasses should normally override) =
 
 + (NSString*) pluginVersion {
