@@ -129,16 +129,39 @@
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>public.zcodeblorb</string>
+				<string>public.blorb.zcode</string>
 			</array>
 			<key>NSDocumentClass</key>
 			<string>ZoomClient</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>glb</string>
+				<string>gblorb</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>Blorb.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>Glulx blorb resource file</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.blorb.glulx</string>
+			</array>
+			<key>LSTypeIsPackage</key>
+			<true/>
+			<key>NSDocumentClass</key>
+			<string>ZoomClient</string>
+			<key>NSPersistentStoreTypeKey</key>
+			<string>Binary</string>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>Zoom</string>
 	<key>CFBundleGetInfoString</key>
-	<string>Zoom 1.0.5</string>
+	<string>Zoom 1.1.0</string>
 	<key>CFBundleIconFile</key>
 	<string>zoom-app.icns</string>
 	<key>CFBundleIdentifier</key>
@@ -154,7 +177,7 @@
 	<key>CFBundleSignature</key>
 	<string>YZZY</string>
 	<key>CFBundleVersion</key>
-	<string>1.0.5</string>
+	<string>1.1.0</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu.nib</string>
 	<key>NSPrincipalClass</key>
@@ -222,13 +245,33 @@
 			<key>UTTypeIconFile</key>
 			<string>Blorb.icns</string>
 			<key>UTTypeIdentifier</key>
-			<string>public.zcodeblorb</string>
+			<string>public.blorb.zcode</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
 				<array>
 					<string>zlb</string>
 					<string>zblorb</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Glulx Blorb resource file</string>
+			<key>UTTypeIconFile</key>
+			<string>Blorb.icns</string>
+			<key>UTTypeIdentifier</key>
+			<string>public.blorb.glulx</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>glb</string>
+					<string>gblorb</string>
 				</array>
 			</dict>
 		</dict>
