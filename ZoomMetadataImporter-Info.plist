@@ -19,7 +19,7 @@
 			<string>MDImporter</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>public.zcodeblorb</string>
+				<string>public.blorb.zcode</string>
 			</array>
 		</dict>
 	</array>

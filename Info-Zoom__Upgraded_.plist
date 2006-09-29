@@ -118,13 +118,31 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>ulx</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>GlkClient.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>Glulx game</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.glulx</string>
+			</array>
+			<key>NSDocumentClass</key>
+			<string>ZoomClient</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>zlb</string>
 				<string>zblorb</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>Blorb.icns</string>
+			<string>zoom-game.icns</string>
 			<key>CFBundleTypeName</key>
-			<string>Z-Code blorb resource file</string>
+			<string>Z-Code blorb file</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
@@ -141,7 +159,7 @@
 				<string>gblorb</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>Blorb.icns</string>
+			<string>GlkClient.icns</string>
 			<key>CFBundleTypeName</key>
 			<string>Glulx blorb resource file</string>
 			<key>CFBundleTypeRole</key>
@@ -150,18 +168,14 @@
 			<array>
 				<string>public.blorb.glulx</string>
 			</array>
-			<key>LSTypeIsPackage</key>
-			<true/>
 			<key>NSDocumentClass</key>
 			<string>ZoomClient</string>
-			<key>NSPersistentStoreTypeKey</key>
-			<string>Binary</string>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>Zoom</string>
 	<key>CFBundleGetInfoString</key>
-	<string>Zoom 1.1.0</string>
+	<string>Zoom 1.2.0dev1</string>
 	<key>CFBundleIconFile</key>
 	<string>zoom-app.icns</string>
 	<key>CFBundleIdentifier</key>
@@ -177,7 +191,7 @@
 	<key>CFBundleSignature</key>
 	<string>YZZY</string>
 	<key>CFBundleVersion</key>
-	<string>1.1.0</string>
+	<string>1.2.0</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu.nib</string>
 	<key>NSPrincipalClass</key>
@@ -241,9 +255,9 @@
 				<string>public.data</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>Z-Code Blorb resource file</string>
+			<string>Z-Code Blorb file</string>
 			<key>UTTypeIconFile</key>
-			<string>Blorb.icns</string>
+			<string>zoom-game.icns</string>
 			<key>UTTypeIdentifier</key>
 			<string>public.blorb.zcode</string>
 			<key>UTTypeTagSpecification</key>
@@ -256,14 +270,14 @@
 			</dict>
 		</dict>
 		<dict>
-			<key>UTTTypeConformsTo</key>
+			<key>UTTypeConformsTo</key>
 			<array>
 				<string>public.data</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>Glulx Blorb resource file</string>
+			<string>Glulx Blorb Story</string>
 			<key>UTTypeIconFile</key>
-			<string>Blorb.icns</string>
+			<string>GlkClient.icns</string>
 			<key>UTTypeIdentifier</key>
 			<string>public.blorb.glulx</string>
 			<key>UTTypeTagSpecification</key>
@@ -272,6 +286,25 @@
 				<array>
 					<string>glb</string>
 					<string>gblorb</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Glulx Story</string>
+			<key>UTTypeIconFile</key>
+			<string>GlkClient.icns</string>
+			<key>UTTypeIdentifier</key>
+			<string>public.glulx</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>ulx</string>
 				</array>
 			</dict>
 		</dict>
