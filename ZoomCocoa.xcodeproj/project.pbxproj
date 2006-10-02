@@ -33,7 +33,7 @@
 		4B1888FC0935F912003AF62A /* xmltok.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B1888E90935F912003AF62A /* xmltok.c */; };
 		4B1888FD0935F912003AF62A /* xmltok.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888EA0935F912003AF62A /* xmltok.h */; };
 		4B18890D0935FB4F003AF62A /* libExpat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B1888D00935F863003AF62A /* libExpat.a */; };
-		4B1FEA240ACB159D008B9EFE /* ZoomPreferences.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B418ED805961D2C009C44DE /* ZoomPreferences.h */; };
+		4B1FEA240ACB159D008B9EFE /* ZoomPreferences.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B418ED805961D2C009C44DE /* ZoomPreferences.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B1FEA250ACB15B0008B9EFE /* ZoomPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B418ED905961D2C009C44DE /* ZoomPreferences.m */; };
 		4B1FEA4D0ACB1687008B9EFE /* ZoomStory.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BACEAB605B45BF400A9B6DC /* ZoomStory.m */; };
 		4B1FEA4E0ACB1688008B9EFE /* ZoomStoryID.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BACEABC05B45C0500A9B6DC /* ZoomStoryID.m */; };
@@ -369,6 +369,23 @@
 			);
 		};
 /* End PBXBuildRule section */
+
+/* Begin PBXBuildStyle section */
+		4B76EF270AD02DA900AD08BA /* Development */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Development;
+		};
+		4B76EF280AD02DA900AD08BA /* Deployment */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+			};
+			name = Deployment;
+		};
+/* End PBXBuildStyle section */
 
 /* Begin PBXContainerItemProxy section */
 		4B18890B0935FB46003AF62A /* PBXContainerItemProxy */ = {
@@ -799,7 +816,7 @@
 		4BB8C0E908C2452F00D7D334 /* Builder */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Builder; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BB8C16A08C2497700D7D334 /* ZoomServer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ZoomServer; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BB8C20708C249F400D7D334 /* Info-Zoom__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Info-Zoom__Upgraded_.plist"; sourceTree = "<group>"; };
-		4BB8C20808C249F400D7D334 /* Zoom.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Zoom.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4BB8C20808C249F400D7D334 /* Zoom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Zoom.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BBC1F69062F41E300FE547F /* stars-grey.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stars-grey.png"; sourceTree = "<group>"; };
 		4BBC1F6A062F41E300FE547F /* stars-none.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stars-none.png"; sourceTree = "<group>"; };
 		4BBC1F6B062F41E300FE547F /* stars-red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stars-red.png"; sourceTree = "<group>"; };
@@ -1774,6 +1791,12 @@
 		4B1E3F4B050F7AD000A8E303 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 4B11039608606E2600253E87 /* Build configuration list for PBXProject "ZoomCocoa" */;
+			buildSettings = {
+			};
+			buildStyles = (
+				4B76EF270AD02DA900AD08BA /* Development */,
+				4B76EF280AD02DA900AD08BA /* Deployment */,
+			);
 			hasScannedForEncodings = 1;
 			mainGroup = 4B1E3F47050F7AD000A8E303;
 			productRefGroup = 4B1E3F55050F7B0E00A8E303 /* Products */;
