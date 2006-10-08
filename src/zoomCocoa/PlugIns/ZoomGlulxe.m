@@ -18,7 +18,7 @@
 	if ([extn isEqualToString: @"ulx"]) return YES;
 	
 	// ... and we can run blorb files with a Glulx block in them
-	if ([extn isEqualToString: @"blb"] || [extn isEqualToString: @"glb"] || [extn isEqualToString: @"gblorb"] || [extn isEqualToString: @"blorb"]) {
+	if ([extn isEqualToString: @"blb"] || [extn isEqualToString: @"glb"] || [extn isEqualToString: @"gblorb"] || [extn isEqualToString: @"zblorb"] || [extn isEqualToString: @"blorb"]) {
 		ZoomBlorbFile* blorb = [[ZoomBlorbFile alloc] initWithContentsOfFile: path];
 		
 		if (blorb != nil && [blorb dataForChunkWithType: @"GLUL"] != nil) {

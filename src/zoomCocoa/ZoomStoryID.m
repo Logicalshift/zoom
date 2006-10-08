@@ -11,6 +11,7 @@
 #import "ZoomPlugIn.h"
 
 #include "ifmetabase.h"
+#include "../md5.h"
 
 @implementation ZoomStoryID
 
@@ -41,7 +42,7 @@
 		|| [extension isEqualToString: @"zlb"]
 		|| [extension isEqualToString: @"zblorb"]) {
 		result = [[[ZoomStoryID alloc] initWithZCodeFile: filename] autorelease];
-	}
+	}	
 	
 	return result;
 }
@@ -398,17 +399,39 @@
 	return self;
 }
 
-- (id) initWithData: (NSData*) genericGameData {
+- (id) initWithData: (NSData*) genericGameData
+			   type: (NSString*) type {
 	self = [super init];
 	
 	if (self) {
-		// IMPLEMENT ME: take MD5 of file
+		// Take MD5 of the data
+		md5_state_t md5state;
+		unsigned char r[16];
 		
-		[self release];
-		return nil;
+		md5_init(&md5state);
+		md5_append(&md5state, [genericGameData bytes], [genericGameData length]);
+		md5_finish(&md5state, r);
+		
+		// Build the string
+		int len = ([type length]+32+2);
+		char* result = malloc(sizeof(char)*len);
+		
+		snprintf(result, len, "%s-%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+				 [type UTF8String],
+				 r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12], r[13], r[14], r[15]);
+		
+		// Allocate the identity block
+		ident = IFMB_IdFromString(result);
+			
+		free(result);
 	}
 	
 	return self;
+}
+
+- (id) initWithData: (NSData*) genericGameData {
+	return [self initWithData: genericGameData
+						 type: @"MD5"];
 }
 
 - (id) initWithIdent: (struct IFID*) idt {

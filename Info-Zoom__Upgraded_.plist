@@ -142,7 +142,7 @@
 			<key>CFBundleTypeIconFile</key>
 			<string>zoom-game.icns</string>
 			<key>CFBundleTypeName</key>
-			<string>Z-Code blorb file</string>
+			<string>Z-Code story</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
@@ -161,12 +161,49 @@
 			<key>CFBundleTypeIconFile</key>
 			<string>GlkClient.icns</string>
 			<key>CFBundleTypeName</key>
-			<string>Glulx blorb resource file</string>
+			<string>Glulx story</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>public.blorb.glulx</string>
+			</array>
+			<key>NSDocumentClass</key>
+			<string>ZoomClient</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>gam</string>
+				<string>t3</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>TADS.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>TADS story</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.tads</string>
+			</array>
+			<key>NSDocumentClass</key>
+			<string>ZoomClient</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>hex</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>HUGO.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>Hugo story</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.hugo</string>
 			</array>
 			<key>NSDocumentClass</key>
 			<string>ZoomClient</string>
@@ -255,7 +292,7 @@
 				<string>public.data</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>Z-Code Blorb file</string>
+			<string>Z-Code story</string>
 			<key>UTTypeIconFile</key>
 			<string>zoom-game.icns</string>
 			<key>UTTypeIdentifier</key>
@@ -275,7 +312,7 @@
 				<string>public.data</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>Glulx Blorb Story</string>
+			<string>Glulx Story</string>
 			<key>UTTypeIconFile</key>
 			<string>GlkClient.icns</string>
 			<key>UTTypeIdentifier</key>
@@ -305,6 +342,45 @@
 				<key>public.filename-extension</key>
 				<array>
 					<string>ulx</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>TADS Story</string>
+			<key>UTTypeIconFile</key>
+			<string>TADS.icns</string>
+			<key>UTTypeIdentifier</key>
+			<string>public.tads</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>gam</string>
+					<string>t3</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Hugo Story</string>
+			<key>UTTypeIconFile</key>
+			<string>HUGO.icns</string>
+			<key>UTTypeIdentifier</key>
+			<string>public.hugo</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>hex</string>
 				</array>
 			</dict>
 		</dict>

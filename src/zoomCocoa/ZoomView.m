@@ -1649,6 +1649,10 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 //	     (phut)
 - (void) zoomTaskFinished: (NSNotification*) not {
 	if ([not object] != zoomTask) return; // Not our task
+	
+	// In case we're self-destructing, retain + autorelease
+	[self retain];
+	[self autorelease];
 
 	[[ZoomConnector sharedConnector] removeView: self];
 

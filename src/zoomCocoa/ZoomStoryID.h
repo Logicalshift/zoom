@@ -20,6 +20,8 @@
 - (id) initWithZCodeFile: (NSString*) zcodeFile;
 - (id) initWithGlulxFile: (NSString*) glulxFile;
 - (id) initWithData: (NSData*) genericGameData;
+- (id) initWithData: (NSData*) genericGameData
+			   type: (NSString*) type;
 - (id) initWithIdent: (struct IFID*) ident;
 - (id) initWithZcodeRelease: (int) release
 					 serial: (const unsigned char*) serial

@@ -91,6 +91,10 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	ZoomStoryID* fileID = [[ZoomStoryID idForFile: filename] retain];
 	ZoomMetadata* fileMetadata = nil;
 	
+	if (fileID == nil) {
+		fileID = [[[ZoomStoryID alloc] initWithData: [NSData dataWithContentsOfFile: filename]] autorelease];
+	}
+	
 	// If this file is a blorb file, then extract the IFmd chunk
 	NSFileHandle* fh = [NSFileHandle fileHandleForReadingAtPath: filename];
 	NSData* data = [[[fh readDataOfLength: 64] retain] autorelease];
