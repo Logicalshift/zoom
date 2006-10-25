@@ -196,6 +196,9 @@ static NSImage* saveBackground;
 	}
 }
 
+- (void) mouseDown: (NSEvent*) event {
+}
+
 - (void) mouseUp: (NSEvent*) event {
 	ZoomSavePreviewView* superview = (ZoomSavePreviewView*)[self superview];
 	

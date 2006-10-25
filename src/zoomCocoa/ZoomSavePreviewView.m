@@ -128,6 +128,9 @@
 	return YES;
 }
 
+- (void) mouseDown: (NSEvent*) event {
+}
+
 - (void) previewMouseUp: (NSEvent*) evt
 				 inView: (ZoomSavePreview*) view {
 	int clicked = [upperWindowViews indexOfObjectIdenticalTo: view];
