@@ -202,7 +202,6 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	[[self window] setExcludedFromWindowsMenu: YES];
 
 	[gameDetailView setTextContainerInset: NSMakeSize(6.0, 6.0)];
-	[self flipTo: filterView];
 	[self setupSplitView];
 		
 	// Set up the filter table headers (panther only)
@@ -318,6 +317,7 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 				   
 	[mainTableView setDoubleAction:@selector(startNewGame:)];
 
+	[self flipTo: filterView];
 }
 
 - (void) close {
