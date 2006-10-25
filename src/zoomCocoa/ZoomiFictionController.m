@@ -180,6 +180,7 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	viewFrame.origin = NSMakePoint(0,0);
 	
 	[view setFrame: viewFrame];
+	
 	[flipView prepareToAnimateView: topPanelView];
 	[flipView animateTo: view
 				  style: ZoomAnimateFade];
