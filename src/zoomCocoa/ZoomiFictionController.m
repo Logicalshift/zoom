@@ -185,6 +185,14 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	[flipView animateTo: view
 				  style: ZoomAnimateFade];
 	
+	if (view == filterView) {
+		[flipButtonMatrix selectCellWithTag: 2];		
+	} else if (view == infoView) {
+		[flipButtonMatrix selectCellWithTag: 1];
+	} else if (view == saveGameView) {
+		[flipButtonMatrix selectCellWithTag: 0];
+	}
+	
 	topPanelView = view;
 }
 
@@ -1268,6 +1276,7 @@ int tableSorter(id a, id b, void* context) {
 		[infoView setFrame: [topPanelView frame]];
 		[flipView animateTo: infoView
 					  style: ZoomAnimateFade];
+		[flipButtonMatrix selectCellWithTag: 1];
 		topPanelView = infoView;
 		[[gameDetailView layoutManager] setBackgroundLayoutEnabled: YES];
 	}

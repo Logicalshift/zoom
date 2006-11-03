@@ -31,6 +31,7 @@
 	IBOutlet NSView* filterView;
 	IBOutlet NSView* infoView;
 	IBOutlet NSView* saveGameView;
+	IBOutlet NSMatrix* flipButtonMatrix;
 
 	IBOutlet NSWindow* picturePreview;
 	IBOutlet NSImageView* picturePreviewView;
