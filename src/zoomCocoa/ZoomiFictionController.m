@@ -61,8 +61,6 @@ static NSString* sortGroup    = @"ZoomiFictionControllerSortGroup";
 	[sortColumn release];
 	[filterSet1 release]; [filterSet2 release];
 	[previewView release];
-	[commentView release];
-	[teaserView release];
 	[resourceDrop release];
 	
 	[[NSNotificationCenter defaultCenter] removeObserver: self];
@@ -200,10 +198,8 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	[addButton setPushedImage: [NSImage imageNamed: @"add-in"]];
 	[newgameButton setPushedImage: [NSImage imageNamed: @"newgame-in"]];
 	[continueButton setPushedImage: [NSImage imageNamed: @"continue-in"]];
-	[drawerButton setPushedImage: [NSImage imageNamed: @"drawer-in"]];		
 	[infoButton setPushedImage: [NSImage imageNamed: @"information-in"]];		
 	
-	[drawerButton setEnabled: YES];
 	[continueButton setEnabled: NO];
 	[newgameButton setEnabled: NO];
 	
@@ -262,66 +258,6 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	[self configureFromMainTableSelection];
 	[mainTableView reloadData];
 	
-	// Add to the collapsable view
-	descriptionView = [[NSTextView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
-	pictureView = [[ZoomHQImageView alloc] initWithFrame: NSMakeRect(0,0, 100, 1)];
-	commentView = [[NSTextView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
-	teaserView = [[NSTextView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
-	//previewView = [[ZoomSavePreviewView alloc] initWithFrame: NSMakeRect(0,0, 100,1)];
-	resourceDrop = [[ZoomResourceDrop alloc] initWithFrame: NSMakeRect(0, 0, 100, 100)];
-
-	[resourceDrop setDelegate: self];
-	//[previewView setMenu: saveMenu];
-	
-	[teaserView setMaxSize: NSMakeSize(1e8, 1e8)];
-    [teaserView setHorizontallyResizable: NO];
-    [teaserView setVerticallyResizable: YES];
-	[teaserView setRichText: NO];
-    [[teaserView textContainer] setWidthTracksTextView: YES];
-    [[teaserView textContainer] setContainerSize: NSMakeSize(1e8, 1e8)];	
-	//[[teaserView layoutManager] setBackgroundLayoutEnabled: NO];
-	
-	[commentView setMaxSize: NSMakeSize(1e8, 1e8)];
-    [commentView setHorizontallyResizable: NO];
-    [commentView setVerticallyResizable: YES];
-	[commentView setRichText: NO];
-    [[commentView textContainer] setWidthTracksTextView: YES];
-    [[commentView textContainer] setContainerSize: NSMakeSize(1e8, 1e8)];	
-	//[[commentView layoutManager] setBackgroundLayoutEnabled: NO];
-
-	[descriptionView setMaxSize: NSMakeSize(1e8, 1e8)];
-    [descriptionView setHorizontallyResizable: NO];
-    [descriptionView setVerticallyResizable: YES];
-	[descriptionView setRichText: NO];
-    [[descriptionView textContainer] setWidthTracksTextView: YES];
-    [[descriptionView textContainer] setContainerSize: NSMakeSize(1e8, 1e8)];	
-	
-	[teaserView setDelegate: self];
-	[commentView setDelegate: self];
-	[descriptionView setDelegate: self];
-	
-	[pictureView setTarget: picturePreview];
-	[pictureView setAction: @selector(orderFront:)];
-	[pictureView setImageFrameStyle: NSImageFramePhoto];
-	[pictureView setPostsFrameChangedNotifications: YES];
-	[[NSNotificationCenter defaultCenter] addObserver: self
-											 selector: @selector(pictureViewFrameChanged:)
-												 name: NSViewFrameDidChangeNotification
-											   object: pictureView];
-	
-	[collapseView addSubview: pictureView
-				   withTitle: @""];
-	//[collapseView addSubview: previewView
-	//			   withTitle: @"Saved games"];
-	[collapseView addSubview: descriptionView
-				   withTitle: @"Description"];
-	[collapseView addSubview: teaserView
-				   withTitle: @"Teaser"];
-	[collapseView addSubview: commentView
-				   withTitle: @"Comments"];
-	[collapseView addSubview: resourceDrop
-				   withTitle: @"Resources"];
-
 	[mainTableView registerForDraggedTypes:[NSArray arrayWithObjects:NSFilenamesPboardType, nil]];
 				   
 	[mainTableView setDoubleAction:@selector(startNewGame:)];
@@ -478,17 +414,6 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 							 contextInfo: nil];
 }
 
-- (IBAction) drawerButtonPressed: (id) sender {
-	[drawer toggle: self];
-	
-	if ([drawer state] == NSDrawerClosedState ||
-		[drawer state] == NSDrawerClosingState) {
-		showDrawer = NO;
-	} else {
-		showDrawer = YES;
-	}
-}
-
 - (void) autosaveAlertFinished: (NSWindow *)alert 
 					returnCode: (int)returnCode 
 				   contextInfo: (void *)contextInfo {
@@ -626,24 +551,6 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	
 	[self queueStoryUpdate];
 	//[self finishUpdatingStoryList: self];
-}
-
-- (void) pictureViewFrameChanged: (NSNotification*) not {
-	// Retrieve the picture that we're displaying
-	NSImage* coverPicture = [pictureView image];
-	if (coverPicture == nil) return;
-	
-	// Calculate the new height
-	NSSize pictureSize = [pictureView frame].size;
-	NSSize imageSize = [coverPicture size];
-	
-	float ratio = imageSize.height/imageSize.width;
-	float newHeight = floorf(pictureSize.width*ratio);
-	
-	if (newHeight != pictureSize.height) {
-		pictureSize.height = newHeight;
-		[pictureView setFrameSize: pictureSize];
-	}
 }
 
 - (void) storyProgressChanged: (NSNotification*) not {
@@ -1020,8 +927,6 @@ int tableSorter(id a, id b, void* context) {
 	NSString* teaser;
 	NSString* description;
 	
-	[collapseView startRearranging];
-	
 	if (numSelected == 1) {
 		ZoomStoryID* ident = [storyList objectAtIndex: [mainTableView selectedRow]];
 		ZoomStory* story = [self storyForID: ident];
@@ -1034,10 +939,6 @@ int tableSorter(id a, id b, void* context) {
 		comment = [story comment];
 		teaser = [story teaser];
 		description = [story description];
-		
-		[teaserView setEditable: YES];
-		[commentView setEditable: YES];
-		[descriptionView setEditable: YES];
 		
 		// Set up the save preview view
 		NSString* dir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: ident 
@@ -1091,10 +992,6 @@ int tableSorter(id a, id b, void* context) {
 		comment = @"";
 		teaser = @"";
 		description = @"";
-		
-		[teaserView setEditable: NO];
-		[commentView setEditable: NO];
-		[descriptionView setEditable: NO];
 
 		[previewView setDirectoryToUse: nil];
 		
@@ -1105,53 +1002,6 @@ int tableSorter(id a, id b, void* context) {
 	if (comment == nil) comment = @"";
 	if (teaser == nil) teaser = @"";
 	if (description == nil) description = @"";
-	
-	// The teaser is obsolete: do not show it if it is not present
-	if (teaser == nil || [teaser isEqualToString: @""]) {
-		[collapseView setSubview: teaserView
-						isHidden: YES];
-	} else {
-		[collapseView setSubview: teaserView
-						isHidden: NO];
-	}
-	
-	if (![[commentView string] isEqualToString: comment]) {
-		//[commentView setString: @""];
-		NSSize sz = [commentView frame].size;
-		sz.height = 2;
-		[commentView setFrameSize: sz];
-
-		[commentView setString: comment];
-	}
-	if (![[teaserView string] isEqualToString: teaser]) {
-		// FIXME: when ending editing the teaser is temporarily set to "", which mucks things up a bit
-		//[teaserView setString: @""];
-		NSSize sz = [teaserView frame].size;
-		sz.height = 2;
-		[teaserView setFrameSize: sz];
-
-		[teaserView setString: teaser];
-	}
-	if (![[descriptionView string] isEqualToString: description]) {
-		NSSize sz = [descriptionView frame].size;
-		sz.height = 2;
-		[descriptionView setFrameSize: sz];
-		
-		[[descriptionView textStorage] beginEditing];
-		[descriptionView setString: description];
-		
-		// Description needs to have its paragraph spacing messed with
-		NSMutableParagraphStyle* paragraphSpacing = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-		[paragraphSpacing setParagraphSpacing: 3];
-		[paragraphSpacing setParagraphSpacingBefore: 4];
-		
-		[[descriptionView textStorage] addAttribute: NSParagraphStyleAttributeName
-											  value: [paragraphSpacing autorelease]
-											  range: NSMakeRange(0, [description length])];
-		
-		// Done
-		[[descriptionView textStorage] endEditing];
-	}
 	
 	// Set the game details
 	BOOL flipToDescription = NO;
@@ -1219,21 +1069,10 @@ int tableSorter(id a, id b, void* context) {
 	}
 	
 	// Set the cover picture
-	NSSize pictureSize = [pictureView frame].size;
 	if (coverPicture) {
 		NSSize imageSize = [coverPicture size];
-		
-		float ratio = imageSize.height/imageSize.width;
-		pictureSize.height = floorf(pictureSize.width*ratio);
 
-		[pictureView setFrameSize: pictureSize];
-		[pictureView setImage: coverPicture];
 		[gameImageView setImage: coverPicture];
-
-		[collapseView setSubview: pictureView
-						isHidden: NO];
-		
-		[self pictureViewFrameChanged: nil];
 		
 		// Setup the picture preview window
 		[picturePreviewView setImage: coverPicture];
@@ -1257,18 +1096,10 @@ int tableSorter(id a, id b, void* context) {
 		
 		[picturePreview setContentSize: previewSize];
 	} else {
-		[pictureView setImage: nil];
 		[gameImageView setImage: nil];
-
-		pictureSize.height = 1;
-		[pictureView setFrameSize: pictureSize];
 		
 		[picturePreview orderOut: self];
-		[collapseView setSubview: pictureView
-						isHidden: YES];
 	}
-	
-	[collapseView finishRearranging];
 	
 	// Flip any views that need flipping
 	if (flipToDescription) {
@@ -1594,13 +1425,7 @@ int tableSorter(id a, id b, void* context) {
 
 	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
 	
-	if (textView == commentView) {
-		[story setComment: [commentView string]];
-	} else if (textView == teaserView) {
-		[story setTeaser: [teaserView string]];
-	} else if (textView == descriptionView) {
-		[story setDescription: [descriptionView string]];
-	} else {
+	{
 		NSLog(@"Unknown text view");
 	}
 
@@ -1735,13 +1560,11 @@ int tableSorter(id a, id b, void* context) {
 }
 
 // = windowWillClose, etc =
+
 - (void) windowWillClose: (NSNotification*) notification {
-	[drawer close];
 }
 
 - (BOOL) windowShouldClose: (NSNotification*) notification {
-	[drawer close];
-	//if ([drawer state] == NSDrawerClosingState) return NO;
 	return YES;
 }
 

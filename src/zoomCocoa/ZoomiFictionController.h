@@ -21,10 +21,10 @@
 	IBOutlet ZoomiFButton* addButton;
 	IBOutlet ZoomiFButton* newgameButton;
 	IBOutlet ZoomiFButton* continueButton;	
-	IBOutlet ZoomiFButton* drawerButton;
+	// IBOutlet ZoomiFButton* drawerButton;
 	IBOutlet ZoomiFButton* infoButton;
 	
-	IBOutlet ZoomCollapsableView* collapseView;
+	//IBOutlet ZoomCollapsableView* collapseView;
 	
 	IBOutlet ZoomFlipView* flipView;
 	IBOutlet NSView* topPanelView;
@@ -42,14 +42,14 @@
 	IBOutlet NSTextView* gameDetailView;
 	IBOutlet NSImageView* gameImageView;
 	
-	NSTextView*   commentView;
-	NSTextView*   teaserView;
-	NSTextView*	  descriptionView;
+	//NSTextView*   commentView;
+	//NSTextView*   teaserView;
+	//NSTextView*	  descriptionView;
 	
-	NSImageView*  pictureView;
+	//NSImageView*  pictureView;
 	
-	IBOutlet NSDrawer* drawer;
-	IBOutlet NSView*   drawerView;
+	//IBOutlet NSDrawer* drawer;
+	//IBOutlet NSView*   drawerView;
 
 	IBOutlet ZoomCollapsingSplitView* splitView;
 
@@ -88,7 +88,6 @@
 + (ZoomiFictionController*) sharediFictionController;
 
 - (IBAction) addButtonPressed: (id) sender;
-- (IBAction) drawerButtonPressed: (id) sender;
 - (IBAction) startNewGame: (id) sender;
 - (IBAction) restoreAutosave: (id) sender;
 - (IBAction) searchFieldChanged: (id) sender;

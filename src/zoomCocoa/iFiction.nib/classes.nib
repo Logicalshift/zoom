@@ -38,7 +38,6 @@
                 changeFilter1 = id; 
                 changeFilter2 = id; 
                 deleteSavegame = id; 
-                drawerButtonPressed = id; 
                 flipToFilter = id; 
                 flipToInfo = id; 
                 flipToSaves = id; 
@@ -50,11 +49,7 @@
             LANGUAGE = ObjC; 
             OUTLETS = {
                 addButton = ZoomiFButton; 
-                collapseView = ZoomCollapsableView; 
                 continueButton = ZoomiFButton; 
-                drawer = NSDrawer; 
-                drawerButton = ZoomiFButton; 
-                drawerView = NSView; 
                 filterTable1 = NSTableView; 
                 filterTable2 = NSTableView; 
                 filterView = NSView; 
