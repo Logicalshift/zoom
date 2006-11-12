@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 
 #import <ZoomPlugIns/ZoomStory.h>
-#import <ZoomPlugIns/ZoomStoryID.h>
+#import <ZoomPlugIns/ZoomStoryID.h>0
 
 ///
 /// Base class for deriving Zoom plugins for playing new game types.
@@ -45,7 +45,7 @@
 - (NSData*) gameData;											// Gets the data for the game associated with this plugin
 
 // The game document + windows
-- (NSDocument*) gameDocument;									// Retrieves/creates the document associated with this game (should not create window controllers immediately)
+- (NSDocument*) gameDocumentWithMetadata: (ZoomStory*) story;	// Retrieves/creates the document associated with this game (should not create window controllers immediately)
 
 // Dealing with game metadata
 - (ZoomStoryID*) idForStory;									// Retrieves the unique ID for this story (UUIDs are preferred, or MD5s if the game format does not support that)

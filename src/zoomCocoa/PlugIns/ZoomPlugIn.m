@@ -148,7 +148,7 @@ static NSMutableArray* pluginClasses = nil;
 
 // = The game window =
 
-- (NSDocument*) gameDocument {
+- (NSDocument*) gameDocumentWithMetadata: (ZoomStory*) story {
 	[NSException raise: @"ZoomNoPlugInInterface" 
 				format: @"An attempt was made to load a game whose plugin does not provide an interface"];
 	

@@ -103,7 +103,7 @@
 			}
 			
 			// ... we've managed to load this file with the given plug-in, so display it
-			NSDocument* pluginDocument = [pluginInstance gameDocument];
+			NSDocument* pluginDocument = [pluginInstance gameDocumentWithMetadata: story];
 			
 			[[NSDocumentController sharedDocumentController] addDocument: pluginDocument];
 			[pluginDocument makeWindowControllers];

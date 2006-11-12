@@ -37,12 +37,13 @@
 	return NO;
 }
 
-- (NSDocument*) gameDocument {
+- (NSDocument*) gameDocumentWithMetadata: (ZoomStory*) story {
 	if (!document) {
 		// Set up the document for this game
 		document = [[ZoomGlkDocument alloc] init];
 
 		// Tell it what it needs to know
+		[document setStoryData: story];
 		[document setClientPath: clientPath];
 		[document setInputFilename: [self gameFilename]];
 	}

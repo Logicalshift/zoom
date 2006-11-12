@@ -16,6 +16,7 @@
 - (void) dealloc {
 	if (clientPath) [clientPath release];
 	if (inputPath) [inputPath release];
+	if (storyData) [storyData release];
 	
 	[super dealloc];
 }
@@ -45,6 +46,11 @@
 	[self setFileName: newInputPath];
 }
 
+- (void) setStoryData: (ZoomStory*) story {
+	[storyData release];
+	storyData = [story retain];
+}
+
 // = Constructing the window controllers =
 
 - (void) makeWindowControllers {
@@ -57,6 +63,16 @@
 	
 	// Add it as a controller for this document
 	[self addWindowController: [controller autorelease]];
+}
+
+// = The display name =
+
+- (NSString*) displayName {
+	if (storyData && [storyData title] && [[storyData title] length] > 0) {
+		return [storyData title];
+	}
+	
+	return [super displayName];
 }
 
 @end
