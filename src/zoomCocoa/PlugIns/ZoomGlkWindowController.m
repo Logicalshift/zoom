@@ -83,9 +83,9 @@
 - (void) maybeStartView {
 	// If we're sufficiently configured to start the application, then do so
 	if (glkView && clientPath && inputPath) {
+		[glkView setDelegate: self];
 		[glkView setPreferences: [ZoomGlkWindowController glkPreferencesFromZoomPreferences]];
 		[glkView setInputFilename: inputPath];
-		[glkView setDelegate: self];
 		[glkView launchClientApplication: clientPath
 						   withArguments: [NSArray array]];
 	}
@@ -95,11 +95,11 @@
 	// Configure the view
 	[glkView setRandomViewCookie];
 	
-	// Start it if we've got enough information
-	[self maybeStartView];
-	
 	// Set the default log message
 	[logText setString: [NSString stringWithFormat: @"Zoom CocoaGlk Plugin\n"]];
+	
+	// Start it if we've got enough information
+	[self maybeStartView];
 }
 
 - (void) prefsChanged: (NSNotification*) not {
