@@ -2589,6 +2589,10 @@
 		4B36C4590955ED1700874F9F /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					../CocoaGlk/build/Default,
+					"$(FRAMEWORK_SEARCH_PATHS)",
+				);
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -2808,6 +2812,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 5;
+				FRAMEWORK_SEARCH_PATHS = (
+					../CocoaGlk/build/Default,
+					"$(FRAMEWORK_SEARCH_PATHS)",
+				);
 				FRAMEWORK_VERSION = A;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
