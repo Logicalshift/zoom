@@ -10,6 +10,7 @@
                 restartZMachine = id; 
                 saveMetadata = id; 
                 showGamePreferences = id; 
+                showLog = id; 
                 showPreferences = id; 
                 showiFiction = id; 
             }; 

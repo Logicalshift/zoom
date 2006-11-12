@@ -16,6 +16,9 @@
 ///
 @interface ZoomGlkWindowController : NSWindowController {
 	IBOutlet GlkView* glkView;										// The view onto the game this controller is running
+
+	IBOutlet NSDrawer* logDrawer;									// The drawer that's opened while dealing with log messages
+	IBOutlet NSTextView* logText;									// The text contained in the drawer
 	
 	NSString* clientPath;											// The Glk executable we'll run to play this game
 	NSString* inputPath;											// The file we'll pass to the executable as the game to run

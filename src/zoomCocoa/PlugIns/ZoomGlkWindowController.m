@@ -10,6 +10,7 @@
 #import "ZoomPreferences.h"
 
 #import <GlkView/GlkHub.h>
+#import <GlkView/GlkView.h>
 
 
 @implementation ZoomGlkWindowController
@@ -84,6 +85,7 @@
 	if (glkView && clientPath && inputPath) {
 		[glkView setPreferences: [ZoomGlkWindowController glkPreferencesFromZoomPreferences]];
 		[glkView setInputFilename: inputPath];
+		[glkView setDelegate: self];
 		[glkView launchClientApplication: clientPath
 						   withArguments: [NSArray array]];
 	}
@@ -95,6 +97,9 @@
 	
 	// Start it if we've got enough information
 	[self maybeStartView];
+	
+	// Set the default log message
+	[logText setString: [NSString stringWithFormat: @"Zoom CocoaGlk Plugin (%@)\n", [[self class] description]]];
 }
 
 - (void) prefsChanged: (NSNotification*) not {
@@ -121,6 +126,66 @@
 	
 	// Start it if we've got enough information
 	[self maybeStartView];
+}
+
+// = Log messages =
+
+- (void) showLogMessage: (NSString*) message
+			 withStatus: (GlkLogStatus) status {
+	// Choose a style for this message
+	float msgSize = 10;
+	NSColor* msgColour = [NSColor grayColor];
+	BOOL isBold = NO;
+	
+	switch (status) {
+		case GlkLogRoutine:
+			break;
+			
+		case GlkLogInformation:
+			isBold = YES;
+			break;
+			
+		case GlkLogWarning:
+			msgColour = [NSColor blueColor];
+			msgSize = 12;
+			break;
+			
+		case GlkLogError:
+			msgSize = 12;
+			msgColour = [NSColor redColor];
+			isBold = YES;
+			break;
+	}
+	
+	// Create the attributes for this style
+	NSFont* font;
+	
+	if (isBold) {
+		font = [NSFont boldSystemFontOfSize: msgSize];
+	} else {
+		font = [NSFont systemFontOfSize: msgSize];
+	}
+	
+	NSDictionary* msgAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+		font, NSFontAttributeName,
+		msgColour, NSForegroundColorAttributeName,
+		nil];
+	
+	// Create the attributed string
+	NSAttributedString* newMsg = [[NSAttributedString alloc] initWithString: [message stringByAppendingString: @"\n"]
+																 attributes: msgAttributes];
+	
+	// Append this message to the log
+	[[logText textStorage] appendAttributedString: [newMsg autorelease]];
+	
+	// Show the log drawer
+	if (status >= GlkLogWarning && [[ZoomPreferences globalPreferences] displayWarnings]) {
+		[logDrawer open: self];
+	}
+}
+
+- (void) showLog: (id) sender {
+	[logDrawer open: self];
 }
 
 @end
