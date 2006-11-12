@@ -99,7 +99,7 @@
 	[self maybeStartView];
 	
 	// Set the default log message
-	[logText setString: [NSString stringWithFormat: @"Zoom CocoaGlk Plugin (%@)\n", [[self class] description]]];
+	[logText setString: [NSString stringWithFormat: @"Zoom CocoaGlk Plugin\n"]];
 }
 
 - (void) prefsChanged: (NSNotification*) not {
