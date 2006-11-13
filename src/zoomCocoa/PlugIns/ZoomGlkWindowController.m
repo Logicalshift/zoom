@@ -77,6 +77,8 @@
 	[clientPath release];
 	[inputPath release];
 	
+	if (glkView) [glkView setDelegate: nil];
+	
 	[super dealloc];
 }
 
@@ -203,6 +205,10 @@
 
 - (void) showLog: (id) sender {
 	[logDrawer open: self];
+}
+
+- (void) windowWillClose: (NSNotification*) not {
+	[glkView terminateClient];
 }
 
 @end
