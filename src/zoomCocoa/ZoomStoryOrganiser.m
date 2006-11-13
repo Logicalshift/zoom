@@ -55,6 +55,10 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 											  forKey:extraDefaultsName];
 }
 
+- (ZoomStoryID*) idForFile: (NSString*) filename {
+	return [ZoomStoryID idForFile: filename];
+}
+
 - (void) preferenceThread: (NSDictionary*) threadDictionary {
 	NSAutoreleasePool* p = [[NSAutoreleasePool alloc] init];
 	NSDictionary* prefs = [threadDictionary objectForKey: @"preferences"];
@@ -80,6 +84,8 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 	while (filename = [filenameEnum nextObject]) {
 		NSData* storyData = [prefs objectForKey: filename];
 		ZoomStoryID* fileID = [NSUnarchiver unarchiveObjectWithData: storyData];
+		//ZoomStoryID* realID = [(ZoomStoryOrganiser*)[subThread rootProxy] idForFile: filename];
+		//ZoomStoryID* realID = [ZoomStoryID idForFile: filename];
 		ZoomStoryID* realID = [[ZoomStoryID alloc] initWithZCodeFile: filename];
 		
 		if (fileID != nil && realID != nil && [fileID isEqual: realID]) {

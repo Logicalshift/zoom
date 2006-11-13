@@ -94,6 +94,9 @@
 - (void) windowDidLoad {
 	// Configure the view
 	[glkView setRandomViewCookie];
+	[logDrawer setLeadingOffset: 16];
+	[logDrawer setContentSize: NSMakeSize([logDrawer contentSize].width, 120)];
+	[logDrawer setMinContentSize: NSMakeSize(0, 120)];
 	
 	// Set the default log message
 	[logText setString: [NSString stringWithFormat: @"Zoom CocoaGlk Plugin\n"]];
@@ -145,6 +148,11 @@
 			isBold = YES;
 			break;
 			
+		case GlkLogCustom:
+			msgSize = 12;
+			msgColour = [NSColor blackColor];
+			break;
+			
 		case GlkLogWarning:
 			msgColour = [NSColor blueColor];
 			msgSize = 12;
@@ -153,6 +161,15 @@
 		case GlkLogError:
 			msgSize = 12;
 			msgColour = [NSColor redColor];
+			isBold = YES;
+			break;
+			
+		case GlkLogFatalError:
+			msgSize = 12;
+			msgColour = [NSColor colorWithDeviceRed: 0.8
+											  green: 0
+											   blue: 0
+											  alpha: 1.0];
 			isBold = YES;
 			break;
 	}
@@ -179,7 +196,7 @@
 	[[logText textStorage] appendAttributedString: [newMsg autorelease]];
 	
 	// Show the log drawer
-	if (status >= GlkLogWarning && [[ZoomPreferences globalPreferences] displayWarnings]) {
+	if (status >= GlkLogWarning && (status >= GlkLogFatalError || [[ZoomPreferences globalPreferences] displayWarnings])) {
 		[logDrawer open: self];
 	}
 }
