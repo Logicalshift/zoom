@@ -50,5 +50,6 @@
 // Dealing with game metadata
 - (ZoomStoryID*) idForStory;									// Retrieves the unique ID for this story (UUIDs are preferred, or MD5s if the game format does not support that)
 - (ZoomStory*) defaultMetadata;									// Retrieves the default metadata for this story (used iff no metadata pre-exists for this story)
+- (NSImage*) coverImage;										// Retrieves the picture to use for the cover image
 
 @end

@@ -20,6 +20,7 @@
 #import "ZoomSavePreviewView.h"
 #import "ZoomRatingCell.h"
 #import "ZoomHQImageView.h"
+#import "ZoomPlugIn.h"
 
 #import "ifmetabase.h"
 
@@ -950,40 +951,46 @@ int tableSorter(id a, id b, void* context) {
 		[resourceDrop setEnabled: YES];
 		
 		// Set up the cover picture
-		int coverPictureNumber = [story coverPicture];
-		
 		NSString* filename = [org filenameForIdent: ident];
-		ZoomBlorbFile* decodedFile = [[ZoomBlorbFile alloc] initWithContentsOfFile: filename];
-		
-		// Try to retrieve the frontispiece tag (overrides metadata if present)
-		NSData* front = [decodedFile dataForChunkWithType: @"Fspc"];
-		if (front != nil && [front length] >= 4) {
-			const unsigned char* fpc = [front bytes];
+		ZoomPlugIn* plugin = [ZoomPlugIn instanceForFile: filename];
+		if (plugin == nil) {
+			// If there's no plugin, try loading the file as a blorb
+			int coverPictureNumber = [story coverPicture];
 			
-			coverPictureNumber = (((int)fpc[0])<<24)|(((int)fpc[1])<<16)|(((int)fpc[2])<<8)|(((int)fpc[3])<<0);
-		}
-		
-		if (coverPicture >= 0) {			
-			// Attempt to retrieve the cover picture image
-			if (decodedFile != nil) {
-				NSData* coverPictureData = [decodedFile imageDataWithNumber: coverPictureNumber];
+			ZoomBlorbFile* decodedFile = [[ZoomBlorbFile alloc] initWithContentsOfFile: filename];
+			
+			// Try to retrieve the frontispiece tag (overrides metadata if present)
+			NSData* front = [decodedFile dataForChunkWithType: @"Fspc"];
+			if (front != nil && [front length] >= 4) {
+				const unsigned char* fpc = [front bytes];
 				
-				if (coverPictureData) {
-					coverPicture = [[[NSImage alloc] initWithData: coverPictureData] autorelease];
+				coverPictureNumber = (((int)fpc[0])<<24)|(((int)fpc[1])<<16)|(((int)fpc[2])<<8)|(((int)fpc[3])<<0);
+			}
+			
+			if (coverPictureNumber >= 0) {			
+				// Attempt to retrieve the cover picture image
+				if (decodedFile != nil) {
+					NSData* coverPictureData = [decodedFile imageDataWithNumber: coverPictureNumber];
 					
-					// Sometimes the image size and pixel size do not match up
-					NSImageRep* coverRep = [[coverPicture representations] objectAtIndex: 0];
-					NSSize pixSize = NSMakeSize([coverRep pixelsWide], [coverRep pixelsHigh]);
-					
-					if (!NSEqualSizes(pixSize, [coverPicture size])) {
-						[coverPicture setScalesWhenResized: YES];
-						[coverPicture setSize: pixSize];
+					if (coverPictureData) {
+						coverPicture = [[[NSImage alloc] initWithData: coverPictureData] autorelease];
+						
+						// Sometimes the image size and pixel size do not match up
+						NSImageRep* coverRep = [[coverPicture representations] objectAtIndex: 0];
+						NSSize pixSize = NSMakeSize([coverRep pixelsWide], [coverRep pixelsHigh]);
+						
+						if (!NSEqualSizes(pixSize, [coverPicture size])) {
+							[coverPicture setScalesWhenResized: YES];
+							[coverPicture setSize: pixSize];
+						}
 					}
 				}
 			}
+			
+			[decodedFile release];
+		} else {
+			coverPicture = [plugin coverImage];
 		}
-		
-		[decodedFile release];
 	} else {
 		if ([[self window] isMainWindow] && [[ZoomGameInfoController sharedGameInfoController] infoOwner] == self) {
 			[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];

@@ -167,4 +167,8 @@ static NSMutableArray* pluginClasses = nil;
 	return [ZoomStory defaultMetadataForFile: gameFile]; 
 }
 
+- (NSImage*) coverImage {
+	return nil;
+}
+
 @end
