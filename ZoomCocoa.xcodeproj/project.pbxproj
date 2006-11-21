@@ -92,6 +92,8 @@
 		4B7CB1E90936357900F3B8F6 /* ZoomPlugIn.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7CB0790936294B00F3B8F6 /* ZoomPlugIn.m */; };
 		4B7CB1EA0936357900F3B8F6 /* ZoomPlugIn.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7CB0780936294B00F3B8F6 /* ZoomPlugIn.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B7CB2130936361800F3B8F6 /* GlkView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B7CB1C5093634DD00F3B8F6 /* GlkView.framework */; };
+		4B84304C0B139F6000679417 /* TADS.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4B84304B0B139F6000679417 /* TADS.icns */; };
+		4B84304E0B139F7200679417 /* HUGO.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4B84304D0B139F7200679417 /* HUGO.icns */; };
 		4B87BA7309C9AB13005D6722 /* ifmetabase-internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B87BA7109C9AAE1005D6722 /* ifmetabase-internal.h */; };
 		4B8CE6F40AD95A3A008235D2 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B8CE6F20AD95A3A008235D2 /* md5.c */; };
 		4B8CE6F50AD95A3A008235D2 /* md5.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8CE6F30AD95A3A008235D2 /* md5.h */; };
@@ -776,6 +778,8 @@
 		4B807BD905BFF74600681653 /* drawer-in.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "drawer-in.png"; sourceTree = "<group>"; };
 		4B807BEA05C009ED00681653 /* ZoomiFButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomiFButton.h; sourceTree = "<group>"; };
 		4B807BEB05C009ED00681653 /* ZoomiFButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomiFButton.m; sourceTree = "<group>"; };
+		4B84304B0B139F6000679417 /* TADS.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = TADS.icns; sourceTree = "<group>"; };
+		4B84304D0B139F7200679417 /* HUGO.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = HUGO.icns; sourceTree = "<group>"; };
 		4B87BA7109C9AAE1005D6722 /* ifmetabase-internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ifmetabase-internal.h"; sourceTree = "<group>"; };
 		4B8CE6F20AD95A3A008235D2 /* md5.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = md5.c; sourceTree = "<group>"; };
 		4B8CE6F30AD95A3A008235D2 /* md5.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = md5.h; sourceTree = "<group>"; };
@@ -804,7 +808,7 @@
 		4BB8C0E908C2452F00D7D334 /* Builder */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Builder; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BB8C16A08C2497700D7D334 /* ZoomServer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ZoomServer; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BB8C20708C249F400D7D334 /* Info-Zoom__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Info-Zoom__Upgraded_.plist"; sourceTree = "<group>"; };
-		4BB8C20808C249F400D7D334 /* Zoom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Zoom.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4BB8C20808C249F400D7D334 /* Zoom.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Zoom.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BBC1F69062F41E300FE547F /* stars-grey.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stars-grey.png"; sourceTree = "<group>"; };
 		4BBC1F6A062F41E300FE547F /* stars-none.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stars-none.png"; sourceTree = "<group>"; };
 		4BBC1F6B062F41E300FE547F /* stars-red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stars-red.png"; sourceTree = "<group>"; };
@@ -1336,6 +1340,8 @@
 				4B418DE40594FC3B009C44DE /* gameSettings.png */,
 				4B418DE50594FC3B009C44DE /* fontSettings.png */,
 				4B418DE60594FC3B009C44DE /* generalSettings.png */,
+				4B84304B0B139F6000679417 /* TADS.icns */,
+				4B84304D0B139F7200679417 /* HUGO.icns */,
 				4B418DE70594FC3B009C44DE /* colourSettings.png */,
 				4B9ED9CF0602977C0049E468 /* Metal-Title.png */,
 				4B807BC505BFF06E00681653 /* add-out.png */,
@@ -1923,6 +1929,8 @@
 				4BB8C1DF08C249F400D7D334 /* archive.iFiction in Resources */,
 				4B0D81E20AC5A3C0003E8CCA /* top-shading.png in Resources */,
 				4B1FEB760ACDBC44008B9EFE /* GlkClient.icns in Resources */,
+				4B84304C0B139F6000679417 /* TADS.icns in Resources */,
+				4B84304E0B139F7200679417 /* HUGO.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

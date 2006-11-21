@@ -1051,9 +1051,12 @@ int tableSorter(id a, id b, void* context) {
 				[gameDetails appendAttributedString: [[[NSAttributedString alloc] initWithString: descText
 																					  attributes: [NSDictionary dictionaryWithObjectsAndKeys: descFont, NSFontAttributeName, nil]] autorelease]];
 				
-				flipToDescription = YES;
+				if ([descText length] > 0) flipToDescription = YES;
 			}
 			extraNewline = YES;
+			
+			// Always flip if the description view is already displayed
+			if (topPanelView == infoView) flipToDescription = YES;
 		}
 	} else {
 		// Note that there are multiple or no games selected
