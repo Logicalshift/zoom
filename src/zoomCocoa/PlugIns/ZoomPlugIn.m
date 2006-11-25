@@ -21,35 +21,45 @@ static NSMutableArray* pluginClasses = nil;
 	if (pluginLock == nil) pluginLock = [[NSLock alloc] init];
 }
 
++ (void) loadPluginsFrom: (NSString*) pluginPath {
+	pluginBundles = [[NSMutableArray alloc] init];
+	pluginClasses = [[NSMutableArray alloc] init];
+	
+	NSLog(@"= Loading plugins from: %@", pluginPath);
+	NSEnumerator* pluginEnum = [[[NSFileManager defaultManager] directoryContentsAtPath: pluginPath] objectEnumerator];
+	
+	NSString* plugin;
+	while (plugin = [pluginEnum nextObject]) {
+		NSLog(@"= Found file: %@", plugin);
+		if ([[[plugin pathExtension] lowercaseString] isEqualToString: @"bundle"]) {
+			NSBundle* pluginBundle = [NSBundle bundleWithPath: [pluginPath stringByAppendingPathComponent: plugin]];
+			
+			if (pluginBundle != nil) {
+				if ([pluginBundle load]) {
+					NSLog(@"== Plugin loaded: %@", [plugin stringByDeletingPathExtension]);
+					[pluginBundles addObject: pluginBundle];
+					
+					Class primaryClass = [pluginBundle principalClass];
+					[pluginClasses addObject: primaryClass];
+					NSLog(@"=== Principal class: %@", [primaryClass description]);
+				}
+			}
+		}
+	}	
+}
+
 + (void) loadPlugins {
 	if (pluginBundles == nil) {
 		NSLog(@"= Will load plugin bundles now");
 
 		// Load the plugins
-		pluginBundles = [[NSMutableArray alloc] init];
-		pluginClasses = [[NSMutableArray alloc] init];
-		
 		NSString* pluginPath = [[NSBundle mainBundle] builtInPlugInsPath];
-		NSLog(@"= Loading plugins from: %@", pluginPath);
-		NSEnumerator* pluginEnum = [[[NSFileManager defaultManager] directoryContentsAtPath: pluginPath] objectEnumerator];
+		[self loadPluginsFrom: pluginPath];
 		
-		NSString* plugin;
-		while (plugin = [pluginEnum nextObject]) {
-			NSLog(@"= Found file: %@", plugin);
-			if ([[[plugin pathExtension] lowercaseString] isEqualToString: @"bundle"]) {
-				NSBundle* pluginBundle = [NSBundle bundleWithPath: [pluginPath stringByAppendingPathComponent: plugin]];
-				
-				if (pluginBundle != nil) {
-					if ([pluginBundle load]) {
-						NSLog(@"== Plugin loaded: %@", [plugin stringByDeletingPathExtension]);
-						[pluginBundles addObject: pluginBundle];
-						
-						Class primaryClass = [pluginBundle principalClass];
-						[pluginClasses addObject: primaryClass];
-						NSLog(@"=== Principal class: %@", [primaryClass description]);
-					}
-				}
-			}
+		if ([pluginClasses count] == 0) {
+			NSString* pluginPath = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent: @"Contents/PlugIns"];
+			NSLog(@"= Trying harder to load plugins");
+			[self loadPluginsFrom: pluginPath];
 		}
 	}
 }

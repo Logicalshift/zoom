@@ -652,6 +652,9 @@ typedef unsigned char IFMDByte;
 	NSString* identString = [NSString stringWithUTF8String: stringId];
 	free(stringId);
 	
+	if (identString == nil)
+		return @"(null)";
+	
 	return identString;
 }
 

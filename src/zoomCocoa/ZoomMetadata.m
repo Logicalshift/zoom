@@ -95,6 +95,7 @@
 // = Finding information =
 
 - (BOOL) containsStoryWithIdent: (ZoomStoryID*) ident {
+	if (ident == nil || [ident ident] == NULL) return NO;
 	return IFMB_ContainsStoryWithId(metadata, [ident ident]);
 }
 
