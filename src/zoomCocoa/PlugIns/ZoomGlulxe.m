@@ -99,4 +99,76 @@
 		autorelease];
 }
 
+- (NSImage*) resizeLogo: (NSImage*) input {
+	NSSize oldSize = [input size];
+	NSImage* result = input;
+	
+	if (oldSize.width > 256 || oldSize.height > 256) {
+		float scaleFactor;
+		
+		if (oldSize.width > oldSize.height) {
+			scaleFactor = 256/oldSize.width;
+		} else {
+			scaleFactor = 256/oldSize.height;
+		}
+		
+		NSSize newSize = NSMakeSize(scaleFactor * oldSize.width, scaleFactor * oldSize.height);
+		
+		result = [[[NSImage alloc] initWithSize: newSize] autorelease];
+		[result lockFocus];
+		[[NSGraphicsContext currentContext] setImageInterpolation: NSImageInterpolationHigh];
+		
+		[input drawInRect: NSMakeRect(0,0, newSize.width, newSize.height)
+				 fromRect: NSMakeRect(0,0, oldSize.width, oldSize.height)
+				operation: NSCompositeSourceOver
+				 fraction: 1.0];
+		[result unlockFocus];
+	}
+	
+	return result;
+}
+
+- (NSImage*) logo {
+	// Try decoding the cover picture, if available
+	ZoomBlorbFile* decodedFile = [[ZoomBlorbFile alloc] initWithContentsOfFile: [self gameFilename]];
+	int coverPictureNumber = -1;
+	
+	// Try to retrieve the frontispiece tag (overrides metadata if present)
+	NSData* front = [decodedFile dataForChunkWithType: @"Fspc"];
+	if (front != nil && [front length] >= 4) {
+		const unsigned char* fpc = [front bytes];
+		
+		coverPictureNumber = (((int)fpc[0])<<24)|(((int)fpc[1])<<16)|(((int)fpc[2])<<8)|(((int)fpc[3])<<0);
+	}
+	
+	if (coverPictureNumber >= 0) {			
+		// Attempt to retrieve the cover picture image
+		if (decodedFile != nil) {
+			NSData* coverPictureData = [decodedFile imageDataWithNumber: coverPictureNumber];
+			
+			if (coverPictureData) {
+				NSImage* coverPicture = [[[NSImage alloc] initWithData: coverPictureData] autorelease];
+				
+				// Sometimes the image size and pixel size do not match up
+				NSImageRep* coverRep = [[coverPicture representations] objectAtIndex: 0];
+				NSSize pixSize = NSMakeSize([coverRep pixelsWide], [coverRep pixelsHigh]);
+				
+				if (!NSEqualSizes(pixSize, [coverPicture size])) {
+					[coverPicture setScalesWhenResized: YES];
+					[coverPicture setSize: pixSize];
+				}
+				
+				if (coverPicture != nil) {
+					[decodedFile release];
+					return [self resizeLogo: coverPicture];
+				}
+			}
+		}
+	}
+	
+	[decodedFile release];
+	
+	return nil;
+}
+
 @end

@@ -130,8 +130,6 @@
 			<array>
 				<string>public.glulx</string>
 			</array>
-			<key>NSDocumentClass</key>
-			<string>ZoomClient</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -168,8 +166,6 @@
 			<array>
 				<string>public.blorb.glulx</string>
 			</array>
-			<key>NSDocumentClass</key>
-			<string>ZoomClient</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -187,8 +183,6 @@
 			<array>
 				<string>public.tads</string>
 			</array>
-			<key>NSDocumentClass</key>
-			<string>ZoomClient</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -205,8 +199,6 @@
 			<array>
 				<string>public.hugo</string>
 			</array>
-			<key>NSDocumentClass</key>
-			<string>ZoomClient</string>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>

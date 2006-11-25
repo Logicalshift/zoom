@@ -40,10 +40,9 @@ static NSMutableArray* pluginClasses = nil;
 						NSLog(@"== Plugin loaded: %@", [plugin stringByDeletingPathExtension]);
 						[pluginBundles addObject: pluginBundle];
 						
-						NSString* primaryClassName = [[pluginBundle infoDictionary] objectForKey: @"ZoomPluginClass"];
-						Class primaryClass = [pluginBundle classNamed: primaryClassName];
-						
+						Class primaryClass = [pluginBundle principalClass];
 						[pluginClasses addObject: primaryClass];
+						NSLog(@"=== Principal class: %@", [primaryClass description]);
 					}
 				}
 			}

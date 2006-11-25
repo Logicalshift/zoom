@@ -46,6 +46,7 @@
 		[document setStoryData: story];
 		[document setClientPath: clientPath];
 		[document setInputFilename: [self gameFilename]];
+		[document setLogo: [self logo]];
 	}
 	
 	// Return it
@@ -58,6 +59,10 @@
 	[clientPath release];
 	clientPath = nil;
 	clientPath = [newPath copy];
+}
+
+- (NSImage*) logo {
+	return nil;
 }
 
 @end

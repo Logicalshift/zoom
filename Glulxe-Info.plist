@@ -16,7 +16,9 @@
 	<string>YZZY</string>
 	<key>CFBundleVersion</key>
 	<string>0.3.5</string>
-	<key>ZoomPluginClass</key>
+	<key>NSPrincipalClass</key>
 	<string>ZoomGlulxe</string>
+	<key>NSExecutable</key>
+	<string>Glulxe</string>
 </dict>
 </plist>

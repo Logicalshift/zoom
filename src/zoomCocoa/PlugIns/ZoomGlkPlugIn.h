@@ -23,5 +23,6 @@
 
 // Configuring the client
 - (void) setClientPath: (NSString*) clientPath;						// Selects which GlkClient executable to run
+- (NSImage*) logo;													// If non-nil, sets the logo to display for this game
 
 @end

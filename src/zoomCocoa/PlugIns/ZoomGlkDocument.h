@@ -18,11 +18,13 @@
 	NSString* inputPath;											// The file we'll pass to the executable as the game to run
 	
 	ZoomStory* storyData;											// Metadata for this story
+	NSImage* logo;													// The logo for this story
 }
 
 // Configuring the client
 - (void) setStoryData: (ZoomStory*) story;							// Sets the metadata associated with this story
 - (void) setClientPath: (NSString*) clientPath;						// Selects which GlkClient executable to run
 - (void) setInputFilename: (NSString*) inputPath;					// The file that should be passed to the client as the file to run
+- (void) setLogo: (NSImage*) logo;
 
 @end

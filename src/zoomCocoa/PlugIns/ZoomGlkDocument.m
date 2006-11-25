@@ -17,6 +17,7 @@
 	if (clientPath) [clientPath release];
 	if (inputPath) [inputPath release];
 	if (storyData) [storyData release];
+	if (logo) [logo release];
 	
 	[super dealloc];
 }
@@ -51,6 +52,11 @@
 	storyData = [story retain];
 }
 
+- (void) setLogo: (NSImage*) newLogo {
+	[logo release];
+	logo = [newLogo retain];
+}
+
 // = Constructing the window controllers =
 
 - (void) makeWindowControllers {
@@ -60,6 +66,7 @@
 	// Give it the paths
 	[controller setClientPath: clientPath];
 	[controller setInputFilename: inputPath];
+	[controller setLogo: logo];
 	
 	// Add it as a controller for this document
 	[self addWindowController: [controller autorelease]];

@@ -76,6 +76,7 @@
 	
 	[clientPath release];
 	[inputPath release];
+	[logo release];
 	
 	if (glkView) [glkView setDelegate: nil];
 	
@@ -131,6 +132,15 @@
 	
 	// Start it if we've got enough information
 	[self maybeStartView];
+}
+
+- (void) setLogo: (NSImage*) newLogo {
+	[logo release];
+	logo = [newLogo copy];
+}
+
+- (NSImage*) logo {
+	return logo;
 }
 
 // = Log messages =
