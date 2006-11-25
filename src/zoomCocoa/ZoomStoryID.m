@@ -489,7 +489,7 @@
 }
 
 - (void) dealloc {
-	if (needsFreeing) {
+	if (needsFreeing && ident != NULL) {
 		IFMB_FreeId(ident);
 	}
 	

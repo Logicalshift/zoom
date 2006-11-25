@@ -135,8 +135,10 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 			[storyFilenames addObject: newFilename];
 			[storyIdents addObject: newIdent];
 			
-			[identsToFilenames setObject: newFilename forKey: newIdent];
-			[filenamesToIdents setObject: newIdent forKey: newFilename];
+			if (newIdent != nil) {
+				[identsToFilenames setObject: newFilename forKey: newIdent];
+				[filenamesToIdents setObject: newIdent forKey: newFilename];
+			}
 
 			[storyLock unlock];
 		}
@@ -464,7 +466,9 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 
 - (void) addStory: (NSString*) filename
 		withIdent: (ZoomStoryID*) ident
-		 organise: (BOOL) organise {	
+		 organise: (BOOL) organise {
+	if (ident == nil) return;
+	
 	[storyLock lock];
 	
 	NSString* oldFilename;
@@ -519,8 +523,10 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	[storyFilenames addObject: newFilename];
 	[storyIdents addObject: newIdent];
 	
-	[identsToFilenames setObject: newFilename forKey: newIdent];
-	[filenamesToIdents setObject: newIdent forKey: newFilename];
+	if (newIdent != nil) {
+		[identsToFilenames setObject: newFilename forKey: newIdent];
+		[filenamesToIdents setObject: newIdent forKey: newFilename];
+	}
 	
 	[storyLock unlock];
 	
@@ -790,7 +796,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	// If there is a directory in the preferences, then that's the directory to use
 	NSDictionary* gameDirs = [defaults objectForKey: ZoomGameDirectories];
 	
-	if (gameDirs)
+	if (gameDirs && [ident description] != nil)
 		confDir = [gameDirs objectForKey: [ident description]];
 
 	BOOL isDir;
@@ -820,10 +826,12 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		newGameDirs = [[NSMutableDictionary alloc] init];
 	}
 
-	[newGameDirs setObject: gameDir
-					forKey: [ident description]];
-	[defaults setObject: [newGameDirs autorelease]
-				 forKey: ZoomGameDirectories];
+	if (ident != nil && [ident description] != nil) {
+		[newGameDirs setObject: gameDir
+						forKey: [ident description]];
+		[defaults setObject: [newGameDirs autorelease]
+					 forKey: ZoomGameDirectories];
+	}
 	
 	return gameDir;
 }
@@ -881,10 +889,12 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		newGameDirs = [[NSMutableDictionary alloc] init];
 	}
 	
-	[newGameDirs setObject: idealDir
-					forKey: [ident description]];
-	[defaults setObject: [newGameDirs autorelease]
-				 forKey: ZoomGameDirectories];	
+	if (ident != nil && [ident description] != nil) {
+		[newGameDirs setObject: idealDir
+						forKey: [ident description]];
+		[defaults setObject: [newGameDirs autorelease]
+					 forKey: ZoomGameDirectories];	
+	}
 	
 	return YES;
 }
@@ -943,10 +953,12 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 					if (![oldGameFile isEqualToString: newGameFile]) {
 						[filenamesToIdents removeObjectForKey: oldGameFile];
 						
-						[filenamesToIdents setObject: realID
-											  forKey: newGameFile];
-						[identsToFilenames setObject: newGameFile
-											  forKey: realID];
+						if (realID != nil) {
+							[filenamesToIdents setObject: realID
+												  forKey: newGameFile];
+							[identsToFilenames setObject: newGameFile
+												  forKey: realID];
+						}
 						
 						[storyFilenames replaceObjectAtIndex: identID
 												  withObject: newGameFile];
@@ -1061,11 +1073,13 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	}
 	
 	// Update the indexes
-	[identsToFilenames setObject: filename
-						  forKey: ident];
-	[filenamesToIdents removeObjectForKey: oldFilename];
-	[filenamesToIdents setObject: ident
-						  forKey: filename];
+	if (ident != nil) {
+		[identsToFilenames setObject: filename
+							  forKey: ident];
+		[filenamesToIdents removeObjectForKey: oldFilename];
+		[filenamesToIdents setObject: ident
+							  forKey: filename];
+	}
 	
 	/* --??
 	int filenameIndex = [storyFilenames indexOfObject: oldFilename];
@@ -1180,6 +1194,8 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 
 - (void) renamedIdent: (ZoomStoryID*) ident
 		   toFilename: (NSString*) filename {
+	if (ident == nil) return;
+	
 	filename = [[filename copy] autorelease];
 	
 	[storyLock lock];

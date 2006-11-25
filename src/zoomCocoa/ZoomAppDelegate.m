@@ -29,6 +29,10 @@
 	self = [super init];
 	
 	if (self) {
+		// Ensure the plugins are available
+		NSLog(@"= Loading plugins");
+		[ZoomPlugIn loadPlugins];
+		
 		gameIndices = [[NSMutableArray alloc] init];
 
 		NSString* configDir = [self zoomConfigDirectory];

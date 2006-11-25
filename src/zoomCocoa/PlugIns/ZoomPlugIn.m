@@ -21,18 +21,22 @@ static NSMutableArray* pluginClasses = nil;
 	if (pluginLock == nil) pluginLock = [[NSLock alloc] init];
 }
 
-+ (Class) pluginForFile: (NSString*) filename {
++ (void) loadPlugins {
 	if (pluginBundles == nil) {
+		NSLog(@"= Will load plugin bundles now");
+
 		// Load the plugins
 		pluginBundles = [[NSMutableArray alloc] init];
 		pluginClasses = [[NSMutableArray alloc] init];
 		
 		NSString* pluginPath = [[NSBundle mainBundle] builtInPlugInsPath];
+		NSLog(@"= Loading plugins from: %@", pluginPath);
 		NSEnumerator* pluginEnum = [[[NSFileManager defaultManager] directoryContentsAtPath: pluginPath] objectEnumerator];
 		
 		NSString* plugin;
 		while (plugin = [pluginEnum nextObject]) {
-			if ([[plugin pathExtension] isEqualToString: @"bundle"]) {
+			NSLog(@"= Found file: %@", plugin);
+			if ([[[plugin pathExtension] lowercaseString] isEqualToString: @"bundle"]) {
 				NSBundle* pluginBundle = [NSBundle bundleWithPath: [pluginPath stringByAppendingPathComponent: plugin]];
 				
 				if (pluginBundle != nil) {
@@ -48,16 +52,24 @@ static NSMutableArray* pluginClasses = nil;
 			}
 		}
 	}
+}
+
++ (Class) pluginForFile: (NSString*) filename {
+	NSLog(@"= Seeking a plugin for %@", filename);
+	
+	[self loadPlugins];
 	
 	NSEnumerator* pluginClassEnum = [pluginClasses objectEnumerator];
 	Class pluginClass;
 	
 	while (pluginClass = [pluginClassEnum nextObject]) {
 		if ([pluginClass canRunPath: filename]) {
+			NSLog(@"= Found %@", [pluginClass description]);
 			return pluginClass;
 		}
 	}
 	
+	NSLog(@"= No plugins found (will try z-code)", filename);
 	return nil;
 }
 
@@ -70,6 +82,7 @@ static NSMutableArray* pluginClasses = nil;
 		return nil;
 	}
 	
+	NSLog(@"= Instantiating %@ for %@", [pluginClass description], filename);
 	ZoomPlugIn* instance = [[[pluginClass alloc] initWithFilename: filename] autorelease];
 	
 	[pluginLock unlock];

@@ -25,8 +25,9 @@
 }
 
 // General purpose plugin function
-+ (Class) pluginForFile: (NSString*) filename;
-+ (ZoomPlugIn*) instanceForFile: (NSString*) filename;
++ (Class) pluginForFile: (NSString*) filename;					// Finds the plugin for a specific file
++ (void) loadPlugins;											// Forces Zoom to load the plugin bundles
++ (ZoomPlugIn*) instanceForFile: (NSString*) filename;			// Instantiates a plugin instances ready to act upon the specified file
 
 // Informational functions (subclasses should normally override)
 + (NSString*) pluginVersion;									// The version of this plugin
