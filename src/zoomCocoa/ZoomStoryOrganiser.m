@@ -55,7 +55,7 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 											  forKey:extraDefaultsName];
 }
 
-- (ZoomStoryID*) idForFile: (NSString*) filename {
+- (out bycopy ZoomStoryID*) idForFile: (in bycopy NSString*) filename {
 	return [ZoomStoryID idForFile: filename];
 }
 
@@ -72,21 +72,27 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 	subThread = [[NSConnection allocWithZone: [self zone]]
         initWithReceivePort: port2
                    sendPort: port1];
-	[subThread setRootObject: self];
 	
 	// Notify the main thread that things are happening
-	[(ZoomStoryOrganiser*)[subThread rootProxy] startedActing];
+	ZoomStoryOrganiser* rootProxy = (ZoomStoryOrganiser*)[subThread rootProxy];
+	
+	[(NSDistantObject*)rootProxy setProtocolForProxy: @protocol(ZoomStoryIDFetcherProtocol)];
+	[(ZoomStoryOrganiser*)rootProxy startedActing];
 			
 	// Preference keys indicate the filenames
 	NSEnumerator* filenameEnum = [prefs keyEnumerator];
 	NSString* filename;
 	
+	NSAutoreleasePool* p2 = [[NSAutoreleasePool alloc] init];
 	while (filename = [filenameEnum nextObject]) {
+		[p2 release];
+		p2 =  [[NSAutoreleasePool alloc] init];
+		
 		NSData* storyData = [prefs objectForKey: filename];
 		ZoomStoryID* fileID = [NSUnarchiver unarchiveObjectWithData: storyData];
-		//ZoomStoryID* realID = [(ZoomStoryOrganiser*)[subThread rootProxy] idForFile: filename];
+		ZoomStoryID* realID = [rootProxy idForFile: filename];
 		//ZoomStoryID* realID = [ZoomStoryID idForFile: filename];
-		ZoomStoryID* realID = [[ZoomStoryID alloc] initWithZCodeFile: filename];
+		//ZoomStoryID* realID = [[ZoomStoryID alloc] initWithZCodeFile: filename];
 		
 		if (fileID != nil && realID != nil && [fileID isEqual: realID]) {
 			// Check for a pre-existing entry
@@ -135,16 +141,14 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 			[storyLock unlock];
 		}
 		
-		[realID release];
-		
 		counter++;
 		if (counter > 40) {
 			counter = 0;
-			[(ZoomStoryOrganiser*)[subThread rootProxy] organiserChanged];
+			[rootProxy organiserChanged];
 		}
 	}	
 	
-	[(ZoomStoryOrganiser*)[subThread rootProxy] organiserChanged];
+	[rootProxy organiserChanged];
 	
 	// If story organisation is on, we need to check for any disappeared stories that have appeared in
 	// the organiser directory, and recreate any story data as required.
@@ -203,7 +207,7 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 						continue;
 					}
 					
-					gameFileID = [ZoomStoryID idForFile: [gameDir stringByAppendingPathComponent: gameFileName]];
+					gameFileID = [rootProxy idForFile: [gameDir stringByAppendingPathComponent: gameFileName]];
 					if (gameFileID != nil) {
 						gameFile = [gameDir stringByAppendingPathComponent: gameFileName];
 						break;
@@ -232,10 +236,10 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 		if (orgD) closedir(orgD);
 	}
 
-	[(ZoomStoryOrganiser*)[subThread rootProxy] organiserChanged];
+	[rootProxy organiserChanged];
 
 	// Tidy up
-	[(ZoomStoryOrganiser*)[subThread rootProxy] endedActing];
+	[rootProxy endedActing];
 
 	[subThread release];
 	[port1 release];
@@ -249,6 +253,7 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 	[self release];
 	
 	// Clear the pool
+	[p2 release];
 	[p release];
 }
 
@@ -1379,9 +1384,9 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
                                 forMode: NSDefaultRunLoopMode];
 	NSConnection* subThreadConnection = [[NSConnection allocWithZone: [self zone]] initWithReceivePort: threadPort2
 																							  sendPort: threadPort1];
-	[subThreadConnection setRootObject: self];
 	
 	// Start things rolling
+	[[subThreadConnection rootProxy] setProtocolForProxy: @protocol(ZoomStoryIDFetcherProtocol)];
 	[(ZoomStoryOrganiser*)[subThreadConnection rootProxy] startedActing];
 	
 	NSString* gameStorageDirectory = [[[(ZoomStoryOrganiser*)[subThreadConnection rootProxy] gameStorageDirectory] copy] autorelease];

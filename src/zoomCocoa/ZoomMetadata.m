@@ -101,6 +101,8 @@
 - (ZoomStory*) findOrCreateStory: (ZoomStoryID*) ident {
 	IFStory story;
 	
+	if ([ident ident] == nil) return nil;
+	
 	[dataLock lock];
 	
 	story = IFMB_GetStoryWithId(metadata, [ident ident]);

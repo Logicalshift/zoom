@@ -11,6 +11,13 @@
 #import "ZoomStoryID.h"
 
 
+@protocol ZoomStoryIDFetcherProtocol
+
+- (out bycopy ZoomStoryID*) idForFile: (in bycopy NSString*) filename;
+- (oneway void) testThing;
+
+@end
+
 // The story organiser is used to store story locations and identifications
 // (Mainly to build up the iFiction window)
 
@@ -18,7 +25,7 @@
 extern NSString* ZoomStoryOrganiserChangedNotification;
 extern NSString* ZoomStoryOrganiserProgressNotification;
 
-@interface ZoomStoryOrganiser : NSObject {
+@interface ZoomStoryOrganiser : NSObject<ZoomStoryIDFetcherProtocol> {
 	// Arrays of the stories and their idents
 	NSMutableArray* storyFilenames;
 	NSMutableArray* storyIdents;

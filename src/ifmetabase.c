@@ -184,6 +184,9 @@ IFID IFMB_IdFromString(const char* idString) {
 	int pos;
 	unsigned char md5[16];
 	
+	/* NULL string indicates a NULL ID */
+	if (idString == NULL) return NULL;
+	
 	/* Skip any initial whitespace */
 	while (whitespace(*idString)) idString++;
 	
@@ -989,6 +992,8 @@ void IFMB_CopyStory(IFMetabase meta, IFStory story, IFID id) {
 	IFStory newStory;
 	
 	if (meta == NULL) meta = story->metabase;
+	if (story == NULL) return;							/* Error! */
+	if (story->id == NULL) return;
 	if (id == NULL && IFMB_GetStoryWithId(meta, story->id) == story) return;
 	if (id == NULL) id = story->id;
 	

@@ -147,6 +147,11 @@
 		}
 	}
 	
+	if (ident == nil) {
+		[self release];
+		return nil;
+	}
+	
 	return self;
 }
 
@@ -261,6 +266,11 @@
 				if (gotUUID) break;
 			}
 		}
+	}
+	
+	if (ident == nil) {
+		[self release];
+		return nil;
 	}
 	
 	return self;
@@ -396,6 +406,11 @@
 		}
 	}
 	
+	if (ident == nil) {
+		[self release];
+		return nil;
+	}
+	
 	return self;
 }
 
@@ -426,6 +441,11 @@
 		free(result);
 	}
 	
+	if (ident == nil) {
+		[self release];
+		return nil;
+	}
+	
 	return self;
 }
 
@@ -437,9 +457,19 @@
 - (id) initWithIdent: (struct IFID*) idt {
 	self = [super init];
 	
+	if (idt == nil) {
+		[self release];
+		return nil;
+	}
+	
 	if (self) {
 		ident = IFMB_CopyId(idt);
 		needsFreeing = YES;
+	}
+	
+	if (ident == nil) {
+		[self release];
+		return nil;
 	}
 	
 	return self;
@@ -590,6 +620,11 @@ typedef unsigned char IFMDByte;
 		}
 	}
 	
+	if (ident == nil) {
+		[self release];
+		return nil;
+	}
+	
 	return self;
 }
 
@@ -619,5 +654,12 @@ typedef unsigned char IFMDByte;
 	
 	return identString;
 }
+
+// = Port coding =
+
+- (id)replacementObjectForPortCoder:(NSPortCoder *)encoder { 
+	if ([encoder isBycopy]) return self; 
+	return [super replacementObjectForPortCoder:encoder]; 
+} 
 
 @end
