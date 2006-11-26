@@ -139,6 +139,7 @@
 					} else {
 						IFMB_FreeId(ident);
 						ident = uuidId;
+						needsFreeing = YES;
 					}
 				}
 
@@ -260,6 +261,7 @@
 					} else {
 						IFMB_FreeId(ident);
 						ident = uuidId;
+						needsFreeing = YES;
 					}
 				}
 				
@@ -385,6 +387,7 @@
 						gotUUID = false;
 					} else {
 						ident = uuidId;
+						needsFreeing = YES;
 						return self;
 					}
 				}
@@ -399,10 +402,12 @@
 			int checksum = (bytes[32]<<24) | (bytes[33]<<16) | (bytes[34]<<8) | (bytes[35]<<0);
 			
 			ident = IFMB_GlulxId(release, bytes + 54, checksum);
+			needsFreeing = YES;
 		} else {
 			int checksum = (bytes[32]<<24) | (bytes[33]<<16) | (bytes[34]<<8) | (bytes[35]<<0);
 
 			ident = IFMB_GlulxIdNotInform(memsize, checksum);
+			needsFreeing = YES;
 		}
 	}
 	
@@ -437,6 +442,7 @@
 		
 		// Allocate the identity block
 		ident = IFMB_IdFromString(result);
+		needsFreeing = YES;
 			
 		free(result);
 	}
@@ -588,6 +594,7 @@ typedef unsigned char IFMDByte;
 												at: &checksum];
 					
 					ident = IFMB_ZcodeId(release, serial, checksum);
+					needsFreeing = YES;
 					break;
 				}
 					
@@ -599,6 +606,7 @@ typedef unsigned char IFMDByte;
 											 count: 16
 												at: uuid];
 					ident = IFMB_UUID(uuid);
+					needsFreeing = YES;
 					break;
 				}
 					
@@ -610,6 +618,7 @@ typedef unsigned char IFMDByte;
 			NSString* idString = (NSString*)[decoder decodeObject];
 			
 			ident = IFMB_IdFromString([idString UTF8String]);
+			needsFreeing = YES;
 		} else {
 			// Only v1 and v2 decodes supported ATM
 			[self release];
