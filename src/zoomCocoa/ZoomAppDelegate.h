@@ -27,4 +27,6 @@
 
 - (NSString*) zoomConfigDirectory;
 
+- (IBAction) fixedOpenDocument: (id) sender;
+
 @end

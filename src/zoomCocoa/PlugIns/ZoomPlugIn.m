@@ -6,6 +6,7 @@
 //  Copyright 2005 Andrew Hunter. All rights reserved.
 //
 
+#define VERBOSITY 1
 #import "ZoomPlugIn.h"
 
 
@@ -25,23 +26,31 @@ static NSMutableArray* pluginClasses = nil;
 	pluginBundles = [[NSMutableArray alloc] init];
 	pluginClasses = [[NSMutableArray alloc] init];
 	
+#if VERBOSITY >= 2
 	NSLog(@"= Loading plugins from: %@", pluginPath);
+#endif
 	NSEnumerator* pluginEnum = [[[NSFileManager defaultManager] directoryContentsAtPath: pluginPath] objectEnumerator];
 	
 	NSString* plugin;
 	while (plugin = [pluginEnum nextObject]) {
+#if VERBOSITY >= 2
 		NSLog(@"= Found file: %@", plugin);
+#endif
 		if ([[[plugin pathExtension] lowercaseString] isEqualToString: @"bundle"]) {
 			NSBundle* pluginBundle = [NSBundle bundleWithPath: [pluginPath stringByAppendingPathComponent: plugin]];
 			
 			if (pluginBundle != nil) {
 				if ([pluginBundle load]) {
+#if VERBOSITY >= 1
 					NSLog(@"== Plugin loaded: %@", [plugin stringByDeletingPathExtension]);
+#endif
 					[pluginBundles addObject: pluginBundle];
 					
 					Class primaryClass = [pluginBundle principalClass];
 					[pluginClasses addObject: primaryClass];
+#if VERBOSITY >= 2
 					NSLog(@"=== Principal class: %@", [primaryClass description]);
+#endif
 				}
 			}
 		}
@@ -50,7 +59,9 @@ static NSMutableArray* pluginClasses = nil;
 
 + (void) loadPlugins {
 	if (pluginBundles == nil) {
+#if VERBOSITY >= 2
 		NSLog(@"= Will load plugin bundles now");
+#endif
 
 		// Load the plugins
 		NSString* pluginPath = [[NSBundle mainBundle] builtInPlugInsPath];
@@ -58,14 +69,18 @@ static NSMutableArray* pluginClasses = nil;
 		
 		if ([pluginClasses count] == 0) {
 			NSString* pluginPath = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent: @"Contents/PlugIns"];
+#if VERBOSITY >=1
 			NSLog(@"= Trying harder to load plugins");
+#endif
 			[self loadPluginsFrom: pluginPath];
 		}
 	}
 }
 
 + (Class) pluginForFile: (NSString*) filename {
+#if VERBOSITY >= 3
 	NSLog(@"= Seeking a plugin for %@", filename);
+#endif
 	
 	[self loadPlugins];
 	
@@ -74,12 +89,16 @@ static NSMutableArray* pluginClasses = nil;
 	
 	while (pluginClass = [pluginClassEnum nextObject]) {
 		if ([pluginClass canRunPath: filename]) {
+#if VERBOSITY >=3
 			NSLog(@"= Found %@", [pluginClass description]);
+#endif
 			return pluginClass;
 		}
 	}
 	
+#if VERBOSITY >= 3
 	NSLog(@"= No plugins found (will try z-code)", filename);
+#endif
 	return nil;
 }
 
@@ -92,7 +111,9 @@ static NSMutableArray* pluginClasses = nil;
 		return nil;
 	}
 	
+#if VERBOSITY >= 3
 	NSLog(@"= Instantiating %@ for %@", [pluginClass description], filename);
+#endif
 	ZoomPlugIn* instance = [[[pluginClass alloc] initWithFilename: filename] autorelease];
 	
 	[pluginLock unlock];

@@ -18,6 +18,8 @@
 #import "ZoomPlugIn.h"
 #import "ZoomStoryOrganiser.h"
 
+NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
+
 @implementation ZoomAppDelegate
 
 // = Initialisation =
@@ -72,10 +74,12 @@
 // = Opening files =
 
 - (BOOL) applicationShouldOpenUntitledFile: (NSApplication*) sender {
+	// 'Opening an untitled file' is an action that occurs when the user clicks on the 'Z' icon...
     return YES;
 }
 
 - (BOOL) applicationOpenUntitledFile:(NSApplication *)theApplication {
+	// ... which we want to have the effect of showing the iFiction window
 	[[[ZoomiFictionController sharediFictionController] window] makeKeyAndOrderFront: self];
 	
 	return YES;
@@ -225,6 +229,102 @@
 	}
 	
 	return nil;
+}
+
+- (IBAction) fixedOpenDocument: (id) sender {
+	// The standard open dialog does not go through the applicationOpenFile: mechanism, or know about plugins.
+	// This version does.
+	NSOpenPanel* openPanel = [NSOpenPanel openPanel];
+	
+	NSString* directory = [[NSUserDefaults standardUserDefaults] objectForKey: ZoomOpenPanelLocation];
+	if (directory == nil) {
+		directory = [@"~" stringByStandardizingPath];
+	} else {
+		directory = [directory stringByStandardizingPath];
+	}
+	
+	// Set up the open panel
+	[openPanel setDelegate: self];
+	[openPanel setCanChooseFiles: YES];
+	[openPanel setResolvesAliases: YES];
+	[openPanel setTitle: @"Open Story"];
+	[openPanel setDirectory: directory];
+	[openPanel setAllowsMultipleSelection: YES];
+	
+	// Run the panel
+	int result = [openPanel runModal];
+	if (result != NSFileHandlingPanelOKButton) return;
+	
+	// Remember the directory
+	[[NSUserDefaults standardUserDefaults] setObject: [openPanel directory]
+											  forKey: ZoomOpenPanelLocation];
+	
+	// Open the file(s)
+	NSArray* files = [openPanel filenames];
+	NSEnumerator* fileEnum = [files objectEnumerator];
+	NSString* file;
+	while (file = [fileEnum nextObject]) {
+		[self application: NSApp
+				 openFile: file];
+	}
+}
+
+- (BOOL)		panel:(id)sender 
+   shouldShowFilename:(NSString *)filename {
+	BOOL exists;
+	BOOL isDirectory;
+	
+	exists = [[NSFileManager defaultManager] fileExistsAtPath: filename
+												  isDirectory: &isDirectory];
+	if (!exists) return NO;
+	
+	// Show directories that are not packages
+	if (isDirectory) {
+		if ([[NSWorkspace sharedWorkspace] isFilePackageAtPath: filename]) {
+			return NO;
+		} else {
+			return YES;
+		}
+	}
+	
+	// Don't show non-readable files
+	if (![[NSFileManager defaultManager] isReadableFileAtPath: filename]) {
+		return NO;
+	}
+	
+	// Show files that have a valid plugin
+	Class pluginClass = [ZoomPlugIn pluginForFile: filename];
+	
+	if (pluginClass != nil) {
+		return YES;
+	}
+	
+	// Show files that we can open with the ZoomClient document type
+	NSArray* extensions = [[NSDocumentController sharedDocumentController] fileExtensionsFromType: @"ZCode story"];
+	NSEnumerator* extnEnum = [extensions objectEnumerator];
+	NSString* extn;
+	NSString* fileExtension = [[filename pathExtension] lowercaseString];
+	while (extn = [extnEnum nextObject]) {
+		if ([extn isEqualToString: fileExtension]) return YES;
+	}
+	
+	return NO;
+}
+
+- (BOOL)        panel:(id)sender
+	  isValidFilename:(NSString *)filename {
+	if (![self panel: sender shouldShowFilename: filename]) return NO; 
+
+	BOOL exists;
+	BOOL isDirectory;
+	
+	exists = [[NSFileManager defaultManager] fileExistsAtPath: filename
+												  isDirectory: &isDirectory];
+	
+	if (!exists) return NO;
+	if (isDirectory) return NO;
+	
+	return YES;
 }
 
 @end

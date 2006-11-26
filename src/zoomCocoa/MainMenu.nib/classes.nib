@@ -5,6 +5,7 @@
                 displayGameInfoWindow = id; 
                 displayNoteWindow = id; 
                 displaySkein = id; 
+                fixedOpenDocument = id; 
                 playInFullScreen = id; 
                 reloadGame = id; 
                 restartZMachine = id; 
