@@ -22,8 +22,11 @@
 		ZoomBlorbFile* blorb = [[ZoomBlorbFile alloc] initWithContentsOfFile: path];
 		
 		if (blorb != nil && [blorb dataForChunkWithType: @"GLUL"] != nil) {
+			[blorb release];
 			return YES;
 		}
+		
+		[blorb release];
 	}
 	
 	return [super canRunPath: path];
