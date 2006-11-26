@@ -216,6 +216,8 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 					}
 				}
 				
+				if (gameD) closedir(gameD);
+				
 				struct stat sb;
 				if (gameFile == nil || stat([gameFile UTF8String], &sb) != 0) continue;
 				
