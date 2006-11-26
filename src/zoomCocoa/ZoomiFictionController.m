@@ -1073,6 +1073,8 @@ int tableSorter(id a, id b, void* context) {
 		flipToDescription = NO;
 	}
 	
+	[gameDetails release];
+	
 	if (coverPicture == nil) {
 		// TODO: set this to a suitable picture for the game format
 		coverPicture = [NSImage imageNamed: @"zoom-app"];
