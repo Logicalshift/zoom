@@ -78,6 +78,7 @@
 	[clientPath release];
 	[inputPath release];
 	[logo release];
+	[tts release];
 	
 	if (glkView) [glkView setDelegate: nil];
 	
@@ -87,12 +88,15 @@
 - (void) maybeStartView {
 	// If we're sufficiently configured to start the application, then do so
 	if (glkView && clientPath && inputPath) {
+		[tts release];
+		tts = [[ZoomTextToSpeech alloc] init];
 		[glkView setDelegate: self];
-		[glkView addOutputReceiver: [[[ZoomTextToSpeech alloc] init] autorelease]];
 		[glkView setPreferences: [ZoomGlkWindowController glkPreferencesFromZoomPreferences]];
 		[glkView setInputFilename: inputPath];
 		[glkView launchClientApplication: clientPath
 						   withArguments: [NSArray array]];
+		
+		[self prefsChanged: nil];
 	}
 }
 
@@ -112,6 +116,15 @@
 
 - (void) prefsChanged: (NSNotification*) not {
 	// TODO: actually change the preferences (might need some changes to the way Glk styles work here; styles are traditionally fixed after they are set...)
+	if (glkView == nil) return;
+	
+	if ([[ZoomPreferences globalPreferences] speakGameText]) {
+		if (!ttsAdded) [glkView addOutputReceiver: tts];
+		ttsAdded = YES;
+	} else {
+		if (ttsAdded) [glkView removeAutomationObject: tts];
+		ttsAdded = NO;
+	}
 }
 
 // = Configuring the client =

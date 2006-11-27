@@ -138,7 +138,7 @@ static SpeechChannel channel = nil;
 		  fromView: (GlkView*) view {
 	[text appendString: @"\n\n"];
 	[text appendString: userInput];
-	[self zoomWaitingForInput];
+	[text appendString: @"...\n"];
 }
 
 - (void) userClickedAtXPos: (int) xpos

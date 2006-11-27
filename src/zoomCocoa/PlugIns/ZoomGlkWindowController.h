@@ -11,6 +11,8 @@
 #import <GlkView/GlkView.h>
 
 
+@class ZoomTextToSpeech;
+
 ///
 /// WindowController for windows running a Glk interpreter
 ///
@@ -23,6 +25,8 @@
 	NSString* clientPath;											// The Glk executable we'll run to play this game
 	NSString* inputPath;											// The file we'll pass to the executable as the game to run
 	NSImage* logo;													// The logo that we're going to show
+	BOOL ttsAdded;													// Whether or not the GlkView has the tts receiver added to it
+	ZoomTextToSpeech* tts;											// Text-to-speech object
 }
 
 // Configuring the client
