@@ -104,6 +104,7 @@
 		4BA8B5780B1B047A007CD75E /* ZoomTextToSpeech.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BE5F510075121A400C25A70 /* ZoomTextToSpeech.h */; };
 		4BA8B5820B1B053E007CD75E /* ZoomTextToSpeech.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BE5F510075121A400C25A70 /* ZoomTextToSpeech.h */; };
 		4BA8B5830B1B053E007CD75E /* ZoomTextToSpeech.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE5F511075121A400C25A70 /* ZoomTextToSpeech.m */; };
+		4BA8B83A0B1B5F65007CD75E /* typographicSettings.png in Resources */ = {isa = PBXBuildFile; fileRef = 4BA8B8390B1B5F65007CD75E /* typographicSettings.png */; };
 		4BB65ACE08EF02D600E7E28E /* ZoomBlorbFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF1576406BAD034001A3C27 /* ZoomBlorbFile.m */; };
 		4BB65AD408EF02DF00E7E28E /* ZoomProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BCF3F29050F8E0000A8E303 /* ZoomProtocol.m */; };
 		4BB8C0DE08C2452E00D7D334 /* operation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1E3F82050F7CC500A8E303 /* operation.h */; };
@@ -792,6 +793,7 @@
 		4BA2BCF30694A0830082C022 /* ZoomSkeinItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomSkeinItem.m; sourceTree = "<group>"; };
 		4BA66B2A0906538F000A3852 /* ZoomWindowThatCanBecomeKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomWindowThatCanBecomeKey.h; sourceTree = "<group>"; };
 		4BA66B2B0906538F000A3852 /* ZoomWindowThatCanBecomeKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomWindowThatCanBecomeKey.m; sourceTree = "<group>"; };
+		4BA8B8390B1B5F65007CD75E /* typographicSettings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = typographicSettings.png; sourceTree = "<group>"; };
 		4BAADD7B079053030076ACC4 /* ZoomSkeinLayoutItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomSkeinLayoutItem.h; sourceTree = "<group>"; };
 		4BAADD7C079053030076ACC4 /* ZoomSkeinLayoutItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomSkeinLayoutItem.m; sourceTree = "<group>"; };
 		4BACE9FA05B428C700A9B6DC /* infocom.iFiction */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = infocom.iFiction; path = src/infocom.iFiction; sourceTree = SOURCE_ROOT; };
@@ -1340,6 +1342,7 @@
 				4B418DE40594FC3B009C44DE /* gameSettings.png */,
 				4B418DE50594FC3B009C44DE /* fontSettings.png */,
 				4B418DE60594FC3B009C44DE /* generalSettings.png */,
+				4BA8B8390B1B5F65007CD75E /* typographicSettings.png */,
 				4B84304B0B139F6000679417 /* TADS.icns */,
 				4B84304D0B139F7200679417 /* HUGO.icns */,
 				4B418DE70594FC3B009C44DE /* colourSettings.png */,
@@ -1931,6 +1934,7 @@
 				4B1FEB760ACDBC44008B9EFE /* GlkClient.icns in Resources */,
 				4B84304C0B139F6000679417 /* TADS.icns in Resources */,
 				4B84304E0B139F7200679417 /* HUGO.icns in Resources */,
+				4BA8B83A0B1B5F65007CD75E /* typographicSettings.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
