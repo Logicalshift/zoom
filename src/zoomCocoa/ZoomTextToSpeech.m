@@ -120,4 +120,41 @@ static SpeechChannel channel = nil;
 	[self zoomWaitingForInput];
 }
 
+// = Glk automation =
+
+
+// Notifications about events that have occured in the view (when using this automation object for output)
+
+- (void) receivedCharacters: (NSString*) characters					// Text has arrived at the specified text buffer window (from the game)
+					 window: (int) windowNumber
+				   fromView: (GlkView*) view {
+	[text appendString: @"\n\n"];
+	[text appendString: characters];
+}
+
+- (void) userTyped: (NSString*) userInput							// The user has typed the specified string into the specified window (which is any window that is waiting for input)
+			window: (int) windowNumber
+		 lineInput: (BOOL) isLineInput
+		  fromView: (GlkView*) view {
+	[text appendString: @"\n\n"];
+	[text appendString: userInput];
+	[self zoomWaitingForInput];
+}
+
+- (void) userClickedAtXPos: (int) xpos
+					  ypos: (int) ypos
+					window: (int) windowNumber
+				  fromView: (GlkView*) view {
+}
+
+- (void) viewWaiting: (GlkView*) view {
+	[self zoomWaitingForInput];
+}
+
+// Using this automation object for input
+
+- (void) viewIsWaitingForInput: (GlkView*) view {
+	[self zoomWaitingForInput];
+}
+
 @end

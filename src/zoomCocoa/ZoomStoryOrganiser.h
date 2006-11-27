@@ -14,7 +14,6 @@
 @protocol ZoomStoryIDFetcherProtocol
 
 - (out bycopy ZoomStoryID*) idForFile: (in bycopy NSString*) filename;
-- (oneway void) testThing;
 
 @end
 

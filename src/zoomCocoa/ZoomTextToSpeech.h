@@ -7,11 +7,12 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <GlkView/GlkAutomation.h>
 
 //
 // An output source that performs text-to-speech functions
 //
-@interface ZoomTextToSpeech : NSObject {
+@interface ZoomTextToSpeech : NSObject<GlkAutomation> {
 	NSMutableString* text;
 }
 

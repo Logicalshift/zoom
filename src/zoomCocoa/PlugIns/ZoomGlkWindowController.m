@@ -8,6 +8,7 @@
 
 #import "ZoomGlkWindowController.h"
 #import "ZoomPreferences.h"
+#import "ZoomTextToSpeech.h"
 
 #import <GlkView/GlkHub.h>
 #import <GlkView/GlkView.h>
@@ -87,6 +88,7 @@
 	// If we're sufficiently configured to start the application, then do so
 	if (glkView && clientPath && inputPath) {
 		[glkView setDelegate: self];
+		[glkView addOutputReceiver: [[[ZoomTextToSpeech alloc] init] autorelease]];
 		[glkView setPreferences: [ZoomGlkWindowController glkPreferencesFromZoomPreferences]];
 		[glkView setInputFilename: inputPath];
 		[glkView launchClientApplication: clientPath
