@@ -2160,6 +2160,8 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		textToSpeechReceiver = nil;
 	}
 	
+	[textView setTextContainerInset: NSMakeSize([viewPrefs textMargin], [viewPrefs textMargin])]; 
+	
 	[self reformatWindow];
 }
 

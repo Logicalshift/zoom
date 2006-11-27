@@ -26,16 +26,19 @@ extern NSString* ZoomPreferencesHaveChangedNotification;
 // Getting preferences
 + (NSString*) defaultOrganiserDirectory;
 
+// Warnings and game text prefs
 - (BOOL)  displayWarnings;
 - (BOOL)  fatalWarnings;
 - (BOOL)  speakGameText;
 - (BOOL)  confirmGameClose;
 - (float) scrollbackLength;	// 0-100
 
+// Interpreter preferences
 - (NSString*)     gameTitle;
 - (int)           interpreter;
 - (unsigned char) revision;
 
+// Typographical preferences
 - (NSArray*)      fonts;   // 16 fonts
 - (NSArray*)      colours; // 13 colours
 
@@ -44,11 +47,15 @@ extern NSString* ZoomPreferencesHaveChangedNotification;
 - (NSString*) symbolicFontFamily;
 - (float) fontSize;
 
-- (NSDictionary*) dictionary;
+- (float) textMargin;
 
+// Organiser preferences
 - (NSString*) organiserDirectory;
 - (BOOL)	  keepGamesOrganised;
 - (BOOL)      autosaveGames;
+
+// The dictionary
+- (NSDictionary*) dictionary;
 
 // Setting preferences
 - (void) setDisplayWarnings: (BOOL) flag;
@@ -68,6 +75,8 @@ extern NSString* ZoomPreferencesHaveChangedNotification;
 - (void) setFixedFontFamily: (NSString*) fontFamily;
 - (void) setSymbolicFontFamily: (NSString*) fontFamily;
 - (void) setFontSize: (float) size;
+
+- (void) setTextMargin: (float) textMargin;
 
 - (void) setOrganiserDirectory: (NSString*) directory;
 - (void) setKeepGamesOrganised: (BOOL) value;

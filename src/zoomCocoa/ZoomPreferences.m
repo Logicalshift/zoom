@@ -29,6 +29,7 @@ static NSString* revision			= @"Revision";
 
 static NSString* fonts				= @"Fonts";
 static NSString* colours			= @"Colours";
+static NSString* textMargin			= @"TextMargin";
 
 static NSString* organiserDirectory = @"organiserDirectory";
 
@@ -390,6 +391,15 @@ static NSArray* DefaultColours(void) {
 	return res;
 }
 
+- (float) textMargin {
+	[prefLock lock];
+	NSNumber* result = (NSNumber*)[prefs objectForKey: textMargin];
+	if (result == nil) result = [NSNumber numberWithFloat: 0];
+	[prefLock unlock];
+	
+	return [result floatValue];
+}
+
 - (BOOL) keepGamesOrganised {
 	[prefLock lock];
 	BOOL result = [[prefs objectForKey: keepGamesOrganised] boolValue];
@@ -489,6 +499,12 @@ static NSArray* DefaultColours(void) {
 - (void) setAutosaveGames: (BOOL) value {
 	[prefs setObject: [NSNumber numberWithBool: value]
 			  forKey: autosaveGames];
+	[self preferencesHaveChanged];
+}
+
+- (void) setTextMargin: (float) value {
+	[prefs setObject: [NSNumber numberWithFloat: value]
+			  forKey: textMargin];
 	[self preferencesHaveChanged];
 }
 
