@@ -32,6 +32,9 @@
 	[prefs setProportionalFont: [[zPrefs fonts] objectAtIndex: 0]];
 	[prefs setFixedFont: [[zPrefs fonts] objectAtIndex: 4]];
 	
+	// Set the typography options according to the Zoom preferences object
+	[prefs setTextMargin: [zPrefs textMargin]];
+	
 	// Set the foreground/background colours
 	NSColor* foreground = [[zPrefs colours] objectAtIndex: 0];
 	NSColor* background = [[zPrefs colours] objectAtIndex: 7];

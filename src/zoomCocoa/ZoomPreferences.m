@@ -394,7 +394,7 @@ static NSArray* DefaultColours(void) {
 - (float) textMargin {
 	[prefLock lock];
 	NSNumber* result = (NSNumber*)[prefs objectForKey: textMargin];
-	if (result == nil) result = [NSNumber numberWithFloat: 0];
+	if (result == nil) result = [NSNumber numberWithFloat: 10.0];
 	[prefLock unlock];
 	
 	return [result floatValue];
