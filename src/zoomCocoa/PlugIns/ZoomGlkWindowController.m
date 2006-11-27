@@ -34,6 +34,8 @@
 	
 	// Set the typography options according to the Zoom preferences object
 	[prefs setTextMargin: [zPrefs textMargin]];
+	[prefs setUseScreenFonts: [zPrefs useScreenFonts]];
+	[prefs setUseHyphenation: [zPrefs useHyphenation]];
 	
 	// Set the foreground/background colours
 	NSColor* foreground = [[zPrefs colours] objectAtIndex: 0];
