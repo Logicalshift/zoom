@@ -16,6 +16,7 @@ static NSToolbarItem* generalSettingsItem;
 static NSToolbarItem* gameSettingsItem;
 static NSToolbarItem* fontSettingsItem;
 static NSToolbarItem* colourSettingsItem;
+static NSToolbarItem* typographicSettingsItem;
 
 static NSDictionary*  itemDictionary = nil;
 
@@ -27,6 +28,7 @@ static NSDictionary*  itemDictionary = nil;
 	gameSettingsItem = [[NSToolbarItem alloc] initWithItemIdentifier: @"gameSettings"];
 	fontSettingsItem = [[NSToolbarItem alloc] initWithItemIdentifier: @"fontSettings"];
 	colourSettingsItem = [[NSToolbarItem alloc] initWithItemIdentifier: @"colourSettings"];
+	typographicSettingsItem = [[NSToolbarItem alloc] initWithItemIdentifier: @"typographicSettings"];
 	
 	// ... and the dictionary
 	itemDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:
@@ -34,6 +36,7 @@ static NSDictionary*  itemDictionary = nil;
 		gameSettingsItem, @"gameSettings",
 		fontSettingsItem, @"fontSettings",
 		colourSettingsItem, @"colourSettings",
+		typographicSettingsItem, @"typographicSettings",
 		nil] retain];
 	
 	// Set up the items
@@ -45,12 +48,15 @@ static NSDictionary*  itemDictionary = nil;
 	[fontSettingsItem setImage: [[[NSImage alloc] initWithContentsOfFile: [[NSBundle mainBundle] pathForImageResource: @"fontSettings"]] autorelease]];
 	[colourSettingsItem setLabel: @"Colour"];
 	[colourSettingsItem setImage: [[[NSImage alloc] initWithContentsOfFile: [[NSBundle mainBundle] pathForImageResource: @"colourSettings"]] autorelease]];
+	[typographicSettingsItem setLabel: @"Typography"];
+	[typographicSettingsItem setImage: [[[NSImage alloc] initWithContentsOfFile: [[NSBundle mainBundle] pathForImageResource: @"typographicSettings"]] autorelease]];
 	
 	// And the actions
 	[generalSettingsItem setAction: @selector(generalSettings:)];
 	[gameSettingsItem setAction: @selector(gameSettings:)];
 	[fontSettingsItem setAction: @selector(fontSettings:)];
 	[colourSettingsItem setAction: @selector(colourSettings:)];	
+	[typographicSettingsItem setAction: @selector(typographicSettings:)];	
 }
 
 - (id) init {
@@ -116,7 +122,7 @@ static int familyComparer(id a, id b, void* context) {
 
 - (void) windowDidLoad {
 	// Set the toolbar
-	toolbar = [[NSToolbar allocWithZone: [self zone]] initWithIdentifier: @"preferencesToolbar"];
+	toolbar = [[NSToolbar allocWithZone: [self zone]] initWithIdentifier: @"preferencesToolbar2"];
 		
 	[toolbar setDelegate: self];
 	[toolbar setDisplayMode: NSToolbarDisplayModeIconAndLabel];
@@ -178,13 +184,13 @@ static int familyComparer(id a, id b, void* context) {
 
 - (NSArray *)toolbarAllowedItemIdentifiers:(NSToolbar*)toolbar {
     return [NSArray arrayWithObjects:
-		@"generalSettings", @"gameSettings", @"fontSettings", @"colourSettings",
+		@"generalSettings", @"gameSettings", @"fontSettings", @"colourSettings", @"typographicSettings", NSToolbarFlexibleSpaceItemIdentifier,
 		nil];
 }
 
 - (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar*)toolbar {
     return [NSArray arrayWithObjects:
-		NSToolbarFlexibleSpaceItemIdentifier, @"generalSettings", @"gameSettings", @"fontSettings", @"colourSettings", NSToolbarFlexibleSpaceItemIdentifier,
+		NSToolbarFlexibleSpaceItemIdentifier, @"generalSettings", @"gameSettings", @"fontSettings", @"colourSettings", @"typographicSettings", NSToolbarFlexibleSpaceItemIdentifier,
 		nil];
 }
 
@@ -204,6 +210,10 @@ static int familyComparer(id a, id b, void* context) {
 
 - (void) colourSettings: (id) sender {
 	[self switchToPane: colourSettingsView];
+}
+
+- (void) typographicSettings: (id) sender {
+	[self switchToPane: typographicalSettingsView];
 }
 
 // == Setting the preferences that we're editing ==
@@ -271,6 +281,13 @@ static int familyComparer(id a, id b, void* context) {
 	[self setSimpleFonts];
 	
 	[organiseDir setString: [prefs organiserDirectory]];
+	
+	[showMargins setState: [prefs textMargin] > 0?NSOnState:NSOffState];
+	
+	[marginWidth setEnabled: [prefs textMargin] > 0];
+	if ([prefs textMargin] > 0) {
+		[marginWidth setFloatValue: [prefs textMargin]];
+	}
 }
 
 // == Table data source ==
@@ -573,6 +590,37 @@ static void appendStyle(NSMutableString* styleName,
 	
 	// Update the display
 	[self setSimpleFonts];
+}
+
+// = Typographical changes =
+
+- (IBAction) marginsChanged: (id) sender {
+	// Work out the new margin size
+	float oldSize = [prefs textMargin];
+	float newSize;
+	
+	if ([showMargins state] == NSOffState) {
+		newSize = 0;
+		[marginWidth setEnabled: NO];
+	} else if ([showMargins state] == NSOnState && oldSize <= 0) {
+		newSize = 10.0;
+		[marginWidth setEnabled: YES];
+	} else {
+		newSize = floorf([marginWidth floatValue]);
+		[marginWidth setEnabled: YES];
+	}
+	
+	if (newSize != oldSize) {
+		[prefs setTextMargin: newSize];
+	}
+}
+
+- (IBAction) screenFontsChanged: (id) sender {
+	
+}
+
+- (IBAction) hyphenationChanged: (id) sender {
+	
 }
 
 // = Story progress meter =

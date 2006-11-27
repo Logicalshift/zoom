@@ -15,11 +15,14 @@
                 confirmGameCloseChanged = id; 
                 displayWarningsChanged = id; 
                 fatalWarningsChanged = id; 
+                hyphenationChanged = id; 
                 interpreterChanged = id; 
                 keepOrganisedChanged = id; 
+                marginsChanged = id; 
                 reorganiseGames = id; 
                 resetOrganiseDir = id; 
                 revisionChanged = id; 
+                screenFontsChanged = id; 
                 scrollbackChanged = id; 
                 simpleFontsChanged = id; 
                 speakGameTextChanged = id; 
@@ -43,15 +46,20 @@
                 generalSettingsView = NSView; 
                 interpreter = NSPopUpButton; 
                 keepGamesOrganised = NSButton; 
+                marginWidth = NSSlider; 
                 organiseDir = NSTextView; 
                 organiserIndicator = NSProgressIndicator; 
                 proportionalFont = NSPopUpButton; 
                 reorganiseGames = NSButton; 
                 revision = NSTextField; 
                 scrollbackLength = NSSlider; 
+                showMargins = NSButton; 
                 speakGameText = NSButton; 
                 symbolicFont = NSPopUpButton; 
                 transparencySlider = NSSlider; 
+                typographicalSettingsView = NSView; 
+                useHyphenation = NSButton; 
+                useScreenFonts = NSButton; 
             }; 
             SUPERCLASS = NSWindowController; 
         }

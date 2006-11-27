@@ -16,6 +16,7 @@
 	IBOutlet NSView* gameSettingsView;
 	IBOutlet NSView* fontSettingsView;
 	IBOutlet NSView* colourSettingsView;
+	IBOutlet NSView* typographicalSettingsView;
 	
 	// The settings controls themselves
 	IBOutlet NSButton* displayWarnings;
@@ -45,6 +46,11 @@
 	IBOutlet NSTableView* fonts;
 	IBOutlet NSTableView* colours;
 	
+	IBOutlet NSButton* showMargins;
+	IBOutlet NSSlider* marginWidth;
+	IBOutlet NSButton* useScreenFonts;
+	IBOutlet NSButton* useHyphenation;
+	
 	// The toolbar
 	NSToolbar* toolbar;
 	
@@ -71,5 +77,9 @@
 - (IBAction) changeOrganiseDir: (id) sender;
 - (IBAction) resetOrganiseDir: (id) sender;
 - (IBAction) reorganiseGames: (id) sender;
+
+- (IBAction) marginsChanged: (id) sender;
+- (IBAction) screenFontsChanged: (id) sender;
+- (IBAction) hyphenationChanged: (id) sender;
 
 @end
