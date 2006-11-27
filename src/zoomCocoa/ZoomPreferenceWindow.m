@@ -132,6 +132,11 @@ static int familyComparer(id a, id b, void* context) {
 	
 	[[self window] setContentSize: [generalSettingsView frame].size];
 	[[self window] setContentView: generalSettingsView];
+
+	if ([toolbar respondsToSelector: @selector(setSelectedItemIdentifier:)]) {
+		[toolbar setSelectedItemIdentifier: @"generalSettings"];
+	}
+	
 	
 	[fonts setDataSource: self];
 	[fonts setDelegate: self];
@@ -154,6 +159,28 @@ static int familyComparer(id a, id b, void* context) {
 - (void) switchToPane: (NSView*) preferencePane {
 	if ([[self window] contentView] == preferencePane) return;
 	
+	// Select the appropriate item in the toolbar
+	if ([toolbar respondsToSelector: @selector(setSelectedItemIdentifier:)]) {
+		NSString* selected = nil;
+		
+		if (preferencePane == generalSettingsView) {
+			selected = @"generalSettings";
+		} else if (preferencePane == gameSettingsView) {
+			selected = @"gameSettings";
+		} else if (preferencePane == fontSettingsView) {
+			selected = @"fontSettings";
+		} else if (preferencePane == colourSettingsView) {
+			selected = @"colourSettings";
+		} else if (preferencePane == typographicalSettingsView) {
+			selected = @"typographicSettings";
+		}
+		
+		if (selected != nil) {
+			[toolbar setSelectedItemIdentifier: selected];
+		}
+	}
+	
+	// Work ou the various frame sizes
 	NSRect currentFrame = [[[self window] contentView] frame];
 	NSRect oldFrame = currentFrame;
 	NSRect windowFrame = [[self window] frame];
@@ -192,6 +219,12 @@ static int familyComparer(id a, id b, void* context) {
     return [NSArray arrayWithObjects:
 		NSToolbarFlexibleSpaceItemIdentifier, @"generalSettings", @"gameSettings", @"fontSettings", @"colourSettings", @"typographicSettings", NSToolbarFlexibleSpaceItemIdentifier,
 		nil];
+}
+
+- (NSArray *)toolbarSelectableItemIdentifiers:(NSToolbar *)toolbar {
+    return [NSArray arrayWithObjects:
+		@"generalSettings", @"gameSettings", @"fontSettings", @"colourSettings", @"typographicSettings",
+		nil];	
 }
 
 // == Toolbar actions ==
@@ -469,7 +502,6 @@ static void appendStyle(NSMutableString* styleName,
 }
 
 - (void)changeTransparency:(id)sender {
-
 	NSMutableArray* cols = [[prefs colours] mutableCopy];
 	
 	int i;
@@ -488,7 +520,6 @@ static void appendStyle(NSMutableString* styleName,
 	[colours reloadData];
 	
 	[cols release];
-
 }
 
 // == Various actions ==
