@@ -159,6 +159,10 @@
 	logo = [newLogo copy];
 }
 
+- (BOOL) disableLogo {
+	return logo == nil;
+}
+
 - (NSImage*) logo {
 	return logo;
 }
