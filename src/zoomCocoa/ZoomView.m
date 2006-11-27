@@ -2161,6 +2161,8 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	}
 	
 	[textView setTextContainerInset: NSMakeSize([viewPrefs textMargin], [viewPrefs textMargin])]; 
+	[[textView layoutManager] setHyphenationFactor: [viewPrefs useHyphenation]?1:0];
+	[[textView layoutManager] setUsesScreenFonts: [viewPrefs useScreenFonts]];
 	
 	[self reformatWindow];
 }

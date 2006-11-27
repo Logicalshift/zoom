@@ -30,6 +30,8 @@ static NSString* revision			= @"Revision";
 static NSString* fonts				= @"Fonts";
 static NSString* colours			= @"Colours";
 static NSString* textMargin			= @"TextMargin";
+static NSString* useScreenFonts		= @"UseScreenFonts";
+static NSString* useHyphenation		= @"UseHyphenation";
 
 static NSString* organiserDirectory = @"organiserDirectory";
 
@@ -400,6 +402,34 @@ static NSArray* DefaultColours(void) {
 	return [result floatValue];
 }
 
+- (BOOL) useScreenFonts {
+	[prefLock lock];
+	NSNumber* num = [prefs objectForKey: useScreenFonts];
+	BOOL result;
+	
+	if (num)
+		result = [num boolValue];
+	else
+		result = YES;
+	[prefLock unlock];
+	
+	return result;
+}
+
+- (BOOL) useHyphenation {
+	[prefLock lock];
+	NSNumber* num = [prefs objectForKey: useHyphenation];
+	BOOL result;
+	
+	if (num)
+		result = [num boolValue];
+	else
+		result = YES;
+	[prefLock unlock];
+	
+	return result;	
+}
+
 - (BOOL) keepGamesOrganised {
 	[prefLock lock];
 	BOOL result = [[prefs objectForKey: keepGamesOrganised] boolValue];
@@ -505,6 +535,18 @@ static NSArray* DefaultColours(void) {
 - (void) setTextMargin: (float) value {
 	[prefs setObject: [NSNumber numberWithFloat: value]
 			  forKey: textMargin];
+	[self preferencesHaveChanged];
+}
+
+- (void) setUseScreenFonts: (BOOL) value {
+	[prefs setObject: [NSNumber numberWithBool: value]
+			  forKey: useScreenFonts];
+	[self preferencesHaveChanged];
+}
+
+- (void) setUseHyphenation: (BOOL) value {
+	[prefs setObject: [NSNumber numberWithBool: value]
+			  forKey: useHyphenation];
 	[self preferencesHaveChanged];
 }
 

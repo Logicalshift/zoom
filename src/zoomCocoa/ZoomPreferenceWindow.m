@@ -316,6 +316,8 @@ static int familyComparer(id a, id b, void* context) {
 	[organiseDir setString: [prefs organiserDirectory]];
 	
 	[showMargins setState: [prefs textMargin] > 0?NSOnState:NSOffState];
+	[useScreenFonts setState: [prefs useScreenFonts]?NSOnState:NSOffState];
+	[useHyphenation setState: [prefs useHyphenation]?NSOnState:NSOffState];
 	
 	[marginWidth setEnabled: [prefs textMargin] > 0];
 	if ([prefs textMargin] > 0) {
@@ -647,11 +649,19 @@ static void appendStyle(NSMutableString* styleName,
 }
 
 - (IBAction) screenFontsChanged: (id) sender {
+	BOOL newState = [useScreenFonts state]==NSOnState;
 	
+	if (newState != [prefs useScreenFonts]) {
+		[prefs setUseScreenFonts: newState];
+	}	
 }
 
 - (IBAction) hyphenationChanged: (id) sender {
+	BOOL newState = [useHyphenation state]==NSOnState;
 	
+	if (newState != [prefs useHyphenation]) {
+		[prefs setUseHyphenation: newState];
+	}
 }
 
 // = Story progress meter =

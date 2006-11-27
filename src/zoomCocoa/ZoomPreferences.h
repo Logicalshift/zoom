@@ -48,6 +48,8 @@ extern NSString* ZoomPreferencesHaveChangedNotification;
 - (float) fontSize;
 
 - (float) textMargin;
+- (BOOL) useScreenFonts;
+- (BOOL) useHyphenation;
 
 // Organiser preferences
 - (NSString*) organiserDirectory;
@@ -77,6 +79,8 @@ extern NSString* ZoomPreferencesHaveChangedNotification;
 - (void) setFontSize: (float) size;
 
 - (void) setTextMargin: (float) textMargin;
+- (void) setUseScreenFonts: (BOOL) useScreenFonts;
+- (void) setUseHyphenation: (BOOL) useHyphenation;
 
 - (void) setOrganiserDirectory: (NSString*) directory;
 - (void) setKeepGamesOrganised: (BOOL) value;
