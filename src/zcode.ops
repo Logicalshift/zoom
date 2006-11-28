@@ -1521,7 +1521,10 @@ OPCODE "random"         VAR:0x07 ARGS:1 STORE         VERSION all
 %{
   if (argblock.arg[0] > 0)
     {
-      store(stack, st, (random_number()%argblock.arg[0])+1);
+      unsigned int random = random_number()>>8;
+      random = random&0xffff;
+      random = (random*argblock.arg[0])/0x10000;
+      store(stack, st, random+1);
     }
   else if (argblock.arg[0] < 0)
     {
