@@ -307,6 +307,18 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 	while (extn = [extnEnum nextObject]) {
 		if ([extn isEqualToString: fileExtension]) return YES;
 	}
+
+	extensions = [NSArray arrayWithObjects: @"zblorb", @"zlb", nil];
+	extnEnum = [extensions objectEnumerator];
+	while (extn = [extnEnum nextObject]) {
+		if ([extn isEqualToString: fileExtension]) return YES;
+	}
+	
+	extensions = [[NSDocumentController sharedDocumentController] fileExtensionsFromType: @"Blorb resource file"];
+	extnEnum = [extensions objectEnumerator];
+	while (extn = [extnEnum nextObject]) {
+		if ([extn isEqualToString: fileExtension]) return YES;
+	}
 	
 	return NO;
 }

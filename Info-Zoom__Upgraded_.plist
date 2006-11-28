@@ -152,7 +152,7 @@
 			<key>CFBundleTypeIconFile</key>
 			<string>zoom-game.icns</string>
 			<key>CFBundleTypeName</key>
-			<string>Z-Code story</string>
+			<string>ZCode story</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
@@ -253,7 +253,7 @@
 				<string>public.data</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>ZCode Story</string>
+			<string>ZCode story</string>
 			<key>UTTypeIconFile</key>
 			<string>zoom-game.icns</string>
 			<key>UTTypeIdentifier</key>
@@ -304,7 +304,7 @@
 				<string>public.data</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>Z-Code story</string>
+			<string>ZCode story</string>
 			<key>UTTypeIconFile</key>
 			<string>zoom-game.icns</string>
 			<key>UTTypeIdentifier</key>

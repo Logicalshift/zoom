@@ -356,9 +356,9 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 											 isDirectory: &isDir];
 		
 		NSString* fileType = [filename pathExtension];
+		Class plugin;
 		
-		if (isDir) 
-		{
+		if (isDir) {
 			NSArray* dirContents = [[NSFileManager defaultManager] directoryContentsAtPath: filename];
 			
 			NSEnumerator* dirContentsEnum = [dirContents objectEnumerator];
@@ -368,9 +368,7 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 			{
 				[selectedFiles addObject: [filename stringByAppendingPathComponent: dirComponent]];
 			}
-		} 
-		else if ( [fileTypes containsObject: fileType] ) 
-		{
+		} else if ( [fileTypes containsObject: fileType] ) {
 			ZoomStoryID* fileID = [[ZoomStoryID alloc] initWithZCodeFile: filename];
 			
 			if (fileID != nil) 
@@ -380,6 +378,15 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 														   organise: [[ZoomPreferences globalPreferences] keepGamesOrganised]];
 				
 				[fileID release];
+			}
+		} else if (plugin = [ZoomPlugIn pluginForFile: filename]) {
+			ZoomPlugIn* instance = [[[plugin alloc] initWithFilename: filename] autorelease];
+			ZoomStoryID* fileID = [instance idForStory];
+			
+			if (fileID != nil) {
+				[[ZoomStoryOrganiser sharedStoryOrganiser] addStory: filename
+														  withIdent: fileID
+														   organise: [[ZoomPreferences globalPreferences] keepGamesOrganised]];				
 			}
 		}
 
@@ -393,6 +400,77 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 
 // = IB actions =
 
+- (BOOL)		panel:(id)sender 
+   shouldShowFilename:(NSString *)filename {
+	BOOL exists;
+	BOOL isDirectory;
+	
+	exists = [[NSFileManager defaultManager] fileExistsAtPath: filename
+												  isDirectory: &isDirectory];
+	if (!exists) return NO;
+	
+	// Show directories that are not packages
+	if (isDirectory) {
+		if ([[NSWorkspace sharedWorkspace] isFilePackageAtPath: filename]) {
+			return NO;
+		} else {
+			return YES;
+		}
+	}
+	
+	// Don't show non-readable files
+	if (![[NSFileManager defaultManager] isReadableFileAtPath: filename]) {
+		return NO;
+	}
+	
+	// Show files that have a valid plugin
+	Class pluginClass = [ZoomPlugIn pluginForFile: filename];
+	
+	if (pluginClass != nil) {
+		return YES;
+	}
+	
+	// Show files that we can open with the ZoomClient document type
+	NSArray* extensions = [[NSDocumentController sharedDocumentController] fileExtensionsFromType: @"ZCode story"];
+	NSEnumerator* extnEnum = [extensions objectEnumerator];
+	NSString* extn;
+	NSString* fileExtension = [[filename pathExtension] lowercaseString];
+
+	while (extn = [extnEnum nextObject]) {
+		if ([extn isEqualToString: fileExtension]) return YES;
+	}
+	
+	extensions = [NSArray arrayWithObjects: @"zblorb", @"zlb", nil];
+	extnEnum = [extensions objectEnumerator];
+	while (extn = [extnEnum nextObject]) {
+		if ([extn isEqualToString: fileExtension]) return YES;
+	}
+	
+	extensions = [[NSDocumentController sharedDocumentController] fileExtensionsFromType: @"Blorb resource file"];
+	extnEnum = [extensions objectEnumerator];
+	while (extn = [extnEnum nextObject]) {
+		if ([extn isEqualToString: fileExtension]) return YES;
+	}
+	
+	return NO;
+}
+
+- (BOOL)        panel:(id)sender
+	  isValidFilename:(NSString *)filename {
+	if (![self panel: sender shouldShowFilename: filename]) return NO; 
+	
+	BOOL exists;
+	BOOL isDirectory;
+	
+	exists = [[NSFileManager defaultManager] fileExistsAtPath: filename
+												  isDirectory: &isDirectory];
+	
+	if (!exists) return NO;
+	if (isDirectory) return YES;
+	
+	return YES;
+}
+
 - (IBAction) addButtonPressed: (id) sender {
 	// Create an open panel
 	NSOpenPanel* storiesToAdd;
@@ -403,12 +481,13 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	[storiesToAdd setAllowsMultipleSelection: YES];
 	[storiesToAdd setCanChooseDirectories: YES];
 	[storiesToAdd setCanChooseFiles: YES];
+	[storiesToAdd setDelegate: self];
 	
 	NSString* path = [[NSUserDefaults standardUserDefaults] objectForKey: addDirectory];
 	
 	[storiesToAdd beginSheetForDirectory: path
 									file: nil
-								   types: fileTypes
+								   types: nil
 						  modalForWindow: [self window]
 						   modalDelegate: self
 						  didEndSelector: @selector(addFilesFromPanel:returnCode:contextInfo:)

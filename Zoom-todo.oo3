@@ -16,10 +16,7 @@
   <settings/>
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
-    <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="fa_t76WcCUm"/>
-    <selected-columns ids=":941128d340f2709e21a6e303"/>
-    <selected-characters range="{18, 0}"/>
+    <selected-rows ids="eWq9ovja9g8"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -123,7 +120,43 @@
             <text>
               <p>
                 <run>
-                  <lit>Can load .zlb files</lit>
+                  <lit>Can load .zlb/.zblorb files</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
+        <item id="iSppD39MdZG">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Can load .ulx/.gblorb files</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
+        <item id="kYt2td6uCFb">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Can load .gam/.t3 files</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
+        <item id="eWq9ovja9g8">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Can load .hex files</lit>
                 </run>
               </p>
             </text>
@@ -201,6 +234,172 @@
                 </text>
                 <null/>
               </values>
+            </item>
+          </children>
+        </item>
+        <item id="gVNcfEW6HfL" expanded="yes">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Plugins</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <children>
+            <item id="j4ZjyQyN-zq" expanded="yes">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Can open files by double-clicking</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+              <children>
+                <item id="hTGFpBpcAXY">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>Z-Code</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
+                <item id="lLIpKvpaY38">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>Glulx/TADS</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
+              </children>
+            </item>
+            <item id="bJQN1VpDd4c" expanded="yes">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Can open files by dragging</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+              <children>
+                <item id="aGLtSoc2GLL">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>Z-Code</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
+                <item id="kc1bG-fmpFF">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>Glulx/TADS</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
+              </children>
+            </item>
+            <item id="dnM4xEkwJPJ" expanded="yes">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Can open files by the Open dialog</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+              <children>
+                <item id="lYjTpGte7wL">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>Z-Code</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
+                <item id="kSGthNE3LYt">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>Glulx/TADS</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
+              </children>
+            </item>
+            <item id="cGiaBfwmzVF" expanded="yes">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Can add files using the iFiction window</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+              <children>
+                <item id="hzCsF2mI5r8">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>Z-Code</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
+                <item id="nVdSYTmCbV6">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>Glulx</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
+              </children>
             </item>
           </children>
         </item>
@@ -642,6 +841,18 @@
               <p>
                 <run>
                   <lit>When saving (or autosaving) version 6 data, the v6 screen state is not saved. We need to retrieve this from the ZoomServer process and restore it as required</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
+        <item id="n-sAOejUleJ">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Clicking on the Zoom icon does not open the iFiction window any more</lit>
                 </run>
               </p>
             </text>
