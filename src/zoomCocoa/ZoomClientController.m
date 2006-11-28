@@ -597,7 +597,7 @@
 - (void) showLogoWindow {
 	// Fading the logo out like this stops it from flickering
 	waitTime = 1.0;
-	fadeTime = 0.2;
+	fadeTime = 0.5;
 	NSImage* logo = [self logo];
 	
 	if (logo == nil) return;
