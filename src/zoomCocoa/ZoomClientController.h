@@ -36,5 +36,6 @@
 - (IBAction) playInFullScreen: (id) sender;
 
 - (ZoomView*) zoomView;
+- (void) showLogoWindow;
 
 @end

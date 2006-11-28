@@ -38,7 +38,13 @@
 	
 	if (fullscreenWindow) [fullscreenWindow release];
 	if (normalWindow) [normalWindow release];
-    
+
+	if (fadeStart) [fadeStart release];
+	if (fadeTimer) {
+		[fadeTimer invalidate]; [fadeTimer release];
+	}
+	if (logoWindow) [logoWindow release];
+	
     [super dealloc];
 }
 
@@ -590,7 +596,8 @@
 
 - (void) showLogoWindow {
 	// Fading the logo out like this stops it from flickering
-	waitTime = fadeTime = 1.0;
+	waitTime = 1.0;
+	fadeTime = 0.2;
 	NSImage* logo = [self logo];
 	
 	if (logo == nil) return;
