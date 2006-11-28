@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "ZoomStory.h"
 #import "ZoomStoryID.h"
+#import "ZoomBlorbFile.h"
 
 
 @protocol ZoomStoryIDFetcherProtocol
@@ -47,6 +48,10 @@ extern NSString* ZoomStoryOrganiserProgressNotification;
 
 // The shared organiser
 + (ZoomStoryOrganiser*) sharedStoryOrganiser;
+
+// Image management
++ (NSImage*) frontispieceForBlorb: (ZoomBlorbFile*) decodedFile;
++ (NSImage*) frontispieceForFile: (NSString*) filename;
 
 // Storing stories
 - (void) addStory: (NSString*) filename

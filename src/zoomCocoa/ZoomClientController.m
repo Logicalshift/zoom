@@ -66,6 +66,7 @@
 	
 	// Add a skein view as an output receiver for the ZoomView
 	[zoomView addOutputReceiver: [[self document] skein]];
+	[self showLogoWindow];
 	
 	shownOnce = NO;
 }
@@ -96,6 +97,7 @@
 		}
 	}
 	
+	[self showLogoWindow];
 	shownOnce = YES;
 }
 
@@ -531,6 +533,139 @@
 		[zoomView release];
 		
 		isFullscreen = YES;
+	}
+}
+
+// = Showing a logo =
+
+- (NSImage*) resizeLogo: (NSImage*) input {
+	NSSize oldSize = [input size];
+	NSImage* result = input;
+	
+	if (oldSize.width > 256 || oldSize.height > 256) {
+		float scaleFactor;
+		
+		if (oldSize.width > oldSize.height) {
+			scaleFactor = 256/oldSize.width;
+		} else {
+			scaleFactor = 256/oldSize.height;
+		}
+		
+		NSSize newSize = NSMakeSize(scaleFactor * oldSize.width, scaleFactor * oldSize.height);
+		
+		result = [[[NSImage alloc] initWithSize: newSize] autorelease];
+		[result lockFocus];
+		[[NSGraphicsContext currentContext] setImageInterpolation: NSImageInterpolationHigh];
+		
+		[input drawInRect: NSMakeRect(0,0, newSize.width, newSize.height)
+				 fromRect: NSMakeRect(0,0, oldSize.width, oldSize.height)
+				operation: NSCompositeSourceOver
+				 fraction: 1.0];
+		[result unlockFocus];
+	}
+	
+	return result;
+}
+
+- (NSImage*) logo {
+	NSImage* result = [ZoomStoryOrganiser frontispieceForFile: [[self document] fileName]];
+	if (result == nil) return nil;
+	
+	return [self resizeLogo: result];
+}
+
+- (void) positionLogoWindow {
+	// Position relative to the window
+	NSRect frame = [[[self window] contentView] convertRect: [[[self window] contentView] bounds] toView: nil];
+	NSRect windowFrame = [[self window] frame];
+	
+	// Position on screen
+	frame.origin.x += windowFrame.origin.x;
+	frame.origin.y += windowFrame.origin.y;
+	
+	// Position the logo window
+	[logoWindow setFrame: frame
+				 display: YES];
+}
+
+- (void) showLogoWindow {
+	// Fading the logo out like this stops it from flickering
+	waitTime = fadeTime = 1.0;
+	NSImage* logo = [self logo];
+	
+	if (logo == nil) return;
+	if (logoWindow) return;
+	if (fadeTimer) return;
+	
+	// Don't show this if this view is not on the screen
+	if ([self window] == nil) return;
+	if (![[self window] isVisible]) return;
+	
+	// Create the window
+	logoWindow = [[NSWindow alloc] initWithContentRect: [[[self window] contentView] frame]				// Gets the size, we position later
+											 styleMask: NSBorderlessWindowMask
+											   backing: NSBackingStoreBuffered
+												 defer: YES];
+	[logoWindow setOpaque: NO];
+	[logoWindow setBackgroundColor: [NSColor clearColor]];
+	
+	// Create the image view that goes inside
+	NSImageView* fadeContents = [[NSImageView alloc] initWithFrame: [[logoWindow contentView] frame]];
+	
+	[fadeContents setImage: logo];
+	[logoWindow setContentView: [fadeContents autorelease]];
+	
+	fadeTimer = [NSTimer timerWithTimeInterval: waitTime
+										target: self
+									  selector: @selector(startToFadeLogo)
+									  userInfo: nil
+									   repeats: NO];
+	[[NSRunLoop currentRunLoop] addTimer: fadeTimer
+								 forMode: NSDefaultRunLoopMode];
+	
+	// Position the window correctly
+	[self positionLogoWindow];
+	
+	// Show the window
+	[logoWindow orderFront: self];
+	[[self window] addChildWindow: logoWindow
+						  ordered: NSWindowAbove];
+}
+
+- (void) startToFadeLogo {
+	fadeTimer = nil;
+	
+	fadeTimer = [NSTimer timerWithTimeInterval: 0.01
+										target: self
+									  selector: @selector(fadeLogo)
+									  userInfo: nil
+									   repeats: YES];
+	[[NSRunLoop currentRunLoop] addTimer: fadeTimer
+								 forMode: NSDefaultRunLoopMode];
+	
+	[fadeStart release];
+	fadeStart = [[NSDate date] retain];
+}
+
+- (void) fadeLogo {
+	float timePassed = [[NSDate date] timeIntervalSinceDate: fadeStart];
+	float fadeAmount = timePassed/fadeTime;
+	
+	if (fadeAmount < 0 || fadeAmount > 1) {
+		// Finished fading: get rid of the window + the timer
+		[fadeTimer invalidate];
+		fadeTimer = nil;
+		
+		[[logoWindow parentWindow] removeChildWindow: logoWindow];
+		[logoWindow release];
+		logoWindow = nil;
+		
+		[fadeStart release];
+		fadeStart = nil;
+	} else {
+		fadeAmount = -2.0*fadeAmount*fadeAmount*fadeAmount + 3.0*fadeAmount*fadeAmount;
+		
+		[logoWindow setAlphaValue: 1.0 - fadeAmount];
 	}
 }
 

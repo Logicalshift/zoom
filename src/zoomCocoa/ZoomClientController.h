@@ -22,6 +22,12 @@
 	
 	NSWindow* fullscreenWindow;							// Alternative window used for full-screen view
 	NSWindow* normalWindow;								// The usual window
+
+	float fadeTime;
+	float waitTime;
+	NSDate* fadeStart;
+	NSTimer* fadeTimer;
+	NSWindow* logoWindow;
 }
 
 - (IBAction) recordGameInfo: (id) sender;

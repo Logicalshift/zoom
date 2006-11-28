@@ -13,6 +13,11 @@
 #import <GlkView/GlkHub.h>
 #import <GlkView/GlkView.h>
 
+@interface ZoomGlkWindowController(ZoomPrivate)
+
+- (void) prefsChanged: (NSNotification*) not;
+
+@end
 
 @implementation ZoomGlkWindowController
 
