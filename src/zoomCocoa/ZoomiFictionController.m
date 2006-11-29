@@ -35,6 +35,17 @@ static ZoomiFictionController* sharedController = nil;
 static NSString* addDirectory = @"ZoomiFictionControllerDefaultDirectory";
 static NSString* sortGroup    = @"ZoomiFictionControllerSortGroup";
 
+static NSString* ZoomFieldAttribute = @"ZoomFieldAttribute";
+static NSString* ZoomRowAttribute = @"ZoomRowAttribute";
+static NSString* ZoomStoryAttribute = @"ZoomStoryAttribute";
+
+enum {
+	ZoomNoField,
+	ZoomTitleField,
+	ZoomYearField,
+	ZoomDescriptionField
+};
+
 // = Setup/initialisation =
 
 + (ZoomiFictionController*) sharediFictionController {
@@ -208,6 +219,7 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	[[self window] setExcludedFromWindowsMenu: YES];
 
 	[gameDetailView setTextContainerInset: NSMakeSize(6.0, 6.0)];
+	[[gameDetailView textStorage] setDelegate: self];
 	[self setupSplitView];
 		
 	// Set up the filter table headers (panther only)
@@ -1102,6 +1114,11 @@ int tableSorter(id a, id b, void* context) {
 		NSEnumerator* rowEnum = [mainTableView selectedRowEnumerator];
 		NSNumber* row;
 		BOOL extraNewline = NO;
+		NSAttributedString* newlineString = [[[NSAttributedString alloc] initWithString: @"\n"
+																			 attributes: [NSDictionary dictionaryWithObjectsAndKeys:
+																				 [NSNumber numberWithInt: ZoomNoField], ZoomFieldAttribute,
+																				 [NSNumber numberWithInt: 0], ZoomRowAttribute,
+																				 nil]] autorelease];
 		
 		while (row = [rowEnum nextObject]) {
 			ZoomStoryID* ident = [storyList objectAtIndex: [row intValue]];
@@ -1109,26 +1126,48 @@ int tableSorter(id a, id b, void* context) {
 			
 			// Append the title
 			NSString* title = [story title];
+			NSString* extraText;
 			if (title == nil) title = @"Untitled";
-			title = [NSString stringWithFormat: @"%@%@\n", extraNewline?@"\n\n":@"", title];
+			if (extraNewline) {
+				[gameDetails appendAttributedString: newlineString];
+				[gameDetails appendAttributedString: newlineString];
+			}
 			[gameDetails appendAttributedString: [[[NSAttributedString alloc] initWithString: title
-																				  attributes: [NSDictionary dictionaryWithObjectsAndKeys: titleFont, NSFontAttributeName, nil]] autorelease]];
+																				  attributes: [NSDictionary dictionaryWithObjectsAndKeys:
+																					  titleFont, NSFontAttributeName, 
+																					  [NSNumber numberWithInt: ZoomTitleField], ZoomFieldAttribute,
+																					  row, ZoomRowAttribute,
+																					  story, ZoomStoryAttribute,
+																					  nil]] autorelease]];
+			[gameDetails appendAttributedString: newlineString];
 				
 			// Append the year of publication
 			int year = [story year];
 			if (year > 0) {
-				NSString* yearText = [NSString stringWithFormat: @"%i\n", year];
+				NSString* yearText = [NSString stringWithFormat: @"%i", year];
 				[gameDetails appendAttributedString: [[[NSAttributedString alloc] initWithString: yearText
-																					  attributes: [NSDictionary dictionaryWithObjectsAndKeys: yearFont, NSFontAttributeName, nil]] autorelease]];			
+																					  attributes: [NSDictionary dictionaryWithObjectsAndKeys: 
+																						  yearFont, NSFontAttributeName, 
+																						  [NSNumber numberWithInt: ZoomYearField], ZoomFieldAttribute,
+																						  row, ZoomRowAttribute,
+																						  story, ZoomStoryAttribute,
+																						  nil]] autorelease]];
+				[gameDetails appendAttributedString: newlineString];
 			}
 			
 			// Append the description
 			NSString* descText = [story description];
 			if (descText == nil) descText = [story teaser];
+			if (descText == nil || [descText length] == 0) descText = @"";
 			if (descText != nil) {
-				descText = [NSString stringWithFormat: @"\n%@", descText];
+				[gameDetails appendAttributedString: newlineString];
 				[gameDetails appendAttributedString: [[[NSAttributedString alloc] initWithString: descText
-																					  attributes: [NSDictionary dictionaryWithObjectsAndKeys: descFont, NSFontAttributeName, nil]] autorelease]];
+																					  attributes: [NSDictionary dictionaryWithObjectsAndKeys: 
+																						  descFont, NSFontAttributeName, 
+																						  [NSNumber numberWithInt: ZoomDescriptionField], ZoomFieldAttribute,
+																						  row, ZoomRowAttribute,
+																						  story, ZoomStoryAttribute,
+																						  nil]] autorelease]];
 				
 				if ([descText length] > 0) flipToDescription = YES;
 			}
@@ -1147,7 +1186,9 @@ int tableSorter(id a, id b, void* context) {
 	
 	if (![[gameDetailView string] isEqualToString: [gameDetails string]]) {
 		if (flipToDescription) [flipView prepareToAnimateView: topPanelView];
+		[[gameDetailView textStorage] setDelegate: nil];
 		[[gameDetailView textStorage] setAttributedString: gameDetails];
+		[[gameDetailView textStorage] setDelegate: self];
 	} else {
 		flipToDescription = NO;
 	}
@@ -1509,19 +1550,229 @@ int tableSorter(id a, id b, void* context) {
 
 // = NSText delegate =
 
+- (BOOL)    	textView:(NSTextView *)aTextView
+ shouldChangeTextInRange:(NSRange)affectedCharRange
+	   replacementString:(NSString *)replacementString {
+	if (aTextView == gameDetailView) {
+		// If there are no selected stories, then do not allow any editing
+		if ([mainTableView numberOfSelectedRows] <= 0) return NO;
+		
+		// If we're editing only one row, and we're at the very end of the text, then we're editing the decription, and that's OK
+		if ([mainTableView numberOfSelectedRows] == 1) {
+			if (affectedCharRange.location == [[aTextView textStorage] length]) return YES;
+		}
+		
+		// If we're inserting, then move the affected character range appropriately
+		if (affectedCharRange.length == 0) {
+			if (affectedCharRange.location > 0
+				&& (affectedCharRange.location == [[aTextView textStorage] length]
+					|| [[[aTextView textStorage] string] characterAtIndex: affectedCharRange.location] == '\n')) {
+				affectedCharRange.location--;
+			}
+			affectedCharRange.length = 1;
+		}
+		
+		// Only allow editing if the row and field are consistent across the range
+		NSRange effectiveRange;
+		NSNumber* initialRow = [[[aTextView textStorage] attributesAtIndex: affectedCharRange.location
+															effectiveRange: &effectiveRange] objectForKey: ZoomRowAttribute];
+		NSNumber* initialField = [[[aTextView textStorage] attributesAtIndex: affectedCharRange.location
+															  effectiveRange: &effectiveRange] objectForKey: ZoomFieldAttribute];
+		NSNumber* finalRow = [[[aTextView textStorage] attributesAtIndex: affectedCharRange.location+affectedCharRange.length-1
+														  effectiveRange: &effectiveRange] objectForKey: ZoomRowAttribute];
+		NSNumber* finalField = [[[aTextView textStorage] attributesAtIndex: affectedCharRange.location+affectedCharRange.length-1
+															effectiveRange: &effectiveRange] objectForKey: ZoomFieldAttribute];
+		
+		if (initialRow != finalRow
+			|| initialField != finalField) {
+			return NO;
+		}
+		
+		// The field being edited must not be NoField
+		int field = [initialField intValue];
+		if (field == ZoomNoField) return NO;
+		
+		// Newlines are only allowed in the descrption, not the title or year
+		if (field != ZoomDescriptionField) {
+			int x;
+			for (x=0; x<[replacementString length]; x++) {
+				unichar thisChar = [replacementString characterAtIndex: x];
+				if (thisChar == '\n' || thisChar == '\r')
+					return NO;
+			}
+		}
+		
+		// Only numbers are allowed in the year
+		if (field == ZoomYearField) {
+			int x;
+			for (x=0; x<[replacementString length]; x++) {
+				unichar thisChar = [replacementString characterAtIndex: x];
+				if (thisChar < '0' || thisChar > '9') return NO;
+			}
+		}
+	}
+	
+	// Default to allowing editing
+	return YES;
+}
+
+- (void) updateStoriesFromDetailView {
+	// We assume that the attributes are contiguous.
+	NSTextStorage* storage = [gameDetailView textStorage];
+	int pos = 0;
+
+	ZoomStory* lastStory = nil;
+	NSString* title = nil;
+	NSString* year = nil;
+	NSString* description = nil;
+	
+	while (pos < [storage length]) {
+		NSRange attributeRange;
+		ZoomStory* story;
+		NSNumber* field;
+		
+		// Retrieve the story at this position
+		story = [storage attribute: ZoomStoryAttribute
+						   atIndex: pos
+			 longestEffectiveRange: &attributeRange
+						   inRange: NSMakeRange(pos, [storage length]-pos)];
+		
+		// Retrieve the field at this position
+		field = [storage attribute: ZoomFieldAttribute
+						   atIndex: pos
+			 longestEffectiveRange: &attributeRange
+						   inRange: NSMakeRange(pos, [storage length]-pos)];
+		
+		// Move pos on to the next position
+		pos = attributeRange.location + attributeRange.length;
+		
+		// Nothing to do if there's no story or field here
+		if (story == nil || field == nil || [field intValue] == ZoomNoField) {
+			continue;
+		}
+		
+		// Get the new attribute value
+		NSString* newAttributeValue = [[storage string] substringWithRange: attributeRange];
+		
+		// Update the story (we perform all updates at once, to prevent copying causing only the last change to take effect)
+		if (story != lastStory && lastStory != nil) {
+			lastStory = [self createStoryCopy: lastStory];
+			if (title) [lastStory setTitle: title];
+			if (year) [lastStory setYear: [year intValue]];
+			if (description) [lastStory setDescription: description];
+			
+			title = year = description = nil;
+			lastStory = nil;
+		}
+		lastStory = story;
+		
+		switch ([field intValue]) {
+			case ZoomTitleField:
+				title = newAttributeValue;
+				break;
+				
+			case ZoomYearField:
+				year = newAttributeValue;
+				break;
+			
+			case ZoomDescriptionField:
+				description = newAttributeValue;
+				break;
+		}
+	}
+	
+	// Update the final story
+	if (lastStory) {
+		lastStory = [self createStoryCopy: lastStory];
+		if (title) [lastStory setTitle: title];
+		if (year) [lastStory setYear: [year intValue]];
+		if (description) [lastStory setDescription: description];	
+	}
+}
+
 - (void)textDidEndEditing:(NSNotification *)aNotification {
 	NSTextView* textView = [aNotification object];
 	
-	if ([self selectedStory] == nil) return;
-
-	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
-	
-	{
+	if (textView == gameDetailView) {
+		// Update each of the stories in the game detail view
+		[self updateStoriesFromDetailView];
+		[[[NSApp delegate] userMetadata] writeToDefaultFile];
+	} else {
+		// Mysterious text view of DOOOOM
 		NSLog(@"Unknown text view");
 	}
 
-	[self reloadTableData]; [mainTableView reloadData];
-	[[[NSApp delegate] userMetadata] writeToDefaultFile];		
+	[self queueStoryUpdate];
+}
+
+- (void)textStorageWillProcessEditing:(NSNotification *)aNotification {
+	NSTextStorage* storage = [aNotification object];
+	
+	if (storage == [gameDetailView textStorage]) {
+		// Get the edited range
+		NSRange edited = [storage editedRange];
+		NSRange affectedCharRange = NSMakeRange(edited.location + edited.length, 0);
+
+		// Work out the effective row/field/story at this position
+		if (affectedCharRange.length == 0) {
+			if (affectedCharRange.location > 0
+				&& (affectedCharRange.location == [storage length]
+					|| [[storage string] characterAtIndex: affectedCharRange.location] == '\n')) {
+				affectedCharRange.location--;
+			}
+			affectedCharRange.length = 1;
+		}
+		
+		NSRange effectiveRange;
+		NSNumber* row = [[storage attributesAtIndex: affectedCharRange.location
+									 effectiveRange: &effectiveRange] objectForKey: ZoomRowAttribute];
+		NSNumber* field = [[storage attributesAtIndex: affectedCharRange.location
+									   effectiveRange: &effectiveRange] objectForKey: ZoomFieldAttribute];
+		ZoomStory* story = [[storage attributesAtIndex: affectedCharRange.location
+										effectiveRange: &effectiveRange] objectForKey: ZoomStoryAttribute];
+		
+		// If field is nil, and we're at the end, then act as if we're editing the description
+		if ([field intValue] == ZoomNoField 
+			&& edited.location + edited.length == [storage length]
+			&& [mainTableView numberOfSelectedRows] == 1) {
+			row = [NSNumber numberWithInt: [mainTableView selectedRow]];
+			field = [NSNumber numberWithInt: ZoomDescriptionField];
+			story = [self selectedStory];
+		}
+		
+		// If we've got any nil values, then give up
+		if (row == nil || field == nil || story == nil || [field intValue] == ZoomNoField) {
+			return;
+		}
+		
+		// Set the attributes appropriately
+		NSFont* titleFont = [NSFont boldSystemFontOfSize: 14];
+		NSFont* yearFont = [NSFont systemFontOfSize: 10];
+		NSFont* descFont = [NSFont systemFontOfSize: 11];
+
+		NSFont* font;
+		switch ([field intValue]) {
+			case ZoomTitleField:
+				font = titleFont;
+				break;
+			case ZoomYearField:
+				font = yearFont;
+				break;
+			default:
+				font = descFont;
+				break;
+		}
+		
+		NSDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+			font, NSFontAttributeName,
+			row, ZoomRowAttribute,
+			field, ZoomFieldAttribute,
+			story, ZoomStoryAttribute,
+			nil];
+		
+		[storage addAttributes: attributes
+						 range: edited];
+	}
 }
 
 // = Various menus =

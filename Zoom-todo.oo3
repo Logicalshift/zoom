@@ -16,7 +16,10 @@
   <settings/>
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
-    <selected-rows ids="eWq9ovja9g8"/>
+    <hoisted-rows ids="kzPdhsKinRx"/>
+    <selected-rows ids="crozp2s9iLr"/>
+    <selected-columns ids=":078928d440f2709e21a6e303"/>
+    <selected-characters range="{26, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -817,6 +820,44 @@
             <null/>
           </values>
         </item>
+        <item id="baoyF4pjTvR" expanded="yes" state="indeterminate">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>New description editor</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <children>
+            <item id="crozp2s9iLr">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Can&apos;t edit title if we delete the whole thing (eg by backspacing)</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="oyVB9hGupgH" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Title for Glulx games does not stick</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+          </children>
+        </item>
         <item id="fN4737NPiQ8">
           <values>
             <text>
@@ -858,27 +899,6 @@
             </text>
             <null/>
           </values>
-        </item>
-        <item id="aHLYY9GNtfo" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Random number generator does not seem to be working very well</lit>
-                </run>
-              </p>
-            </text>
-            <null/>
-          </values>
-          <note expanded="yes">
-            <text>
-              <p>
-                <run>
-                  <lit>Lowest bit seems to be sticky</lit>
-                </run>
-              </p>
-            </text>
-          </note>
         </item>
         <item id="fa_t76WcCUm">
           <values>
@@ -1884,6 +1904,27 @@
               <p>
                 <run>
                   <lit>Might actually just be the Blorb bug again?</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="aHLYY9GNtfo" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Random number generator does not seem to be working very well</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>Lowest bit seems to be sticky</lit>
                 </run>
               </p>
             </text>

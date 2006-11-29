@@ -97,13 +97,17 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 		if (pluginInstance) {
 			// Register this game with iFiction
 			ZoomStoryID* ident = [pluginInstance idForStory];
-			ZoomStory* story = [pluginInstance defaultMetadata];
+			ZoomStory* story = nil;
 				
-			if (ident != nil && story != nil) {
-				if ([self findStory: ident] == nil) {
-					[[self userMetadata] copyStory: story
-											  toId: ident];
-				} 
+			if (ident != nil) {
+				story = [self findStory: ident];
+				if (story == nil) {
+					story = [pluginInstance defaultMetadata];
+					if (story != nil) {
+						[[self userMetadata] copyStory: story
+												  toId: ident];
+					}
+				}
 				
 				[[ZoomStoryOrganiser sharedStoryOrganiser] addStory: filename
 														  withIdent: ident
