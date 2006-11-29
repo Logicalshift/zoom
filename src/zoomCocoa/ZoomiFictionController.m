@@ -43,7 +43,11 @@ enum {
 	ZoomNoField,
 	ZoomTitleField,
 	ZoomYearField,
-	ZoomDescriptionField
+	ZoomDescriptionField,
+
+	ZoomTitleNewlineField,
+	ZoomYearNewlineField,
+	ZoomDescriptionNewlineField
 };
 
 // = Setup/initialisation =
@@ -1139,7 +1143,12 @@ int tableSorter(id a, id b, void* context) {
 																					  row, ZoomRowAttribute,
 																					  story, ZoomStoryAttribute,
 																					  nil]] autorelease]];
-			[gameDetails appendAttributedString: newlineString];
+			[gameDetails appendAttributedString: [[[NSAttributedString alloc] initWithString: @"\n"
+																				  attributes: [NSDictionary dictionaryWithObjectsAndKeys:
+																					  [NSNumber numberWithInt: ZoomTitleNewlineField], ZoomFieldAttribute,
+																					  row, ZoomRowAttribute,
+																					  story, ZoomStoryAttribute,
+																					  nil]] autorelease]];
 				
 			// Append the year of publication
 			int year = [story year];
@@ -1152,7 +1161,12 @@ int tableSorter(id a, id b, void* context) {
 																						  row, ZoomRowAttribute,
 																						  story, ZoomStoryAttribute,
 																						  nil]] autorelease]];
-				[gameDetails appendAttributedString: newlineString];
+				[gameDetails appendAttributedString: [[[NSAttributedString alloc] initWithString: @"\n"
+																					  attributes: [NSDictionary dictionaryWithObjectsAndKeys:
+																						  [NSNumber numberWithInt: ZoomYearNewlineField], ZoomFieldAttribute,
+																						  row, ZoomRowAttribute,
+																						  story, ZoomStoryAttribute,
+																						  nil]] autorelease]];
 			}
 			
 			// Append the description
@@ -1563,7 +1577,9 @@ int tableSorter(id a, id b, void* context) {
 		}
 		
 		// If we're inserting, then move the affected character range appropriately
+		BOOL newlineEditsValid = NO;
 		if (affectedCharRange.length == 0) {
+			newlineEditsValid = YES;
 			if (affectedCharRange.location > 0
 				&& (affectedCharRange.location == [[aTextView textStorage] length]
 					|| [[[aTextView textStorage] string] characterAtIndex: affectedCharRange.location] == '\n')) {
@@ -1591,6 +1607,14 @@ int tableSorter(id a, id b, void* context) {
 		// The field being edited must not be NoField
 		int field = [initialField intValue];
 		if (field == ZoomNoField) return NO;
+		
+		// Can't edit newlines
+		if (!newlineEditsValid
+			&& (field == ZoomTitleNewlineField
+				|| field == ZoomYearNewlineField
+				|| field == ZoomDescriptionNewlineField)) {
+			return NO;
+		}
 		
 		// Newlines are only allowed in the descrption, not the title or year
 		if (field != ZoomDescriptionField) {
@@ -1686,7 +1710,7 @@ int tableSorter(id a, id b, void* context) {
 		lastStory = [self createStoryCopy: lastStory];
 		if (title) [lastStory setTitle: title];
 		if (year) [lastStory setYear: [year intValue]];
-		if (description) [lastStory setDescription: description];	
+		if (description) [lastStory setDescription: description];
 	}
 }
 
@@ -1714,14 +1738,7 @@ int tableSorter(id a, id b, void* context) {
 		NSRange affectedCharRange = NSMakeRange(edited.location + edited.length, 0);
 
 		// Work out the effective row/field/story at this position
-		if (affectedCharRange.length == 0) {
-			if (affectedCharRange.location > 0
-				&& (affectedCharRange.location == [storage length]
-					|| [[storage string] characterAtIndex: affectedCharRange.location] == '\n')) {
-				affectedCharRange.location--;
-			}
-			affectedCharRange.length = 1;
-		}
+		if (affectedCharRange.location >= [storage length]) affectedCharRange.location--;
 		
 		NSRange effectiveRange;
 		NSNumber* row = [[storage attributesAtIndex: affectedCharRange.location
@@ -1752,12 +1769,18 @@ int tableSorter(id a, id b, void* context) {
 
 		NSFont* font;
 		switch ([field intValue]) {
+			case ZoomTitleNewlineField:
+				field = [NSNumber numberWithInt: ZoomTitleField];
 			case ZoomTitleField:
 				font = titleFont;
 				break;
+			case ZoomYearNewlineField:
+				field = [NSNumber numberWithInt: ZoomYearField];
 			case ZoomYearField:
 				font = yearFont;
 				break;
+			case ZoomDescriptionNewlineField:
+				field = [NSNumber numberWithInt: ZoomDescriptionField];
 			default:
 				font = descFont;
 				break;
