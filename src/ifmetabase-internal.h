@@ -71,6 +71,7 @@ struct IFID {
 		ID_GLULX,
 		ID_GLULXNOTINFORM,
 		ID_MD5,
+		ID_GENERIC,
 		ID_COMPOUND
 	} type;
 	
@@ -94,6 +95,10 @@ struct IFID {
 			unsigned int memsize;
 			unsigned int checksum;
 		} glulxNotInform;
+		
+		struct {
+			char* idString;
+		} generic;
 		
 		struct {
 			int count;

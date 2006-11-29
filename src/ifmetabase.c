@@ -161,6 +161,19 @@ static int whitespace(char c) {
 	return c == ' ' || c == '\t' || c == '\n' || c == '\r';
 }
 
+/* Allocates a generic ID based on a specific string */
+static IFID IFMB_GenericId(const char* idString) {
+	IFID result;
+	
+	result = malloc(sizeof(struct IFID));
+	result->type = ID_GENERIC;
+	
+	result->data.generic.idString = malloc((strlen(idString)+1)*sizeof(char));
+	strcpy(result->data.generic.idString, idString);
+	
+	return result;	
+}
+
 /* Takes an ID string and produces a corresponding IFID structure, or NULL if the string is invalid */
 IFID IFMB_IdFromString(const char* idString) {
 	/* 
@@ -174,6 +187,7 @@ IFID IFMB_IdFromString(const char* idString) {
 	 * GLULX-12359abc-263a6bf1 (glulx, memsize + checksum)
 	 * GLULX-11-287367-27382917 (glulx, release + serial + checksum)
 	 * TADS-78372173827931 (TADS, MD5 sum - treated identically to a MD5 sum)
+	 * HUGO-78372173827931 (HUGO, MD5 sum - treated identically to a MD5 sum)
 	 * 67687abe6717cef (MD5 sum)
 	 */
 	
@@ -181,6 +195,7 @@ IFID IFMB_IdFromString(const char* idString) {
 	int idLen;
 	char lowerPrefix[10];
 	int isTads;
+	int isHugo;
 	int pos;
 	unsigned char md5[16];
 	
@@ -372,13 +387,22 @@ IFID IFMB_IdFromString(const char* idString) {
 	/* MD5sum identifiers are treated identically */
 	pos = 0;
 	
+	isTads = 0;
+	isHugo = 0;
+	
 	/* Might be a TADS specifier */
 	if (lowerPrefix[0] == 't' && lowerPrefix[1] == 'a' && lowerPrefix[2] == 'd' && lowerPrefix[3] == 's' && lowerPrefix[4] == '-') {
 		pos += 5;
 		isTads = 1;
 	}
 	
-	/* Rest of the string should be an MD5 specifier (32 hexadecimal characters) */
+	/* Might be a Hugo specifier */
+	if (lowerPrefix[0] == 'h' && lowerPrefix[1] == 'u' && lowerPrefix[2] == 'g' && lowerPrefix[3] == 'o' && lowerPrefix[4] == '-') {
+		pos += 5;
+		isHugo = 1;
+	}
+	
+	/* Rest of the string should be an MD5 specifier (32 hexadecimal characters). If not, treat this as a generic ID */
 	for (x=0; x<16; x++) md5[x] = 0;
 	
 	x = 0;
@@ -386,7 +410,7 @@ IFID IFMB_IdFromString(const char* idString) {
 		int hexValue;
 		
 		hexValue = hex(idString[pos]);
-		if (hexValue < 0) return NULL;
+		if (hexValue < 0) return IFMB_GenericId(idString);
 		
 		if (x >= 32) break;
 		md5[x>>1] |= hexValue<<(4*(1-(x&1)));
@@ -394,10 +418,10 @@ IFID IFMB_IdFromString(const char* idString) {
 		x++;
 	}
 	
-	if (x < 32) return NULL;
+	if (x < 32) return IFMB_GenericId(idString);
 	
 	for (; idString[pos] != 0; pos++) {
-		if (!whitespace(idString[pos])) return NULL;
+		if (!whitespace(idString[pos])) return IFMB_GenericId(idString);
 	}
 	
 	/* Is a TADS/generic MD5 string */
@@ -421,6 +445,10 @@ char* IFMB_IdToString(IFID id) {
 	result[0] = 0;
 	
 	switch (id->type) {
+		case ID_GENERIC:
+			result = Append(result, id->data.generic.idString);
+			break;
+		
 		case ID_UUID:
 			result = Append(result, "UUID://");
 			
@@ -642,6 +670,9 @@ int IFMB_CompareIds(IFID a, IFID b) {
 	
 	/* Compare based on what the ID is */
 	switch (a->type /* == b->type */) {
+		case ID_GENERIC:
+			return strcmp(a->data.generic.idString, b->data.generic.idString);
+		
 		case ID_UUID:
 			for (x=0; x<16; x++) {
 				if (a->data.uuid[x] > b->data.uuid[x]) return 1;
@@ -725,6 +756,8 @@ void IFMB_FreeId(IFID ident) {
 		free(ident->data.compound.ids);
 		
 		if (ident->data.compound.idsNotNull) free(ident->data.compound.idsNotNull);
+	} else if (ident->type == ID_GENERIC) {
+		free(ident->data.generic.idString);
 	}
 	
 	free(ident);
@@ -745,6 +778,9 @@ IFID IFMB_CopyId(IFID ident) {
 		for (x=0; x<ident->data.compound.count; x++) {
 			result->data.compound.ids[x] = IFMB_CopyId(ident->data.compound.ids[x]);
 		}
+	} else if (ident->type == ID_GENERIC) {
+		result->data.generic.idString = malloc(sizeof(char)*(strlen(ident->data.generic.idString)+1));
+		strcpy(result->data.generic.idString, ident->data.generic.idString);
 	}
 	
 	return result;
