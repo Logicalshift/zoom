@@ -224,7 +224,7 @@
 	<key>CFBundleExecutable</key>
 	<string>Zoom</string>
 	<key>CFBundleGetInfoString</key>
-	<string>Zoom 1.1.0</string>
+	<string>Zoom 1.1.0 beta 1</string>
 	<key>CFBundleIconFile</key>
 	<string>zoom-app.icns</string>
 	<key>CFBundleIdentifier</key>
@@ -240,7 +240,7 @@
 	<key>CFBundleSignature</key>
 	<string>YZZY</string>
 	<key>CFBundleVersion</key>
-	<string>1.1.0</string>
+	<string>1.1.0beta1</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu.nib</string>
 	<key>NSPrincipalClass</key>
