@@ -68,6 +68,10 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/ZoomWindowThatCanBecomeKey.m \
 	zoomCocoa/Spotlight/MetadataImporter.h \
 	zoomCocoa/Spotlight/MetadataImporter.m \
+	zoomCocoa/ZoomFadeView.h	zoomCocoa/ZoomFadeView.m \
+	zoomCocoa/ZoomFlipView.h	zoomCocoa/ZoomFlipView.m \
+	zoomCocoa/ZoomWhiteView.h	zoomCocoa/ZoomWhiteView.m \
+	md5.c				md5.h \
 	zoomCocoa/Spotlight/schema.xml \
 	zoomCocoa/MainMenu.nib/classes.nib zoomCocoa/MainMenu.nib/info.nib \
 	zoomCocoa/MainMenu.nib/keyedobjects.nib \
@@ -116,6 +120,9 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/iFiction.icns 	zoomCocoa/saveBackground.png \
 	zoomCocoa/saveHighlightActive.png zoomCocoa/saveHighlightInactive.png \
 	zoomCocoa/Blorb.icns		zoomCocoa/Resources/NeedDrop.png \
+	zoomCocoa/GlkClient.icns	zoomCocoa/HUGO.icns \
+	zoomCocoa/TADS.icns		zoomCocoa/top-shading.png \
+	zoomCocoa/typographicSettings.png \
 	zoomCocoa/Skein/Skein-active.png zoomCocoa/Skein/Skein-changed.png \
 	zoomCocoa/Skein/Skein-selected.png zoomCocoa/Skein/Skein-unchanged.png \
 	zoomCocoa/Skein/Skein-unplayed.png zoomCocoa/Skein/SkeinAdd.png \
