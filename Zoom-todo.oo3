@@ -9,6 +9,7 @@
     <style-attribute version="0" key="font-italic" group="font" name="italic" class="bool">no</style-attribute>
     <style-attribute version="0" key="font-size" group="font" name="size" class="number">12</style-attribute>
     <style-attribute version="0" key="font-weight" group="font" name="weight" class="number">5</style-attribute>
+    <style-attribute version="0" key="paragraph-minimum-line-height" group="paragraph" name="minimum line height" class="number">0</style-attribute>
     <style-attribute version="0" key="text-background-color" group="text" name="background color" class="color">
       <color w="0" a="0"/>
     </style-attribute>
@@ -17,7 +18,9 @@
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="baoyF4pjTvR"/>
+    <selected-rows ids="fN4737NPiQ8"/>
+    <selected-columns ids=":078928d440f2709e21a6e303"/>
+    <selected-characters range="{41, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -817,6 +820,76 @@
             </text>
             <null/>
           </values>
+        </item>
+        <item id="mL-QyITZzGB" expanded="yes">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Autymn&apos;s bugs (not sure I understand all of these)</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <children>
+            <item id="dI2ofa75-Bi">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Colons don&apos;t go after runons (?)</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="gmrvEazgtki">
+              <style>
+                <value key="paragraph-minimum-line-height">15</value>
+              </style>
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>confirmation&apos;s alt-text: &quot;you Zoom&quot;</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="hVXIMcS5JmP">
+              <style>
+                <value key="paragraph-minimum-line-height">15</value>
+              </style>
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>buttons in iFiction don&apos;t update with states in other windows, like</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run>
+                      <lit>&lt;play&gt; stays dimmed after I shut the game&apos;s window</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <lit>Gluxe</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+          </children>
         </item>
         <item id="fN4737NPiQ8">
           <values>
