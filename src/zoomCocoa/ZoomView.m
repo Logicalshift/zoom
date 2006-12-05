@@ -850,7 +850,7 @@ static void finalizeViews(void) {
 - (void) resetMorePrompt {
     // Resets the point at which paging will next occur
     // Does NOT reset the point if paging is already going on
-    
+	
     double maxHeight;
     NSLayoutManager* mgr = [textView layoutManager];
 
@@ -858,9 +858,20 @@ static void finalizeViews(void) {
         return; // More prompt is currently being displayed
     }
 
-    NSRange endGlyph = [textView selectionRangeForProposedRange:
-        NSMakeRange([[textView textStorage] length]-1, 1)
-                                                    granularity: NSSelectByCharacter];
+    if (editingTextView) {
+		[[textView textStorage] endEditing];
+	}
+
+    NSRange endGlyph;
+	int length = [[textView textStorage] length];
+	
+	if (length > 0) {
+		endGlyph = [textView selectionRangeForProposedRange:
+			NSMakeRange([[textView textStorage] length]-1, 1)
+												   granularity: NSSelectByCharacter];
+	} else {
+		endGlyph = NSMakeRange(0xffffffff,0);
+	}
     if (endGlyph.location < 0xf0000000) {
         NSRect endRect = [mgr boundingRectForGlyphRange: endGlyph
                                         inTextContainer: [textView textContainer]];
@@ -873,6 +884,11 @@ static void finalizeViews(void) {
     maxHeight += [textScroller contentSize].height;
 
     [textView setMaxSize: NSMakeSize(1e8, maxHeight)];
+	
+    if (editingTextView) {
+		[[textView textStorage] beginEditing];
+	}
+	
     [self scrollToEnd];
 }
 
