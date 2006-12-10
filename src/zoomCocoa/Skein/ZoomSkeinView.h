@@ -54,6 +54,9 @@ extern NSString* ZoomSkeinItemPboardType;
 	
 	BOOL editingAnnotation;
 	
+	float itemWidth;
+	float itemHeight;
+	
 	// The delegate
 	NSObject* delegate;
 }
@@ -64,6 +67,9 @@ extern NSString* ZoomSkeinItemPboardType;
 
 // Laying things out
 - (void) skeinNeedsLayout;
+
+- (void) setItemWidth: (float) itemWidth;
+- (void) setItemHeight: (float) itemHeight;
 
 // The delegate
 - (void) setDelegate: (id) delegate;

@@ -761,6 +761,11 @@ static void finalizeViews(void) {
 	
 	willScrollToEnd = NO;
 	
+	if ([[textView textStorage] length] <= 0) {
+		// No scrolling to do if the view is empty
+		return;
+	}
+	
     NSLayoutManager* mgr = [textView layoutManager];
 	
     NSRange endGlyph = [textView selectionRangeForProposedRange:
@@ -807,6 +812,11 @@ static void finalizeViews(void) {
 			[self resetMorePrompt];
 			moreOn = NO;
 		}
+	}
+	
+	if ([[textView textStorage] length] <= 0) {
+		// Nothing to do
+		return;
 	}
 	
 	// Find the last glyph in the text view

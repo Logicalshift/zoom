@@ -12,8 +12,8 @@
 #include <Carbon/Carbon.h>
 
 // Constants
-static const float itemWidth = 120.0; // Pixels
-static const float itemHeight = 96.0;
+static const float defaultItemWidth = 120.0; // Pixels
+static const float defaultItemHeight = 96.0;
 
 // Drawing info
 static NSDictionary* itemTextAttributes;
@@ -118,6 +118,9 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 		
 		layout = [[ZoomSkeinLayout alloc] init];
 		[layout setRootItem: [skein rootItem]];
+		
+		itemWidth = defaultItemWidth;
+		itemHeight = defaultItemHeight;
 		
 		[self registerForDraggedTypes: [NSArray arrayWithObjects: ZoomSkeinItemPboardType, nil]];
     }
@@ -321,6 +324,23 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 											  modes: [NSArray arrayWithObjects: NSDefaultRunLoopMode, NSModalPanelRunLoopMode, nil]];
 		skeinNeedsLayout = YES;
 	}
+}
+
+- (void) setItemWidth: (float) newItemWidth {
+	if (newItemWidth < 16.0) newItemWidth = 16.0;
+	if (newItemWidth == itemWidth) return;
+	itemWidth = newItemWidth;
+	
+	[self skeinNeedsLayout];
+}
+
+- (void) setItemHeight: (float) newItemHeight {
+	if (newItemHeight < 16.0) newItemHeight = 16.0;
+	if (newItemHeight == itemHeight) return;
+	itemHeight = newItemHeight;
+	
+	[self skeinNeedsLayout];
+	[self setNeedsDisplay: YES];
 }
 
 - (void) layoutSkein {
@@ -569,7 +589,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	}
 	
 	if (clickedItem) [clickedItem release];
-	clickedItem = [trackedItem retain];
+	clickedItem = [realItem retain];
 	
 	if (trackedItem == nil) {
 		// We're dragging to move the view around
@@ -699,6 +719,9 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 						if ([layout selectedItem] != trackedItem) {
 							// Change the selected item
 							[self setSelectedItem: trackedItem];
+							
+							// Edit soon
+							[self editSoon: trackedItem];
 						} else {
 							// Edit soon
 							[self editSoon: trackedItem];
