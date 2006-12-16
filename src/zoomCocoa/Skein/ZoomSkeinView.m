@@ -350,6 +350,8 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	skeinNeedsLayout = NO;
 	
 	// Re-layout this skein
+	[layout setItemWidth: itemWidth];
+	[layout setItemHeight: itemHeight];
 	[layout setRootItem: [skein rootItem]];
 	[layout layoutSkein];
 	

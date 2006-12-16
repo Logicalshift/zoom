@@ -11,8 +11,6 @@
 #import "ZoomSkeinLayout.h"
 
 // Constants
-static const float itemWidth = 120.0; // Pixels
-static const float itemHeight = 96.0;
 static const float itemPadding = 56.0;
 
 static NSDictionary* itemTextAttributes = nil;
@@ -135,6 +133,9 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 	
 	if (self) {
 		rootItem = [item retain];
+
+		itemWidth = 120.0; // Pixels
+		itemHeight = 96.0;
 	}
 	
 	return self;
@@ -155,6 +156,14 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 }
 
 // = Setting skein data =
+
+- (void) setItemWidth: (float) newItemWidth {
+	itemWidth = newItemWidth;
+}
+
+- (void) setItemHeight: (float) newItemHeight {
+	itemHeight = newItemHeight;
+}
 
 - (void) setRootItem: (ZoomSkeinItem*) item {
 	if (rootItem) [rootItem release];
@@ -502,21 +511,21 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 	ZoomSkeinLayoutItem* item;
 	
 	while (item = [levelEnum nextObject]) {
-		float itemWidth = [item width];
+		float thisItemWidth = [item width];
 		float itemPos = [item position] + globalOffset;
 		
 		// There's a +40 border either side of the item
-		itemWidth += 40.0;
+		thisItemWidth += 40.0;
 		
 		// Buttons require a minimum width
-		if (itemWidth < 72.0) {
-			itemWidth = 72.0;
+		if (thisItemWidth < 72.0) {
+			thisItemWidth = 72.0;
 		}
 		
 		// Item is centered
-		itemWidth /= 2.0;
+		thisItemWidth /= 2.0;
 		
-		if (point.x > (itemPos - itemWidth) && point.x < (itemPos + itemWidth)) {
+		if (point.x > (itemPos - thisItemWidth) && point.x < (itemPos + thisItemWidth)) {
 			// This is the item
 			return [item item];
 		}
@@ -623,12 +632,12 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 			
 			// Draw the annotation, if present
 			if ([[skeinItem annotation] length] > 0) {
-				float itemWidth = [self widthForItem: skeinItem];
+				float thisItemWidth = [self widthForItem: skeinItem];
 				float labelWidth = [skeinItem annotationSize].width;
 				
 				[[self class] drawImage: annotation
-								atPoint: NSMakePoint(xpos - itemWidth/2.0, ypos-30)
-							  withWidth: itemWidth];
+								atPoint: NSMakePoint(xpos - thisItemWidth/2.0, ypos-30)
+							  withWidth: thisItemWidth];
 				
 				[skeinItem drawAnnotationAtPosition: NSMakePoint(xpos - (labelWidth/2), ypos - 23)];
 			}

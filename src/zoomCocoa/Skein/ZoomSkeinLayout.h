@@ -22,6 +22,9 @@
 	NSMutableArray* levels;
 	float globalOffset, globalWidth;
 	
+	float itemWidth;
+	float itemHeight;
+	
 	// Highlighted skein line
 	ZoomSkeinItem* highlightedLineItem;
 	NSMutableSet*  highlightedSet;
@@ -35,6 +38,8 @@
 - (id) initWithRootItem: (ZoomSkeinItem*) item;
 
 // Setting skein data
+- (void) setItemWidth: (float) itemWidth;
+- (void) setItemHeight: (float) itemHeight;
 - (void) setRootItem: (ZoomSkeinItem*) item;
 - (void) setActiveItem: (ZoomSkeinItem*) item;
 - (void) setSelectedItem: (ZoomSkeinItem*) item;
