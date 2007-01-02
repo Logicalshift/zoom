@@ -53,11 +53,14 @@ static NSMutableDictionary* notesDictionary = nil;
 		// Nothing to do
 	} else {
 		// Update the notes for this story
-		[notesDictionary setObject: [[notes textStorage] RTFFromRange: NSMakeRange(0, [[notes textStorage] length])
-												   documentAttributes: nil]
-							forKey: [storyId description]];
-		[[NSUserDefaults standardUserDefaults] setObject: notesDictionary
-												  forKey: @"ZoomNotes"];
+		NSData* rtfNotes = [[notes textStorage] RTFFromRange: NSMakeRange(0, [[notes textStorage] length])
+										  documentAttributes: nil];
+		if (rtfNotes != nil) {
+			[notesDictionary setObject: rtfNotes
+								forKey: [storyId description]];
+			[[NSUserDefaults standardUserDefaults] setObject: notesDictionary
+													  forKey: @"ZoomNotes"];
+		}
 	}
 }
 
