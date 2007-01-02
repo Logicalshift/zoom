@@ -16,6 +16,7 @@
 #import "ZoomStoryID.h"
 #import "ZoomAppDelegate.h"
 #import "ZoomGameInfoController.h"
+#import "ZoomNotesController.h"
 #import "ZoomClient.h"
 #import "ZoomSavePreviewView.h"
 #import "ZoomRatingCell.h"
@@ -669,6 +670,7 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 
 - (void)windowDidBecomeMain:(NSNotification *)aNotification {
 	[[ZoomGameInfoController sharedGameInfoController] setInfoOwner: self];
+	[[ZoomNotesController sharedNotesController] setInfoOwner: self];
 	[self configureFromMainTableSelection];
 }
 
@@ -676,6 +678,11 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	if ([[ZoomGameInfoController sharedGameInfoController] infoOwner] == self) {
 		[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
 		[[ZoomGameInfoController sharedGameInfoController] setInfoOwner: nil];
+	}
+
+	if ([[ZoomNotesController sharedNotesController] infoOwner] == self) {
+		[[ZoomNotesController sharedNotesController] setGameInfo: nil];
+		[[ZoomNotesController sharedNotesController] setInfoOwner: nil];
 	}
 }
 
@@ -1031,6 +1038,10 @@ int tableSorter(id a, id b, void* context) {
 			[[ZoomGameInfoController sharedGameInfoController] setGameInfo: story];
 		}
 
+		if ([[self window] isMainWindow] && [[ZoomNotesController sharedNotesController] infoOwner] == self) {
+			[[ZoomNotesController sharedNotesController] setGameInfo: story];
+		}
+		
 		// Set up the comment, teaser and description views
 		comment = [story comment];
 		teaser = [story teaser];
@@ -1089,6 +1100,10 @@ int tableSorter(id a, id b, void* context) {
 	} else {
 		if ([[self window] isMainWindow] && [[ZoomGameInfoController sharedGameInfoController] infoOwner] == self) {
 			[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
+		}
+		
+		if ([[self window] isMainWindow] && [[ZoomNotesController sharedNotesController] infoOwner] == self) {
+			[[ZoomNotesController sharedNotesController] setGameInfo: nil];
 		}
 		
 		comment = @"";

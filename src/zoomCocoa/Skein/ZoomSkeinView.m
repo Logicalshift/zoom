@@ -131,15 +131,16 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 - (void) dealloc {
 	[skein release];
 	
-	if (trackingRects) [trackingRects release];
+	if (trackingRects)  [trackingRects release];
 
-	if (itemToEdit)    [itemToEdit release];
-	if (fieldScroller) [fieldScroller release];
-	if (fieldStorage)  [fieldStorage release];
+	if (itemToEdit)     [itemToEdit release];
+	if (fieldScroller)  [fieldScroller release];
+	if (fieldStorage)   [fieldStorage release];
 	
-	if (trackedItem)   [trackedItem release];
-	if (clickedItem)   [clickedItem release];
-	if (trackingItems) [trackingItems release];
+	if (trackedItem)    [trackedItem release];
+	if (clickedItem)    [clickedItem release];
+	if (trackingItems)  [trackingItems release];
+	if (mostRecentItem) [mostRecentItem release];
 
 	[layout release];
 	[[NSNotificationCenter defaultCenter] removeObserver: self];
@@ -312,7 +313,8 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	[self finishEditing: self];
 	[self skeinNeedsLayout];
 	
-	[self scrollToItem: [skein activeItem]];
+	[self scrollToItem: mostRecentItem];
+	[mostRecentItem release]; mostRecentItem = nil;
 }
 
 - (void) skeinNeedsLayout {
@@ -372,8 +374,11 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 // = Affecting the display =
 
 - (void) scrollToItem: (ZoomSkeinItem*) item {
-	if (item == nil) return;
+	if (item == nil) item = [skein activeItem];
 	if ([self superview] == nil) return;
+	
+	[mostRecentItem release];
+	mostRecentItem = [item retain];
 	
 	if (skeinNeedsLayout) [self layoutSkein];
 	
@@ -776,6 +781,11 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	} else if (offset.y > 18.0 && offset.y < 30.0) {
 		// Lower row of buttons
 		if (offset.x > right+2.0 && offset.x < right+14.0) return ZSVlockButton;
+	} else if ([item commentaryComparison] == ZoomSkeinDifferent
+			   && offset.x > right + 4.0 && offset.x < right + 20.0
+			   && offset.y > 6.0 && offset.y < 22.0) {
+		// Comparison failed badge
+		return ZSVtranscriptButton;
 	} else if (offset.y > -2.0 && offset.y < 14.0) {
 		// Main item
 		return ZSVmainItem;
@@ -1275,6 +1285,296 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	if (item == nil) return;
 	
 	[self scrollToItem: item];
+}
+
+// = Context menu =
+
+- (NSMenu *)menuForEvent:(NSEvent *)event {
+	// Find which item that the mouse is over
+	NSPoint pointInView = [event locationInWindow];
+	pointInView = [self convertPoint: pointInView fromView: nil];
+	
+	contextItem = [layout itemAtPoint: pointInView];
+	
+	if (contextItem == nil) return nil;
+	
+	NSMenu* contextMenu = [[NSMenu alloc] init];
+	
+	// Add menu items for the standard actions
+	
+	[contextMenu addItemWithTitle: @"Play to Here"
+						   action: @selector(playToHere:)
+					keyEquivalent: @""];
+	
+	[contextMenu addItem: [NSMenuItem separatorItem]];
+
+	if ([contextItem parent] != nil) {
+		BOOL hasLabel = [[contextItem annotation] length] > 0;
+		[contextMenu addItemWithTitle: hasLabel?@"Edit Label":@"Add Label"
+							   action: @selector(addAnnotation:)
+						keyEquivalent: @""];
+	}
+	if ([delegate respondsToSelector: @selector(transcriptToPoint:)]) {
+		[contextMenu addItemWithTitle: @"Show in Transcript"
+							   action: @selector(showInTranscript:)
+						keyEquivalent: @""];
+	}
+	if ([contextItem parent] != nil) {
+		[contextMenu addItemWithTitle: [contextItem temporary]?@"Lock":@"Unlock"
+							   action: @selector(toggleLock:)
+						keyEquivalent: @""];
+		[contextMenu addItemWithTitle: [contextItem temporary]?@"Lock this Branch":@"Unlock this Branch"
+							   action: @selector(toggleLockBranch:)
+						keyEquivalent: @""];
+	}
+
+	[contextMenu addItem: [NSMenuItem separatorItem]];
+
+	if ([[contextItem children] count] > 0) {
+		[contextMenu addItemWithTitle: @"New Branch"
+							   action: @selector(addNewBranch:)
+						keyEquivalent: @""];
+	} else {
+		[contextMenu addItemWithTitle: @"Add New"
+							   action: @selector(addNewBranch:)
+						keyEquivalent: @""];
+	}
+
+	if ([contextItem parent] != nil) {
+		[contextMenu addItemWithTitle: @"Insert Item"
+							   action: @selector(insertItem:)
+						keyEquivalent: @""];
+		if ([[contextItem children] count] > 0) {
+			[contextMenu addItemWithTitle: @"Delete"
+								   action: @selector(deleteOneItem:)
+							keyEquivalent: @""];
+			[contextMenu addItemWithTitle: @"Delete all Below"
+								   action: @selector(deleteItem:)
+							keyEquivalent: @""];
+		} else {
+			[contextMenu addItemWithTitle: @"Delete"
+								   action: @selector(deleteItem:)
+							keyEquivalent: @""];
+		}
+		[contextMenu addItemWithTitle: @"Delete all in Branch"
+							   action: @selector(deleteBranch:)
+						keyEquivalent: @""];
+	}
+	
+	[contextMenu addItem: [NSMenuItem separatorItem]];
+	[contextMenu addItemWithTitle: @"Save Transcript to Here..."
+						   action: @selector(saveTranscript:)
+					keyEquivalent: @""];
+	
+	// Return the menu
+	return [contextMenu autorelease];
+}
+
+// = Menu actions =
+
+- (IBAction) playToHere: (id) sender {
+	[self playToPoint: contextItem];
+}
+
+- (IBAction) showInTranscript: (id) sender {
+	[self transcriptButtonClicked: nil
+						 withItem: contextItem];
+}
+
+- (IBAction) addAnnotation: (id) sender {
+	[self editItemAnnotation: contextItem];
+}
+
+- (IBAction) toggleLock: (id) sender {
+	[contextItem setTemporary: ![contextItem temporary]];
+}
+
+- (IBAction) toggleLockBranch: (id) sender {
+	[contextItem setBranchTemporary: ![contextItem temporary]];
+}
+
+- (IBAction) addNewBranch: (id) sender {
+	// Add a new, blank item
+	ZoomSkeinItem* newItem = [contextItem addChild: [ZoomSkeinItem skeinItemWithCommand: @""]];
+	
+	// Lock it
+	[newItem setTemporary: NO];
+	
+	// Note the changes
+	[skein zoomSkeinChanged];	
+	[self skeinNeedsLayout];
+	
+	// Edit the item
+	[self scrollToItem: newItem];
+	[self editItem: newItem];
+}
+
+- (IBAction) insertItem: (id) sender {
+	// Get the parent item
+	ZoomSkeinItem* parent = [contextItem parent];
+	
+	// Remove any child items (these will become children of the new item)
+	NSArray* children = [[[[parent children] allObjects] copy] autorelease];
+	ZoomSkeinItem* child;
+	NSEnumerator* childEnum = [children objectEnumerator];;
+	
+	while (child = [childEnum nextObject]) {
+		[parent removeChild: child];
+	}
+	
+	// Add a new, blank item
+	ZoomSkeinItem* newItem = [parent addChild: [ZoomSkeinItem skeinItemWithCommand: @""]];
+	
+	// Add the child items back in again
+	childEnum = [children objectEnumerator];;
+	
+	while (child = [childEnum nextObject]) {
+		[newItem addChild: child];
+	}
+	
+	// Lock it
+	[newItem setTemporary: NO];
+	
+	// Note the changes
+	[skein zoomSkeinChanged];	
+	[self skeinNeedsLayout];
+	
+	// Edit the item
+	[self scrollToItem: newItem];
+	[self editItem: newItem];
+}
+
+- (BOOL) checkDelete: (ZoomSkeinItem*) skeinItem {
+	ZoomSkeinItem* itemParent = [skeinItem parent];
+	
+	if (itemParent == nil) return NO;
+	
+	ZoomSkeinItem* parent = [skein activeItem];
+	while (parent != nil) {
+		if (parent == skeinItem) {
+			if (![delegate respondsToSelector: @selector(cantDeleteActiveBranch)]) {
+				// Can't delete an item that's the parent of the active item
+				NSBeep();
+			} else {
+				[delegate cantDeleteActiveBranch];
+			}
+			return NO;
+		}
+		
+		parent = [parent parent];
+	}
+	
+	return YES;
+}
+
+- (IBAction) deleteItem: (id) sender {
+	if (![self checkDelete: contextItem]) return;
+	
+	ZoomSkeinItem* parent = [contextItem parent];
+	[parent removeChild: contextItem];
+	
+	// Force a layout of the skein
+	[self scrollToItem: parent];
+	[skein zoomSkeinChanged];
+	[self skeinNeedsLayout];
+}
+
+- (IBAction) deleteOneItem: (id) sender {
+	if (![self checkDelete: contextItem]) return;
+
+	// Remember the children of this item
+	NSArray* children = [[[[contextItem children] allObjects] copy] autorelease];
+
+	// Remove them from the tree
+	ZoomSkeinItem* child;
+	NSEnumerator* childEnum = [children objectEnumerator];;
+	
+	while (child = [childEnum nextObject]) {
+		[contextItem removeChild: child];
+	}
+	
+	// Remove this item (and any children)
+	ZoomSkeinItem* parent = [contextItem parent];
+	[parent removeChild: contextItem];
+	
+	// Add the children back to the parent item
+	childEnum = [children objectEnumerator];;
+	
+	while (child = [childEnum nextObject]) {
+		[parent addChild: child];
+	}
+	
+	// Force a layout of the skein
+	[skein zoomSkeinChanged];
+	[self skeinNeedsLayout];
+	
+	// Force a layout of the skein
+	[self scrollToItem: parent];
+	[skein zoomSkeinChanged];
+	[self skeinNeedsLayout];
+}
+
+- (IBAction) deleteBranch: (id) sender {
+	if (![self checkDelete: contextItem]) return;
+
+	// Find the top of this branch
+	ZoomSkeinItem* top = contextItem;
+	
+	while (top != nil && [top parent] != [skein rootItem] && [[[top parent] children] count] <= 1) {
+		top = [top parent];
+	}
+	
+	if (![self checkDelete: top]) return;
+	
+	// Remove the entire branch
+	ZoomSkeinItem* parent = [top parent];
+	[parent removeChild: top];
+	
+	// Force a layout of the skein
+	[self scrollToItem: parent];
+	[skein zoomSkeinChanged];
+	[self skeinNeedsLayout];
+}
+
+- (void) saveTranscript: (id) sender {
+	if ([self window] == nil) return;
+	
+	NSSavePanel* panel = [NSSavePanel savePanel];
+	[panel setRequiredFileType: @"txt"];
+	
+	NSString* directory = nil;
+	if (directory == nil) {
+		directory = [[NSUserDefaults standardUserDefaults] objectForKey: @"ZoomTranscriptPath"];
+	}
+	if (directory == nil) {
+		directory = NSHomeDirectory();
+	}
+	
+    [panel beginSheetForDirectory: directory
+                             file: nil
+                   modalForWindow: [self window]
+                    modalDelegate: self
+                   didEndSelector: @selector(saveTranscript:returnCode:contextInfo:) 
+                      contextInfo: [[skein transcriptToPoint: contextItem] retain]];
+}
+
+- (void) saveTranscript: (NSSavePanel *) panel 
+             returnCode: (int) returnCode 
+            contextInfo: (void*) contextInfo {
+	NSString* data = (NSString*)contextInfo;
+	[data autorelease];
+	
+	if (returnCode != NSOKButton) return;
+	
+	// Remember the directory we last saved in
+	[[NSUserDefaults standardUserDefaults] setObject: [panel directory]
+											  forKey: @"ZoomTranscriptPath"];
+	
+	// Save the data
+	[data writeToFile: [panel filename]
+		   atomically: YES
+			 encoding: NSUTF8StringEncoding
+				error: nil];
 }
 
 @end

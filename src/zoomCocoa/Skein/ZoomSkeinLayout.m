@@ -20,7 +20,7 @@ static NSDictionary* labelTextAttributes = nil;
 static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 
 // Images
-static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
+static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation, *commentaryBadge;
 
 @implementation ZoomSkeinLayout
 
@@ -60,6 +60,7 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 	unchanged  = [[[self class] imageNamed: @"Skein-unchanged"] retain];
 	changed    = [[[self class] imageNamed: @"Skein-changed"] retain];
 	annotation = [[[self class] imageNamed: @"Skein-annotation"] retain];
+	commentaryBadge = [[[self class] imageNamed: @"SkeinDiffersBadge"] retain];
 	
 	itemTextAttributes = [[NSDictionary dictionaryWithObjectsAndKeys:
 		[NSFont systemFontOfSize: 10], NSFontAttributeName,
@@ -82,15 +83,6 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 	width = floorf(width);
 	
 	// Images must be 90x30
-	if (width == 90.0) {
-		[img drawAtPoint: pos
-				fromRect: NSMakeRect(0,0,90,30)
-			   operation: NSCompositeSourceOver
-				fraction: 1.0];
-		
-		return;
-	}
-	
 	if (width <= 0.0) width = 1.0;
 	
 	// Draw the middle bit
@@ -593,6 +585,19 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 			// Draw the item
 			[skeinItem drawCommandAtPosition: NSMakePoint(xpos - (size.width/2), ypos + (background==selected?2.0:0.0))];
 			
+			// Draw the 'commentary changed' badge if necessary
+			if ([skeinItem commentaryComparison] == ZoomSkeinDifferent) {
+				NSRect fromRect;
+				
+				fromRect.origin = NSMakePoint(0,0);
+				fromRect.size = [commentaryBadge size];
+				
+				[commentaryBadge drawAtPoint: NSMakePoint(xpos + bgWidth/2.0 + 4, ypos + 6)
+									fromRect: fromRect
+								   operation: NSCompositeSourceOver
+									fraction: 1.0];
+			}
+			
 			// Draw links to the children
 			[[NSColor blackColor] set];
 			NSEnumerator* childEnumerator = [[item children] objectEnumerator];
@@ -610,20 +615,35 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation;
 				
 				BOOL highlightLine = [child onSkeinLine];
 				
-				if ([[child item] temporary]) {
-					[tempChildLink set];
-				} else {
-					[permChildLink set];
-				}
-				
 				// Thicken the line if this is on the highlighted line
 				if (highlightLine) {
 					[NSBezierPath setDefaultLineWidth: 3.0];
 				}
 				
-				[NSBezierPath strokeLineFromPoint: NSMakePoint(xpos, startYPos)
-										  toPoint: NSMakePoint(childXPos, annotated?endYPos-18:endYPos)];
+				// Construct the line we're going to draw
+				NSBezierPath* line = [[NSBezierPath alloc] init];
+				[line moveToPoint: NSMakePoint(xpos, startYPos)];
+				[line lineToPoint: NSMakePoint(childXPos, annotated?endYPos-18:endYPos)];
 				
+				// Set the appropriate colour and dash pattern
+				if ([[child item] temporary]) {
+					float dashPattern[2];
+					
+					[tempChildLink set];
+					
+					dashPattern[0] = 4.0;
+					dashPattern[1] = 3.0;
+					[line setLineDash: dashPattern
+								count: 2
+								phase: 0.0];
+				} else {
+					[permChildLink set];
+				}
+				
+				// Draw the line
+				[line stroke];
+				[line release];
+								 
 				// Thin it out again afterwards
 				if (highlightLine) {
 					[NSBezierPath setDefaultLineWidth: 1.0];

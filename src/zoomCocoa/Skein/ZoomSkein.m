@@ -144,6 +144,10 @@ NSString* ZoomSkeinChangedNotification = @"ZoomSkeinChangedNotification";
 - (void) outputText: (NSString*) outputText {
 	// Append this text to the current outout
 	[currentOutput appendString: outputText];
+
+	//if ([currentOutput length] > 0) {
+	//	[activeItem setResult: currentOutput];
+	//}
 }
 
 - (void) zoomWaitingForInput {
@@ -333,6 +337,63 @@ static NSComparisonResult stringCompare(id a, id b, void* context) {
 	
 	// Return the result
 	return res;
+}
+
+// = Converting to other formats =
+
+- (NSString*) transcriptToPoint: (ZoomSkeinItem*) item {
+	if (item == nil) item = activeItem;
+	
+	// Get the list of items
+	NSMutableArray* itemList = [NSMutableArray array];
+	while (item != nil) {
+		[itemList addObject: item];
+		
+		item = [item parent];
+	}
+	
+	NSMutableString* result = [[NSMutableString alloc] init];
+	while ([itemList count] > 0) {
+		// Retrieve the next item
+		ZoomSkeinItem* thisItem = [itemList lastObject];
+		[itemList removeLastObject];
+		
+		// Add it to the transcript
+		if (thisItem != rootItem) {
+			[result appendString: [thisItem command]];
+			[result appendString: @"\n"];
+		}
+		[result appendString: [thisItem result]];
+	}
+	
+	return [result autorelease];
+}
+
+- (NSString*) recordingToPoint: (ZoomSkeinItem*) item {
+	if (item == nil) item = activeItem;
+	
+	// Get the list of items
+	NSMutableArray* itemList = [NSMutableArray array];
+	while (item != nil) {
+		[itemList addObject: item];
+		
+		item = [item parent];
+	}
+	
+	NSMutableString* result = [[NSMutableString alloc] init];
+	while ([itemList count] > 0) {
+		// Retrieve the next item
+		ZoomSkeinItem* thisItem = [itemList lastObject];
+		[itemList removeLastObject];
+		
+		// Add it to the transcript
+		if (thisItem != rootItem) {
+			[result appendString: [thisItem command]];
+			[result appendString: @"\n"];
+		}
+	}
+	
+	return [result autorelease];
 }
 
 @end

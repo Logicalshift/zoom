@@ -300,6 +300,8 @@ static NSString* convertCommand(NSString* command) {
 	result = nil;
 	if (newResult) result = [newResult copy];
 	
+	commentaryComparison = ZoomSkeinNotCompared;
+	
 	[self itemHasChanged];
 }
 
@@ -328,14 +330,40 @@ static NSString* convertCommand(NSString* command) {
 	
 	// Also applies to parent items if set to 'NO'
 	if (!isTemporary) {
-		while (p != nil) {
+		while (p != nil && [p parent] != nil) {
 			if (![p temporary]) break;
 			[p setTemporary: NO];
+			
+			p = [p parent];
+		}
+	} else {
+		// Applies to child items if set to 'YES'
+		NSEnumerator* childEnum = [[self children] objectEnumerator];
+		ZoomSkeinItem* child;
+		
+		while (child = [childEnum nextObject]) {
+			if (![child temporary]) [child setTemporary: YES];
 		}
 	}
 	
-	// FIXME: unsetting should apply to children, too	
 	[self itemHasChanged];
+}
+
+- (void) setBranchTemporary: (BOOL) isTemporary {
+	ZoomSkeinItem* lowerItem = self;
+	if (!isTemporary) {
+		// Find the lowermost item in this branch (ie, set this entire branch as temporary)		
+		while ([[lowerItem children] count] == 1) {
+			lowerItem = [[[lowerItem children] allObjects] objectAtIndex: 0];
+		}
+	} else {
+		// Find the uppermost item in this branch (ie, set this entire branch as not temporary)
+		while ([lowerItem parent] != nil && [[[lowerItem parent] children] count] == 1) {
+			lowerItem = [lowerItem parent];
+		}
+	}
+	
+	[lowerItem setTemporary: isTemporary];
 }
 
 static int currentScore = 1;
@@ -388,6 +416,10 @@ static int currentScore = 1;
 	annotation = nil;
 	if (newAnnotation && ![newAnnotation isEqualToString: @""]) annotation = [newAnnotation copy];
 	
+	if (newAnnotation != nil && [newAnnotation length] > 0) {
+		[self setBranchTemporary: NO];
+	}
+	
 	[self itemHasChanged];
 }
 
@@ -402,8 +434,125 @@ static int currentScore = 1;
 	
 	[commentary release]; commentary = nil;
 	commentary = [newCommentary copy];
+
+	commentaryComparison = ZoomSkeinNotCompared;
 	
+	if (newCommentary != nil && [newCommentary length] > 0) {
+		[self setBranchTemporary: NO];
+	}
+
 	[self itemHasChanged];
+}
+
+- (NSString*) stripWhitespace: (NSString*) otherString {
+	NSMutableString* res = [[otherString mutableCopy] autorelease];
+	
+	// Sigh. Need perl. (stringByTrimmingCharactersInSet would have been perfect if it applied across the whole string)
+	int pos;
+	for (pos=0; pos<[res length]; pos++) {
+		unichar chr = [res characterAtIndex: pos];
+		
+		if (chr == '\n' || chr == '\r' || chr == ' ' || chr == '\t') {
+			// Whitespace character
+			[res deleteCharactersInRange: NSMakeRange(pos, 1)];
+			pos--;
+		}
+	}
+	
+	// Remove a trailing '>'
+	if ([res length] > 0 && [res characterAtIndex: [res length]-1] == '>') {
+		[res deleteCharactersInRange: NSMakeRange([res length]-1, 1)];
+	}
+	
+	return res;
+}
+
+- (ZoomSkeinComparison) commentaryComparison {
+	if (commentaryComparison == ZoomSkeinNotCompared) {
+		if (result == nil || [result length] == 0
+			|| commentary == nil || [commentary length] == 0) {
+			// If either the result of commentary is of 0 length, then there is no result
+			commentaryComparison = ZoomSkeinNoResult;
+		} else {
+			// Compare the two strings (taking account of whitespace)
+			NSComparisonResult compareResult = [result compare: commentary];
+			
+			if (compareResult == NSOrderedSame) {
+				// These two items are exactly the same
+				commentaryComparison = ZoomSkeinIdentical;
+			} else {
+				// Compare the two strings (ignoring whitespace)
+				compareResult = [[self stripWhitespace: result] compare: [self stripWhitespace: commentary]];
+				
+				if (compareResult == NSOrderedSame) {
+					commentaryComparison = ZoomSkeinDiffersOnlyByWhitespace;
+				} else {
+					commentaryComparison = ZoomSkeinDifferent;
+				}
+			}
+		}
+	}
+	
+	return commentaryComparison;
+}
+
+- (ZoomSkeinItem*) nextDiffDown {
+	// Finds the next difference (below this item)
+	NSEnumerator* childEnum = [[self children] objectEnumerator];
+	ZoomSkeinItem* child;
+	
+	while (child = [childEnum nextObject]) {
+		int compare = [child commentaryComparison];
+		if (compare == ZoomSkeinDifferent
+			|| compare == ZoomSkeinDiffersOnlyByWhitespace) {
+			return child;
+		}
+		
+		ZoomSkeinItem* childDiff = [child nextDiffDown];
+		if (childDiff != nil) return childDiff;
+	}
+	
+	return nil;
+}
+
+- (ZoomSkeinItem*) nextDiff {
+	// Finds the next difference (either below this item, or to the right in the skein)
+	ZoomSkeinItem* diffBelow = [self nextDiffDown];
+	if (diffBelow != nil) return diffBelow;
+	
+	// Iterate up from this point
+	ZoomSkeinItem* top = self;
+	ZoomSkeinItem* ourBranch;
+	
+	while (top != nil) {
+		ourBranch = top;
+		top = [top parent];
+	
+		while (top != nil && [[top children] count] <= 1) {
+			ourBranch = top;
+			top = [top parent];
+		}
+		
+		// Find the item to the right
+		NSEnumerator* childEnum = [[top children] objectEnumerator];
+		ZoomSkeinItem* child;
+		BOOL foundBranch = NO;
+		
+		while (child = [childEnum nextObject]) {
+			if (child == ourBranch) {
+				foundBranch = YES;
+				break;
+			}
+		}	
+
+		// See if we can find any differences there
+		while (foundBranch && (child = [childEnum nextObject])) {
+			diffBelow = [child nextDiffDown];
+			if (diffBelow) return diffBelow;
+		}
+	}
+	
+	return nil;
 }
 
 // = Taking part in a set =

@@ -57,6 +57,10 @@
 	logo = [newLogo retain];
 }
 
+- (ZoomStory*) storyData {
+	return storyData;
+}
+	
 // = Constructing the window controllers =
 
 - (void) makeWindowControllers {

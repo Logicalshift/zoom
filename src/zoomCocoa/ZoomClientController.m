@@ -11,6 +11,7 @@
 #import "ZoomClientController.h"
 #import "ZoomPreferenceWindow.h"
 #import "ZoomGameInfoController.h"
+#import "ZoomNotesController.h"
 #import "ZoomStoryOrganiser.h"
 #import "ZoomSkeinController.h"
 #import "ZoomConnector.h"
@@ -291,11 +292,16 @@
 	
 	if ([[ZoomGameInfoController sharedGameInfoController] infoOwner] == self) {
 		[self recordGameInfo: self];
+
 		[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
-		
 		[[ZoomGameInfoController sharedGameInfoController] setInfoOwner: nil];
 	}
-
+	
+	if ([[ZoomNotesController sharedNotesController] infoOwner] == self) {
+		[[ZoomNotesController sharedNotesController] setGameInfo: nil];
+		[[ZoomNotesController sharedNotesController] setInfoOwner: nil];
+	}
+	
 	if ([[ZoomSkeinController sharedSkeinController] skein] == [[self document] skein]) {
 		[[ZoomSkeinController sharedSkeinController] setSkein: nil];
 	}
@@ -384,6 +390,9 @@
 	
 	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: [[self document] storyInfo]];
 	[[ZoomSkeinController sharedSkeinController] setSkein: [[self document] skein]];
+
+	[[ZoomNotesController sharedNotesController] setGameInfo: [[self document] storyInfo]];
+	[[ZoomNotesController sharedNotesController] setInfoOwner: self];
 }
 
 // = GameInfo updates =
@@ -674,6 +683,22 @@
 		
 		[logoWindow setAlphaValue: 1.0 - fadeAmount];
 	}
+}
+
+// = Interacting with the skein =
+
+- (void) restartGame {
+	 // Will force a restart
+	 [[self zoomView] runNewServer: nil];
+}
+
+- (void) playToPoint: (ZoomSkeinItem*) point
+		   fromPoint: (ZoomSkeinItem*) fromPoint {
+	 id inputSource = [ZoomSkein inputSourceFromSkeinItem: fromPoint
+												   toItem: point];
+	 
+	 
+	 [[self zoomView] setInputSource: inputSource];
 }
 
 // = Window title =

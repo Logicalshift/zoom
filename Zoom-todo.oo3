@@ -18,9 +18,9 @@
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="dI2ofa75-Bi"/>
+    <selected-rows ids="kwPcsV-UO5r"/>
     <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{16, 0}"/>
+    <selected-characters range="{59, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -809,6 +809,254 @@
         <null/>
       </values>
       <children>
+        <item id="gMke-ziNo2M" expanded="yes" state="indeterminate">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Glk bugs</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <children>
+            <item id="nk0Hx-22aCM" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Margins have stopped working for glk games (??)</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="oxOhLj2koDP" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Save always produces 0-sized files</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="c1cjC5adrVF" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Colours are wrong for moments out of time</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <lit>Seem to be getting inappropriate reverse video in adventure type, and also in renegade type in the lower status bar</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="kc5b9AkzMBS">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Save should go to the save folder for the game when &apos;keep games organised&apos; is on</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="m1N_7Yf4I3s">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>?? Might be seeing some out of order output ??</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <lit>Moments: adventure type - after talking to julia the first time?</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="omvFrIIxmmU" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Something up with grid view</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <lit>Menus in moments out of time seem to sometimes not draw (or get erased?)</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run/>
+                  </p>
+                  <p>
+                    <run>
+                      <lit>Could be related to the colour problem above.</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run/>
+                  </p>
+                  <p>
+                    <run>
+                      <lit>Was typesetter: shouldn&apos;t have been ending the line fragment early</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="dhR6lpReZGi">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Requesting character input screws up more prompt?</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <lit>Eg moments out of time: adventure type</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
+            <item id="eqOMKC6SLvq">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>No way to limit scrollback</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="mFISmkKPOB-">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>cancel_line_event should fill the buffer with the input so far</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="mXSnU2DU2uF">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Closing the window before the logo has finished fading causes a crash</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+          </children>
+        </item>
+        <item id="aIB9tV2v4JK">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Scrollback screwups</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <children>
+            <item id="nSlBo8nPQ8a">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>When switching from fullscreen to standard, boxquote scrollback retains its earlier size and position</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="a4yY9jSQ1Sc">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>When truncating scrollback, boxquotes are left intact</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+          </children>
+        </item>
+        <item id="kwPcsV-UO5r">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Notes do not save if you&apos;re editing them when you quit Zoom</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
+        <item id="brpvg08qWua" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Quite often, Zoom fails to scroll to the end of the file properly</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
         <item id="gy0KHDYsyo7">
           <values>
             <text>
@@ -821,7 +1069,7 @@
             <null/>
           </values>
         </item>
-        <item id="mL-QyITZzGB" expanded="yes" state="indeterminate">
+        <item id="mL-QyITZzGB" state="indeterminate">
           <values>
             <text>
               <p>
@@ -2854,7 +3102,7 @@
             <null/>
           </values>
         </item>
-        <item id="cMghiufVeEh" expanded="yes" state="indeterminate">
+        <item id="cMghiufVeEh" state="indeterminate">
           <values>
             <text>
               <p>
@@ -4637,6 +4885,139 @@
             </text>
             <null/>
           </values>
+        </item>
+        <item id="hPVS2cxINCf">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Make colours match the transcript</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
+        <item id="lMi6KBTZVQ-" expanded="yes" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Add context menu</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <children>
+            <item id="bjmZO2tOwaY" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>&apos;Delete this branch&apos;</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="bqN0Bizlg22" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>&apos;Play to here&apos;</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="nRggBFoHiEE" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>&apos;Save transcript to here&apos;</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+          </children>
+        </item>
+        <item id="geu9YF3sLOT" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Change &apos;unlocked&apos; lines in the skein to be dashed</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>Need to better highlight these than using the blue/black convention that&apos;s there at the moment</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="gBtv5qHBltw" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Add &apos;badge&apos; to indicate which skein items have differences in the transcript</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
+        <item id="jSJoqglSo1e" expanded="yes" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Automatically lock:</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <children>
+            <item id="clQX9eU04y9" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>When a label is added</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="koC2dil61I5" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>When a transcript item is blessed</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+          </children>
         </item>
         <item id="ib30HqKDQ3x">
           <values>

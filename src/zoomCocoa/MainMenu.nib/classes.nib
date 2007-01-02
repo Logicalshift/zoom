@@ -2,6 +2,7 @@
     IBClasses = (
         {
             ACTIONS = {
+                copyTranscript = id; 
                 displayGameInfoWindow = id; 
                 displayNoteWindow = id; 
                 displaySkein = id; 
@@ -10,6 +11,9 @@
                 reloadGame = id; 
                 restartZMachine = id; 
                 saveMetadata = id; 
+                saveRecording = id; 
+                saveSkein = id; 
+                saveTranscript = id; 
                 showGamePreferences = id; 
                 showLog = id; 
                 showPreferences = id; 

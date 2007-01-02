@@ -52,6 +52,10 @@ extern NSString* ZoomSkeinChangedNotification;
 - (void)	 populatePopupButton: (NSPopUpButton*) button;
 - (NSArray*) itemsWithAnnotation: (NSString*) annotation;
 
+// Converting to strings/other file formats
+- (NSString*) transcriptToPoint: (ZoomSkeinItem*) item;
+- (NSString*) recordingToPoint: (ZoomSkeinItem*) item;
+
 @end
 
 // = Dealing with/creating XML data =

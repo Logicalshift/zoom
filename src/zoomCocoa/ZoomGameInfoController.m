@@ -16,7 +16,9 @@
 // = Initialisation/finalisation =
 
 - (id) init {
-	self = [self initWithWindowNibName: @"GameInfo"];
+	self = [self initWithWindowNibPath: [[NSBundle bundleForClass: [ZoomGameInfoController class]] pathForResource: @"GameInfo"
+																											 ofType: @"nib"]
+								 owner: self];
 	
 	if (self) {
 		gameInfo = nil;

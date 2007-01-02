@@ -8,6 +8,16 @@
 
 #import <Foundation/Foundation.h>
 
+// Commentary comparison results
+typedef enum ZoomSkeinComparison {
+	ZoomSkeinNoResult,										// One side of the comparison doesn't exist (eg, no commentary for an item)
+	ZoomSkeinIdentical,										// Sides are identical
+	ZoomSkeinDiffersOnlyByWhitespace,						// Sides are different, but only in terms of whitespace
+	ZoomSkeinDifferent,										// Sides are different
+	
+	ZoomSkeinNotCompared									// (Placeholder: sides have not been compared)
+} ZoomSkeinComparison;
+
 // Skein item notifications
 extern NSString* ZoomSkeinItemIsBeingReplaced;				// One skein item is being replaced by another
 extern NSString* ZoomSkeinItemHasBeenRemovedFromTree;		// A skein item is being removed from the tree (may be associated with the previous)
@@ -44,6 +54,9 @@ extern NSString* ZoomSIChild;								// Child item (if relevant)
 	
 	BOOL   annotationSizeDidChange;
 	NSSize annotationSize;
+	
+	// Results of comparing the result to the commentary
+	ZoomSkeinComparison commentaryComparison;
 }
 
 // Initialisation
@@ -80,6 +93,7 @@ extern NSString* ZoomSIChild;								// Child item (if relevant)
 							// (Automagically updated by setResult:)
 
 - (void) setTemporary: (BOOL) isTemporary;
+- (void) setBranchTemporary: (BOOL) isTemporary;
 - (void) setTemporaryScore: (int) score;
 - (void) increaseTemporaryScore;
 - (void) setPlayed: (BOOL) played;
@@ -99,6 +113,8 @@ extern NSString* ZoomSIChild;								// Child item (if relevant)
 // producing for this item
 - (NSString*) commentary;
 - (void)      setCommentary: (NSString*) commentary;
+- (ZoomSkeinComparison) commentaryComparison;
+- (ZoomSkeinItem*) nextDiff;									// Finds the first item following this one that has a difference
 
 // Drawing/sizing
 - (NSSize) commandSize;

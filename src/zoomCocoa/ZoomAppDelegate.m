@@ -10,6 +10,7 @@
 
 #import "ZoomAppDelegate.h"
 #import "ZoomGameInfoController.h"
+#import "ZoomNotesController.h"
 #import "ZoomSkeinController.h"
 
 #import "ZoomMetadata.h"
@@ -172,6 +173,7 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 }
 
 - (IBAction) displayNoteWindow: (id) sender {
+	[[ZoomNotesController sharedNotesController] showWindow: self];
 }
 
 - (IBAction) showiFiction: (id) sender {
@@ -179,6 +181,7 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 }
 
 // = Application-wide data =
+
 - (NSArray*) gameIndices {
 	return gameIndices;
 }
@@ -341,6 +344,124 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 	if (isDirectory) return NO;
 	
 	return YES;
+}
+
+// = Validation =
+
+- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem {
+	SEL sel = [menuItem action];
+	
+	if (sel == @selector(saveTranscript:)
+		|| sel == @selector(saveSkein:)
+		|| sel == @selector(saveRecording:)
+		|| sel == @selector(copyTranscript:)) {
+		if ([NSApp mainWindow] == nil) return NO;
+		return [[ZoomSkeinController sharedSkeinController] skein] != nil;
+	}
+	
+	return YES;
+}
+
+// = Saving skeins, transcripts, etc =
+
+- (IBAction) saveTranscript: (id) sender {
+	if ([NSApp mainWindow] == nil) return;
+	if ([[ZoomSkeinController sharedSkeinController] skein] == nil) return;
+	
+	NSSavePanel* panel = [NSSavePanel savePanel];
+	[panel setRequiredFileType: @"txt"];
+
+	NSString* directory = nil;
+	if (directory == nil) {
+		directory = [[NSUserDefaults standardUserDefaults] objectForKey: @"ZoomTranscriptPath"];
+	}
+	if (directory == nil) {
+		directory = NSHomeDirectory();
+	}
+	
+    [panel beginSheetForDirectory: directory
+                             file: nil
+                   modalForWindow: [NSApp mainWindow]
+                    modalDelegate: self
+                   didEndSelector: @selector(saveTranscript:returnCode:contextInfo:) 
+                      contextInfo: [[[[ZoomSkeinController sharedSkeinController] skein] transcriptToPoint: nil] retain]];
+}
+
+- (IBAction) copyTranscript: (id) sender {
+	if ([NSApp mainWindow] == nil) return;
+	if ([[ZoomSkeinController sharedSkeinController] skein] == nil) return;
+	
+	NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
+	
+	[pasteboard declareTypes: [NSArray arrayWithObjects: NSStringPboardType, nil]
+					   owner: self];
+	[pasteboard setString: [[[ZoomSkeinController sharedSkeinController] skein] transcriptToPoint: nil] 
+				  forType: NSStringPboardType];
+}
+
+- (IBAction) saveRecording: (id) sender {
+	if ([NSApp mainWindow] == nil) return;
+	if ([[ZoomSkeinController sharedSkeinController] skein] == nil) return;
+	
+	NSSavePanel* panel = [NSSavePanel savePanel];
+	[panel setRequiredFileType: @"txt"];
+	
+	NSString* directory = nil;
+	if (directory == nil) {
+		directory = [[NSUserDefaults standardUserDefaults] objectForKey: @"ZoomTranscriptPath"];
+	}
+	if (directory == nil) {
+		directory = NSHomeDirectory();
+	}
+	
+    [panel beginSheetForDirectory: directory
+                             file: nil
+                   modalForWindow: [NSApp mainWindow]
+                    modalDelegate: self
+                   didEndSelector: @selector(saveTranscript:returnCode:contextInfo:) 
+                      contextInfo: [[[[ZoomSkeinController sharedSkeinController] skein] recordingToPoint: nil] retain]];
+}
+
+- (IBAction) saveSkein: (id) sender {
+	if ([NSApp mainWindow] == nil) return;
+	if ([[ZoomSkeinController sharedSkeinController] skein] == nil) return;
+	
+	NSSavePanel* panel = [NSSavePanel savePanel];
+	[panel setRequiredFileType: @"skein"];
+	
+	NSString* directory = nil;
+	if (directory == nil) {
+		directory = [[NSUserDefaults standardUserDefaults] objectForKey: @"ZoomTranscriptPath"];
+	}
+	if (directory == nil) {
+		directory = NSHomeDirectory();
+	}
+	
+    [panel beginSheetForDirectory: directory
+                             file: nil
+                   modalForWindow: [NSApp mainWindow]
+                    modalDelegate: self
+                   didEndSelector: @selector(saveTranscript:returnCode:contextInfo:) 
+                      contextInfo: [[[[ZoomSkeinController sharedSkeinController] skein] xmlData] retain]];
+}
+
+- (void) saveTranscript: (NSSavePanel *) panel 
+             returnCode: (int) returnCode 
+            contextInfo: (void*) contextInfo {
+	NSString* data = (NSString*)contextInfo;
+	[data autorelease];
+
+	if (returnCode != NSOKButton) return;
+	
+	// Remember the directory we last saved in
+	[[NSUserDefaults standardUserDefaults] setObject: [panel directory]
+											  forKey: @"ZoomTranscriptPath"];
+	
+	// Save the data
+	[data writeToFile: [panel filename]
+		   atomically: YES
+			 encoding: NSUTF8StringEncoding
+				error: nil];
 }
 
 @end

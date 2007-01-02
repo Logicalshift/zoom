@@ -48,6 +48,7 @@ extern NSString* ZoomSkeinItemPboardType;
 	
 	// Editing things
 	ZoomSkeinItem* itemToEdit;
+	ZoomSkeinItem* mostRecentItem;
 	NSScrollView* fieldScroller;
 	NSTextView* fieldEditor;
 	NSTextStorage* fieldStorage;
@@ -59,6 +60,9 @@ extern NSString* ZoomSkeinItemPboardType;
 	
 	// The delegate
 	NSObject* delegate;
+	
+	// Context menu
+	ZoomSkeinItem* contextItem;
 }
 
 // Setting/getting the source

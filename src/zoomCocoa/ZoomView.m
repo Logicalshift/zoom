@@ -21,6 +21,9 @@
 // decrease, but provides 'earliest possible' warning of heap corruption.
 #undef  ZoomTaskMaximumMemoryDebug
 
+// Turn on tracing of text editing events
+#undef  ZoomTraceTextEditing
+
 @implementation ZoomView
 
 static ZoomView** allocatedViews = nil;
@@ -441,6 +444,9 @@ static void finalizeViews(void) {
 }
 
 - (void) flushBuffer: (ZBuffer*) toFlush {
+#ifdef ZoomTraceTextEditing
+	NSLog(@"Begin editing: flushBuffer");
+#endif
 	[[textView textStorage] beginEditing];
 	editingTextView = YES;
 
@@ -460,8 +466,13 @@ static void finalizeViews(void) {
 		}
 	}
 	
+#ifdef ZoomTraceTextEditing
+	NSLog(@"End editing: flushBuffer");
+#endif
 	[[textView textStorage] endEditing];
 	editingTextView = NO;
+	
+	if (willScrollToEnd) [self scrollToEnd];
 }
 
 // Set whether or not we recieve certain types of data
@@ -531,6 +542,10 @@ static void finalizeViews(void) {
 		
 		if (nextInput == nil) {
 			// End of input
+			if (delegate && [delegate respondsToSelector: @selector(inputSourceHasFinished:)]) {
+				[delegate inputSourceHasFinished: inputSource];
+			}
+			
 			[inputSource release];
 			inputSource = nil;
 		} else {			
@@ -645,6 +660,10 @@ static void finalizeViews(void) {
 		
 		if (nextInput == nil) {
 			// End of input
+			if (delegate && [delegate respondsToSelector: @selector(inputSourceHasFinished:)]) {
+				[delegate inputSourceHasFinished: inputSource];
+			}
+			
 			[inputSource release];
 			inputSource = nil;
 		} else {
@@ -745,43 +764,60 @@ static void finalizeViews(void) {
 }
 
 - (void) scrollToEnd {
+	BOOL wasEditingTextView = editingTextView;
+
 	if (editingTextView) {
 		// Re-queue for later
 		if (!willScrollToEnd) {
-			[[NSRunLoop currentRunLoop] performSelector: @selector(scrollToEnd)
-												 target: self
-											   argument: nil
-												  order: 64
-												  modes: [NSArray arrayWithObject: NSDefaultRunLoopMode]];
 			willScrollToEnd = YES;
 		}
 
 		return;
 	}
 	
+	if (wasEditingTextView) {
+#ifdef ZoomTraceTextEditing
+		NSLog(@"End editing: scroll to end");
+#endif
+		editingTextView = NO;
+		[[textView textStorage] endEditing];
+	}
+	
 	willScrollToEnd = NO;
 	
 	if ([[textView textStorage] length] <= 0) {
 		// No scrolling to do if the view is empty
+		if (wasEditingTextView && !editingTextView) {
+#ifdef ZoomTraceTextEditing
+			NSLog(@"Begin editing: scroll to end");
+#endif
+			editingTextView = YES;
+			[[textView textStorage] beginEditing];
+		}
 		return;
 	}
 	
     NSLayoutManager* mgr = [textView layoutManager];
+	NSTextStorage* textStorage = [textView textStorage];
 	
-    NSRange endGlyph = [textView selectionRangeForProposedRange:
-        NSMakeRange([[textView textStorage] length]-1, 1)
-                                                           granularity: NSSelectByCharacter];
-    if (endGlyph.location > 0xf0000000) {
-        return; // Doesn't exist
-    }
-    
-    NSRect endRect = [mgr boundingRectForGlyphRange: endGlyph
-                                    inTextContainer: [textView textContainer]];
-	NSRect frame = [textView convertRect: [[textScroller contentView] frame]
-								fromView: textScroller];
+	NSRange lastGlyph = [mgr glyphRangeForCharacterRange: NSMakeRange(0, [textStorage length])
+									actualCharacterRange: nil];
+	
+	// Force the layout manager to lay out the final glyph so we can scroll there
+	if (lastGlyph.location + lastGlyph.length > 0) {
+		[mgr boundingRectForGlyphRange: lastGlyph
+					   inTextContainer: [textView textContainer]];
+	}
+	
+	[textView scrollPoint: NSMakePoint(0, NSMaxY([textView bounds]))];
 
-    [textView scrollPoint: NSMakePoint(0,
-									   NSMaxY(endRect) - frame.size.height)];
+	if (wasEditingTextView && !editingTextView) {
+#ifdef ZoomTraceTextEditing
+		NSLog(@"Begin editing: scroll to end");
+#endif
+		editingTextView = YES;
+		[[textView textStorage] beginEditing];
+	}
 }
 
 - (void) displayMore: (BOOL) shown {
@@ -868,8 +904,14 @@ static void finalizeViews(void) {
         return; // More prompt is currently being displayed
     }
 
-    if (editingTextView) {
+	BOOL wasEditingTextView = editingTextView;
+	editingTextView = NO;
+    if (wasEditingTextView) {
+#ifdef ZoomTraceTextEditing
+		NSLog(@"End editing: reset more prompt");
+#endif
 		[[textView textStorage] endEditing];
+		if (willScrollToEnd) [self scrollToEnd];
 	}
 
     NSRange endGlyph;
@@ -895,11 +937,15 @@ static void finalizeViews(void) {
 
     [textView setMaxSize: NSMakeSize(1e8, maxHeight)];
 	
-    if (editingTextView) {
-		[[textView textStorage] beginEditing];
-	}
-	
     [self scrollToEnd];
+	
+    if (wasEditingTextView) {
+#ifdef ZoomTraceTextEditing
+		NSLog(@"Begin editing: reset more prompt");
+#endif
+		[[textView textStorage] beginEditing];
+		editingTextView = YES;
+	}
 }
 
 - (void) updateMorePrompt {
@@ -1419,10 +1465,25 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 
 - (void) setUpperBuffer: (double) bufHeight {
     // Update the upper window buffer
-	if (editingTextView) [[textView textStorage] endEditing];
+	BOOL wasEditingTextView = editingTextView;
+	editingTextView = NO;
+	if (wasEditingTextView) {
+#ifdef ZoomTraceTextEditing
+		NSLog(@"End editing: set upper buffer");
+#endif
+		[[textView textStorage] endEditing];
+		if (willScrollToEnd) [self scrollToEnd];
+	}
     NSSize contentSize = [textScroller contentSize];
     [upperWindowBuffer setContainerSize: NSMakeSize(contentSize.width*scaleFactor, bufHeight)];
-	if (editingTextView) [[textView textStorage] beginEditing];
+	if (wasEditingTextView) {
+		if (willScrollToEnd) [self scrollToEnd];
+#ifdef ZoomTraceTextEditing
+		NSLog(@"Begin editing: set upper buffer");
+#endif
+		[[textView textStorage] beginEditing];
+		editingTextView = YES;
+	}
 }
 
 - (double) upperBufferHeight {
@@ -1433,7 +1494,15 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     int newSize = [self upperWindowSize];
     if (newSize != lastUpperWindowSize) {
 		// Stop editing the text view (if we are editing it)
-		if (editingTextView) [[textView textStorage] endEditing];
+		BOOL wasEditingTextView = editingTextView;
+		editingTextView = NO;
+		if (wasEditingTextView) {
+#ifdef ZoomTraceTextEditing
+			NSLog(@"End editing: rearrange upper windows");
+#endif
+			[[textView textStorage] endEditing];
+			if (willScrollToEnd) [self scrollToEnd];
+		}
 		
         // Lay things out
         lastUpperWindowSize = newSize;
@@ -1483,7 +1552,13 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         [self updateMorePrompt];
 
 		// Restart editing the text view (if we are editing it)
-		if (editingTextView) [[textView textStorage] beginEditing];
+		if (wasEditingTextView) {
+#ifdef ZoomTraceTextEditing
+			NSLog(@"Begin editing: rearrange upper windows");
+#endif
+			[[textView textStorage] beginEditing];
+			editingTextView = YES;
+		}
 	}
 
     // Redraw the upper windows if necessary
@@ -1522,8 +1597,16 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     //
     // Er, right, the code:
     NSTextContainer* theContainer;
+	BOOL wasEditingTextView = editingTextView;
+	editingTextView = NO;
 	
-	if (editingTextView) [[textView textStorage] endEditing];
+	if (wasEditingTextView) {
+#ifdef ZoomTraceTextEditing
+		NSLog(@"End editing: pad to lower window");
+#endif
+		[[textView textStorage] endEditing];
+		if (willScrollToEnd) [self scrollToEnd];
+	}
 
     if (upperWindowBuffer == nil) return;
 
@@ -1538,7 +1621,12 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
             NSMakeRange([[textView textStorage] length]-1, 1)
                                                     granularity: NSSelectByCharacter];
         if (endGlyph.location > 0xf0000000) {
-			if (editingTextView) [[textView textStorage] beginEditing];
+			if (editingTextView) {
+#ifdef ZoomTraceTextEditing
+				NSLog(@"Begin editing: pad to lower window");
+#endif
+				[[textView textStorage] beginEditing];
+			}
             return; // Doesn't exist
         }
 
@@ -1554,7 +1642,13 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         // I suppose there's an outside chance of an infinite loop here
     } while (theContainer == upperWindowBuffer);
 
-	if (editingTextView) [[textView textStorage] beginEditing];
+	if (wasEditingTextView) {
+#ifdef ZoomTraceTextEditing
+		NSLog(@"Begin editing: pad to lower window");
+#endif
+		[[textView textStorage] beginEditing];
+		editingTextView = YES;
+	}
 }
 
 - (void) runNewServer: (NSString*) serverName {
@@ -1874,7 +1968,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
             typeCode = 'TEXT';
             if (supportsMessage) {
                 [panel setMessage: [NSString stringWithFormat: @"%@ command recording file", saveOpen]];
-                [panel setAllowedFileTypes: [NSArray arrayWithObjects: @"txt", nil]];
+                [panel setAllowedFileTypes: [NSArray arrayWithObjects: @"txt", @"rec", nil]];
             }
             break;
             
@@ -2202,6 +2296,9 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	
 	attributedRange.location = 0;
 	
+#ifdef ZoomTraceTextEditing
+	NSLog(@"Begin editing: reformat window");
+#endif
 	[storage beginEditing];
 	
 	while (attributedRange.location < len) {
@@ -2231,6 +2328,9 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		attributedRange.location += attributedRange.length;
 	}
 	
+#ifdef ZoomTraceTextEditing
+	NSLog(@"End editing: reformat window");
+#endif
 	[storage endEditing];
 	
 	// Reset the background colour of the lower window
@@ -2789,6 +2889,10 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		
 		if (nextInput == nil) {
 			// End of input
+			if (delegate && [delegate respondsToSelector: @selector(inputSourceHasFinished:)]) {
+				[delegate inputSourceHasFinished: inputSource];
+			}
+			
 			[inputSource release];
 			inputSource = nil;
 		} else {			
@@ -2806,6 +2910,10 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		
 		if (nextInput == nil) {
 			// End of input
+			if (delegate && [delegate respondsToSelector: @selector(inputSourceHasFinished:)]) {
+				[delegate inputSourceHasFinished: inputSource];
+			}
+			
 			[inputSource release];
 			inputSource = nil;
 		} else {

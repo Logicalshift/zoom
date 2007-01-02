@@ -10,7 +10,9 @@
 
 #import <GlkView/GlkView.h>
 
+#import "ZoomGameInfoController.h"
 
+@class ZoomSkein;
 @class ZoomTextToSpeech;
 
 ///
@@ -27,6 +29,8 @@
 	NSImage* logo;													// The logo that we're going to show
 	BOOL ttsAdded;													// Whether or not the GlkView has the tts receiver added to it
 	ZoomTextToSpeech* tts;											// Text-to-speech object
+	
+	ZoomSkein* skein;												// The skein/transcript for this window
 }
 
 // Configuring the client

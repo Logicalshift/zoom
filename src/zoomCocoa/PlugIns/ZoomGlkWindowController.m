@@ -9,10 +9,86 @@
 #import "ZoomGlkWindowController.h"
 #import "ZoomPreferences.h"
 #import "ZoomTextToSpeech.h"
+#import "ZoomSkeinController.h"
+#import "ZoomSkein.h"
+#import "ZoomGlkDocument.h"
+#import "ZoomGameInfoController.h"
+#import "ZoomNotesController.h"
 
 #import <GlkView/GlkHub.h>
 #import <GlkView/GlkView.h>
 
+///
+/// Class to interface to Zoom's skein system
+///
+@interface ZoomGlkSkeinOutputReceiver : NSObject<GlkAutomation>{
+	ZoomSkein* skein;
+}
+
+- (id) initWithSkein: (ZoomSkein*) skein;
+
+@end
+
+@implementation ZoomGlkSkeinOutputReceiver
+
+- (id) initWithSkein: (ZoomSkein*) newSkein {
+	self = [super init];
+	
+	if (self) {
+		skein = [newSkein retain];
+	}
+	
+	return self;
+}
+
+- (void) dealloc {
+	[skein release];
+	[super dealloc];
+}
+
+- (IBAction) glkTaskHasStarted: (id) sender {
+	[skein zoomInterpreterRestart];	
+}
+
+- (void) setGlkInputSource: (id) newSource {
+}
+
+- (void) receivedCharacters: (NSString*) characters
+					 window: (int) windowNumber
+				   fromView: (GlkView*) view {
+	[skein outputText: characters];
+}
+
+- (void) userTyped: (NSString*) userInput
+			window: (int) windowNumber
+		 lineInput: (BOOL) isLineInput
+		  fromView: (GlkView*) view {
+	[skein zoomWaitingForInput];
+	if (isLineInput) {
+		[skein inputCommand: userInput];
+	} else {
+		[skein inputCharacter: userInput];
+	}
+}
+
+- (void) userClickedAtXPos: (int) xpos
+					  ypos: (int) ypos
+					window: (int) windowNumber
+				  fromView: (GlkView*) view {
+}
+
+- (void) viewWaiting: (GlkView*) view {
+	// Do nothing
+}
+
+- (void) viewIsWaitingForInput: (GlkView*) view {
+}
+
+@end
+
+///
+/// The window controller proper
+///
 @interface ZoomGlkWindowController(ZoomPrivate)
 
 - (void) prefsChanged: (NSNotification*) not;
@@ -77,6 +153,8 @@
 												selector: @selector(prefsChanged:)
 													name: ZoomPreferencesHaveChangedNotification
 												  object: nil];
+		
+		skein = [[ZoomSkein alloc] init];
 	}
 	
 	return self;
@@ -89,6 +167,7 @@
 	[inputPath release];
 	[logo release];
 	[tts release];
+	[skein release];
 	
 	if (glkView) [glkView setDelegate: nil];
 	
@@ -101,6 +180,7 @@
 		[tts release];
 		tts = [[ZoomTextToSpeech alloc] init];
 		[glkView setDelegate: self];
+		[glkView addOutputReceiver: [[[ZoomGlkSkeinOutputReceiver alloc] initWithSkein: skein] autorelease]];
 		[glkView setPreferences: [ZoomGlkWindowController glkPreferencesFromZoomPreferences]];
 		[glkView setInputFilename: inputPath];
 		[glkView launchClientApplication: clientPath
@@ -248,6 +328,66 @@
 
 - (void) windowWillClose: (NSNotification*) not {
 	[glkView terminateClient];
+}
+
+// = The game info window =
+
+- (IBAction) recordGameInfo: (id) sender {
+	ZoomGameInfoController* sgI = [ZoomGameInfoController sharedGameInfoController];
+	ZoomStory* storyInfo = [(ZoomGlkDocument*)[self document] storyData];
+	
+	if ([sgI gameInfo] == storyInfo) {
+		NSDictionary* sgIValues = [sgI dictionary];
+		
+		[storyInfo setTitle: [sgIValues objectForKey: @"title"]];
+		[storyInfo setHeadline: [sgIValues objectForKey: @"headline"]];
+		[storyInfo setAuthor: [sgIValues objectForKey: @"author"]];
+		[storyInfo setGenre: [sgIValues objectForKey: @"genre"]];
+		[storyInfo setYear: [[sgIValues objectForKey: @"year"] intValue]];
+		[storyInfo setGroup: [sgIValues objectForKey: @"group"]];
+		[storyInfo setComment: [sgIValues objectForKey: @"comments"]];
+		[storyInfo setTeaser: [sgIValues objectForKey: @"teaser"]];
+		[storyInfo setZarfian: [[sgIValues objectForKey: @"zarfRating"] unsignedIntValue]];
+		[storyInfo setRating: [[sgIValues objectForKey: @"rating"] floatValue]];
+		
+		[[(id)[NSApp delegate] userMetadata] writeToDefaultFile];
+	}
+}
+
+- (IBAction) updateGameInfo: (id) sender {
+	if ([[ZoomGameInfoController sharedGameInfoController] infoOwner] == self) {
+		[[ZoomGameInfoController sharedGameInfoController] setGameInfo: [(ZoomGlkDocument*)[self document] storyData]];
+	}
+}
+
+// = Gaining/losing focus =
+
+- (void)windowDidBecomeMain:(NSNotification *)aNotification {
+	[[ZoomSkeinController sharedSkeinController] setSkein: skein];
+
+	[[ZoomGameInfoController sharedGameInfoController] setInfoOwner: self];
+	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: [(ZoomGlkDocument*)[self document] storyData]];
+
+	[[ZoomNotesController sharedNotesController] setGameInfo: [(ZoomGlkDocument*)[self document] storyData]];
+	[[ZoomNotesController sharedNotesController] setInfoOwner: self];
+}
+
+- (void)windowDidResignMain:(NSNotification *)aNotification {
+	if ([[ZoomGameInfoController sharedGameInfoController] infoOwner] == self) {
+		[self recordGameInfo: self];
+		
+		[[ZoomGameInfoController sharedGameInfoController] setGameInfo: nil];
+		[[ZoomGameInfoController sharedGameInfoController] setInfoOwner: nil];
+	}
+
+	if ([[ZoomNotesController sharedNotesController] infoOwner] == self) {
+		[[ZoomNotesController sharedNotesController] setGameInfo: nil];
+		[[ZoomNotesController sharedNotesController] setInfoOwner: nil];
+	}
+	
+	if ([[ZoomSkeinController sharedSkeinController] skein] == skein) {
+		[[ZoomSkeinController sharedSkeinController] setSkein: nil];
+	}
 }
 
 @end

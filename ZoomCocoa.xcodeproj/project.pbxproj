@@ -16,6 +16,13 @@
 		4B0D81DD0AC59F3F003E8CCA /* ZoomFadeView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B0D81DB0AC59F3F003E8CCA /* ZoomFadeView.h */; };
 		4B0D81DE0AC59F3F003E8CCA /* ZoomFadeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B0D81DC0AC59F3F003E8CCA /* ZoomFadeView.m */; };
 		4B0D81E20AC5A3C0003E8CCA /* top-shading.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B0D81E10AC5A3C0003E8CCA /* top-shading.png */; };
+		4B152A040B440B9D008CC1EF /* SkeinDiffersBadge.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B152A030B440B9D008CC1EF /* SkeinDiffersBadge.png */; };
+		4B152CE20B46CBEB008CC1EF /* ZoomGameInfoController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B2EAFAD05B08D1E0021A5E6 /* ZoomGameInfoController.h */; };
+		4B152CE30B46CBED008CC1EF /* ZoomGameInfoController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2EAFAE05B08D1E0021A5E6 /* ZoomGameInfoController.m */; };
+		4B152CE40B46CC07008CC1EF /* GameInfo.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4B2EAF9905B056EC0021A5E6 /* GameInfo.nib */; };
+		4B152D2F0B46D2F9008CC1EF /* ZoomNotesController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B152D2D0B46D2F9008CC1EF /* ZoomNotesController.h */; };
+		4B152D300B46D2F9008CC1EF /* ZoomNotesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B152D2E0B46D2F9008CC1EF /* ZoomNotesController.m */; };
+		4B152DBE0B46E929008CC1EF /* NoteWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4B152DBD0B46E929008CC1EF /* NoteWindow.nib */; };
 		4B1888EB0935F912003AF62A /* ascii.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888D80935F912003AF62A /* ascii.h */; };
 		4B1888EC0935F912003AF62A /* asciitab.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888D90935F912003AF62A /* asciitab.h */; };
 		4B1888ED0935F912003AF62A /* expat_external.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1888DA0935F912003AF62A /* expat_external.h */; };
@@ -98,6 +105,9 @@
 		4B8CE6F40AD95A3A008235D2 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B8CE6F20AD95A3A008235D2 /* md5.c */; };
 		4B8CE6F50AD95A3A008235D2 /* md5.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8CE6F30AD95A3A008235D2 /* md5.h */; };
 		4B8CE6F80AD95A6C008235D2 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B8CE6F20AD95A3A008235D2 /* md5.c */; };
+		4B95CDA1C5B03AD500FD9F27 /* ZoomSkeinController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B18852906987AC6004D8501 /* ZoomSkeinController.h */; };
+		4B95CDA2C5B03AD500FD9F27 /* ZoomSkeinController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B18852A06987AC6004D8501 /* ZoomSkeinController.m */; };
+		4B95CDB9C5B03AD500FD9F27 /* ZoomSkeinController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B18852906987AC6004D8501 /* ZoomSkeinController.h */; };
 		4BA66B2C0906538F000A3852 /* ZoomWindowThatCanBecomeKey.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA66B2A0906538F000A3852 /* ZoomWindowThatCanBecomeKey.h */; };
 		4BA66B2D0906538F000A3852 /* ZoomWindowThatCanBecomeKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA66B2B0906538F000A3852 /* ZoomWindowThatCanBecomeKey.m */; };
 		4BA8B5770B1B0479007CD75E /* ZoomInputLine.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3DA12F068DAF9E00B7090F /* ZoomInputLine.h */; };
@@ -184,7 +194,6 @@
 		4BB8C19808C249F400D7D334 /* ZoomAppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B23C64E053C9C8C00A8E303 /* ZoomAppDelegate.h */; };
 		4BB8C19908C249F400D7D334 /* ZoomPreferenceWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B418DC30594FB97009C44DE /* ZoomPreferenceWindow.h */; };
 		4BB8C19A08C249F400D7D334 /* ZoomPreferences.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B418ED805961D2C009C44DE /* ZoomPreferences.h */; };
-		4BB8C19B08C249F400D7D334 /* ZoomGameInfoController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B2EAFAD05B08D1E0021A5E6 /* ZoomGameInfoController.h */; };
 		4BB8C19F08C249F400D7D334 /* ZoomiFictionController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B807BA305BFEE2700681653 /* ZoomiFictionController.h */; };
 		4BB8C1A008C249F400D7D334 /* ZoomStoryOrganiser.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B807BA905BFEE7200681653 /* ZoomStoryOrganiser.h */; };
 		4BB8C1A108C249F400D7D334 /* ZoomCollapsableView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B926F8805E7F9DA00E5C0EA /* ZoomCollapsableView.h */; };
@@ -197,7 +206,6 @@
 		4BB8C1A908C249F400D7D334 /* ZoomSkein.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA2BCEB06949E730082C022 /* ZoomSkein.h */; };
 		4BB8C1AA08C249F400D7D334 /* ZoomSkeinItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA2BCF20694A0830082C022 /* ZoomSkeinItem.h */; };
 		4BB8C1AB08C249F400D7D334 /* ZoomSkeinView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1884AF06975647004D8501 /* ZoomSkeinView.h */; };
-		4BB8C1AD08C249F400D7D334 /* ZoomSkeinController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B18852906987AC6004D8501 /* ZoomSkeinController.h */; };
 		4BB8C1AE08C249F400D7D334 /* ZoomCollapsingSplitView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B5CBB2D069D640900C0AA88 /* ZoomCollapsingSplitView.h */; };
 		4BB8C1AF08C249F400D7D334 /* ZoomStoryTableView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B5CBB79069D656000C0AA88 /* ZoomStoryTableView.h */; };
 		4BB8C1B008C249F400D7D334 /* ZoomSkeinLayout.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC3B03506AE8563008FCD35 /* ZoomSkeinLayout.h */; };
@@ -214,7 +222,6 @@
 		4BB8C1BE08C249F400D7D334 /* generalSettings.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B418DE60594FC3B009C44DE /* generalSettings.png */; };
 		4BB8C1BF08C249F400D7D334 /* colourSettings.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B418DE70594FC3B009C44DE /* colourSettings.png */; };
 		4BB8C1C008C249F400D7D334 /* Preferences.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4B418E140594FCDB009C44DE /* Preferences.nib */; };
-		4BB8C1C108C249F400D7D334 /* GameInfo.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4B2EAF9905B056EC0021A5E6 /* GameInfo.nib */; };
 		4BB8C1C208C249F400D7D334 /* infocom.iFiction in Resources */ = {isa = PBXBuildFile; fileRef = 4BACE9FA05B428C700A9B6DC /* infocom.iFiction */; };
 		4BB8C1C308C249F400D7D334 /* iFiction.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4BB515B405BC615F00D00C96 /* iFiction.nib */; };
 		4BB8C1C408C249F400D7D334 /* add-out.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B807BC505BFF06E00681653 /* add-out.png */; };
@@ -248,7 +255,6 @@
 		4BB8C1E208C249F400D7D334 /* ZoomClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BCF3F54050FB47200A8E303 /* ZoomClient.m */; };
 		4BB8C1E308C249F400D7D334 /* ZoomAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B23C64F053C9C8C00A8E303 /* ZoomAppDelegate.m */; };
 		4BB8C1E408C249F400D7D334 /* ZoomPreferenceWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B418DC40594FB97009C44DE /* ZoomPreferenceWindow.m */; };
-		4BB8C1E508C249F400D7D334 /* ZoomGameInfoController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2EAFAE05B08D1E0021A5E6 /* ZoomGameInfoController.m */; };
 		4BB8C1EA08C249F400D7D334 /* ZoomiFictionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B807BA405BFEE2700681653 /* ZoomiFictionController.m */; };
 		4BB8C1EB08C249F400D7D334 /* ZoomStoryOrganiser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B807BAA05BFEE7200681653 /* ZoomStoryOrganiser.m */; };
 		4BB8C1EC08C249F400D7D334 /* ZoomiFButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B807BEB05C009ED00681653 /* ZoomiFButton.m */; };
@@ -256,7 +262,6 @@
 		4BB8C1EE08C249F400D7D334 /* ZoomSavePreviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B13ECD3060F93F200021429 /* ZoomSavePreviewView.m */; };
 		4BB8C1EF08C249F400D7D334 /* ZoomSavePreview.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BCB09630615D0D800CDFB98 /* ZoomSavePreview.m */; };
 		4BB8C1F008C249F400D7D334 /* ZoomRatingCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC1F77062F43BB00FE547F /* ZoomRatingCell.m */; };
-		4BB8C1F108C249F400D7D334 /* ZoomSkeinController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B18852A06987AC6004D8501 /* ZoomSkeinController.m */; };
 		4BB8C1F208C249F400D7D334 /* ZoomCollapsingSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5CBB2E069D640900C0AA88 /* ZoomCollapsingSplitView.m */; };
 		4BB8C1F308C249F400D7D334 /* ZoomStoryTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5CBB78069D656000C0AA88 /* ZoomStoryTableView.m */; };
 		4BB8C1F408C249F400D7D334 /* ZoomResourceDrop.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BC5562106B83F4600F0DD4A /* ZoomResourceDrop.m */; };
@@ -622,6 +627,10 @@
 		4B13ECD2060F93F200021429 /* ZoomSavePreviewView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomSavePreviewView.h; sourceTree = "<group>"; };
 		4B13ECD3060F93F200021429 /* ZoomSavePreviewView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomSavePreviewView.m; sourceTree = "<group>"; };
 		4B14632106A2DD9E00398650 /* ZoomSkeinXML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomSkeinXML.m; sourceTree = "<group>"; };
+		4B152A030B440B9D008CC1EF /* SkeinDiffersBadge.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SkeinDiffersBadge.png; sourceTree = "<group>"; };
+		4B152D2D0B46D2F9008CC1EF /* ZoomNotesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomNotesController.h; sourceTree = "<group>"; };
+		4B152D2E0B46D2F9008CC1EF /* ZoomNotesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomNotesController.m; sourceTree = "<group>"; };
+		4B152DBD0B46E929008CC1EF /* NoteWindow.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = NoteWindow.nib; sourceTree = "<group>"; };
 		4B1884AF06975647004D8501 /* ZoomSkeinView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomSkeinView.h; sourceTree = "<group>"; };
 		4B1884B006975647004D8501 /* ZoomSkeinView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomSkeinView.m; sourceTree = "<group>"; };
 		4B18850B069873F0004D8501 /* Skein.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = Skein.nib; sourceTree = "<group>"; };
@@ -985,6 +994,15 @@
 			name = FlipView;
 			sourceTree = "<group>";
 		};
+		4B152D2C0B46D2DA008CC1EF /* Notes */ = {
+			isa = PBXGroup;
+			children = (
+				4B152D2D0B46D2F9008CC1EF /* ZoomNotesController.h */,
+				4B152D2E0B46D2F9008CC1EF /* ZoomNotesController.m */,
+			);
+			name = Notes;
+			sourceTree = "<group>";
+		};
 		4B1888D10935F870003AF62A /* Expat */ = {
 			isa = PBXGroup;
 			children = (
@@ -1319,6 +1337,7 @@
 				4BDFA4E80535E9DE00A8E303 /* ZoomView */,
 				4BC5561D06B83EEB00F0DD4A /* Resources */,
 				4B39C93608EEF64C00BA5E90 /* Spotlight */,
+				4B152D2C0B46D2DA008CC1EF /* Notes */,
 				4B7CB0730936276B00F3B8F6 /* PlugIns */,
 			);
 			name = ZoomClient;
@@ -1329,6 +1348,7 @@
 			isa = PBXGroup;
 			children = (
 				4B0D81E10AC5A3C0003E8CCA /* top-shading.png */,
+				4B152A030B440B9D008CC1EF /* SkeinDiffersBadge.png */,
 				4B5CBC59069D9EB700C0AA88 /* SkeinAdd.png */,
 				4B5CBC5E069D9EB700C0AA88 /* SkeinDelete.png */,
 				4B5CBC5B069D9EB700C0AA88 /* SkeinLocked.png */,
@@ -1384,6 +1404,7 @@
 				4BB515B405BC615F00D00C96 /* iFiction.nib */,
 				4B1C14D205C69CAD00E5796D /* iFiction-10.2.nib */,
 				4B18850B069873F0004D8501 /* Skein.nib */,
+				4B152DBD0B46E929008CC1EF /* NoteWindow.nib */,
 			);
 			name = Resources;
 			path = src/zoomCocoa;
@@ -1477,6 +1498,8 @@
 				4B87BA7309C9AB13005D6722 /* ifmetabase-internal.h in Headers */,
 				4B71AB6209E300FF00E27876 /* ifmetaxml.h in Headers */,
 				4B8CE6F50AD95A3A008235D2 /* md5.h in Headers */,
+				4B152CE20B46CBEB008CC1EF /* ZoomGameInfoController.h in Headers */,
+				4B152D2F0B46D2F9008CC1EF /* ZoomNotesController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1542,7 +1565,6 @@
 				4BB8C19808C249F400D7D334 /* ZoomAppDelegate.h in Headers */,
 				4BB8C19908C249F400D7D334 /* ZoomPreferenceWindow.h in Headers */,
 				4BB8C19A08C249F400D7D334 /* ZoomPreferences.h in Headers */,
-				4BB8C19B08C249F400D7D334 /* ZoomGameInfoController.h in Headers */,
 				4BB8C19F08C249F400D7D334 /* ZoomiFictionController.h in Headers */,
 				4BB8C1A008C249F400D7D334 /* ZoomStoryOrganiser.h in Headers */,
 				4BB8C1A108C249F400D7D334 /* ZoomCollapsableView.h in Headers */,
@@ -1555,7 +1577,6 @@
 				4BB8C1A908C249F400D7D334 /* ZoomSkein.h in Headers */,
 				4BB8C1AA08C249F400D7D334 /* ZoomSkeinItem.h in Headers */,
 				4BB8C1AB08C249F400D7D334 /* ZoomSkeinView.h in Headers */,
-				4BB8C1AD08C249F400D7D334 /* ZoomSkeinController.h in Headers */,
 				4BB8C1AE08C249F400D7D334 /* ZoomCollapsingSplitView.h in Headers */,
 				4BB8C1AF08C249F400D7D334 /* ZoomStoryTableView.h in Headers */,
 				4BB8C1B008C249F400D7D334 /* ZoomSkeinLayout.h in Headers */,
@@ -1570,6 +1591,7 @@
 				4B0D81DD0AC59F3F003E8CCA /* ZoomFadeView.h in Headers */,
 				4BA8B5770B1B0479007CD75E /* ZoomInputLine.h in Headers */,
 				4BA8B5780B1B047A007CD75E /* ZoomTextToSpeech.h in Headers */,
+				4B95CDB9C5B03AD500FD9F27 /* ZoomSkeinController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1597,6 +1619,7 @@
 				4BD2748F08701E6700C1AE15 /* ZoomSkeinLayoutItem.h in Headers */,
 				4B1FEA240ACB159D008B9EFE /* ZoomPreferences.h in Headers */,
 				4BA8B5820B1B053E007CD75E /* ZoomTextToSpeech.h in Headers */,
+				4B95CDA1C5B03AD500FD9F27 /* ZoomSkeinController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1895,6 +1918,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				4B43DA8409364C7400F03009 /* GlkWindow.nib in Resources */,
+				4B152CE40B46CC07008CC1EF /* GameInfo.nib in Resources */,
+				4B152DBE0B46E929008CC1EF /* NoteWindow.nib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1911,7 +1936,6 @@
 				4BB8C1BE08C249F400D7D334 /* generalSettings.png in Resources */,
 				4BB8C1BF08C249F400D7D334 /* colourSettings.png in Resources */,
 				4BB8C1C008C249F400D7D334 /* Preferences.nib in Resources */,
-				4BB8C1C108C249F400D7D334 /* GameInfo.nib in Resources */,
 				4BB8C1C308C249F400D7D334 /* iFiction.nib in Resources */,
 				4BB8C1C408C249F400D7D334 /* add-out.png in Resources */,
 				4BB8C1C508C249F400D7D334 /* add-in.png in Resources */,
@@ -1969,6 +1993,7 @@
 				4BD2749C08701E6700C1AE15 /* SkeinDelete.png in Resources */,
 				4BD2749E08701E6700C1AE15 /* archive.iFiction in Resources */,
 				4BD2749F08701E6700C1AE15 /* Skein-annotation.png in Resources */,
+				4B152A040B440B9D008CC1EF /* SkeinDiffersBadge.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2038,7 +2063,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ -e ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE} ]; then\n\techo Installing plugin bundles from ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE}\n\tls ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE}/*.bundle\n\tcp -Raf ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE}/*.bundle ${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/PlugIns\nfi\n";
+			shellScript = "if [ -e ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE} ]; then\n\techo Installing plugin bundles from ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE}\n\tls ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE}/*.bundle\n\tcp -Rf ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE}/*.bundle ${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/PlugIns\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -2093,6 +2118,8 @@
 				4B0CAB6A097F0CBB00867EF4 /* ZoomGlkDocument.m in Sources */,
 				4B71AB6309E300FF00E27876 /* ifmetaxml.c in Sources */,
 				4B8CE6F40AD95A3A008235D2 /* md5.c in Sources */,
+				4B152CE30B46CBED008CC1EF /* ZoomGameInfoController.m in Sources */,
+				4B152D300B46D2F9008CC1EF /* ZoomNotesController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2146,7 +2173,6 @@
 				4BB8C1E208C249F400D7D334 /* ZoomClient.m in Sources */,
 				4BB8C1E308C249F400D7D334 /* ZoomAppDelegate.m in Sources */,
 				4BB8C1E408C249F400D7D334 /* ZoomPreferenceWindow.m in Sources */,
-				4BB8C1E508C249F400D7D334 /* ZoomGameInfoController.m in Sources */,
 				4BB8C1EA08C249F400D7D334 /* ZoomiFictionController.m in Sources */,
 				4BB8C1EB08C249F400D7D334 /* ZoomStoryOrganiser.m in Sources */,
 				4BB8C1EC08C249F400D7D334 /* ZoomiFButton.m in Sources */,
@@ -2154,7 +2180,6 @@
 				4BB8C1EE08C249F400D7D334 /* ZoomSavePreviewView.m in Sources */,
 				4BB8C1EF08C249F400D7D334 /* ZoomSavePreview.m in Sources */,
 				4BB8C1F008C249F400D7D334 /* ZoomRatingCell.m in Sources */,
-				4BB8C1F108C249F400D7D334 /* ZoomSkeinController.m in Sources */,
 				4BB8C1F208C249F400D7D334 /* ZoomCollapsingSplitView.m in Sources */,
 				4BB8C1F308C249F400D7D334 /* ZoomStoryTableView.m in Sources */,
 				4BB8C1F408C249F400D7D334 /* ZoomResourceDrop.m in Sources */,
@@ -2195,6 +2220,7 @@
 				4BD274B708701E6700C1AE15 /* ZoomSkeinLayoutItem.m in Sources */,
 				4B1FEA250ACB15B0008B9EFE /* ZoomPreferences.m in Sources */,
 				4BA8B5830B1B053E007CD75E /* ZoomTextToSpeech.m in Sources */,
+				4B95CDA2C5B03AD500FD9F27 /* ZoomSkeinController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

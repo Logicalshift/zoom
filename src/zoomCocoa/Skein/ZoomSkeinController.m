@@ -8,8 +8,6 @@
 
 #import "ZoomSkeinController.h"
 
-#import "ZoomClientController.h"
-
 @implementation ZoomSkeinController
 
 + (ZoomSkeinController*) sharedSkeinController {
@@ -49,24 +47,18 @@
 }
 
 - (void) restartGame {
-	ZoomClientController* activeController = [[NSApp mainWindow] windowController];
-	
-	if ([activeController isKindOfClass: [ZoomClientController class]]) {
-		// Will force a restart
-		[[activeController zoomView] runNewServer: nil];
+	id controller  = [[NSApp mainWindow] windowController];
+	if ([controller respondsToSelector: @selector(restartGame)]) {
+		[controller restartGame];
 	}
 }
 
 - (void) playToPoint: (ZoomSkeinItem*) point
-		   fromPoint: (ZoomSkeinItem*) fromPoint{
-	ZoomClientController* activeController = [[NSApp mainWindow] windowController];
-	
-	if ([activeController isKindOfClass: [ZoomClientController class]]) {
-		id inputSource = [ZoomSkein inputSourceFromSkeinItem: fromPoint
-													  toItem: point];
-		
-		
-		[[activeController zoomView] setInputSource: inputSource];
+		   fromPoint: (ZoomSkeinItem*) fromPoint {
+	id controller  = [[NSApp mainWindow] windowController];
+	if ([controller respondsToSelector: @selector(playToPoint:fromPoint:)]) {
+		[controller playToPoint: point
+					  fromPoint: fromPoint];
 	}
 }
 
