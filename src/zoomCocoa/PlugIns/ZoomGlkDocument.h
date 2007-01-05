@@ -19,6 +19,7 @@
 	
 	ZoomStory* storyData;											// Metadata for this story
 	NSImage* logo;													// The logo for this story
+	NSString* preferredSaveDir;										// Preferred save directory
 }
 
 // Configuring the client
@@ -28,5 +29,8 @@
 - (void) setLogo: (NSImage*) logo;									// The logo to display for this story
 
 - (ZoomStory*) storyData;											// The story data that we stored for this story
+
+- (void) setPreferredSaveDirectory: (NSString*) dir;				// Sets the preferred directory to put savegames into
+- (NSString*) preferredSaveDirectory;								// Returns the preferred save directory
 
 @end

@@ -60,7 +60,15 @@
 - (ZoomStory*) storyData {
 	return storyData;
 }
-	
+
+- (void) setPreferredSaveDirectory: (NSString*) dir {
+	preferredSaveDir = [dir copy];
+}
+
+- (NSString*) preferredSaveDirectory {
+	return preferredSaveDir;
+}
+
 // = Constructing the window controllers =
 
 - (void) makeWindowControllers {

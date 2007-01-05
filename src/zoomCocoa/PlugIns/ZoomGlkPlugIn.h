@@ -19,6 +19,7 @@
 	ZoomGlkDocument* document;										// Constructed on demand
 	
 	NSString* clientPath;											// Path to the client application
+	NSString* preferredSaveDir;										// Place to put save files
 }
 
 // Configuring the client

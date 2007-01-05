@@ -28,6 +28,8 @@
 	if (document) [document release];
 	document = nil;
 	
+	[preferredSaveDir release];
+	
 	[super dealloc];
 }
 
@@ -47,6 +49,7 @@
 		[document setClientPath: clientPath];
 		[document setInputFilename: [self gameFilename]];
 		[document setLogo: [self logo]];
+		[document setPreferredSaveDirectory: preferredSaveDir];
 	}
 	
 	// Return it
@@ -63,6 +66,10 @@
 
 - (NSImage*) logo {
 	return nil;
+}
+
+- (void) setPreferredSaveDirectory: (NSString*) dir {
+	preferredSaveDir = [dir copy];
 }
 
 @end

@@ -86,6 +86,39 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 	return YES;
 }
 
+- (NSString*) saveDirectoryForStoryId: (ZoomStoryID*) storyId {
+	ZoomPreferences* prefs = [ZoomPreferences globalPreferences];
+	
+	if ([prefs keepGamesOrganised]) {
+		// Get the directory for this game
+		NSString* gameDir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: storyId
+																				  create: YES];
+		NSString* saveDir = [gameDir stringByAppendingPathComponent: @"Saves"];
+		
+		BOOL isDir = NO;
+		
+		if (![[NSFileManager defaultManager] fileExistsAtPath: saveDir
+												  isDirectory: &isDir]) {
+			if (![[NSFileManager defaultManager] createDirectoryAtPath: saveDir
+															attributes: nil]) {
+				// Couldn't create the directory
+				return nil;
+			}
+			
+			isDir = YES;
+		} else {
+			if (!isDir) {
+				// Some inconsiderate person stuck a file here
+				return nil;
+			}
+		}
+		
+		return saveDir;
+	}	
+	
+	return nil;
+}
+
 - (BOOL)application: (NSApplication *)theApplication 
 		   openFile: (NSString *)filename {
 	// See if there's a plug-in that can handle this file. This gives plug-ins first shot at handling blorb files.
@@ -116,6 +149,7 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 			}
 			
 			// ... we've managed to load this file with the given plug-in, so display it
+			[pluginInstance setPreferredSaveDirectory: [self saveDirectoryForStoryId: ident]];
 			NSDocument* pluginDocument = [pluginInstance gameDocumentWithMetadata: story];
 			
 			[[NSDocumentController sharedDocumentController] addDocument: pluginDocument];

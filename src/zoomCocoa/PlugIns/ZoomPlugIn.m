@@ -214,4 +214,10 @@ static NSMutableArray* pluginClasses = nil;
 	return nil;
 }
 
+// = More information =
+
+- (void) setPreferredSaveDirectory: (NSString*) dir {
+	// Default implementation does nothing
+}
+
 @end

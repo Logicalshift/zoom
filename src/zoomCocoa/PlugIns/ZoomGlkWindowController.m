@@ -252,6 +252,10 @@
 	return logo;
 }
 
+- (NSString*) preferredSaveDirectory {
+	return [[self document] preferredSaveDirectory];
+}
+
 // = Log messages =
 
 - (void) showLogMessage: (NSString*) message
