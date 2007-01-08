@@ -209,6 +209,9 @@ static NSString* convertCommand(NSString* command) {
 		
 		return oldChild;
 	} else {
+		[[childItem retain] autorelease];
+		[childItem removeFromParent];
+		
 		// Otherwise, just add the new item
 		[childItem setParent: self];
 		[children addObject: childItem];
