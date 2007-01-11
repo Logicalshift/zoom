@@ -18,6 +18,7 @@
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
+    <selected-rows ids="aIB9tV2v4JK"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -966,12 +967,24 @@
                 <null/>
               </values>
             </item>
-            <item id="mFISmkKPOB-">
+            <item id="mFISmkKPOB-" state="checked">
               <values>
                 <text>
                   <p>
                     <run>
                       <lit>cancel_line_event should fill the buffer with the input so far</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="eC278xHfH33">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>should avoid flushing the buffer when cancelling line input events</lit>
                     </run>
                   </p>
                 </text>
