@@ -11,6 +11,11 @@
 #import "ZoomSkein.h"
 #import "ZoomSkeinLayoutItem.h"
 
+enum IFSkeinPackingStyle {
+	IFSkeinPackLoose,
+	IFSkeinPackTight
+};
+
 @interface ZoomSkeinLayout : NSObject {
 	ZoomSkeinItem* rootItem;
 
@@ -24,6 +29,7 @@
 	
 	float itemWidth;
 	float itemHeight;
+	int packingStyle;
 	
 	// Highlighted skein line
 	ZoomSkeinItem* highlightedLineItem;
@@ -40,6 +46,8 @@
 // Setting skein data
 - (void) setItemWidth: (float) itemWidth;
 - (void) setItemHeight: (float) itemHeight;
+- (void) setPackingStyle: (int) packingStyle;
+
 - (void) setRootItem: (ZoomSkeinItem*) item;
 - (void) setActiveItem: (ZoomSkeinItem*) item;
 - (void) setSelectedItem: (ZoomSkeinItem*) item;

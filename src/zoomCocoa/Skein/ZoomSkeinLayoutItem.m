@@ -31,6 +31,7 @@
 		width = newWidth;
 		fullWidth = newFullWidth;
 		level = newLevel;
+		depth = 0;
 	}
 	
 	return self;
@@ -73,6 +74,10 @@
 	return onSkeinLine;
 }
 
+- (int) depth {
+	return depth;
+}
+
 // = Setting properties =
 
 - (void) setItem: (ZoomSkeinItem*) newItem {
@@ -95,6 +100,16 @@
 - (void) setChildren: (NSArray*) newChildren {
 	if (children) [children release];
 	children = [newChildren retain];
+	
+	int maxDepth = -1;
+	NSEnumerator* childEnum = [children objectEnumerator];
+	ZoomSkeinLayoutItem* child;
+	
+	while (child = [childEnum nextObject]) {
+		if ([child depth] > maxDepth) maxDepth = [child depth];
+	}
+	
+	depth = maxDepth+1;
 }
 
 - (void) setLevel: (int) newLevel {
@@ -103,6 +118,36 @@
 
 - (void) setOnSkeinLine: (BOOL) online {
 	onSkeinLine = online;
+}
+
+- (void) findItemsOnLevel: (int) findLevel
+				   result: (NSMutableArray*) result {
+	if (findLevel < level) return;
+	
+	if (findLevel == level) {
+		[result addObject: self];
+		return;
+	} else if (findLevel == level-1) {
+		if (children) [result addObjectsFromArray: children];
+		return;
+	} else if (children) {
+		NSEnumerator* childEnum = [children objectEnumerator];
+		ZoomSkeinLayoutItem* child;
+		
+		while (child = [childEnum nextObject]) {
+			[child findItemsOnLevel: findLevel
+							 result: result];
+		}
+	}
+}
+
+- (NSArray*) itemsOnLevel: (int) findLevel {
+	NSMutableArray* result = [NSMutableArray array];
+	
+	[self findItemsOnLevel: findLevel
+					result: result];
+	
+	return result;
 }
 
 @end

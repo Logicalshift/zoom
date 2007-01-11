@@ -26,7 +26,8 @@
 	float		   fullWidth;
 	float		   position;
 	NSArray*	   children;
-	int			   level;	
+	int			   level;
+	int			   depth;
 }
 
 // Initialisation
@@ -45,6 +46,7 @@
 - (NSArray*)	   children;
 - (int)			   level;
 - (BOOL)		   onSkeinLine;
+- (int)			   depth;
 
 - (void) setItem: (ZoomSkeinItem*) newItem;
 - (void) setWidth: (float) newWidth;
@@ -53,5 +55,7 @@
 - (void) setChildren: (NSArray*) newChildren;
 - (void) setLevel: (int) newLevel;
 - (void) setOnSkeinLine: (BOOL) onSkeinLine;
+
+- (NSArray*) itemsOnLevel: (int) level;
 
 @end

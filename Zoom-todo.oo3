@@ -18,9 +18,6 @@
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="kwPcsV-UO5r"/>
-    <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{59, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -936,7 +933,7 @@
                 </text>
               </note>
             </item>
-            <item id="dhR6lpReZGi">
+            <item id="dhR6lpReZGi" state="checked">
               <values>
                 <text>
                   <p>

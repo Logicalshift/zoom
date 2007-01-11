@@ -128,6 +128,7 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation,
 
 		itemWidth = 120.0; // Pixels
 		itemHeight = 96.0;
+		packingStyle = IFSkeinPackTight;
 	}
 	
 	return self;
@@ -236,8 +237,8 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation,
 
 // = Performing layout =
 
-- (ZoomSkeinLayoutItem*) layoutSkeinItem: (ZoomSkeinItem*) item
-							   withLevel: (int) level {
+- (ZoomSkeinLayoutItem*) layoutSkeinItemLoose: (ZoomSkeinItem*) item
+									withLevel: (int) level {
 	if (item == nil) return nil;
 	
 	NSEnumerator* childEnum = [[item children] objectEnumerator];
@@ -251,8 +252,8 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation,
 	
 	while (child = [childEnum nextObject]) {
 		// Layout the child item
-		childItem = [self layoutSkeinItem: child
-								withLevel: level+1];
+		childItem = [self layoutSkeinItemLoose: child
+									 withLevel: level+1];
 		
 		// Position it (first iteration: we center later)
 		position += lastWidth/2.0; // Add in halves: we're dealing with object centers
@@ -265,6 +266,100 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation,
 		
 		// Add to the list of children for this item
 		[children addObject: childItem];
+	}
+	
+	// Update position to be the total width
+	position += lastWidth/2.0;
+	
+	// Should only happen if there are no children
+	if (position == 0.0) position = itemWidth;
+	
+	// Center the children	
+	float center = position / 2.0;
+	
+	childEnum = [children objectEnumerator];
+	while (childItem = [childEnum nextObject]) {
+		[childItem setPosition: [childItem position] - center];
+	}
+	
+	// Adjust the width to fit the text, if required
+	float ourWidth = [item commandSize].width;
+	float labelWidth = [item annotationSize].width;
+	
+	if (labelWidth > ourWidth) ourWidth = labelWidth;
+	
+	if (position < (ourWidth + itemPadding)) position = ourWidth + itemPadding;
+	
+	// Return the result
+	ZoomSkeinLayoutItem* result = [[ZoomSkeinLayoutItem alloc] initWithItem: item
+																	  width: ourWidth
+																  fullWidth: position
+																	  level: level];
+	
+	[result setChildren: children];
+	
+	// Index this item
+	[itemForItem setObject: result
+					forKey: [NSValue valueWithPointer: item]];
+	
+	// Add to the 'levels' array, which contains which items to draw at which levels
+	while (level >= [levels count]) {
+		[levels addObject: [NSMutableArray array]];
+	}
+	
+	[[levels objectAtIndex: level] addObject: result];
+	[result release]; // Is retained in the levels array, so we don't autorelease (saves some time. Might cause bugs in the future though, so NOTE THIS)
+	
+	return result;
+}
+
+#define MaxTightDepth 8
+
+- (ZoomSkeinLayoutItem*) layoutSkeinItemTight: (ZoomSkeinItem*) item
+									withLevel: (int) level {
+	// Counterpart to layoutSkeinItemLoose that is slightly more intelligent about re-using vertical space
+	if (item == nil) return nil;
+	
+	NSEnumerator* childEnum = [[item children] objectEnumerator];
+	ZoomSkeinItem* child;
+	ZoomSkeinLayoutItem* lastItem = nil;
+	float position = 0.0;
+	float lastWidth = 0.0;
+	ZoomSkeinLayoutItem* childItem;
+	
+	NSMutableArray* children = [NSMutableArray array];
+	
+	while (child = [childEnum nextObject]) {
+		// Layout the child item
+		childItem = [self layoutSkeinItemTight: child
+									 withLevel: level+1];
+		
+		// Pick an effective item width
+		float effectiveWidthLeft = lastWidth;
+		float effectiveWidthRight = [childItem fullWidth];
+		
+		if (lastItem) {
+			int leftDepth = [lastItem depth];
+			int rightDepth = [childItem depth];
+			
+			if (leftDepth < rightDepth && leftDepth < MaxTightDepth) {
+				
+			} else if (rightDepth < leftDepth && rightDepth < MaxTightDepth) {
+				
+			}
+		}
+		
+		// Position it (first iteration: we center later)
+		position += effectiveWidthLeft/2.0; // Add in halves: we're dealing with object centers
+		
+		lastWidth = effectiveWidthRight;
+		position += lastWidth/2.0;
+		
+		[childItem setPosition: position];
+		
+		// Add to the list of children for this item
+		[children addObject: childItem];
+		lastItem = childItem;
 	}
 	
 	// Update position to be the total width
@@ -355,8 +450,8 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation,
 	}
 	levels = [[NSMutableArray alloc] init];
 	
-	tree = [[self layoutSkeinItem: rootItem
-						withLevel: 0] retain];
+	tree = [[self layoutSkeinItemLoose: rootItem
+							 withLevel: 0] retain];
 	
 	if (tree != nil) {
 		// Transform the 'relative' positions of all items into 'absolute' positions
