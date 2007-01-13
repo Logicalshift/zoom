@@ -118,6 +118,8 @@
 	[prefs setUseScreenFonts: [zPrefs useScreenFonts]];
 	[prefs setUseHyphenation: [zPrefs useHyphenation]];
 	
+	[prefs setScrollbackLength: [zPrefs scrollbackLength]];
+	
 	// Set the foreground/background colours
 	NSColor* foreground = [[zPrefs colours] objectAtIndex: 0];
 	NSColor* background = [[zPrefs colours] objectAtIndex: 7];

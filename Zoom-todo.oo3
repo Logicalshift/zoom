@@ -15,12 +15,10 @@
     </style-attribute>
   </style-attribute-registry>
   <settings/>
-  <editor scroll-position="{0, 165}" ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
+  <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="m1N_7Yf4I3s"/>
-    <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{46, 0}"/>
+    <selected-rows ids="k31rH8QlEqt"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -821,54 +819,6 @@
             <null/>
           </values>
           <children>
-            <item id="kc5b9AkzMBS">
-              <values>
-                <text>
-                  <p>
-                    <run>
-                      <lit>Save should go to the save folder for the game when &apos;keep games organised&apos; is on</lit>
-                    </run>
-                  </p>
-                </text>
-                <null/>
-              </values>
-            </item>
-            <item id="eqOMKC6SLvq">
-              <values>
-                <text>
-                  <p>
-                    <run>
-                      <lit>No way to limit scrollback</lit>
-                    </run>
-                  </p>
-                </text>
-                <null/>
-              </values>
-            </item>
-            <item id="pZw4YvyeDPY">
-              <values>
-                <text>
-                  <p>
-                    <run>
-                      <lit>Clicking on &apos;verbs&apos;, etc in Moments out of time does not show the menu first time...</lit>
-                    </run>
-                  </p>
-                </text>
-                <null/>
-              </values>
-            </item>
-            <item id="ag9Je5orrMx">
-              <values>
-                <text>
-                  <p>
-                    <run>
-                      <lit>iFiction window won&apos;t show after running a Glk game</lit>
-                    </run>
-                  </p>
-                </text>
-                <null/>
-              </values>
-            </item>
             <item id="eC278xHfH33">
               <values>
                 <text>
@@ -913,6 +863,66 @@
                   </p>
                 </text>
               </note>
+            </item>
+            <item id="eqOMKC6SLvq" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>No way to limit scrollback</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="ag9Je5orrMx" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>iFiction window won&apos;t show after running a Glk game</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="k31rH8QlEqt" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Tab needs to switch between windows</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="pZw4YvyeDPY" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Clicking on &apos;verbs&apos;, etc in Moments out of time does not show the menu first time...</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="kc5b9AkzMBS" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Save should go to the save folder for the game when &apos;keep games organised&apos; is on</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
             </item>
             <item id="nk0Hx-22aCM" state="checked">
               <values>
