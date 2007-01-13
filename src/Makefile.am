@@ -7,6 +7,7 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	macos/zoom-file.icns macos/zoom-game.icns \
 	macos/zoom.nib/classes.nib macos/zoom.nib/info.nib \
 	macos/zoom.nib/objects.xib macos/macreadme.rtf macos/zoomrc \
+	zoomCocoa/PlugIns/README \
 	zoomCocoa/ZDisplay.m              zoomCocoa/ZoomScrollView.m \
 	zoomCocoa/ZFiles.m                zoomCocoa/ZoomServer.h \
 	zoomCocoa/ZoomAppDelegate.h       zoomCocoa/ZoomServer.m \
@@ -54,6 +55,7 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/ZoomStoryTableView.h    zoomCocoa/ZoomStoryTableView.m \
 	zoomCocoa/ZoomTextToSpeech.h	  zoomCocoa/ZoomTextToSpeech.m \
 	zoomCocoa/ZoomHQImageView.h	  zoomCocoa/ZoomHQImageView.m \
+	zoomCocoa/ZoomNotesController.h	  zoomCocoa/ZoomNotesController.m \
 	zoomCocoa/PlugIns/ZoomGlkDocument.h \
 	zoomCocoa/PlugIns/ZoomGlkDocument.m \
 	zoomCocoa/PlugIns/ZoomGlkPlugIn.h \
@@ -99,6 +101,9 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/Skein.nib/info.nib \
 	zoomCocoa/Skein.nib/keyedobjects.nib \
 	zoomCocoa/Skein.nib/objects.nib \
+	zoomCocoa/NoteWindow.nib/classes.nib \
+	zoomCocoa/NoteWindow.nib/info.nib \
+	zoomCocoa/NoteWindow.nib/keyedobjects.nib \
 	zoomCocoa/PlugIns/English.lproj/GlkWindow.nib/classes.nib \
 	zoomCocoa/PlugIns/English.lproj/GlkWindow.nib/info.nib \
 	zoomCocoa/PlugIns/English.lproj/GlkWindow.nib/keyedobjects.nib \
@@ -130,6 +135,7 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/Skein/SkeinLocked.png zoomCocoa/Skein/SkeinTranscript.png \
 	zoomCocoa/Skein/SkeinUnlocked.png \
 	zoomCocoa/Skein-annotation.png \
+	zoomCocoa/SkeinDiffersBadge.png \
 	zoomCocoa/English.lproj/Credits.rtf
 
 zoom_SOURCES = \

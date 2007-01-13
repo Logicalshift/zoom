@@ -18,7 +18,6 @@
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="k31rH8QlEqt"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -807,7 +806,7 @@
         <null/>
       </values>
       <children>
-        <item id="gMke-ziNo2M" expanded="yes" state="indeterminate">
+        <item id="gMke-ziNo2M" state="indeterminate">
           <values>
             <text>
               <p>
