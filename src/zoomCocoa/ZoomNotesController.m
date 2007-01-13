@@ -32,12 +32,18 @@ static NSMutableDictionary* notesDictionary = nil;
 								 owner: self];
 	
 	if (self) {
+		[[NSNotificationCenter defaultCenter] addObserver: self
+												 selector: @selector(applicationWillTerminate:)
+													 name: NSApplicationWillTerminateNotification
+												   object: nil];
 	}
 	
 	return self;
 }
 
 - (void) dealloc {
+	[[NSNotificationCenter defaultCenter] removeObserver: self];
+	
 	[story release];
 	[super dealloc];
 }
@@ -62,6 +68,10 @@ static NSMutableDictionary* notesDictionary = nil;
 													  forKey: @"ZoomNotes"];
 		}
 	}
+}
+
+- (void) applicationWillTerminate: (NSNotification*) not {
+	if (story) [self textDidEndEditing: nil];
 }
 
 // = Setting up the window =

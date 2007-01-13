@@ -15,10 +15,12 @@
     </style-attribute>
   </style-attribute-registry>
   <settings/>
-  <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
+  <editor scroll-position="{0, 165}" ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="aIB9tV2v4JK"/>
+    <selected-rows ids="m1N_7Yf4I3s"/>
+    <selected-columns ids=":078928d440f2709e21a6e303"/>
+    <selected-characters range="{46, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -819,6 +821,99 @@
             <null/>
           </values>
           <children>
+            <item id="kc5b9AkzMBS">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Save should go to the save folder for the game when &apos;keep games organised&apos; is on</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="eqOMKC6SLvq">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>No way to limit scrollback</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="pZw4YvyeDPY">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Clicking on &apos;verbs&apos;, etc in Moments out of time does not show the menu first time...</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="ag9Je5orrMx">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>iFiction window won&apos;t show after running a Glk game</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="eC278xHfH33">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>should avoid flushing the buffer when cancelling line input events</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="mXSnU2DU2uF">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Closing the window before the logo has finished fading causes a crash</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="m1N_7Yf4I3s">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>?? Might be seeing some out of order output ??</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <lit>Moments: adventure type - after talking to julia the first time?</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
+            </item>
             <item id="nk0Hx-22aCM" state="checked">
               <values>
                 <text>
@@ -859,39 +954,6 @@
                   <p>
                     <run>
                       <lit>Seem to be getting inappropriate reverse video in adventure type, and also in renegade type in the lower status bar</lit>
-                    </run>
-                  </p>
-                </text>
-              </note>
-            </item>
-            <item id="kc5b9AkzMBS">
-              <values>
-                <text>
-                  <p>
-                    <run>
-                      <lit>Save should go to the save folder for the game when &apos;keep games organised&apos; is on</lit>
-                    </run>
-                  </p>
-                </text>
-                <null/>
-              </values>
-            </item>
-            <item id="m1N_7Yf4I3s">
-              <values>
-                <text>
-                  <p>
-                    <run>
-                      <lit>?? Might be seeing some out of order output ??</lit>
-                    </run>
-                  </p>
-                </text>
-                <null/>
-              </values>
-              <note expanded="yes">
-                <text>
-                  <p>
-                    <run>
-                      <lit>Moments: adventure type - after talking to julia the first time?</lit>
                     </run>
                   </p>
                 </text>
@@ -955,18 +1017,6 @@
                 </text>
               </note>
             </item>
-            <item id="eqOMKC6SLvq">
-              <values>
-                <text>
-                  <p>
-                    <run>
-                      <lit>No way to limit scrollback</lit>
-                    </run>
-                  </p>
-                </text>
-                <null/>
-              </values>
-            </item>
             <item id="mFISmkKPOB-" state="checked">
               <values>
                 <text>
@@ -979,24 +1029,12 @@
                 <null/>
               </values>
             </item>
-            <item id="eC278xHfH33">
+            <item id="hejusWvc3e7" state="checked">
               <values>
                 <text>
                   <p>
                     <run>
-                      <lit>should avoid flushing the buffer when cancelling line input events</lit>
-                    </run>
-                  </p>
-                </text>
-                <null/>
-              </values>
-            </item>
-            <item id="mXSnU2DU2uF">
-              <values>
-                <text>
-                  <p>
-                    <run>
-                      <lit>Closing the window before the logo has finished fading causes a crash</lit>
+                      <lit>Requesting input on a grid window with a non-empty starting buffer causes exceptions</lit>
                     </run>
                   </p>
                 </text>
@@ -1043,7 +1081,7 @@
             </item>
           </children>
         </item>
-        <item id="kwPcsV-UO5r">
+        <item id="kwPcsV-UO5r" state="checked">
           <values>
             <text>
               <p>
