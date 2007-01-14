@@ -14,6 +14,7 @@
 // Constants
 static const float defaultItemWidth = 120.0; // Pixels
 static const float defaultItemHeight = 96.0;
+static const float itemButtonBarWidth = 40.0;
 
 // Drawing info
 static NSDictionary* itemTextAttributes;
@@ -221,7 +222,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 		// 
 		// Where A = Annotate, T = transcript, x = delete, + = add, L = lock
 		float w = bgWidth;
-		if (w < 32.0) w = 32.0;
+		if (w < itemButtonBarWidth) w = itemButtonBarWidth;
 		w += 40.0;
 		float left = xpos - w/2.0;
 		float right = xpos + w/2.0;
@@ -262,7 +263,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 			NSImage* lock = [trackedItem temporary]?unlocked:locked;
 			
 			[[self class] drawButton: lock
-							 atPoint: NSMakePoint(right, ypos + 18)
+							 atPoint: NSMakePoint(xpos - 8, ypos - 18)
 						 highlighted: activeButton==ZSVlockButton];
 		}
 	}
@@ -759,10 +760,11 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	NSSize size = [[item command] sizeWithAttributes: fontAttrs];
 
 	float w = size.width; //[[item objectForKey: ZSwidth] floatValue];
-	if (w < 32.0) w = 32.0;
+	if (w < itemButtonBarWidth) w = itemButtonBarWidth;
 	w += 40.0;
 	float left = -w/2.0;
 	float right = w/2.0;
+	float lozengeRight = size.width/2.0;
 	
 	// Correct for shadow
 	right -= 20.0;
@@ -778,11 +780,11 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 		if (offset.x > left+16.0 && offset.x < left+28.0) return ZSVtranscriptButton;
 		if (offset.x > right+2.0 && offset.x < right+14.0) return ZSVaddButton;
 		if (offset.x > right-12.0 && offset.x < right-0.0) return ZSVdeleteButton;
+		if (offset.x > -8 && offset.x < 8) return ZSVlockButton;
 	} else if (offset.y > 18.0 && offset.y < 30.0) {
 		// Lower row of buttons
-		if (offset.x > right+2.0 && offset.x < right+14.0) return ZSVlockButton;
 	} else if ([item commentaryComparison] == ZoomSkeinDifferent
-			   && offset.x > right + 4.0 && offset.x < right + 20.0
+			   && offset.x > lozengeRight + 4.0 && offset.x < lozengeRight + 20.0
 			   && offset.y > 6.0 && offset.y < 22.0) {
 		// Comparison failed badge
 		return ZSVtranscriptButton;

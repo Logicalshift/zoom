@@ -151,6 +151,7 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation,
 // = Setting skein data =
 
 - (void) setItemWidth: (float) newItemWidth {
+	if (newItemWidth < 82.0) newItemWidth = 82.0;
 	itemWidth = newItemWidth;
 }
 

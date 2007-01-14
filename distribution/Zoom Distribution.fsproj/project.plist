@@ -50,13 +50,13 @@
 	<key>License List</key>
 	<array/>
 	<key>Lock Frame</key>
-	<string>FALSE</string>
+	<string>TRUE</string>
 	<key>Project File Path</key>
 	<string>/Users/ahunter/prog/zoom/distribution/</string>
 	<key>Show Toolbar</key>
 	<string>TRUE</string>
 	<key>Volume Name</key>
-	<string>Zoom 1.1.0 beta 2</string>
+	<string>Zoom 1.1.0 beta 3</string>
 	<key>Window Frame</key>
 	<string>{{168, 75}, {459, 467}}</string>
 </dict>
