@@ -10,6 +10,9 @@
 
 #import "ZoomSkeinLayout.h"
 
+// Define this to use the 'new' skein colouring style
+#define SkeinDrawingStyleNew
+
 // Constants
 static const float itemPadding = 56.0;
 
@@ -22,8 +25,9 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 // Images
 static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation, *commentaryBadge;
 
-// Define this to use the 'new' skein colouring style
-#define SkeinDrawingStyleNew
+#ifdef SkeinDrawingStyleNew
+static NSImage* unchangedDark, *activeDark;
+#endif
 
 @implementation ZoomSkeinLayout
 
@@ -47,6 +51,35 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation,
 	return img;
 }
 
++ (NSImage*) darkenImage: (NSImage*) image {
+	NSRect imgRect;
+	
+	imgRect.origin = NSMakePoint(0,0);
+	imgRect.size = [image size];
+
+	NSImage* highlighted = [[NSImage alloc] initWithSize: imgRect.size];
+	
+	[highlighted lockFocus];
+	
+	// Background
+	[[NSColor colorWithDeviceRed: 0.0
+						   green: 0.0
+							blue: 0.0
+						   alpha: 0.25] set];
+	NSRectFill(imgRect);
+	
+	// The item
+	[image drawAtPoint: NSMakePoint(0,0)
+			  fromRect: imgRect
+			 operation: NSCompositeDestinationAtop
+			  fraction: 1.0];
+	
+	[highlighted unlockFocus];
+	
+	// Release
+	return [highlighted autorelease];
+}
+
 + (void) initialize {
 	NSObject* labelShadow = nil;
 	
@@ -64,6 +97,11 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation,
 	changed    = [[[self class] imageNamed: @"Skein-changed"] retain];
 	annotation = [[[self class] imageNamed: @"Skein-annotation"] retain];
 	commentaryBadge = [[[self class] imageNamed: @"SkeinDiffersBadge"] retain];
+	
+#ifdef SkeinDrawingStyleNew
+	unchangedDark = [[[self class] darkenImage: unchanged] retain];
+	activeDark = [[[self class] darkenImage: active] retain];
+#endif	
 	
 	itemTextAttributes = [[NSDictionary dictionaryWithObjectsAndKeys:
 		[NSFont systemFontOfSize: 10], NSFontAttributeName,
@@ -678,8 +716,12 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation,
 			//if (bgWidth < 90.0) bgWidth = 90.0;
 			
 #ifdef SkeinDrawingStyleNew
+			BOOL darken = [[skeinItem commentary] length] > 0;
+			
 			background = unchanged;
-			if ([item recentlyPlayed]) background = active;
+			if (darken) background = unchangedDark;
+			if ([item recentlyPlayed] && !darken) background = active;
+			if ([item recentlyPlayed] && darken) background = activeDark;
 #else
 			if (![skeinItem played]) background = unplayed;
 			if ([skeinItem changed]) background = changed;
