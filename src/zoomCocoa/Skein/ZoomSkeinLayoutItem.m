@@ -78,6 +78,10 @@
 	return depth;
 }
 
+- (BOOL) recentlyPlayed {
+	return recentlyPlayed;
+}
+
 // = Setting properties =
 
 - (void) setItem: (ZoomSkeinItem*) newItem {
@@ -118,6 +122,10 @@
 
 - (void) setOnSkeinLine: (BOOL) online {
 	onSkeinLine = online;
+}
+
+- (BOOL) setRecentlyPlayed: (BOOL) played {
+	recentlyPlayed = played;
 }
 
 - (void) findItemsOnLevel: (int) findLevel

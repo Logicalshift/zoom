@@ -22,6 +22,9 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 // Images
 static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation, *commentaryBadge;
 
+// Define this to use the 'new' skein colouring style
+#define SkeinDrawingStyleNew
+
 @implementation ZoomSkeinLayout
 
 // = Factory methods =
@@ -196,6 +199,7 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation,
 		
 		while (layoutItem = [oldHighlightEnum nextObject])  {
 			[layoutItem setOnSkeinLine: NO];
+			[layoutItem setRecentlyPlayed: NO];
 		}
 	}
 	
@@ -208,7 +212,9 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation,
 	
 	while (currentItem != nil) {
 		// Store this item
-		[[itemForItem objectForKey: [NSValue valueWithPointer: currentItem]] setOnSkeinLine: YES];
+		ZoomSkeinLayoutItem* itemUpwards = [itemForItem objectForKey: [NSValue valueWithPointer: currentItem]];
+		[itemUpwards setOnSkeinLine: YES];
+		[itemUpwards setRecentlyPlayed: YES];
 		
 		// Up the tree
 		currentItem = [currentItem parent];
@@ -222,7 +228,10 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation,
 		currentItem = [[[currentItem children] allObjects] objectAtIndex: 0];
 		
 		// Store this item
-		[[itemForItem objectForKey: [NSValue valueWithPointer: currentItem]] setOnSkeinLine: YES];
+		ZoomSkeinLayoutItem* itemUpwards = [itemForItem objectForKey: [NSValue valueWithPointer: currentItem]];
+		[itemUpwards setOnSkeinLine: YES];
+		[itemUpwards setRecentlyPlayed: NO];
+		// [[itemForItem objectForKey: [NSValue valueWithPointer: currentItem]] setOnSkeinLine: YES];
 	}
 }
 
@@ -668,11 +677,16 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation,
 			float bgWidth = size.width;
 			//if (bgWidth < 90.0) bgWidth = 90.0;
 			
+#ifdef SkeinDrawingStyleNew
+			background = unchanged;
+			if ([item recentlyPlayed]) background = active;
+#else
 			if (![skeinItem played]) background = unplayed;
 			if ([skeinItem changed]) background = changed;
 			// if (skeinItem == activeItem) background = active;
 			if ([skeinItem parent] == activeItem) background = active;
 			// if (skeinItem == [self selectedItem]) background = selected;
+#endif
 			
 			[[self class] drawImage: background
 							atPoint: NSMakePoint(xpos - bgWidth/2.0, ypos-8 + (background==selected?2.0:0.0))
@@ -701,7 +715,11 @@ static NSImage* unplayed, *selected, *active, *unchanged, *changed, *annotation,
 			float startYPos = ypos + 10.0 + size.height;
 			float endYPos = ypos - 10.0 + itemHeight;
 			
+#ifdef SkeinDrawingStyleNew
+			NSColor* tempChildLink = [NSColor grayColor];
+#else
 			NSColor* tempChildLink = [NSColor blueColor];
+#endif
 			NSColor* permChildLink = [NSColor blackColor];
 			
 			ZoomSkeinLayoutItem* child;
