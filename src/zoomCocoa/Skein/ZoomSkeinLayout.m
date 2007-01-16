@@ -65,7 +65,7 @@ static NSImage* unchangedDark, *activeDark;
 	[[NSColor colorWithDeviceRed: 0.0
 						   green: 0.0
 							blue: 0.0
-						   alpha: 0.25] set];
+						   alpha: 0.3] set];
 	NSRectFill(imgRect);
 	
 	// The item
@@ -716,7 +716,7 @@ static NSImage* unchangedDark, *activeDark;
 			//if (bgWidth < 90.0) bgWidth = 90.0;
 			
 #ifdef SkeinDrawingStyleNew
-			BOOL darken = [[skeinItem commentary] length] > 0;
+			BOOL darken = [[skeinItem commentary] length] == 0;
 			
 			background = unchanged;
 			if (darken) background = unchangedDark;

@@ -67,6 +67,7 @@
 		4B39CA0708EEF8DE00BA5E90 /* ZoomMetadataImporter.mdimporter in Copy Metadata importer */ = {isa = PBXBuildFile; fileRef = 4B39C92B08EEF63400BA5E90 /* ZoomMetadataImporter.mdimporter */; };
 		4B39CA8408EEFE8F00BA5E90 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B39CA8308EEFE8F00BA5E90 /* CoreServices.framework */; };
 		4B39CBCB08EF006E00BA5E90 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B39CBCA08EF006E00BA5E90 /* CoreFoundation.framework */; };
+		4B3B74710B5AE34700FF1E14 /* ZoomSkein.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA2BCEC06949E730082C022 /* ZoomSkein.m */; };
 		4B43DA8409364C7400F03009 /* GlkWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4B43DA8309364C7400F03009 /* GlkWindow.nib */; };
 		4B43DAB109364CD700F03009 /* ZoomGlkWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B43DAAD09364CD100F03009 /* ZoomGlkWindowController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B43DAB209364CD800F03009 /* ZoomGlkWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B43DAAE09364CD100F03009 /* ZoomGlkWindowController.m */; };
@@ -2190,6 +2191,7 @@
 				4B0D81C70AC59C79003E8CCA /* ZoomWhiteView.m in Sources */,
 				4B0D81DE0AC59F3F003E8CCA /* ZoomFadeView.m in Sources */,
 				4BA8B9530B1BB3F4007CD75E /* main.m in Sources */,
+				4B3B74710B5AE34700FF1E14 /* ZoomSkein.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -18,9 +18,9 @@
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="eUPTpkz-Z-A"/>
-    <selected-columns ids=":941128d340f2709e21a6e303"/>
-    <selected-characters range="{22, 0}"/>
+    <selected-rows ids="caams0H9l8V"/>
+    <selected-columns ids=":078928d440f2709e21a6e303"/>
+    <selected-characters range="{88, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -1116,6 +1116,42 @@
               </p>
             </text>
           </note>
+        </item>
+        <item id="nOPuV0Vmxe4">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Can&apos;t set blorbs from the information window</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
+        <item id="l0b6v1IyTNb">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Focus fails to set itself properly when switching to fullscreen mode</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
+        <item id="caams0H9l8V">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>iFiction window switches to info tab when you switch to the blorb tab in the info window</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
         </item>
         <item id="aIB9tV2v4JK">
           <values>
