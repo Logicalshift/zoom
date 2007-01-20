@@ -210,8 +210,28 @@ static NSImage* unchangedDark, *activeDark;
 }
 
 - (void) setActiveItem: (ZoomSkeinItem*) item {
-	if (activeItem) [activeItem release];
+	if (activeItem) {
+		// If the new active item is not a child of the previous item, then unset the 'recently played' flag
+		if (![[activeItem children] containsObject: item]) {
+			ZoomSkeinItem* skeinItem = activeItem;
+			while (skeinItem != nil) {
+				ZoomSkeinLayoutItem* layoutItem = [itemForItem objectForKey: [NSValue valueWithPointer: skeinItem]];
+				[layoutItem setRecentlyPlayed: NO];
+				skeinItem = [skeinItem parent];
+			}
+		}
+		
+		[activeItem release];
+	}
 	activeItem = [item retain];
+	
+	// Mark everything upwards of the active item as played
+	ZoomSkeinItem* skeinItem = activeItem;
+	while (skeinItem != nil) {
+		ZoomSkeinLayoutItem* layoutItem = [itemForItem objectForKey: [NSValue valueWithPointer: skeinItem]];
+		[layoutItem setRecentlyPlayed: YES];
+		skeinItem = [skeinItem parent];
+	}
 }
 
 - (ZoomSkeinItem*) activeItem {
@@ -237,7 +257,6 @@ static NSImage* unchangedDark, *activeDark;
 		
 		while (layoutItem = [oldHighlightEnum nextObject])  {
 			[layoutItem setOnSkeinLine: NO];
-			[layoutItem setRecentlyPlayed: NO];
 		}
 	}
 	
@@ -252,7 +271,6 @@ static NSImage* unchangedDark, *activeDark;
 		// Store this item
 		ZoomSkeinLayoutItem* itemUpwards = [itemForItem objectForKey: [NSValue valueWithPointer: currentItem]];
 		[itemUpwards setOnSkeinLine: YES];
-		[itemUpwards setRecentlyPlayed: YES];
 		
 		// Up the tree
 		currentItem = [currentItem parent];
