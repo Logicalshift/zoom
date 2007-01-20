@@ -778,8 +778,10 @@ static NSImage* unchangedDark, *activeDark;
 				
 				// Construct the line we're going to draw
 				NSBezierPath* line = [[NSBezierPath alloc] init];
-				[line moveToPoint: NSMakePoint(xpos, startYPos)];
+				[line moveToPoint: NSMakePoint(xpos, startYPos-8.0)];
+				[line lineToPoint: NSMakePoint(xpos, startYPos)];
 				[line lineToPoint: NSMakePoint(childXPos, annotated?endYPos-18:endYPos)];
+				[line lineToPoint: NSMakePoint(childXPos, annotated?endYPos-14:endYPos+10.0)];
 				
 				// Set the appropriate colour and dash pattern
 				if ([[child item] temporary]) {
