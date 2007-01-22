@@ -1262,6 +1262,9 @@ int tableSorter(id a, id b, void* context) {
 		[picturePreview orderOut: self];
 	}
 	
+	// Do no flipping if the iFiction window is not active (prevents apparently mysterious behaviour)
+	if (flipToDescription && ![[self window] isKeyWindow]) flipToDescription = NO;
+	
 	// Flip any views that need flipping
 	if (flipToDescription) {
 		[[gameDetailView layoutManager] setBackgroundLayoutEnabled: NO];

@@ -18,9 +18,9 @@
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="caams0H9l8V"/>
+    <selected-rows ids="fN4737NPiQ8"/>
     <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{88, 0}"/>
+    <selected-characters range="{25, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -833,6 +833,56 @@
                 <null/>
               </values>
             </item>
+            <item id="cKwD_eRCl_t">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Quitting doesn&apos;t quite work right</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+              <children>
+                <item id="kERnBGQGMU-">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>No confirmation dialog when quitting a glk game</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
+                <item id="ooTMxYZNyVq">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>Input does not turn off when a glk game finishes</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
+                <item id="lJK85ctVx7_">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>No (finished) shown in the title bar when a glk game finishes</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
+              </children>
+            </item>
             <item id="mXSnU2DU2uF">
               <values>
                 <text>
@@ -877,6 +927,23 @@
                 </text>
                 <null/>
               </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <lit>Caching problem? If we get an insertion to the text without flushing the cache we&apos;ll probably see this...</lit>
+                    </run>
+                  </p>
+                  <p>
+                    <run/>
+                  </p>
+                  <p>
+                    <run>
+                      <lit>Need to detect edits somehow</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
             </item>
             <item id="bXklmDBudJA" state="checked">
               <values>
@@ -1352,6 +1419,29 @@
           </values>
           <note expanded="yes">
             <text>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                  <lit>[[[ Argh, no idea why this is happening: it shouldn&apos;t be!! ]]]</lit>
+                </run>
+              </p>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color w="0"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                  </style>
+                </run>
+              </p>
               <p>
                 <run>
                   <style>
