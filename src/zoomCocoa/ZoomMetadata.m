@@ -14,6 +14,8 @@
 
 #define ReportErrors
 
+NSString* ZoomMetadataWillDestroyStory = @"ZoomMetadataWillDestroyStory";
+
 @implementation ZoomMetadata
 
 // = Initialisation, etc =
@@ -140,6 +142,12 @@
 // = Storing information =
 
 - (void) removeStoryWithIdent: (ZoomStoryID*) ident {
+	[[NSNotificationCenter defaultCenter] postNotificationName: ZoomMetadataWillDestroyStory
+														object: self
+													  userInfo: [NSDictionary dictionaryWithObjectsAndKeys: 
+														  ident, @"Ident",
+														  nil]];
+	
 	[dataLock lock];
 	
 	IFMB_RemoveStoryWithId(metadata, [ident ident]);

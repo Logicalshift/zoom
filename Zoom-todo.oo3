@@ -18,9 +18,9 @@
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="fN4737NPiQ8"/>
-    <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{25, 0}"/>
+    <selected-rows ids="eUPTpkz-Z-A"/>
+    <selected-columns ids=":941128d340f2709e21a6e303"/>
+    <selected-characters range="{142, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -1163,7 +1163,7 @@
             </item>
           </children>
         </item>
-        <item id="eUPTpkz-Z-A">
+        <item id="eUPTpkz-Z-A" state="checked">
           <values>
             <text>
               <p>
@@ -1178,7 +1178,7 @@
             <text>
               <p>
                 <run>
-                  <lit>Caused by notes window</lit>
+                  <lit>Caused by notes window... Not non-ZCode at all, in fact, but due to what happens when a story is deleted while a ZoomStory object still exists</lit>
                 </run>
               </p>
             </text>

@@ -184,6 +184,11 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 		metadata = [metadataContainer retain];
 		
 		extraMetadata = nil;
+		
+		[[NSNotificationCenter defaultCenter] addObserver: self
+												 selector: @selector(storyDying:)
+													 name: ZoomMetadataWillDestroyStory
+												   object: metadataContainer];
 	}
 	
 	return self;
@@ -195,16 +200,41 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	
 	if (metadata) [metadata release];
 	if (extraMetadata) [extraMetadata release];
+	
+	[[NSNotificationCenter defaultCenter] removeObserver: self];
 		
 	[super dealloc];
 }
 
+// = Notifications =
+
+- (void) storyDying: (NSNotification*) not {
+	// If this story is removed from the metabase, then invalidate this object
+	//
+	// Ideally, all story objects should be destroyed before they get removed from the metabase, but 
+	// it's going to be far too hard to keep track of them all, so this will do as an alternative.
+	//
+	// An improvement that might be made: stories could be put into a temporary metabase here so that
+	// they continue to be completely valid (and recoverable if necessary). However, this is not yet
+	// a required feature.
+	//
+	
+	ZoomStoryID* ident = [[not userInfo] objectForKey: @"Ident"];
+	
+	if ([self hasID: ident]) {
+		story = NULL;
+	}
+}
+
 // = Accessors =
+
 - (struct IFStory*) story {
 	return story;
 }
 
-- (void) addID: (ZoomStoryID*) newID {	
+- (void) addID: (ZoomStoryID*) newID {
+	if (story == NULL) return;
+	
 	IFID oldId = IFMB_IdForStory(story);
 	
 	if (IFMB_CompareIds(oldId, [newID ident]) != 0) {
@@ -384,6 +414,7 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 }
 
 // = NSCopying =
+
 /*
 - (id) copyWithZone: (NSZone*) zone {
 	IFMDStory* newStory = IFStory_Alloc();
@@ -399,6 +430,7 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 */
 
 // = Story pseudo-dictionary methods =
+
 - (void) loadExtraMetadata {
 	if (extraMetadata != nil) return;
 	
@@ -491,6 +523,8 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 }
 
 - (id) objectForKey: (id) key {
+	if (story == NULL) return;
+
 	if (![key isKindOfClass: [NSString class]]) {
 		[NSException raise: @"ZoomKeyNotString" 
 					format: @"Metadata key is not a string"];
@@ -524,6 +558,8 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 
 - (void) setObject: (id) value
 			forKey: (id) key {
+	if (story == NULL) return;
+
 	if ([key isEqualToString: @"rating"] && [value isKindOfClass: [NSNumber class]]) {
 		[self setRating: [value floatValue]];
 		return;
@@ -566,8 +602,11 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	[self heyLookThingsHaveChangedOohShiney];
 }
 
-// Searching
+// = Searching =
+
 - (BOOL) containsText: (NSString*) text {
+	if (story == NULL) return NO;
+
 	// List of strings to check against
 	NSArray* stringsToCheck = [[NSArray alloc] initWithObjects: 
 		[self title], [self headline], [self author], [self genre], [self group], nil];
@@ -605,6 +644,7 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 }
 
 // = Sending notifications =
+
 - (void) heyLookThingsHaveChangedOohShiney {
 	[[NSNotificationCenter defaultCenter] postNotificationName: ZoomStoryDataHasChangedNotification
 														object: self];
@@ -613,10 +653,13 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 // Identifying and comparing stories
 
 - (ZoomStoryID*) storyID {
+	if (story == NULL) return nil;
 	return [[[ZoomStoryID alloc] initWithIdent: IFMB_IdForStory(story)] autorelease];
 }
 
 - (NSArray*) storyIDs {
+	if (story == NULL) return nil;
+
 	NSMutableArray* idArray = [NSMutableArray array];
 	
 	[metadata lock];
@@ -646,12 +689,16 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 }
 
 - (BOOL) hasID: (ZoomStoryID*) storyID {
+	if (story == NULL) return NO;
+
 	NSArray* ourIds = [self storyIDs];
 	
 	return [ourIds containsObject: storyID];
 }
 
 - (BOOL) isEquivalentToStory: (ZoomStory*) eqStory {
+	if (story == NULL) return NO;
+
 	if (eqStory == self) return YES; // Shortcut
 	
 	NSArray* theirIds = [eqStory storyIDs];
