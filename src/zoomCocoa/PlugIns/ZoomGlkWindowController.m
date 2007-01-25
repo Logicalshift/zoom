@@ -396,4 +396,60 @@
 	}
 }
 
+// = Closing the window =
+
+- (void) confirmFinish:(NSWindow *)sheet 
+			returnCode:(int)returnCode 
+		   contextInfo:(void *)contextInfo {
+	if (returnCode == NSAlertAlternateReturn) {
+		// Close the window
+		closeConfirmed = YES;
+		[[NSRunLoop currentRunLoop] performSelector: @selector(performClose:)
+											 target: [self window]
+										   argument: self
+											  order: 32
+											  modes: [NSArray arrayWithObject: NSDefaultRunLoopMode]];
+	}
+}
+
+- (BOOL) windowShouldClose: (id) sender {
+	// Get confirmation if required
+	if (!closeConfirmed && running && [[ZoomPreferences globalPreferences] confirmGameClose]) {
+		BOOL autosave = [[ZoomPreferences globalPreferences] autosaveGames];
+		NSString* msg = @"Sarah O'Conner will be terminated.";
+		
+		msg = @"There is still a story playing in this window. Are you sure you wish to finish it without saving? The current state of the game will be lost.";
+		
+		NSBeginAlertSheet(@"Finish the game?",
+						  @"Keep playing", @"Finish", nil,
+						  [self window], self,
+						  @selector(confirmFinish:returnCode:contextInfo:), nil,
+						  nil, msg);
+		
+		return NO;
+	}
+	
+	return YES;
+}
+
+// = Ending the game =
+
+- (void) taskHasStarted {
+	[[self window] setDocumentEdited: YES];	
+	
+	running = YES;
+	closeConfirmed = NO;
+}
+
+- (void) taskHasCrashed {
+	[[self window] setTitle: [NSString stringWithFormat: @"%@ (crashed)", [[self document] displayName], nil]];
+}
+
+- (void) taskHasFinished {
+	[[self window] setTitle: [NSString stringWithFormat: @"%@ (finished)", [[self document] displayName], nil]];	
+
+	[[self window] setDocumentEdited: NO];
+	running = NO;
+}
+
 @end

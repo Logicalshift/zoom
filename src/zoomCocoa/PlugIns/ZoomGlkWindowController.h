@@ -30,6 +30,9 @@
 	BOOL ttsAdded;													// Whether or not the GlkView has the tts receiver added to it
 	ZoomTextToSpeech* tts;											// Text-to-speech object
 	
+	BOOL running;
+	BOOL closeConfirmed;											// YES if the user has OKed closing the game while it's still running
+	
 	ZoomSkein* skein;												// The skein/transcript for this window
 }
 
