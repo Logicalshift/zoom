@@ -18,9 +18,9 @@
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="kc5b9AkzMBS"/>
-    <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{18, 0}"/>
+    <selected-rows ids="bXklmDBudJA"/>
+    <selected-columns ids=":941128d340f2709e21a6e303"/>
+    <selected-characters range="{189, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -848,12 +848,16 @@
                 <text>
                   <p>
                     <run>
+                      <lit>... Probably fixed ...</lit>
+                    </run>
+                  </p>
+                  <p/>
+                  <p>
+                    <run>
                       <lit>Caching problem? If we get an insertion to the text without flushing the cache we&apos;ll probably see this...</lit>
                     </run>
                   </p>
-                  <p>
-                    <run/>
-                  </p>
+                  <p/>
                   <p>
                     <run>
                       <lit>Need to detect edits somehow</lit>
