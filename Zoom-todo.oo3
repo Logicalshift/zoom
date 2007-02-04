@@ -18,9 +18,9 @@
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="bXklmDBudJA"/>
-    <selected-columns ids=":941128d340f2709e21a6e303"/>
-    <selected-characters range="{189, 0}"/>
+    <selected-rows ids="fN4737NPiQ8"/>
+    <selected-columns ids=":078928d440f2709e21a6e303"/>
+    <selected-characters range="{17, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -809,7 +809,7 @@
         <null/>
       </values>
       <children>
-        <item id="gMke-ziNo2M" expanded="yes" state="indeterminate">
+        <item id="gMke-ziNo2M" state="indeterminate">
           <values>
             <text>
               <p>
@@ -851,13 +851,17 @@
                       <lit>... Probably fixed ...</lit>
                     </run>
                   </p>
-                  <p/>
+                  <p>
+                    <run/>
+                  </p>
                   <p>
                     <run>
                       <lit>Caching problem? If we get an insertion to the text without flushing the cache we&apos;ll probably see this...</lit>
                     </run>
                   </p>
-                  <p/>
+                  <p>
+                    <run/>
+                  </p>
                   <p>
                     <run>
                       <lit>Need to detect edits somehow</lit>
@@ -1187,6 +1191,18 @@
             <null/>
           </values>
         </item>
+        <item id="jRTGg40_Z8M">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Setting fullscreen while on the screen without the dock hides it on the screen *with* the dock</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
         <item id="l0b6v1IyTNb">
           <values>
             <text>
@@ -1331,7 +1347,7 @@
             </item>
           </children>
         </item>
-        <item id="fN4737NPiQ8">
+        <item id="fN4737NPiQ8" state="checked">
           <values>
             <text>
               <p>

@@ -263,11 +263,17 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	
 	[mainTableView addTableColumn: [newColumn autorelease]];
 	
+	// Turn on autosaving
+	[mainTableView setAutosaveName: @"ZoomStoryTable"];
+	[mainTableView setAutosaveTableColumns: YES];
+	
+	// Update the table when the story list changes
 	[[NSNotificationCenter defaultCenter] addObserver: self
 											 selector: @selector(storyListChanged:)
 												 name: ZoomStoryOrganiserChangedNotification
 											   object: [ZoomStoryOrganiser sharedStoryOrganiser]];
 	
+	// Deal with progress indicator notifications
 	[[NSNotificationCenter defaultCenter] addObserver: self
 											 selector: @selector(storyProgressChanged:)
 												 name: ZoomStoryOrganiserProgressNotification
