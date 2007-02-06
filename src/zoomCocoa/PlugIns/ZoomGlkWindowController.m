@@ -461,8 +461,12 @@
 			[normalWindow setWindowController: self];
 			[self setWindow: normalWindow];
 			[normalWindow setInitialFirstResponder: glkView];
-			[fullscreenWindow orderOut: self];
+			[normalWindow setFrame: oldWindowFrame
+						   display: YES];
 			[normalWindow makeKeyAndOrderFront: self];
+			
+			[fullscreenWindow orderOut: self];
+			[fullscreenWindow release]; fullscreenWindow = nil;
  		}
 		
 		//[self setWindowFrameAutosaveName: @"ZoomClientWindow"];
