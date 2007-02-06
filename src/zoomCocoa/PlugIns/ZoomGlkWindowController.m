@@ -14,6 +14,7 @@
 #import "ZoomGlkDocument.h"
 #import "ZoomGameInfoController.h"
 #import "ZoomNotesController.h"
+#import "ZoomWindowThatCanBecomeKey.h"
 
 #import <GlkView/GlkHub.h>
 #import <GlkView/GlkView.h>
@@ -170,6 +171,8 @@
 	[logo release];
 	[tts release];
 	[skein release];
+	[normalWindow release];
+	[fullscreenWindow release];
 	
 	if (glkView) [glkView setDelegate: nil];
 	
@@ -416,7 +419,7 @@
 	// Get confirmation if required
 	if (!closeConfirmed && running && [[ZoomPreferences globalPreferences] confirmGameClose]) {
 		BOOL autosave = [[ZoomPreferences globalPreferences] autosaveGames];
-		NSString* msg = @"Sarah O'Conner will be terminated.";
+		NSString* msg;
 		
 		msg = @"There is still a story playing in this window. Are you sure you wish to finish it without saving? The current state of the game will be lost.";
 		
@@ -430,6 +433,123 @@
 	}
 	
 	return YES;
+}
+
+// = Going fullscreen =
+
+
+- (IBAction) playInFullScreen: (id) sender {
+	if (isFullscreen) {
+		// Show the menubar
+		[NSMenu setMenuBarVisible: YES];
+		
+		// Stop being fullscreen
+		[glkView retain];
+		[glkView removeFromSuperview];
+		
+		[glkView setScaleFactor: 1.0];
+		[glkView setFrame: [[normalWindow contentView] bounds]];
+		[[normalWindow contentView] addSubview: glkView];
+		[glkView release];
+		
+		// Swap windows back
+		if (normalWindow) {
+			[fullscreenWindow setDelegate: nil];
+			[fullscreenWindow setInitialFirstResponder: nil];
+			
+			[normalWindow setDelegate: self];
+			[normalWindow setWindowController: self];
+			[self setWindow: normalWindow];
+			[normalWindow setInitialFirstResponder: glkView];
+			[fullscreenWindow orderOut: self];
+			[normalWindow makeKeyAndOrderFront: self];
+ 		}
+		
+		//[self setWindowFrameAutosaveName: @"ZoomClientWindow"];
+		isFullscreen = NO;
+	} else {
+		// Do nothing if the game is not running
+		if (!running) return;
+		
+		// As of 10.4, we need to create a separate full-screen window (10.4 tries to be 'clever' with the window borders, which messes things up
+		if (!normalWindow) normalWindow = [[self window] retain];
+		if (!fullscreenWindow) {
+			fullscreenWindow = [[ZoomWindowThatCanBecomeKey alloc] initWithContentRect: [[[self window] contentView] bounds] 
+																			 styleMask: NSBorderlessWindowMask
+																			   backing: NSBackingStoreBuffered
+																				 defer: YES];
+			
+			[fullscreenWindow setLevel: NSStatusWindowLevel];
+			[fullscreenWindow setHidesOnDeactivate: YES];
+			[fullscreenWindow setReleasedWhenClosed: NO];
+			
+			if (![fullscreenWindow canBecomeKeyWindow]) {
+				[NSException raise: @"ZoomProgrammerIsASpoon"
+							format: @"For some reason, the full screen window won't accept key"];
+			}
+		}
+		
+		// Swap the displayed windows over
+		[self setWindowFrameAutosaveName: @""];
+		[fullscreenWindow setFrame: [normalWindow frame]
+						   display: NO];
+		[fullscreenWindow makeKeyAndOrderFront: self];
+		
+		[glkView retain];
+		[glkView removeFromSuperview];
+		[[fullscreenWindow contentView] addSubview: glkView];
+		[glkView release];
+		
+		[normalWindow setInitialFirstResponder: nil];
+		[normalWindow setDelegate: nil];
+		
+		[fullscreenWindow setInitialFirstResponder: glkView];
+		[fullscreenWindow makeFirstResponder: glkView];
+		[fullscreenWindow setDelegate: self];
+		
+		[fullscreenWindow setWindowController: self];
+		[self setWindow: fullscreenWindow];
+		[normalWindow orderOut: self];
+		
+		// Start being fullscreen
+		[[self window] makeKeyAndOrderFront: self];
+		oldWindowFrame = [[self window] frame];
+		
+		// Finish off glkView
+		NSSize oldGlkViewSize = [glkView frame].size;
+		
+		[glkView retain];
+		[glkView removeFromSuperviewWithoutNeedingDisplay];
+		
+		// Hide the menubar
+		[NSMenu setMenuBarVisible: NO];
+		
+		// Resize the window
+		NSRect frame = [[[self window] screen] frame];
+		[[self window] setShowsResizeIndicator: NO];
+		frame = [NSWindow frameRectForContentRect: frame
+										styleMask: NSBorderlessWindowMask];
+		[[self window] setFrame: frame
+						display: YES
+						animate: YES];
+		
+		// Resize, reposition the glkView
+		NSRect newGlkViewFrame = [[[self window] contentView] bounds];
+		NSRect newGlkViewBounds;
+		
+		newGlkViewBounds.origin = NSMakePoint(0,0);
+		newGlkViewBounds.size   = newGlkViewFrame.size;
+		
+		double ratio = newGlkViewFrame.size.width/oldGlkViewSize.width;
+		[glkView setFrame: newGlkViewFrame];
+		[glkView setScaleFactor: ratio];
+		
+		// Add it back in again
+		[[[self window] contentView] addSubview: glkView];
+		[glkView release];
+		
+		isFullscreen = YES;
+	}
 }
 
 // = Ending the game =
@@ -446,6 +566,8 @@
 }
 
 - (void) taskHasFinished {
+	if (isFullscreen) [self playInFullScreen: self];
+	
 	[[self window] setTitle: [NSString stringWithFormat: @"%@ (finished)", [[self document] displayName], nil]];	
 
 	[[self window] setDocumentEdited: NO];

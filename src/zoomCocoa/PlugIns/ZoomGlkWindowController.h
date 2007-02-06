@@ -34,6 +34,11 @@
 	BOOL closeConfirmed;											// YES if the user has OKed closing the game while it's still running
 	
 	ZoomSkein* skein;												// The skein/transcript for this window
+	
+	BOOL isFullscreen;												// YES if this window has been switched to full-screen mode
+	NSWindow* normalWindow;											// Cached version of the normal-sized window
+	NSWindow* fullscreenWindow;										// Cached version of the full-screen window
+	NSRect oldWindowFrame;											// Size of the window before it became full-screen
 }
 
 // Configuring the client

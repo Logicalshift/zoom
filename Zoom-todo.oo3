@@ -18,8 +18,8 @@
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="fN4737NPiQ8"/>
-    <selected-columns ids=":078928d440f2709e21a6e303"/>
+    <selected-rows ids="jRTGg40_Z8M"/>
+    <selected-columns ids=":941128d340f2709e21a6e303"/>
     <selected-characters range="{17, 0}"/>
   </editor>
   <columns>
@@ -1202,6 +1202,15 @@
             </text>
             <null/>
           </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>Not high priority</lit>
+                </run>
+              </p>
+            </text>
+          </note>
         </item>
         <item id="l0b6v1IyTNb">
           <values>
@@ -1215,7 +1224,7 @@
             <null/>
           </values>
         </item>
-        <item id="caams0H9l8V">
+        <item id="caams0H9l8V" state="checked">
           <values>
             <text>
               <p>
@@ -1226,6 +1235,15 @@
             </text>
             <null/>
           </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>Should have fixed this, though I&apos;ve never observed it (iFiction window will now only automatically switch when it has focus)</lit>
+                </run>
+              </p>
+            </text>
+          </note>
         </item>
         <item id="aIB9tV2v4JK">
           <values>

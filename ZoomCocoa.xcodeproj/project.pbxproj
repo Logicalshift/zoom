@@ -109,8 +109,6 @@
 		4B95CDA1C5B03AD500FD9F27 /* ZoomSkeinController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B18852906987AC6004D8501 /* ZoomSkeinController.h */; };
 		4B95CDA2C5B03AD500FD9F27 /* ZoomSkeinController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B18852A06987AC6004D8501 /* ZoomSkeinController.m */; };
 		4B95CDB9C5B03AD500FD9F27 /* ZoomSkeinController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B18852906987AC6004D8501 /* ZoomSkeinController.h */; };
-		4BA66B2C0906538F000A3852 /* ZoomWindowThatCanBecomeKey.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA66B2A0906538F000A3852 /* ZoomWindowThatCanBecomeKey.h */; };
-		4BA66B2D0906538F000A3852 /* ZoomWindowThatCanBecomeKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA66B2B0906538F000A3852 /* ZoomWindowThatCanBecomeKey.m */; };
 		4BA8B5770B1B0479007CD75E /* ZoomInputLine.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3DA12F068DAF9E00B7090F /* ZoomInputLine.h */; };
 		4BA8B5780B1B047A007CD75E /* ZoomTextToSpeech.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BE5F510075121A400C25A70 /* ZoomTextToSpeech.h */; };
 		4BA8B5820B1B053E007CD75E /* ZoomTextToSpeech.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BE5F510075121A400C25A70 /* ZoomTextToSpeech.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -329,6 +327,8 @@
 		4BD274BA08701E6700C1AE15 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BCF3F2B050F8E2400A8E303 /* Foundation.framework */; };
 		4BD274BC08701E6700C1AE15 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B0A32AE06A5966D00BB8878 /* WebKit.framework */; };
 		4BD274BD08701E6700C1AE15 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5CBB9B069D671200C0AA88 /* Carbon.framework */; };
+		4BE175940B792BD80094B73D /* ZoomWindowThatCanBecomeKey.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA66B2A0906538F000A3852 /* ZoomWindowThatCanBecomeKey.h */; };
+		4BE175950B792BD90094B73D /* ZoomWindowThatCanBecomeKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA66B2B0906538F000A3852 /* ZoomWindowThatCanBecomeKey.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -1501,6 +1501,7 @@
 				4B8CE6F50AD95A3A008235D2 /* md5.h in Headers */,
 				4B152CE20B46CBEB008CC1EF /* ZoomGameInfoController.h in Headers */,
 				4B152D2F0B46D2F9008CC1EF /* ZoomNotesController.h in Headers */,
+				4BE175940B792BD80094B73D /* ZoomWindowThatCanBecomeKey.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1585,7 +1586,6 @@
 				4BB8C1B208C249F400D7D334 /* ZoomBlorbFile.h in Headers */,
 				4BB8C1B308C249F400D7D334 /* ZoomConnector.h in Headers */,
 				4BB8C1B508C249F400D7D334 /* ZoomSkeinLayoutItem.h in Headers */,
-				4BA66B2C0906538F000A3852 /* ZoomWindowThatCanBecomeKey.h in Headers */,
 				4B65B3A10979B981002D5534 /* ZoomHQImageView.h in Headers */,
 				4B0D80DB0AC590A4003E8CCA /* ZoomFlipView.h in Headers */,
 				4B0D81C60AC59C79003E8CCA /* ZoomWhiteView.h in Headers */,
@@ -2121,6 +2121,7 @@
 				4B8CE6F40AD95A3A008235D2 /* md5.c in Sources */,
 				4B152CE30B46CBED008CC1EF /* ZoomGameInfoController.m in Sources */,
 				4B152D300B46D2F9008CC1EF /* ZoomNotesController.m in Sources */,
+				4BE175950B792BD90094B73D /* ZoomWindowThatCanBecomeKey.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2185,7 +2186,6 @@
 				4BB8C1F308C249F400D7D334 /* ZoomStoryTableView.m in Sources */,
 				4BB8C1F408C249F400D7D334 /* ZoomResourceDrop.m in Sources */,
 				4BB8C1F508C249F400D7D334 /* ZoomClientController.m in Sources */,
-				4BA66B2D0906538F000A3852 /* ZoomWindowThatCanBecomeKey.m in Sources */,
 				4B65B3A20979B981002D5534 /* ZoomHQImageView.m in Sources */,
 				4B0D80DC0AC590A4003E8CCA /* ZoomFlipView.m in Sources */,
 				4B0D81C70AC59C79003E8CCA /* ZoomWhiteView.m in Sources */,
