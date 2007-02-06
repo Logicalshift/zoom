@@ -2664,7 +2664,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		return YES;
 	}
 	
-	return NO;
+	return [super acceptsFirstResponder];
 }
 
 - (BOOL) becomeFirstResponder {
@@ -2673,7 +2673,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		return YES;
 	}
 	
-	return NO;
+	return [super becomeFirstResponder];
 }
 
 - (BOOL) resignFirstResponder {
@@ -2681,7 +2681,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 		[pixmapCursor setFirst: NO];
 	}
 	
-	return YES;
+	return [super resignFirstResponder];
 }
 
 // = Manual input =

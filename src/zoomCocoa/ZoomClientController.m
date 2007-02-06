@@ -502,8 +502,10 @@
 		[normalWindow setInitialFirstResponder: nil];
 		[normalWindow setDelegate: nil];
 
-		[fullscreenWindow setInitialFirstResponder: zoomView];
-		[fullscreenWindow makeFirstResponder: zoomView];
+		NSView* newFirstResponder = [zoomView textView];
+		if (newFirstResponder == nil) newFirstResponder = zoomView;
+		[fullscreenWindow setInitialFirstResponder: newFirstResponder];
+		[fullscreenWindow makeFirstResponder: newFirstResponder];
 		[fullscreenWindow setDelegate: self];
 
 		[fullscreenWindow setWindowController: self];

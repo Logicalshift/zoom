@@ -437,7 +437,6 @@
 
 // = Going fullscreen =
 
-
 - (IBAction) playInFullScreen: (id) sender {
 	if (isFullscreen) {
 		// Show the menubar
