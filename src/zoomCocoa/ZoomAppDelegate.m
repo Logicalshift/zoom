@@ -471,12 +471,15 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 		directory = NSHomeDirectory();
 	}
 	
+	ZoomSkein* skein = [[ZoomSkeinController sharedSkeinController] skein];
+	NSString* xml = [skein xmlData];
+	
     [panel beginSheetForDirectory: directory
                              file: nil
                    modalForWindow: [NSApp mainWindow]
                     modalDelegate: self
                    didEndSelector: @selector(saveTranscript:returnCode:contextInfo:) 
-                      contextInfo: [[[[ZoomSkeinController sharedSkeinController] skein] xmlData] retain]];
+                      contextInfo: [xml retain]];
 }
 
 - (void) saveTranscript: (NSSavePanel *) panel 
