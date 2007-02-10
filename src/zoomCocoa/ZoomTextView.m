@@ -62,7 +62,10 @@
 
 // (Draw the overlays)
 - (void) drawRect: (NSRect) r {
+	// Perform standard text drawing actions (we save state so that we don't get the text view clip rectangle at the end)
+	[[NSGraphicsContext currentContext] saveGraphicsState];	
     [super drawRect: r];
+	[[NSGraphicsContext currentContext] restoreGraphicsState];
 
     NSRect ourBounds = [self bounds];
     NSRect superBounds = [[self superview] frame];
