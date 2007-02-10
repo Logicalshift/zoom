@@ -18,9 +18,9 @@
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="nSlBo8nPQ8a"/>
+    <selected-rows ids="fN4737NPiQ8"/>
     <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{56, 0}"/>
+    <selected-characters range="{0, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -1233,6 +1233,18 @@
             </text>
           </note>
         </item>
+        <item id="epnQGqSND0O">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Context menu for the - start - skein item is messed up (two dividers in a row)</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
         <item id="caams0H9l8V" state="checked">
           <values>
             <text>
@@ -1254,7 +1266,7 @@
             </text>
           </note>
         </item>
-        <item id="aIB9tV2v4JK" expanded="yes" state="indeterminate">
+        <item id="aIB9tV2v4JK" state="checked">
           <values>
             <text>
               <p>
@@ -1278,7 +1290,7 @@
                 <null/>
               </values>
             </item>
-            <item id="a4yY9jSQ1Sc">
+            <item id="a4yY9jSQ1Sc" state="checked">
               <values>
                 <text>
                   <p>

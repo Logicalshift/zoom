@@ -21,5 +21,6 @@
 - (void) clearPastedLines;
 
 - (void) setPastedLineScaleFactor: (float) scaleFactor;
+- (void) offsetPastedLines: (float) offset;
 
 @end

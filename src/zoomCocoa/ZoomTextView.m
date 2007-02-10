@@ -148,15 +148,6 @@
 												 lineRect.size.height)
 							operation:NSCompositeSourceOver
 							 fraction:fadeAmount];
-				/*
-                [fadeImage compositeToPoint:NSMakePoint(lineRect.origin.x,
-                                                        lineRect.origin.y+lineRect.size.height)
-                                   fromRect:NSMakeRect(0,0,
-                                                       lineRect.size.width,
-                                                       lineRect.size.height)
-                                  operation:NSCompositeSourceOver
-                                   fraction:fadeAmount];
-				 */
 
                 [fadeImage release];
             } else {
@@ -296,6 +287,36 @@
 
     // Scrub the lines
     [win cutLines];
+}
+
+- (void) offsetPastedLines: (float) offset {
+	if (offset == 0) return;
+	offset /= pastedScaleFactor;
+	
+	// Subtract offset from all of the pasted lines, and remove any that have disappeared
+	NSMutableArray* newLines = [[NSMutableArray alloc] init];
+	
+	NSEnumerator* pastedEnum = [pastedLines objectEnumerator];
+	NSArray* line;
+	while (line = [pastedEnum nextObject]) {
+		// Work out the new position of this line
+		NSRect lineRect = [[line objectAtIndex: 0] rectValue];;
+		NSAttributedString* str = [line objectAtIndex: 1];
+		
+		lineRect.origin.y -= offset;
+
+		// If it's still in the view, then add it to the modified array
+		if (NSMaxY(lineRect) > 0) {
+			[newLines addObject: [NSArray arrayWithObjects:
+				[NSValue valueWithRect: lineRect],
+				str,
+				nil]];
+		}
+	}
+	
+	// Replace the pasted lines with the new set of lines
+	[pastedLines autorelease];
+	pastedLines = newLines;
 }
 
 @end

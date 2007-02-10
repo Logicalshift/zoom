@@ -444,10 +444,30 @@ static void finalizeViews(void) {
     exclusiveMode = NO;
 }
 
+- (float) bufferHeight {
+	NSLayoutManager* mgr = [textView layoutManager];
+	NSTextStorage* textStorage = [textView textStorage];
+	
+	NSRange lastGlyph = [mgr glyphRangeForCharacterRange: NSMakeRange(0, [textStorage length])
+									actualCharacterRange: nil];
+	
+	if (lastGlyph.location + lastGlyph.length > 0) {
+		return NSMaxY([mgr boundingRectForGlyphRange: lastGlyph
+									 inTextContainer: [textView textContainer]]);
+	}
+	
+	return 0;
+}
+
 - (void) flushBuffer: (ZBuffer*) toFlush {
 #ifdef ZoomTraceTextEditing
 	NSLog(@"Begin editing: flushBuffer");
 #endif
+	
+	[[textView layoutManager] setBackgroundLayoutEnabled: NO];
+	BOOL truncated = NO;
+	float oldHeight = [self bufferHeight];
+
 	[[textView textStorage] beginEditing];
 	editingTextView = YES;
 
@@ -464,6 +484,7 @@ static void finalizeViews(void) {
 			// Need to truncate
 			[[textView textStorage] deleteCharactersInRange: NSMakeRange(0, len - preserve)];
 			inputPos -= len-preserve;
+			truncated = YES;
 		}
 	}
 	
@@ -473,7 +494,13 @@ static void finalizeViews(void) {
 	[[textView textStorage] endEditing];
 	editingTextView = NO;
 	
+	float newHeight = [self bufferHeight];
+	if (newHeight != oldHeight && truncated) {
+		[textView offsetPastedLines: oldHeight-newHeight];
+	}
+	
 	if (willScrollToEnd) [self scrollToEnd];
+	[[textView layoutManager] setBackgroundLayoutEnabled: YES];
 }
 
 // Set whether or not we recieve certain types of data
