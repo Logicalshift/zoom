@@ -15,6 +15,7 @@
     self = [super initWithFrame: frame];
     if (self) {
         pastedLines = [[NSMutableArray allocWithZone: [self zone]] init];
+		pastedScaleFactor = 1.0;
     }
     return self;
 }
@@ -78,24 +79,40 @@
     }
     ZoomView* zoomView = (ZoomView*) superview;
 
-    double offset = [zoomView upperBufferHeight];
+    double offset = [zoomView upperBufferHeight]/pastedScaleFactor;
     
     // Draw pasted lines
     NSEnumerator* lineEnum = [pastedLines objectEnumerator];
     NSArray* line;
 	
 	NSAffineTransform* invertTransform = [NSAffineTransform transform];
-	[invertTransform scaleXBy: 1.0 yBy: -1.0];
+	[invertTransform scaleXBy: 1.0 
+						  yBy: -1.0];
 
+	NSAffineTransform* scaleTransform = [NSAffineTransform transform];
+	[scaleTransform scaleXBy: pastedScaleFactor
+						 yBy: pastedScaleFactor];
+	
     while (line = [lineEnum nextObject]) {
         NSValue* rect = [line objectAtIndex: 0];
         NSRect   lineRect = [rect rectValue];
 
         lineRect.origin.y -= offset;
-
+		NSRect nonScaledRect = lineRect;
+		
+		lineRect.origin.x *= pastedScaleFactor;
+		lineRect.origin.y *= pastedScaleFactor;
+		lineRect.size.width *= pastedScaleFactor;
+		lineRect.size.height *= pastedScaleFactor;
+		
+		lineRect.origin.x = floorf(lineRect.origin.x+0.5);
+		lineRect.origin.y = floorf(lineRect.origin.y+0.5);
+		lineRect.size.width = floorf(lineRect.size.width+0.5);
+		lineRect.size.height = floorf(lineRect.size.height+0.5);
+		
         if (NSIntersectsRect(r, lineRect)) {
             NSAttributedString* str = [line objectAtIndex: 1];
-
+			
             if (NSMaxY(lineRect) < NSMaxY(ourBounds)-superBounds.size.height) {
                 // Draw it faded out (so text underneath becomes increasingly visible)
                 NSImage* fadeImage;
@@ -114,10 +131,11 @@
 
 				[[NSGraphicsContext currentContext] saveGraphicsState];					
 
-				// (Grr, under 10.4, the images come out upside-down, something that could be avoided under 10.3 by scaling the image)
+				// Because text views are drawn flipped, we need to draw the image upsidedown
+				[scaleTransform concat];
 				[invertTransform concat];
                 
-				[str drawAtPoint: NSMakePoint(0, -lineRect.size.height)];
+				[str drawAtPoint: NSMakePoint(0, -lineRect.size.height/pastedScaleFactor)];
 				[[NSGraphicsContext currentContext] restoreGraphicsState];
                 [fadeImage unlockFocus];
 
@@ -142,7 +160,10 @@
 
                 [fadeImage release];
             } else {
-                [str drawAtPoint: lineRect.origin];
+				[[NSGraphicsContext currentContext] saveGraphicsState];	
+				[scaleTransform concat];
+                [str drawAtPoint: nonScaledRect.origin];
+				[[NSGraphicsContext currentContext] restoreGraphicsState];
             }
         }
     }
@@ -155,6 +176,10 @@
 
 - (void) clearPastedLines {
     [pastedLines removeAllObjects];
+}
+
+- (void) setPastedLineScaleFactor: (float) scaleFactor {
+	pastedScaleFactor = scaleFactor;
 }
 
 - (void) pasteUpperWindowLinesFrom: (ZoomUpperWindow*) win {
@@ -199,6 +224,8 @@
         [NSDictionary dictionaryWithObjectsAndKeys:
             [zoomView fontWithStyle:ZFixedStyle], NSFontAttributeName, nil]];
     
+	NSFontManager* fm = [NSFontManager sharedFontManager];
+	
     // Perform the pasting
     changed = NO;
 
@@ -213,7 +240,43 @@
             r = NSMakeRect(0, topPoint+fixedSize.height*(l-[win length]), 0,0);
             r.origin.y += offset;
             r.size = [str size];
+			
+			// Scale down the rectangle by the scale factor
+			if (pastedScaleFactor != 1.0) {
+				r.origin.x /= pastedScaleFactor;
+				r.origin.y /= pastedScaleFactor;
+				r.size.width /= pastedScaleFactor;
+				r.size.height /= pastedScaleFactor;
 
+				// Scale down the font size by the scale factor
+				NSMutableAttributedString* editedStr = [[str mutableCopy] autorelease];
+				
+				NSRange editRange;
+				NSDictionary* currentAttributes = [editedStr attributesAtIndex: 0
+																effectiveRange: &editRange];
+				for (;;) {
+					NSFont* oldFont = [currentAttributes objectForKey: NSFontAttributeName];
+					
+					if (oldFont != nil) {
+						NSFont* newFont = [fm convertFont: oldFont
+												   toSize: [oldFont pointSize] / pastedScaleFactor];
+						[editedStr addAttribute: NSFontAttributeName
+										  value: newFont
+										  range: editRange];
+					}
+					
+					int newPos = editRange.location + editRange.length;
+					if (editRange.length == 0) newPos++;
+					if (newPos >= [editedStr length]) break;
+					
+					currentAttributes = [editedStr attributesAtIndex: newPos
+													  effectiveRange: &editRange];
+				}
+				
+				str = editedStr;
+			}
+			
+			// Add this line to the set of pasted lines
             [pastedLines addObject: [NSArray arrayWithObjects:
                 [NSValue valueWithRect: r],
                 str,

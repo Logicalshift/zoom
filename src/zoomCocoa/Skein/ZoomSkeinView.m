@@ -1325,7 +1325,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 		[contextMenu addItemWithTitle: [contextItem temporary]?@"Lock":@"Unlock"
 							   action: @selector(toggleLock:)
 						keyEquivalent: @""];
-		[contextMenu addItemWithTitle: [contextItem temporary]?@"Lock this Branch":@"Unlock this Branch"
+		[contextMenu addItemWithTitle: [contextItem temporary]?@"Lock this Thread":@"Unlock this Branch"
 							   action: @selector(toggleLockBranch:)
 						keyEquivalent: @""];
 	}
@@ -1333,7 +1333,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	[contextMenu addItem: [NSMenuItem separatorItem]];
 
 	if ([[contextItem children] count] > 0) {
-		[contextMenu addItemWithTitle: @"New Branch"
+		[contextMenu addItemWithTitle: @"New Thread"
 							   action: @selector(addNewBranch:)
 						keyEquivalent: @""];
 	} else {
@@ -1358,7 +1358,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 								   action: @selector(deleteItem:)
 							keyEquivalent: @""];
 		}
-		[contextMenu addItemWithTitle: @"Delete all in Branch"
+		[contextMenu addItemWithTitle: @"Delete all in Thread"
 							   action: @selector(deleteBranch:)
 						keyEquivalent: @""];
 	}

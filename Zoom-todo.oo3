@@ -18,7 +18,9 @@
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="gMke-ziNo2M"/>
+    <selected-rows ids="nSlBo8nPQ8a"/>
+    <selected-columns ids=":078928d440f2709e21a6e303"/>
+    <selected-characters range="{56, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -1221,6 +1223,15 @@
             </text>
             <null/>
           </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>Weirdly, the exact same code works fine for CocoaGlk :-/</lit>
+                </run>
+              </p>
+            </text>
+          </note>
         </item>
         <item id="caams0H9l8V" state="checked">
           <values>
@@ -1243,7 +1254,7 @@
             </text>
           </note>
         </item>
-        <item id="aIB9tV2v4JK">
+        <item id="aIB9tV2v4JK" expanded="yes" state="indeterminate">
           <values>
             <text>
               <p>
@@ -1255,7 +1266,7 @@
             <null/>
           </values>
           <children>
-            <item id="nSlBo8nPQ8a">
+            <item id="nSlBo8nPQ8a" state="checked">
               <values>
                 <text>
                   <p>

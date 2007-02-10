@@ -301,6 +301,7 @@ static void finalizeViews(void) {
 // Scaling
 - (void) setScaleFactor: (float) scaling {
 	scaleFactor = scaling;
+	[textView setPastedLineScaleFactor: 1.0/scaling];
 	
 	// Scale up all the fonts
 	// Previously we used OS X scaling, but this is problematic (largely because NSLayoutManager is fragile)

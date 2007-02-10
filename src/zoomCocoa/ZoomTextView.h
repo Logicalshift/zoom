@@ -14,9 +14,12 @@
     NSMutableArray* pastedLines; // Array of arrays ([NSValue<rect>, NSAttributedString])
 	
 	BOOL dragged;
+	float pastedScaleFactor;
 }
 
 - (void) pasteUpperWindowLinesFrom: (ZoomUpperWindow*) win;
 - (void) clearPastedLines;
+
+- (void) setPastedLineScaleFactor: (float) scaleFactor;
 
 @end
