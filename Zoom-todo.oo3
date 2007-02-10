@@ -1245,77 +1245,6 @@
             </text>
           </note>
         </item>
-        <item id="epnQGqSND0O" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Context menu for the - start - skein item is messed up (two dividers in a row)</lit>
-                </run>
-              </p>
-            </text>
-            <null/>
-          </values>
-        </item>
-        <item id="caams0H9l8V" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>iFiction window switches to info tab when you switch to the blorb tab in the info window</lit>
-                </run>
-              </p>
-            </text>
-            <null/>
-          </values>
-          <note expanded="yes">
-            <text>
-              <p>
-                <run>
-                  <lit>Should have fixed this, though I&apos;ve never observed it (iFiction window will now only automatically switch when it has focus)</lit>
-                </run>
-              </p>
-            </text>
-          </note>
-        </item>
-        <item id="aIB9tV2v4JK" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Scrollback screwups</lit>
-                </run>
-              </p>
-            </text>
-            <null/>
-          </values>
-          <children>
-            <item id="nSlBo8nPQ8a" state="checked">
-              <values>
-                <text>
-                  <p>
-                    <run>
-                      <lit>When switching from fullscreen to standard, boxquote scrollback retains its earlier size and position</lit>
-                    </run>
-                  </p>
-                </text>
-                <null/>
-              </values>
-            </item>
-            <item id="a4yY9jSQ1Sc" state="checked">
-              <values>
-                <text>
-                  <p>
-                    <run>
-                      <lit>When truncating scrollback, boxquotes are left intact</lit>
-                    </run>
-                  </p>
-                </text>
-                <null/>
-              </values>
-            </item>
-          </children>
-        </item>
         <item id="gy0KHDYsyo7">
           <values>
             <text>
@@ -1397,24 +1326,6 @@
               </note>
             </item>
           </children>
-        </item>
-        <item id="fN4737NPiQ8" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Rating column position not getting saved?</lit>
-                </run>
-              </p>
-            </text>
-            <text>
-              <p>
-                <run>
-                  <lit>Harri Granholm</lit>
-                </run>
-              </p>
-            </text>
-          </values>
         </item>
         <item id="fPtw9vJC0Fq">
           <values>
@@ -2459,6 +2370,95 @@
               </p>
             </text>
           </note>
+        </item>
+        <item id="caams0H9l8V" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>iFiction window switches to info tab when you switch to the blorb tab in the info window</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>Should have fixed this, though I&apos;ve never observed it (iFiction window will now only automatically switch when it has focus)</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="epnQGqSND0O" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Context menu for the - start - skein item is messed up (two dividers in a row)</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
+        <item id="aIB9tV2v4JK" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Scrollback screwups</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <children>
+            <item id="nSlBo8nPQ8a" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>When switching from fullscreen to standard, boxquote scrollback retains its earlier size and position</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="a4yY9jSQ1Sc" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>When truncating scrollback, boxquotes are left intact</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+          </children>
+        </item>
+        <item id="fN4737NPiQ8" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Rating column position not getting saved?</lit>
+                </run>
+              </p>
+            </text>
+            <text>
+              <p>
+                <run>
+                  <lit>Harri Granholm</lit>
+                </run>
+              </p>
+            </text>
+          </values>
         </item>
         <item id="n-sAOejUleJ" state="checked">
           <values>
