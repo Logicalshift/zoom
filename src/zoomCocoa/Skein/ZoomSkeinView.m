@@ -1310,18 +1310,22 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	
 	[contextMenu addItem: [NSMenuItem separatorItem]];
 
+	BOOL needSep = NO;
 	if ([contextItem parent] != nil) {
 		BOOL hasLabel = [[contextItem annotation] length] > 0;
+		needSep = YES;
 		[contextMenu addItemWithTitle: hasLabel?@"Edit Label":@"Add Label"
 							   action: @selector(addAnnotation:)
 						keyEquivalent: @""];
 	}
 	if ([delegate respondsToSelector: @selector(transcriptToPoint:)]) {
+		needSep = YES;
 		[contextMenu addItemWithTitle: @"Show in Transcript"
 							   action: @selector(showInTranscript:)
 						keyEquivalent: @""];
 	}
 	if ([contextItem parent] != nil) {
+		needSep = YES;
 		[contextMenu addItemWithTitle: [contextItem temporary]?@"Lock":@"Unlock"
 							   action: @selector(toggleLock:)
 						keyEquivalent: @""];
@@ -1330,7 +1334,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 						keyEquivalent: @""];
 	}
 
-	[contextMenu addItem: [NSMenuItem separatorItem]];
+	if (needSep) [contextMenu addItem: [NSMenuItem separatorItem]];
 
 	if ([[contextItem children] count] > 0) {
 		[contextMenu addItemWithTitle: @"New Thread"
