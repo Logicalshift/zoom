@@ -8,6 +8,7 @@
 
 #import "ZoomTextView.h"
 #import "ZoomView.h"
+#import "ZoomPreferences.h"
 
 @implementation ZoomTextView
 
@@ -56,6 +57,11 @@
 	}
 	
 	[super mouseDown: evt];
+}
+
+- (BOOL)accessibilityIsIgnored {
+	if ([[ZoomPreferences globalPreferences] speakGameText]) return YES;
+	return [super accessibilityIsIgnored];
 }
 
 // = Drawing =
