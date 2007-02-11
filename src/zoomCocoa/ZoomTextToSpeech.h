@@ -14,6 +14,7 @@
 //
 @interface ZoomTextToSpeech : NSObject<GlkAutomation> {
 	NSMutableString* text;
+	NSSpeechSynthesizer* synth;
 }
 
 @end

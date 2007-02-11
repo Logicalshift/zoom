@@ -10,21 +10,30 @@
 
 #import "ZoomTextToSpeech.h"
 
+#define UseCocoaSpeech
+
+#ifndef UseCocoaSpeech
 static SpeechChannel channel = nil;
+#endif
 
 @implementation ZoomTextToSpeech
 
 + (void) initialize {
+#ifndef UseCocoaSpeech
 	if (channel == nil) NewSpeechChannel(NULL, &channel);
+#endif
 }
 
 - (id) init {
+#ifndef UseCocoaSpeech
 	if (channel == nil) return nil;
+#endif
 	
 	self = [super init];
 	
 	if (self) {
 		text = [[NSMutableString alloc] init];
+		synth = [[NSSpeechSynthesizer alloc] initWithVoice: [NSSpeechSynthesizer defaultVoice]];
 	}
 	
 	return self;
@@ -32,6 +41,8 @@ static SpeechChannel channel = nil;
 
 - (void) dealloc {
 	[text release];
+	[synth stopSpeaking];
+	[synth release];
 	
 	[super dealloc];
 }
@@ -54,6 +65,7 @@ static SpeechChannel channel = nil;
 // = Status notifications =
 
 - (void) zoomWaitingForInput {
+#ifndef UseCocoaSpeech
 	char* buffer = NULL;
 	int bufLen = 0;
 	int x;
@@ -111,6 +123,10 @@ static SpeechChannel channel = nil;
 	SpeakBuffer(channel, buffer, bufLen-1, 0);
 	
 	free(buffer);
+#else
+	[synth startSpeakingString: text];
+#endif
+	
 	
 	[text release];
 	text = [[NSMutableString alloc] init];
