@@ -22,6 +22,7 @@
 		
 		lastTileSize = NSMakeSize(-1,-1);
 		lastUpperSize = -1;
+		useDivider = YES;
     }
     return self;
 }
@@ -84,6 +85,7 @@
 		upperFrame.size.height = upperMargin;
 
 		double sepHeight = [upperDivider frame].size.height;
+		if (!useDivider) sepHeight = 0;
 
 		// Actually resize the contentView
 		contentFrame.origin.y    += sepHeight;
@@ -92,13 +94,17 @@
 		[contentView setFrame: contentFrame];
 
 		// The upper/lower view seperator
-		sepFrame = [upperDivider frame];
-		sepFrame = contentFrame;
-		sepFrame.origin.y -= sepHeight;
-		sepFrame.size.height = sepHeight;
-		[upperDivider setFrame: sepFrame];
-		if ([upperDivider superview] == nil) [self addSubview: upperDivider];
-		[upperDivider setNeedsDisplay: YES];
+		if (useDivider) {
+			sepFrame = [upperDivider frame];
+			sepFrame = contentFrame;
+			sepFrame.origin.y -= sepHeight;
+			sepFrame.size.height = sepHeight;
+			[upperDivider setFrame: sepFrame];
+			if ([upperDivider superview] == nil) [self addSubview: upperDivider];
+			[upperDivider setNeedsDisplay: YES];
+		} else {
+			if ([upperDivider superview] != nil) [upperDivider removeFromSuperview];
+		}
 
 		// The upper window view
 		[zoomView setUpperBuffer: (upperMargin*scaleFactor) + sepHeight];
@@ -143,5 +149,11 @@
 - (ZoomUpperWindowView*) upperWindowView {
 	return upperView;
 }
+
+- (BOOL) setUseUpperDivider: (BOOL) newUseDivider {
+	useDivider = newUseDivider;
+	[self tile];
+}
+
 
 @end

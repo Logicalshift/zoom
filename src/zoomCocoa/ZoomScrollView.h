@@ -24,6 +24,8 @@
 	NSSize lastFixedSize;
 	NSSize lastTileSize;
 	int lastUpperSize;
+	
+	BOOL useDivider;
 }
 
 - (id) initWithFrame: (NSRect) frame
@@ -32,5 +34,7 @@
 - (void) setScaleFactor: (float) factor;
 - (void) updateUpperWindows;
 - (ZoomUpperWindowView*) upperWindowView;
+
+- (BOOL) setUseUpperDivider: (BOOL) useDivider;
 
 @end
