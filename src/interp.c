@@ -1368,6 +1368,8 @@ static int newline_function(const int* remaining, int rem_len);
 void zcode_v6_initialise(void)
 {
   int x;
+  
+  machine.dinfo = display_get_info();
 
   for (x=0; x<8; x++)
     {
@@ -1394,8 +1396,6 @@ void zcode_v6_initialise(void)
   windows[0].wrapping = 1;
 
   v6_set_newline_function(newline_function);
-
-  machine.dinfo = display_get_info();
 }
 
 static int*  pending_text = NULL;
@@ -1613,15 +1613,21 @@ void zmachine_run(const int version,
   pc    = GetWord(machine.header, ZH_initpc);
   stack = &machine.stack;
 
+  machine.dinfo = display_get_info();
 #if defined(SUPPORT_VERSION_6)
   if (version == 6)
     {
-      machine.dinfo = display_get_info();
       zcode_v6_initialise();
     }
 #endif
 
   zmachine_setup_header();
+  
+  if (version != 6) {
+    display_set_window(0);
+    display_set_colour(machine.dinfo->fore, machine.dinfo->back);
+    display_clear();
+  }
 
   for (x=0; x<UNDO_LEVEL; x++)
     {

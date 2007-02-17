@@ -17,6 +17,7 @@
 	IBOutlet NSView* fontSettingsView;
 	IBOutlet NSView* colourSettingsView;
 	IBOutlet NSView* typographicalSettingsView;
+	IBOutlet NSView* displaySettingsView;
 	
 	// The settings controls themselves
 	IBOutlet NSButton* displayWarnings;

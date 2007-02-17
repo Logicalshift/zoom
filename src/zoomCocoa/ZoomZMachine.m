@@ -129,6 +129,8 @@
 	rc_defgame->xsize = 80;
 	rc_defgame->ysize = 25;
 	rc_defgame->antialias = 1;
+	rc_defgame->fg_col = 7;
+	rc_defgame->bg_col = 0;
 	
 	hash_store(rc_hash, "default", 7, rc_defgame);
 	

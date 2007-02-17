@@ -34,6 +34,7 @@
                 colourSettingsView = NSView; 
                 colours = NSTableView; 
                 confirmGameClose = NSButton; 
+                displaySettingsView = NSView; 
                 displayWarnings = NSButton; 
                 fatalWarnings = NSButton; 
                 fixedFont = NSPopUpButton; 

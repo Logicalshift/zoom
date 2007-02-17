@@ -127,7 +127,7 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/Blorb.icns		zoomCocoa/Resources/NeedDrop.png \
 	zoomCocoa/GlkClient.icns	zoomCocoa/HUGO.icns \
 	zoomCocoa/TADS.icns		zoomCocoa/top-shading.png \
-	zoomCocoa/typographicSettings.png \
+	zoomCocoa/typographicSettings.png zoomCocoa/displaySettings.png \
 	zoomCocoa/Skein/Skein-active.png zoomCocoa/Skein/Skein-changed.png \
 	zoomCocoa/Skein/Skein-selected.png zoomCocoa/Skein/Skein-unchanged.png \
 	zoomCocoa/Skein/Skein-unplayed.png zoomCocoa/Skein/SkeinAdd.png \

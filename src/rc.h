@@ -57,6 +57,8 @@ typedef struct
   char*      graphics;
 
   int xsize, ysize;
+  
+  int fg_col, bg_col;
 
   int antialias;
 } rc_game;
@@ -77,6 +79,8 @@ extern int        rc_get_xsize      (void);
 extern int        rc_get_ysize      (void);
 extern char*      rc_get_graphics   (void);
 extern char*      rc_get_sounds     (void);
+extern int        rc_get_foreground (void);
+extern int        rc_get_background (void);
 
 extern hash       rc_hash;
 extern rc_game*   rc_defgame;

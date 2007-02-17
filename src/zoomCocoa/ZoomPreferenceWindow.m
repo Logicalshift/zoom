@@ -14,6 +14,7 @@
 
 static NSToolbarItem* generalSettingsItem;
 static NSToolbarItem* gameSettingsItem;
+static NSToolbarItem* displaySettingsItem;
 static NSToolbarItem* fontSettingsItem;
 static NSToolbarItem* colourSettingsItem;
 static NSToolbarItem* typographicSettingsItem;
@@ -26,6 +27,7 @@ static NSDictionary*  itemDictionary = nil;
 	// Create the toolbar items
 	generalSettingsItem = [[NSToolbarItem alloc] initWithItemIdentifier: @"generalSettings"];
 	gameSettingsItem = [[NSToolbarItem alloc] initWithItemIdentifier: @"gameSettings"];
+	displaySettingsItem = [[NSToolbarItem alloc] initWithItemIdentifier: @"displaySettings"];
 	fontSettingsItem = [[NSToolbarItem alloc] initWithItemIdentifier: @"fontSettings"];
 	colourSettingsItem = [[NSToolbarItem alloc] initWithItemIdentifier: @"colourSettings"];
 	typographicSettingsItem = [[NSToolbarItem alloc] initWithItemIdentifier: @"typographicSettings"];
@@ -34,6 +36,7 @@ static NSDictionary*  itemDictionary = nil;
 	itemDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:
 		generalSettingsItem, @"generalSettings",
 		gameSettingsItem, @"gameSettings",
+		displaySettingsItem, @"displaySettings",
 		fontSettingsItem, @"fontSettings",
 		colourSettingsItem, @"colourSettings",
 		typographicSettingsItem, @"typographicSettings",
@@ -44,6 +47,8 @@ static NSDictionary*  itemDictionary = nil;
 	[generalSettingsItem setImage: [[[NSImage alloc] initWithContentsOfFile: [[NSBundle mainBundle] pathForImageResource: @"generalSettings"]] autorelease]];
 	[gameSettingsItem setLabel: @"Game"];
 	[gameSettingsItem setImage: [[[NSImage alloc] initWithContentsOfFile: [[NSBundle mainBundle] pathForImageResource: @"gameSettings"]] autorelease]];
+	[displaySettingsItem setLabel: @"Display"];
+	[displaySettingsItem setImage: [[[NSImage alloc] initWithContentsOfFile: [[NSBundle mainBundle] pathForImageResource: @"displaySettings"]] autorelease]];
 	[fontSettingsItem setLabel: @"Fonts"];
 	[fontSettingsItem setImage: [[[NSImage alloc] initWithContentsOfFile: [[NSBundle mainBundle] pathForImageResource: @"fontSettings"]] autorelease]];
 	[colourSettingsItem setLabel: @"Colour"];
@@ -54,6 +59,7 @@ static NSDictionary*  itemDictionary = nil;
 	// And the actions
 	[generalSettingsItem setAction: @selector(generalSettings:)];
 	[gameSettingsItem setAction: @selector(gameSettings:)];
+	[displaySettingsItem setAction: @selector(displaySettings:)];
 	[fontSettingsItem setAction: @selector(fontSettings:)];
 	[colourSettingsItem setAction: @selector(colourSettings:)];	
 	[typographicSettingsItem setAction: @selector(typographicSettings:)];	
@@ -167,6 +173,8 @@ static int familyComparer(id a, id b, void* context) {
 			selected = @"generalSettings";
 		} else if (preferencePane == gameSettingsView) {
 			selected = @"gameSettings";
+		} else if (preferencePane == displaySettingsView) {
+			selected = @"displaySettings";
 		} else if (preferencePane == fontSettingsView) {
 			selected = @"fontSettings";
 		} else if (preferencePane == colourSettingsView) {
@@ -180,7 +188,7 @@ static int familyComparer(id a, id b, void* context) {
 		}
 	}
 	
-	// Work ou the various frame sizes
+	// Work out the various frame sizes
 	NSRect currentFrame = [[[self window] contentView] frame];
 	NSRect oldFrame = currentFrame;
 	NSRect windowFrame = [[self window] frame];
@@ -211,19 +219,19 @@ static int familyComparer(id a, id b, void* context) {
 
 - (NSArray *)toolbarAllowedItemIdentifiers:(NSToolbar*)toolbar {
     return [NSArray arrayWithObjects:
-		@"generalSettings", @"gameSettings", @"fontSettings", @"colourSettings", @"typographicSettings", NSToolbarFlexibleSpaceItemIdentifier,
+		@"generalSettings", @"gameSettings", @"displaySettings", @"fontSettings", @"typographicSettings", @"colourSettings", NSToolbarFlexibleSpaceItemIdentifier,
 		nil];
 }
 
 - (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar*)toolbar {
     return [NSArray arrayWithObjects:
-		NSToolbarFlexibleSpaceItemIdentifier, @"generalSettings", @"gameSettings", @"fontSettings", @"colourSettings", @"typographicSettings", NSToolbarFlexibleSpaceItemIdentifier,
+		NSToolbarFlexibleSpaceItemIdentifier, @"generalSettings", @"gameSettings", @"displaySettings", @"fontSettings", @"typographicSettings", @"colourSettings", NSToolbarFlexibleSpaceItemIdentifier,
 		nil];
 }
 
 - (NSArray *)toolbarSelectableItemIdentifiers:(NSToolbar *)toolbar {
     return [NSArray arrayWithObjects:
-		@"generalSettings", @"gameSettings", @"fontSettings", @"colourSettings", @"typographicSettings",
+		@"generalSettings", @"gameSettings", @"displaySettings", @"fontSettings", @"colourSettings", @"typographicSettings",
 		nil];	
 }
 
@@ -235,6 +243,10 @@ static int familyComparer(id a, id b, void* context) {
 
 - (void) gameSettings: (id) sender {
 	[self switchToPane: gameSettingsView];
+}
+
+- (void) displaySettings: (id) sender {
+	[self switchToPane: displaySettingsView];
 }
 
 - (void) fontSettings: (id) sender {

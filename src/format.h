@@ -25,6 +25,7 @@
 #define __FORMAT_H
 
 #include "../config.h"
+#include "rc.h"
 
 # if WINDOW_SYSTEM == 3
 #  undef FORMAT_ASSUME_BAD_MEASUREMENTS
@@ -146,8 +147,8 @@ extern XFONT_MEASURE start_y;
 
 extern int scroll_overlays;
 
-#define DEFAULT_FORE 0
-#define DEFAULT_BACK 7
+#define DEFAULT_FORE rc_get_foreground()
+#define DEFAULT_BACK rc_get_background()
 //#define FIRST_ZCOLOUR 3
 
 extern int more_on;

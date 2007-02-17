@@ -138,7 +138,7 @@ ZDisplay* display_get_info(void) {
     dis.fixed_space   = 1;
     dis.sound_effects = 0;
     dis.timed_input   = 1;
-    dis.mouse         = 0;
+    dis.mouse         = 1;
 
     int xsize, ysize;
     int pxsize, pysize;
@@ -158,8 +158,8 @@ ZDisplay* display_get_info(void) {
     dis.font_width    = fontwidth;
     dis.font_height   = fontheight + 2.0;
     dis.pictures      = 1;
-    dis.fore          = 0; // Implement me: make configurable
-    dis.back          = 7; // Implement me: make configurable
+    dis.fore          = rc_get_foreground();
+    dis.back          = rc_get_background();
 	
 	NOTE(@"display_get_info");
 	
@@ -654,8 +654,8 @@ void display_set_colour(int fore, int back) {
 	
     zDisplayCurrentStyle = [[zDisplayCurrentStyle autorelease] copy];
 
-    if (fore == -1) fore = 0;
-    if (back == -1) back = 7;
+    if (fore == -1) fore = rc_get_foreground();
+    if (back == -1) back = rc_get_background();
     
     if (fore < 16) {
         if (fore >= 0) {

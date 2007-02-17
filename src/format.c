@@ -69,8 +69,6 @@ XFONT_MEASURE start_y;
 
 int scroll_overlays = 1;
 
-#define DEFAULT_FORE 0
-#define DEFAULT_BACK 7
 #define FIRST_ZCOLOUR 3
 
 int more_on = 0;

@@ -328,3 +328,11 @@ int rc_get_ysize(void)
     }
   return game->ysize;
 }
+
+int rc_get_foreground (void) {
+  return game->fg_col;
+}
+
+int rc_get_background (void) {
+  return game->bg_col;
+}

@@ -19,7 +19,7 @@ extern int  rc_lex(void);
 
 int rc_merging = 0;
 
-#define EMPTY_GAME(x) x.interpreter = -1; x.revision = -1; x.name = NULL; x.fonts = NULL; x.n_fonts = -1; x.colours = NULL; x.n_colours = -1; x.gamedir = x.savedir = x.sounds = x.graphics = NULL; x.xsize = x.ysize = -1; x.antialias = -1;
+#define EMPTY_GAME(x) x.fg_col = -1; x.bg_col = -1; x.interpreter = -1; x.revision = -1; x.name = NULL; x.fonts = NULL; x.n_fonts = -1; x.colours = NULL; x.n_colours = -1; x.gamedir = x.savedir = x.sounds = x.graphics = NULL; x.xsize = x.ysize = -1; x.antialias = -1;
 
 static inline rc_game merge_games(const rc_game* a, const rc_game* b)
 {
