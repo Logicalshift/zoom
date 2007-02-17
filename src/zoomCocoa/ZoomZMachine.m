@@ -129,8 +129,8 @@
 	rc_defgame->xsize = 80;
 	rc_defgame->ysize = 25;
 	rc_defgame->antialias = 1;
-	rc_defgame->fg_col = 7;
-	rc_defgame->bg_col = 0;
+	rc_defgame->fg_col = 0;
+	rc_defgame->bg_col = 7;
 	
 	hash_store(rc_hash, "default", 7, rc_defgame);
 	
@@ -195,7 +195,11 @@
     // Setup the display, etc
     rc_set_game(zmachine_get_serial(), Word(ZH_release), Word(ZH_checksum));
     display_initialise();
-	
+
+	// Clear the display to the default colours
+	display_set_colour(rc_get_foreground(), rc_get_background());
+	display_clear();
+
 	if (wasRestored) zmachine_setup_header();
 
     // Start running the machine

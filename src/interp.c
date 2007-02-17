@@ -1622,12 +1622,6 @@ void zmachine_run(const int version,
 #endif
 
   zmachine_setup_header();
-  
-  if (version != 6) {
-    display_set_window(0);
-    display_set_colour(machine.dinfo->fore, machine.dinfo->back);
-    display_clear();
-  }
 
   for (x=0; x<UNDO_LEVEL; x++)
     {

@@ -291,6 +291,7 @@ int zoom_main(int argc, char** argv)
   display_prints_c("[ Press any key to begin ]");
   display_set_colour(0, 7);
   display_readchar(0);
+  display_set_colour(rc_get_foreground(), rc_get_background());
   display_clear();
 
   machine.graphical = args.graphical;
