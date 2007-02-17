@@ -15,10 +15,12 @@
     </style-attribute>
   </style-attribute-registry>
   <settings/>
-  <editor scroll-position="{0, 294}" ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
+  <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="i0P5yXMtvbF"/>
+    <selected-rows ids="ag9Je5orrMx"/>
+    <selected-columns ids=":078928d440f2709e21a6e303"/>
+    <selected-characters range="{51, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -807,7 +809,7 @@
         <null/>
       </values>
       <children>
-        <item id="gMke-ziNo2M" state="indeterminate">
+        <item id="gMke-ziNo2M" expanded="yes" state="indeterminate">
           <values>
             <text>
               <p>
@@ -908,6 +910,18 @@
                   </p>
                 </text>
               </note>
+            </item>
+            <item id="pnaSrl82Kfg" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Typing in a non-keyboard focused window should move focus to a keyboard focused one (and repeat the keypress)</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
             </item>
             <item id="cKwD_eRCl_t" state="checked">
               <values>
