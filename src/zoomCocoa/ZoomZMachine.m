@@ -197,8 +197,10 @@
     display_initialise();
 
 	// Clear the display to the default colours
-	display_set_colour(rc_get_foreground(), rc_get_background());
-	display_clear();
+	if (!wasRestored) {
+		display_set_colour(rc_get_foreground(), rc_get_background());
+		display_clear();
+	}
 
 	if (wasRestored) zmachine_setup_header();
 
