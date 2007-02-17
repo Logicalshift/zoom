@@ -1347,7 +1347,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	}
 
 	if ([contextItem parent] != nil) {
-		[contextMenu addItemWithTitle: @"Insert Item"
+		[contextMenu addItemWithTitle: @"Insert Knot"
 							   action: @selector(insertItem:)
 						keyEquivalent: @""];
 		if ([[contextItem children] count] > 0) {
