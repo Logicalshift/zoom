@@ -218,7 +218,7 @@
         case 3:
             display_split(1, 1);
 
-            display_set_colour(0, 7); display_set_font(0);
+            display_set_colour(rc_get_foreground(), rc_get_background()); display_set_font(0);
             display_set_window(0);
             if (!wasRestored) zmachine_run(3, NULL); else zmachine_runsome(3, machine.zpc);
             break;

@@ -512,7 +512,7 @@ static void draw_statusbar_123(ZStack* stack)
   stream_buffering(0);
   
   display_set_window(1); display_set_style(0); display_set_style(8);
-  display_set_colour(7, 0);
+  display_set_colour(rc_get_background(), rc_get_foreground());
 
   display_set_cursor(0, 0);
   display_erase_line(1);
@@ -533,7 +533,7 @@ static void draw_statusbar_123(ZStack* stack)
       display_printf("Score: %i  Moves: %i", score, moves);
     }
 
-  display_set_colour(0, 7); display_set_style(0);
+  display_set_colour(rc_get_foreground(), rc_get_background()); display_set_style(0);
   display_set_window(0);
   stream_buffering(1);
 }

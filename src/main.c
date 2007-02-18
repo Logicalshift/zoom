@@ -349,7 +349,7 @@ int zoom_main(int argc, char** argv)
     case 3:
       display_split(1, 1);
 
-      display_set_colour(0, 7); display_set_font(0);
+      display_set_colour(rc_get_foreground(), rc_get_background()); display_set_font(0);
       display_set_window(0);
       zmachine_run(3, args.save_file);
       break;
