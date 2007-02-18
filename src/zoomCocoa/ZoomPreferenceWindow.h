@@ -52,6 +52,11 @@
 	IBOutlet NSButton* useScreenFonts;
 	IBOutlet NSButton* useHyphenation;
 	
+	IBOutlet NSPopUpButton* foregroundColour;
+	IBOutlet NSPopUpButton* backgroundColour;
+	IBOutlet NSButton* zoomBorders;
+	IBOutlet NSButton* glkBorders;
+	
 	// The toolbar
 	NSToolbar* toolbar;
 	
@@ -82,5 +87,8 @@
 - (IBAction) marginsChanged: (id) sender;
 - (IBAction) screenFontsChanged: (id) sender;
 - (IBAction) hyphenationChanged: (id) sender;
+
+- (IBAction) bordersChanged: (id) sender;
+- (IBAction) colourChanged: (id) sender;
 
 @end

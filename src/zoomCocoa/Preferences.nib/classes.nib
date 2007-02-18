@@ -10,8 +10,10 @@
         {
             ACTIONS = {
                 autosaveChanged = id; 
+                bordersChanged = id; 
                 changeOrganiseDir = id; 
                 changeTransparency = id; 
+                colourChanged = id; 
                 confirmGameCloseChanged = id; 
                 displayWarningsChanged = id; 
                 fatalWarningsChanged = id; 
@@ -31,6 +33,7 @@
             LANGUAGE = ObjC; 
             OUTLETS = {
                 autosaveGames = NSButton; 
+                backgroundColour = NSPopUpButton; 
                 colourSettingsView = NSView; 
                 colours = NSTableView; 
                 confirmGameClose = NSButton; 
@@ -43,8 +46,10 @@
                 fontSizeDisplay = NSTextField; 
                 fontSizeSlider = NSSlider; 
                 fonts = NSTableView; 
+                foregroundColour = NSPopUpButton; 
                 gameSettingsView = NSView; 
                 generalSettingsView = NSView; 
+                glkBorders = NSButton; 
                 interpreter = NSPopUpButton; 
                 keepGamesOrganised = NSButton; 
                 marginWidth = NSSlider; 
@@ -61,6 +66,7 @@
                 typographicalSettingsView = NSView; 
                 useHyphenation = NSButton; 
                 useScreenFonts = NSButton; 
+                zoomBorders = NSButton; 
             }; 
             SUPERCLASS = NSWindowController; 
         }

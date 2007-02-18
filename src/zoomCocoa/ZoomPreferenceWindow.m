@@ -302,6 +302,58 @@ static int familyComparer(id a, id b, void* context) {
 	[fontPreview setFont: [[prefs fonts] objectAtIndex: 0]];
 }
 
+- (NSString*) colourNameAtIndex: (int) index {
+	switch (index) {
+		case 0: return @"Black";
+		case 1: return @"Red";
+		case 2: return @"Green";
+		case 3: return @"Yellow";
+		case 4: return @"Blue";
+		case 5: return @"Magenta";
+		case 6: return @"Cyan";
+		case 7: return @"White";
+		case 8: return @"Light grey";
+		case 9: return @"Medium grey";
+		case 10: return @"Dark grey";
+		default: return @"Unused colour";
+	}	
+}
+
+- (void) updateColourMenus {
+	NSMenu* newColourMenu = [[[NSMenu alloc] init] autorelease];
+	
+	int col;
+	for (col=0; col<10; col++) {
+		// Build the image showing a preview of this colour
+		NSImage* sampleImage = [[NSImage alloc] initWithSize: NSMakeSize(16, 12)];
+		
+		[sampleImage lockFocus];
+		[[[prefs colours] objectAtIndex: col] set];
+		NSRectFill(NSMakeRect(0,0,16,12));
+		
+		// Build the actual menu item
+		NSMenuItem* colourItem = [[NSMenuItem alloc] initWithTitle: [self colourNameAtIndex: col]
+															action: nil
+													 keyEquivalent: @""];
+		[colourItem setTag: col];
+		[colourItem setImage: sampleImage];
+		
+		// Add it to the menu
+		[newColourMenu addItem: colourItem];
+		
+		// Release our resources
+		[colourItem release];
+		[sampleImage release];
+	}
+	
+	// Set the menu as the menu for both the popup buttons
+	[foregroundColour setMenu: newColourMenu];
+	[backgroundColour setMenu: [[newColourMenu copy] autorelease]];
+
+	[foregroundColour selectItemWithTag: [prefs foregroundColour]];
+	[backgroundColour selectItemWithTag: [prefs backgroundColour]];
+}
+
 - (void) setPreferences: (ZoomPreferences*) preferences {
 	if (prefs) [prefs release];
 	prefs = [preferences retain];
@@ -336,6 +388,10 @@ static int familyComparer(id a, id b, void* context) {
 	if ([prefs textMargin] > 0) {
 		[marginWidth setFloatValue: [prefs textMargin]];
 	}
+	
+	[zoomBorders setState: [prefs showBorders]?NSOnState:NSOffState];
+	[glkBorders setState: [prefs showGlkBorders]?NSOnState:NSOffState];
+	[self updateColourMenus];
 }
 
 // == Table data source ==
@@ -398,21 +454,7 @@ static void appendStyle(NSMutableString* styleName,
 	
 	if (aTableView == colours) {
 		if ([[aTableColumn identifier] isEqualToString: @"Colour name"]) {
-			switch (rowIndex) {
-				case 0: return @"Black";
-				case 1: return @"Red";
-				case 2: return @"Green";
-				case 3: return @"Yellow";
-				case 4: return @"Blue";
-				case 5: return @"Magenta";
-				case 6: return @"Cyan";
-				case 7: return @"White";
-				case 8: return @"Light grey";
-				case 9: return @"Medium grey";
-				case 10: return @"Dark grey";
-				default: return @"Unused colour";
-			}
-			
+			return [self colourNameAtIndex: rowIndex];
 		} else if ([[aTableColumn identifier] isEqualToString: @"Colour"]) {
 			NSColor* theColour = [[prefs colours] objectAtIndex: rowIndex];
 			NSAttributedString* res;
@@ -511,6 +553,7 @@ static void appendStyle(NSMutableString* styleName,
 		[prefs setColours: cols];
 		
 		[colours reloadData];
+		[self updateColourMenus];
 	}
 	
 	[cols release];
@@ -703,6 +746,34 @@ static void appendStyle(NSMutableString* styleName,
 	
 	// Reorganise all the stories
 	[[ZoomStoryOrganiser sharedStoryOrganiser] organiseAllStories];
+}
+
+// = Display pane =
+
+- (IBAction) bordersChanged: (id) sender {
+	BOOL newState = [sender state] == NSOnState;
+	BOOL oldState = (sender==zoomBorders)?[prefs showBorders]:[prefs showGlkBorders];
+	
+	if (newState != oldState) {
+		if (sender == zoomBorders) {
+			[prefs setShowBorders: newState];
+		} else {
+			[prefs setShowGlkBorders: newState];
+		}
+	}
+}
+
+- (IBAction) colourChanged: (id) sender {
+	int newValue = [sender selectedTag];
+	int oldValue = (sender==foregroundColour)?[prefs foregroundColour]:[prefs backgroundColour];
+	
+	if (newValue != oldValue) {
+		if (sender == foregroundColour) {
+			[prefs setForegroundColour: newValue];
+		} else {
+			[prefs setBackgroundColour: newValue];
+		}
+	}
 }
 
 @end

@@ -35,6 +35,11 @@ static NSString* useHyphenation		= @"UseHyphenation";
 
 static NSString* organiserDirectory = @"organiserDirectory";
 
+static NSString* foregroundColour   = @"foregroundColour";
+static NSString* backgroundColour   = @"backgroundColour";
+static NSString* showBorders		= @"showBorders";
+static NSString* showGlkBorders		= @"showGlkBorders";
+
 // == Global preferences ==
 
 static ZoomPreferences* globalPreferences = nil;
@@ -183,6 +188,15 @@ static NSArray* DefaultColours(void) {
 				  forKey: fonts];
 		[prefs setObject: DefaultColours()
 				  forKey: colours];
+		
+		[prefs setObject: [NSNumber numberWithInt: 0]
+				  forKey: foregroundColour];
+		[prefs setObject: [NSNumber numberWithInt: 7]
+				  forKey: backgroundColour];
+		[prefs setObject: [NSNumber numberWithBool: YES]
+				  forKey: showBorders];
+		[prefs setObject: [NSNumber numberWithBool: YES]
+				  forKey: showGlkBorders];
 		
 		[pool release];
 	}
@@ -629,7 +643,58 @@ static NSArray* DefaultColours(void) {
 	[self setFonts: newFonts];
 }
 
+// = Display preferences =
+
+- (int) foregroundColour {
+	NSNumber* val = [prefs objectForKey: foregroundColour];
+	if (val == nil) return 0;
+	return [val intValue];
+}
+
+- (int) backgroundColour {
+	NSNumber* val = [prefs objectForKey: backgroundColour];
+	if (val == nil) return 7;
+	return [val intValue];	
+}
+
+- (BOOL) showBorders {
+	NSNumber* val = [prefs objectForKey: showBorders];
+	if (val == nil) return YES;
+	return [val boolValue];
+}
+
+- (BOOL) showGlkBorders {
+	NSNumber* val = [prefs objectForKey: showGlkBorders];
+	if (val == nil) return YES;
+	return [val boolValue];	
+}
+
+- (void) setShowBorders: (BOOL) value {
+	[prefs setObject: [NSNumber numberWithBool: value]
+			  forKey: showBorders];
+	[self preferencesHaveChanged];	
+}
+
+- (void) setShowGlkBorders: (BOOL) value {
+	[prefs setObject: [NSNumber numberWithBool: value]
+			  forKey: showGlkBorders];
+	[self preferencesHaveChanged];	
+}
+
+- (void) setForegroundColour: (int) value {
+	[prefs setObject: [NSNumber numberWithInt: value]
+			  forKey: foregroundColour];
+	[self preferencesHaveChanged];		
+}
+
+- (void) setBackgroundColour: (int) value {
+	[prefs setObject: [NSNumber numberWithInt: value]
+			  forKey: backgroundColour];
+	[self preferencesHaveChanged];	
+}
+
 // = Notifications =
+
 - (void) preferencesHaveChanged {
 	[[NSNotificationCenter defaultCenter] postNotificationName: ZoomPreferencesHaveChangedNotification
 														object:self];

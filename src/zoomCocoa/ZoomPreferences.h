@@ -56,6 +56,12 @@ extern NSString* ZoomPreferencesHaveChangedNotification;
 - (BOOL)	  keepGamesOrganised;
 - (BOOL)      autosaveGames;
 
+// Display preferences
+- (int) foregroundColour;
+- (int) backgroundColour;
+- (BOOL) showBorders;
+- (BOOL) showGlkBorders;
+
 // The dictionary
 - (NSDictionary*) dictionary;
 
@@ -85,6 +91,11 @@ extern NSString* ZoomPreferencesHaveChangedNotification;
 - (void) setOrganiserDirectory: (NSString*) directory;
 - (void) setKeepGamesOrganised: (BOOL) value;
 - (void) setAutosaveGames: (BOOL) value;
+
+- (void) setShowBorders: (BOOL) value;
+- (void) setShowGlkBorders: (BOOL) value;
+- (void) setForegroundColour: (int) value;
+- (void) setBackgroundColour: (int) value;
 
 // Notifications
 - (void) preferencesHaveChanged;
