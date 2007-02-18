@@ -207,6 +207,7 @@ static int familyComparer(id a, id b, void* context) {
 					display: YES
 					animate: YES];
 	[[self window] setContentView: preferencePane];
+	[[self window] setInitialFirstResponder: preferencePane];
 }
 
 // == Toolbar delegate functions ==
