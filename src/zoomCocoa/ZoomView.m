@@ -2391,6 +2391,14 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
     }
 }
 
+- (int) foregroundColour {
+	return [viewPrefs foregroundColour];
+}
+
+- (int) backgroundColour {
+	return [viewPrefs backgroundColour];
+}
+
 // = Autosave =
 
 - (BOOL) createAutosaveDataWithCoder: (NSCoder*) encoder {

@@ -227,6 +227,9 @@ enum ZValueTypeMasks {
 - (void) fontWidth: (out int*) width
 			height: (out int*) height;
 
+- (int) foregroundColour;
+- (int) backgroundColour;
+
 // Functions to create the standard windows
 - (byref NSObject<ZLowerWindow>*) createLowerWindow;
 - (byref NSObject<ZUpperWindow>*) createUpperWindow;

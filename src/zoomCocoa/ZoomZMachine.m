@@ -129,8 +129,8 @@
 	rc_defgame->xsize = 80;
 	rc_defgame->ysize = 25;
 	rc_defgame->antialias = 1;
-	rc_defgame->fg_col = 0;
-	rc_defgame->bg_col = 7;
+	rc_defgame->fg_col = [display foregroundColour];
+	rc_defgame->bg_col = [display backgroundColour];
 	
 	hash_store(rc_hash, "default", 7, rc_defgame);
 	
@@ -156,7 +156,14 @@
     }
      */
     
+	// Remember the display
     display = [disp retain];
+	
+	// Set up colours
+	if (rc_defgame) {
+		rc_defgame->fg_col = [display foregroundColour];
+		rc_defgame->bg_col = [display backgroundColour];
+	}
 
     // OK, we can now set up the ZMachine and get running
 
