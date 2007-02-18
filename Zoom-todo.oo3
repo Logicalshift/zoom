@@ -17,10 +17,8 @@
   <settings/>
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
-    <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="ag9Je5orrMx"/>
-    <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{51, 0}"/>
+    <hoisted-rows ids="gkaYwyn-BUm"/>
+    <selected-rows ids="ljSvE54Cz9V"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -809,7 +807,7 @@
         <null/>
       </values>
       <children>
-        <item id="gMke-ziNo2M" expanded="yes" state="indeterminate">
+        <item id="gMke-ziNo2M" state="indeterminate">
           <values>
             <text>
               <p>
@@ -4950,34 +4948,7 @@
             <null/>
           </values>
         </item>
-        <item id="dGwB5uicp4a">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Foreground/background colours</lit>
-                </run>
-              </p>
-            </text>
-            <null/>
-          </values>
-          <note>
-            <text>
-              <p>
-                <run>
-                  <lit>Want to be able to set the default foreground/background Z-colours</lit>
-                </run>
-              </p>
-              <p/>
-              <p>
-                <run>
-                  <lit>(Will fix bug in Varicella, amongst others)</lit>
-                </run>
-              </p>
-            </text>
-          </note>
-        </item>
-        <item id="ljSvE54Cz9V">
+        <item id="ljSvE54Cz9V" state="checked">
           <values>
             <text>
               <p>
@@ -4999,6 +4970,33 @@
               <p>
                 <run>
                   <lit>(not possible in OS X?)</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="dGwB5uicp4a" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Foreground/background colours</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <note>
+            <text>
+              <p>
+                <run>
+                  <lit>Want to be able to set the default foreground/background Z-colours</lit>
+                </run>
+              </p>
+              <p/>
+              <p>
+                <run>
+                  <lit>(Will fix bug in Varicella, amongst others)</lit>
                 </run>
               </p>
             </text>

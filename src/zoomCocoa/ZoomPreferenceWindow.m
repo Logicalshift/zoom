@@ -383,6 +383,8 @@ static int familyComparer(id a, id b, void* context) {
 	[showMargins setState: [prefs textMargin] > 0?NSOnState:NSOffState];
 	[useScreenFonts setState: [prefs useScreenFonts]?NSOnState:NSOffState];
 	[useHyphenation setState: [prefs useHyphenation]?NSOnState:NSOffState];
+	[kerning setState: [prefs useKerning]?NSOnState:NSOffState];
+	[ligatures setState: [prefs useLigatures]?NSOnState:NSOffState];
 	
 	[marginWidth setEnabled: [prefs textMargin] > 0];
 	if ([prefs textMargin] > 0) {
@@ -718,6 +720,22 @@ static void appendStyle(NSMutableString* styleName,
 	if (newState != [prefs useHyphenation]) {
 		[prefs setUseHyphenation: newState];
 	}
+}
+
+- (IBAction) ligaturesChanged: (id) sender {
+	BOOL newState = [ligatures state]==NSOnState;
+	
+	if (newState != [prefs useLigatures]) {
+		[prefs setUseLigatures: newState];
+	}	
+}
+
+- (IBAction) kerningChanged: (id) sender {
+	BOOL newState = [kerning state]==NSOnState;
+	
+	if (newState != [prefs useKerning]) {
+		[prefs setUseKerning: newState];
+	}	
 }
 
 // = Story progress meter =

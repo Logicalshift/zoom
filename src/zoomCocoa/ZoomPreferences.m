@@ -32,13 +32,15 @@ static NSString* colours			= @"Colours";
 static NSString* textMargin			= @"TextMargin";
 static NSString* useScreenFonts		= @"UseScreenFonts";
 static NSString* useHyphenation		= @"UseHyphenation";
+static NSString* useKerning			= @"UseKerning";
+static NSString* useLigatures		= @"UseLigatures";
 
 static NSString* organiserDirectory = @"organiserDirectory";
 
-static NSString* foregroundColour   = @"foregroundColour";
-static NSString* backgroundColour   = @"backgroundColour";
-static NSString* showBorders		= @"showBorders";
-static NSString* showGlkBorders		= @"showGlkBorders";
+static NSString* foregroundColour   = @"ForegroundColour";
+static NSString* backgroundColour   = @"BackgroundColour";
+static NSString* showBorders		= @"ShowBorders";
+static NSString* showGlkBorders		= @"ShowGlkBorders";
 
 // == Global preferences ==
 
@@ -444,6 +446,34 @@ static NSArray* DefaultColours(void) {
 	return result;	
 }
 
+- (BOOL) useKerning {
+	[prefLock lock];
+	NSNumber* num = [prefs objectForKey: useKerning];
+	BOOL result;
+	
+	if (num)
+		result = [num boolValue];
+	else
+		result = YES;
+	[prefLock unlock];
+	
+	return result;	
+}
+
+- (BOOL) useLigatures {
+	[prefLock lock];
+	NSNumber* num = [prefs objectForKey: useLigatures];
+	BOOL result;
+	
+	if (num)
+		result = [num boolValue];
+	else
+		result = YES;
+	[prefLock unlock];
+	
+	return result;		
+}
+
 - (BOOL) keepGamesOrganised {
 	[prefLock lock];
 	BOOL result = [[prefs objectForKey: keepGamesOrganised] boolValue];
@@ -562,6 +592,18 @@ static NSArray* DefaultColours(void) {
 	[prefs setObject: [NSNumber numberWithBool: value]
 			  forKey: useHyphenation];
 	[self preferencesHaveChanged];
+}
+
+- (void) setUseKerning: (BOOL) value {
+	[prefs setObject: [NSNumber numberWithBool: value]
+			  forKey: useKerning];
+	[self preferencesHaveChanged];	
+}
+
+- (void) setUseLigatures: (BOOL) value {
+	[prefs setObject: [NSNumber numberWithBool: value]
+			  forKey: useLigatures];
+	[self preferencesHaveChanged];	
 }
 
 - (void) setFontRange: (NSRange) fontRange

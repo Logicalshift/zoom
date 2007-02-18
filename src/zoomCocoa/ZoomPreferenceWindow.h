@@ -51,6 +51,8 @@
 	IBOutlet NSSlider* marginWidth;
 	IBOutlet NSButton* useScreenFonts;
 	IBOutlet NSButton* useHyphenation;
+	IBOutlet NSButton* kerning;
+	IBOutlet NSButton* ligatures;
 	
 	IBOutlet NSPopUpButton* foregroundColour;
 	IBOutlet NSPopUpButton* backgroundColour;
@@ -87,6 +89,8 @@
 - (IBAction) marginsChanged: (id) sender;
 - (IBAction) screenFontsChanged: (id) sender;
 - (IBAction) hyphenationChanged: (id) sender;
+- (IBAction) ligaturesChanged: (id) sender;
+- (IBAction) kerningChanged: (id) sender;
 
 - (IBAction) bordersChanged: (id) sender;
 - (IBAction) colourChanged: (id) sender;

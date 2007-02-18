@@ -20,6 +20,8 @@
                 hyphenationChanged = id; 
                 interpreterChanged = id; 
                 keepOrganisedChanged = id; 
+                kerningChanged = id; 
+                ligaturesChanged = id; 
                 marginsChanged = id; 
                 reorganiseGames = id; 
                 resetOrganiseDir = id; 
@@ -52,6 +54,8 @@
                 glkBorders = NSButton; 
                 interpreter = NSPopUpButton; 
                 keepGamesOrganised = NSButton; 
+                kerning = NSButton; 
+                ligatures = NSButton; 
                 marginWidth = NSSlider; 
                 organiseDir = NSTextView; 
                 organiserIndicator = NSProgressIndicator; 
