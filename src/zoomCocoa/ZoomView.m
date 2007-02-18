@@ -1336,6 +1336,7 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
         fontToUse, NSFontAttributeName,
         foregroundColour, NSForegroundColorAttributeName,
         backgroundColour, NSBackgroundColorAttributeName,
+		[NSNumber numberWithBool: [viewPrefs useLigatures]], NSLigatureAttributeName,
 		[[style copy] autorelease], ZoomStyleAttributeName,
         nil];
 	

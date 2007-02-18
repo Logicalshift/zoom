@@ -118,6 +118,8 @@
 	[prefs setTextMargin: [zPrefs textMargin]];
 	[prefs setUseScreenFonts: [zPrefs useScreenFonts]];
 	[prefs setUseHyphenation: [zPrefs useHyphenation]];
+	[prefs setUseKerning: [zPrefs useKerning]];
+	[prefs setUseLigatures: [zPrefs useLigatures]];
 	
 	[prefs setScrollbackLength: [zPrefs scrollbackLength]];
 	
