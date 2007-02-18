@@ -2312,6 +2312,9 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	[[textView layoutManager] setHyphenationFactor: [viewPrefs useHyphenation]?1:0];
 	[[textView layoutManager] setUsesScreenFonts: [viewPrefs useScreenFonts]];
 	
+	[textScroller setUseUpperDivider: [viewPrefs showBorders]];
+	[textScroller tile];
+	
 	[self reformatWindow];
 }
 

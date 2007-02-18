@@ -205,6 +205,12 @@
 	// Set the default log message
 	[logText setString: [NSString stringWithFormat: @"Zoom CocoaGlk Plugin\n"]];
 	
+	// Set up the window borders
+	if (![[ZoomPreferences globalPreferences] showGlkBorders])
+		[glkView setBorderWidth: 0];
+	else
+		[glkView setBorderWidth: 2];
+	
 	// Start it if we've got enough information
 	[self maybeStartView];
 }
@@ -220,6 +226,12 @@
 		if (ttsAdded) [glkView removeAutomationObject: tts];
 		ttsAdded = NO;
 	}
+	
+	// Set up the window borders
+	if (![[ZoomPreferences globalPreferences] showGlkBorders])
+		[glkView setBorderWidth: 0];
+	else
+		[glkView setBorderWidth: 2];
 }
 
 // = Configuring the client =
