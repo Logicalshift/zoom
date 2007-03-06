@@ -51,7 +51,6 @@
                 foregroundColour = NSPopUpButton; 
                 gameSettingsView = NSView; 
                 generalSettingsView = NSView; 
-                glkBorders = NSButton; 
                 interpreter = NSPopUpButton; 
                 keepGamesOrganised = NSButton; 
                 kerning = NSButton; 

@@ -47,6 +47,9 @@
 }
 
 + (NSImage*) cacheView: (NSView*) view {
+	// TODO: instead of putting the view on the cached window, could directly call drawRect: on the
+	// view and its subviews, with the display focus locked to the image instead of the 'real' window.
+	
 	// Create the cached representation of the view
 	NSRect viewFrame = [view frame];
 	NSCachedImageRep* cacheRep = [[NSCachedImageRep alloc] initWithSize: viewFrame.size

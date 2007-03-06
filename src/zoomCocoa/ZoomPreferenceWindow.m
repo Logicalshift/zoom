@@ -150,9 +150,13 @@ static int familyComparer(id a, id b, void* context) {
 	[colours setDelegate: self];
 	
 	// Set up the various font menus
-	[proportionalFont setMenu: [self fontMenu: NO]];
-	[fixedFont setMenu: [self fontMenu: YES]];
-	[symbolicFont setMenu: [self fontMenu: NO]];
+	NSMenu* proportionalMenu = [self fontMenu: NO];
+	NSMenu* fixedMenu = [self fontMenu: YES];
+	NSMenu* symbolMenu = [[proportionalMenu copy] autorelease];
+	
+	[proportionalFont setMenu: proportionalMenu];
+	[fixedFont setMenu: fixedMenu];
+	[symbolicFont setMenu: symbolMenu];
 	
 	[[NSNotificationCenter defaultCenter] addObserver: self
 											 selector: @selector(storyProgressChanged:)
@@ -392,7 +396,6 @@ static int familyComparer(id a, id b, void* context) {
 	}
 	
 	[zoomBorders setState: [prefs showBorders]?NSOnState:NSOffState];
-	[glkBorders setState: [prefs showGlkBorders]?NSOnState:NSOffState];
 	[self updateColourMenus];
 }
 
@@ -770,14 +773,11 @@ static void appendStyle(NSMutableString* styleName,
 
 - (IBAction) bordersChanged: (id) sender {
 	BOOL newState = [sender state] == NSOnState;
-	BOOL oldState = (sender==zoomBorders)?[prefs showBorders]:[prefs showGlkBorders];
+	BOOL oldState = [prefs showBorders];
 	
 	if (newState != oldState) {
-		if (sender == zoomBorders) {
-			[prefs setShowBorders: newState];
-		} else {
-			[prefs setShowGlkBorders: newState];
-		}
+		[prefs setShowBorders: newState];
+		[prefs setShowGlkBorders: newState];
 	}
 }
 

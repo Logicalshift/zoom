@@ -57,7 +57,6 @@
 	IBOutlet NSPopUpButton* foregroundColour;
 	IBOutlet NSPopUpButton* backgroundColour;
 	IBOutlet NSButton* zoomBorders;
-	IBOutlet NSButton* glkBorders;
 	
 	// The toolbar
 	NSToolbar* toolbar;

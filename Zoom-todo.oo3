@@ -15,12 +15,12 @@
     </style-attribute>
   </style-attribute-registry>
   <settings/>
-  <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
+  <editor scroll-position="{0, 168}" ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
-    <hoisted-rows ids="gkaYwyn-BUm"/>
-    <selected-rows ids="j9PhsYoN6mI"/>
+    <hoisted-rows ids="kzPdhsKinRx"/>
+    <selected-rows ids="dwMYW0L1MCR"/>
     <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{9, 0}"/>
+    <selected-characters range="{120, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -1224,6 +1224,18 @@
             </text>
           </note>
         </item>
+        <item id="fk3TzBtmW7u">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Switching apps while in fullscreen should restore the normal size. Only one game at once should actually be allowed to run in fullscreen mode.</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
         <item id="l0b6v1IyTNb">
           <values>
             <text>
@@ -1240,6 +1252,14 @@
               <p>
                 <run>
                   <lit>Weirdly, the exact same code works fine for CocoaGlk :-/</lit>
+                </run>
+              </p>
+              <p>
+                <run/>
+              </p>
+              <p>
+                <run>
+                  <lit>Thought that this may have been because the initialFirstResponder wasn&apos;t set for the Zoom window, but apparently not. Need to go over initialisation again, I think.</lit>
                 </run>
               </p>
             </text>
@@ -2214,6 +2234,57 @@
             </text>
           </note>
         </item>
+        <item id="dONDAAfKJjH">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Preferencs takes a long time to build the font menu</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>?? Much longer on the mac pro than on PPC machines?? Could try availableFontNamesWithTraits: instead to avoid the call to isFixedPitch (which seems to be the main culprit).</lit>
+                </run>
+              </p>
+              <p/>
+              <p>
+                <run>
+                  <lit>Could also put off building the menu until one of the font items is actually clicked, but that is still less than ideal.</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="oJRh3EqxDb3">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Looks like line history doesn&apos;t work quite right in CocoaGlk games (forward and backwards seem to do the same thing)</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
+        <item id="dwMYW0L1MCR">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Bug in RobotFindKitten: flicker + some upper window stuff is going to the wrong place. Seen this in some other games too</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
         <item id="mhp-oU_nFnR">
           <values>
             <text>
@@ -2280,6 +2351,23 @@
             </text>
             <null/>
           </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>Need to extend the background on the last character to fill the whole window.</lit>
+                </run>
+              </p>
+              <p>
+                <run/>
+              </p>
+              <p>
+                <run>
+                  <lit>Probably need something similar for Glk, too... Could be harder because of the typesetter. (Could be easier too....)</lit>
+                </run>
+              </p>
+            </text>
+          </note>
         </item>
         <item id="m9hL7srSzjO">
           <values>
@@ -4837,6 +4925,15 @@
               </p>
             </text>
           </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>Maybe less necessary now; Inform has the ability to import .rec files directly into the skein.</lit>
+                </run>
+              </p>
+            </text>
+          </note>
           <children>
             <item id="mcmKTrk5d8A">
               <values>
@@ -4938,7 +5035,82 @@
             <null/>
           </values>
         </item>
-        <item id="pjQXb-RL44r">
+        <item id="nDjP2JIUDiS">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Really only want one checkbox for the window borders</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
+        <item id="i0mfU9MvjYk">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Simplified colour chooser?</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>Ie, simple colour control. Colour chosen would affect the nearest colour in the main palette (by hue). When moving away from a colour, it would need to snap back to its original value.</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="oyBC3khzAtl">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Separate colour for input text?</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>Risky: would need to deal with the case where the background colour is something other than the default. Glk apps are liable not to look at this to change when selecting their colours, so possibly need to hack this.</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="fJKMwUYpsav">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Put CocoaGlk more prompt into the main ZoomView</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>(Can I sensibly avoid reimplementing it? Don&apos;t really want to create a hard dependency between ZoomView and GlkView)</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="pjQXb-RL44r" state="checked">
           <values>
             <text>
               <p>
@@ -5113,7 +5285,7 @@
             <null/>
           </values>
         </item>
-        <item id="jCsCwpJQjhv" expanded="yes" state="indeterminate">
+        <item id="jCsCwpJQjhv" state="indeterminate">
           <values>
             <text>
               <p>
@@ -5172,6 +5344,15 @@
                 </text>
                 <null/>
               </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <lit>(Can&apos;t actually limit the mouse, so just limit where clicks can appear? Not much seems to actually use this)</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
             </item>
           </children>
         </item>
@@ -5186,23 +5367,35 @@
             </text>
             <null/>
           </values>
-          <note>
+          <note expanded="yes">
             <text>
               <p>
                 <run>
                   <lit>BWUAHAHAHAHAAHA</lit>
                 </run>
               </p>
-              <p/>
+              <p>
+                <run/>
+              </p>
               <p>
                 <run>
                   <lit>Oh, I kill me. </lit>
                 </run>
               </p>
-              <p/>
+              <p>
+                <run/>
+              </p>
               <p>
                 <run>
                   <lit>Finding a decent sound library for both Linux and OS X would be a help here, I think. (Grr, AIFFs are hard to play under Linux, and mods are hard to play under OS X. It gets even harder when you have to keep the interpreter running as well. Then you have to be able to interrupt playback reliably...)</lit>
+                </run>
+              </p>
+              <p>
+                <run/>
+              </p>
+              <p>
+                <run>
+                  <lit>Could use CoreAudio under OS X if I can find appropriate plug-ins... Possible effect on the size of the Z dmg could be a problem here though.</lit>
                 </run>
               </p>
             </text>
