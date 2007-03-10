@@ -326,6 +326,9 @@ static NSMutableDictionary* babelCache = nil;
 	fileEnum = [files objectEnumerator];
 	while (file = [fileEnum nextObject]) {
 		NSString* fullPath = [dir stringByAppendingPathComponent: [self fixFile: file]];
+		if (![[NSFileManager defaultManager] fileExistsAtPath: fullPath]) {
+			continue;
+		}
 		[[NSFileManager defaultManager] removeFileAtPath: fullPath
 												 handler: nil];
 	}
