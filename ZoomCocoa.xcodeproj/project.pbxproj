@@ -70,6 +70,7 @@
 		4B3E766C0BA2D47300661FE8 /* ZoomBabel.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3E766A0BA2D47300661FE8 /* ZoomBabel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3E766D0BA2D47300661FE8 /* ZoomBabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3E766B0BA2D47300661FE8 /* ZoomBabel.m */; };
 		4B3E76DD0BA2DF8E00661FE8 /* ZoomResourceDrop.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC5562006B83F4600F0DD4A /* ZoomResourceDrop.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3E775B0BA2F00000661FE8 /* babel in Copy babel */ = {isa = PBXBuildFile; fileRef = 4BD79A8F0BA2C9AA002C82B2 /* babel */; };
 		4B43DA8409364C7400F03009 /* GlkWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4B43DA8309364C7400F03009 /* GlkWindow.nib */; };
 		4B43DAB109364CD700F03009 /* ZoomGlkWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B43DAAD09364CD100F03009 /* ZoomGlkWindowController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B43DAB209364CD800F03009 /* ZoomGlkWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B43DAAE09364CD100F03009 /* ZoomGlkWindowController.m */; };
@@ -354,7 +355,6 @@
 		4BD79AF00BA2CC06002C82B2 /* babel_multi_functions.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BD79AED0BA2CC06002C82B2 /* babel_multi_functions.c */; };
 		4BD79AF10BA2CC06002C82B2 /* babel_story_functions.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BD79AEE0BA2CC06002C82B2 /* babel_story_functions.c */; };
 		4BD79AF30BA2CC13002C82B2 /* babel.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BD79AF20BA2CC13002C82B2 /* babel.c */; };
-		4BD79B440BA2CDFE002C82B2 /* babel in Copy babel */ = {isa = PBXBuildFile; fileRef = 4BD79A8F0BA2C9AA002C82B2 /* babel */; };
 		4BE175940B792BD80094B73D /* ZoomWindowThatCanBecomeKey.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA66B2A0906538F000A3852 /* ZoomWindowThatCanBecomeKey.h */; };
 		4BE175950B792BD90094B73D /* ZoomWindowThatCanBecomeKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA66B2B0906538F000A3852 /* ZoomWindowThatCanBecomeKey.m */; };
 /* End PBXBuildFile section */
@@ -459,6 +459,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 4B39C92A08EEF63400BA5E90;
 			remoteInfo = ZoomMetadataImporter;
+		};
+		4B3E77550BA2EFDD00661FE8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4BD79A8E0BA2C9AA002C82B2 /* babel */;
+			remoteInfo = babel;
 		};
 		4B7CB03909360A6A00F3B8F6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -593,13 +600,6 @@
 			remoteGlobalIDString = 4BB8C12208C2497700D7D334;
 			remoteInfo = ZoomServer;
 		};
-		4BD79B400BA2CDD5002C82B2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4BD79A8E0BA2C9AA002C82B2;
-			remoteInfo = babel;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -625,6 +625,17 @@
 			name = "Copy Metadata importer";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4B3E77590BA2EFED00661FE8 /* Copy babel */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				4B3E775B0BA2F00000661FE8 /* babel in Copy babel */,
+			);
+			name = "Copy babel";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4BB8C20108C249F400D7D334 /* Copy frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -637,17 +648,6 @@
 				4BB8C20208C249F400D7D334 /* ZoomView.framework in Copy frameworks */,
 			);
 			name = "Copy frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4BD79B420BA2CDDF002C82B2 /* Copy babel */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 6;
-			files = (
-				4BD79B440BA2CDFE002C82B2 /* babel in Copy babel */,
-			);
-			name = "Copy babel";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -1883,10 +1883,12 @@
 				4B7CB07D09362A3B00F3B8F6 /* Resources */,
 				4B7CB07E09362A3B00F3B8F6 /* Sources */,
 				4B7CB07F09362A3B00F3B8F6 /* Frameworks */,
+				4B3E77590BA2EFED00661FE8 /* Copy babel */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				4B3E77560BA2EFDD00661FE8 /* PBXTargetDependency */,
 				4B7CB08C09362A4600F3B8F6 /* PBXTargetDependency */,
 				4B7CB08F09362A5300F3B8F6 /* PBXTargetDependency */,
 				4B2D3A980AB37E130038255E /* PBXTargetDependency */,
@@ -1953,7 +1955,6 @@
 				4B39CA0408EEF8C600BA5E90 /* Copy Metadata importer */,
 				4B36C45C0955ED3F00874F9F /* Copy Glulxe plugin */,
 				4B7FC2380B1F2588004DD113 /* Copy more plugins, if available */,
-				4BD79B420BA2CDDF002C82B2 /* Copy babel */,
 			);
 			buildRules = (
 				4B51A95208FAC71D00232D0B /* PBXBuildRule */,
@@ -1965,7 +1966,6 @@
 				4B36C45B0955ED3B00874F9F /* PBXTargetDependency */,
 				4BB8C18B08C249F400D7D334 /* PBXTargetDependency */,
 				4B39C93508EEF63E00BA5E90 /* PBXTargetDependency */,
-				4BD79B410BA2CDD5002C82B2 /* PBXTargetDependency */,
 				4B18890C0935FB46003AF62A /* PBXTargetDependency */,
 				4B7CB1F4093635C400F3B8F6 /* PBXTargetDependency */,
 			);
@@ -2491,6 +2491,11 @@
 			target = 4B39C92A08EEF63400BA5E90 /* ZoomMetadataImporter */;
 			targetProxy = 4B39C93408EEF63E00BA5E90 /* PBXContainerItemProxy */;
 		};
+		4B3E77560BA2EFDD00661FE8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4BD79A8E0BA2C9AA002C82B2 /* babel */;
+			targetProxy = 4B3E77550BA2EFDD00661FE8 /* PBXContainerItemProxy */;
+		};
 		4B7CB03A09360A6A00F3B8F6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 4B1888CF0935F863003AF62A /* Expat */;
@@ -2555,11 +2560,6 @@
 			isa = PBXTargetDependency;
 			target = 4BB8C12208C2497700D7D334 /* ZoomServer */;
 			targetProxy = 4BB8C18C08C249F400D7D334 /* PBXContainerItemProxy */;
-		};
-		4BD79B410BA2CDD5002C82B2 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4BD79A8E0BA2C9AA002C82B2 /* babel */;
-			targetProxy = 4BD79B400BA2CDD5002C82B2 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

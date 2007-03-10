@@ -15,7 +15,16 @@
 // Objective-C interface to the babel command line tool
 //
 @interface ZoomBabel : NSObject {
+	float timeout;											// Maximum time to block for before giving up
+	
+	NSString* filename;										// The file that needs identifying
 	NSTask* babelTask;										// The babel task
+	NSPipe* babelStdOut;									// The standard output from the babel task
+	
+	NSData* metadata;										// The raw XML metadata
+	NSData* babelImage;										// The raw cover image
+	
+	NSMutableArray* waitingForTask;							// Tasks waiting for babel to finish
 }
 
 // = Initialisation =
@@ -26,7 +35,7 @@
 
 - (void) setTaskTimeout: (float) seconds;					// Sets the maximum time to wait for the babel command to respond when blocking (default is 0.2 seconds)
 
-- (NSString*) rawMetadata;									// Retrieves a raw XML metadata record (or nil)
+- (NSData*) rawMetadata;									// Retrieves a raw XML metadata record (or nil)
 - (NSData*) rawCoverImage;									// Retrieves the raw cover image data (or nil)
 
 // = Interpreted reading =

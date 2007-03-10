@@ -39,8 +39,8 @@ UTIL_CHECK_CFLAG(fomit-frame-pointer)
 
 AC_ARG_ENABLE([new-terp], 
 [  --enable-new-terp       Enable alternative interpreter (insignificant 
-                          performance hit, faster compile times) 
-                          <EXPERIMENTAL> ],
+                          performance hit, faster compile times, performance 
+                          boost on some architectures) ],
 [
 UTIL_CHECK_CFLAG(fno-gcse)
 AC_MSG_CHECKING([for computed gotos])
