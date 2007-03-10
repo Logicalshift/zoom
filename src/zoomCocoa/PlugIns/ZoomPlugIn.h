@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 
 #import <ZoomPlugIns/ZoomStory.h>
-#import <ZoomPlugIns/ZoomStoryID.h>0
+#import <ZoomPlugIns/ZoomStoryID.h>
 
 ///
 /// Base class for deriving Zoom plugins for playing new game types.

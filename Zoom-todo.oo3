@@ -15,12 +15,12 @@
     </style-attribute>
   </style-attribute-registry>
   <settings/>
-  <editor scroll-position="{0, 168}" ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
+  <editor scroll-position="{0, 592}" ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
     <selected-rows ids="dwMYW0L1MCR"/>
-    <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{120, 0}"/>
+    <selected-columns ids=":941128d340f2709e21a6e303"/>
+    <selected-characters range="{92, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -809,7 +809,7 @@
         <null/>
       </values>
       <children>
-        <item id="gMke-ziNo2M" state="indeterminate">
+        <item id="gMke-ziNo2M" expanded="yes" state="indeterminate">
           <values>
             <text>
               <p>
@@ -910,6 +910,18 @@
                   </p>
                 </text>
               </note>
+            </item>
+            <item id="oJRh3EqxDb3" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Looks like line history doesn&apos;t work quite right in CocoaGlk games (forward and backwards seem to do the same thing)</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
             </item>
             <item id="pnaSrl82Kfg" state="checked">
               <values>
@@ -2261,18 +2273,6 @@
             </text>
           </note>
         </item>
-        <item id="oJRh3EqxDb3">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Looks like line history doesn&apos;t work quite right in CocoaGlk games (forward and backwards seem to do the same thing)</lit>
-                </run>
-              </p>
-            </text>
-            <null/>
-          </values>
-        </item>
         <item id="dwMYW0L1MCR">
           <values>
             <text>
@@ -2284,6 +2284,15 @@
             </text>
             <null/>
           </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>Due to the border and the differences in line spacing between the upper and the lower window</lit>
+                </run>
+              </p>
+            </text>
+          </note>
         </item>
         <item id="mhp-oU_nFnR">
           <values>

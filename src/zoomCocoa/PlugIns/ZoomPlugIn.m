@@ -36,7 +36,8 @@ static NSMutableArray* pluginClasses = nil;
 #if VERBOSITY >= 2
 		NSLog(@"= Found file: %@", plugin);
 #endif
-		if ([[[plugin pathExtension] lowercaseString] isEqualToString: @"bundle"]) {
+		if ([[[plugin pathExtension] lowercaseString] isEqualToString: @"bundle"]
+			|| [[[plugin pathExtension] lowercaseString] isEqualToString: @"plugin"]) {
 			NSBundle* pluginBundle = [NSBundle bundleWithPath: [pluginPath stringByAppendingPathComponent: plugin]];
 			
 			if (pluginBundle != nil) {
