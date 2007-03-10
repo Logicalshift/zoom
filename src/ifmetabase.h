@@ -28,7 +28,7 @@
  * be found for the zcode identifier, but will for the md5 one.
  *
  * These functions are not thread-safe, but should be re-entrant. That is, you can use
- * this in multi-threaded applications provided that you use locks when individual 
+ * this in multi-threaded applications provided that you use locks with individual 
  * metabases.
  */
 
