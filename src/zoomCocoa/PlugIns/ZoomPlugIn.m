@@ -221,4 +221,33 @@ static NSMutableArray* pluginClasses = nil;
 	// Default implementation does nothing
 }
 
+- (NSImage*) resizeLogo: (NSImage*) input {
+	NSSize oldSize = [input size];
+	NSImage* result = input;
+	
+	if (oldSize.width > 256 || oldSize.height > 256) {
+		float scaleFactor;
+		
+		if (oldSize.width > oldSize.height) {
+			scaleFactor = 256/oldSize.width;
+		} else {
+			scaleFactor = 256/oldSize.height;
+		}
+		
+		NSSize newSize = NSMakeSize(scaleFactor * oldSize.width, scaleFactor * oldSize.height);
+		
+		result = [[[NSImage alloc] initWithSize: newSize] autorelease];
+		[result lockFocus];
+		[[NSGraphicsContext currentContext] setImageInterpolation: NSImageInterpolationHigh];
+		
+		[input drawInRect: NSMakeRect(0,0, newSize.width, newSize.height)
+				 fromRect: NSMakeRect(0,0, oldSize.width, oldSize.height)
+				operation: NSCompositeSourceOver
+				 fraction: 1.0];
+		[result unlockFocus];
+	}
+	
+	return result;
+}
+
 @end

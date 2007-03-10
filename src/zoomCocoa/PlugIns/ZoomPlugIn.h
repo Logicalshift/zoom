@@ -53,6 +53,8 @@
 - (ZoomStory*) defaultMetadata;									// Retrieves the default metadata for this story (used iff no metadata pre-exists for this story)
 - (NSImage*) coverImage;										// Retrieves the picture to use for the cover image
 
+- (NSImage*) resizeLogo: (NSImage*) input;						// Resizes a cover image so that it's suitable for use as a window logo
+
 // More information from the main Zoom application
 - (void) setPreferredSaveDirectory: (NSString*) dir;			// Sets the preferred directory to put savegames into
 
