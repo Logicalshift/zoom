@@ -60,6 +60,7 @@
 - (NSString*) teaser;
 - (unsigned)  zarfRating;
 - (float)     rating;
+- (NSString*) resourceFilename;
 
 // Read them all at once
 - (NSDictionary*) dictionary;

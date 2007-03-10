@@ -1175,17 +1175,28 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		}
 		
 		NSString* newFile = [dir stringByAppendingPathComponent: @"resource.blb"];
+		NSString* oldFile = resources;
 		
-		if (![fm copyPath: resources
-				   toPath: newFile
-				  handler: nil]) {
-			NSLog(@"Unable to copy resource file to new location");
-		} else {
-			resources = newFile;
+		newFile = [newFile stringByStandardizingPath];
+		oldFile = [oldFile stringByStandardizingPath];
+		
+		if (![[oldFile lowercaseString] isEqualToString: [newFile lowercaseString]]) {
+			if ([fm fileExistsAtPath: newFile]) {
+				[fm removeFileAtPath: newFile
+							 handler: nil];
+			}
+			
+			if (![fm copyPath: resources
+					   toPath: newFile
+					  handler: nil]) {
+				NSLog(@"Unable to copy resource file to new location");
+			} else {
+				resources = newFile;
+			}
+			
+			[story setObject: resources
+					  forKey: @"ResourceFilename"];
 		}
-		
-		[story setObject: resources
-				  forKey: @"ResourceFilename"];
 	} else {
 		[story setObject: nil
 				  forKey: @"ResourceFilename"];

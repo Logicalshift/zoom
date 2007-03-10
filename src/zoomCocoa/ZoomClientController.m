@@ -437,6 +437,20 @@
 	[[[self document] storyInfo] setRating: [[ZoomGameInfoController sharedGameInfoController] rating]];
 }
 
+- (IBAction) infoResourceChanged: (id) sender {
+	if ([self selectedStory] == nil) return;
+	ZoomStory* story = [[self document] storyInfo];
+	
+	// Update the resource path
+	[story setObject: [[ZoomGameInfoController sharedGameInfoController] resourceFilename]
+			  forKey: @"ResourceFilename"];
+	
+	// Perform organisation
+	if ([[ZoomPreferences globalPreferences] keepGamesOrganised]) {
+		[[ZoomStoryOrganiser sharedStoryOrganiser] organiseStory: story];
+	}
+}
+
 // = Various IB actions =
 
 - (IBAction) playInFullScreen: (id) sender {

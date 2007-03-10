@@ -523,7 +523,7 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 }
 
 - (id) objectForKey: (id) key {
-	if (story == NULL) return;
+	if (story == NULL) return nil;
 
 	if (![key isKindOfClass: [NSString class]]) {
 		[NSException raise: @"ZoomKeyNotString" 

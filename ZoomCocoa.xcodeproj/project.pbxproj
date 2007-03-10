@@ -71,6 +71,8 @@
 		4B3E766D0BA2D47300661FE8 /* ZoomBabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3E766B0BA2D47300661FE8 /* ZoomBabel.m */; };
 		4B3E76DD0BA2DF8E00661FE8 /* ZoomResourceDrop.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC5562006B83F4600F0DD4A /* ZoomResourceDrop.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3E775B0BA2F00000661FE8 /* babel in Copy babel */ = {isa = PBXBuildFile; fileRef = 4BD79A8F0BA2C9AA002C82B2 /* babel */; };
+		4B3E79D90BA31FA800661FE8 /* ZoomStoryOrganiser.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B807BA905BFEE7200681653 /* ZoomStoryOrganiser.h */; };
+		4B3E79DA0BA31FA800661FE8 /* ZoomStoryOrganiser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B807BAA05BFEE7200681653 /* ZoomStoryOrganiser.m */; };
 		4B43DA8409364C7400F03009 /* GlkWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4B43DA8309364C7400F03009 /* GlkWindow.nib */; };
 		4B43DAB109364CD700F03009 /* ZoomGlkWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B43DAAD09364CD100F03009 /* ZoomGlkWindowController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B43DAB209364CD800F03009 /* ZoomGlkWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B43DAAE09364CD100F03009 /* ZoomGlkWindowController.m */; };
@@ -198,7 +200,6 @@
 		4BB8C19908C249F400D7D334 /* ZoomPreferenceWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B418DC30594FB97009C44DE /* ZoomPreferenceWindow.h */; };
 		4BB8C19A08C249F400D7D334 /* ZoomPreferences.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B418ED805961D2C009C44DE /* ZoomPreferences.h */; };
 		4BB8C19F08C249F400D7D334 /* ZoomiFictionController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B807BA305BFEE2700681653 /* ZoomiFictionController.h */; };
-		4BB8C1A008C249F400D7D334 /* ZoomStoryOrganiser.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B807BA905BFEE7200681653 /* ZoomStoryOrganiser.h */; };
 		4BB8C1A108C249F400D7D334 /* ZoomCollapsableView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B926F8805E7F9DA00E5C0EA /* ZoomCollapsableView.h */; };
 		4BB8C1A208C249F400D7D334 /* ZoomSavePreviewView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B13ECD2060F93F200021429 /* ZoomSavePreviewView.h */; };
 		4BB8C1A308C249F400D7D334 /* ZoomiFButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B807BEA05C009ED00681653 /* ZoomiFButton.h */; };
@@ -259,7 +260,6 @@
 		4BB8C1E308C249F400D7D334 /* ZoomAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B23C64F053C9C8C00A8E303 /* ZoomAppDelegate.m */; };
 		4BB8C1E408C249F400D7D334 /* ZoomPreferenceWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B418DC40594FB97009C44DE /* ZoomPreferenceWindow.m */; };
 		4BB8C1EA08C249F400D7D334 /* ZoomiFictionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B807BA405BFEE2700681653 /* ZoomiFictionController.m */; };
-		4BB8C1EB08C249F400D7D334 /* ZoomStoryOrganiser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B807BAA05BFEE7200681653 /* ZoomStoryOrganiser.m */; };
 		4BB8C1EC08C249F400D7D334 /* ZoomiFButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B807BEB05C009ED00681653 /* ZoomiFButton.m */; };
 		4BB8C1ED08C249F400D7D334 /* ZoomCollapsableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B926F8905E7F9DA00E5C0EA /* ZoomCollapsableView.m */; };
 		4BB8C1EE08C249F400D7D334 /* ZoomSavePreviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B13ECD3060F93F200021429 /* ZoomSavePreviewView.m */; };
@@ -1744,7 +1744,6 @@
 				4BB8C19908C249F400D7D334 /* ZoomPreferenceWindow.h in Headers */,
 				4BB8C19A08C249F400D7D334 /* ZoomPreferences.h in Headers */,
 				4BB8C19F08C249F400D7D334 /* ZoomiFictionController.h in Headers */,
-				4BB8C1A008C249F400D7D334 /* ZoomStoryOrganiser.h in Headers */,
 				4BB8C1A108C249F400D7D334 /* ZoomCollapsableView.h in Headers */,
 				4BB8C1A208C249F400D7D334 /* ZoomSavePreviewView.h in Headers */,
 				4BB8C1A308C249F400D7D334 /* ZoomiFButton.h in Headers */,
@@ -1769,6 +1768,7 @@
 				4BA8B5770B1B0479007CD75E /* ZoomInputLine.h in Headers */,
 				4BA8B5780B1B047A007CD75E /* ZoomTextToSpeech.h in Headers */,
 				4B95CDB9C5B03AD500FD9F27 /* ZoomSkeinController.h in Headers */,
+				4B3E79D90BA31FA800661FE8 /* ZoomStoryOrganiser.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2373,7 +2373,6 @@
 				4BB8C1E308C249F400D7D334 /* ZoomAppDelegate.m in Sources */,
 				4BB8C1E408C249F400D7D334 /* ZoomPreferenceWindow.m in Sources */,
 				4BB8C1EA08C249F400D7D334 /* ZoomiFictionController.m in Sources */,
-				4BB8C1EB08C249F400D7D334 /* ZoomStoryOrganiser.m in Sources */,
 				4BB8C1EC08C249F400D7D334 /* ZoomiFButton.m in Sources */,
 				4BB8C1ED08C249F400D7D334 /* ZoomCollapsableView.m in Sources */,
 				4BB8C1EE08C249F400D7D334 /* ZoomSavePreviewView.m in Sources */,
@@ -2388,6 +2387,7 @@
 				4B0D81C70AC59C79003E8CCA /* ZoomWhiteView.m in Sources */,
 				4B0D81DE0AC59F3F003E8CCA /* ZoomFadeView.m in Sources */,
 				4BA8B9530B1BB3F4007CD75E /* main.m in Sources */,
+				4B3E79DA0BA31FA800661FE8 /* ZoomStoryOrganiser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

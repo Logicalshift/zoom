@@ -1568,6 +1568,21 @@ int tableSorter(id a, id b, void* context) {
 	[[[NSApp delegate] userMetadata] writeToDefaultFile];
 }
 
+- (IBAction) infoResourceChanged: (id) sender {
+	if ([self selectedStory] == nil) return;
+	ZoomStory* story = [self createStoryCopy: [self selectedStory]];
+	
+	// Update the resource path
+	[story setObject: [[ZoomGameInfoController sharedGameInfoController] resourceFilename]
+				 forKey: @"ResourceFilename"];
+	[[[NSApp delegate] userMetadata] writeToDefaultFile];
+	
+	// Perform organisation
+	if ([[ZoomPreferences globalPreferences] keepGamesOrganised]) {
+		[[ZoomStoryOrganiser sharedStoryOrganiser] organiseStory: [self selectedStory]];
+	}
+}
+
 - (IBAction) infoZarfRatingChanged: (id) sender {
 	if ([self selectedStory] == nil) return;
 	

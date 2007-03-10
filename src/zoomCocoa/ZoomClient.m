@@ -191,7 +191,7 @@
 	} else if (resourceFilename != nil) {
 		// Resource file not found
 		[self addLoadingError: resources==nil?@"Failed to load resources: the resources set for this story could not be found":
-			@"Failed to load resources that were set for this story, but found alternatives in directory with story file"];
+			@"Failed to load resources that were set for this story, but found alternatives in the directory with story file"];
 		[story setObject: nil
 				  forKey: @"ResourceFilename"];
 	}

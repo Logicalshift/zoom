@@ -1,4 +1,5 @@
 #import "ZoomGameInfoController.h"
+#import "ZoomPreferences.h"
 
 @implementation ZoomGameInfoController
 
@@ -156,7 +157,8 @@ static NSString* stringOrEmpty(NSString* str) {
 		}
 		
 		// FIXME: need improved metadata handling to implement this properly
-		[resourceDrop setEnabled: NO]; [chooseResourceButton setEnabled: NO];
+		[resourceDrop setDroppedFilename: [info objectForKey: @"ResourceFilename"]];
+		[resourceDrop setEnabled: YES]; [chooseResourceButton setEnabled: YES];
 	}
 }
 
@@ -244,10 +246,50 @@ static NSString* stringOrEmpty(NSString* str) {
 
 // = Resource files =
 
+- (NSString*) resourceFilename {
+	return [resourceDrop droppedFilename];
+}
+
+- (void) setResourceFile: (NSString*) filename {
+	[resourceDrop setDroppedFilename: filename];
+	[resourceDrop setNeedsDisplay: YES];
+	[NSApp sendAction: @selector(infoResourceChanged:)
+				   to: nil
+				 from: self];
+}
+
+- (void) finishedChoosingResourceFile: (NSOpenPanel *)sheet
+						   returnCode: (int)returnCode
+						  contextInfo: (void *)contextInfo {
+	if (returnCode != NSOKButton) return;
+	
+	[self setResourceFile: [sheet filename]];
+}
+
 - (IBAction)chooseResourceFile:(id)sender {
+	NSOpenPanel* openPanel = [NSOpenPanel openPanel];
+	NSArray* filetypes = [NSArray arrayWithObjects: @"blb", @"blorb", nil];
+	
+	[openPanel setAllowsMultipleSelection: NO];
+	[openPanel setCanChooseDirectories: NO];
+	[openPanel setCanChooseFiles: YES];
+	[openPanel setDelegate: self];
+	
+	NSString* directory = nil;
+	if ([self resourceFilename] != nil) {
+		directory = [[self resourceFilename] stringByDeletingLastPathComponent];
+	}
+	
+	[openPanel beginSheetForDirectory: directory
+								 file: [self resourceFilename]
+					   modalForWindow: [self window]
+						modalDelegate: self
+					   didEndSelector: @selector(finishedChoosingResourceFile:returnCode:contextInfo:)
+						  contextInfo: nil];
 }
 
 - (void) resourceDropFilenameChanged: (ZoomResourceDrop*) drop {
+	[self setResourceFile: [drop droppedFilename]];
 }
 
 @end
