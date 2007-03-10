@@ -11,6 +11,7 @@
 
 static NSString* babelFolder = nil;
 static NSLock* babelLock;
+static NSMutableDictionary* babelCache = nil;
 
 @interface ZoomBabel(Private)
 
@@ -23,6 +24,7 @@ static NSLock* babelLock;
 
 + (void) initialize {
 	babelLock = [[NSLock alloc] init];
+	babelCache = [[NSMutableDictionary alloc] init];
 }
 
 + (NSString*) babelFolder {
@@ -63,6 +65,30 @@ static NSLock* babelLock;
 - (id) initWithFilename: (NSString*) story {
 	// Initialise this object with the specified story (metadata and image extraction will start immediately)
 	self = [super init];
+	
+	[babelLock lock];
+	
+	// Try to find this story in the cache
+	ZoomBabel* cachedVersion = [babelCache objectForKey: story];
+	if (cachedVersion != nil) {
+		// Use the cached version instead if possible
+		[cachedVersion retain];
+		[self autorelease];
+		[babelLock unlock];
+		return cachedVersion;
+	}
+	
+	// Empty the cache if it's too full (fairly dumb, but works for the expected usage patterns)
+	if ([babelCache count] > 10) {
+		[babelCache release];
+		babelCache = [[NSMutableDictionary alloc] init];
+	}
+	
+	// Store this object in the cache
+	[babelCache setObject: self
+				   forKey: story];
+	
+	[babelLock unlock];
 
 	if (self) {
 		// Default timeout is 0.2 seconds
@@ -114,8 +140,10 @@ static NSLock* babelLock;
 	}
 
 	[filename release]; filename = nil;
-
 	[babelStdOut release]; babelStdOut = nil;
+	
+	[metadata release];
+	[babelImage release];
 	
 	[super dealloc];
 }
@@ -228,6 +256,23 @@ static NSLock* babelLock;
 	return filenames;
 }
 
+- (NSString*) fixFile: (NSString*) file {
+	// Image files have the (size) suffix in the output from babel: remove this, as we don't care
+	if ([file length] <= 0) return file;
+	if ([file characterAtIndex: [file length] - 1] == ')') {
+		int pos = [file length]-1;
+		while (pos >= 0 && [file characterAtIndex: pos] != '(') {
+			if ([file characterAtIndex: pos] == '.') return file;
+			pos--;
+		}
+		
+		if (pos <= 0) return file;
+		file = [file substringToIndex: pos-1];
+	}
+	
+	return file;
+}
+
 - (void) handleBabelTaskFinished {
 	// (Actually perform finishing the babel task without acquiring the lock)
 	// The babel task has finished...
@@ -250,13 +295,21 @@ static NSLock* babelLock;
 		fileEnum = [files objectEnumerator];
 		
 		while (file = [fileEnum nextObject]) {
+			// Image files have the (size) suffix in the output from babel: remove this, as we don't care
+			file = [self fixFile: file];
+			
+			// Get the full path
 			NSString* fullPath = [dir stringByAppendingPathComponent: file];
 			NSString* extension = [[fullPath pathExtension] lowercaseString];
+			
+			if (![[NSFileManager defaultManager] fileExistsAtPath: fullPath]) {
+				continue;
+			}
 			
 			// Check for known extensions
 			if ([extension isEqualToString: @"ifiction"]) {
 				// This is an iFiction record
-				metadata = [NSData dataWithContentsOfFile: fullPath];
+				metadata = [[NSData dataWithContentsOfFile: fullPath] retain];
 			} else if ([extension isEqualToString: @"jpg"]
 					   || [extension isEqualToString: @"jpeg"]
 					   || [extension isEqualToString: @"png"]
@@ -264,7 +317,7 @@ static NSLock* babelLock;
 					   || [extension isEqualToString: @"tif"]
 					   || [extension isEqualToString: @"tiff"]) {
 				// This is an image file
-				babelImage = [NSData dataWithContentsOfFile: fullPath];
+				babelImage = [[NSData dataWithContentsOfFile: fullPath] retain];
 			}
 		}
 	}
@@ -272,7 +325,7 @@ static NSLock* babelLock;
 	// Delete any files the babel task extracted
 	fileEnum = [files objectEnumerator];
 	while (file = [fileEnum nextObject]) {
-		NSString* fullPath = [dir stringByAppendingPathComponent: file];
+		NSString* fullPath = [dir stringByAppendingPathComponent: [self fixFile: file]];
 		[[NSFileManager defaultManager] removeFileAtPath: fullPath
 												 handler: nil];
 	}
