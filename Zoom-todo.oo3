@@ -17,7 +17,10 @@
   <settings/>
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
-    <hoisted-rows ids="bnN6VeEFG6A"/>
+    <hoisted-rows ids="kzPdhsKinRx"/>
+    <selected-rows ids="oWsvPWShTdI"/>
+    <selected-columns ids=":941128d340f2709e21a6e303"/>
+    <selected-characters range="{22, 1}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -188,7 +191,7 @@
             <null/>
           </values>
         </item>
-        <item id="btW6FfOgszw" expanded="yes" state="checked">
+        <item id="btW6FfOgszw" state="checked">
           <values>
             <text>
               <p>
@@ -238,7 +241,7 @@
             </item>
           </children>
         </item>
-        <item id="asQxOYMaNdB" expanded="yes" state="checked">
+        <item id="asQxOYMaNdB" state="checked">
           <values>
             <text>
               <p>
@@ -314,7 +317,7 @@
             </item>
           </children>
         </item>
-        <item id="gVNcfEW6HfL" expanded="yes" state="checked">
+        <item id="gVNcfEW6HfL" state="checked">
           <values>
             <text>
               <p>
