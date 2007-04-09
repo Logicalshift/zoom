@@ -979,6 +979,12 @@ static void finalizeViews(void) {
 - (void) updateMorePrompt {
 	if (pixmapWindow) return; // Nothing to do
 	
+	BOOL wasEditingTextView = editingTextView;
+	if (wasEditingTextView) {
+		editingTextView = NO;
+		[[textView textStorage] endEditing]; 
+	}
+	
     // Updates the more prompt to represent the new height of the window
 	NSSize contentSize = [textScroller contentSize];
 	contentSize = [textView convertSize: contentSize
@@ -990,6 +996,11 @@ static void finalizeViews(void) {
     [textView sizeToFit];
     [self scrollToEnd];
     [self displayMoreIfNecessary];
+
+	if (wasEditingTextView) {
+		editingTextView = YES;
+		[[textView textStorage] beginEditing]; 
+	}
 }
 
 - (void) page {
