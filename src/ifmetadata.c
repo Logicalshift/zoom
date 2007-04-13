@@ -1684,7 +1684,7 @@ int IFMD_Save(IFMetadata* data,
 		IFMDStory* thisStory = data->stories[story];
 		
 		if (thisStory->error) continue; /* No erroneous stories */
-		if (thisStory->numberOfIdents == 0) continue; /* No nonexistant stories */
+		if (thisStory->numberOfIdents == 0) continue; /* No nonexistent stories */
 		
 		ws("\n <story>\n");
 		

@@ -398,7 +398,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 		
 		[self scrollPoint: NSMakePoint(xpos, ypos)];
 	} else {
-		NSLog(@"ZoomSkeinView: Attempt to scroll to nonexistant item");
+		NSLog(@"ZoomSkeinView: Attempt to scroll to nonexistent item");
 	}
 }
 

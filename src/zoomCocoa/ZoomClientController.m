@@ -492,7 +492,7 @@
 																			   backing: NSBackingStoreBuffered
 																				 defer: YES];
 			
-			[fullscreenWindow setLevel: NSStatusWindowLevel];
+			[fullscreenWindow setLevel: NSFloatingWindowLevel];
 			[fullscreenWindow setHidesOnDeactivate: YES];
 			[fullscreenWindow setReleasedWhenClosed: NO];
 			

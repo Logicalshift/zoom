@@ -555,7 +555,7 @@ void v6_set_window(int window)
 {
   if (window < 0 || window >= 8)
     {
-      zmachine_fatal("Attempt to use nonexistant window %i", window);
+      zmachine_fatal("Attempt to use nonexistent window %i", window);
     }
 
 #ifdef DEBUG
