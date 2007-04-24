@@ -302,6 +302,27 @@ static NSComparisonResult stringCompare(id a, id b, void* context) {
 												 context: nil];
 }
 
+- (NSMenu*) populateMenuWithAction: (SEL) action
+							target: (id) target {
+	NSMenu* result = [[[NSMenu alloc] init] autorelease];
+	
+	NSArray* items = [self annotations];
+	NSEnumerator* itemEnum = [items objectEnumerator];
+	NSString* item;
+	
+	while (item = [itemEnum nextObject]) {
+		NSMenuItem* newItem = [[NSMenuItem alloc] initWithTitle: item
+														 action: action
+												  keyEquivalent: @""];
+		[newItem setTarget: target];
+		
+		[result addItem: newItem];
+		[newItem release];
+	}
+	
+	return result;
+}
+
 - (void) populatePopupButton: (NSPopUpButton*) button {
 	[button removeAllItems];
 	
