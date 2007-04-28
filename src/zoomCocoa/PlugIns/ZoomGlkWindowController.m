@@ -264,7 +264,7 @@
 }
 
 - (BOOL) disableLogo {
-	return logo == nil;
+	return logo == nil || ![[ZoomPreferences globalPreferences] showCoverPicture];
 }
 
 - (NSImage*) logo {
@@ -418,7 +418,7 @@
 - (void) confirmFinish:(NSWindow *)sheet 
 			returnCode:(int)returnCode 
 		   contextInfo:(void *)contextInfo {
-	if (returnCode == NSAlertAlternateReturn) {
+	if (returnCode == NSAlertDefaultReturn) {
 		// Close the window
 		closeConfirmed = YES;
 		[[NSRunLoop currentRunLoop] performSelector: @selector(performClose:)
@@ -438,7 +438,7 @@
 		msg = @"There is still a story playing in this window. Are you sure you wish to finish it without saving? The current state of the game will be lost.";
 		
 		NSBeginAlertSheet(@"Finish the game?",
-						  @"Keep playing", @"Finish", nil,
+						  @"Finish", @"Continue playing", nil,
 						  [self window], self,
 						  @selector(confirmFinish:returnCode:contextInfo:), nil,
 						  nil, msg);

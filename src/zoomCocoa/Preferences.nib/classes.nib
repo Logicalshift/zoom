@@ -28,6 +28,7 @@
                 revisionChanged = id; 
                 screenFontsChanged = id; 
                 scrollbackChanged = id; 
+                showCoverPictureChanged = id; 
                 simpleFontsChanged = id; 
                 speakGameTextChanged = id; 
             }; 
@@ -62,6 +63,7 @@
                 reorganiseGames = NSButton; 
                 revision = NSTextField; 
                 scrollbackLength = NSSlider; 
+                showCoverPicture = NSButton; 
                 showMargins = NSButton; 
                 speakGameText = NSButton; 
                 symbolicFont = NSPopUpButton; 

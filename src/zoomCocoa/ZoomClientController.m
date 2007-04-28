@@ -310,7 +310,7 @@
 - (void) confirmFinish:(NSWindow *)sheet 
 			returnCode:(int)returnCode 
 		   contextInfo:(void *)contextInfo {
-	if (returnCode == NSAlertAlternateReturn) {
+	if (returnCode == NSAlertDefaultReturn) {
 		// Close the window
 		closeConfirmed = YES;
 		[[NSRunLoop currentRunLoop] performSelector: @selector(performClose:)
@@ -334,7 +334,7 @@
 		}
 		
 		NSBeginAlertSheet(@"Finish the game?",
-						  @"Keep playing", @"Finish", nil,
+						  @"Finish", @"Continue playing", nil,
 						  [self window], self,
 						  @selector(confirmFinish:returnCode:contextInfo:), nil,
 						  nil, msg);
@@ -630,6 +630,7 @@
 	if (fadeTimer) return;
 	
 	// Don't show this if this view is not on the screen
+	if (![[ZoomPreferences globalPreferences] showCoverPicture]) return;
 	if ([self window] == nil) return;
 	if (![[self window] isVisible]) return;
 	

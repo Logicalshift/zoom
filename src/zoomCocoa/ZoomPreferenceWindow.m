@@ -396,6 +396,7 @@ static int familyComparer(id a, id b, void* context) {
 	}
 	
 	[zoomBorders setState: [prefs showBorders]?NSOnState:NSOffState];
+	[showCoverPicture setState: [prefs showCoverPicture]?NSOnState:NSOffState];
 	[self updateColourMenus];
 }
 
@@ -779,6 +780,15 @@ static void appendStyle(NSMutableString* styleName,
 		[prefs setShowBorders: newState];
 		[prefs setShowGlkBorders: newState];
 	}
+}
+
+- (IBAction) showCoverPictureChanged: (id) sender {
+	BOOL newState = [sender state] == NSOnState;
+	BOOL oldState = [prefs showCoverPicture];
+	
+	if (newState != oldState) {
+		[prefs setShowCoverPicture: newState];
+	}	
 }
 
 - (IBAction) colourChanged: (id) sender {

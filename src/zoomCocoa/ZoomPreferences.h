@@ -64,6 +64,7 @@ extern NSString* ZoomPreferencesHaveChangedNotification;
 - (int) backgroundColour;
 - (BOOL) showBorders;
 - (BOOL) showGlkBorders;
+- (BOOL) showCoverPicture;
 
 // The dictionary
 - (NSDictionary*) dictionary;
@@ -101,6 +102,7 @@ extern NSString* ZoomPreferencesHaveChangedNotification;
 - (void) setShowGlkBorders: (BOOL) value;
 - (void) setForegroundColour: (int) value;
 - (void) setBackgroundColour: (int) value;
+- (void) setShowCoverPicture: (BOOL) value;
 
 // Notifications
 - (void) preferencesHaveChanged;

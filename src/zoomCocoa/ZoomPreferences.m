@@ -41,6 +41,7 @@ static NSString* foregroundColour   = @"ForegroundColour";
 static NSString* backgroundColour   = @"BackgroundColour";
 static NSString* showBorders		= @"ShowBorders";
 static NSString* showGlkBorders		= @"ShowGlkBorders";
+static NSString* showCoverPicture   = @"ShowCoverPicture";
 
 // == Global preferences ==
 
@@ -699,6 +700,12 @@ static NSArray* DefaultColours(void) {
 	return [val intValue];	
 }
 
+- (BOOL) showCoverPicture {
+	NSNumber* val = [prefs objectForKey: showCoverPicture];
+	if (val == nil) return YES;
+	return [val boolValue];	
+}
+
 - (BOOL) showBorders {
 	NSNumber* val = [prefs objectForKey: showBorders];
 	if (val == nil) return YES;
@@ -709,6 +716,12 @@ static NSArray* DefaultColours(void) {
 	NSNumber* val = [prefs objectForKey: showGlkBorders];
 	if (val == nil) return YES;
 	return [val boolValue];	
+}
+
+- (void) setShowCoverPicture: (BOOL) value {
+	[prefs setObject: [NSNumber numberWithBool: value]
+			  forKey: showCoverPicture];
+	[self preferencesHaveChanged];	
 }
 
 - (void) setShowBorders: (BOOL) value {

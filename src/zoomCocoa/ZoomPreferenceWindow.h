@@ -57,6 +57,7 @@
 	IBOutlet NSPopUpButton* foregroundColour;
 	IBOutlet NSPopUpButton* backgroundColour;
 	IBOutlet NSButton* zoomBorders;
+	IBOutlet NSButton* showCoverPicture;
 	
 	// The toolbar
 	NSToolbar* toolbar;
@@ -92,6 +93,7 @@
 - (IBAction) kerningChanged: (id) sender;
 
 - (IBAction) bordersChanged: (id) sender;
+- (IBAction) showCoverPictureChanged: (id) sender;
 - (IBAction) colourChanged: (id) sender;
 
 @end
