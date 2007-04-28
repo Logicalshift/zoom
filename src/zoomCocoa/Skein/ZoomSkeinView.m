@@ -396,7 +396,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 		xpos -= visRect.size.width / 2.0;
 		ypos -= visRect.size.height / 3.0;
 		
-		[self scrollPoint: NSMakePoint(xpos, ypos)];
+		[self scrollPoint: NSMakePoint(floorf(xpos), floorf(ypos))];
 	} else {
 		NSLog(@"ZoomSkeinView: Attempt to scroll to nonexistent item");
 	}
@@ -624,7 +624,7 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 		newVisRect.origin.x += dragOrigin.x - currentPos.x;
 		newVisRect.origin.y -= dragOrigin.y - currentPos.y;
 		
-		[self scrollRectToVisible: newVisRect];
+		[self scrollRectToVisible: NSIntegralRect(newVisRect)];
 	} else if (clickedItem != nil && (lastButton == ZSVmainItem)) {
 		// Drag this item. Default action is a copy action, but a move op is possible if command is held
 		// down.
