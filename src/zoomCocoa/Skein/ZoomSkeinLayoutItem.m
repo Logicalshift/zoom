@@ -124,7 +124,7 @@
 	onSkeinLine = online;
 }
 
-- (BOOL) setRecentlyPlayed: (BOOL) played {
+- (void) setRecentlyPlayed: (BOOL) played {
 	recentlyPlayed = played;
 }
 
