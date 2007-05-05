@@ -1577,10 +1577,9 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 											  forKey: @"ZoomTranscriptPath"];
 	
 	// Save the data
-	[data writeToFile: [panel filename]
-		   atomically: YES
-			 encoding: NSUTF8StringEncoding
-				error: nil];
+	NSData* stringData = [data dataUsingEncoding: NSUTF8StringEncoding];
+	[stringData writeToFile: [panel filename]
+				 atomically: YES];
 }
 
 @end
