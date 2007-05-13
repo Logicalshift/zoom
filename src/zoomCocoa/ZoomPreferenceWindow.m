@@ -323,6 +323,18 @@ static int familyComparer(id a, id b, void* context) {
 	}	
 }
 
+- (void) selectItemWithTag: (int) tag
+				   inPopup: (NSPopUpButton*) button {
+	int index;
+	
+	for (index=0; index < [[button itemArray] count]; index++) {
+		if ([[button itemAtIndex: index] tag] == tag) {
+			[button selectItemAtIndex: index];
+			return;
+		}
+	}
+}
+
 - (void) updateColourMenus {
 	NSMenu* newColourMenu = [[[NSMenu alloc] init] autorelease];
 	
@@ -354,8 +366,10 @@ static int familyComparer(id a, id b, void* context) {
 	[foregroundColour setMenu: newColourMenu];
 	[backgroundColour setMenu: [[newColourMenu copy] autorelease]];
 
-	[foregroundColour selectItemWithTag: [prefs foregroundColour]];
-	[backgroundColour selectItemWithTag: [prefs backgroundColour]];
+	[self selectItemWithTag: [prefs foregroundColour]
+					inPopup: foregroundColour];
+	[self selectItemWithTag: [prefs backgroundColour]
+					inPopup: backgroundColour];
 }
 
 - (void) setPreferences: (ZoomPreferences*) preferences {

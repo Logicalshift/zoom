@@ -495,10 +495,9 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 											  forKey: @"ZoomTranscriptPath"];
 	
 	// Save the data
-	[data writeToFile: [panel filename]
-		   atomically: YES
-			 encoding: NSUTF8StringEncoding
-				error: nil];
+	NSData* charData = [data dataUsingEncoding: NSUTF8StringEncoding];
+	[charData writeToFile: [panel filename]
+			   atomically: YES];
 }
 
 @end
