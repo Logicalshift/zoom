@@ -107,6 +107,9 @@
 	const unsigned char* bytes = [data bytes];
 	BOOL isForm = NO;
 	
+	// No valid game can be less than 40 bytes long (in fact, it must be longer but 40 bytes is needed for the ID, etc)
+	if ([data length] < 40) return NO;
+	
 	// See if this looks like a Blorb file (begins with 'FORM')
 	if (bytes[0] == 'F' && bytes[1] == 'O' && bytes[2] == 'R' && bytes[3] == 'M') isForm = YES;
 	
