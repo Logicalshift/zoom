@@ -384,7 +384,9 @@ static NSComparisonResult stringCompare(id a, id b, void* context) {
 			[result appendString: [thisItem command]];
 			[result appendString: @"\n"];
 		}
-		[result appendString: [thisItem result]];
+		if ([thisItem result] != nil) {
+			[result appendString: [thisItem result]];
+		}
 	}
 	
 	return [result autorelease];
