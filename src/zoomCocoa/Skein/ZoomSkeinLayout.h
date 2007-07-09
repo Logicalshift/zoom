@@ -59,6 +59,8 @@ enum IFSkeinPackingStyle {
 
 // Performing the layout
 - (void) layoutSkein;
+- (void) layoutSkeinLoose;
+- (void) layoutSkeinTight;
 
 // Getting layout data
 - (int) levels;

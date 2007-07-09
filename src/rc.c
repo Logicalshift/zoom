@@ -330,9 +330,11 @@ int rc_get_ysize(void)
 }
 
 int rc_get_foreground (void) {
-  return game->fg_col;
+	if (game->fg_col == -1) return 0;
+	return game->fg_col;
 }
 
 int rc_get_background (void) {
-  return game->bg_col;
+	if (game->bg_col == -1) return 7;
+	return game->bg_col;
 }

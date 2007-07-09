@@ -2535,7 +2535,7 @@ void display_initialise(void)
   rc_colour*           cols;
   int                  num;
   
-  int x,y;
+  int 					x,y;
 
   x_display = XOpenDisplay(NULL);
   x_screen  = DefaultScreen(x_display);
