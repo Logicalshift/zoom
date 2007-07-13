@@ -25,6 +25,15 @@ static inline rc_game merge_games(const rc_game* a, const rc_game* b)
 {
   rc_game r;
 
+  if (a->fg_col == -1)
+	r.fg_col = b->fg_col;
+  else
+    r.fg_col = a->fg_col;
+  if (a->bg_col == -1)
+	r.bg_col = b->bg_col;
+  else
+    r.bg_col = a->bg_col;
+
   if (a->interpreter == -1)
     r.interpreter = b->interpreter;
   else
