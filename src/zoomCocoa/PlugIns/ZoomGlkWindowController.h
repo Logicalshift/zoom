@@ -39,6 +39,9 @@
 	NSWindow* normalWindow;											// Cached version of the normal-sized window
 	NSWindow* fullscreenWindow;										// Cached version of the full-screen window
 	NSRect oldWindowFrame;											// Size of the window before it became full-screen
+	
+	NSObject<GlkFilePrompt>* promptHandler;							// The handler for the last save prompt that was presented
+	NSSavePanel* lastPanel;											// The last save panel
 }
 
 // Configuring the client

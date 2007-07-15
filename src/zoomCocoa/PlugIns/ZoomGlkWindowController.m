@@ -15,9 +15,12 @@
 #import "ZoomGameInfoController.h"
 #import "ZoomNotesController.h"
 #import "ZoomWindowThatCanBecomeKey.h"
+#import "ZoomGlkSaveRef.h"
 
 #import <GlkView/GlkHub.h>
 #import <GlkView/GlkView.h>
+#import <GlkView/GlkSessionProtocol.h>
+#import <GlkView/GlkFileRef.h>
 
 ///
 /// Class to interface to Zoom's skein system
@@ -589,6 +592,94 @@
 
 	[[self window] setDocumentEdited: NO];
 	running = NO;
+}
+
+// = Saving the game =
+
+- (BOOL) promptForFilesForUsage: (NSString*) usage
+					 forWriting: (BOOL) writing
+						handler: (NSObject<GlkFilePrompt>*) handler
+			 preferredDirectory: (NSString*) preferredDirectory {
+	if (![usage isEqualToString: GlkFileUsageSavedGame]) {
+		// We only customise save game generation
+		return NO;
+	}
+	
+	// Remember the handler
+	[promptHandler release];
+	promptHandler = [handler retain];
+	
+	// Create the prompt window
+	if (writing) {
+		// Create a save dialog
+		NSSavePanel* panel = [NSSavePanel savePanel];
+		
+		[panel setRequiredFileType: @"glksave"];
+		if (preferredDirectory != nil) [panel setDirectory: preferredDirectory];
+		
+		[panel beginSheetForDirectory: preferredDirectory
+								 file: nil
+					   modalForWindow: [self window]
+						modalDelegate: self
+					   didEndSelector: @selector(panelDidEnd:returnCode:contextInfo:)
+						  contextInfo: nil];
+		
+		[lastPanel release]; lastPanel = [panel retain];		
+	} else {
+		// Create an open dialog
+		NSOpenPanel* panel = [NSOpenPanel openPanel];
+		
+		NSMutableArray* allowedFiletypes = [[[glkView fileTypesForUsage: usage] mutableCopy] autorelease];
+		[allowedFiletypes insertObject: @"glksave"
+							   atIndex: 0];
+		
+		[panel setRequiredFileType: [allowedFiletypes objectAtIndex: 0]];
+		if (preferredDirectory != nil) [panel setDirectory: preferredDirectory];
+		
+		if ([panel respondsToSelector: @selector(setAllowedFileTypes:)]) {
+			// Only works on 10.3
+			[panel setAllowedFileTypes: allowedFiletypes];
+		}
+		
+		[panel beginSheetForDirectory: preferredDirectory
+								 file: nil
+								types: allowedFiletypes
+					   modalForWindow: [self window]
+						modalDelegate: self
+					   didEndSelector: @selector(panelDidEnd:returnCode:contextInfo:) 
+						  contextInfo: nil];
+		
+		[lastPanel release]; lastPanel = [panel retain];
+	}
+	
+	return YES;
+}
+
+
+- (void) panelDidEnd: (NSSavePanel*) panel
+		  returnCode: (int) returnCode
+		 contextInfo: (void*) willBeNil {
+	if (!promptHandler) return;
+	
+	if (returnCode == NSOKButton) {
+		// TODO: preview
+		ZoomGlkSaveRef* promptRef = [[ZoomGlkSaveRef alloc] initWithPlugIn: [[self document] plugIn]
+																	  path: [panel filename]];
+		[promptRef setSkein: skein];
+		[promptHandler promptedFileRef: promptRef];
+		[promptRef autorelease];
+		
+		[[NSUserDefaults standardUserDefaults] setObject: [panel directory]
+												  forKey: @"GlkSaveDirectory"];
+		if ([self respondsToSelector: @selector(savePreferredDirectory:)]) {
+			[self savePreferredDirectory: [panel directory]];
+		}
+	} else {
+		[promptHandler promptCancelled];
+	}
+	
+	[promptHandler release]; promptHandler = nil;
+	[lastPanel release]; lastPanel = nil;
 }
 
 @end

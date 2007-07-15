@@ -13,11 +13,13 @@
 ///
 /// Document representing a Glk game
 ///
+@class ZoomPlugIn;
 @interface ZoomGlkDocument : NSDocument {
 	NSString* clientPath;											// The Glk executable we'll run to play this game
 	NSString* inputPath;											// The file we'll pass to the executable as the game to run
 	
 	ZoomStory* storyData;											// Metadata for this story
+	ZoomPlugIn* plugIn;
 	NSImage* logo;													// The logo for this story
 	NSString* preferredSaveDir;										// Preferred save directory
 }
@@ -27,10 +29,14 @@
 - (void) setClientPath: (NSString*) clientPath;						// Selects which GlkClient executable to run
 - (void) setInputFilename: (NSString*) inputPath;					// The file that should be passed to the client as the file to run
 - (void) setLogo: (NSImage*) logo;									// The logo to display for this story
+- (void) setPlugIn: (ZoomPlugIn*) plugIn;							// The plugin that created this document
 
 - (ZoomStory*) storyData;											// The story data that we stored for this story
+- (ZoomPlugIn*) plugIn;												// The plugin that created this document
 
 - (void) setPreferredSaveDirectory: (NSString*) dir;				// Sets the preferred directory to put savegames into
 - (NSString*) preferredSaveDirectory;								// Returns the preferred save directory
 
 @end
+
+#import <ZoomPlugIns/ZoomPlugIn.h>

@@ -18,6 +18,7 @@
 	if (inputPath) [inputPath release];
 	if (storyData) [storyData release];
 	if (logo) [logo release];
+	if (plugIn) [plugIn release];
 	
 	[super dealloc];
 }
@@ -67,6 +68,15 @@
 
 - (NSString*) preferredSaveDirectory {
 	return preferredSaveDir;
+}
+
+- (void) setPlugIn: (ZoomPlugIn*) newPlugIn {
+	[plugIn release];
+	plugIn = [newPlugIn retain];
+}
+
+- (ZoomPlugIn*) plugIn {
+	return [[plugIn retain] autorelease];
 }
 
 // = Constructing the window controllers =

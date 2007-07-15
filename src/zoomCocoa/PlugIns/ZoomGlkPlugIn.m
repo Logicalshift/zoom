@@ -50,6 +50,7 @@
 		[document setInputFilename: [self gameFilename]];
 		[document setLogo: [self logo]];
 		[document setPreferredSaveDirectory: preferredSaveDir];
+		[document setPlugIn: self];
 	}
 	
 	// Return it
