@@ -18,9 +18,9 @@
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="l14SNL2AVpS"/>
+    <selected-rows ids="kRySm_dYpQB"/>
     <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{82, 0}"/>
+    <selected-characters range="{119, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -1329,7 +1329,7 @@
             <text>
               <p>
                 <run>
-                  <lit>Hmm, may be a bug: add in a TADS 3 game then immediately rename it: Zoom loses track of it</lit>
+                  <lit>Hmm, may be a bug: add in a TADS 3 game then immediately rename it: Zoom loses track of it (I tried first things first)</lit>
                 </run>
               </p>
             </text>
@@ -3722,6 +3722,18 @@
               <p>
                 <run>
                   <lit>Need to do something appropriate when resources are found+loaded automatically by ZoomClient, and game organisation is turned on</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
+        <item id="jTDlRBLN7JA">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Need to add in a method of setting the preview for Glk games</lit>
                 </run>
               </p>
             </text>
