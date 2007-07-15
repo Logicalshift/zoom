@@ -23,6 +23,7 @@
 - (id) initWithData: (NSData*) genericGameData
 			   type: (NSString*) type;
 - (id) initWithIdent: (struct IFID*) ident;
+- (id) initWithIdString: (NSString*) idString;
 - (id) initWithZcodeRelease: (int) release
 					 serial: (const unsigned char*) serial
 				   checksum: (int) checksum;

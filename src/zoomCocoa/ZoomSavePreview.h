@@ -13,12 +13,15 @@
 @interface ZoomSavePreview : NSView {
 	NSString* filename;
 	ZoomUpperWindow* preview;
+	NSArray* previewLines;
 	
 	BOOL highlighted;
 }
 
 - (id) initWithPreview: (ZoomUpperWindow*) prev
 			  filename: (NSString*) filename;
+- (id) initWithPreviewStrings: (NSArray*) prev
+					 filename: (NSString*) filename;
 - (void) setHighlighted: (BOOL) value;
 - (NSString*) filename;
 

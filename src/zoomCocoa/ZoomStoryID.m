@@ -47,6 +47,17 @@
 	return result;
 }
 
+- (id) initWithIdString: (NSString*) idString {
+	self = [super init];
+	
+	if (self) {
+		needsFreeing = YES;
+		ident = IFMB_IdFromString([idString UTF8String]);
+	}
+	
+	return self;
+}
+
 - (id) initWithZCodeStory: (NSData*) gameData {
 	self = [super init];
 	

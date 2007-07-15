@@ -10,6 +10,7 @@
 #import "ZoomSavePreview.h"
 
 #import "ZoomClient.h"
+#import "ZoomAppDelegate.h"
 
 
 @implementation ZoomSavePreviewView
@@ -70,6 +71,7 @@
 	
 	while (file = [fileEnum nextObject]) {
 		if ([[[file pathExtension] lowercaseString] isEqualToString: @"zoomsave"]) {
+			
 			// This is a zoomSave file - load the preview
 			NSString* previewFile = [directory stringByAppendingPathComponent: file];
 			previewFile = [previewFile stringByAppendingPathComponent: @"ZoomPreview.dat"];
@@ -102,6 +104,59 @@
 			[preview setMenu: [self menu]];
 			[self addSubview: preview];
 			[upperWindowViews addObject: [preview autorelease]];
+
+		} else if ([[[file pathExtension] lowercaseString] isEqualToString: @"glksave"]) {
+		
+			// This is a glksave file
+			NSString* previewFile = [directory stringByAppendingPathComponent: file];
+			
+			NSDictionary* previewProperties = nil;
+			NSString* propertiesPath = [previewFile stringByAppendingPathComponent: @"Info.plist"];
+			if ([[NSFileManager defaultManager] fileExistsAtPath: propertiesPath]) {
+				previewProperties = [NSPropertyListSerialization propertyListFromData: [NSData dataWithContentsOfFile: propertiesPath]
+																	 mutabilityOption: NSPropertyListImmutable
+																			   format: nil
+																	 errorDescription: nil];
+				if (![previewProperties isKindOfClass: [NSDictionary class]]) previewProperties = nil;
+			}
+			
+			if (!previewProperties) continue;
+			
+			ZoomStoryID* storyId = [[ZoomStoryID alloc] initWithIdString: [previewProperties objectForKey: @"ZoomGlkGameId"]];
+			
+			// Load the preview lines from the glksave directory
+			NSArray* previewLines = nil;
+			NSString* previewLinesPath = [previewFile stringByAppendingPathComponent: @"Preview.plist"];
+			if ([[NSFileManager defaultManager] fileExistsAtPath: previewLinesPath]) {
+				previewLines = [NSPropertyListSerialization propertyListFromData: [NSData dataWithContentsOfFile: previewLinesPath]
+																mutabilityOption: NSPropertyListImmutable
+																		  format: nil
+																errorDescription: nil];
+				if (![previewLines isKindOfClass: [NSArray class]]) previewLines = nil;
+			}
+			
+			// Use some defaults if no lines are supplied
+			if (!previewLines) {
+				ZoomStory* story = [[NSApp delegate] findStory: storyId];
+				
+				if (story) {
+					previewLines = [NSArray arrayWithObjects:
+						[NSString stringWithFormat: @"Saved story from '%@'", [story title]],
+						nil];
+				} else {
+					previewLines = [NSArray arrayWithObject: @"Saved story"];
+				}
+			}
+			
+			// Create the preview object
+			ZoomSavePreview* preview = [[ZoomSavePreview alloc] initWithPreviewStrings: previewLines
+																			  filename: propertiesPath];
+			
+			[preview setAutoresizingMask: NSViewWidthSizable];
+			[preview setMenu: [self menu]];
+			[self addSubview: preview];
+			[upperWindowViews addObject: [preview autorelease]];
+
 		}
 	}
 	

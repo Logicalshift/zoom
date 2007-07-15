@@ -49,7 +49,21 @@ static NSImage* saveBackground;
 	return self;
 }
 
+- (id) initWithPreviewStrings: (NSArray*) prev
+					 filename: (NSString*) file {
+	self = [self init];
+	
+	if (self) {
+		previewLines = [prev retain];
+		filename = [file copy];
+		highlighted = NO;
+	}
+	
+	return self;
+}
+
 - (void) dealloc {
+	if (previewLines) [previewLines release];
 	if (preview) [preview release];
 	if (filename) [filename release];
 	
@@ -110,8 +124,14 @@ static NSImage* saveBackground;
 	float ypos = 4;
 	int lines = 0;
 	
-	NSArray* upperLines = [preview lines];
-	NSAttributedString* thisLine;
+	NSArray* upperLines = nil;
+	id thisLine;
+	
+	if (preview) {
+		upperLines = [preview lines];
+	} else if (previewLines) {
+		upperLines = previewLines;
+	}
 	
 	NSEnumerator* lineEnum = [upperLines objectEnumerator];
 	
@@ -122,11 +142,18 @@ static NSImage* saveBackground;
 		unichar* newString = NULL;
 		int newLen = 0;
 
+		NSString* lineString;
+		if ([thisLine isKindOfClass: [NSString class]]) {
+			lineString = thisLine;
+		} else {
+			lineString = [thisLine string];
+		}
+		
 		for (x=0; x<[thisLine length]; x++) {
-			unichar chr = [[thisLine string] characterAtIndex: x];
+			unichar chr = [lineString characterAtIndex: x];
 			
 			if (chr == 32) {
-				while (x<[thisLine length]-1 && [[thisLine string] characterAtIndex: x+1] == 32) {
+				while (x<[lineString length]-1 && [lineString characterAtIndex: x+1] == 32) {
 					x++;
 				}
 			}
@@ -240,7 +267,8 @@ static NSImage* saveBackground;
 	
 	NSString* saveDir = [[self filename] stringByDeletingLastPathComponent];
 	
-	if (![[[saveDir pathExtension] lowercaseString] isEqualToString: @"zoomsave"]) {
+	if (![[[saveDir pathExtension] lowercaseString] isEqualToString: @"zoomsave"]
+		&& ![[[saveDir pathExtension] lowercaseString] isEqualToString: @"glksave"]) {
 		genuine = NO; reason = reason?reason:[NSString stringWithFormat: @"File has the wrong extension (%@)", [saveDir pathExtension]];
 	}
 	if (![[NSFileManager defaultManager] fileExistsAtPath: saveDir
