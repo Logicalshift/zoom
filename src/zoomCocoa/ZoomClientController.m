@@ -198,6 +198,10 @@
 	  forFilename: @"Skein.skein"];
 }
 
+- (void) loadedSkeinData: (NSData*) skeinData {
+	[[[self document] skein] parseXmlData: skeinData];
+}
+
 - (NSString*) defaultSaveDirectory {
 	ZoomPreferences* prefs = [ZoomPreferences globalPreferences];
 	

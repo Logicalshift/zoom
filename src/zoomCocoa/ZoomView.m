@@ -2199,6 +2199,13 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 										forWriting: NO];
 			
 			if (f) {
+				NSData* skeinData = [f dataForFile: @"Skein.skein"];
+				if (skeinData) {
+					if (delegate && [delegate respondsToSelector: @selector(loadedSkeinData:)]) {
+						[delegate loadedSkeinData: skeinData];
+					}
+				}
+				
 				[zMachine promptedFileIs: [f autorelease]
 									size: [f fileSize]];
 			} else {

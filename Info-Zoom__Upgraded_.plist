@@ -9,6 +9,20 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>glksave</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Zoom savegame</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<true/>
+			<key>NSPersistentStoreTypeKey</key>
+			<string>Binary</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>z3</string>
 				<string>z4</string>
 				<string>z5</string>

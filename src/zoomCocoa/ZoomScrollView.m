@@ -153,6 +153,7 @@
 - (BOOL) setUseUpperDivider: (BOOL) newUseDivider {
 	useDivider = newUseDivider;
 	[self tile];
+	return YES;
 }
 
 
