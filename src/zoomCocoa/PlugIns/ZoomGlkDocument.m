@@ -14,11 +14,12 @@
 // = Initialisation/finalisation =
 
 - (void) dealloc {
-	if (clientPath) [clientPath release];
-	if (inputPath) [inputPath release];
-	if (storyData) [storyData release];
-	if (logo) [logo release];
-	if (plugIn) [plugIn release];
+	if (clientPath)		[clientPath release];
+	if (inputPath)		[inputPath release];
+	if (storyData)		[storyData release];
+	if (logo)			[logo release];
+	if (plugIn)			[plugIn release];
+	if (savedGamePath)	[savedGamePath release];
 	
 	[super dealloc];
 }
@@ -79,6 +80,11 @@
 	return [[plugIn retain] autorelease];
 }
 
+- (void) setSaveGame: (NSString*) saveGame {
+	[savedGamePath release];
+	savedGamePath = [saveGame copy];
+}
+
 // = Constructing the window controllers =
 
 - (void) makeWindowControllers {
@@ -88,6 +94,7 @@
 	// Give it the paths
 	[controller setClientPath: clientPath];
 	[controller setInputFilename: inputPath];
+	if (savedGamePath) [controller setSaveGame: savedGamePath];
 	[controller setLogo: logo];
 	
 	// Add it as a controller for this document

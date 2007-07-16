@@ -47,6 +47,8 @@
 
 // The game document + windows
 - (NSDocument*) gameDocumentWithMetadata: (ZoomStory*) story;	// Retrieves/creates the document associated with this game (should not create window controllers immediately)
+- (NSDocument*) gameDocumentWithMetadata: (ZoomStory*) story	// Retrieves/creates the document associated with this game along with the specified save game file (should not create window controllers immediately)
+								saveGame: (NSString*) saveGame;
 
 // Dealing with game metadata
 - (ZoomStoryID*) idForStory;									// Retrieves the unique ID for this story (UUIDs are preferred, or MD5s if the game format does not support that)

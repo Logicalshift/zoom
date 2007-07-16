@@ -57,6 +57,26 @@
 	return document;
 }
 
+- (NSDocument*) gameDocumentWithMetadata: (ZoomStory*) story
+								saveGame: (NSString*) saveGame {
+	if (!document) {
+		// Set up the document for this game
+		document = [[ZoomGlkDocument alloc] init];
+		
+		// Tell it what it needs to know
+		[document setStoryData: story];
+		[document setClientPath: clientPath];
+		[document setInputFilename: [self gameFilename]];
+		[document setLogo: [self logo]];
+		[document setPreferredSaveDirectory: preferredSaveDir];
+		[document setPlugIn: self];
+		[document setSaveGame: saveGame];
+	}
+	
+	// Return it
+	return document;	
+}
+
 // = Configuring the client =
 
 - (void) setClientPath: (NSString*) newPath {

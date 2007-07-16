@@ -17,6 +17,7 @@
 @interface ZoomGlkDocument : NSDocument {
 	NSString* clientPath;											// The Glk executable we'll run to play this game
 	NSString* inputPath;											// The file we'll pass to the executable as the game to run
+	NSString* savedGamePath;										// The file that we'll pass as a savegame
 	
 	ZoomStory* storyData;											// Metadata for this story
 	ZoomPlugIn* plugIn;
@@ -30,6 +31,7 @@
 - (void) setInputFilename: (NSString*) inputPath;					// The file that should be passed to the client as the file to run
 - (void) setLogo: (NSImage*) logo;									// The logo to display for this story
 - (void) setPlugIn: (ZoomPlugIn*) plugIn;							// The plugin that created this document
+- (void) setSaveGame: (NSString*) saveGame;							// A .glksave file that the game should load on first start up
 
 - (ZoomStory*) storyData;											// The story data that we stored for this story
 - (ZoomPlugIn*) plugIn;												// The plugin that created this document

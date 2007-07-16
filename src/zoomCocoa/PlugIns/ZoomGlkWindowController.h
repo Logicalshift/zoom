@@ -26,6 +26,7 @@
 	
 	NSString* clientPath;											// The Glk executable we'll run to play this game
 	NSString* inputPath;											// The file we'll pass to the executable as the game to run
+	NSString* savedGamePath;										// The .glksave folder to load
 	NSImage* logo;													// The logo that we're going to show
 	BOOL ttsAdded;													// Whether or not the GlkView has the tts receiver added to it
 	ZoomTextToSpeech* tts;											// Text-to-speech object
@@ -48,5 +49,6 @@
 - (void) setClientPath: (NSString*) clientPath;						// Selects which GlkClient executable to run
 - (void) setInputFilename: (NSString*) inputPath;					// The file that should be passed to the client as the file to run
 - (void) setLogo: (NSImage*) logo;									// The logo to display instead of the 'CocoaGlk' logo
+- (void) setSaveGame: (NSString*) path;								// The .glksave saved game file that this controller should load on startup
 
 @end

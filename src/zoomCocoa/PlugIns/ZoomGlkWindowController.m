@@ -173,6 +173,7 @@
 	
 	[clientPath release];
 	[inputPath release];
+	[savedGamePath release];
 	[logo release];
 	[tts release];
 	[skein release];
@@ -189,10 +190,26 @@
 	if (glkView && clientPath && inputPath) {
 		[tts release];
 		tts = [[ZoomTextToSpeech alloc] init];
+
 		[glkView setDelegate: self];
 		[glkView addOutputReceiver: [[[ZoomGlkSkeinOutputReceiver alloc] initWithSkein: skein] autorelease]];
 		[glkView setPreferences: [ZoomGlkWindowController glkPreferencesFromZoomPreferences]];
 		[glkView setInputFilename: inputPath];
+		
+		if (savedGamePath) {
+			NSString* saveSkeinPath = [savedGamePath stringByAppendingPathComponent: @"Skein.skein"];
+			NSString* saveDataPath = [savedGamePath stringByAppendingPathComponent: @"Save.data"];
+
+			if ([[NSFileManager defaultManager] fileExistsAtPath: saveDataPath]) {
+				[glkView addInputFilename: saveDataPath
+								  withKey: @"savegame"];
+				
+				if ([[NSFileManager defaultManager] fileExistsAtPath: saveSkeinPath]) {
+					[skein parseXmlData: [NSData dataWithContentsOfFile: saveSkeinPath]];
+				}
+			}
+		}
+		
 		[glkView launchClientApplication: clientPath
 						   withArguments: [NSArray array]];
 		
@@ -249,6 +266,12 @@
 	
 	// Start it if we've got enough information
 	[self maybeStartView];
+}
+
+- (void) setSaveGame: (NSString*) path {
+	// Set the saved game path
+	[savedGamePath release];
+	savedGamePath = [path copy];
 }
 
 - (void) setInputFilename: (NSString*) newPath {

@@ -121,6 +121,42 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 
 - (BOOL)application: (NSApplication *)theApplication 
 		   openFile: (NSString *)filename {
+	// If this is a .glksave file, then set up to load the saved story instead
+	NSString* saveFilename = nil;
+	
+	if ([[[filename pathExtension] lowercaseString] isEqualToString: @"glksave"]) {
+		// Try to load the property list from the package
+		NSString* propertyListPath = [filename stringByAppendingPathComponent: @"Info.plist"];
+		NSDictionary* fileProperties = nil;
+		if ([[NSFileManager defaultManager] fileExistsAtPath: propertyListPath]) {
+			fileProperties = [NSPropertyListSerialization propertyListFromData: [NSData dataWithContentsOfFile: propertyListPath]
+															  mutabilityOption: NSPropertyListImmutable
+																		format: nil
+															  errorDescription: nil];
+		}
+		
+		// Retrieve the story identifier
+		ZoomStoryID* ident = nil;
+		NSString* identString = [fileProperties objectForKey: @"ZoomGlkGameId"];
+		
+		if (identString) {
+			ident = [[ZoomStoryID alloc] initWithIdString: identString];
+			[ident autorelease];
+		}
+		
+		// Try to get the filename of the game file that owns this story
+		saveFilename = filename;
+		filename = nil;
+		if (ident) {
+			filename = [[ZoomStoryOrganiser sharedStoryOrganiser] filenameForIdent: ident];
+		}
+	}
+	
+	if (filename == nil) {
+		// TODO: report that we couldn't load this file
+		return NO;
+	}
+
 	// See if there's a plug-in that can handle this file. This gives plug-ins first shot at handling blorb files.
 	Class pluginClass = [ZoomPlugIn pluginForFile: filename];
 	
@@ -150,7 +186,14 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 			
 			// ... we've managed to load this file with the given plug-in, so display it
 			[pluginInstance setPreferredSaveDirectory: [self saveDirectoryForStoryId: ident]];
-			NSDocument* pluginDocument = [pluginInstance gameDocumentWithMetadata: story];
+			NSDocument* pluginDocument;
+			
+			if (saveFilename) {
+				pluginDocument = [pluginInstance gameDocumentWithMetadata: story
+																 saveGame: saveFilename];				
+			} else {
+				pluginDocument = [pluginInstance gameDocumentWithMetadata: story];
+			}
 			
 			[[NSDocumentController sharedDocumentController] addDocument: pluginDocument];
 			[pluginDocument makeWindowControllers];

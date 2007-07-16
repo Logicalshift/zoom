@@ -208,9 +208,15 @@
 		NSString* filename = [view filename];
 		NSString* directory = [filename stringByDeletingLastPathComponent];
 		
-		//ZoomClient* newDoc = 
-		[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfFile: directory
-																				display: YES];
+		if ([[[directory pathExtension] lowercaseString] isEqualToString: @"glksave"]) {
+			// Pass off to the app delegate
+			[[NSApp delegate] application: NSApp
+								 openFile: directory];
+		} else {
+			//ZoomClient* newDoc = 
+			[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfFile: directory
+																					display: YES];
+		}
 	}
 }
 
