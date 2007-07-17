@@ -1336,7 +1336,7 @@
             <null/>
           </values>
         </item>
-        <item id="l14SNL2AVpS">
+        <item id="l14SNL2AVpS" state="checked">
           <values>
             <text>
               <p>
@@ -1347,8 +1347,17 @@
             </text>
             <null/>
           </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>Babel bug? The meta data is OK</lit>
+                </run>
+              </p>
+            </text>
+          </note>
         </item>
-        <item id="itVGgM1-wKY">
+        <item id="itVGgM1-wKY" state="checked">
           <values>
             <text>
               <p>

@@ -544,7 +544,15 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	// If there's no story registered, then we need to create one
 	if (theStory == nil) {
 		// theStory = [[[NSApp delegate] userMetadata] findOrCreateStory: ident];
-		theStory = [ZoomStory defaultMetadataForFile: filename];
+		Class pluginClass = [ZoomPlugIn pluginForFile: filename];
+		ZoomPlugIn* pluginInstance = pluginClass?[[pluginClass alloc] initWithFilename: filename]:nil;
+		
+		if (pluginInstance) {
+			theStory = [pluginInstance defaultMetadata];
+		} else {
+			theStory = [ZoomStory defaultMetadataForFile: filename];
+		}
+		
 		[[[NSApp delegate] userMetadata] copyStory: theStory];
 		[theStory setTitle: [[filename lastPathComponent] stringByDeletingPathExtension]];
 		
