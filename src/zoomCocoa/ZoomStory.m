@@ -574,6 +574,11 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 		return;
 	}
 	
+	if ([[self objectForKey: key] isEqualTo: value] && [self objectForKey: key] != value) {
+		// Nothing to do
+		return;
+	}
+	
 	[metadata lock];
 	
 	IFChar* metaValue = nil;
