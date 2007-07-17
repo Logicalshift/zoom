@@ -572,9 +572,9 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 		
 		if ([[newDoc windowControllers] count] == 0) {
 			[newDoc makeWindowControllers];
+			[newDoc loadDefaultAutosave];
 		}
 		
-		[newDoc loadDefaultAutosave];
 		[[[newDoc windowControllers] objectAtIndex: 0] showWindow: self];
 		
 		[self configureFromMainTableSelection];

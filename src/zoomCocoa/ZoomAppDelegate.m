@@ -121,6 +121,17 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 
 - (BOOL)application: (NSApplication *)theApplication 
 		   openFile: (NSString *)filename {
+	// Just show the existing document if it already exists
+	NSDocument* existingDocument = [[NSDocumentController sharedDocumentController] documentForFileName: filename];
+	if (existingDocument && [[existingDocument windowControllers] count] > 0) {
+		[[[existingDocument windowControllers] objectAtIndex: 0] showWindow: self];
+		return YES;
+	}
+	
+	if (existingDocument) {
+		NSLog(@"WARNING: found a leaked document for '%@'", filename);
+	}
+
 	// If this is a .glksave file, then set up to load the saved story instead
 	NSString* saveFilename = nil;
 	
@@ -190,9 +201,11 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 			
 			if (saveFilename) {
 				pluginDocument = [pluginInstance gameDocumentWithMetadata: story
-																 saveGame: saveFilename];				
+																 saveGame: saveFilename];
+				[pluginDocument setFileName: saveFilename];
 			} else {
 				pluginDocument = [pluginInstance gameDocumentWithMetadata: story];
+				[pluginDocument setFileName: filename];
 			}
 			
 			[[NSDocumentController sharedDocumentController] addDocument: pluginDocument];
