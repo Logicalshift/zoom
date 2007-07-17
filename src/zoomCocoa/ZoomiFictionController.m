@@ -702,7 +702,14 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	if (filename == nil) filename = @"No filename";
 	
 	if (story == nil) {
-		story = [ZoomStory defaultMetadataForFile: filename]; 
+		Class pluginClass = [ZoomPlugIn pluginForFile: filename];
+		ZoomPlugIn* pluginInstance = pluginClass?[[pluginClass alloc] initWithFilename: filename]:nil;
+		
+		if (pluginInstance) {
+			story = [[pluginInstance autorelease] defaultMetadata];
+		} else {
+			story = [ZoomStory defaultMetadataForFile: filename];
+		}
 		
 		// Store this in the user metadata for later
 		NSLog(@"Failed to find story for ID: %@", ident);

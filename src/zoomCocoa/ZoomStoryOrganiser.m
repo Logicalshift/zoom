@@ -548,7 +548,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		ZoomPlugIn* pluginInstance = pluginClass?[[pluginClass alloc] initWithFilename: filename]:nil;
 		
 		if (pluginInstance) {
-			theStory = [pluginInstance defaultMetadata];
+			theStory = [[pluginInstance autorelease] defaultMetadata];
 		} else {
 			theStory = [ZoomStory defaultMetadataForFile: filename];
 		}
@@ -1015,7 +1015,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 				changed = YES;
 			
 				// Store the new location of the game, if necessary
-				if ([oldGameLoc isEqualToString: oldGameFile]) {
+				if (YES || [oldGameLoc isEqualToString: oldGameFile]) {
 					NSString* newGameFile = [[self directoryForIdent: ident create: NO] stringByAppendingPathComponent: [oldGameLoc lastPathComponent]];
 					newGameFile = [newGameFile stringByStandardizingPath];
 
