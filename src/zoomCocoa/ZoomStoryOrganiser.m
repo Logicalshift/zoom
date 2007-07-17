@@ -115,6 +115,7 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 }
 
 - (out bycopy ZoomStoryID*) idForFile: (in bycopy NSString*) filename {
+	if (![[NSFileManager defaultManager] fileExistsAtPath: filename]) return nil;
 	return [ZoomStoryID idForFile: filename];
 }
 
