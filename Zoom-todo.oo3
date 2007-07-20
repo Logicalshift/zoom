@@ -18,9 +18,9 @@
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="kVyoG52fPfB"/>
+    <selected-rows ids="px9V5TBRQ7N"/>
     <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{46, 0}"/>
+    <selected-characters range="{44, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -1336,12 +1336,48 @@
             <null/>
           </values>
         </item>
+        <item id="kURVyKTJakF">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Abbreviations table crash with certain old games</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
+        <item id="pvRRZbVQnC0">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Loading TADS 3 games that are not in .glksave packages doesn&apos;t work</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
         <item id="kVyoG52fPfB">
           <values>
             <text>
               <p>
                 <run>
                   <lit>TADS 3 savegames take a very long time to load</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
+        <item id="px9V5TBRQ7N">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Skein not loading right from .glksave games?</lit>
                 </run>
               </p>
             </text>

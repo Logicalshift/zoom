@@ -688,7 +688,6 @@
 		// TODO: preview
 		ZoomGlkSaveRef* promptRef = [[ZoomGlkSaveRef alloc] initWithPlugIn: [[self document] plugIn]
 																	  path: [panel filename]];
-		[promptRef setSkein: skein];
 		[promptHandler promptedFileRef: promptRef];
 		[promptRef autorelease];
 		
