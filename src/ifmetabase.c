@@ -803,8 +803,8 @@ static int NearestIndexNumber(IFMetabase meta, IFID ident) {
 		compare = IFMB_CompareIds(ident, meta->index[middle].id);
 		
 		if (compare == 0) return middle;
-		if (compare == -1) bottom = middle + 1;
-		if (compare == 1) top = middle - 1;
+		if (compare <= -1) bottom = middle + 1;
+		if (compare >= 1) top = middle - 1;
 	}
 	
 	/* Return the first value that is less than the specified ID */
