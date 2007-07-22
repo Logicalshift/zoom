@@ -686,10 +686,17 @@
 	
 	if (returnCode == NSOKButton) {
 		// TODO: preview
-		ZoomGlkSaveRef* promptRef = [[ZoomGlkSaveRef alloc] initWithPlugIn: [[self document] plugIn]
-																	  path: [panel filename]];
-		[promptHandler promptedFileRef: promptRef];
-		[promptRef autorelease];
+		if ([[[[panel filename] pathExtension] lowercaseString] isEqualToString: @"glksave"]) {
+			ZoomGlkSaveRef* saveRef = [[ZoomGlkSaveRef alloc] initWithPlugIn: [[self document] plugIn]
+																		path: [panel filename]];
+			[saveRef setSkein: skein];
+			[promptHandler promptedFileRef: saveRef];
+			[saveRef autorelease];
+		} else {
+			GlkFileRef* promptRef = [[GlkFileRef alloc] initWithPath: [panel filename]];
+			[promptHandler promptedFileRef: promptRef];
+			[promptRef autorelease];			
+		}
 		
 		[[NSUserDefaults standardUserDefaults] setObject: [panel directory]
 												  forKey: @"GlkSaveDirectory"];
