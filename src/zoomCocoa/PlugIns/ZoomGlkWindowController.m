@@ -222,7 +222,7 @@
 - (IBAction)showWindow:(id)sender {
 	[super showWindow: sender];
 	
-	if (!canOpenSaveGames && !shownSaveGameWarning) {
+	if (savedGamePath && !canOpenSaveGames && !shownSaveGameWarning) {
 		shownSaveGameWarning = YES;
 		NSBeginAlertSheet(@"This interpreter is unable to load saved states", 
 						  @"Continue", nil, nil,
