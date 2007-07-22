@@ -70,6 +70,7 @@
 	BOOL needsUpdating;
 	
 	BOOL queuedUpdate;
+	BOOL isFiltered;
 	
 	// Save game previews
 	IBOutlet ZoomSavePreviewView* previewView;

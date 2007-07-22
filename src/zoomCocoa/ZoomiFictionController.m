@@ -759,7 +759,7 @@ int tableSorter(id a, id b, void* context) {
 	}
 }
 
-- (void) filterTableDataPass1 {
+- (BOOL) filterTableDataPass1 {
 	// Filter using the selection from the first filter table
 	NSString* filterKey = [[[filterTable1 tableColumns] objectAtIndex: 0] identifier];
 	
@@ -772,7 +772,7 @@ int tableSorter(id a, id b, void* context) {
 		if ([selRow intValue] == 0) {
 			// All selected - no filtering
 			[filterTable1 selectRow: 0 byExtendingSelection: NO];
-			return;
+			return NO;
 		}
 		
 		[filterFor addObject: [filterSet1 objectAtIndex: [selRow intValue]-1]];
@@ -792,9 +792,11 @@ int tableSorter(id a, id b, void* context) {
 			num--;
 		}
 	}
+	
+	return YES;
 }
 
-- (void) filterTableDataPass2 {
+- (BOOL) filterTableDataPass2 {
 	// Filter using the selection from the second filter table
 	NSString* filterKey = [[[filterTable2 tableColumns] objectAtIndex: 0] identifier];
 	
@@ -821,7 +823,7 @@ int tableSorter(id a, id b, void* context) {
 	int num;
 	NSString* searchText = [searchField stringValue];
 	
-	if (!tableFilter && [searchText length] <= 0) return; // Nothing to do
+	if (!tableFilter && [searchText length] <= 0) return NO; // Nothing to do
 		
 	for (num = 0; num < [storyList count]; num++) {
 		ZoomStoryID* ident = [storyList objectAtIndex: num];
@@ -846,6 +848,8 @@ int tableSorter(id a, id b, void* context) {
 			}
 		}
 	}
+	
+	return tableFilter;
 }
 
 - (void) filterTableData {
@@ -898,7 +902,9 @@ int tableSorter(id a, id b, void* context) {
 	[filterTable1 reloadData];
 	
 	// Filter the table as required
-	[self filterTableDataPass1];
+	BOOL wasFiltered = isFiltered;
+	isFiltered = NO;
+	isFiltered = [self filterTableDataPass1] || isFiltered;
 	
 	// Generate + sort the second filter set
 	identEnum = [storyList objectEnumerator];
@@ -913,7 +919,7 @@ int tableSorter(id a, id b, void* context) {
 	[filterTable2 reloadData];	
 
 	// Continue filtering
-	[self filterTableDataPass2];
+	isFiltered = [self filterTableDataPass2] || isFiltered;
 
 	// Sort the table as required
 	[self sortTableData];
@@ -931,6 +937,35 @@ int tableSorter(id a, id b, void* context) {
 			[mainTableView selectRow: index
 				byExtendingSelection: YES];
 		}
+	}
+	
+	// Highlight the 'filter' button if some filtering has occurred
+	if (isFiltered != wasFiltered) {
+		// Prepare to animate to the new style of filtering
+		ZoomFlipView* matrixAnimation = [[[ZoomFlipView alloc] init] autorelease];
+		[matrixAnimation prepareToAnimateView: flipButtonMatrix];
+		
+		// Get the cell containing the 'filter' button
+		NSButtonCell* filterButtonCell = [flipButtonMatrix cellWithTag: 2];
+		
+		// Set its text color to dark red if filtered
+		NSColor* filterColour;
+		
+		if (isFiltered) {
+			filterColour = [NSColor colorWithDeviceRed: 0.7 green: 0 blue: 0 alpha: 1.0];
+		} else {
+			filterColour = [NSColor blackColor];
+		}
+		
+		NSMutableAttributedString* filterButtonTitle = [[[filterButtonCell attributedTitle] mutableCopy] autorelease];
+		[filterButtonTitle addAttributes: [NSDictionary dictionaryWithObjectsAndKeys: filterColour, NSForegroundColorAttributeName, nil]
+								   range: NSMakeRange(0, [filterButtonTitle length])];
+		
+		[filterButtonCell setAttributedTitle: filterButtonTitle];
+		
+		// Finish the animation
+		[matrixAnimation animateTo: flipButtonMatrix
+							 style: ZoomAnimateFade];
 	}
 	
 	// Tidy up (prevents a dumb infinite loop possibility)

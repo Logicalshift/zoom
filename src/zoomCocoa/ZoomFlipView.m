@@ -65,6 +65,7 @@
 	if ([[cacheRep window] contentView] == nil) {
 		[[cacheRep window] setContentView: [[[NSView alloc] init] autorelease]];
 	}
+	[[cacheRep window] setBackgroundColor: [NSColor clearColor]];
 	
 	[view setFrame: [cacheRep rect]];
 	[[[cacheRep window] contentView] addSubview: view];
