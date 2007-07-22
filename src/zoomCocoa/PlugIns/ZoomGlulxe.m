@@ -32,6 +32,18 @@
 	return [super canRunPath: path];
 }
 
++ (NSString*) pluginVersion {
+	return [[NSBundle bundleForClass: [self class]] objectForInfoDictionaryKey: @"CFBundleVersion"];
+}
+
++ (NSString*) pluginDescription {
+	return @"Zoom Glulx PlugIn";
+}
+
++ (NSString*) pluginAuthor {
+	return @"Andrew Hunter";
+}
+
 - (id) initWithFilename: (NSString*) gameFile {
 	// Initialise as usual
 	self = [super initWithFilename: gameFile];
