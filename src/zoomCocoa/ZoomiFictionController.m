@@ -209,6 +209,8 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	}
 	
 	topPanelView = view;
+	[flipButtonMatrix setNextKeyView: view];
+	[view setNextKeyView: mainTableView];
 }
 
 - (void) windowDidLoad {
