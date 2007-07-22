@@ -43,6 +43,7 @@
 		upperWindowViews = nil;
 	}
 	
+	saveGamesAvailable = NO;
 	upperWindowViews = [[NSMutableArray alloc] init];
 	selected = NSNotFound;
 	
@@ -104,6 +105,8 @@
 			[preview setMenu: [self menu]];
 			[self addSubview: preview];
 			[upperWindowViews addObject: [preview autorelease]];
+			
+			saveGamesAvailable = YES;
 
 		} else if ([[[file pathExtension] lowercaseString] isEqualToString: @"glksave"]) {
 		
@@ -156,6 +159,8 @@
 			[preview setMenu: [self menu]];
 			[self addSubview: preview];
 			[upperWindowViews addObject: [preview autorelease]];
+			
+			saveGamesAvailable = YES;
 
 		}
 	}
@@ -226,6 +231,10 @@
 	} else {
 		return nil;
 	}
+}
+
+- (BOOL) saveGamesAvailable {
+	return saveGamesAvailable;
 }
 
 @end

@@ -13,11 +13,13 @@
 @interface ZoomSavePreviewView : NSView {
 	NSMutableArray* upperWindowViews;
 	int selected;
+	BOOL saveGamesAvailable;
 }
 
 - (void) setDirectoryToUse: (NSString*) directory;
 - (void) previewMouseUp: (NSEvent*) evt
 				 inView: (ZoomSavePreview*) view;
 - (NSString*) selectedSaveGame;
+- (BOOL) saveGamesAvailable;
 
 @end

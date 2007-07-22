@@ -948,7 +948,7 @@ int tableSorter(id a, id b, void* context) {
 		// Get the cell containing the 'filter' button
 		NSButtonCell* filterButtonCell = [flipButtonMatrix cellWithTag: 2];
 		
-		// Set its text color to dark red if filtered
+		// Set its text colour to dark red if filtered
 		NSColor* filterColour;
 		
 		if (isFiltered) {
@@ -1099,6 +1099,37 @@ int tableSorter(id a, id b, void* context) {
 		NSString* dir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: ident 
 																			  create: NO];
 		[previewView setDirectoryToUse: [dir stringByAppendingPathComponent: @"Saves"]];
+		
+		if ([previewView saveGamesAvailable] != saveGamesAvailable) {
+			// Set the 'saves' tab to dark blue if save games are available
+			saveGamesAvailable = [previewView saveGamesAvailable];
+
+			// Prepare to animate to the new style of filtering
+			ZoomFlipView* matrixAnimation = [[[ZoomFlipView alloc] init] autorelease];
+			[matrixAnimation prepareToAnimateView: flipButtonMatrix];
+			
+			// Get the cell containing the 'filter' button
+			NSButtonCell* filterButtonCell = [flipButtonMatrix cellWithTag: 0];
+			
+			// Set its text colour
+			NSColor* filterColour;
+			
+			if (saveGamesAvailable) {
+				filterColour = [NSColor colorWithDeviceRed: 0 green: 0.5 blue: 0.7 alpha: 1.0];
+			} else {
+				filterColour = [NSColor blackColor];
+			}
+			
+			NSMutableAttributedString* filterButtonTitle = [[[filterButtonCell attributedTitle] mutableCopy] autorelease];
+			[filterButtonTitle addAttributes: [NSDictionary dictionaryWithObjectsAndKeys: filterColour, NSForegroundColorAttributeName, nil]
+									   range: NSMakeRange(0, [filterButtonTitle length])];
+			
+			[filterButtonCell setAttributedTitle: filterButtonTitle];
+			
+			// Finish the animation
+			[matrixAnimation animateTo: flipButtonMatrix
+								 style: ZoomAnimateFade];
+		} 
 		
 		// Set up the extra blorb resources display
 		[resourceDrop setDroppedFilename: [story objectForKey: @"ResourceFilename"]];
