@@ -101,8 +101,9 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 	const unsigned char* bytes = [data bytes];
 	[fh closeFile];
 	
+	ZoomBlorbFile* blorb = nil;
 	if (bytes[0] == 'F' && bytes[1] == 'O' && bytes[2] == 'R' && bytes[3] == 'M') {
-		ZoomBlorbFile* blorb = [[ZoomBlorbFile alloc] initWithContentsOfFile: filename];
+		blorb = [[ZoomBlorbFile alloc] initWithContentsOfFile: filename];
 		NSData* ifMD = [blorb dataForChunkWithType: @"IFmd"];
 		
 		if (ifMD != nil) {
@@ -111,7 +112,7 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 			NSLog(@"Warning: found a game with an IFmd chunk, but was not able to parse it");
 		}
 		
-		[blorb release];
+		[blorb autorelease];
 	}
 	
 	// If we've got an ifMD chunk, then see if we can extract the story from it
@@ -156,6 +157,23 @@ NSString* ZoomStoryExtraMetadataChangedNotification = @"ZoomStoryExtraMetadataCh
 		
 		[result setTitle: gameName];
 		[result setGroup: groupName];
+	}
+	
+	if (result != nil && ([result group] == nil || [[result group] isEqualToString: @""])) {
+		// Use a default group based on the type of game this is
+		BOOL isUlx = NO;
+		
+		if (blorb) {
+			isUlx = [blorb dataForChunkWithType: @"GLUL"] != nil;
+		} else {
+			isUlx = bytes[0] == 'G' && bytes[1] == 'l' && bytes[2] == 'u' && bytes[3] == 'l';
+		}
+		
+		if (isUlx) {
+			[result setGroup: @"Glulx"];
+		} else {
+			[result setGroup: @"Z-Code"];
+		}
 	}
 	
 	// Clean up
