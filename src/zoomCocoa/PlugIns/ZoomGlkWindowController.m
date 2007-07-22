@@ -197,15 +197,17 @@
 		[glkView setInputFilename: inputPath];
 		
 		if (savedGamePath) {
-			NSString* saveSkeinPath = [savedGamePath stringByAppendingPathComponent: @"Skein.skein"];
-			NSString* saveDataPath = [savedGamePath stringByAppendingPathComponent: @"Save.data"];
+			if (canOpenSaveGames) {
+				NSString* saveSkeinPath = [savedGamePath stringByAppendingPathComponent: @"Skein.skein"];
+				NSString* saveDataPath = [savedGamePath stringByAppendingPathComponent: @"Save.data"];
 
-			if ([[NSFileManager defaultManager] fileExistsAtPath: saveDataPath]) {
-				[glkView addInputFilename: saveDataPath
-								  withKey: @"savegame"];
-				
-				if ([[NSFileManager defaultManager] fileExistsAtPath: saveSkeinPath]) {
-					[skein parseXmlData: [NSData dataWithContentsOfFile: saveSkeinPath]];
+				if ([[NSFileManager defaultManager] fileExistsAtPath: saveDataPath]) {
+					[glkView addInputFilename: saveDataPath
+									  withKey: @"savegame"];
+					
+					if ([[NSFileManager defaultManager] fileExistsAtPath: saveSkeinPath]) {
+						[skein parseXmlData: [NSData dataWithContentsOfFile: saveSkeinPath]];
+					}
 				}
 			}
 		}
@@ -214,6 +216,18 @@
 						   withArguments: [NSArray array]];
 		
 		[self prefsChanged: nil];
+	}
+}
+
+- (IBAction)showWindow:(id)sender {
+	[super showWindow: sender];
+	
+	if (!canOpenSaveGames && !shownSaveGameWarning) {
+		shownSaveGameWarning = YES;
+		NSBeginAlertSheet(@"This interpreter is unable to load saved states", 
+						  @"Continue", nil, nil,
+						  [self window], nil, nil, nil, nil,
+						  @"Due to a limitation in the design of the interpreter for this story, Zoom is unable to request that it load a saved state file. You will need to use the story's own restore function to request that it load this state.");
 	}
 }
 
@@ -274,6 +288,10 @@
 	savedGamePath = [path copy];
 }
 
+- (void) setCanOpenSaveGame: (BOOL) newCanOpenSaveGame {
+	canOpenSaveGames = newCanOpenSaveGame;
+}
+
 - (void) setInputFilename: (NSString*) newPath {
 	// Set the input path
 	[inputPath release];
@@ -298,7 +316,13 @@
 }
 
 - (NSString*) preferredSaveDirectory {
-	return [[self document] preferredSaveDirectory];
+	if (!canOpenSaveGames && savedGamePath) {
+		// If the user has requested a particular save game and the interpreter doesn't know how to load it, then open the directory containing the game that they wanted
+		return [savedGamePath stringByDeletingLastPathComponent];
+	} else {
+		// Otherwise use whatever the document thinks should be used
+		return [[self document] preferredSaveDirectory];
+	}
 }
 
 // = Log messages =

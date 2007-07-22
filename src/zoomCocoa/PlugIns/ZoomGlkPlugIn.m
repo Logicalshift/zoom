@@ -69,8 +69,8 @@
 		[document setInputFilename: [self gameFilename]];
 		[document setLogo: [self logo]];
 		[document setPreferredSaveDirectory: preferredSaveDir];
-		[document setPlugIn: self];
 		[document setSaveGame: saveGame];
+		[document setPlugIn: self];
 	}
 	
 	// Return it

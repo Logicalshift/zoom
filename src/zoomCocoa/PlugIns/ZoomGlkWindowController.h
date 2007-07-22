@@ -27,6 +27,8 @@
 	NSString* clientPath;											// The Glk executable we'll run to play this game
 	NSString* inputPath;											// The file we'll pass to the executable as the game to run
 	NSString* savedGamePath;										// The .glksave folder to load
+	BOOL canOpenSaveGames;											// YES if the plugin will actually load the save game
+	BOOL shownSaveGameWarning;										// YES if the sheet to warn about the fact that this plugin can't load games has been shown
 	NSImage* logo;													// The logo that we're going to show
 	BOOL ttsAdded;													// Whether or not the GlkView has the tts receiver added to it
 	ZoomTextToSpeech* tts;											// Text-to-speech object
@@ -50,5 +52,6 @@
 - (void) setInputFilename: (NSString*) inputPath;					// The file that should be passed to the client as the file to run
 - (void) setLogo: (NSImage*) logo;									// The logo to display instead of the 'CocoaGlk' logo
 - (void) setSaveGame: (NSString*) path;								// The .glksave saved game file that this controller should load on startup
+- (void) setCanOpenSaveGame: (BOOL) canOpenSaveGame;				// Set to YES if the plugin knows how to open save games
 
 @end

@@ -94,6 +94,7 @@
 	// Give it the paths
 	[controller setClientPath: clientPath];
 	[controller setInputFilename: inputPath];
+	[controller setCanOpenSaveGame: [[plugIn class] canLoadSavegames]];
 	if (savedGamePath) [controller setSaveGame: savedGamePath];
 	[controller setLogo: logo];
 	
