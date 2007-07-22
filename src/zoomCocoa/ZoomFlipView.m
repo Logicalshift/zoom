@@ -104,6 +104,8 @@
 // = Animating =
 
 - (void) finishAnimation {
+	if (animationTimer) [self autorelease];
+	
 	if (originalView != nil) {
 		[self removeFromSuperview];
 		
@@ -180,6 +182,7 @@
 	[self setNeedsDisplay: YES];
 	
 	// Start running the animation
+	[self retain];
 	animationStyle = style;
 	animationTimer = [[NSTimer timerWithTimeInterval: 0.01
 											  target: self
