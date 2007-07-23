@@ -3250,6 +3250,7 @@
 					APPLE_IS_ARBITRARY,
 					HAVE_COREFOUNDATION,
 					"XMLCALL=",
+					DEVELOPMENTBUILD,
 				);
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				INFOPLIST_FILE = "Info-Zoom__Upgraded_.plist";
