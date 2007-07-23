@@ -227,7 +227,7 @@
 		NSBeginAlertSheet(@"This interpreter is unable to load saved states", 
 						  @"Continue", nil, nil,
 						  [self window], nil, nil, nil, nil,
-						  @"Due to a limitation in the design of the interpreter for this story, Zoom is unable to request that it load a saved state file. You will need to use the story's own restore function to request that it load this state.");
+						  @"Due to a limitation in the design of the interpreter for this story, Zoom is unable to request that it load a saved state file.\n\nYou will need to use the story's own restore function to request that it load the state that you selected.");
 	}
 }
 

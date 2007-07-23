@@ -196,6 +196,13 @@
 	
 	[file addData: [[[[self document] skein] xmlData] dataUsingEncoding: NSUTF8StringEncoding]
 	  forFilename: @"Skein.skein"];
+	
+	// Add information about our story ID
+	[file addData: [NSPropertyListSerialization dataFromPropertyList: [NSDictionary dictionaryWithObjectsAndKeys: 
+		[[[self document] storyId] description], @"ZoomStoryId", nil]
+																									   format: NSPropertyListXMLFormat_v1_0
+																							 errorDescription: nil]
+													  forFilename: @"Info.plist"];
 }
 
 - (void) loadedSkeinData: (NSData*) skeinData {

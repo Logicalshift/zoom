@@ -18,9 +18,9 @@
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="nY9bY_yTIxs"/>
+    <selected-rows ids="jRTGg40_Z8M"/>
     <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{32, 0}"/>
+    <selected-characters range="{15, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -1360,12 +1360,12 @@
             <null/>
           </values>
         </item>
-        <item id="nY9bY_yTIxs">
+        <item id="nY9bY_yTIxs" state="checked">
           <values>
             <text>
               <p>
                 <run>
-                  <lit>Can&apos;t load save games for bronze</lit>
+                  <lit>Can&apos;t load save games for bronze by double-clicking them</lit>
                 </run>
               </p>
             </text>

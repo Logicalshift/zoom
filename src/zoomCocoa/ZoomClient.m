@@ -388,6 +388,22 @@
 		return NO;
 	}
 	
+	// If this isn't a single file, then try retrieving the ID from the Info.plist file (if it exists)
+	if (!isSingleFile) {
+		NSData* plist = [[[wrapper fileWrappers] objectForKey: @"Info.plist"] regularFileContents];
+		
+		if (plist != nil) {
+			NSDictionary* plistDict = [NSPropertyListSerialization propertyListFromData: plist
+																	   mutabilityOption: NSPropertyListImmutable
+																				 format: nil
+																	   errorDescription: nil];
+			NSString* idString  = [plistDict objectForKey: @"ZoomStoryId"];
+			if (idString != nil) {
+				storyID = [[[ZoomStoryID alloc] initWithIdString: idString] autorelease];
+			}
+		}
+	}
+	
 	// Get the game file for this save from the story organiser
 	NSString* gameFile = [[ZoomStoryOrganiser sharedStoryOrganiser] filenameForIdent: storyID];
 	[self findResourcesForFile: gameFile];
