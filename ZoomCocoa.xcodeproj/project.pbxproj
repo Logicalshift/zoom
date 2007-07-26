@@ -121,6 +121,8 @@
 		4BA8B5830B1B053E007CD75E /* ZoomTextToSpeech.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE5F511075121A400C25A70 /* ZoomTextToSpeech.m */; };
 		4BA8B83A0B1B5F65007CD75E /* typographicSettings.png in Resources */ = {isa = PBXBuildFile; fileRef = 4BA8B8390B1B5F65007CD75E /* typographicSettings.png */; };
 		4BA8B9530B1BB3F4007CD75E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BCF3F4B050FB2C500A8E303 /* main.m */; };
+		4BB27DA00C592D9100470443 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BB27D9F0C592D9100470443 /* Sparkle.framework */; };
+		4BB27DB40C592D9D00470443 /* Sparkle.framework in Copy frameworks */ = {isa = PBXBuildFile; fileRef = 4BB27D9F0C592D9100470443 /* Sparkle.framework */; };
 		4BB65ACE08EF02D600E7E28E /* ZoomBlorbFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF1576406BAD034001A3C27 /* ZoomBlorbFile.m */; };
 		4BB65AD408EF02DF00E7E28E /* ZoomProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BCF3F29050F8E0000A8E303 /* ZoomProtocol.m */; };
 		4BB8C0DE08C2452E00D7D334 /* operation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1E3F82050F7CC500A8E303 /* operation.h */; };
@@ -644,6 +646,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				4BB27DB40C592D9D00470443 /* Sparkle.framework in Copy frameworks */,
 				4B36C4440955EC2600874F9F /* GlkView.framework in Copy frameworks */,
 				4B7CB1D00936350E00F3B8F6 /* GlkClient.framework in Copy frameworks */,
 				4B7CB0AA09362A7200F3B8F6 /* ZoomPlugIns.framework in Copy frameworks */,
@@ -875,6 +878,7 @@
 		4BACEABB05B45C0500A9B6DC /* ZoomStoryID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomStoryID.h; sourceTree = "<group>"; };
 		4BACEABC05B45C0500A9B6DC /* ZoomStoryID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomStoryID.m; sourceTree = "<group>"; };
 		4BAE0EF6062ADA19009426D5 /* iFiction.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = iFiction.icns; sourceTree = "<group>"; };
+		4BB27D9F0C592D9100470443 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = "../Sparkle-1.1/Sparkle.framework"; sourceTree = SOURCE_ROOT; };
 		4BB515B405BC615F00D00C96 /* iFiction.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = iFiction.nib; sourceTree = "<group>"; };
 		4BB8BED308B785B200D7D334 /* ifmetabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ifmetabase.h; sourceTree = "<group>"; };
 		4BB8BED408B785B200D7D334 /* ifmetabase.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ifmetabase.c; sourceTree = "<group>"; };
@@ -1050,6 +1054,7 @@
 				4B7CB0AB09362A7900F3B8F6 /* ZoomPlugIns.framework in Frameworks */,
 				4B36C4100955E7EB00874F9F /* GlkView.framework in Frameworks */,
 				4B18890D0935FB4F003AF62A /* libExpat.a in Frameworks */,
+				4BB27DA00C592D9100470443 /* Sparkle.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1189,6 +1194,7 @@
 		4B1E3F5F050F7B8100A8E303 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4BB27D9F0C592D9100470443 /* Sparkle.framework */,
 				4B39CA8308EEFE8F00BA5E90 /* CoreServices.framework */,
 				4BECA7F705B194AA006840BA /* libexpat.a */,
 				4B5CBB9B069D671200C0AA88 /* Carbon.framework */,
@@ -3245,7 +3251,9 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
 					"$(SRCROOT)/build/Development",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../Sparkle-1.1\"";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					APPLE_IS_ARBITRARY,
 					HAVE_COREFOUNDATION,
@@ -3266,7 +3274,9 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
 					"$(SRCROOT)/build/Development",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../Sparkle-1.1\"";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					APPLE_IS_ARBITRARY,
 					HAVE_COREFOUNDATION,
@@ -3288,7 +3298,9 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
 					"$(SRCROOT)/build/Development",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../Sparkle-1.1\"";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					APPLE_IS_ARBITRARY,
 					HAVE_COREFOUNDATION,
