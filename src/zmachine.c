@@ -168,6 +168,7 @@ void zmachine_load_file(ZFile* file, ZMachine* machine) {
     }
 
     /* Parse the abbreviations table */
+    if (GetWord(machine->header, ZH_abbrevs) != 0)
     {
         ZByte* abbrev;
         int*  word;
