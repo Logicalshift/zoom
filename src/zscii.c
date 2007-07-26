@@ -235,44 +235,51 @@ unsigned int* zscii_to_unicode(ZByte* string, int* len)
 					
 					if (machine.abbrev_addr[zchar] != addr)
 					{
-						/* 
-						* Hack, this function was never designed to be called
-						 * recursively
-						 */
-						unsigned int* oldbuf;
-						int oldmaxlen;
-						int ablen;
-						
-						oldbuf = buf;
-						oldmaxlen = maxlen;
-						maxlen = 0;
-						buf = NULL;
-						
-						zlen = y;
-						abbrev = zscii_to_unicode((ZByte*)machine.memory +
-												  addr,
-												  &ablen);
-						
-						buf = oldbuf;
-						maxlen = oldmaxlen;
-						
-						for (z=0; abbrev[z]!=0; z++)
-							zlen++;
-						
-						while ((zlen+2) > maxlen)
-						{
-							maxlen += 1024;
-							buf = realloc(buf, sizeof(int)*(maxlen));
-						}
-						
-						for (z=0; abbrev[z] != 0; z++)
-						{
-							buf[y++] = abbrev[z];
-						}
-						
-						free(abbrev);
+					   if (addr >= 0 && addr < machine.story_length)
+					   {
+						  /* 
+						  * Hack, this function was never designed to be called
+						   * recursively
+						   */
+						  unsigned int* oldbuf;
+						  int oldmaxlen;
+						  int ablen;
+						  
+						  oldbuf = buf;
+						  oldmaxlen = maxlen;
+						  maxlen = 0;
+						  buf = NULL;
+						  
+						  zlen = y;
+						  abbrev = zscii_to_unicode((ZByte*)machine.memory +
+													addr,
+													&ablen);
+						  
+						  buf = oldbuf;
+						  maxlen = oldmaxlen;
+						  
+						  for (z=0; abbrev[z]!=0; z++)
+							  zlen++;
+						  
+						  while ((zlen+2) > maxlen)
+						  {
+							  maxlen += 1024;
+							  buf = realloc(buf, sizeof(int)*(maxlen));
+						  }
+						  
+						  for (z=0; abbrev[z] != 0; z++)
+						  {
+							  buf[y++] = abbrev[z];
+						  }
+						  
+						  free(abbrev);
+					   }
+					  else
+					  {
+						zmachine_fatal("Found a bad entry in the abbreviation table for entry %i", zchar);
+					  }
 					}
-					else
+					else if (machine.abbrev[zchar])
 					{
 						abbrev = machine.abbrev[zchar];
 						
@@ -289,6 +296,10 @@ unsigned int* zscii_to_unicode(ZByte* string, int* len)
 						{
 							buf[y++] = abbrev[z];
 						}
+					}
+					else
+					{
+					  zmachine_fatal("Found a bad entry in the abbreviation table for entry %i", zchar);
 					}
 				}
 					
