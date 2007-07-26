@@ -1106,18 +1106,18 @@ int tableSorter(id a, id b, void* context) {
 			// Set the 'saves' tab to dark blue if save games are available
 			saveGamesAvailable = [previewView saveGamesAvailable];
 
-			// Prepare to animate to the new style of filtering
+			// Prepare to animate to the 'saves available' button
 			ZoomFlipView* matrixAnimation = [[[ZoomFlipView alloc] init] autorelease];
 			[matrixAnimation prepareToAnimateView: flipButtonMatrix];
 			
-			// Get the cell containing the 'filter' button
+			// Get the cell containing the 'save' button
 			NSButtonCell* filterButtonCell = [flipButtonMatrix cellWithTag: 0];
 			
 			// Set its text colour
 			NSColor* filterColour;
 			
 			if (saveGamesAvailable) {
-				filterColour = [NSColor colorWithDeviceRed: 0 green: 0.5 blue: 0.7 alpha: 1.0];
+				filterColour = [NSColor colorWithDeviceRed: 0.7 green: 0 blue: 0.3 alpha: 1.0];
 			} else {
 				filterColour = [NSColor blackColor];
 			}
