@@ -15,12 +15,10 @@
     </style-attribute>
   </style-attribute-registry>
   <settings/>
-  <editor scroll-position="{0, 112}" ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
+  <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="bnN6VeEFG6A"/>
-    <selected-rows ids="b_LBE3r_qwF"/>
-    <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{4, 0}"/>
+    <selected-rows ids="lg6HQ7BgI_C"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -469,7 +467,7 @@
             </item>
           </children>
         </item>
-        <item id="gVNcfEW6HfL" expanded="yes" state="indeterminate">
+        <item id="gVNcfEW6HfL" state="checked">
           <values>
             <text>
               <p>
@@ -543,7 +541,7 @@
                 </item>
               </children>
             </item>
-            <item id="dnM4xEkwJPJ" expanded="yes" state="checked">
+            <item id="dnM4xEkwJPJ" state="checked">
               <values>
                 <text>
                   <p>
@@ -605,7 +603,7 @@
                 </item>
               </children>
             </item>
-            <item id="cGiaBfwmzVF" expanded="yes">
+            <item id="cGiaBfwmzVF" state="checked">
               <values>
                 <text>
                   <p>
@@ -617,7 +615,7 @@
                 <null/>
               </values>
               <children>
-                <item id="hzCsF2mI5r8">
+                <item id="hzCsF2mI5r8" state="checked">
                   <values>
                     <text>
                       <p>
@@ -629,7 +627,7 @@
                     <null/>
                   </values>
                 </item>
-                <item id="nVdSYTmCbV6">
+                <item id="nVdSYTmCbV6" state="checked">
                   <values>
                     <text>
                       <p>
@@ -641,7 +639,7 @@
                     <null/>
                   </values>
                 </item>
-                <item id="jebmFtNy9yy">
+                <item id="jebmFtNy9yy" state="checked">
                   <values>
                     <text>
                       <p>
@@ -653,7 +651,7 @@
                     <null/>
                   </values>
                 </item>
-                <item id="e2xrdWMR_UA">
+                <item id="e2xrdWMR_UA" state="checked">
                   <values>
                     <text>
                       <p>
@@ -669,7 +667,7 @@
             </item>
           </children>
         </item>
-        <item id="lDW9D8lX0Op">
+        <item id="lDW9D8lX0Op" state="checked">
           <values>
             <text>
               <p>
@@ -705,7 +703,7 @@
             <null/>
           </values>
         </item>
-        <item id="lg6HQ7BgI_C" expanded="yes">
+        <item id="lg6HQ7BgI_C">
           <values>
             <text>
               <p>
@@ -755,7 +753,7 @@
             </item>
           </children>
         </item>
-        <item id="c6ziRYi0qmz" expanded="yes">
+        <item id="c6ziRYi0qmz" expanded="yes" state="checked">
           <values>
             <text>
               <p>
@@ -767,7 +765,7 @@
             <null/>
           </values>
           <children>
-            <item id="l3pmWbEAxCh">
+            <item id="l3pmWbEAxCh" state="checked">
               <values>
                 <text>
                   <p>
@@ -779,7 +777,7 @@
                 <null/>
               </values>
             </item>
-            <item id="aROiTe1prPG">
+            <item id="aROiTe1prPG" state="checked">
               <values>
                 <text>
                   <p>
@@ -791,12 +789,24 @@
                 <null/>
               </values>
             </item>
-            <item id="evWksbqMaVt">
+            <item id="evWksbqMaVt" state="checked">
               <values>
                 <text>
                   <p>
                     <run>
                       <lit>TADS</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="eOzreNtqNyn" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>HUGO </lit>
                     </run>
                   </p>
                 </text>
