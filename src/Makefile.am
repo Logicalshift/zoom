@@ -68,6 +68,8 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/PlugIns/ZoomPlugIn.m \
 	zoomCocoa/PlugIns/ZoomBabel.h \
 	zoomCocoa/PlugIns/ZoomBabel.m \
+	zoomCocoa/PlugIns/ZoomGlkSaveRef.h \
+	zoomCocoa/PlugIns/ZoomGlkSaveRef.m \
 	zoomCocoa/ZoomWindowThatCanBecomeKey.h \
 	zoomCocoa/ZoomWindowThatCanBecomeKey.m \
 	zoomCocoa/Spotlight/MetadataImporter.h \
