@@ -1959,7 +1959,7 @@ int tableSorter(id a, id b, void* context) {
 	}
 	
 	NSBeginAlertSheet(@"Are you sure?",
-					  @"Keep", @"Delete", nil,
+					  @"Delete", @"Keep", nil,
 					  [self window],
 					  self,
 					  @selector(confirmDelete:returnCode:contextInfo:),
@@ -2005,7 +2005,7 @@ int tableSorter(id a, id b, void* context) {
 	NSMutableArray* storiesToDelete = contextInfo;
 	[storiesToDelete autorelease];
 	
-	if (returnCode != NSAlertAlternateReturn) return;
+	if (returnCode != NSAlertDefaultReturn) return;
 	
 	// Delete the selected games from the organiser
 	ZoomStoryID* ident;
@@ -2118,8 +2118,8 @@ int tableSorter(id a, id b, void* context) {
 	
 	// If there's anything to query about, ask!
 	if ([replacements count] > 0) {
-		NSBeginAlertSheet(@"Some descriptors are already in my database", 
-						  @"Keep old", @"Use new",
+		NSBeginAlertSheet(@"Some story descriptions are already in the database", 
+						  @"Use new", @"Keep new",
 						  nil, [self window], self, @selector(useReplacements:returnCode:contextInfo:),
 						  nil, [replacements retain],
 						  @"This metadata file contains descriptions for some story files that already exist in the database. Do you want to keep using the old descriptions or switch to the new ones?");		
@@ -2132,7 +2132,7 @@ int tableSorter(id a, id b, void* context) {
 	NSArray* replacements = contextInfo;
 	[replacements autorelease];
 	
-	if (returnCode != NSAlertAlternateReturn) return;
+	if (returnCode != NSAlertDefaultReturn) return;
 	
 	ZoomStory* story;
 	NSEnumerator* storyEnum = [replacements objectEnumerator];

@@ -15,12 +15,12 @@
     </style-attribute>
   </style-attribute-registry>
   <settings/>
-  <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
+  <editor scroll-position="{0, 112}" ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
-    <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="eCrvlEM269S"/>
-    <selected-columns ids=":941128d340f2709e21a6e303"/>
-    <selected-characters range="{22, 0}"/>
+    <hoisted-rows ids="bnN6VeEFG6A"/>
+    <selected-rows ids="b_LBE3r_qwF"/>
+    <selected-columns ids=":078928d440f2709e21a6e303"/>
+    <selected-characters range="{4, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -214,6 +214,32 @@
                 </text>
                 <null/>
               </values>
+              <children>
+                <item id="g8Jma1i-8qM" state="checked">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>2</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
+                <item id="d1m3IBlkZ29" state="checked">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>3</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
+              </children>
             </item>
             <item id="eOfdd2xJST9" state="checked">
               <values>
@@ -239,6 +265,18 @@
                 <null/>
               </values>
             </item>
+            <item id="b3UoJXVW4mC" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Hugo</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
           </children>
         </item>
         <item id="asQxOYMaNdB" state="checked">
@@ -253,7 +291,7 @@
             <null/>
           </values>
           <children>
-            <item id="co8i2g2Uh1c" expanded="yes" state="checked">
+            <item id="co8i2g2Uh1c" state="checked">
               <values>
                 <text>
                   <p>
@@ -289,7 +327,7 @@
                     <null/>
                   </values>
                 </item>
-                <item id="czJe9uLuSPO" state="checked">
+                <item id="czJe9uLuSPO" expanded="yes" state="checked">
                   <values>
                     <text>
                       <p>
@@ -300,10 +338,48 @@
                     </text>
                     <null/>
                   </values>
+                  <children>
+                    <item id="oE_XQR8zuNS" state="checked">
+                      <values>
+                        <text>
+                          <p>
+                            <run>
+                              <lit>2</lit>
+                            </run>
+                          </p>
+                        </text>
+                        <null/>
+                      </values>
+                    </item>
+                    <item id="oJiC-BRqvIo" state="checked">
+                      <values>
+                        <text>
+                          <p>
+                            <run>
+                              <lit>3</lit>
+                            </run>
+                          </p>
+                        </text>
+                        <null/>
+                      </values>
+                    </item>
+                  </children>
+                </item>
+                <item id="fPi3j_7bpGY" state="checked">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>Hugo</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
                 </item>
               </children>
             </item>
-            <item id="cS3fNvJkZs-" state="checked">
+            <item id="cS3fNvJkZs-" expanded="yes" state="checked">
               <values>
                 <text>
                   <p>
@@ -314,34 +390,8 @@
                 </text>
                 <null/>
               </values>
-            </item>
-          </children>
-        </item>
-        <item id="gVNcfEW6HfL" state="checked">
-          <values>
-            <text>
-              <p>
-                <run>
-                  <lit>Plugins</lit>
-                </run>
-              </p>
-            </text>
-            <null/>
-          </values>
-          <children>
-            <item id="j4ZjyQyN-zq" expanded="yes" state="checked">
-              <values>
-                <text>
-                  <p>
-                    <run>
-                      <lit>Can open files by double-clicking</lit>
-                    </run>
-                  </p>
-                </text>
-                <null/>
-              </values>
               <children>
-                <item id="hTGFpBpcAXY" state="checked">
+                <item id="ePPEV2924Oz" state="checked">
                   <values>
                     <text>
                       <p>
@@ -353,12 +403,62 @@
                     <null/>
                   </values>
                 </item>
-                <item id="lLIpKvpaY38" state="checked">
+                <item id="bu1zoLYRd6T" state="checked">
                   <values>
                     <text>
                       <p>
                         <run>
-                          <lit>Glulx/TADS</lit>
+                          <lit>Glulx</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
+                <item id="gwRcRHA42fO" expanded="yes" state="checked">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>TADS</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                  <children>
+                    <item id="dj2cX5YcHvi" state="checked">
+                      <values>
+                        <text>
+                          <p>
+                            <run>
+                              <lit>2</lit>
+                            </run>
+                          </p>
+                        </text>
+                        <null/>
+                      </values>
+                    </item>
+                    <item id="ahr5cUpjDq-" state="checked">
+                      <values>
+                        <text>
+                          <p>
+                            <run>
+                              <lit>3</lit>
+                            </run>
+                          </p>
+                        </text>
+                        <null/>
+                      </values>
+                    </item>
+                  </children>
+                </item>
+                <item id="f8Fnu9tSDk5" state="checked">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>Hugo</lit>
                         </run>
                       </p>
                     </text>
@@ -367,7 +467,21 @@
                 </item>
               </children>
             </item>
-            <item id="bJQN1VpDd4c" expanded="yes" state="checked">
+          </children>
+        </item>
+        <item id="gVNcfEW6HfL" expanded="yes" state="indeterminate">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Plugins</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <children>
+            <item id="bJQN1VpDd4c" state="checked">
               <values>
                 <text>
                   <p>
@@ -396,7 +510,31 @@
                     <text>
                       <p>
                         <run>
-                          <lit>Glulx/TADS</lit>
+                          <lit>Glulx</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
+                <item id="gChoGwXBo6K" state="checked">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>TADS</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
+                <item id="mLDvxeDRLyk" state="checked">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>HUGO</lit>
                         </run>
                       </p>
                     </text>
@@ -434,7 +572,31 @@
                     <text>
                       <p>
                         <run>
-                          <lit>Glulx/TADS</lit>
+                          <lit>Glulx</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
+                <item id="hql90SZN2qJ" state="checked">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>TADS</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
+                <item id="b_LBE3r_qwF" state="checked">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>HUGO</lit>
                         </run>
                       </p>
                     </text>
@@ -443,7 +605,7 @@
                 </item>
               </children>
             </item>
-            <item id="cGiaBfwmzVF" expanded="yes" state="checked">
+            <item id="cGiaBfwmzVF" expanded="yes">
               <values>
                 <text>
                   <p>
@@ -455,7 +617,7 @@
                 <null/>
               </values>
               <children>
-                <item id="hzCsF2mI5r8" state="checked">
+                <item id="hzCsF2mI5r8">
                   <values>
                     <text>
                       <p>
@@ -467,7 +629,7 @@
                     <null/>
                   </values>
                 </item>
-                <item id="nVdSYTmCbV6" state="checked">
+                <item id="nVdSYTmCbV6">
                   <values>
                     <text>
                       <p>
@@ -479,11 +641,35 @@
                     <null/>
                   </values>
                 </item>
+                <item id="jebmFtNy9yy">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>HUGO</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
+                <item id="e2xrdWMR_UA">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>TADS</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
               </children>
             </item>
           </children>
         </item>
-        <item id="lDW9D8lX0Op" state="checked">
+        <item id="lDW9D8lX0Op">
           <values>
             <text>
               <p>
@@ -495,7 +681,7 @@
             <null/>
           </values>
         </item>
-        <item id="dVKcRp7v-1q" state="checked">
+        <item id="dVKcRp7v-1q">
           <values>
             <text>
               <p>
@@ -519,7 +705,107 @@
             <null/>
           </values>
         </item>
-        <item id="fjkK3hjN1OQ" state="checked">
+        <item id="lg6HQ7BgI_C" expanded="yes">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>X11</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <children>
+            <item id="huv2fXe4xmd">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Builds</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="adrZkqUUZGN">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Runs z-code games</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="d4n4IxW9tAj">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Tar/untar builds in XCode and on the command line</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+          </children>
+        </item>
+        <item id="c6ziRYi0qmz" expanded="yes">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Text-to-speech works</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <children>
+            <item id="l3pmWbEAxCh">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Z-Code</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="aROiTe1prPG">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Glk</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="evWksbqMaVt">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>TADS</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+          </children>
+        </item>
+        <item id="fjkK3hjN1OQ">
           <values>
             <text>
               <p>
@@ -1348,7 +1634,7 @@
             <null/>
           </values>
         </item>
-        <item id="eCrvlEM269S">
+        <item id="eCrvlEM269S" state="checked">
           <values>
             <text>
               <p>

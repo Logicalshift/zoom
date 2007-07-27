@@ -249,7 +249,7 @@ static NSImage* saveBackground;
 - (IBAction) deleteSavegame: (id) sender {
 	// Display a confirmation dialog
 	NSBeginAlertSheet(@"Are you sure?", 
-					  @"Keep", @"Delete", nil, nil, self, @selector(confirmDelete:returnCode:contextInfo:), 
+					  @"Delete", @"Keep", nil, nil, self, @selector(confirmDelete:returnCode:contextInfo:), 
 					  nil, nil,
 					  @"Are you sure you want to delete this saved game?");
 	
@@ -258,7 +258,7 @@ static NSImage* saveBackground;
 
 - (void) confirmDelete:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo {
 	// Check the user confirmed the delete
-	if (returnCode != NSAlertAlternateReturn) return;
+	if (returnCode != NSAlertDefaultReturn) return;
 	
 	// Ensure that this is a genuine savegame
 	BOOL genuine = YES;
