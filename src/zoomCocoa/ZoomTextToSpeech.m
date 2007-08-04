@@ -10,7 +10,7 @@
 
 #import "ZoomTextToSpeech.h"
 
-#define UseCocoaSpeech
+#undef UseCocoaSpeech
 
 #ifndef UseCocoaSpeech
 static SpeechChannel channel = nil;

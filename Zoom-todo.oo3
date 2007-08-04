@@ -17,8 +17,10 @@
   <settings/>
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
-    <hoisted-rows ids="bnN6VeEFG6A"/>
-    <selected-rows ids="lg6HQ7BgI_C"/>
+    <hoisted-rows ids="kzPdhsKinRx"/>
+    <selected-rows ids="ccmYOZKfB_z"/>
+    <selected-columns ids=":078928d440f2709e21a6e303"/>
+    <selected-characters range="{89, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -1619,6 +1621,18 @@
               </values>
             </item>
           </children>
+        </item>
+        <item id="ccmYOZKfB_z">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Switch back to the carbon speech API; NSSpeechSynthesizer can&apos;t change the speaking rate.</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
         </item>
         <item id="kURVyKTJakF" state="checked">
           <values>
