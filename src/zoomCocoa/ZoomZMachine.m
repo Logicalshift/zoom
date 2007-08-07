@@ -146,15 +146,6 @@
 // = Running =
 - (void) startRunningInDisplay: (in byref NSObject<ZDisplay>*) disp {
     NSAutoreleasePool* mainPool = [[NSAutoreleasePool alloc] init];
-    /*
-    {
-        int x;
-        for (x=0; x<10; x++) {
-            NSLog(@"...%i...", x);
-            sleep(1);
-        }
-    }
-     */
     
 	// Remember the display
     display = [disp retain];
@@ -821,7 +812,6 @@ void zmachine_warning(char* format, ...) {
 	
 #ifdef DEBUG
 	NSLog(@"Warning: %s", fatalBuf);
-	zmachine_fatal(fatalBuf);
 #endif
 	
 	stream_flush_buffer();

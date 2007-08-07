@@ -11,6 +11,7 @@
 
 #include <sys/types.h>
 #include <unistd.h>
+#include "zmachine.h"
 
 NSAutoreleasePool* mainPool = nil;
 NSRunLoop*         mainLoop = nil;
@@ -22,6 +23,18 @@ int main(int argc, char** argv) {
     // Create the main autorelease pool and runloop
     mainPool = [[NSAutoreleasePool alloc] init];
     mainLoop = [NSRunLoop currentRunLoop];
+
+	
+#ifdef DEBUG
+    {
+		NSLog(@"DEBUG");
+        int x;
+        for (x=0; x<10; x++) {
+            NSLog(@"...%i...", 10-x);
+            sleep(1);
+        }
+    }
+#endif
 	
     // Indicates that the client should be able to connect
     NSLog(@"Server ready");
