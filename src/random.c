@@ -61,6 +61,10 @@ void random_seed(int seed)
 {
   int x, odd, even;
 
+#ifdef DEBUG
+  printf_debug("Seeding RNG with %i\n", seed);
+#endif
+  
   lin_seed(seed);
 
   do
@@ -86,7 +90,7 @@ void random_seed(int seed)
 ZDWord random_number(void)
 {
   ZDWord Xn;
-
+  
   Xn = seq[n1] + seq[n2];
 
   seq[n2] = Xn;
@@ -96,6 +100,10 @@ ZDWord random_number(void)
 
   if (Xn < 0)
     Xn = -Xn;
+
+#ifdef DEBUG
+  printf_debug("Raw random number: %x\n", Xn);
+#endif
   
   return Xn;
 }

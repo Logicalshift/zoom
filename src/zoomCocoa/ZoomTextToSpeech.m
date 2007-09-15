@@ -33,7 +33,10 @@ static SpeechChannel channel = nil;
 	
 	if (self) {
 		text = [[NSMutableString alloc] init];
+		
+#ifdef UseCocoaSpeech
 		synth = [[NSSpeechSynthesizer alloc] initWithVoice: [NSSpeechSynthesizer defaultVoice]];
+#endif
 	}
 	
 	return self;
@@ -41,8 +44,13 @@ static SpeechChannel channel = nil;
 
 - (void) dealloc {
 	[text release];
-	[synth stopSpeaking];
-	[synth release];
+	[lastText release];
+	[skein release];
+	
+	if (synth) {
+		[synth stopSpeaking];
+		[synth release];
+	}
 	
 	[super dealloc];
 }
@@ -65,71 +73,16 @@ static SpeechChannel channel = nil;
 // = Status notifications =
 
 - (void) zoomWaitingForInput {
-#ifndef UseCocoaSpeech
-	char* buffer = NULL;
-	int bufLen = 0;
-	int x;
-	
-#define WriteBuffer(x) buffer = realloc(buffer, bufLen+1); buffer[bufLen++] = x;
-	
-	BOOL whitespace = YES;
-	BOOL newline = YES;
-	BOOL punctuation = NO;
-	
-	for (x=0; x<[text length]; x++) {
-		unichar chr = [text characterAtIndex: x];
-		
-		if (chr != '\n' && chr != '\r' && (chr < 32 || chr >= 127)) chr = ' ';
-		
-		switch (chr) {
-			case ' ':
-				punctuation = NO;
-				if (!whitespace) {
-					whitespace = YES;
-					WriteBuffer(' ');
-				}
-				break;
-				
-			case '\n':
-			case '\r':
-				if (!punctuation && !whitespace) {
-					punctuation = YES;
-					WriteBuffer('.');
-				} else {
-					punctuation = NO;
-				}
-				
-				if (!newline) {
-					whitespace = YES;
-					newline = YES;
-					WriteBuffer('\n');
-				}
-				break;
-				
-			case ',': case '.': case '?': case ';': case ':': case '!':
-				if (!punctuation) {
-					punctuation = YES;
-					WriteBuffer(chr);
-				}
-				break;
-				
-			default:
-				whitespace = newline = punctuation = NO;
-				WriteBuffer(chr);
-		}
+	if (isImmediate) {
+		[self speak: text];		
 	}
-	WriteBuffer(0);
 	
-	SpeakBuffer(channel, buffer, bufLen-1, 0);
-	
-	free(buffer);
-#else
-	[synth startSpeakingString: text];
-#endif
-	
+	[lastText release];
+	lastText = [text copy];
 	
 	[text release];
 	text = [[NSMutableString alloc] init];
+	[self resetMoves];
 }
 
 - (void) zoomInterpreterRestart {
@@ -165,6 +118,149 @@ static SpeechChannel channel = nil;
 
 - (void) viewWaiting: (GlkView*) view {
 	[self zoomWaitingForInput];
+}
+
+- (void) setImmediate: (BOOL) immediateSpeech {
+	isImmediate = immediateSpeech;
+}
+
+- (void) speakLastText {
+	if (lastText) {
+		[self speak: lastText];
+	} else {
+		[self speak: @"No text is available for the last move"];
+	}
+}
+
+- (void) speak: (NSString*) newText {
+#ifndef UseCocoaSpeech
+	char* buffer = NULL;
+	int bufLen = 0;
+	int x;
+	
+#define WriteBuffer(x) buffer = realloc(buffer, bufLen+1); buffer[bufLen++] = x;
+	
+	BOOL whitespace = YES;
+	BOOL newline = YES;
+	BOOL punctuation = NO;
+	
+	for (x=0; x<[newText length]; x++) {
+		unichar chr = [newText characterAtIndex: x];
+		
+		if (chr != '\n' && chr != '\r' && (chr < 32 || chr >= 127)) chr = ' ';
+		
+		switch (chr) {
+			case ' ':
+				punctuation = NO;
+				if (!whitespace) {
+					whitespace = YES;
+					WriteBuffer(' ');
+				}
+					break;
+				
+			case '\n':
+			case '\r':
+				if (!punctuation && !whitespace) {
+					punctuation = YES;
+					WriteBuffer('.');
+				} else {
+					punctuation = NO;
+				}
+				
+				if (!newline) {
+					whitespace = YES;
+					newline = YES;
+					WriteBuffer('\n');
+				}
+				break;
+				
+			case ',': case '.': case '?': case ';': case ':': case '!':
+				if (!punctuation) {
+					punctuation = YES;
+					WriteBuffer(chr);
+				}
+				break;
+				
+			default:
+				whitespace = newline = punctuation = NO;
+				WriteBuffer(chr);
+		}
+	}
+	WriteBuffer(0);
+	
+	SpeakBuffer(channel, buffer, bufLen-1, 0);
+	
+	free(buffer);
+#else
+	[synth startSpeakingString: newText];
+#endif	
+}
+
+- (void) beQuiet {
+#ifndef UseCocoaSpeech
+	StopSpeech(channel);
+#else
+	[synth stopSpeaking];
+#endif
+}
+
+- (void) setSkein: (ZoomSkein*) newSkein {
+	[skein release];
+	skein = [newSkein retain];
+}
+
+- (BOOL) speakBehind: (int) position {
+	// Iterate up the skein until we get to the move we want
+	ZoomSkeinItem* itemToSpeak = [skein activeItem];
+	
+	int count = 0;
+	while (itemToSpeak != nil && count < position) {
+		itemToSpeak = [itemToSpeak parent];
+		count++;
+	}
+	
+	if (itemToSpeak == nil) {
+		// Mention if we've reached the end
+		[self speak: @"There are no previous moves"];
+		
+		return NO;
+	} else {
+		NSMutableString* toSpeak = [NSMutableString string];
+		
+		if (movesBehind <= 0) {
+			[toSpeak appendFormat: @"Most recent move:\n"];
+		} else {
+			[toSpeak appendFormat: @"%i moves ago:\n", position+1];			
+		}
+		
+		if (movesBehind <= 0 && lastText) {
+			[toSpeak appendString: lastText];
+		} else {
+			[toSpeak appendFormat: @"%@.\n%@", [itemToSpeak command], [itemToSpeak result]];			
+		}
+		[self speak: toSpeak];
+		
+		return YES;
+	}
+}
+
+- (void) speakPreviousMove {
+	if ([self speakBehind: movesBehind]) {
+		movesBehind++;
+	}
+}
+
+- (void) speakNextMove {
+	if (movesBehind > 1) {
+		movesBehind--;
+		[self speakBehind: movesBehind-1];
+	} else {
+		[self speak: @"No further moves"];
+	}
+}
+
+- (void) resetMoves {
+	movesBehind = 0;
 }
 
 // Using this automation object for input

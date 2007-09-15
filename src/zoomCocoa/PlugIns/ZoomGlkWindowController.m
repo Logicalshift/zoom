@@ -190,6 +190,7 @@
 	if (glkView && clientPath && inputPath) {
 		[tts release];
 		tts = [[ZoomTextToSpeech alloc] init];
+		[tts setSkein: skein];
 
 		[glkView setDelegate: self];
 		[glkView addOutputReceiver: [[[ZoomGlkSkeinOutputReceiver alloc] initWithSkein: skein] autorelease]];
@@ -254,14 +255,10 @@
 - (void) prefsChanged: (NSNotification*) not {
 	// TODO: actually change the preferences (might need some changes to the way Glk styles work here; styles are traditionally fixed after they are set...)
 	if (glkView == nil) return;
-	
-	if ([[ZoomPreferences globalPreferences] speakGameText]) {
-		if (!ttsAdded) [glkView addOutputReceiver: tts];
-		ttsAdded = YES;
-	} else {
-		if (ttsAdded) [glkView removeAutomationObject: tts];
-		ttsAdded = NO;
-	}
+
+	if (!ttsAdded) [glkView addOutputReceiver: tts];
+	ttsAdded = YES;
+	[tts setImmediate: [[ZoomPreferences globalPreferences] speakGameText]];
 	
 	// Set up the window borders
 	if (![[ZoomPreferences globalPreferences] showGlkBorders])
@@ -702,7 +699,6 @@
 	return YES;
 }
 
-
 - (void) panelDidEnd: (NSSavePanel*) panel
 		  returnCode: (int) returnCode
 		 contextInfo: (void*) willBeNil {
@@ -733,6 +729,25 @@
 	
 	[promptHandler release]; promptHandler = nil;
 	[lastPanel release]; lastPanel = nil;
+}
+
+// = Speech commands =
+
+- (IBAction) stopSpeakingMove: (id) sender {
+	[tts beQuiet];
+}
+
+- (IBAction) speakMostRecent: (id) sender {
+	[tts resetMoves];
+	[tts speakLastText];
+}
+
+- (IBAction) speakNext: (id) sender {
+	[tts speakNextMove];
+}
+
+- (IBAction) speakPrevious: (id) sender {
+	[tts speakPreviousMove];
 }
 
 @end

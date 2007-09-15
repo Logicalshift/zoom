@@ -401,6 +401,7 @@
 	
 	[[ZoomGameInfoController sharedGameInfoController] setGameInfo: [[self document] storyInfo]];
 	[[ZoomSkeinController sharedSkeinController] setSkein: [[self document] skein]];
+	[[zoomView textToSpeech] setSkein: [[self document] skein]];
 
 	[[ZoomNotesController sharedNotesController] setGameInfo: [[self document] storyInfo]];
 	[[ZoomNotesController sharedNotesController] setInfoOwner: self];
@@ -741,6 +742,24 @@
 
 - (ZoomView*) zoomView {
 	return zoomView;
+}
+
+// = Text to speech =
+
+- (IBAction) stopSpeakingMove: (id) sender {
+	[[zoomView textToSpeech] beQuiet];
+}
+
+- (IBAction) speakMostRecent: (id) sender {
+	[[zoomView textToSpeech] speakLastText];
+}
+
+- (IBAction) speakNext: (id) sender {
+	[[zoomView textToSpeech] speakNextMove];
+}
+
+- (IBAction) speakPrevious: (id) sender {
+	[[zoomView textToSpeech] speakPreviousMove];
 }
 
 @end

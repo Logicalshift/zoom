@@ -2316,16 +2316,11 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	colours = [[viewPrefs colours] retain];
 	
 	// Switch on the text-to-speech if required
-	if ([viewPrefs speakGameText] && !textToSpeechReceiver) {
+	if (!textToSpeechReceiver) {
 		textToSpeechReceiver = [[ZoomTextToSpeech alloc] init];
 		[self addOutputReceiver: textToSpeechReceiver];
 	}
-	
-	if (![viewPrefs speakGameText] && textToSpeechReceiver) {
-		[self removeOutputReceiver: textToSpeechReceiver];
-		[textToSpeechReceiver release];
-		textToSpeechReceiver = nil;
-	}
+	[textToSpeechReceiver setImmediate: [viewPrefs speakGameText]];
 	
 	[textView setTextContainerInset: NSMakeSize([viewPrefs textMargin], [viewPrefs textMargin])]; 
 	[[textView layoutManager] setHyphenationFactor: [viewPrefs useHyphenation]?1:0];
@@ -3093,6 +3088,14 @@ shouldChangeTextInRange:(NSRange)affectedCharRange
 	} else {
 		return nil;
 	}
+}
+
+- (ZoomTextToSpeech*) textToSpeech {
+	if (!textToSpeechReceiver) {
+		textToSpeechReceiver = [[ZoomTextToSpeech alloc] init];
+		[self addOutputReceiver: textToSpeechReceiver];
+	}
+	return textToSpeechReceiver;
 }
 
 @end

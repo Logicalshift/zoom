@@ -18,6 +18,10 @@
                 showLog = id; 
                 showPreferences = id; 
                 showiFiction = id; 
+                speakMostRecent = id; 
+                speakNext = id; 
+                speakPrevious = id; 
+                stopSpeakingMove = id; 
             }; 
             CLASS = FirstResponder; 
             LANGUAGE = ObjC; 

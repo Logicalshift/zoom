@@ -213,6 +213,8 @@ extern NSString* ZoomStyleAttributeName;
 - (void) orWaitingForInput;
 - (void) orInterpreterRestart;
 
+- (ZoomTextToSpeech*) textToSpeech;
+
 // Input sources (nil = default, window input source)
 - (void) setInputSource: (id) source;
 - (void) removeInputSource: (id) source;

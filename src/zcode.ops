@@ -1535,6 +1535,10 @@ OPCODE "random"         VAR:0x07 ARGS:1 STORE         VERSION all
       random = random&0xffff;
       random = (random*argblock.arg[0])/0x10000;
       store(stack, st, random+1);
+      
+      #ifdef DEBUG
+      printf_debug("Random(%i) = %i\n", argblock.arg[0], random+1);
+      #endif
     }
   else if (argblock.arg[0] < 0)
     {
