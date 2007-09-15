@@ -227,13 +227,13 @@ static SpeechChannel channel = nil;
 	} else {
 		NSMutableString* toSpeak = [NSMutableString string];
 		
-		if (movesBehind <= 0) {
+		if (position <= 0) {
 			[toSpeak appendFormat: @"Most recent move:\n"];
 		} else {
 			[toSpeak appendFormat: @"%i moves ago:\n", position+1];			
 		}
 		
-		if (movesBehind <= 0 && lastText) {
+		if (position <= 0 && lastText) {
 			[toSpeak appendString: lastText];
 		} else {
 			[toSpeak appendFormat: @"%@.\n%@", [itemToSpeak command], [itemToSpeak result]];			

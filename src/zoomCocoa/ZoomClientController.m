@@ -751,6 +751,7 @@
 }
 
 - (IBAction) speakMostRecent: (id) sender {
+	[[zoomView textToSpeech] resetMoves];
 	[[zoomView textToSpeech] speakLastText];
 }
 
