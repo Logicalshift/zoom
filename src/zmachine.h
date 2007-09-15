@@ -63,7 +63,7 @@
  * this bit set. This doesn't actually do a lot any more.
  */
 
-#define DEBUG        /* Lots of debugging crap */
+#undef  DEBUG        /* Lots of debugging crap */
 #define SAFE         /* Perform more bounds checking */
 #undef  PAGED_MEMORY /* Not implemented, anyway ;-) */
 #define GLOBAL_PC    /* Set to make the program counter global */

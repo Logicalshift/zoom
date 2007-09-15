@@ -150,22 +150,27 @@ OPCODE "set_attr"      2OP:0x0b        VERSION 1,2,3
   ZByte* obj;
   int byte, bit;
 
-  if (uarg1>255 || uarg1 == 0)
-    zmachine_fatal("Object %i out of range", uarg1);
-  if (uarg2>31)
-    zmachine_fatal("Attribute out of range");
+  if (uarg1 == 0) {
+	/* Technically this is a bug in the game, but The Witness accidentally does this so we allow it in v3 games */
+	zmachine_warning("Cannot set attributes of object 0");
+  } else {
+	  if (uarg1>255 || uarg1 == 0)
+	    zmachine_fatal("Object %i out of range", uarg1);
+	  if (uarg2>31)
+	    zmachine_fatal("Attribute out of range");
 
 #ifdef TRACKING
-  if (machine.track_attributes)
-    tracking_print("Setting attribute %i of object \"%s\"",
-		   uarg2, tracking_object(uarg1));
+	  if (machine.track_attributes)
+	    tracking_print("Setting attribute %i of object \"%s\"",
+			   uarg2, tracking_object(uarg1));
 #endif
   
-  byte = uarg2>>3;
-  bit  = uarg2&7;
+	  byte = uarg2>>3;
+	  bit  = uarg2&7;
 
-  obj = Obj3(uarg1);
-  obj[byte] |= 0x80>>bit;
+	  obj = Obj3(uarg1);
+	  obj[byte] |= 0x80>>bit;
+  }
 %}
 
 OPCODE "set_attr"      2OP:0x0b        VERSION 4,5,6,7,8
@@ -200,22 +205,27 @@ OPCODE "clear_attr"    2OP:0x0c        VERSION 1,2,3
   ZByte* obj;
   int byte, bit;
 
-  if (uarg1>255 || uarg1 == 0)
-    zmachine_fatal("Object %i out of range", uarg1);
-  if (uarg2>31)
-    zmachine_fatal("Attribute out of range");
+  if (uarg1 == 0) {
+	/* Technically this is a bug in the game, but The Witness accidentally does this so we allow it in v3 games */
+	zmachine_warning("Cannot clear the attributs of object 0");
+  } else {
+	  if (uarg1>255 || uarg1 == 0)
+	    zmachine_fatal("Object %i out of range", uarg1);
+	  if (uarg2>31)
+	    zmachine_fatal("Attribute out of range");
 
 #ifdef TRACKING
-  if (machine.track_attributes)
-    tracking_print("Setting attribute %i of object \"%s\"",
-		   uarg2, tracking_object(uarg1));
+	  if (machine.track_attributes)
+	    tracking_print("Setting attribute %i of object \"%s\"",
+			   uarg2, tracking_object(uarg1));
 #endif
   
-  byte = uarg2>>3;
-  bit  = uarg2&7;
+	  byte = uarg2>>3;
+	  bit  = uarg2&7;
 
-  obj = Obj3(uarg1);
-  obj[byte] &= ~(0x80>>bit);
+	  obj = Obj3(uarg1);
+	  obj[byte] &= ~(0x80>>bit);
+  }
 %}
 
 OPCODE "clear_attr"    2OP:0x0c        VERSION 4,5,6,7,8
