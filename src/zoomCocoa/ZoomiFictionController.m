@@ -21,6 +21,7 @@
 #import "ZoomSavePreviewView.h"
 #import "ZoomRatingCell.h"
 #import "ZoomHQImageView.h"
+#import "ZoomPlugInManager.h"
 #import "ZoomPlugIn.h"
 
 #import "ifmetabase.h"
@@ -404,7 +405,7 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 				
 				[fileID release];
 			}
-		} else if (plugin = [ZoomPlugIn pluginForFile: filename]) {
+		} else if (plugin = [[ZoomPlugInManager sharedPlugInManager] plugInForFile: filename]) {
 			ZoomPlugIn* instance = [[[plugin alloc] initWithFilename: filename] autorelease];
 			ZoomStoryID* fileID = [instance idForStory];
 			
@@ -449,7 +450,7 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	}
 	
 	// Show files that have a valid plugin
-	Class pluginClass = [ZoomPlugIn pluginForFile: filename];
+	Class pluginClass = [[ZoomPlugInManager sharedPlugInManager] plugInForFile: filename];
 	
 	if (pluginClass != nil) {
 		return YES;
@@ -704,7 +705,7 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	if (filename == nil) filename = @"No filename";
 	
 	if (story == nil) {
-		Class pluginClass = [ZoomPlugIn pluginForFile: filename];
+		Class pluginClass = [[ZoomPlugInManager sharedPlugInManager] plugInForFile: filename];
 		ZoomPlugIn* pluginInstance = pluginClass?[[pluginClass alloc] initWithFilename: filename]:nil;
 		
 		if (pluginInstance) {
@@ -1139,7 +1140,7 @@ int tableSorter(id a, id b, void* context) {
 		
 		// Set up the cover picture
 		NSString* filename = [org filenameForIdent: ident];
-		ZoomPlugIn* plugin = [ZoomPlugIn instanceForFile: filename];
+		ZoomPlugIn* plugin = [[ZoomPlugInManager sharedPlugInManager] instanceForFile: filename];
 		if (plugin == nil) {
 			// If there's no plugin, try loading the file as a blorb
 			int coverPictureNumber = [story coverPicture];

@@ -9,6 +9,7 @@
 #import "ZoomStoryID.h"
 #import "ZoomBlorbFile.h"
 #import "ZoomPlugIn.h"
+#import "ZoomPlugInManager.h"
 
 #include "ifmetabase.h"
 #include "../md5.h"
@@ -19,7 +20,7 @@
 	ZoomStoryID* result = nil;
 
 #ifndef BUILDING_SPOTLIGHT
-	ZoomPlugIn* plugin = [ZoomPlugIn instanceForFile: filename];
+	ZoomPlugIn* plugin = [[ZoomPlugInManager sharedPlugInManager] instanceForFile: filename];
 
 	if (plugin != nil) {
 		// Try asking the plugin for the type of this file

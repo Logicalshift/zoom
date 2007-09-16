@@ -15,6 +15,7 @@
 #import "ZoomStoryOrganiser.h"
 #import "ZoomAppDelegate.h"
 #import "ZoomPreferences.h"
+#import "ZoomPlugInManager.h"
 #import "ZoomPlugIn.h"
 
 NSString* ZoomStoryOrganiserChangedNotification = @"ZoomStoryOrganiserChangedNotification";
@@ -69,7 +70,7 @@ static NSString* ZoomIdentityFilename = @".zoomIdentity";
 
 + (NSImage*) frontispieceForFile: (NSString*) filename {
 	// First see if a plugin can provide the image...
-	ZoomPlugIn* plugin = [ZoomPlugIn instanceForFile: filename];
+	ZoomPlugIn* plugin = [[ZoomPlugInManager sharedPlugInManager] instanceForFile: filename];
 	NSImage* res = nil;
 	if (plugin != nil) {
 		res = [plugin coverImage];
@@ -545,7 +546,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	// If there's no story registered, then we need to create one
 	if (theStory == nil) {
 		// theStory = [[[NSApp delegate] userMetadata] findOrCreateStory: ident];
-		Class pluginClass = [ZoomPlugIn pluginForFile: filename];
+		Class pluginClass = [[ZoomPlugInManager sharedPlugInManager] plugInForFile: filename];
 		ZoomPlugIn* pluginInstance = pluginClass?[[pluginClass alloc] initWithFilename: filename]:nil;
 		
 		if (pluginInstance) {

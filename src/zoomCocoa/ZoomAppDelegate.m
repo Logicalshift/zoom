@@ -17,6 +17,7 @@
 #import "ZoomiFictionController.h"
 
 #import "ZoomPlugIn.h"
+#import "ZoomPlugInManager.h"
 #import "ZoomStoryOrganiser.h"
 
 NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
@@ -34,7 +35,7 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 	if (self) {
 		// Ensure the plugins are available
 		NSLog(@"= Loading plugins");
-		[ZoomPlugIn loadPlugins];
+		[[ZoomPlugInManager sharedPlugInManager] loadPlugIns];
 		
 		gameIndices = [[NSMutableArray alloc] init];
 
@@ -169,7 +170,7 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 	}
 
 	// See if there's a plug-in that can handle this file. This gives plug-ins first shot at handling blorb files.
-	Class pluginClass = [ZoomPlugIn pluginForFile: filename];
+	Class pluginClass = [[ZoomPlugInManager sharedPlugInManager] plugInForFile: filename];
 	
 	if (pluginClass) {
 		// TODO: work out when to release this class
@@ -398,7 +399,7 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 	}
 	
 	// Show files that have a valid plugin
-	Class pluginClass = [ZoomPlugIn pluginForFile: filename];
+	Class pluginClass = [[ZoomPlugInManager sharedPlugInManager] plugInForFile: filename];
 	
 	if (pluginClass != nil) {
 		return YES;

@@ -16,6 +16,8 @@
 		4B0D81DD0AC59F3F003E8CCA /* ZoomFadeView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B0D81DB0AC59F3F003E8CCA /* ZoomFadeView.h */; };
 		4B0D81DE0AC59F3F003E8CCA /* ZoomFadeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B0D81DC0AC59F3F003E8CCA /* ZoomFadeView.m */; };
 		4B0D81E20AC5A3C0003E8CCA /* top-shading.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B0D81E10AC5A3C0003E8CCA /* top-shading.png */; };
+		4B123ECA0C9C636200CA3374 /* ZoomPlugInManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B123EC80C9C636200CA3374 /* ZoomPlugInManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B123ECB0C9C636200CA3374 /* ZoomPlugInManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B123EC90C9C636200CA3374 /* ZoomPlugInManager.m */; };
 		4B152A040B440B9D008CC1EF /* SkeinDiffersBadge.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B152A030B440B9D008CC1EF /* SkeinDiffersBadge.png */; };
 		4B152CE20B46CBEB008CC1EF /* ZoomGameInfoController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B2EAFAD05B08D1E0021A5E6 /* ZoomGameInfoController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B152CE30B46CBED008CC1EF /* ZoomGameInfoController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2EAFAE05B08D1E0021A5E6 /* ZoomGameInfoController.m */; };
@@ -359,7 +361,7 @@
 		4BD79AF30BA2CC13002C82B2 /* babel.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BD79AF20BA2CC13002C82B2 /* babel.c */; };
 		4BE175940B792BD80094B73D /* ZoomWindowThatCanBecomeKey.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA66B2A0906538F000A3852 /* ZoomWindowThatCanBecomeKey.h */; };
 		4BE175950B792BD90094B73D /* ZoomWindowThatCanBecomeKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA66B2B0906538F000A3852 /* ZoomWindowThatCanBecomeKey.m */; };
-		4BF02D200C4A8141006FC32E /* ZoomGlkSaveRef.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF02D1E0C4A8141006FC32E /* ZoomGlkSaveRef.h */; };
+		4BF02D200C4A8141006FC32E /* ZoomGlkSaveRef.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF02D1E0C4A8141006FC32E /* ZoomGlkSaveRef.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BF02D210C4A8141006FC32E /* ZoomGlkSaveRef.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF02D1F0C4A8141006FC32E /* ZoomGlkSaveRef.m */; };
 /* End PBXBuildFile section */
 
@@ -676,6 +678,8 @@
 		4B0DC63F05C0A0EB000B96A3 /* newgame-out.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "newgame-out.png"; sourceTree = "<group>"; };
 		4B0DC66805C0A425000B96A3 /* Z-Decal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Z-Decal.png"; sourceTree = "<group>"; };
 		4B0DC67B05C0A61D000B96A3 /* disabledButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = disabledButton.png; sourceTree = "<group>"; };
+		4B123EC80C9C636200CA3374 /* ZoomPlugInManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomPlugInManager.h; sourceTree = "<group>"; };
+		4B123EC90C9C636200CA3374 /* ZoomPlugInManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomPlugInManager.m; sourceTree = "<group>"; };
 		4B13ECD2060F93F200021429 /* ZoomSavePreviewView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomSavePreviewView.h; sourceTree = "<group>"; };
 		4B13ECD3060F93F200021429 /* ZoomSavePreviewView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomSavePreviewView.m; sourceTree = "<group>"; };
 		4B14632106A2DD9E00398650 /* ZoomSkeinXML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomSkeinXML.m; sourceTree = "<group>"; };
@@ -885,7 +889,7 @@
 		4BB8C0E908C2452F00D7D334 /* Builder */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Builder; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BB8C16A08C2497700D7D334 /* ZoomServer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ZoomServer; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BB8C20708C249F400D7D334 /* Info-Zoom__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Info-Zoom__Upgraded_.plist"; sourceTree = "<group>"; };
-		4BB8C20808C249F400D7D334 /* Zoom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Zoom.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4BB8C20808C249F400D7D334 /* Zoom.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Zoom.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BBC1F69062F41E300FE547F /* stars-grey.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stars-grey.png"; sourceTree = "<group>"; };
 		4BBC1F6A062F41E300FE547F /* stars-none.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stars-none.png"; sourceTree = "<group>"; };
 		4BBC1F6B062F41E300FE547F /* stars-red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stars-red.png"; sourceTree = "<group>"; };
@@ -1344,6 +1348,8 @@
 				4B3E766B0BA2D47300661FE8 /* ZoomBabel.m */,
 				4BF02D1E0C4A8141006FC32E /* ZoomGlkSaveRef.h */,
 				4BF02D1F0C4A8141006FC32E /* ZoomGlkSaveRef.m */,
+				4B123EC80C9C636200CA3374 /* ZoomPlugInManager.h */,
+				4B123EC90C9C636200CA3374 /* ZoomPlugInManager.m */,
 			);
 			path = PlugIns;
 			sourceTree = "<group>";
@@ -1691,6 +1697,7 @@
 				4B3E766C0BA2D47300661FE8 /* ZoomBabel.h in Headers */,
 				4B3E76DD0BA2DF8E00661FE8 /* ZoomResourceDrop.h in Headers */,
 				4BF02D200C4A8141006FC32E /* ZoomGlkSaveRef.h in Headers */,
+				4B123ECA0C9C636200CA3374 /* ZoomPlugInManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2333,6 +2340,7 @@
 				4BE175950B792BD90094B73D /* ZoomWindowThatCanBecomeKey.m in Sources */,
 				4B3E766D0BA2D47300661FE8 /* ZoomBabel.m in Sources */,
 				4BF02D210C4A8141006FC32E /* ZoomGlkSaveRef.m in Sources */,
+				4B123ECB0C9C636200CA3374 /* ZoomPlugInManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
