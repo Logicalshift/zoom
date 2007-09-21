@@ -155,9 +155,41 @@
 	return nil;
 }
 
-- (BOOL) version: (NSString*) oldVersion
-	 isNewerThan: (NSString*) newVerison {
+- (NSArray*) arrayForVersion: (NSString*) version {
+	NSMutableArray* result = [NSMutableArray array];
 	
+	unichar chr;
+	int lastPos = 0;
+	int x;
+	for (x=0; x<[version length]; x++) {
+		chr = [version characterAtIndex: x];
+		
+		if (chr == '.') {
+			[result addObject: [version substringWithRange: NSMakeRange(lastPos, x-lastPos)]];
+			lastPos = x+1;
+		}
+	}
+	
+	return result;
+}
+
+- (BOOL) version: (NSString*) oldVersion
+	 isNewerThan: (NSString*) newVersion {
+	// Divide the two versions into strings separated by '.'s
+	NSArray* oldVersionArray = [self arrayForVersion: oldVersion];
+	NSArray* newVersionArray = [self arrayForVersion: newVersion];
+	
+	int length = [oldVersionArray count];
+	if ([newVersionArray count] > length) length = [newVersionArray count];
+	int x;
+	for (x=length-1; x>=0; x--) {
+		NSString* old = x<[oldVersionArray count]?[oldVersionArray objectAtIndex: x]:@"0";
+		NSString* new = x<[newVersionArray count]?[newVersionArray objectAtIndex: x]:@"0";
+		
+		if ([old intValue] > [new intValue]) return YES;
+	}
+	
+	return NO;
 }
 
 // = Installing new plugins =
