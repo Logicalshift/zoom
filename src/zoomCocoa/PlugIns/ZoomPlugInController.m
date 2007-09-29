@@ -65,4 +65,8 @@
 	// TODO: Implement me
 }
 
+- (IBAction) checkForUpdates: (id) sender {
+	// TODO: implement me
+}
+
 @end

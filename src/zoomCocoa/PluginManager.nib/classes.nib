@@ -3,7 +3,7 @@
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {CLASS = ZoomPlugInCell; LANGUAGE = ObjC; SUPERCLASS = NSActionCell; }, 
         {
-            ACTIONS = {installUpdates = id; }; 
+            ACTIONS = {checkForUpdates = id; installUpdates = id; }; 
             CLASS = ZoomPlugInController; 
             LANGUAGE = ObjC; 
             OUTLETS = {

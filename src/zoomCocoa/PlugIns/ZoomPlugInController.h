@@ -25,5 +25,6 @@
 
 // Actions
 - (IBAction) installUpdates: (id) sender;							// 'Install' button clicked
+- (IBAction) checkForUpdates: (id) sender;							// 'Check for updates' button clicked
 
 @end
