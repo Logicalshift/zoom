@@ -39,6 +39,9 @@
 	[pluginClasses release];
 	[pluginsToVersions release];
 	
+	[lastPlist release];
+	[lastPlistPlugin release];
+	
 	[super dealloc];
 }
 
@@ -213,6 +216,18 @@
 	// Standardise the plugin path
 	pluginBundle = [pluginBundle stringByStandardizingPath];
 	
+	// Use the cached version of the plist if we've already got it loaded
+	if ([plugInBundle isEqualToString: lastPlistPlugin]) {
+		return lastPlist;
+	}
+	
+	// Clear the cache
+	[lastPlistPlugin release];
+	[lastPlist release];
+		
+	lastPlistPlugin = [pluginBundle copy];
+	lastPlist = nil;
+		
 	// Check that the bundle exists and is a directory
 	BOOL exists;
 	BOOL isDir;
@@ -248,7 +263,7 @@
 	}
 	
 	// Plugin is OK: return the result
-	return plistDictionary;
+	return lastPlist = [plistDictionary retain];
 }
 
 - (NSString*) nameForBundle: (NSString*) pluginBundle {

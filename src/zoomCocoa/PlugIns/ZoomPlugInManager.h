@@ -19,6 +19,9 @@
 	NSMutableArray* pluginBundles;							// The bundles containing the loaded plugins
 	NSMutableArray* pluginClasses;							// The ZoomPlugIn classes from the bundles
 	NSMutableDictionary* pluginsToVersions;					// Array mapping plugin versions to names
+	
+	NSString* lastPlistPlugin;								// The path of the last plugin we retrieved a plist for
+	NSDictionary* lastPlist;								// The plist retrieved from the lastPlistPlugin
 }
 
 + (ZoomPlugInManager*) sharedPlugInManager;					// The shared plug-in manager
