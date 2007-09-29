@@ -53,6 +53,8 @@
 		} else {
 			status = ZoomPlugInDownloaded;
 		}
+		
+		location = [[NSURL fileURLWithPath: bundle] copy];
 	}
 	
 	return self;
@@ -65,6 +67,7 @@
 	[interpreterAuthor release];
 	[version release];
 	[image release];
+	[location release];
 	
 	[super dealloc];
 }
@@ -80,6 +83,7 @@
 	newInfo->interpreterAuthor = [interpreterAuthor copy];
 	newInfo->version = [version copy];
 	newInfo->image = [image copy];
+	newInfo->location = [location copy];
 	newInfo->status = status;
 }
 
@@ -119,6 +123,10 @@
 
 - (NSString*) description {
 	return [NSString stringWithFormat: @"Plug in: %@, version %@", [self name], [self version]];
+}
+
+- (NSURL*) location {
+	return location;
 }
 
 @end
