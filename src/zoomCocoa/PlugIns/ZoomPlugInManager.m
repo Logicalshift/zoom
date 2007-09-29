@@ -217,7 +217,7 @@
 	pluginBundle = [pluginBundle stringByStandardizingPath];
 	
 	// Use the cached version of the plist if we've already got it loaded
-	if ([plugInBundle isEqualToString: lastPlistPlugin]) {
+	if ([pluginBundle isEqualToString: lastPlistPlugin]) {
 		return lastPlist;
 	}
 	
