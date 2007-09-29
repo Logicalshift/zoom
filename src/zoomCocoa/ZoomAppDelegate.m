@@ -18,6 +18,7 @@
 
 #import "ZoomPlugIn.h"
 #import "ZoomPlugInManager.h"
+#import "ZoomPlugInController.h"
 #import "ZoomStoryOrganiser.h"
 
 NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
@@ -563,6 +564,10 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 	NSData* charData = [data dataUsingEncoding: NSUTF8StringEncoding];
 	[charData writeToFile: [panel filename]
 			   atomically: YES];
+}
+
+- (IBAction) showPluginManager: (id) sender {
+	[[ZoomPlugInController sharedPlugInController] showWindow: self];
 }
 
 @end

@@ -16,6 +16,7 @@
                 saveTranscript = id; 
                 showGamePreferences = id; 
                 showLog = id; 
+                showPluginManager = id; 
                 showPreferences = id; 
                 showiFiction = id; 
                 speakMostRecent = id; 

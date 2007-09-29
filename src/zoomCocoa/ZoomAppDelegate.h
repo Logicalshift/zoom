@@ -28,5 +28,6 @@
 - (NSString*) zoomConfigDirectory;
 
 - (IBAction) fixedOpenDocument: (id) sender;
+- (IBAction) showPluginManager: (id) sender;
 
 @end

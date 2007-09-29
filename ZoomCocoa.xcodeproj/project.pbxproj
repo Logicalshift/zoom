@@ -18,6 +18,9 @@
 		4B0D81E20AC5A3C0003E8CCA /* top-shading.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B0D81E10AC5A3C0003E8CCA /* top-shading.png */; };
 		4B123ECA0C9C636200CA3374 /* ZoomPlugInManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B123EC80C9C636200CA3374 /* ZoomPlugInManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B123ECB0C9C636200CA3374 /* ZoomPlugInManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B123EC90C9C636200CA3374 /* ZoomPlugInManager.m */; };
+		4B1242CE0CAE8D1800CA3374 /* PluginManager.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4B1242CD0CAE8D1800CA3374 /* PluginManager.nib */; };
+		4B1242D80CAE93D600CA3374 /* ZoomPlugInController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1242D60CAE93D600CA3374 /* ZoomPlugInController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B1242D90CAE93D600CA3374 /* ZoomPlugInController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1242D70CAE93D600CA3374 /* ZoomPlugInController.m */; };
 		4B152A040B440B9D008CC1EF /* SkeinDiffersBadge.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B152A030B440B9D008CC1EF /* SkeinDiffersBadge.png */; };
 		4B152CE20B46CBEB008CC1EF /* ZoomGameInfoController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B2EAFAD05B08D1E0021A5E6 /* ZoomGameInfoController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B152CE30B46CBED008CC1EF /* ZoomGameInfoController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2EAFAE05B08D1E0021A5E6 /* ZoomGameInfoController.m */; };
@@ -680,6 +683,9 @@
 		4B0DC67B05C0A61D000B96A3 /* disabledButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = disabledButton.png; sourceTree = "<group>"; };
 		4B123EC80C9C636200CA3374 /* ZoomPlugInManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomPlugInManager.h; sourceTree = "<group>"; };
 		4B123EC90C9C636200CA3374 /* ZoomPlugInManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomPlugInManager.m; sourceTree = "<group>"; };
+		4B1242CD0CAE8D1800CA3374 /* PluginManager.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = PluginManager.nib; sourceTree = "<group>"; };
+		4B1242D60CAE93D600CA3374 /* ZoomPlugInController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomPlugInController.h; sourceTree = "<group>"; };
+		4B1242D70CAE93D600CA3374 /* ZoomPlugInController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomPlugInController.m; sourceTree = "<group>"; };
 		4B13ECD2060F93F200021429 /* ZoomSavePreviewView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomSavePreviewView.h; sourceTree = "<group>"; };
 		4B13ECD3060F93F200021429 /* ZoomSavePreviewView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomSavePreviewView.m; sourceTree = "<group>"; };
 		4B14632106A2DD9E00398650 /* ZoomSkeinXML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomSkeinXML.m; sourceTree = "<group>"; };
@@ -1350,6 +1356,8 @@
 				4BF02D1F0C4A8141006FC32E /* ZoomGlkSaveRef.m */,
 				4B123EC80C9C636200CA3374 /* ZoomPlugInManager.h */,
 				4B123EC90C9C636200CA3374 /* ZoomPlugInManager.m */,
+				4B1242D60CAE93D600CA3374 /* ZoomPlugInController.h */,
+				4B1242D70CAE93D600CA3374 /* ZoomPlugInController.m */,
 			);
 			path = PlugIns;
 			sourceTree = "<group>";
@@ -1518,6 +1526,7 @@
 				4B1C14D205C69CAD00E5796D /* iFiction-10.2.nib */,
 				4B18850B069873F0004D8501 /* Skein.nib */,
 				4B152DBD0B46E929008CC1EF /* NoteWindow.nib */,
+				4B1242CD0CAE8D1800CA3374 /* PluginManager.nib */,
 			);
 			name = Resources;
 			path = src/zoomCocoa;
@@ -1698,6 +1707,7 @@
 				4B3E76DD0BA2DF8E00661FE8 /* ZoomResourceDrop.h in Headers */,
 				4BF02D200C4A8141006FC32E /* ZoomGlkSaveRef.h in Headers */,
 				4B123ECA0C9C636200CA3374 /* ZoomPlugInManager.h in Headers */,
+				4B1242D80CAE93D600CA3374 /* ZoomPlugInController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2188,6 +2198,7 @@
 				4B84304E0B139F7200679417 /* HUGO.icns in Resources */,
 				4BA8B83A0B1B5F65007CD75E /* typographicSettings.png in Resources */,
 				4B77DD1E0B87BBBC000D2504 /* displaySettings.png in Resources */,
+				4B1242CE0CAE8D1800CA3374 /* PluginManager.nib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2341,6 +2352,7 @@
 				4B3E766D0BA2D47300661FE8 /* ZoomBabel.m in Sources */,
 				4BF02D210C4A8141006FC32E /* ZoomGlkSaveRef.m in Sources */,
 				4B123ECB0C9C636200CA3374 /* ZoomPlugInManager.m in Sources */,
+				4B1242D90CAE93D600CA3374 /* ZoomPlugInController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
