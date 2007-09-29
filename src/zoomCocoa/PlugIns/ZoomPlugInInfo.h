@@ -10,6 +10,7 @@
 
 typedef enum ZoomPlugInStatus {
 	ZoomPlugInInstalled,									// Installed plugin
+	ZoomPlugInDisabled,										// Installed plugin that has been disabled
 	ZoomPlugInUpdated,										// Installed plugin, update to be installed
 	ZoomPlugInDownloaded,									// Downloaded plugin available to install
 	ZoomPluginUpdateAvailable,								// Update available to download
@@ -41,5 +42,6 @@ typedef enum ZoomPlugInStatus {
 - (NSString*) interpreterVersion;							// The version of the interpreter in the plugin
 - (NSString*) imagePath;									// The path to an image that represents this plugin
 - (ZoomPlugInStatus) status;								// The status for this plugin
+- (void) setStatus: (ZoomPlugInStatus) status;				// Updates the status for this plugin
 
 @end

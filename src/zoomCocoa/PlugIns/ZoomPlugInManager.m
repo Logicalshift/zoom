@@ -372,7 +372,7 @@ static int RankForStatus(ZoomPlugInStatus status) {
 	if (status == ZoomPlugInUpdated) {
 		return 4;
 	}
-	if (status == ZoomPlugInNotKnown) {
+	if (status == ZoomPlugInNotKnown || status == ZoomPlugInDisabled) {
 		return 0;
 	}
 	
@@ -409,7 +409,7 @@ static int SortPlugInInfo(id a, id b, void* context) {
 	[pluginInformation release];
 	pluginInformation = [[NSMutableArray alloc] init];
 	
-	// Get the information for all of the plugins
+	// Get the information for all of the loaded plugins
 	NSEnumerator* pluginEnum = [pluginBundles objectEnumerator];
 	NSBundle* bundle;
 	while (bundle = [pluginEnum nextObject]) {
@@ -419,6 +419,31 @@ static int SortPlugInInfo(id a, id b, void* context) {
 		
 		// Store in the array
 		[pluginInformation addObject: [information autorelease]];
+	}
+	
+	// Get the information for any plugins that are installed but disabled
+	NSString* disabledPath = [[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent: @"Contents"] stringByAppendingPathComponent: @"PlugIns Disabled"];
+	BOOL exists;
+	BOOL isDir;
+	exists = [[NSFileManager defaultManager] fileExistsAtPath: disabledPath
+												  isDirectory: &isDir];
+	
+	if (exists && isDir) {
+		NSArray* disabledPlugins = [[NSFileManager defaultManager] directoryContentsAtPath: 
+			disabledPath];
+		NSEnumerator* disabledEnum = [disabledPlugins objectEnumerator];
+		NSString* disabledPluginName;
+		while (disabledPluginName = [disabledEnum nextObject]) {
+			NSString* fullPath = [disabledPath stringByAppendingPathComponent: disabledPluginName];
+			
+			// Get the info object
+			ZoomPlugInInfo* information = [[ZoomPlugInInfo alloc] initWithBundleFilename: fullPath];
+			if (information == nil) continue;
+			[information setStatus: ZoomPlugInDisabled];
+			
+			// Store in the array
+			[pluginInformation addObject: [information autorelease]];
+		}
 	}
 	
 	// Sort the plugin array

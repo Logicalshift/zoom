@@ -113,6 +113,10 @@
 	return status;
 }
 
+- (void) setStatus: (ZoomPlugInStatus) newStatus {
+	status = newStatus;
+}
+
 - (NSString*) description {
 	return [NSString stringWithFormat: @"Plug in: %@, version %@", [self name], [self version]];
 }

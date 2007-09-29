@@ -139,6 +139,7 @@
 
 		case ZoomPlugInUpdated:										// Installed plugin, update to be installed
 		case ZoomPlugInDownloaded:									// Downloaded plugin available to install
+		case ZoomPlugInDisabled:
 			statusAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
 				statusFont, NSFontAttributeName,
 				highlightColour2, NSForegroundColorAttributeName,
@@ -174,6 +175,10 @@
 			
 		case ZoomPlugInInstalled:									// Installed plugin
 			status = @"Installed";
+			break;
+			
+		case ZoomPlugInDisabled:
+			status = @"Disabled";
 			break;
 			
 		case ZoomPlugInNotKnown:									// Unknown status
