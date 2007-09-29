@@ -473,17 +473,183 @@ static int SortPlugInInfo(id a, id b, void* context) {
 	return pluginInformation;
 }
 
-- (void) checkForUpdatesFrom: (NSArray*) urls {
+- (void) startNextCheck {
+	if (lastRequest != nil) return;
 	
+	// Get the next URL to check
+	NSURL* nextUrl = nil;
+	if ([checkUrls count] > 0) {
+		nextUrl = [[[checkUrls lastObject] retain] autorelease];
+		[checkUrls removeLastObject];
+	}
+	
+	// We've finished if the next URL is nil
+	if (nextUrl == nil) {
+		[checkUrls release];
+		checkUrls = nil;
+		
+		if (delegate && [delegate respondsToSelector: @selector(finishedCheckingForUpdates)]) {
+			[delegate finishedCheckingForUpdates];
+		}
+		return;
+	}
+	
+	// Create a new request
+	NSLog(@"Checking for plug-in updates from %@", nextUrl);
+	lastRequest = [[NSURLRequest requestWithURL: nextUrl
+									cachePolicy: NSURLRequestReloadIgnoringCacheData
+								timeoutInterval: 20] retain];
+	[checkConnection release];
+	checkConnection = [[NSURLConnection connectionWithRequest: lastRequest
+													 delegate: self] retain];
+}
+
+- (void) checkForUpdatesFrom: (NSArray*) urls {
+	// Get the set of URLs to check
+	NSSet* uniqueUrls = [NSSet setWithArray: urls];
+	
+	// Store the set of URLs to check
+	[checkUrls release];
+	checkUrls = [[uniqueUrls allObjects] mutableCopy];
+	
+	// Notify the delegate that we're starting to check for updates
+	if (delegate && [delegate respondsToSelector: @selector(checkingForUpdates)]) {
+		[delegate checkingForUpdates];
+	}
+	
+	// Start the next check for updates request
+	[self startNextCheck];
 }
 
 - (void) checkForUpdates {
 	// Build the list of places to check
 	NSMutableArray* whereToCheck = [[NSMutableArray alloc] init];
 	
+	if (checkUrls != nil) {
+		[whereToCheck addObjectsFromArray: checkUrls];
+	}
+	
+#ifdef DEVELOPMENT
+	[whereToCheck addObject: [NSURL URLWithString: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"ZoomPluginFeedTestURL"]]];
+#endif
+	[whereToCheck addObject: [NSURL URLWithString: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"ZoomPluginFeedURL"]]];
+	
 	// Start the check
 	[self checkForUpdatesFrom: whereToCheck];
 	[whereToCheck release];
+}
+
+- (BOOL) addUpdatedPlugin: (ZoomPlugInInfo*) plugin {
+	// Find the old plugin that matches this one
+	ZoomPlugInInfo* oldPlugIn = nil;
+	
+	NSEnumerator* pluginEnum = [[self informationForPlugins] objectEnumerator];
+	ZoomPlugInInfo* maybePlugin;
+	while (maybePlugin = [pluginEnum nextObject]) {
+		if ([[plugin name] isEqualToString: [maybePlugin name]]) {
+			oldPlugIn = [[maybePlugin retain] autorelease];
+		}
+	}
+	
+	// If there is no old plugin, then this plugin is new
+	if (oldPlugIn == nil) {
+		[plugin setStatus: ZoomPlugInNew];
+		[pluginInformation addObject: plugin];
+		[self sortInformation];
+		return YES;
+	}
+	
+	// If there is an old plugin, then compare the versions and mark the old plugin as updated if there's a new version available
+	if ([self version: [plugin version]
+		  isNewerThan: [oldPlugIn version]]) {
+		[oldPlugIn setUpdateInfo: plugin];
+		[oldPlugIn setStatus: ZoomPluginUpdateAvailable];
+		[self sortInformation];
+		return YES;
+	}
+	
+	return NO;
+}
+
+// = Handling URL events =
+
+- (void)  connection:(NSURLConnection *)connection 
+  didReceiveResponse:(NSURLResponse *)response {
+	if (connection == checkConnection) {
+		// Got a response to the last check for updates URL
+		[checkResponse release];
+		checkResponse = [response retain];
+		[checkData release];
+		checkData = [[NSMutableData alloc] init];
+	}
+}
+
+- (void)connection:(NSURLConnection *)connection 
+  didFailWithError:(NSError *)error {
+	if (connection == checkConnection) {
+		// Got a response to the last check for updates URL
+		[checkResponse release];
+		checkResponse = nil;
+		
+		NSLog(@"Error while checking for updates: %@", error);
+	}
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+	if (connection == checkConnection) {
+		[checkData appendData: data];
+	}
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+	if (connection == checkConnection) {
+		NSDictionary* result = nil;
+		
+		if (checkResponse != nil && checkData != nil) {
+			// Handle the response
+			result = [NSPropertyListSerialization propertyListFromData: checkData
+													  mutabilityOption: NSPropertyListImmutable
+																format: nil
+													  errorDescription: nil];
+		}
+		
+		if (result != nil) {
+			// Iterate through the values in the result to get the current versions of the plugins specified in the XML file
+			NSEnumerator* valueEnum = [[result allValues] objectEnumerator];
+			NSDictionary* value;
+			BOOL updated = NO;
+			while (value = [valueEnum nextObject]) {
+				// The entries must be dictionaries
+				if (![value isKindOfClass: [NSDictionary class]])
+					continue;
+				
+				// Work out the plugin information for this entry
+				ZoomPlugInInfo* info = [[[ZoomPlugInInfo alloc] initFromPList: value] autorelease];
+				if (info == nil)
+					continue;
+				
+				// Work out what to do with this plugin
+				if ([self addUpdatedPlugin: info]) {
+					updated = YES;
+				}
+			}
+			
+			if (updated) {
+				// Notify the delegate of the change
+				if (delegate && [delegate respondsToSelector: @selector(pluginInformationChanged)]) {
+					[delegate pluginInformationChanged];
+				}
+			}
+		}
+		
+		// Move on to the next URL
+		[lastRequest release]; lastRequest = nil;
+		[checkConnection autorelease]; checkConnection = nil;
+		[checkResponse autorelease]; checkResponse = nil;
+		[checkData autorelease]; checkData = nil;
+		
+		[self startNextCheck];
+	}	
 }
 
 // = Installing new plugins =

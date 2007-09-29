@@ -32,6 +32,8 @@ typedef enum ZoomPlugInStatus {
 	NSString* interpreterVersion;							// The version number of the interpreter contained in the plugin
 	NSURL* location;										// The location of this plugin
 	ZoomPlugInStatus status;								// The status for this plugin
+	
+	ZoomPlugInInfo* updated;								// The updated information for this plugin, if check for updates has found one
 }
 
 // Initialisation
@@ -48,5 +50,8 @@ typedef enum ZoomPlugInStatus {
 - (NSURL*) location;										// Where this plugin is located
 - (ZoomPlugInStatus) status;								// The status for this plugin
 - (void) setStatus: (ZoomPlugInStatus) status;				// Updates the status for this plugin
+
+- (ZoomPlugInInfo*) updateInfo;								// The plugin info for any known updates to this plugin
+- (void) setUpdateInfo: (ZoomPlugInInfo*) info;				// Sets the update plugin info
 
 @end

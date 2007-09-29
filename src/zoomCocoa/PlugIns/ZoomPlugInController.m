@@ -59,6 +59,19 @@
 	[pluginTable reloadData];
 }
 
+- (void) checkingForUpdates {
+	[pluginProgress setIndeterminate: YES];
+	[pluginProgress startAnimation: self];
+	
+	[statusField setStringValue: @"Checking for updates..."];
+	[statusField setHidden: NO];
+}
+
+- (void) finishedCheckingForUpdates {
+	[pluginProgress stopAnimation: self];
+	[statusField setHidden: YES];
+}
+
 // = Actions =
 
 - (IBAction) installUpdates: (id) sender {
@@ -66,7 +79,7 @@
 }
 
 - (IBAction) checkForUpdates: (id) sender {
-	// TODO: implement me
+	[[ZoomPlugInManager sharedPlugInManager] checkForUpdates];
 }
 
 @end

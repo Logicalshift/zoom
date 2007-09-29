@@ -28,6 +28,12 @@ extern NSString* ZoomPlugInInformationChangedNotification;	// Notification that 
 	
 	NSString* lastPlistPlugin;								// The path of the last plugin we retrieved a plist for
 	NSDictionary* lastPlist;								// The plist retrieved from the lastPlistPlugin
+	
+	NSMutableArray* checkUrls;								// Check for updates URLs that are still waiting to be processed
+	NSURLRequest* lastRequest;								// The last check for updates request that was sent
+	NSURLConnection* checkConnection;						// The connection for the last request
+	NSURLResponse* checkResponse;							// The response to the last check for updates request
+	NSMutableData* checkData;								// The data returned for the last check for updates request
 }
 
 + (ZoomPlugInManager*) sharedPlugInManager;					// The shared plug-in manager
@@ -58,6 +64,8 @@ extern NSString* ZoomPlugInInformationChangedNotification;	// Notification that 
 
 // Getting information about plugins
 - (NSArray*) informationForPlugins;							// Array of ZoomPlugInInfo objects containing the information about all the plugins known about by this object
+- (void) checkForUpdatesFrom: (NSArray*) urls;				// Performs a check for updates operation on the specified URLs
+- (void) checkForUpdates;									// Performs a general check for updates operation
 
 @end
 
@@ -68,5 +76,8 @@ extern NSString* ZoomPlugInInformationChangedNotification;	// Notification that 
 
 - (void) pluginInformationChanged;							// Indicates that the plugin information has changed
 - (void) needsRestart;										// Indicates that the plug-in manager needs a restart before it can continue
+
+- (void) checkingForUpdates;								// Indicates that a check for updates has started
+- (void) finishedCheckingForUpdates;						// Indicates that the check for updates has finished
 
 @end

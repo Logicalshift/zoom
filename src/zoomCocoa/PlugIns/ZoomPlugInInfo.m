@@ -60,6 +60,53 @@
 	return self;
 }
 
+- (id) initFromPList: (NSDictionary*) plist {
+	self = [super init];
+	
+	if (self) {
+		// No information available if there's no plist for this bundle
+		if (plist == nil) {
+			[self release];
+			return nil;
+		}
+		
+		// Get the information out of the plist
+		name				= [[plist objectForKey: @"DisplayName"] retain];
+		author				= [[plist objectForKey: @"Author"] retain];
+		interpreterAuthor	= [[plist objectForKey: @"InterpreterAuthor"] retain];
+		interpreterVersion	= [[plist objectForKey: @"InterpreterVersion"] retain];
+		version				= [[plist objectForKey: @"Version"] retain];
+		image				= nil;		
+		status				= ZoomPlugInNotKnown;
+		
+		if ([plist objectForKey: @"URL"] != nil) {
+			location = [[NSURL fileURLWithPath: [plist objectForKey: @"URL"]] copy];			
+		}
+		
+		// Check the plist entries
+		if (name == nil) {
+			[self release];
+			return nil;
+		}
+		if (author == nil) {
+			if (interpreterAuthor == nil) {
+				[self release];
+				return nil;
+			}
+			author = [interpreterAuthor retain];
+		}
+		if (interpreterAuthor == nil) {
+			interpreterAuthor = [author retain];
+		}
+		if (version == nil || interpreterVersion == nil) {
+			[self release];
+			return nil;
+		}
+	}
+	
+	return self;	
+}
+
 - (void) dealloc {
 	[name release];
 	[author release];
@@ -68,6 +115,7 @@
 	[version release];
 	[image release];
 	[location release];
+	[updated release];
 	
 	[super dealloc];
 }
@@ -85,6 +133,7 @@
 	newInfo->image = [image copy];
 	newInfo->location = [location copy];
 	newInfo->status = status;
+	newInfo->updated = [updated copy];
 }
 
 // = Retrieving the information =
@@ -128,5 +177,15 @@
 - (NSURL*) location {
 	return location;
 }
+
+- (ZoomPlugInInfo*) updateInfo {
+	return updated;
+}
+
+- (void) setUpdateInfo: (ZoomPlugInInfo*) info {
+	[updated release];
+	updated = [info copy];
+}
+
 
 @end
