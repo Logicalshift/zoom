@@ -8,6 +8,10 @@
 
 #import <Cocoa/Cocoa.h>
 #import <ZoomPlugIns/ZoomPlugIn.h>
+#import <ZoomPlugIns/ZoomPlugInInfo.h>
+
+// Notifications
+extern NSString* ZoomPlugInInformationChangedNotification;	// Notification that the set of plugin information has changed
 
 //
 // Class that manages the plugins installed with Zoom
@@ -19,6 +23,8 @@
 	NSMutableArray* pluginBundles;							// The bundles containing the loaded plugins
 	NSMutableArray* pluginClasses;							// The ZoomPlugIn classes from the bundles
 	NSMutableDictionary* pluginsToVersions;					// Array mapping plugin versions to names
+	
+	NSMutableArray* pluginInformation;						// Information about all plugins known about by this object (including those that live elsewhere)
 	
 	NSString* lastPlistPlugin;								// The path of the last plugin we retrieved a plist for
 	NSDictionary* lastPlist;								// The plist retrieved from the lastPlistPlugin
@@ -50,6 +56,9 @@
 - (NSString*) terpAuthorForBundle: (NSString*) pluginBundle;	// Retrieves the author of the interpreter of the specified plugin
 - (NSString*) versionForBundle: (NSString*) pluginBundle;	// Retrieves the version number of the specified plugin bundle
 
+// Getting information about plugins
+- (NSArray*) informationForPlugins;							// Array of ZoomPlugInInfo objects containing the information about all the plugins known about by this object
+
 @end
 
 //
@@ -57,6 +66,7 @@
 //
 @interface NSObject(ZoomPlugInManagerDelegate)
 
+- (void) pluginInformationChanged;							// Indicates that the plugin information has changed
 - (void) needsRestart;										// Indicates that the plug-in manager needs a restart before it can continue
 
 @end

@@ -7,7 +7,9 @@
 //
 
 #import "ZoomPlugInManager.h"
+#import <ZoomPlugIns/ZoomPlugInInfo.h>
 
+NSString* ZoomPlugInInformationChangedNotification = @"ZoomPlugInInformationChangedNotification";
 
 @implementation ZoomPlugInManager
 
@@ -42,6 +44,8 @@
 	[lastPlist release];
 	[lastPlistPlugin release];
 	
+	[pluginInformation release];
+	
 	[super dealloc];
 }
 
@@ -54,9 +58,16 @@
 // = Dealing with existing plugins =
 
 - (void) loadPluginsFrom: (NSString*) pluginPath {
+	[pluginBundles release];
+	[pluginClasses release];
+	[pluginsToVersions release];
+	
 	pluginBundles = [[NSMutableArray alloc] init];
 	pluginClasses = [[NSMutableArray alloc] init];
 	pluginsToVersions = [[NSMutableDictionary alloc] init];
+	
+	[pluginInformation release];
+	pluginInformation = nil;
 	
 #if VERBOSITY >= 2
 	NSLog(@"= Loading plugins from: %@", pluginPath);
@@ -99,7 +110,9 @@
 				}
 			}
 		}
-	}	
+	}
+	
+	[self pluginInformationChanged];
 }
 
 - (void) loadPlugIns {
@@ -342,6 +355,82 @@
 	return result;		
 }
 
+// = Getting information about plugins =
+
+- (void) pluginInformationChanged {
+	if (delegate && [delegate respondsToSelector: @selector(pluginInformationChanged)]) {
+		[delegate pluginInformationChanged];
+	}
+	[[NSNotificationCenter defaultCenter] postNotificationName: ZoomPlugInInformationChangedNotification
+														object: self];
+}
+
+static int RankForStatus(ZoomPlugInStatus status) {
+	if (status == ZoomPluginUpdateAvailable || status == ZoomPlugInNew || status == ZoomPlugInDownloaded) {
+		return 5;
+	}
+	if (status == ZoomPlugInUpdated) {
+		return 4;
+	}
+	if (status == ZoomPlugInNotKnown) {
+		return 0;
+	}
+	
+	return 1;
+}
+
+static int SortPlugInInfo(id a, id b, void* context) {
+	ZoomPlugInInfo* first = a;
+	ZoomPlugInInfo* second = b;
+	
+	// First sort by status: unknown at the bottom, new and updated at the top
+	ZoomPlugInStatus firstStatus = [first status];
+	ZoomPlugInStatus secondStatus = [second status];
+	
+	if (RankForStatus(firstStatus) < RankForStatus(secondStatus))
+		return 1;
+	else if (RankForStatus(firstStatus) > RankForStatus(secondStatus))
+		return -1;
+	else
+		return 0;
+	
+	// Then sort by the name of the plugin
+	return [[first name] caseInsensitiveCompare: [second name]];
+}
+
+- (void) sortInformation {
+	// Sorts the plugin information array
+	[pluginInformation sortUsingFunction: SortPlugInInfo
+								 context: self];
+}
+
+- (void) setupInformation {
+	// Sets up the initial plugin information array
+	[pluginInformation release];
+	pluginInformation = [[NSMutableArray alloc] init];
+	
+	// Get the information for all of the plugins
+	NSEnumerator* pluginEnum = [pluginBundles objectEnumerator];
+	NSBundle* bundle;
+	while (bundle = [pluginEnum nextObject]) {
+		// Get the info object
+		ZoomPlugInInfo* information = [[ZoomPlugInInfo alloc] initWithBundleFilename: [bundle bundlePath]];
+		if (information == nil) continue;
+		
+		// Store in the array
+		[pluginInformation addObject: [information autorelease]];
+	}
+	
+	// Sort the plugin array
+	[self sortInformation];
+}
+
+- (NSArray*) informationForPlugins {
+	if (pluginInformation == nil) [self setupInformation];
+	
+	return pluginInformation;
+}
+	
 // = Installing new plugins =
 
 - (void) installPlugIn: (NSString*) pluginBundle {

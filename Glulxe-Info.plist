@@ -26,6 +26,8 @@
 		<string>Andrew Hunter</string>
 		<key>DisplayName</key>
 		<string>Glulx</string>
+		<key>Image</key>
+		<string>../../Resources/GlkClient.icns</string>
 		<key>InterpreterAuthor</key>
 		<string>Andrew Plotkin</string>
 		<key>InterpreterVersion</key>

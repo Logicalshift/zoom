@@ -21,6 +21,10 @@
 		4B1242CE0CAE8D1800CA3374 /* PluginManager.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4B1242CD0CAE8D1800CA3374 /* PluginManager.nib */; };
 		4B1242D80CAE93D600CA3374 /* ZoomPlugInController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1242D60CAE93D600CA3374 /* ZoomPlugInController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B1242D90CAE93D600CA3374 /* ZoomPlugInController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1242D70CAE93D600CA3374 /* ZoomPlugInController.m */; };
+		4B1243050CAE964400CA3374 /* ZoomPlugInCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1243030CAE964400CA3374 /* ZoomPlugInCell.h */; };
+		4B1243060CAE964400CA3374 /* ZoomPlugInCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1243040CAE964400CA3374 /* ZoomPlugInCell.m */; };
+		4B12431B0CAE9B2500CA3374 /* ZoomPlugInInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1243190CAE9B2500CA3374 /* ZoomPlugInInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B12431C0CAE9B2500CA3374 /* ZoomPlugInInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B12431A0CAE9B2500CA3374 /* ZoomPlugInInfo.m */; };
 		4B152A040B440B9D008CC1EF /* SkeinDiffersBadge.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B152A030B440B9D008CC1EF /* SkeinDiffersBadge.png */; };
 		4B152CE20B46CBEB008CC1EF /* ZoomGameInfoController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B2EAFAD05B08D1E0021A5E6 /* ZoomGameInfoController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B152CE30B46CBED008CC1EF /* ZoomGameInfoController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2EAFAE05B08D1E0021A5E6 /* ZoomGameInfoController.m */; };
@@ -686,6 +690,10 @@
 		4B1242CD0CAE8D1800CA3374 /* PluginManager.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = PluginManager.nib; sourceTree = "<group>"; };
 		4B1242D60CAE93D600CA3374 /* ZoomPlugInController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomPlugInController.h; sourceTree = "<group>"; };
 		4B1242D70CAE93D600CA3374 /* ZoomPlugInController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomPlugInController.m; sourceTree = "<group>"; };
+		4B1243030CAE964400CA3374 /* ZoomPlugInCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomPlugInCell.h; sourceTree = "<group>"; };
+		4B1243040CAE964400CA3374 /* ZoomPlugInCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomPlugInCell.m; sourceTree = "<group>"; };
+		4B1243190CAE9B2500CA3374 /* ZoomPlugInInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomPlugInInfo.h; sourceTree = "<group>"; };
+		4B12431A0CAE9B2500CA3374 /* ZoomPlugInInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomPlugInInfo.m; sourceTree = "<group>"; };
 		4B13ECD2060F93F200021429 /* ZoomSavePreviewView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomSavePreviewView.h; sourceTree = "<group>"; };
 		4B13ECD3060F93F200021429 /* ZoomSavePreviewView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomSavePreviewView.m; sourceTree = "<group>"; };
 		4B14632106A2DD9E00398650 /* ZoomSkeinXML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomSkeinXML.m; sourceTree = "<group>"; };
@@ -1358,6 +1366,10 @@
 				4B123EC90C9C636200CA3374 /* ZoomPlugInManager.m */,
 				4B1242D60CAE93D600CA3374 /* ZoomPlugInController.h */,
 				4B1242D70CAE93D600CA3374 /* ZoomPlugInController.m */,
+				4B1243030CAE964400CA3374 /* ZoomPlugInCell.h */,
+				4B1243040CAE964400CA3374 /* ZoomPlugInCell.m */,
+				4B1243190CAE9B2500CA3374 /* ZoomPlugInInfo.h */,
+				4B12431A0CAE9B2500CA3374 /* ZoomPlugInInfo.m */,
 			);
 			path = PlugIns;
 			sourceTree = "<group>";
@@ -1708,6 +1720,8 @@
 				4BF02D200C4A8141006FC32E /* ZoomGlkSaveRef.h in Headers */,
 				4B123ECA0C9C636200CA3374 /* ZoomPlugInManager.h in Headers */,
 				4B1242D80CAE93D600CA3374 /* ZoomPlugInController.h in Headers */,
+				4B1243050CAE964400CA3374 /* ZoomPlugInCell.h in Headers */,
+				4B12431B0CAE9B2500CA3374 /* ZoomPlugInInfo.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2353,6 +2367,8 @@
 				4BF02D210C4A8141006FC32E /* ZoomGlkSaveRef.m in Sources */,
 				4B123ECB0C9C636200CA3374 /* ZoomPlugInManager.m in Sources */,
 				4B1242D90CAE93D600CA3374 /* ZoomPlugInController.m in Sources */,
+				4B1243060CAE964400CA3374 /* ZoomPlugInCell.m in Sources */,
+				4B12431C0CAE9B2500CA3374 /* ZoomPlugInInfo.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
