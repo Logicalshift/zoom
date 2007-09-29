@@ -16,9 +16,24 @@
 	<string>YZZY</string>
 	<key>CFBundleVersion</key>
 	<string>0.4.2</string>
-	<key>NSPrincipalClass</key>
-	<string>ZoomGlulxe</string>
 	<key>NSExecutable</key>
 	<string>Glulxe</string>
+	<key>NSPrincipalClass</key>
+	<string>ZoomGlulxe</string>
+	<key>ZoomPlugin</key>
+	<dict>
+		<key>Author</key>
+		<string>Andrew Hunter</string>
+		<key>DisplayName</key>
+		<string>Glulx</string>
+		<key>InterpreterAuthor</key>
+		<string>Andrew Plotkin</string>
+		<key>InterpreterVersion</key>
+		<string>0.4.2</string>
+		<key>Version</key>
+		<string>1.0.2</string>
+		<key>ZoomVersion</key>
+		<integer>112</integer>
+	</dict>
 </dict>
 </plist>

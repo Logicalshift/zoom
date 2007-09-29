@@ -18,6 +18,7 @@
 	
 	NSMutableArray* pluginBundles;							// The bundles containing the loaded plugins
 	NSMutableArray* pluginClasses;							// The ZoomPlugIn classes from the bundles
+	NSMutableDictionary* pluginsToVersions;					// Array mapping plugin versions to names
 }
 
 + (ZoomPlugInManager*) sharedPlugInManager;					// The shared plug-in manager
@@ -30,6 +31,7 @@
 - (Class) plugInForFile: (NSString*) fileName;				// Gets the plugin for the specified file
 - (ZoomPlugIn*) instanceForFile: (NSString*) filename;		// Gets a plug-in instance for the specified file
 
+- (NSArray*) pluginBundles;									// The loaded plugin bundles
 - (NSArray*) loadedPlugIns;									// Array of strings indicating the names of the loaded plugins
 - (NSString*) versionForPlugIn: (NSString*) plugin;			// Returns the version of the plugin with the specified name
 - (BOOL) version: (NSString*) oldVersion					// Compares 
@@ -39,8 +41,10 @@
 - (void) installPlugIn: (NSString*) pluginBundle;			// Requests that the specified plugin be installed
 - (void) finishUpdatingPlugins;								// Causes Zoom to finish updating any plugins after a restart
 
+- (NSDictionary*) plistForBundle: (NSString*) pluginBundle;	// Retrieves the plist dictionary for the specified plugin bundle
 - (NSString*) nameForBundle: (NSString*) pluginBundle;		// Retrieves the display name of the specified plugin bundle
 - (NSString*) authorForBundle: (NSString*) pluginBundle;	// Retrieves the author of the specified plugin
+- (NSString*) terpAuthorForBundle: (NSString*) pluginBundle;	// Retrieves the author of the interpreter of the specified plugin
 - (NSString*) versionForBundle: (NSString*) pluginBundle;	// Retrieves the version number of the specified plugin bundle
 
 @end

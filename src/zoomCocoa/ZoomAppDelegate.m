@@ -239,7 +239,7 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 #ifdef DEVELOPMENTBUILD
 	// Tell launch services to re-register the application (ensures that all the icons are always up to date)
 	NSLog(@"Re-registering");
-	LSRegisterURL([NSURL fileURLWithPath: [[NSBundle mainBundle] bundlePath]], 1);
+	LSRegisterURL((CFURLRef)[NSURL fileURLWithPath: [[NSBundle mainBundle] bundlePath]], 1);
 #endif
 }
 

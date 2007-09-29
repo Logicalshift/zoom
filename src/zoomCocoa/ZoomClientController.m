@@ -450,8 +450,8 @@
 }
 
 - (IBAction) infoResourceChanged: (id) sender {
-	if ([self selectedStory] == nil) return;
 	ZoomStory* story = [[self document] storyInfo];
+	if (story == nil) return;
 	
 	// Update the resource path
 	[story setObject: [[ZoomGameInfoController sharedGameInfoController] resourceFilename]

@@ -35,6 +35,9 @@
 
 - (void) dealloc {
 	[pluginLock release];
+	[pluginBundles release];
+	[pluginClasses release];
+	[pluginsToVersions release];
 	
 	[super dealloc];
 }
@@ -50,6 +53,7 @@
 - (void) loadPluginsFrom: (NSString*) pluginPath {
 	pluginBundles = [[NSMutableArray alloc] init];
 	pluginClasses = [[NSMutableArray alloc] init];
+	pluginsToVersions = [[NSMutableDictionary alloc] init];
 	
 #if VERBOSITY >= 2
 	NSLog(@"= Loading plugins from: %@", pluginPath);
@@ -64,7 +68,8 @@
 		if ([[[plugin pathExtension] lowercaseString] isEqualToString: @"bundle"]
 			|| [[[plugin pathExtension] lowercaseString] isEqualToString: @"plugin"]
 			|| [[[plugin pathExtension] lowercaseString] isEqualToString: @"zoomplugin"]) {
-			NSBundle* pluginBundle = [NSBundle bundleWithPath: [pluginPath stringByAppendingPathComponent: plugin]];
+			NSString* pluginBundlePath = [pluginPath stringByAppendingPathComponent: plugin];
+			NSBundle* pluginBundle = [NSBundle bundleWithPath: pluginBundlePath];
 			
 			if (pluginBundle != nil) {
 				if ([pluginBundle load]) {
@@ -72,6 +77,12 @@
 					NSLog(@"== Plugin loaded: %@", [plugin stringByDeletingPathExtension]);
 #endif
 					[pluginBundles addObject: pluginBundle];
+					
+					NSString* version = [self versionForBundle: pluginBundlePath];
+					NSString* name = [self nameForBundle: pluginBundlePath];
+					
+					[pluginsToVersions setObject: version
+										  forKey: name];
 					
 					Class primaryClass = [pluginBundle principalClass];
 					[pluginClasses addObject: primaryClass];
@@ -147,12 +158,16 @@
 	return instance;	
 }
 
+- (NSArray*) pluginBundles {
+	return pluginBundles;
+}
+
 - (NSArray*) loadedPlugIns {
-	return nil;
+	return [pluginsToVersions allKeys];
 }
 
 - (NSString*) versionForPlugIn: (NSString*) plugin {
-	return nil;
+	return [pluginsToVersions objectForKey: plugin];
 }
 
 - (NSArray*) arrayForVersion: (NSString*) version {
@@ -192,6 +207,120 @@
 	return NO;
 }
 
+// = Getting information about plugins =
+
+- (NSDictionary*) plistForBundle: (NSString*) pluginBundle {
+	// Standardise the plugin path
+	pluginBundle = [pluginBundle stringByStandardizingPath];
+	
+	// Check that the bundle exists and is a directory
+	BOOL exists;
+	BOOL isDir;
+	
+	exists = [[NSFileManager defaultManager] fileExistsAtPath: pluginBundle
+												  isDirectory: &isDir];
+	if (!exists || !isDir) {
+		return nil;
+	}
+	
+	// Check that the plist file exists
+	NSString* plistPath = [pluginBundle stringByAppendingPathComponent: @"Info.plist"];
+	
+	exists = [[NSFileManager defaultManager] fileExistsAtPath: plistPath
+												  isDirectory: &isDir];
+	if (!exists || isDir) {
+		return nil;
+	}
+	
+	// Try to load the plist file from the bundle
+	NSDictionary* plistDictionary = [NSDictionary dictionaryWithContentsOfFile: plistPath];
+	if (plistDictionary == nil) {
+		return nil;
+	}
+	
+	// Must contain a ZoomPlugin key
+	if (![plistDictionary objectForKey: @"ZoomPlugin"]) {
+		return nil;
+	}
+	
+	if (![[plistDictionary objectForKey: @"ZoomPlugin"] isKindOfClass: [NSDictionary class]]) {
+		return nil;
+	}
+	
+	// Plugin is OK: return the result
+	return plistDictionary;
+}
+
+- (NSString*) nameForBundle: (NSString*) pluginBundle {
+	// Get the plist for the plugin
+	NSDictionary* plist = [self plistForBundle: pluginBundle];
+	if (plist == nil) return nil;
+	NSDictionary* zoomPlugins = [plist objectForKey: @"ZoomPlugin"];
+	
+	// Get the name for this plugin
+	NSString* result;
+	result = [zoomPlugins objectForKey: @"DisplayName"];
+	if (result == nil || ![result isKindOfClass: [NSString class]]) {
+		result = @"Untitled";
+	}
+	
+	return result;
+}
+
+- (NSString*) authorForBundle: (NSString*) pluginBundle {
+	// Get the plist for the plugin
+	NSDictionary* plist = [self plistForBundle: pluginBundle];
+	if (plist == nil) return nil;
+	NSDictionary* zoomPlugins = [plist objectForKey: @"ZoomPlugin"];
+	
+	// Get the name for this plugin
+	NSString* result;
+	result = [zoomPlugins objectForKey: @"Author"];
+	if (result == nil || ![result isKindOfClass: [NSString class]]) {
+		result = [zoomPlugins objectForKey: @"InterpreterAuthor"];
+	}
+	if (result == nil || ![result isKindOfClass: [NSString class]]) {
+		result = nil;
+	}
+	
+	return result;	
+}
+
+- (NSString*) versionForBundle: (NSString*) pluginBundle {
+	// Get the plist for the plugin
+	NSDictionary* plist = [self plistForBundle: pluginBundle];
+	if (plist == nil) return nil;
+	NSDictionary* zoomPlugins = [plist objectForKey: @"ZoomPlugin"];
+	
+	// Get the name for this plugin
+	NSString* result;
+	result = [zoomPlugins objectForKey: @"Version"];
+	if (result == nil || ![result isKindOfClass: [NSString class]]) {
+		result = nil;
+	}
+	
+	return result;		
+}
+
+- (NSString*) terpAuthorForBundle: (NSString*) pluginBundle {
+	// Get the plist for the plugin
+	NSDictionary* plist = [self plistForBundle: pluginBundle];
+	if (plist == nil) return nil;
+	NSDictionary* zoomPlugins = [plist objectForKey: @"ZoomPlugin"];
+	
+	// Get the name for this plugin
+	NSString* result;
+	result = [zoomPlugins objectForKey: @"InterpreterAuthor"];
+	if (result == nil || ![result isKindOfClass: [NSString class]]) {
+		result = [zoomPlugins objectForKey: @"Author"];
+	}
+	if (result == nil || ![result isKindOfClass: [NSString class]]) {
+		result = nil;
+	}
+	
+	return result;		
+}
+
 // = Installing new plugins =
 
 - (void) installPlugIn: (NSString*) pluginBundle {
@@ -199,18 +328,6 @@
 }
 
 - (void) finishUpdatingPlugins {
-	
-}
-
-- (NSString*) nameForBundle: (NSString*) pluginBundle {
-	
-}
-
-- (NSString*) authorForBundle: (NSString*) pluginBundle {
-	
-}
-
-- (NSString*) versionForBundle: (NSString*) pluginBundle {
 	
 }
 
