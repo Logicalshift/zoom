@@ -160,7 +160,7 @@
 	
 	switch ([objectValue status]) {
 		case ZoomPluginUpdateAvailable:								// Update available to download
-			status = @"Updated";
+			status = @"Update available";
 			break;
 			
 		case ZoomPlugInNew:											// Not yet installed, available to download
@@ -180,7 +180,7 @@
 			break;
 			
 		case ZoomPlugInDownloading:
-			status = @"Downloading Update";
+			status = @"Downloading update";
 			break;
 			
 		case ZoomPlugInInstalled:									// Installed plugin
