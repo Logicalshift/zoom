@@ -73,16 +73,20 @@
 			|| [[[plugin pathExtension] lowercaseString] isEqualToString: @"zoomplugin"]) {
 			NSString* pluginBundlePath = [pluginPath stringByAppendingPathComponent: plugin];
 			NSBundle* pluginBundle = [NSBundle bundleWithPath: pluginBundlePath];
+
+			NSString* version = [self versionForBundle: pluginBundlePath];
+			NSString* name = [self nameForBundle: pluginBundlePath];
 			
-			if (pluginBundle != nil) {
+			if (pluginBundlePath != nil && name == nil) {
+				NSLog(@"== Not a valid plugin: %@", pluginBundlePath);
+			}
+
+			if (pluginBundle != nil && name != nil) {
 				if ([pluginBundle load]) {
 #if VERBOSITY >= 1
 					NSLog(@"== Plugin loaded: %@", [plugin stringByDeletingPathExtension]);
 #endif
 					[pluginBundles addObject: pluginBundle];
-					
-					NSString* version = [self versionForBundle: pluginBundlePath];
-					NSString* name = [self nameForBundle: pluginBundlePath];
 					
 					[pluginsToVersions setObject: version
 										  forKey: name];
@@ -213,6 +217,8 @@
 // = Getting information about plugins =
 
 - (NSDictionary*) plistForBundle: (NSString*) pluginBundle {
+	if (pluginBundle == nil) return nil;
+	
 	// Standardise the plugin path
 	pluginBundle = [pluginBundle stringByStandardizingPath];
 	
@@ -239,7 +245,7 @@
 	}
 	
 	// Check that the plist file exists
-	NSString* plistPath = [pluginBundle stringByAppendingPathComponent: @"Info.plist"];
+	NSString* plistPath = [[pluginBundle stringByAppendingPathComponent: @"Contents"] stringByAppendingPathComponent: @"Info.plist"];
 	
 	exists = [[NSFileManager defaultManager] fileExistsAtPath: plistPath
 												  isDirectory: &isDir];
