@@ -261,6 +261,10 @@
 	<string>NSApplication</string>
 	<key>SUFeedURL</key>
 	<string>http://www.logicalshift.co.uk/unix/zoom/update.xml</string>
+	<key>ZoomPluginFeedURL</key>
+	<string>http://www.logicalshift.co.uk/unix/zoom/plugins.xml</string>
+	<key>ZoomPluginFeedTestURL</key>
+	<string>http://www.logicalshift.co.uk/unix/zoom/plugins-test.xml</string>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>

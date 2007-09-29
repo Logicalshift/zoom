@@ -366,7 +366,13 @@ NSString* ZoomPlugInInformationChangedNotification = @"ZoomPlugInInformationChan
 }
 
 static int RankForStatus(ZoomPlugInStatus status) {
-	if (status == ZoomPluginUpdateAvailable || status == ZoomPlugInNew || status == ZoomPlugInDownloaded) {
+	if (status == ZoomPlugInDownloadFailed) {
+		return 6;
+	}
+	if (status == ZoomPluginUpdateAvailable 
+		|| status == ZoomPlugInNew 
+		|| status == ZoomPlugInDownloaded
+		|| status == ZoomPlugInDownloading) {
 		return 5;
 	}
 	if (status == ZoomPlugInUpdated) {
@@ -404,6 +410,32 @@ static int SortPlugInInfo(id a, id b, void* context) {
 								 context: self];
 }
 
+- (void) addPlugInsFromDirectory: (NSString*) directory
+						  status: (ZoomPlugInStatus) status {
+	BOOL exists;
+	BOOL isDir;
+	exists = [[NSFileManager defaultManager] fileExistsAtPath: directory
+												  isDirectory: &isDir];
+	
+	if (exists && isDir) {
+		NSArray* plugins = [[NSFileManager defaultManager] directoryContentsAtPath: 
+			directory];
+		NSEnumerator* pluginEnum = [plugins objectEnumerator];
+		NSString* pluginName;
+		while (pluginName = [pluginEnum nextObject]) {
+			NSString* fullPath = [directory stringByAppendingPathComponent: pluginName];
+			
+			// Get the info object
+			ZoomPlugInInfo* information = [[ZoomPlugInInfo alloc] initWithBundleFilename: fullPath];
+			if (information == nil) continue;
+			[information setStatus: status];
+			
+			// Store in the array
+			[pluginInformation addObject: [information autorelease]];
+		}
+	}	
+}
+
 - (void) setupInformation {
 	// Sets up the initial plugin information array
 	[pluginInformation release];
@@ -423,28 +455,13 @@ static int SortPlugInInfo(id a, id b, void* context) {
 	
 	// Get the information for any plugins that are installed but disabled
 	NSString* disabledPath = [[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent: @"Contents"] stringByAppendingPathComponent: @"PlugIns Disabled"];
-	BOOL exists;
-	BOOL isDir;
-	exists = [[NSFileManager defaultManager] fileExistsAtPath: disabledPath
-												  isDirectory: &isDir];
+	[self addPlugInsFromDirectory: disabledPath
+						   status: ZoomPlugInDisabled];
 	
-	if (exists && isDir) {
-		NSArray* disabledPlugins = [[NSFileManager defaultManager] directoryContentsAtPath: 
-			disabledPath];
-		NSEnumerator* disabledEnum = [disabledPlugins objectEnumerator];
-		NSString* disabledPluginName;
-		while (disabledPluginName = [disabledEnum nextObject]) {
-			NSString* fullPath = [disabledPath stringByAppendingPathComponent: disabledPluginName];
-			
-			// Get the info object
-			ZoomPlugInInfo* information = [[ZoomPlugInInfo alloc] initWithBundleFilename: fullPath];
-			if (information == nil) continue;
-			[information setStatus: ZoomPlugInDisabled];
-			
-			// Store in the array
-			[pluginInformation addObject: [information autorelease]];
-		}
-	}
+	// Get the information for any plugins that are waiting to be installed
+	NSString* waitingPath = [[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent: @"Contents"] stringByAppendingPathComponent: @"PlugIns Upgraded"];
+	[self addPlugInsFromDirectory: waitingPath
+						   status: ZoomPlugInUpdated];
 	
 	// Sort the plugin array
 	[self sortInformation];
@@ -455,7 +472,20 @@ static int SortPlugInInfo(id a, id b, void* context) {
 	
 	return pluginInformation;
 }
+
+- (void) checkForUpdatesFrom: (NSArray*) urls {
 	
+}
+
+- (void) checkForUpdates {
+	// Build the list of places to check
+	NSMutableArray* whereToCheck = [[NSMutableArray alloc] init];
+	
+	// Start the check
+	[self checkForUpdatesFrom: whereToCheck];
+	[whereToCheck release];
+}
+
 // = Installing new plugins =
 
 - (void) installPlugIn: (NSString*) pluginBundle {

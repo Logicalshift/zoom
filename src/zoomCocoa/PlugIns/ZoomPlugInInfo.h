@@ -15,6 +15,8 @@ typedef enum ZoomPlugInStatus {
 	ZoomPlugInDownloaded,									// Downloaded plugin available to install
 	ZoomPluginUpdateAvailable,								// Update available to download
 	ZoomPlugInNew,											// Not yet installed, available to download
+	ZoomPlugInDownloadFailed,								// Marked as having an update, but it failed to download
+	ZoomPlugInDownloading,									// Currently downloading
 	ZoomPlugInNotKnown,										// Unknown status
 } ZoomPlugInStatus;
 
@@ -34,6 +36,7 @@ typedef enum ZoomPlugInStatus {
 
 // Initialisation
 - (id) initWithBundleFilename: (NSString*) bundle;			// Initialise with an existing plugin bundle
+- (id) initFromPList: (NSDictionary*) plist;				// Initialise with the contents of a particular plist dictionary
 
 // Retrieving the information
 - (NSString*) name;											// The name of this plugin

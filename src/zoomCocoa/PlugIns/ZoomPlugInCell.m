@@ -131,6 +131,7 @@
 	switch ([objectValue status]) {
 		case ZoomPluginUpdateAvailable:								// Update available to download
 		case ZoomPlugInNew:											// Not yet installed, available to download
+		case ZoomPlugInDownloadFailed:
 			statusAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
 				statusFont, NSFontAttributeName,
 				highlightColour, NSForegroundColorAttributeName,
@@ -139,6 +140,7 @@
 
 		case ZoomPlugInUpdated:										// Installed plugin, update to be installed
 		case ZoomPlugInDownloaded:									// Downloaded plugin available to install
+		case ZoomPlugInDownloading:
 		case ZoomPlugInDisabled:
 			statusAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
 				statusFont, NSFontAttributeName,
@@ -171,6 +173,14 @@
 			
 		case ZoomPlugInDownloaded:									// Downloaded plugin available to install
 			status = @"Ready to install";
+			break;
+			
+		case ZoomPlugInDownloadFailed:								// Could not download the plugin for some reasont
+			status = @"Could not download";
+			break;
+			
+		case ZoomPlugInDownloading:
+			status = @"Downloading Update";
 			break;
 			
 		case ZoomPlugInInstalled:									// Installed plugin
