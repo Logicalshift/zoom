@@ -42,7 +42,6 @@ static int lastDownloadId = 0;
 - (void) dealloc {
 	// Delete the temporary file
 	if ([[NSFileManager defaultManager] fileExistsAtPath: tmpFile]) {
-		NSLog(@"Removing temporary file: %@", tmpFile);
 		[[NSFileManager defaultManager] removeFileAtPath: tmpFile
 												 handler: nil];
 	}
@@ -107,6 +106,8 @@ static int lastDownloadId = 0;
 	
 	if (status >= 400) {
 		// Failure: give up
+		NSLog(@"Error: %i", status);
+		
 		[connection cancel];
 		[connection release]; connection = nil;
 		[tmpFile release]; tmpFile = nil;
