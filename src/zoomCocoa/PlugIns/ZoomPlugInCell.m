@@ -161,6 +161,9 @@
 	switch ([objectValue status]) {
 		case ZoomPluginUpdateAvailable:								// Update available to download
 			status = @"Update available";
+			if ([objectValue updateInfo] != nil) {
+				status = [NSString stringWithFormat: @"Update available to v%@", [[objectValue updateInfo] version]];
+			}
 			break;
 			
 		case ZoomPlugInNew:											// Not yet installed, available to download

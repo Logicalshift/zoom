@@ -65,17 +65,59 @@
 	
 	[statusField setStringValue: @"Checking for updates..."];
 	[statusField setHidden: NO];
+	
+	[installButton setEnabled: NO];
+	[checkForUpdates setEnabled: NO];
 }
 
 - (void) finishedCheckingForUpdates {
 	[pluginProgress stopAnimation: self];
 	[statusField setHidden: YES];
+
+	[installButton setEnabled: YES];
+	[checkForUpdates setEnabled: YES];
+}
+
+- (void) downloadingUpdates {
+	[pluginProgress setIndeterminate: YES];
+	[pluginProgress startAnimation: self];
+	[pluginProgress setMinValue: 0];
+	[pluginProgress setMaxValue: 100];
+	
+	[statusField setStringValue: @"Downloading updates..."];
+	[statusField setHidden: NO];
+	
+	[installButton setEnabled: NO];
+	[checkForUpdates setEnabled: NO];	
+}
+
+- (void) downloadProgress: (NSString*) status
+			   percentage: (float) percent {
+	if (percent >= 0) {
+		[pluginProgress setIndeterminate: NO];
+		[pluginProgress setDoubleValue: percent];
+	} else {
+		[pluginProgress setIndeterminate: YES];
+	}
+
+	[statusField setStringValue: status];
+}
+
+- (void) finishedDownloadingUpdates {
+	[pluginProgress stopAnimation: self];
+	[statusField setHidden: YES];
+	
+	[installButton setEnabled: YES];
+	[checkForUpdates setEnabled: YES];	
 }
 
 // = Actions =
 
 - (IBAction) installUpdates: (id) sender {
-	// TODO: Implement me
+	// TODO: implement this properly
+	
+	// Download the updates
+	[[ZoomPlugInManager sharedPlugInManager] downloadUpdates];
 }
 
 - (IBAction) checkForUpdates: (id) sender {

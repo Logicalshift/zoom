@@ -17,6 +17,7 @@
 	IBOutlet NSTableView* pluginTable;								// The table of plugins
 	IBOutlet NSProgressIndicator* pluginProgress;					// Download progress indicator
 	IBOutlet NSButton* installButton;								// The 'install' button
+	IBOutlet NSButton* checkForUpdates;								// The 'check for updates' button
 	IBOutlet NSTextField* statusField;								// The status field
 }
 

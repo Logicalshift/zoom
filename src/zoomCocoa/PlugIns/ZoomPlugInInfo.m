@@ -116,6 +116,7 @@
 	[image release];
 	[location release];
 	[updated release];
+	[updateDownload release];
 	
 	[super dealloc];
 }
@@ -187,5 +188,13 @@
 	updated = [info copy];
 }
 
+- (ZoomDownload*) download {
+	return updateDownload;
+}
+
+- (void) setDownload: (ZoomDownload*) download {
+	[updateDownload release];
+	updateDownload = [download retain];
+}
 
 @end

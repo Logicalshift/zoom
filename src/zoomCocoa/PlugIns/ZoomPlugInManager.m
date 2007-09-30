@@ -562,10 +562,15 @@ static int SortPlugInInfo(id a, id b, void* context) {
 	// If there is an old plugin, then compare the versions and mark the old plugin as updated if there's a new version available
 	if ([self version: [plugin version]
 		  isNewerThan: [oldPlugIn version]]) {
-		[oldPlugIn setUpdateInfo: plugin];
-		[oldPlugIn setStatus: ZoomPluginUpdateAvailable];
-		[self sortInformation];
-		return YES;
+		ZoomPlugInInfo* oldUpdate = [oldPlugIn updateInfo];
+		
+		if (oldUpdate == nil || [self version: [plugin version]
+								  isNewerThan: [oldUpdate version]]) {
+			[oldPlugIn setUpdateInfo: plugin];
+			[oldPlugIn setStatus: ZoomPluginUpdateAvailable];
+			[self sortInformation];
+			return YES;
+		}
 	}
 	
 	return NO;
@@ -654,12 +659,138 @@ static int SortPlugInInfo(id a, id b, void* context) {
 
 // = Installing new plugins =
 
+- (void) downloadNextUpdate {
+	// Pick the next plug-in to download an update for
+	ZoomPlugInInfo* nextUpdate = nil;
+	
+	NSEnumerator* pluginEnum = [[self informationForPlugins] objectEnumerator];
+	ZoomPlugInInfo* info;
+	while (info = [pluginEnum nextObject]) {
+		if ([info download] != nil) continue;
+		if ([info location] == nil) continue;
+		
+		if ([info status] == ZoomPlugInNew) {
+			nextUpdate = info;
+			break;
+		}
+		if ([info status] == ZoomPluginUpdateAvailable) {
+			nextUpdate = info;
+			break;
+		}
+	}
+	
+	// Finished downloading if we didn't find an update to download
+	if (downloading && nextUpdate == nil) {
+		[currentDownload release];
+		currentDownload = nil;
+		downloading = NO;
+		
+		if (delegate && [delegate respondsToSelector: @selector(finishedDownloadingUpdates)]) {
+			[delegate finishedDownloadingUpdates];
+		}
+		return;
+	}
+	
+	// If there's no current download, then notify the delegate that the downloads are starting
+	if (!downloading) {
+		downloading = YES;
+		if (delegate && [delegate respondsToSelector: @selector(downloadingUpdates)]) {
+			[delegate downloadingUpdates];
+		}
+	}
+	
+	// Start the new download
+	[currentDownload release];
+	currentDownload = nil;
+	
+	NSURL* url = [nextUpdate location];
+	if ([nextUpdate status] == ZoomPluginUpdateAvailable) {
+		url = [[nextUpdate updateInfo] location];
+	}
+	
+	currentDownload = [[ZoomDownload alloc] initWithUrl: url];
+	if (currentDownload == nil) {
+		// Couldn't create a download for whatever reason
+		[nextUpdate setStatus: ZoomPlugInDownloadFailed];
+		[self sortInformation];
+		[self pluginInformationChanged];
+		[self downloadNextUpdate];
+		return;
+	}
+	
+	[currentDownload setDelegate: self];
+	[currentDownload startDownload];
+	
+	[downloadInfo release];
+	downloadInfo = [nextUpdate retain];
+	
+	[nextUpdate setDownload: currentDownload];
+	[nextUpdate setStatus: ZoomPlugInDownloading];
+	[self sortInformation];
+	[self pluginInformationChanged];
+}
+
+- (void) downloadUpdates {
+	if (!currentDownload) {
+		[self downloadNextUpdate];		
+	}
+}
+
 - (void) installPlugIn: (NSString*) pluginBundle {
 	
 }
 
 - (void) finishUpdatingPlugins {
 	
+}
+
+// = ZoomDownload delegate functions =
+
+- (void) downloadStarting: (ZoomDownload*) download {
+	
+}
+
+- (void) downloadComplete: (ZoomDownload*) download {
+	[downloadInfo setStatus: ZoomPlugInDownloaded];
+	[self sortInformation];
+	[self pluginInformationChanged];
+	[self downloadNextUpdate];	
+}
+
+- (void) downloadFailed: (ZoomDownload*) download {
+	[downloadInfo setStatus: ZoomPlugInDownloadFailed];
+	[self sortInformation];
+	[self pluginInformationChanged];
+	[self downloadNextUpdate];
+}
+
+- (void) downloadConnecting: (ZoomDownload*) download {
+	if (delegate && [delegate respondsToSelector: @selector(downloadProgress:percentage:)]) {
+		[delegate downloadProgress: @"Connecting..."
+						percentage: -1];		
+	}
+}
+
+- (void) downloading: (ZoomDownload*) download {
+	if (delegate && [delegate respondsToSelector: @selector(downloadProgress:percentage:)]) {
+		[delegate downloadProgress: @"Downloading..."
+						percentage: -1];		
+	}	
+}
+
+- (void) download: (ZoomDownload*) download
+		completed: (float) complete {
+	if (delegate && [delegate respondsToSelector: @selector(downloadProgress:percentage:)]) {
+		[delegate downloadProgress: @"Connecting..."
+						percentage: complete*100.0];		
+	}
+}
+
+- (void) downloadUnarchiving: (ZoomDownload*) download {
+	if (delegate && [delegate respondsToSelector: @selector(downloadProgress:percentage:)]) {
+		[delegate downloadProgress: @"Decompressing..."
+						percentage: -1];		
+	}	
 }
 
 @end

@@ -34,6 +34,10 @@ extern NSString* ZoomPlugInInformationChangedNotification;	// Notification that 
 	NSURLConnection* checkConnection;						// The connection for the last request
 	NSURLResponse* checkResponse;							// The response to the last check for updates request
 	NSMutableData* checkData;								// The data returned for the last check for updates request
+	
+	BOOL downloading;										// YES if we're downloading updates
+	ZoomPlugInInfo* downloadInfo;							// The plug in that we're performing a download for
+	ZoomDownload* currentDownload;							// The active download for this object
 }
 
 + (ZoomPlugInManager*) sharedPlugInManager;					// The shared plug-in manager
@@ -53,6 +57,7 @@ extern NSString* ZoomPlugInInformationChangedNotification;	// Notification that 
 	 isNewerThan: (NSString*) newVerison;
 
 // Installing new plugins
+- (void) downloadUpdates;									// Request that all known updates and new plugins be downloaded
 - (void) installPlugIn: (NSString*) pluginBundle;			// Requests that the specified plugin be installed
 - (void) finishUpdatingPlugins;								// Causes Zoom to finish updating any plugins after a restart
 
@@ -79,5 +84,10 @@ extern NSString* ZoomPlugInInformationChangedNotification;	// Notification that 
 
 - (void) checkingForUpdates;								// Indicates that a check for updates has started
 - (void) finishedCheckingForUpdates;						// Indicates that the check for updates has finished
+
+- (void) downloadingUpdates;								// Indicates that the manager is downloading updates
+- (void) downloadProgress: (NSString*) status				// Indicates that a download status message should be displayed
+			   percentage: (float) percent;
+- (void) finishedDownloadingUpdates;						// Indicates that downloading has finished
 
 @end

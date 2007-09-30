@@ -117,6 +117,8 @@
 		4B7CB2130936361800F3B8F6 /* GlkView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B7CB1C5093634DD00F3B8F6 /* GlkView.framework */; };
 		4B84304C0B139F6000679417 /* TADS.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4B84304B0B139F6000679417 /* TADS.icns */; };
 		4B84304E0B139F7200679417 /* HUGO.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4B84304D0B139F7200679417 /* HUGO.icns */; };
+		4B84FDDD0CAFC9970071F3B3 /* ZoomDownload.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B84FDDB0CAFC9970071F3B3 /* ZoomDownload.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B84FDDE0CAFC9970071F3B3 /* ZoomDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B84FDDC0CAFC9970071F3B3 /* ZoomDownload.m */; };
 		4B87BA7309C9AB13005D6722 /* ifmetabase-internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B87BA7109C9AAE1005D6722 /* ifmetabase-internal.h */; };
 		4B8CE6F40AD95A3A008235D2 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B8CE6F20AD95A3A008235D2 /* md5.c */; };
 		4B8CE6F50AD95A3A008235D2 /* md5.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8CE6F30AD95A3A008235D2 /* md5.h */; };
@@ -873,6 +875,8 @@
 		4B807BEB05C009ED00681653 /* ZoomiFButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomiFButton.m; sourceTree = "<group>"; };
 		4B84304B0B139F6000679417 /* TADS.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = TADS.icns; sourceTree = "<group>"; };
 		4B84304D0B139F7200679417 /* HUGO.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = HUGO.icns; sourceTree = "<group>"; };
+		4B84FDDB0CAFC9970071F3B3 /* ZoomDownload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomDownload.h; sourceTree = "<group>"; };
+		4B84FDDC0CAFC9970071F3B3 /* ZoomDownload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomDownload.m; sourceTree = "<group>"; };
 		4B87BA7109C9AAE1005D6722 /* ifmetabase-internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ifmetabase-internal.h"; sourceTree = "<group>"; };
 		4B8CE6F20AD95A3A008235D2 /* md5.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = md5.c; sourceTree = "<group>"; };
 		4B8CE6F30AD95A3A008235D2 /* md5.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = md5.h; sourceTree = "<group>"; };
@@ -1370,6 +1374,8 @@
 				4B1243040CAE964400CA3374 /* ZoomPlugInCell.m */,
 				4B1243190CAE9B2500CA3374 /* ZoomPlugInInfo.h */,
 				4B12431A0CAE9B2500CA3374 /* ZoomPlugInInfo.m */,
+				4B84FDDB0CAFC9970071F3B3 /* ZoomDownload.h */,
+				4B84FDDC0CAFC9970071F3B3 /* ZoomDownload.m */,
 			);
 			path = PlugIns;
 			sourceTree = "<group>";
@@ -1722,6 +1728,7 @@
 				4B1242D80CAE93D600CA3374 /* ZoomPlugInController.h in Headers */,
 				4B1243050CAE964400CA3374 /* ZoomPlugInCell.h in Headers */,
 				4B12431B0CAE9B2500CA3374 /* ZoomPlugInInfo.h in Headers */,
+				4B84FDDD0CAFC9970071F3B3 /* ZoomDownload.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2369,6 +2376,7 @@
 				4B1242D90CAE93D600CA3374 /* ZoomPlugInController.m in Sources */,
 				4B1243060CAE964400CA3374 /* ZoomPlugInCell.m in Sources */,
 				4B12431C0CAE9B2500CA3374 /* ZoomPlugInInfo.m in Sources */,
+				4B84FDDE0CAFC9970071F3B3 /* ZoomDownload.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

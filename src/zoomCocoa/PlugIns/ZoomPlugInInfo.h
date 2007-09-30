@@ -7,6 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <ZoomPlugIns/ZoomDownload.h>
 
 typedef enum ZoomPlugInStatus {
 	ZoomPlugInInstalled,									// Installed plugin
@@ -34,6 +35,7 @@ typedef enum ZoomPlugInStatus {
 	ZoomPlugInStatus status;								// The status for this plugin
 	
 	ZoomPlugInInfo* updated;								// The updated information for this plugin, if check for updates has found one
+	ZoomDownload* updateDownload;							// The active download for the update
 }
 
 // Initialisation
@@ -53,5 +55,8 @@ typedef enum ZoomPlugInStatus {
 
 - (ZoomPlugInInfo*) updateInfo;								// The plugin info for any known updates to this plugin
 - (void) setUpdateInfo: (ZoomPlugInInfo*) info;				// Sets the update plugin info
+
+- (ZoomDownload*) download;									// The download for the update for this plugin
+- (void) setDownload: (ZoomDownload*) download;
 
 @end
