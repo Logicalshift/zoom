@@ -42,6 +42,7 @@ static int lastDownloadId = 0;
 - (void) dealloc {
 	// Delete the temporary file
 	if ([[NSFileManager defaultManager] fileExistsAtPath: tmpFile]) {
+		NSLog(@"Removing temporary file: %@", tmpFile);
 		[[NSFileManager defaultManager] removeFileAtPath: tmpFile
 												 handler: nil];
 	}
@@ -135,7 +136,25 @@ static int lastDownloadId = 0;
 		downloadFile = nil;
 	}
 	NSLog(@"Downloading to %@", tmpFile);
+	[[NSFileManager defaultManager] createFileAtPath: tmpFile
+											contents: [NSData data]
+										  attributes: nil];
 	downloadFile = [[NSFileHandle fileHandleForWritingAtPath: tmpFile] retain];
+	
+	if (downloadFile == nil) {
+		// Failed to create the download file
+		NSLog(@"...Could not create file");
+		
+		[connection cancel];
+		[connection release]; connection = nil;
+		[tmpFile release]; tmpFile = nil;
+		[downloadFile release]; downloadFile = nil;
+		
+		if (delegate && [delegate respondsToSelector: @selector(downloadFailed:)]) {
+			[delegate downloadFailed: self];
+		}
+		return;
+	}
 	
 	if (delegate && [delegate respondsToSelector: @selector(downloading:)]) {
 		[delegate downloading: self];
