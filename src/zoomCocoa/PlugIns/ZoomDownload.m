@@ -111,7 +111,7 @@ static int lastDownloadId = 0;
 		[tmpFile release]; tmpFile = nil;
 		[downloadFile release]; downloadFile = nil;
 
-		if (delegate && [delegate respondsToSelector: @selector(downlaodFailed:)]) {
+		if (delegate && [delegate respondsToSelector: @selector(downloadFailed:)]) {
 			[delegate downloadFailed: self];
 		}
 		return;
