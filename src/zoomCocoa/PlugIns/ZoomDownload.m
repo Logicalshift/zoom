@@ -157,6 +157,8 @@ static int lastDownloadId = 0;
 	[tmpFile release];
 	tmpFile = nil;
 	
+	NSLog(@"Download failed with error: %@", error);
+	
 	// Inform the delegate, and give up
 	[connection cancel];
 	[connection release]; connection = nil;

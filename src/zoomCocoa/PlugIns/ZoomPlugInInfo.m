@@ -80,7 +80,7 @@
 		status				= ZoomPlugInNotKnown;
 		
 		if ([plist objectForKey: @"URL"] != nil) {
-			location = [[NSURL fileURLWithPath: [plist objectForKey: @"URL"]] copy];			
+			location = [[NSURL URLWithString: [plist objectForKey: @"URL"]] copy];			
 		}
 		
 		// Check the plist entries
