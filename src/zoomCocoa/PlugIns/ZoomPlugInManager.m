@@ -553,7 +553,7 @@ static int SortPlugInInfo(id a, id b, void* context) {
 	
 	// If the old plugin is in the 'download failed' status, then reset it
 	if (oldPlugIn != nil && [oldPlugIn status] == ZoomPlugInDownloadFailed) {
-		if ([oldPlugIn updateInfo] == nil) {
+		if ([oldPlugIn updateInfo] == nil && ![[oldPlugIn location] isFileURL]) {
 			[pluginInformation removeObjectIdenticalTo: oldPlugIn];
 			oldPlugIn = nil;
 		} else {
