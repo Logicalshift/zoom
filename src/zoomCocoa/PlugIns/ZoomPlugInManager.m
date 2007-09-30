@@ -781,7 +781,7 @@ static int SortPlugInInfo(id a, id b, void* context) {
 - (void) download: (ZoomDownload*) download
 		completed: (float) complete {
 	if (delegate && [delegate respondsToSelector: @selector(downloadProgress:percentage:)]) {
-		[delegate downloadProgress: @"Connecting..."
+		[delegate downloadProgress: @"Downloading..."
 						percentage: complete*100.0];		
 	}
 }
