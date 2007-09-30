@@ -220,4 +220,38 @@
 	return objectValue;
 }
 
+- (NSString*) stringValue {
+	NSMutableString* result = [[[objectValue name] mutableCopy] autorelease];
+	
+	switch ([objectValue status]) {
+		case ZoomPlugInDisabled:
+			[result appendString: @" (Disabled)"];
+			break;
+		case ZoomPluginUpdateAvailable:
+			[result appendString: @" (Update available)"];
+			break;
+		case ZoomPlugInNew:
+			[result appendString: @" (New)"];
+			break;
+		case ZoomPlugInDownloadFailed:
+			[result appendString: @" (Download failed)"];
+			break;
+		case ZoomPlugInDownloaded:
+			[result appendString: @" (Ready to install)"];
+			break;
+		default:
+			break;
+	}
+	
+	return result;
+}
+
+- (id)accessibilityAttributeValue:(NSString *)attribute {
+	if ([attribute isEqualToString: NSAccessibilityRoleDescriptionAttribute]) {
+		return [self stringValue];
+	}
+	
+	return [super accessibilityAttributeValue: attribute];
+}
+
 @end
