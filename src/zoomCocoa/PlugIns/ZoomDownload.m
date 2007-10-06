@@ -267,9 +267,11 @@ static int lastDownloadId = 0;
 		if (subtasks == nil) subtasks = [[NSMutableArray alloc] init];
 		[subtasks addObject: nextStage];
 	} else if ([pathExtension isEqualToString: @"tgz"]) {
-		return [self unarchiveFile: [[withoutExtension stringByAppendingPathExtension: @"tar"] stringByAppendingPathExtension: @"gz"]];
+		return [self unarchiveFile: [[withoutExtension stringByAppendingPathExtension: @"tar"] stringByAppendingPathExtension: @"gz"]
+					   toDirectory: directory];
 	} else if ([pathExtension isEqualToString: @"tbz"] || [pathExtension isEqualToString: @"tbz2"]) {
-		return [self unarchiveFile: [[withoutExtension stringByAppendingPathExtension: @"tar"] stringByAppendingPathExtension: @"bz2"]];
+		return [self unarchiveFile: [[withoutExtension stringByAppendingPathExtension: @"tar"] stringByAppendingPathExtension: @"bz2"]
+					   toDirectory: directory];
 	} else {
 		// Default is just to copy the file
 		NSString* destFile = [directory stringByAppendingPathComponent: [filename lastPathComponent]];
