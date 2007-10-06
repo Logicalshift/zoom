@@ -60,7 +60,7 @@ extern NSString* ZoomPlugInInformationChangedNotification;	// Notification that 
 - (void) finishedWithObject;								// Indicates that this object has been finished with and any files should be deleted
 
 - (void) downloadUpdates;									// Request that all known updates and new plugins be downloaded
-- (void) installPlugIn: (NSString*) pluginBundle;			// Requests that the specified plugin be installed
+- (BOOL) installPlugIn: (NSString*) pluginBundle;			// Requests that the specified plugin be installed
 - (void) finishUpdatingPlugins;								// Causes Zoom to finish updating any plugins after a restart
 
 - (NSDictionary*) plistForBundle: (NSString*) pluginBundle;	// Retrieves the plist dictionary for the specified plugin bundle
