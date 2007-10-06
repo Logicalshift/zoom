@@ -266,6 +266,10 @@ static int lastDownloadId = 0;
 		// Add the next stage to the list of subtasks
 		if (subtasks == nil) subtasks = [[NSMutableArray alloc] init];
 		[subtasks addObject: nextStage];
+	} else if ([pathExtension isEqualToString: @"tgz"]) {
+		return [self unarchiveFile: [[withoutExtension stringByAppendingPathExtension: @"tar"] stringByAppendingPathExtension: @"gz"]];
+	} else if ([pathExtension isEqualToString: @"tbz"] || [pathExtension isEqualToString: @"tbz2"]) {
+		return [self unarchiveFile: [[withoutExtension stringByAppendingPathExtension: @"tar"] stringByAppendingPathExtension: @"bz2"]];
 	} else {
 		// Default is just to copy the file
 		NSString* destFile = [directory stringByAppendingPathComponent: [filename lastPathComponent]];
@@ -330,6 +334,20 @@ static int lastDownloadId = 0;
 
 // = NSURLConnection delegate =
 
+- (NSString*) fullExtensionFor: (NSString*) filename {
+	NSString* extension = [filename pathExtension];
+	NSString* withoutExtension = [filename stringByDeletingPathExtension];
+	
+	if (extension == nil || [extension length] <= 0) return nil;
+	
+	NSString* extraExtension = [self fullExtensionFor: withoutExtension];
+	if (extraExtension != nil) {
+		return [extraExtension stringByAppendingPathExtension: extension];
+	} else {
+		return extension;
+	}
+}
+
 - (void)  connection:(NSURLConnection *)conn
   didReceiveResponse:(NSURLResponse *)response {
 	int status = 200;
@@ -354,7 +372,7 @@ static int lastDownloadId = 0;
 	// Create the download file
 	[tmpFile release];
 	tmpFile = [downloadDirectory stringByAppendingPathComponent: [NSString stringWithFormat: @"download-%i", lastDownloadId++]];
-	tmpFile = [tmpFile stringByAppendingPathExtension: [[response suggestedFilename] pathExtension]];
+	tmpFile = [tmpFile stringByAppendingPathExtension: [self fullExtensionFor: [response suggestedFilename]]];
 	[tmpFile retain];
 	
 	if (downloadFile) {
@@ -470,7 +488,7 @@ static int lastDownloadId = 0;
 	
 	if (!succeeded) {
 		// Oops, failed
-		NSLog(@"Unarchiving task failed");
+		NSLog(@"Failed to unarchive %@", tmpFile);
 		[self failed];
 		return;
 	} else if (finished) {
