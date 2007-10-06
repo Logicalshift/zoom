@@ -132,6 +132,7 @@
 		case ZoomPluginUpdateAvailable:								// Update available to download
 		case ZoomPlugInNew:											// Not yet installed, available to download
 		case ZoomPlugInDownloadFailed:
+		case ZoomPlugInInstallFailed:
 			statusAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
 				statusFont, NSFontAttributeName,
 				highlightColour, NSForegroundColorAttributeName,
@@ -178,8 +179,12 @@
 			status = @"Ready to install";
 			break;
 			
-		case ZoomPlugInDownloadFailed:								// Could not download the plugin for some reasont
+		case ZoomPlugInDownloadFailed:								// Could not download the plugin for some reason
 			status = @"Could not download";
+			break;
+
+		case ZoomPlugInInstallFailed:
+			status = @"Failed to install";
 			break;
 			
 		case ZoomPlugInDownloading:
@@ -235,6 +240,9 @@
 			break;
 		case ZoomPlugInDownloadFailed:
 			[result appendString: @" (Download failed)"];
+			break;
+		case ZoomPlugInInstallFailed:
+			[result appendString: @" (Installation failed)"];
 			break;
 		case ZoomPlugInDownloaded:
 			[result appendString: @" (Ready to install)"];

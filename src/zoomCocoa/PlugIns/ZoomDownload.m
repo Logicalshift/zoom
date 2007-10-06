@@ -188,7 +188,7 @@ static int lastDownloadId = 0;
 	// Let the download delegate know that the download has finished
 	if (delegate && [delegate respondsToSelector: @selector(downloadComplete:)]) {
 		[delegate downloadComplete: self];
-	}	
+	}
 }
 
 // = The unarchiver =

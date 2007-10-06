@@ -17,6 +17,7 @@ typedef enum ZoomPlugInStatus {
 	ZoomPluginUpdateAvailable,								// Update available to download
 	ZoomPlugInNew,											// Not yet installed, available to download
 	ZoomPlugInDownloadFailed,								// Marked as having an update, but it failed to download
+	ZoomPlugInInstallFailed,								// Downloaded, but the installation failed for some reason
 	ZoomPlugInDownloading,									// Currently downloading
 	ZoomPlugInNotKnown,										// Unknown status
 } ZoomPlugInStatus;

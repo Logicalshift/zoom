@@ -380,7 +380,8 @@ NSString* ZoomPlugInInformationChangedNotification = @"ZoomPlugInInformationChan
 }
 
 static int RankForStatus(ZoomPlugInStatus status) {
-	if (status == ZoomPlugInDownloadFailed) {
+	if (status == ZoomPlugInDownloadFailed
+		|| status == ZoomPlugInInstallFailed) {
 		return 6;
 	}
 	if (status == ZoomPluginUpdateAvailable 
@@ -566,7 +567,7 @@ static int SortPlugInInfo(id a, id b, void* context) {
 	}
 	
 	// If the old plugin is in the 'download failed' status, then reset it
-	if (oldPlugIn != nil && [oldPlugIn status] == ZoomPlugInDownloadFailed) {
+	if (oldPlugIn != nil && ([oldPlugIn status] == ZoomPlugInDownloadFailed || [oldPlugIn status] == ZoomPlugInInstallFailed)) {
 		if ([oldPlugIn updateInfo] == nil && ![[oldPlugIn location] isFileURL]) {
 			[pluginInformation removeObjectIdenticalTo: oldPlugIn];
 			oldPlugIn = nil;
