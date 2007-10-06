@@ -57,6 +57,8 @@ extern NSString* ZoomPlugInInformationChangedNotification;	// Notification that 
 	 isNewerThan: (NSString*) newVerison;
 
 // Installing new plugins
+- (void) finishedWithObject;								// Indicates that this object has been finished with and any files should be deleted
+
 - (void) downloadUpdates;									// Request that all known updates and new plugins be downloaded
 - (void) installPlugIn: (NSString*) pluginBundle;			// Requests that the specified plugin be installed
 - (void) finishUpdatingPlugins;								// Causes Zoom to finish updating any plugins after a restart

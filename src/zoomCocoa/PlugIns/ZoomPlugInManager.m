@@ -46,7 +46,21 @@ NSString* ZoomPlugInInformationChangedNotification = @"ZoomPlugInInformationChan
 	
 	[pluginInformation release];
 	
+	[currentDownload release];
+	currentDownload = nil;
+	
 	[super dealloc];
+}
+
+- (void) finishedWithObject {
+	[currentDownload release];
+	currentDownload = nil;
+	
+	[downloadInfo release];
+	downloadInfo = nil;
+	
+	[pluginInformation release];
+	pluginInformation = nil;
 }
 
 // = Setting the delegate =

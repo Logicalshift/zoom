@@ -236,6 +236,12 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 	return NO;
 }
 
+- (void) applicationWillTerminate: (NSNotification*) not {
+	// Make sure that the plugin manager is finalised
+	[[ZoomPlugInManager sharedPlugInManager] finishedWithObject];
+	[ZoomDownload removeTemporaryDirectory];
+}
+
 - (void)applicationWillFinishLaunching:(NSNotification *)aNotification {
 #ifdef DEVELOPMENTBUILD
 	// Tell launch services to re-register the application (ensures that all the icons are always up to date)

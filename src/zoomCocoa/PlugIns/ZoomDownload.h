@@ -22,11 +22,15 @@
 	NSString* tmpDirectory;										// The directoruy that the download was unarchived to
 	long long expectedLength;									// The expected length of the download
 	long long downloadedSoFar;									// The amount downloaded so far
+	
+	NSTask* task;												// The main unarchiving task
+	NSMutableArray* subtasks;									// The set of subtasks that are currently running
 }
 
 // Initialisation
 - (id) initWithUrl: (NSURL*) url;								// Prepares to download the specified URL
 - (void) setDelegate: (id) delegate;							// Sets the delegate for this class
++ (void) removeTemporaryDirectory;								// Removes the temporary directory used for downloads (ie, when terminating)
 
 // Starting the download
 - (void) startDownload;											// Starts the download running
