@@ -101,6 +101,11 @@
 	
 	if (updated && ![[self window] isVisible]) {
 		[self showWindow: self];
+
+		NSBeginAlertSheet(@"Zoom found updates to some of the installed plugins", 
+						  @"Install Now", @"Later", nil, [self window], self, 
+						  @selector(finishUpdating:returnCode:contextInfo:), nil, nil,
+						  @"Zoom has found some updates to some of the plugins that are installed. You can install these now to update your interpreters to the latest versions.");
 	}
 }
 
@@ -185,6 +190,14 @@
 		
 		// I'll be back
 		[NSApp terminate: self];
+	}
+}
+
+- (void) finishUpdating:(NSWindow *)sheet 
+			 returnCode:(int)returnCode 
+			contextInfo:(void  *)contextInfo {
+	if (returnCode == NSAlertDefaultReturn) {
+		[self installUpdates: self];
 	}
 }
 
