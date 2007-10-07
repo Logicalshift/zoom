@@ -71,11 +71,33 @@
 }
 
 - (void) finishedCheckingForUpdates {
+	// Re-enable the UI buttons
 	[pluginProgress stopAnimation: self];
 	[statusField setHidden: YES];
 
 	[installButton setEnabled: YES];
 	[checkForUpdates setEnabled: YES];
+	
+	// Show the window if there are any updates
+	BOOL updated = NO;
+	NSEnumerator* infoEnum = [[[ZoomPlugInManager sharedPlugInManager] informationForPlugins] objectEnumerator];
+	ZoomPlugInInfo* info;
+	while (info = [infoEnum nextObject]) {
+		switch ([info status]) {
+			case ZoomPlugInNew:
+			case ZoomPluginUpdateAvailable:
+				updated = YES;
+				break;
+			
+			default:
+				// Do nothing
+				break;
+		}
+	}
+	
+	if (updated && ![[self window] isVisible]) {
+		[self showWindow: self];
+	}
 }
 
 - (void) downloadingUpdates {
@@ -142,7 +164,7 @@
 		setenv("ZOOM_PATH", [zoomPath UTF8String], 1);
 		setenv("ZOOM_PID", [[NSString stringWithFormat: @"%u", getpid()] UTF8String], 1);
 		
-		// Fork off a simple script to restart Zoom (based on the one in sparkle
+		// Fork off a simple script to restart Zoom (based on the one in Sparkle)
 		system("/bin/bash -c '{\n"
 			   "echo Will restart\n"
 			   "for ((x = 0; x < 3000 && $(echo $(/bin/ps -xp $ZOOM_PID|/usr/bin/wc -l))-1; x++)); do\n"
