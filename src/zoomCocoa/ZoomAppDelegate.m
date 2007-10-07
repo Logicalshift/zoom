@@ -137,6 +137,17 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 	if (existingDocument) {
 		NSLog(@"WARNING: found a leaked document for '%@'", filename);
 	}
+	
+	// If this is a .zoomplugin file, then install it
+	if ([[[filename pathExtension] lowercaseString] isEqualToString: @"zoomplugin"]) {
+		if ([[ZoomPlugInManager sharedPlugInManager] installPlugIn: filename]) {
+			[[ZoomPlugInController sharedPlugInController] showWindow: self];
+			if ([[ZoomPlugInManager sharedPlugInManager] restartRequired]) {
+				[[ZoomPlugInController sharedPlugInController] needsRestart];
+			}
+		}
+		return;
+	}
 
 	// If this is a .glksave file, then set up to load the saved story instead
 	NSString* saveFilename = nil;

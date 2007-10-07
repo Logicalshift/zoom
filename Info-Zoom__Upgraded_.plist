@@ -23,6 +23,20 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>zoomplugin</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Zoom PlugIn</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSTypeIsPackage</key>
+			<true/>
+			<key>NSPersistentStoreTypeKey</key>
+			<string>Binary</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>z3</string>
 				<string>z4</string>
 				<string>z5</string>

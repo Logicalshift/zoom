@@ -870,6 +870,10 @@ static int SortPlugInInfo(id a, id b, void* context) {
 	}
 }
 
+- (BOOL) restartRequired {
+	return restartRequired;
+}
+
 - (BOOL) installPlugIn: (NSString*) pluginBundle {
 	// Get the information for the bundle
 	ZoomPlugInInfo* bundleInfo = [[[ZoomPlugInInfo alloc] initWithBundleFilename: pluginBundle] autorelease];
@@ -1117,6 +1121,8 @@ static int SortPlugInInfo(id a, id b, void* context) {
 		if (newPlist) {
 			[newPlist writeToFile: propertyListPath
 					   atomically: YES];
+			restartRequired = YES;
+			[bundleInfo setStatus: ZoomPlugInUpdated];
 		}
 	}
 

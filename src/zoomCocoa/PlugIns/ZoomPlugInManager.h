@@ -63,6 +63,7 @@ extern NSString* ZoomPlugInInformationChangedNotification;	// Notification that 
 - (void) downloadUpdates;									// Request that all known updates and new plugins be downloaded
 - (BOOL) installPlugIn: (NSString*) pluginBundle;			// Requests that the specified plugin be installed
 - (void) finishUpdatingPlugins;								// Causes Zoom to finish updating any plugins after a restart
+- (BOOL) restartRequired;									// YES if a restart is required
 
 - (NSDictionary*) plistForBundle: (NSString*) pluginBundle;	// Retrieves the plist dictionary for the specified plugin bundle
 - (NSString*) nameForBundle: (NSString*) pluginBundle;		// Retrieves the display name of the specified plugin bundle
