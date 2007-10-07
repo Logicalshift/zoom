@@ -253,6 +253,31 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 	
 	// Ensure the shared plugin controller is created
 	[ZoomPlugInController sharedPlugInController];
+	
+	// Force a check for update if check for updates is turned on and it's been more than a week since we last
+	// checked (or if we've never checked)
+	BOOL checkForUpdates = NO;
+	
+	NSNumber* checkForUpdatesDefault = [[NSUserDefaults standardUserDefaults] valueForKey: @"SUCheckAtStartup"];
+	if (checkForUpdatesDefault && [checkForUpdatesDefault isKindOfClass: [NSNumber class]]) {
+		checkForUpdates = [checkForUpdatesDefault boolValue];
+	}
+	
+	if (checkForUpdates) {
+		NSTimeInterval oneWeek = 60*60*24*7;
+		
+		NSDate* now = [NSDate date];
+		NSDate* lastCheck = nil;
+		lastCheck = [[NSUserDefaults standardUserDefaults] valueForKey: @"ZoomLastPluginCheck"];
+		if (lastCheck && ![lastCheck isKindOfClass: [NSDate class]]) lastCheck = nil;
+		
+		NSDate* nextCheck = [lastCheck addTimeInterval: oneWeek];
+		if (!lastCheck || [nextCheck compare: now] == NSOrderedAscending) {
+			[[ZoomPlugInController sharedPlugInController] checkForUpdates: self];
+		} else if (nextCheck) {
+			NSLog(@"Zoom will next check for plugin updates on %@", nextCheck);
+		}
+	}
 }
 
 // = General actions =

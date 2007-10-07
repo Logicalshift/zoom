@@ -78,6 +78,10 @@
 	[installButton setEnabled: YES];
 	[checkForUpdates setEnabled: YES];
 	
+	// Note this as the last check time
+	[[NSUserDefaults standardUserDefaults] setValue: [NSDate date]
+											 forKey: @"ZoomLastPluginCheck"];
+	
 	// Show the window if there are any updates
 	BOOL updated = NO;
 	NSEnumerator* infoEnum = [[[ZoomPlugInManager sharedPlugInManager] informationForPlugins] objectEnumerator];
