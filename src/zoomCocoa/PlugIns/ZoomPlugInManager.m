@@ -996,6 +996,8 @@ static int SortPlugInInfo(id a, id b, void* context) {
 	}
 	
 	// Add the file information for this plugin to Zoom's plist file
+	NSMutableArray* icons = [NSMutableArray array];
+	
 	BOOL plistChanged = NO;
 	NSString* propertyListPath = [[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent: @"Contents"] stringByAppendingPathComponent: @"Info.plist"];
 	
@@ -1044,6 +1046,11 @@ static int SortPlugInInfo(id a, id b, void* context) {
 				if (alreadyExists) break;
 			}
 			
+			// If there is an icon specified then add it to the list of icons to copy into the main resources
+			if ([fileDict objectForKey: @"CFBundleTypeIconFile"]) {
+				[icons addObject: [fileDict objectForKey: @"CFBundleTypeIconFile"]];
+			}
+			
 			// If there's no matching entry, then add the entry from the plugin
 			if (!alreadyExists && [fileDict objectForKey: @"CFBundleTypeExtensions"]) {
 				plistChanged = YES;
@@ -1087,7 +1094,20 @@ static int SortPlugInInfo(id a, id b, void* context) {
 		}
 	}
 	
-	// TODO: copy any icon images to the main Zoom resource directory
+	// Copy any icon images to the main Zoom resource directory
+	NSEnumerator* iconEnum = [icons objectEnumerator];
+	NSString* mainBundle = [[NSBundle mainBundle] bundlePath];
+	NSString* iconFile;
+	while (iconFile = [iconEnum nextObject]) {
+		NSString* source = [[[pluginBundle stringByAppendingPathComponent: @"Contents"] stringByAppendingPathComponent: @"Resources"] stringByAppendingPathComponent: iconFile];
+		NSString* dest = [[[mainBundle stringByAppendingPathComponent: @"Contents"] stringByAppendingPathComponent: @"Resources"] stringByAppendingPathComponent: iconFile];
+		
+		if (![[NSFileManager defaultManager] copyPath: source
+											   toPath: dest
+											  handler: nil]) {
+			NSLog(@"Couldn't copy icon file %@ to %@", source, dest);
+		}
+	}
 	
 	// Write the new plist
 	if (plistChanged) {
