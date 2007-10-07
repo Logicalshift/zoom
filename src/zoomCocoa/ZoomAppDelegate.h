@@ -15,8 +15,10 @@
 #import "ZoomiFictionController.h"
 #import "ZoomView.h"
 
+@class SUUpdater;
 @interface ZoomAppDelegate : NSObject {
 	ZoomPreferenceWindow* preferencePanel;
+	IBOutlet SUUpdater* updater;
 	
 	NSMutableArray* gameIndices;
 }
@@ -29,5 +31,6 @@
 
 - (IBAction) fixedOpenDocument: (id) sender;
 - (IBAction) showPluginManager: (id) sender;
+- (IBAction) checkForUpdates: (id) sender;
 
 @end

@@ -21,6 +21,8 @@
 #import "ZoomPlugInController.h"
 #import "ZoomStoryOrganiser.h"
 
+#import <Sparkle/Sparkle.h>
+
 NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 
 @implementation ZoomAppDelegate
@@ -604,6 +606,13 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 
 - (IBAction) showPluginManager: (id) sender {
 	[[ZoomPlugInController sharedPlugInController] showWindow: self];
+}
+
+// = Check for updates =
+
+- (IBAction) checkForUpdates: (id) sender {
+	[updater checkForUpdates: self];
+	[[ZoomPlugInController sharedPlugInController] checkForUpdates: self];
 }
 
 @end

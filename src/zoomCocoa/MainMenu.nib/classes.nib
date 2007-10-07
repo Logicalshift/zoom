@@ -34,7 +34,13 @@
             LANGUAGE = ObjC; 
             SUPERCLASS = NSObject; 
         }, 
-        {CLASS = ZoomAppDelegate; LANGUAGE = ObjC; SUPERCLASS = NSObject; }
+        {
+            ACTIONS = {checkForUpdates = id; fixedOpenDocument = id; showPluginManager = id; }; 
+            CLASS = ZoomAppDelegate; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {updater = SUUpdater; }; 
+            SUPERCLASS = NSObject; 
+        }
     ); 
     IBVersion = 1; 
 }
