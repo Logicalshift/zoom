@@ -1052,6 +1052,43 @@ static int SortPlugInInfo(id a, id b, void* context) {
 		}
 	}
 	
+	// Update any UTI entries that are added by the plugin
+	NSMutableArray* zoomUti = [zoomPlist objectForKey: @"UTExportedTypeDeclarations"];
+	NSArray* pluginUti = [pluginPlist objectForKey: @"UTExportedTypeDeclarations"];
+	
+	if (zoomUti == nil) {
+		NSLog(@"Oops: couldn't get UTI entries for the Zoom plist");
+	}
+	
+	if (zoomUti != nil && pluginUti != nil) {
+		NSEnumerator* utiEnum = [pluginUti objectEnumerator];
+		NSDictionary* utiDict;
+		while (utiDict = [utiEnum nextObject]) {
+			// Get the identifier for this UTI entry
+			NSString* identifier = [utiDict objectForKey: @"UTTypeIdentifier"];
+			if (!identifier) continue;
+			BOOL alreadyExists = NO;
+
+			// Work out if this identifier is already in the plist
+			NSEnumerator* existingUtiEnum = [zoomUti objectEnumerator];
+			NSDictionary* existingUtiDict;
+			while (existingUtiDict = [existingUtiEnum nextObject]) {
+				if ([identifier isEqual: [existingUtiDict objectForKey: @"UTTypeIdentifier"]]) {
+					alreadyExists = YES;
+					break;
+				}
+			}
+			
+			// If there is no UTI entry for this file, then add the entry from the plugin
+			if (!alreadyExists)  {
+				plistChanged = YES;
+				[zoomUti addObject: [[utiDict copy] autorelease]];
+			}
+		}
+	}
+	
+	// TODO: copy any icon images to the main Zoom resource directory
+	
 	// Write the new plist
 	if (plistChanged) {
 		NSData* newPlist = [NSPropertyListSerialization dataFromPropertyList: zoomPlist
