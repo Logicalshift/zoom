@@ -35,6 +35,8 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 	
 	if (self) {
 		// Ensure the plugins are available
+		[[ZoomPlugInManager sharedPlugInManager] finishUpdatingPlugins];
+		
 		NSLog(@"= Loading plugins");
 		[[ZoomPlugInManager sharedPlugInManager] loadPlugIns];
 		

@@ -112,6 +112,10 @@ static unsigned int ValueForHexChar(int hex) {
 										 length: 16];
 		}
 		
+		if ([plist objectForKey: @"UpdateURL"] != nil) {
+			updateUrl = [[NSURL URLWithString: [plist objectForKey: @"UpdateURL"]] copy];
+		}
+		
 		// Check the plist entries
 		if (name == nil) {
 			[self release];
@@ -147,6 +151,7 @@ static unsigned int ValueForHexChar(int hex) {
 	[updated release];
 	[updateDownload release];
 	[md5 release];
+	[updateUrl release];
 	
 	[super dealloc];
 }
@@ -156,16 +161,17 @@ static unsigned int ValueForHexChar(int hex) {
 - (id) copyWithZone: (NSZone*) zone {
 	ZoomPlugInInfo* newInfo = [[ZoomPlugInInfo allocWithZone: zone] init];
 	
-	newInfo->name = [name copy];
-	newInfo->author = [author copy];
-	newInfo->interpreterVersion = [interpreterVersion copy];
-	newInfo->interpreterAuthor = [interpreterAuthor copy];
-	newInfo->version = [version copy];
-	newInfo->image = [image copy];
-	newInfo->location = [location copy];
-	newInfo->md5 = [md5 copy];
-	newInfo->status = status;
-	newInfo->updated = [updated copy];
+	newInfo->name 				= [name copy];
+	newInfo->author 			= [author copy];
+	newInfo->interpreterVersion	= [interpreterVersion copy];
+	newInfo->interpreterAuthor 	= [interpreterAuthor copy];
+	newInfo->version 			= [version copy];
+	newInfo->image 				= [image copy];
+	newInfo->location 			= [location copy];
+	newInfo->md5 				= [md5 copy];
+	newInfo->status 			= status;
+	newInfo->updated 			= [updated copy];
+	newInfo->updateUrl 			= [updateUrl copy];
 }
 
 // = Retrieving the information =
@@ -230,6 +236,10 @@ static unsigned int ValueForHexChar(int hex) {
 
 - (NSData*) md5 {
 	return md5;
+}
+
+- (NSURL*) updateUrl {
+	return updateUrl;
 }
 
 @end

@@ -548,6 +548,16 @@ static int SortPlugInInfo(id a, id b, void* context) {
 		[whereToCheck addObjectsFromArray: checkUrls];
 	}
 	
+	// If any of the plugins specify an update URL, add that to the list
+	NSArray* pluginInfo = [self informationForPlugins];
+	NSEnumerator* pluginEnum = [pluginInfo objectEnumerator];
+	ZoomPlugInInfo* plugin = nil;
+	while (plugin = [pluginEnum nextObject]) {
+		if ([plugin status] == ZoomPlugInInstalled && [plugin updateUrl] != nil) {
+			[whereToCheck addObject: [plugin updateUrl]];
+		}
+	}
+	
 #ifdef DEVELOPMENT
 	[whereToCheck addObject: [NSURL URLWithString: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"ZoomPluginFeedTestURL"]]];
 #endif
@@ -938,7 +948,11 @@ static int SortPlugInInfo(id a, id b, void* context) {
 		// Create the plugins directory if needed
 		BOOL exists;
 		BOOL isDir;
-		NSString* plugins = [[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent: @"Contents"] stringByAppendingPathComponent: @"PlugIns"];
+		NSString* plugins = [[NSBundle mainBundle] builtInPlugInsPath];
+		
+		if (!plugins) {
+			plugins = [[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent: @"Contents"] stringByAppendingPathComponent: @"PlugIns"];			
+		}
 
 		exists = [[NSFileManager defaultManager] fileExistsAtPath: plugins
 													  isDirectory: &isDir];
@@ -984,7 +998,90 @@ static int SortPlugInInfo(id a, id b, void* context) {
 }
 
 - (void) finishUpdatingPlugins {
+	// Can't finish if we've already loaded the plugins
+	if (pluginBundles || pluginClasses) {
+		NSLog(@"Oops: can't finish updating plugins as we've already loaded them!");
+		return;
+	}
 	
+	// Work out the paths to use
+	NSString* plugins = [[NSBundle mainBundle] builtInPlugInsPath];
+	NSString* pendingPlugIns = [[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent: @"Contents"] stringByAppendingPathComponent: @"Pending PlugIns"];
+	
+	if (![[NSFileManager defaultManager] fileExistsAtPath: pendingPlugIns]) {
+		return;
+	}
+	
+	if (!plugins) {
+		plugins = [[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent: @"Contents"] stringByAppendingPathComponent: @"PlugIns"];			
+	}
+	
+	// Get the set of existing plugins
+	NSLog(@"Will finish updating plugins");
+	NSMutableDictionary* pluginDictionary = [NSMutableDictionary dictionary];
+	
+	NSEnumerator* pluginEnum = [[[NSFileManager defaultManager] directoryContentsAtPath: plugins] objectEnumerator];
+	NSString* pluginName;
+	while (pluginName = [pluginEnum nextObject]) {
+		// Get the information for the next plugin
+		NSString* pluginPath = [plugins stringByAppendingPathComponent: pluginName];
+		ZoomPlugInInfo* info = [[[ZoomPlugInInfo alloc] initWithBundleFilename: pluginPath] autorelease];
+		if (!info) continue;
+		
+		// File it by the display name
+		[pluginDictionary setObject: info
+							 forKey: [info name]];
+	}
+	
+	// Replace the old plugins with the new ones
+	pluginEnum = [[[NSFileManager defaultManager] directoryContentsAtPath: pendingPlugIns] objectEnumerator];
+	while (pluginName = [pluginEnum nextObject]) {
+		// Get the information for the next plugin
+		NSString* pluginPath = [pendingPlugIns stringByAppendingPathComponent: pluginName];
+		ZoomPlugInInfo* info = [[[ZoomPlugInInfo alloc] initWithBundleFilename: pluginPath] autorelease];
+		if (!info) {
+			NSLog(@"== While updating: %@ is not a valid plugin", pluginName);
+			continue;
+		}
+		
+		// Get the old plugin
+		ZoomPlugInInfo* oldPlugIn = [pluginDictionary objectForKey: [info name]];
+		if (oldPlugIn) {
+			if (![oldPlugIn location] || ![[oldPlugIn location] isFileURL]) {
+				NSLog(@"== While updating: couldn't locate the plugin to replace for %@", pluginName);
+				continue;
+			}
+			
+			// Remove the old plugin
+			if (![[NSFileManager defaultManager] removeFileAtPath: [[oldPlugIn location] path]
+														  handler: nil]) {
+				NSLog(@"== While updating: could not delete %@", [oldPlugIn location]);
+				continue;
+			}
+		}
+		
+		// Copy the new plugin to its final home
+		NSString* finalHome = [plugins stringByAppendingPathComponent: pluginName];
+		int count = 0;
+		while ([[NSFileManager defaultManager] fileExistsAtPath: finalHome]) {
+			NSLog(@"== While updating: already have a plugin called %@ - picking a new name", [finalHome lastPathComponent]);
+			count++;
+			NSString* finalHome = [plugins stringByAppendingPathComponent: [NSString stringWithFormat: @"%@-%i", pluginName, count]];
+		}
+		
+		if (![[NSFileManager defaultManager] copyPath: pluginPath
+											   toPath: finalHome
+											  handler: nil]) {
+			NSLog(@"== While updating: could not copy %@ to %@", pluginName, finalHome);
+			continue;
+		}
+	}
+	
+	// Finish up: delete the pending directory
+	if (![[NSFileManager defaultManager] removeFileAtPath: pendingPlugIns
+												  handler: nil]) {
+		NSLog(@"== While updating: could not remove %@", pendingPlugIns);
+	}
 }
 
 // = ZoomDownload delegate functions =
