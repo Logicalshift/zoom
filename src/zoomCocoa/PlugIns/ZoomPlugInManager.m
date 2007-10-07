@@ -995,10 +995,78 @@ static int SortPlugInInfo(id a, id b, void* context) {
 		[pluginInformation addObject: bundleInfo];
 	}
 	
-	// TODO: add the file information for this plugin to Zoom's plist file
+	// Add the file information for this plugin to Zoom's plist file
+	BOOL plistChanged = NO;
+	NSString* propertyListPath = [[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent: @"Contents"] stringByAppendingPathComponent: @"Info.plist"];
+	
+	NSMutableDictionary* zoomPlist = [[NSPropertyListSerialization propertyListFromData: [NSData dataWithContentsOfFile: propertyListPath]
+																	  mutabilityOption: NSPropertyListMutableContainers
+																				format: nil
+																	  errorDescription: nil] mutableCopy];
+	NSDictionary* pluginPlist = [self plistForBundle: pluginBundle];
+	
+	if (zoomPlist == nil) {
+		NSLog(@"Oops: couldn't get Zoom's plist file");
+	}
+	if (pluginPlist == nil) {
+		NSLog(@"Oops: couldn't get the plist of a new plugin");
+	}
+	
+	// Get the file type information for both plists
+	NSMutableArray* zoomFiles = [zoomPlist objectForKey: @"CFBundleDocumentTypes"];
+	NSArray* pluginFiles = [pluginPlist objectForKey: @"CFBundleDocumentTypes"];
+	
+	if (zoomFiles == nil) {
+		NSLog(@"Oops: couldn't get document types for the Zoom plist");
+	}
+	
+	if (zoomFiles != nil && pluginFiles != nil) {
+		// Iterate through the files in this plugin
+		NSEnumerator* fileEnum = [pluginFiles objectEnumerator];
+		NSDictionary* fileDict;
+		while (fileDict = [fileEnum nextObject]) {
+			// Try to find an existing entry for files with the specified extension
+			NSEnumerator* existingFileEnum = [zoomFiles objectEnumerator];
+			NSDictionary* existingDict;
+			BOOL alreadyExists = NO;
+			
+			while (existingDict = [existingFileEnum nextObject]) {
+				NSEnumerator* extnEnum = [[fileDict objectForKey: @"CFBundleTypeExtensions"] objectEnumerator];
+				NSString* extn;
+				
+				while (extn = [extnEnum nextObject]) {
+					if ([[existingDict objectForKey: @"CFBundleTypeExtensions"] containsObject: extn]) {
+						alreadyExists = YES;
+						break;
+					}					
+				}
+				
+				if (alreadyExists) break;
+			}
+			
+			// If there's no matching entry, then add the entry from the plugin
+			if (!alreadyExists && [fileDict objectForKey: @"CFBundleTypeExtensions"]) {
+				plistChanged = YES;
+				[zoomFiles addObject: [[fileDict copy] autorelease]];
+			}
+		}
+	}
+	
+	// Write the new plist
+	if (plistChanged) {
+		NSData* newPlist = [NSPropertyListSerialization dataFromPropertyList: zoomPlist
+																	  format: NSPropertyListXMLFormat_v1_0
+															errorDescription: nil];
+		if (newPlist) {
+			[newPlist writeToFile: propertyListPath
+					   atomically: YES];
+		}
+	}
 
 	// Re-register the Zoom application
-	LSRegisterURL((CFURLRef)[NSURL fileURLWithPath: [[NSBundle mainBundle] bundlePath]], 1);
+	if (plistChanged) {
+		LSRegisterURL((CFURLRef)[NSURL fileURLWithPath: [[NSBundle mainBundle] bundlePath]], 1);
+	}
 	
 	// Notify of any changes to the plugin information
 	[self sortInformation];

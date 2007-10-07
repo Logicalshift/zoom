@@ -130,7 +130,9 @@ static int lastDownloadId = 0;
 	NSLog(@"Downloading: %@", url);
 	
 	// Create a connection to download the specified URL
-	NSURLRequest* request = [NSURLRequest requestWithURL: url];
+	NSURLRequest* request = [NSURLRequest requestWithURL: url
+											 cachePolicy: NSURLRequestUseProtocolCachePolicy
+										 timeoutInterval: 30];
 	connection = [[NSURLConnection connectionWithRequest: request
 												delegate: self] retain];
 }
