@@ -746,6 +746,7 @@ static int SortPlugInInfo(id a, id b, void* context) {
 		
 		if (!installPath) {
 			// Can't install this plugin: don't know where it lives
+			NSLog(@"Failed to install plugin: don't know where it lives");
 			[info setStatus: ZoomPlugInInstallFailed];
 			continue;
 		}
@@ -753,6 +754,7 @@ static int SortPlugInInfo(id a, id b, void* context) {
 		// Try to install this plugin
 		NSLog(@"== Installing plugin from %@", installPath);
 		if (![self installPlugIn: installPath]) {
+			NSLog(@"Failed to install plugin");
 			[info setStatus: ZoomPlugInInstallFailed];
 			continue;
 		}
