@@ -816,6 +816,25 @@ static int SortPlugInInfo(id a, id b, void* context) {
 		return;
 	}
 	
+	// Should be an MD5 for this download
+	NSData* md5 = [nextUpdate md5];
+	if ([nextUpdate status] == ZoomPluginUpdateAvailable) {
+		md5 = [[nextUpdate updateInfo] md5];
+	}	
+	
+	if (!md5) {
+		NSLog(@"No MD5 specified for a download file: will mark it as failed");
+		
+		[nextUpdate setStatus: ZoomPlugInDownloadFailed];
+		[self sortInformation];
+		[self pluginInformationChanged];
+		[self downloadNextUpdate];
+		return;
+	}
+	
+	[currentDownload setExpectedMD5: md5];
+	
+	// Start the download running
 	[currentDownload setDelegate: self];
 	[currentDownload startDownload];
 	

@@ -15,6 +15,7 @@
 @interface ZoomDownload : NSObject {
 	NSURL* url;													// Where to download from
 	id delegate;												// The download delegate
+	NSData* md5;												// The expected MD5 for the downloaded file
 	
 	NSURLConnection* connection;								// The connection that the download will be loaded via
 	NSFileHandle* downloadFile;									// A file handle containing the file that we're downloading
@@ -31,6 +32,7 @@
 - (id) initWithUrl: (NSURL*) url;								// Prepares to download the specified URL
 - (void) setDelegate: (id) delegate;							// Sets the delegate for this class
 + (void) removeTemporaryDirectory;								// Removes the temporary directory used for downloads (ie, when terminating)
+- (void) setExpectedMD5: (NSData*) md5;							// Sets the expected MD5 for the downloaded file
 
 // Starting the download
 - (void) startDownload;											// Starts the download running

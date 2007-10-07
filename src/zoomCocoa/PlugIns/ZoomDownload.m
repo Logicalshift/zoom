@@ -8,6 +8,8 @@
 
 #import "ZoomDownload.h"
 
+#include "md5.h"
+
 
 @implementation ZoomDownload
 
@@ -106,6 +108,12 @@ static int lastDownloadId = 0;
 
 - (void) setDelegate: (id) newDelegate {
 	delegate = newDelegate;
+}
+
+- (void)setExpectedMD5:(NSData*)newMd5
+{
+	[md5 release];
+	md5 = [newMd5 retain];
 }
 
 // = Starting the download =
@@ -447,6 +455,43 @@ static int lastDownloadId = 0;
 		[downloadFile closeFile];
 		[downloadFile release];
 		downloadFile = nil;
+		
+		// If we have an MD5, then verify that the file matches it
+		if (md5) {
+			md5_state_t state;
+			md5_init(&state);
+			
+			NSFileHandle* readDownload = [NSFileHandle fileHandleForReadingAtPath: tmpFile];
+			if (readDownload == nil) {
+				[self failed];
+				return;
+			}
+			
+			// Read in the file and update the MD5 sum
+			NSData* readBytes;
+			NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+			while ((readBytes = [readDownload readDataOfLength: 65536]) && [readBytes length] > 0) {
+				md5_append(&state, [readBytes bytes], [readBytes length]);
+				
+				[pool release];
+				pool = [[NSAutoreleasePool alloc] init];
+			}
+			[pool release]; pool = nil;
+			
+			// Finish up and get the MD5 digest
+			md5_byte_t digest[16];
+			md5_finish(&state, digest);
+			
+			NSData* digestData = [NSData dataWithBytes: digest
+												length: 16];
+			NSLog(@"MD5 digest is %@", digestData);
+			
+			if (![digestData isEqual: md5]) {
+				NSLog(@"Could not verify download");
+				[self failed];
+				return;
+			}
+		}
 		
 		// Create the download directory
 		NSString* directory = [self directoryForUnarchiving];

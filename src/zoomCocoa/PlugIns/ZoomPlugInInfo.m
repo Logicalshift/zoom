@@ -58,6 +58,13 @@
 	return self;
 }
 
+static unsigned int ValueForHexChar(int hex) {
+	if (hex >= '0' && hex <= '9') return hex - '0';
+	if (hex >= 'a' && hex <= 'f') return hex - 'a' + 10;
+	if (hex >= 'A' && hex <= 'F') return hex - 'A' + 10;
+	return 0;
+}
+
 - (id) initFromPList: (NSDictionary*) plist {
 	self = [super init];
 	
@@ -79,6 +86,30 @@
 		
 		if ([plist objectForKey: @"URL"] != nil) {
 			location = [[NSURL URLWithString: [plist objectForKey: @"URL"]] copy];			
+		}
+		
+		// Get the MD5 value if it exists
+		id md5raw = [plist objectForKey: @"MD5"];
+		
+		if ([md5raw isKindOfClass: [NSData class]]) {
+			// Just use data values directly
+			md5 = [md5raw retain];
+		} else if ([md5raw isKindOfClass: [NSString class]]) {
+			// Build a digest from string values
+			unsigned char digest[16];
+			int x;
+			for (x=0; x<16; x++) {
+				int pos = x*2;
+				if (pos+1 >= [md5raw length]) break;
+				
+				unichar firstChar = [md5raw characterAtIndex: pos];
+				unichar secondChar = [md5raw characterAtIndex: pos+1];
+				
+				digest[x] = (ValueForHexChar(firstChar)<<4)|ValueForHexChar(secondChar);
+			}
+			
+			md5 = [[NSData alloc] initWithBytes: digest
+										 length: 16];
 		}
 		
 		// Check the plist entries
@@ -115,6 +146,7 @@
 	[location release];
 	[updated release];
 	[updateDownload release];
+	[md5 release];
 	
 	[super dealloc];
 }
@@ -131,6 +163,7 @@
 	newInfo->version = [version copy];
 	newInfo->image = [image copy];
 	newInfo->location = [location copy];
+	newInfo->md5 = [md5 copy];
 	newInfo->status = status;
 	newInfo->updated = [updated copy];
 }
@@ -193,6 +226,10 @@
 - (void) setDownload: (ZoomDownload*) download {
 	[updateDownload release];
 	updateDownload = [download retain];
+}
+
+- (NSData*) md5 {
+	return md5;
 }
 
 @end
