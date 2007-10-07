@@ -250,6 +250,9 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 	NSLog(@"Re-registering");
 	LSRegisterURL((CFURLRef)[NSURL fileURLWithPath: [[NSBundle mainBundle] bundlePath]], 1);
 #endif
+	
+	// Ensure the shared plugin controller is created
+	[ZoomPlugInController sharedPlugInController];
 }
 
 // = General actions =

@@ -761,6 +761,13 @@ static int SortPlugInInfo(id a, id b, void* context) {
 	// Ensure any displayed info is up to date
 	[self sortInformation];
 	[self pluginInformationChanged];
+	
+	// If a restart is required, inform the delegate
+	if (restartRequired) {
+		if (delegate && [delegate respondsToSelector: @selector(needsRestart)]) {
+			[delegate needsRestart];
+		}
+	}
 }
 
 - (void) downloadNextUpdate {
@@ -940,6 +947,7 @@ static int SortPlugInInfo(id a, id b, void* context) {
 		// Update the previous plugin
 		ZoomPlugInInfo* newInfo = [[[ZoomPlugInInfo alloc] initWithBundleFilename: pluginBundlePath] autorelease];
 		[newInfo setStatus: ZoomPlugInUpdated];
+		restartRequired = YES;
 		
 		[[existingPlugIn retain] autorelease];
 		[pluginInformation removeObjectIdenticalTo: existingPlugIn];

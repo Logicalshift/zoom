@@ -35,6 +35,7 @@ extern NSString* ZoomPlugInInformationChangedNotification;	// Notification that 
 	NSURLResponse* checkResponse;							// The response to the last check for updates request
 	NSMutableData* checkData;								// The data returned for the last check for updates request
 	
+	BOOL restartRequired;									// Set to YES if a restart is required
 	BOOL downloading;										// YES if we're downloading updates
 	ZoomPlugInInfo* downloadInfo;							// The plug in that we're performing a download for
 	ZoomDownload* currentDownload;							// The active download for this object
