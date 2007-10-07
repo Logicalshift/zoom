@@ -15,23 +15,20 @@
 // = Initialisation =
 
 - (id) initWithBundleFilename: (NSString*) bundle {
-	self = [super init];
+	NSDictionary* plist = [[ZoomPlugInManager sharedPlugInManager] plistForBundle: bundle];
+
+	// No information available if there's no plist for this bundle
+	if (plist == nil) {
+		self = [super init];
+		[self release];
+		return nil;
+	}
+	
+	self = [self initFromPList: [plist objectForKey: @"ZoomPlugin"]];
 	
 	if (self) {
-		NSDictionary* plist = [[ZoomPlugInManager sharedPlugInManager] plistForBundle: bundle];
-		
-		// No information available if there's no plist for this bundle
-		if (plist == nil) {
-			[self release];
-			return nil;
-		}
-		
 		// Get the information out of the plist
-		name				= [[[ZoomPlugInManager sharedPlugInManager] nameForBundle: bundle] retain];
-		author				= [[[ZoomPlugInManager sharedPlugInManager] authorForBundle: bundle] retain];
-		interpreterAuthor	= [[[ZoomPlugInManager sharedPlugInManager] terpAuthorForBundle: bundle] retain];
-		interpreterVersion	= [[[plist objectForKey: @"ZoomPlugin"] objectForKey: @"InterpreterVersion"] retain];
-		version				= [[[ZoomPlugInManager sharedPlugInManager] versionForBundle: bundle] retain];
+		[image release]; image = nil;
 		image				= [[plist objectForKey: @"ZoomPlugin"] objectForKey: @"Image"];		
 		
 		if (image != nil) {
@@ -54,6 +51,7 @@
 			status = ZoomPlugInDownloaded;
 		}
 		
+		[location release]; location = nil;
 		location = [[NSURL fileURLWithPath: bundle] copy];
 	}
 	

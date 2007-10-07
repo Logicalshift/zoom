@@ -43,7 +43,7 @@
 // = Designated initialiser =
 
 - (id) init {
-	[NSException raise: @"ZoomNoPluginFilename"
+	[NSException raise: @"ZoomNoPlugInFilename"
 				format: @"An attempt was made to construct a plugin object without providing a filename"];
 	
 	return nil;
@@ -123,7 +123,7 @@
 - (NSImage*) resizeLogo: (NSImage*) input {
 	NSSize oldSize = [input size];
 	NSImage* result = input;
-	
+		
 	if (oldSize.width > 256 || oldSize.height > 256) {
 		float scaleFactor;
 		
