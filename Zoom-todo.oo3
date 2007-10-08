@@ -10,6 +10,8 @@
     <style-attribute version="0" key="font-size" group="font" name="size" class="number">12</style-attribute>
     <style-attribute version="0" key="font-weight" group="font" name="weight" class="number">5</style-attribute>
     <style-attribute version="0" key="paragraph-minimum-line-height" group="paragraph" name="minimum line height" class="number">0</style-attribute>
+    <style-attribute version="0" key="paragraph-tab-stop-interval" group="paragraph" name="tab stop interval" class="number">0</style-attribute>
+    <style-attribute version="0" key="paragraph-tab-stops" group="paragraph" name="tab stops" class="string">28L,56L,84L,112L,140L,168L,196L,224L,252L,280L,308L,336L</style-attribute>
     <style-attribute version="0" key="text-background-color" group="text" name="background color" class="color">
       <color w="0" a="0"/>
     </style-attribute>
@@ -18,9 +20,9 @@
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="fzQbNtBLwYW"/>
-    <selected-columns ids="bJSTis5k9jH"/>
-    <selected-characters range="{0, 0}"/>
+    <selected-rows ids="fagGKLk4yT-"/>
+    <selected-columns ids=":078928d440f2709e21a6e303"/>
+    <selected-characters range="{11, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -1622,12 +1624,54 @@
             </item>
           </children>
         </item>
-        <item id="ccmYOZKfB_z">
+        <item id="ccmYOZKfB_z" state="checked">
           <values>
             <text>
               <p>
                 <run>
                   <lit>Switch back to the carbon speech API; NSSpeechSynthesizer can&apos;t change the speaking rate.</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
+        <item id="oO2P8s0Kemr">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Add note about recovering VO from James</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <style>
+                    <value key="font-family">Monaco</value>
+                    <value key="font-fill">
+                      <color r="0" g="0.0666667" b="0.886275"/>
+                    </value>
+                    <value key="font-italic">no</value>
+                    <value key="paragraph-tab-stop-interval">36</value>
+                    <value key="paragraph-tab-stops"/>
+                  </style>
+                  <lit>A good strategy for reading games With VO with cursor tracking turned off is this. Sometimes, as you know, VO screws up and misses the cursor and starts reading from the top for no apparent reason. Try pressing Control, Option, Shift F4 to move to the end of the text as it thinks it is. Then press control, option, up arrow. What happens is that VO says new line for some reason. Enter your next command and press enter. After this, try Control Option A to read down to the bottom. Notice it works. I wonder now if VO in 10.4 at least, has some issues with redrawing screens or at least, buffering new output? Perhaps it&apos;s not used to so much at once? This has worked great for me and I am enjoying IF like never before in all sorts of places.</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="fagGKLk4yT-">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Transcripts don&apos;t flush to disk until &apos;script off&apos; is typed (which leaves an empty file if the game window is closed before script off is typed)</lit>
                 </run>
               </p>
             </text>
