@@ -7,7 +7,7 @@
 //
 
 #import "ZoomPlugInCell.h"
-
+#import "ZoomPlugInManager.h"
 
 @implementation ZoomPlugInCell
 
@@ -28,9 +28,18 @@
 
 - (void)drawInteriorWithFrame: (NSRect)cellFrame 
 					   inView: (NSView *)controlView {
-	if ([self objectValue] != objectValue && [[self objectValue] isKindOfClass: [ZoomPlugInInfo class]]) {
+	// Cocoa doesn't seem able to deal with cells that aren't strings, numbers or dates, which is useless when we want to show plugin information
+	// So, we instead set the value of this object to be an index into the plugin information array and then get the object from there
+	// (instead of setting it directly to the object we want it to display, sigh).
+	// More annoyingly, if you compile for debug, you can get around this, but Cocoa magics itself broken when
+	// you compile for release.
+	//
+	// What's even MORE annoying is that even though the objectValue has an integer value, the intValue of this cell doesn't get set...
+	int pos = [[self objectValue] intValue];
+	int count = [[[ZoomPlugInManager sharedPlugInManager] informationForPlugins] count];
+	if (pos >= 0 && pos < count) {
 		[objectValue release];
-		objectValue = [[self objectValue] retain];
+		objectValue = [[[[ZoomPlugInManager sharedPlugInManager] informationForPlugins] objectAtIndex: pos] retain];		
 	}
 	
 	// Load the image for this plugin
@@ -211,18 +220,6 @@
 		[status drawAtPoint: NSMakePoint(NSMaxX(cellFrame)-4-statusSize.width, NSMaxY(cellFrame)-2-statusSize.height)
 			 withAttributes: statusAttributes];
 	}
-}
-
-- (void) setObjectValue: (id <NSCopying>)object {
-	if ([(NSObject*)object isKindOfClass: [ZoomPlugInInfo class]]) {
-		[objectValue release]; objectValue = nil;
-		[super setObjectValue: object];
-		objectValue = [object copyWithZone: [self zone]];
-	}
-}
-
-- (id) objectValue {
-	return objectValue;
 }
 
 - (NSString*) stringValue {

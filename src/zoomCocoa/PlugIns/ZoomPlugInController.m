@@ -49,8 +49,7 @@
 - (id)				tableView:(NSTableView *)aTableView 
 	objectValueForTableColumn:(NSTableColumn *)aTableColumn 
 						  row:(int)rowIndex {
-	ZoomPlugInInfo* info = [[[ZoomPlugInManager sharedPlugInManager] informationForPlugins] objectAtIndex: rowIndex];
-	return info;
+	return [NSNumber numberWithInt: rowIndex];
 }
 
 // = Plugin manager delegate methods =
