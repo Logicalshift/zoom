@@ -2294,7 +2294,6 @@ int tableSorter(id a, id b, void* context) {
 			}
 			
 			ifdbUrl = [NSString stringWithFormat: @"%@viewgame?ifid=%@", ifdbUrl, [identString stringByAddingPercentEscapesUsingEncoding: NSISOLatin1StringEncoding]];
-			NSLog(@"%@", ifdbUrl);
 			findMore = YES;
 		}
 	}
@@ -2307,11 +2306,13 @@ int tableSorter(id a, id b, void* context) {
 			[[ifdbView backForwardList] setCapacity: 0];
 			[[ifdbView backForwardList] setCapacity: 256];
 		}
-		[[ifdbView mainFrame] loadRequest: [NSURLRequest requestWithURL: ifdb]];		
+		if (![[[[[ifdbView mainFrame] dataSource] request] URL] isEqualTo: ifdb]) {
+			[[ifdbView mainFrame] loadRequest: [NSURLRequest requestWithURL: ifdb]];			
+		}
 	}
 		
 	usedBrowser = YES;
-	browserOn = YES;
+	browserOn = YES; 
 }
 
 - (IBAction) showLocalGames: (id) sender {
