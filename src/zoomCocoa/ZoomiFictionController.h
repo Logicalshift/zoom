@@ -7,6 +7,7 @@
 //
 
 #import <AppKit/AppKit.h>
+#import <WebKit/WebKit.h>
 #import "ZoomiFButton.h"
 #import "ZoomStory.h"
 #import "ZoomCollapsableView.h"
@@ -33,6 +34,16 @@
 	IBOutlet NSView* saveGameView;
 	IBOutlet NSMatrix* flipButtonMatrix;
 
+	IBOutlet NSView* mainView;
+	IBOutlet NSView* browserView;
+
+	IBOutlet WebView* ifdbView;
+	IBOutlet NSTextField* currentUrl;
+	IBOutlet NSButton* playButton;
+	IBOutlet NSButton* forwardButton;
+	IBOutlet NSButton* backButton;
+	IBOutlet NSButton* homeButton;
+
 	IBOutlet NSWindow* picturePreview;
 	IBOutlet NSImageView* picturePreviewView;
 	
@@ -41,15 +52,6 @@
 	
 	IBOutlet NSTextView* gameDetailView;
 	IBOutlet NSImageView* gameImageView;
-	
-	//NSTextView*   commentView;
-	//NSTextView*   teaserView;
-	//NSTextView*	  descriptionView;
-	
-	//NSImageView*  pictureView;
-	
-	//IBOutlet NSDrawer* drawer;
-	//IBOutlet NSView*   drawerView;
 
 	IBOutlet ZoomCollapsingSplitView* splitView;
 
@@ -85,6 +87,11 @@
 	
 	NSMutableArray* storyList;
 	NSString*       sortColumn;
+	
+	// The browser
+	BOOL usedBrowser;							// YES if the browser has been used
+	BOOL browserOn;								// YES if the browser is being displayed
+	BOOL smallBrowser;							// YES if we've turned on small fonts in the browser
 }
 
 + (ZoomiFictionController*) sharediFictionController;
@@ -100,6 +107,13 @@
 - (IBAction) flipToFilter: (id) sender;
 - (IBAction) flipToInfo: (id) sender;
 - (IBAction) flipToSaves: (id) sender;
+
+- (IBAction) showIfDb: (id) sender;
+- (IBAction) showLocalGames: (id) sender;
+- (IBAction) goBack: (id) sender;
+- (IBAction) goForward: (id) sender;
+- (IBAction) goHome: (id) sender;
+- (IBAction) playIfdbGame: (id) sender;
 
 - (ZoomStory*) storyForID: (ZoomStoryID*) ident;
 - (void) configureFromMainTableSelection;

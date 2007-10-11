@@ -43,6 +43,7 @@ typedef enum ZoomViewAnimationStyle {
 - (void) cacheStartView: (NSView*) view;							// Caches a specific image as the start of an animation
 
 // Animating
+- (void) setAnimationTime: (NSTimeInterval) animationTime;
 - (void) prepareToAnimateView: (NSView*) view;						// Prepares to animate, using the specified view as a template
 - (void) animateTo: (NSView*) view									// Begins animating the specified view so that transitions from the state set in prepareToAnimateView to the new state
 			 style: (ZoomViewAnimationStyle) style;

@@ -146,6 +146,10 @@
 	[self setAutoresizingMask: [originalView autoresizingMask]];
 }
 
+- (void) setAnimationTime: (NSTimeInterval) newAnimationTime {
+	animationTime = newAnimationTime;
+}
+
 - (void) animateTo: (NSView*) view
 			 style: (ZoomViewAnimationStyle) style {
 	[whenStarted release];

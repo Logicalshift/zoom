@@ -75,6 +75,7 @@ enum {
 }
 
 - (void) dealloc {
+	[mainView release];
 	[storyList release];
 	[sortColumn release];
 	[filterSet1 release]; [filterSet2 release];
@@ -215,6 +216,14 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 }
 
 - (void) windowDidLoad {
+	[mainView retain];
+	[ifdbView setFrameLoadDelegate: self];
+
+	NSURL* loadingPage = [NSURL fileURLWithPath: [[NSBundle mainBundle] pathForResource: @"ifdb-loading"
+																				 ofType: @"html"]];
+	[[ifdbView mainFrame] loadRequest: [NSURLRequest requestWithURL: loadingPage]];		
+	[ifdbView setCustomUserAgent: @"Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en-us) AppleWebKit (KHTML like Gecko) Zoom/1.1.2"];
+
 	[addButton setPushedImage: [NSImage imageNamed: @"add-in"]];
 	[newgameButton setPushedImage: [NSImage imageNamed: @"newgame-in"]];
 	[continueButton setPushedImage: [NSImage imageNamed: @"continue-in"]];
@@ -301,8 +310,25 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	[[self window] saveFrameUsingName: @"iFiction"];
 }
 
+- (void) setBrowserFontSize {
+	NSRect viewFrame = [browserView frame];
+	BOOL shouldUseSmallFonts = NO;
+	
+	if (viewFrame.size.width < 900 || viewFrame.size.height < 400) {
+		shouldUseSmallFonts = YES;
+	}
+	
+	if (shouldUseSmallFonts != smallBrowser) {
+		smallBrowser = shouldUseSmallFonts;
+		
+		[ifdbView setTextSizeMultiplier: shouldUseSmallFonts?0.7:1.0];
+	}
+}
+
 - (void)windowDidResize:(NSNotification *)notification {
 	[[self window] saveFrameUsingName: @"iFiction"];
+
+	if (browserOn) [self setBrowserFontSize];
 }
 
 // = Useful functions for getting info about the table =
@@ -2220,6 +2246,121 @@ int tableSorter(id a, id b, void* context) {
 			[org organiseStory: selectedStory];
 		}
 	}
+}
+
+// = Browsing the IFDB =
+
+- (void) updateBackForwardButtons {
+	if ([ifdbView canGoForward]) {
+		[forwardButton setEnabled: YES];
+	} else {
+		[forwardButton setEnabled: NO];		
+	}
+	if ([ifdbView canGoBack]) {
+		[backButton setEnabled: YES];
+	} else {
+		[backButton setEnabled: NO];		
+	}
+}
+
+- (IBAction) showIfDb: (id) sender {
+	ZoomFlipView* fv = [[[ZoomFlipView alloc] init] autorelease];
+	[fv setAnimationTime: 0.35];
+
+	NSRect viewFrame = [mainView frame];
+	[fv setFrame: viewFrame];
+	[browserView setFrame: viewFrame];
+	[self setBrowserFontSize];
+	
+	[fv prepareToAnimateView: mainView];
+	[fv animateTo: browserView
+			style: ZoomAnimateRight];
+	
+	NSString* ifdbUrl = [[[NSBundle mainBundle] infoDictionary] objectForKey: @"ZoomIfdbUrl"];
+	if (!ifdbUrl) {
+		ifdbUrl = @"http://ifdb.tads.org/";
+	}
+	
+	// Reload the main page if the user has strayed off the main ifdb site
+	// TODO: add a splash page to display while the very first page is loading (the white page is a bit dull...)
+	NSURL* ifdb = [NSURL URLWithString: ifdbUrl];
+	if (!usedBrowser || [[[[[[ifdbView mainFrame] dataSource] request] URL] host] caseInsensitiveCompare: [ifdb host]] != 0) {
+		if (!usedBrowser) {
+			[[ifdbView backForwardList] setCapacity: 0];
+			[[ifdbView backForwardList] setCapacity: 256];
+		}
+		[[ifdbView mainFrame] loadRequest: [NSURLRequest requestWithURL: ifdb]];		
+	}
+		
+	usedBrowser = YES;
+	browserOn = YES;
+}
+
+- (IBAction) showLocalGames: (id) sender {
+	ZoomFlipView* fv = [[[ZoomFlipView alloc] init] autorelease];
+	[fv setAnimationTime: 0.35];
+
+	NSRect viewFrame = [browserView frame];
+	[fv setFrame: viewFrame];
+	[mainView setFrame: viewFrame];
+	
+	[fv prepareToAnimateView: browserView];
+	[fv animateTo: mainView
+			style: ZoomAnimateLeft];
+	browserOn = NO;
+}
+
+- (void)webView:(WebView *)sender didStartProvisionalLoadForFrame:(WebFrame *)frame {
+	[self updateBackForwardButtons];
+	
+	if (frame == [ifdbView mainFrame]) {
+		NSString* url = [[[[frame dataSource] request] URL] absoluteString];
+		if (url) [currentUrl setStringValue: url];
+		
+		[progressIndicator startAnimation: self];
+	}
+}
+
+- (void)webView:(WebView *)sender didCommitLoadForFrame:(WebFrame *)frame {
+	[self updateBackForwardButtons];
+
+	if (frame == [ifdbView mainFrame]) {
+		NSString* url = [[[[frame dataSource] request] URL] absoluteString];
+		if (url) [currentUrl setStringValue: url];
+		
+		[progressIndicator startAnimation: self];
+	}
+}
+
+- (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
+	[self updateBackForwardButtons];
+
+	if (frame == [ifdbView mainFrame]) {
+		NSString* url = [[[[frame dataSource] request] URL] absoluteString];
+		if (url) [currentUrl setStringValue: url];
+
+		[progressIndicator stopAnimation: self];
+	}	
+}
+
+- (IBAction) goBack: (id) sender {
+	[ifdbView goBack];
+}
+
+- (IBAction) goForward: (id) sender {
+	[ifdbView goForward];	
+}
+
+- (IBAction) goHome: (id) sender; {
+	NSString* ifdbUrl = [[[NSBundle mainBundle] infoDictionary] objectForKey: @"ZoomIfdbUrl"];
+	if (!ifdbUrl) {
+		ifdbUrl = @"http://ifdb.tads.org/";
+	}
+	[[ifdbView mainFrame] loadRequest: [NSURLRequest requestWithURL: [NSURL URLWithString: ifdbUrl]]];	
+}
+
+- (IBAction) playIfdbGame: (id) sender {
+	
 }
 
 @end

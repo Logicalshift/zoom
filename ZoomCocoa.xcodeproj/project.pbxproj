@@ -116,6 +116,12 @@
 		4B7CB1EA0936357900F3B8F6 /* ZoomPlugIn.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7CB0780936294B00F3B8F6 /* ZoomPlugIn.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B7CB2130936361800F3B8F6 /* GlkView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B7CB1C5093634DD00F3B8F6 /* GlkView.framework */; };
 		4B84007E0CB7EBB20071F3B3 /* ZoomPlugInInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1243190CAE9B2500CA3374 /* ZoomPlugInInfo.h */; };
+		4B840A1B0CBEC1CE0071F3B3 /* IFDB-back.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B840A150CBEC1B10071F3B3 /* IFDB-back.png */; };
+		4B840A1C0CBEC1D40071F3B3 /* IFDB-forward.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B840A160CBEC1B10071F3B3 /* IFDB-forward.png */; };
+		4B840A1D0CBEC1DA0071F3B3 /* IFDB-home.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B840A170CBEC1B10071F3B3 /* IFDB-home.png */; };
+		4B840A2B0CBEC20E0071F3B3 /* IFDB-downloading.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B840A290CBEC2050071F3B3 /* IFDB-downloading.png */; };
+		4B840A450CBECCE60071F3B3 /* IFDB-connecting.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B840A390CBECC690071F3B3 /* IFDB-connecting.png */; };
+		4B840A460CBECCE60071F3B3 /* ifdb-loading.html in Resources */ = {isa = PBXBuildFile; fileRef = 4B840A3B0CBECC690071F3B3 /* ifdb-loading.html */; };
 		4B84304C0B139F6000679417 /* TADS.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4B84304B0B139F6000679417 /* TADS.icns */; };
 		4B84304E0B139F7200679417 /* HUGO.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4B84304D0B139F7200679417 /* HUGO.icns */; };
 		4B84FDDD0CAFC9970071F3B3 /* ZoomDownload.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B84FDDB0CAFC9970071F3B3 /* ZoomDownload.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -874,6 +880,12 @@
 		4B807BD905BFF74600681653 /* drawer-in.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "drawer-in.png"; sourceTree = "<group>"; };
 		4B807BEA05C009ED00681653 /* ZoomiFButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomiFButton.h; sourceTree = "<group>"; };
 		4B807BEB05C009ED00681653 /* ZoomiFButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomiFButton.m; sourceTree = "<group>"; };
+		4B840A150CBEC1B10071F3B3 /* IFDB-back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "IFDB-back.png"; sourceTree = "<group>"; };
+		4B840A160CBEC1B10071F3B3 /* IFDB-forward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "IFDB-forward.png"; sourceTree = "<group>"; };
+		4B840A170CBEC1B10071F3B3 /* IFDB-home.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "IFDB-home.png"; sourceTree = "<group>"; };
+		4B840A290CBEC2050071F3B3 /* IFDB-downloading.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "IFDB-downloading.png"; sourceTree = "<group>"; };
+		4B840A3A0CBECC690071F3B3 /* English */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = English; path = "English.lproj/IFDB-connecting.png"; sourceTree = "<group>"; };
+		4B840A3C0CBECC690071F3B3 /* English */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = English; path = "English.lproj/ifdb-loading.html"; sourceTree = "<group>"; };
 		4B84304B0B139F6000679417 /* TADS.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = TADS.icns; sourceTree = "<group>"; };
 		4B84304D0B139F7200679417 /* HUGO.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = HUGO.icns; sourceTree = "<group>"; };
 		4B84FDDB0CAFC9970071F3B3 /* ZoomDownload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomDownload.h; sourceTree = "<group>"; };
@@ -1486,6 +1498,12 @@
 		4BCF3F42050FB1D800A8E303 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				4B840A390CBECC690071F3B3 /* IFDB-connecting.png */,
+				4B840A3B0CBECC690071F3B3 /* ifdb-loading.html */,
+				4B840A150CBEC1B10071F3B3 /* IFDB-back.png */,
+				4B840A160CBEC1B10071F3B3 /* IFDB-forward.png */,
+				4B840A170CBEC1B10071F3B3 /* IFDB-home.png */,
+				4B840A290CBEC2050071F3B3 /* IFDB-downloading.png */,
 				4B0D81E10AC5A3C0003E8CCA /* top-shading.png */,
 				4B152A030B440B9D008CC1EF /* SkeinDiffersBadge.png */,
 				4B5CBC59069D9EB700C0AA88 /* SkeinAdd.png */,
@@ -2222,6 +2240,12 @@
 				4BA8B83A0B1B5F65007CD75E /* typographicSettings.png in Resources */,
 				4B77DD1E0B87BBBC000D2504 /* displaySettings.png in Resources */,
 				4B1242CE0CAE8D1800CA3374 /* PluginManager.nib in Resources */,
+				4B840A1B0CBEC1CE0071F3B3 /* IFDB-back.png in Resources */,
+				4B840A1C0CBEC1D40071F3B3 /* IFDB-forward.png in Resources */,
+				4B840A1D0CBEC1DA0071F3B3 /* IFDB-home.png in Resources */,
+				4B840A2B0CBEC20E0071F3B3 /* IFDB-downloading.png in Resources */,
+				4B840A450CBECCE60071F3B3 /* IFDB-connecting.png in Resources */,
+				4B840A460CBECCE60071F3B3 /* ifdb-loading.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2638,6 +2662,22 @@
 				4B43DA7709364C6400F03009 /* English */,
 			);
 			name = GlkWindow.nib;
+			sourceTree = "<group>";
+		};
+		4B840A390CBECC690071F3B3 /* IFDB-connecting.png */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4B840A3A0CBECC690071F3B3 /* English */,
+			);
+			name = "IFDB-connecting.png";
+			sourceTree = "<group>";
+		};
+		4B840A3B0CBECC690071F3B3 /* ifdb-loading.html */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4B840A3C0CBECC690071F3B3 /* English */,
+			);
+			name = "ifdb-loading.html";
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
