@@ -222,7 +222,7 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	NSURL* loadingPage = [NSURL fileURLWithPath: [[NSBundle mainBundle] pathForResource: @"ifdb-loading"
 																				 ofType: @"html"]];
 	[[ifdbView mainFrame] loadRequest: [NSURLRequest requestWithURL: loadingPage]];		
-	[ifdbView setCustomUserAgent: @"Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en-us) AppleWebKit (KHTML like Gecko) Zoom/1.1.2"];
+	[ifdbView setCustomUserAgent: @"Mozilla/5.0 (Macintosh; U; Mac OS X; en-us) AppleWebKit (KHTML like Gecko) Zoom/1.1.2"];
 
 	[addButton setPushedImage: [NSImage imageNamed: @"add-in"]];
 	[newgameButton setPushedImage: [NSImage imageNamed: @"newgame-in"]];
@@ -2281,10 +2281,28 @@ int tableSorter(id a, id b, void* context) {
 		ifdbUrl = @"http://ifdb.tads.org/";
 	}
 	
+	// If the user has a single game selected, then open it in the browser
+	BOOL findMore = NO;
+	
+	if ([mainTableView numberOfSelectedRows] == 1) {
+		ZoomStoryID* ident = [storyList objectAtIndex: [mainTableView selectedRow]];
+		if (ident) {
+			NSString* identString = [ident description];
+			if ([identString hasPrefix: @"UUID://"]) {
+				identString = [identString substringFromIndex: 7];
+				identString = [identString substringToIndex: [identString length]-2];
+			}
+			
+			ifdbUrl = [NSString stringWithFormat: @"%@viewgame?ifid=%@", ifdbUrl, [identString stringByAddingPercentEscapesUsingEncoding: NSISOLatin1StringEncoding]];
+			NSLog(@"%@", ifdbUrl);
+			findMore = YES;
+		}
+	}
+	
 	// Reload the main page if the user has strayed off the main ifdb site
 	// TODO: add a splash page to display while the very first page is loading (the white page is a bit dull...)
 	NSURL* ifdb = [NSURL URLWithString: ifdbUrl];
-	if (!usedBrowser || [[[[[[ifdbView mainFrame] dataSource] request] URL] host] caseInsensitiveCompare: [ifdb host]] != 0) {
+	if (findMore || !usedBrowser || [[[[[[ifdbView mainFrame] dataSource] request] URL] host] caseInsensitiveCompare: [ifdb host]] != 0) {
 		if (!usedBrowser) {
 			[[ifdbView backForwardList] setCapacity: 0];
 			[[ifdbView backForwardList] setCapacity: 256];
