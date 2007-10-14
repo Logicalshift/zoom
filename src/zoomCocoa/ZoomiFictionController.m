@@ -2340,6 +2340,7 @@ int tableSorter(id a, id b, void* context) {
 		}
 		
 		// Select the story in the main table
+		[mainTableView deselectAll: self];
 		int storyRow = [storyList indexOfObject: storyToPlay];
 		if (storyRow != NSNotFound) {
 			[mainTableView selectRow: storyRow
