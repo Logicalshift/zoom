@@ -2286,6 +2286,108 @@ int tableSorter(id a, id b, void* context) {
 	return NO;
 }
 
+- (void) addFilesFromDirectory: (NSString*) directory
+					 groupName: (NSString*) groupName {
+	// Work out the group to use to store the files that we've added
+	if (groupName == nil || [groupName length] == 0) groupName = @"Downloaded";
+	
+	// Iterate through the directory and organise any files that we find
+	NSMutableArray* addedFiles = [NSMutableArray array];
+	NSDirectoryEnumerator* dirEnum = [[NSFileManager defaultManager] enumeratorAtPath: directory];
+	NSString* path;
+	while (path = [dirEnum nextObject]) {
+		path = [directory stringByAppendingPathComponent: path];
+		path = [path stringByStandardizingPath];
+		
+		// Must exist
+		BOOL isDir;
+		if (![[NSFileManager defaultManager] fileExistsAtPath: path
+												  isDirectory: &isDir]) {
+			continue;
+		}
+		
+		// Must be a file
+		if (isDir) continue;
+		
+		// Must be playable
+		if (![self canPlayFile: path]) continue;
+		
+		// Must have an ID
+		ZoomStoryID* storyId = [ZoomStoryID idForFile: path];
+		if (!storyId) continue;
+		
+		// Organise this file
+		[[ZoomStoryOrganiser sharedStoryOrganiser] addStory: path
+												  withIdent: storyId
+												   organise: YES];
+		[addedFiles addObject: storyId];
+	}
+	
+	// Either catalogue the files as a group, or load the game that was downloaded if there's only one
+	if ([addedFiles count] == 0) {
+		// Oops: couldn't find any games to add
+		NSBeginAlertSheet(@"The download did not contain any story files", @"Cancel", nil, nil, 
+						  [self window], nil, nil, nil, nil, 
+						  @"Zoom successfully downloaded the file, but was unable to find any story files that can be played by the currently installed plugins.");
+	} else if ([addedFiles count] == 1) {
+		// Play one story
+		ZoomStoryID* storyToPlay = [addedFiles lastObject];
+		NSString* filename = [[ZoomStoryOrganiser sharedStoryOrganiser] filenameForIdent: storyToPlay];
+		
+		if (filename) {
+			[[NSApp delegate] application: NSApp
+								 openFile: filename];			
+		}
+		
+		// Select the story in the main table
+		int storyRow = [storyList indexOfObject: storyToPlay];
+		if (storyRow != NSNotFound) {
+			[mainTableView selectRow: storyRow
+				byExtendingSelection: NO];
+			[mainTableView scrollRowToVisible: storyRow];
+		}
+
+		// Switch back to the browser view
+		if (browserOn) [self showLocalGames: self];
+	} else {
+		// Set the group of all the stories
+		NSEnumerator* storyEnum = [addedFiles objectEnumerator];
+		ZoomStoryID* storyId;
+		
+		while (storyId = [storyEnum nextObject]) {
+			ZoomStory* story = [self storyForID: storyId];
+			
+			story = [self createStoryCopy: story];
+			[story setGroup: groupName];
+		}
+		
+		// Set the filters to filter by group
+		[mainTableView deselectAll: self];
+		[filterTable1 selectRow: 0
+		   byExtendingSelection: NO];
+		[filterTable2 selectRow: 0
+		   byExtendingSelection: NO];
+		
+		NSTableColumn* filterColumn = [[filterTable1 tableColumns] objectAtIndex: 0];
+		
+		[filterColumn setIdentifier: @"group"];
+		[self setTitle: @"Group"
+			  forTable: filterTable1];
+		
+		[self reloadTableData]; [mainTableView reloadData];
+		
+		// Filter by the group we just added
+		int filterRow = [filterSet1 indexOfObject: groupName];
+		if (filterRow != NSNotFound) {
+			[filterTable1 selectRow: filterRow+1
+			   byExtendingSelection: NO];
+		}
+		
+		// Switch back to the browser view
+		if (browserOn) [self showLocalGames: self];		
+	}
+}
+
 - (void) showDownloadWindow {
 	if ([downloadWindow isVisible]) return;
 	
@@ -2314,7 +2416,10 @@ int tableSorter(id a, id b, void* context) {
 
 - (void) downloadComplete: (ZoomDownload*) download {
 	if (download != activeDownload) return;
-
+	
+	[self addFilesFromDirectory: [download downloadDirectory]
+					  groupName: [[[download suggestedFilename] lastPathComponent] stringByDeletingPathExtension]];
+	
 	[activeDownload setDelegate: nil];
 	[activeDownload autorelease]; activeDownload = nil;
 	[[downloadView progress] stopAnimation: self];
