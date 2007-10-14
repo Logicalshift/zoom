@@ -244,6 +244,7 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 															  backing: NSBackingStoreBuffered
 																defer: NO];
 	[downloadWindow setOpaque: NO];
+	[downloadWindow setAlphaValue: 0];
 	[downloadWindow setContentView: downloadView];
 
 	[addButton setPushedImage: [NSImage imageNamed: @"add-in"]];
@@ -2389,20 +2390,85 @@ int tableSorter(id a, id b, void* context) {
 	}
 }
 
+- (void) cancelFadeTimer {
+	if (!downloadFadeTimer) return;
+	
+	[downloadFadeTimer autorelease];
+	[downloadFadeTimer invalidate];
+	downloadFadeTimer = nil;
+}
+
 - (void) showDownloadWindow {
 	if ([downloadWindow isVisible]) return;
 	
+	// Display the window
 	[[self window] addChildWindow: downloadWindow
 						  ordered: NSWindowAbove];
 	[downloadWindow orderFront: self];
 	[self positionDownloadWindow];
+	
+	// Start the timer to fade the window in
+	[self cancelFadeTimer];
+	initialDownloadOpacity = [downloadWindow alphaValue];
+	[downloadFadeStart release];
+	downloadFadeStart = [[NSDate date] retain];
+	downloadFadeTimer = [[NSTimer timerWithTimeInterval: 0.02
+												 target: self
+											   selector: @selector(fadeDownloadIn)
+											   userInfo: nil
+												repeats: YES] retain];
+	[[NSRunLoop currentRunLoop] addTimer: downloadFadeTimer
+								 forMode: NSDefaultRunLoopMode];
 }
 
 - (void) hideDownloadWindow {
 	if (![downloadWindow isVisible]) return;
+
 	
-	[[self window] removeChildWindow: downloadWindow];
-	[downloadWindow orderOut: self];
+	// Start the timer to fade the window out
+	[self cancelFadeTimer];
+	initialDownloadOpacity = [downloadWindow alphaValue];
+	[downloadFadeStart release];
+	downloadFadeStart = [[NSDate date] retain];
+	downloadFadeTimer = [[NSTimer timerWithTimeInterval: 0.02
+												 target: self
+											   selector: @selector(fadeDownloadOut)
+											   userInfo: nil
+												repeats: YES] retain];
+	[[NSRunLoop currentRunLoop] addTimer: downloadFadeTimer
+								 forMode: NSDefaultRunLoopMode];
+}
+
+- (void) fadeDownloadIn {
+	NSTimeInterval runTime = [[NSDate date] timeIntervalSinceDate: downloadFadeStart];
+	double done = runTime / 0.5;
+	
+	if (done < 0) done = 0;
+	if (done > 1) done = 1;
+	
+	done = -2.0*done*done*done + 3.0*done*done;
+	[downloadWindow setAlphaValue: done];
+	
+	if (done >= 0.999) {
+		[self cancelFadeTimer];
+	}
+}
+
+- (void) fadeDownloadOut {
+	NSTimeInterval runTime = [[NSDate date] timeIntervalSinceDate: downloadFadeStart];
+	double done = runTime / 0.5;
+
+	if (done < 0) done = 0;
+	if (done > 1) done = 1;
+	
+	done = -2.0*done*done*done + 3.0*done*done;
+	[downloadWindow setAlphaValue: 1-done];
+
+	if (done >= 0.999) {
+		[self cancelFadeTimer];
+		[[self window] removeChildWindow: downloadWindow];
+		[downloadWindow orderOut: self];
+	}
 }
 
 - (void) downloadStarting: (ZoomDownload*) download {
