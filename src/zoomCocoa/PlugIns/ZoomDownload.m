@@ -96,12 +96,13 @@ static int lastDownloadId = 0;
 	// Release our resources
 	[url release];
 	
-	if (connection)		[connection release];
-	if (tmpFile)		[tmpFile release];
-	if (tmpDirectory)	[tmpDirectory release];
+	if (connection)			[connection release];
+	if (tmpFile)			[tmpFile release];
+	if (tmpDirectory)		[tmpDirectory release];
 	
-	if (task)			[task release];
-	if (subtasks)		[subtasks release];
+	if (task)				[task release];
+	if (subtasks)			[subtasks release];
+	if (suggestedFilename)	[suggestedFilename release];
 	
 	[super dealloc];
 }
@@ -285,6 +286,7 @@ static int lastDownloadId = 0;
 	} else {
 		// Default is just to copy the file
 		NSString* destFile = [directory stringByAppendingPathComponent: [filename lastPathComponent]];
+		if (suggestedFilename && [[suggestedFilename lastPathComponent] length] > 0) destFile = [directory stringByAppendingPathComponent: [suggestedFilename lastPathComponent]];
 		[[NSFileManager defaultManager] createFileAtPath: destFile
 												contents: [NSData data]
 											  attributes: nil];
@@ -360,6 +362,12 @@ static int lastDownloadId = 0;
 	}
 }
 
+-(NSURLRequest *) connection:(NSURLConnection *)connection 
+			 willSendRequest:(NSURLRequest *)request 
+			redirectResponse:(NSURLResponse *)redirectResponse {
+	return request;
+}
+
 - (void)  connection:(NSURLConnection *)conn
   didReceiveResponse:(NSURLResponse *)response {
 	int status = 200;
@@ -386,6 +394,8 @@ static int lastDownloadId = 0;
 	tmpFile = [downloadDirectory stringByAppendingPathComponent: [NSString stringWithFormat: @"download-%i", lastDownloadId++]];
 	tmpFile = [tmpFile stringByAppendingPathExtension: [self fullExtensionFor: [response suggestedFilename]]];
 	[tmpFile retain];
+	
+	suggestedFilename = [[response suggestedFilename] copy];
 	
 	if (downloadFile) {
 		[downloadFile closeFile];
@@ -557,5 +567,8 @@ static int lastDownloadId = 0;
 	return tmpDirectory;
 }
 
+- (NSString*) suggestedFilename {
+	return suggestedFilename;
+}
 
 @end

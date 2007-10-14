@@ -23,6 +23,7 @@
 #import "ZoomHQImageView.h"
 #import "ZoomPlugInManager.h"
 #import "ZoomPlugIn.h"
+#import "ZoomWindowThatIsKey.h"
 
 #import "ifmetabase.h"
 
@@ -215,14 +216,35 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	[view setNextKeyView: mainTableView];
 }
 
+- (void) positionDownloadWindow {
+	if (![downloadWindow isVisible]) return;
+	
+	NSRect mainWindowFrame = [[self window] frame];
+	NSRect downloadFrame = [downloadWindow frame];
+	
+	downloadFrame.origin.x = NSMaxX(mainWindowFrame) - downloadFrame.size.width - 32;
+	downloadFrame.origin.y = NSMinY(mainWindowFrame) + 48;
+	
+	[downloadWindow setFrameOrigin: downloadFrame.origin];
+}
+
 - (void) windowDidLoad {
 	[mainView retain];
 	[ifdbView setFrameLoadDelegate: self];
+	[ifdbView setPolicyDelegate: self];
 
 	NSURL* loadingPage = [NSURL fileURLWithPath: [[NSBundle mainBundle] pathForResource: @"ifdb-loading"
 																				 ofType: @"html"]];
 	[[ifdbView mainFrame] loadRequest: [NSURLRequest requestWithURL: loadingPage]];		
-	[ifdbView setCustomUserAgent: @"Mozilla/5.0 (Macintosh; U; Mac OS X; en-us) AppleWebKit (KHTML like Gecko) Zoom/1.1.2"];
+	[ifdbView setCustomUserAgent: @"Mozilla/5.0 (Macintosh; U; Mac OS X; en-us) AppleWebKit (KHTML like Gecko) uk.org.logicalshift.zoom/1.1.2"];
+	
+	downloadView = [[ZoomDownloadView alloc] initWithFrame: NSMakeRect(0,0,218,54)];
+	downloadWindow = [[ZoomWindowThatIsKey alloc] initWithContentRect: NSMakeRect(0,0,218,54)
+															styleMask: NSBorderlessWindowMask
+															  backing: NSBackingStoreBuffered
+																defer: NO];
+	[downloadWindow setOpaque: NO];
+	[downloadWindow setContentView: downloadView];
 
 	[addButton setPushedImage: [NSImage imageNamed: @"add-in"]];
 	[newgameButton setPushedImage: [NSImage imageNamed: @"newgame-in"]];
@@ -329,6 +351,7 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	[[self window] saveFrameUsingName: @"iFiction"];
 
 	if (browserOn) [self setBrowserFontSize];
+	[self positionDownloadWindow];
 }
 
 // = Useful functions for getting info about the table =
@@ -2246,6 +2269,117 @@ int tableSorter(id a, id b, void* context) {
 			[org organiseStory: selectedStory];
 		}
 	}
+}
+
+// = Handling downloads =
+
+- (BOOL) canPlayFile: (NSString*) filename {
+	NSArray* fileTypes = [NSArray arrayWithObjects: @"z3", @"z4", @"z5", @"z6", @"z7", @"z8", @"blorb", @"zblorb", @"blb", @"zlb", nil];
+	NSString* extn = [[filename pathExtension] lowercaseString];
+	
+	if ([fileTypes containsObject: extn]) {
+		return YES;
+	} else if ([[ZoomPlugInManager sharedPlugInManager] plugInForFile: filename]) {
+		return YES;
+	}
+	
+	return NO;
+}
+
+- (void) showDownloadWindow {
+	if ([downloadWindow isVisible]) return;
+	
+	[[self window] addChildWindow: downloadWindow
+						  ordered: NSWindowAbove];
+	[downloadWindow orderFront: self];
+	[self positionDownloadWindow];
+}
+
+- (void) hideDownloadWindow {
+	if (![downloadWindow isVisible]) return;
+	
+	[[self window] removeChildWindow: downloadWindow];
+	[downloadWindow orderOut: self];
+}
+
+- (void) downloadStarting: (ZoomDownload*) download {
+	if (download != activeDownload) return;
+	[self showDownloadWindow];
+	
+	[[downloadView progress] setIndeterminate: YES];
+	[[downloadView progress] setMinValue: 0];
+	[[downloadView progress] setMaxValue: 100.0];
+	[[downloadView progress] startAnimation: self];
+}
+
+- (void) downloadComplete: (ZoomDownload*) download {
+	if (download != activeDownload) return;
+
+	[activeDownload setDelegate: nil];
+	[activeDownload autorelease]; activeDownload = nil;
+	[[downloadView progress] stopAnimation: self];
+	
+	[self hideDownloadWindow];
+}
+
+- (void) downloadFailed: (ZoomDownload*) download {
+	if (download != activeDownload) return;
+
+	[activeDownload setDelegate: nil];
+	[activeDownload autorelease]; activeDownload = nil;	
+	[[downloadView progress] stopAnimation: self];
+	
+	[self hideDownloadWindow];
+	
+	// TODO: notify that the download has failed for some reason
+}
+
+- (void) download: (ZoomDownload*) download
+		completed: (float) complete {
+	if (download != activeDownload) return;
+
+	[[downloadView progress] setIndeterminate: NO];
+	[[downloadView progress] setDoubleValue: complete * 100.0];
+}
+
+- (void)					webView: (WebView *)sender 
+	decidePolicyForNavigationAction: (NSDictionary *)actionInformation 
+							request:(NSURLRequest *)request 
+							  frame:(WebFrame *)frame 
+				   decisionListener:(id<WebPolicyDecisionListener>)listener {
+	NSArray* archiveFiles = [NSArray arrayWithObjects: @"zip", @"tar", @"tgz", @"gz", @"bz2", nil];
+	
+	if ([[actionInformation objectForKey: WebActionNavigationTypeKey] intValue] == 0) {
+		// Get the URL to download
+		NSURL* url = [request URL];
+		
+		NSString* fakeFile = [[NSTemporaryDirectory() stringByAppendingPathComponent: @"FakeDirectory"] 
+								stringByAppendingPathComponent: [[url path] lastPathComponent]];
+		if ([self canPlayFile: fakeFile] || [archiveFiles containsObject: [[fakeFile pathExtension] lowercaseString]]) {
+			// Use mirror.ifarchive.org, not www.ifarchive.org
+			NSString* host = [url host];
+			if ([host isEqualToString: @"www.ifarchive.org"]) {
+				url = [[[NSURL alloc] initWithScheme: [url scheme]
+												host: @"mirror.ifarchive.org"
+												path: [url path]] autorelease];
+			}
+			
+			// Download the specified file
+			[activeDownload setDelegate: nil];
+			[activeDownload autorelease]; activeDownload = nil;	
+			
+			activeDownload = [[ZoomDownload alloc] initWithUrl: url];
+			[activeDownload setDelegate: self];
+			[activeDownload startDownload];
+			
+			// Ignore the request
+			[listener ignore];
+			return;
+		}
+	}
+	
+	// Default is to use the request
+	[listener use];
 }
 
 // = Browsing the IFDB =

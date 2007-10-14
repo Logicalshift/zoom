@@ -17,6 +17,8 @@
 #import "ZoomStoryTableView.h"
 #import "ZoomMetadata.h"
 #import "ZoomFlipView.h"
+#import "ZoomDownloadView.h"
+#import "ZoomDownload.h"
 
 @interface ZoomiFictionController : NSWindowController {
 	IBOutlet ZoomiFButton* addButton;
@@ -33,17 +35,19 @@
 	IBOutlet NSView* infoView;
 	IBOutlet NSView* saveGameView;
 	IBOutlet NSMatrix* flipButtonMatrix;
-
+	
 	IBOutlet NSView* mainView;
 	IBOutlet NSView* browserView;
-
+	
 	IBOutlet WebView* ifdbView;
 	IBOutlet NSTextField* currentUrl;
 	IBOutlet NSButton* playButton;
 	IBOutlet NSButton* forwardButton;
 	IBOutlet NSButton* backButton;
 	IBOutlet NSButton* homeButton;
-
+	NSWindow* downloadWindow;
+	ZoomDownloadView* downloadView;
+	
 	IBOutlet NSWindow* picturePreview;
 	IBOutlet NSImageView* picturePreviewView;
 	
@@ -52,9 +56,9 @@
 	
 	IBOutlet NSTextView* gameDetailView;
 	IBOutlet NSImageView* gameImageView;
-
+	
 	IBOutlet ZoomCollapsingSplitView* splitView;
-
+	
 	float splitViewPercentage;
 	BOOL splitViewCollapsed;
 	
@@ -92,6 +96,11 @@
 	BOOL usedBrowser;							// YES if the browser has been used
 	BOOL browserOn;								// YES if the browser is being displayed
 	BOOL smallBrowser;							// YES if we've turned on small fonts in the browser
+	
+	ZoomDownload* activeDownload;				// The currently active download
+	NSTimer* downloadFadeTimer;					// The fade in/out timer for the download window
+	NSDate* downloadFadeStart;					// The time the current fade operation started
+	double initialDownloadOpacity;				// The opacity when the last fade operation started
 }
 
 + (ZoomiFictionController*) sharediFictionController;

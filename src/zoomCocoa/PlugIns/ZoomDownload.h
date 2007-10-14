@@ -21,6 +21,7 @@
 	NSFileHandle* downloadFile;									// A file handle containing the file that we're downloading
 	NSString* tmpFile;											// The file that the download is going to
 	NSString* tmpDirectory;										// The directoruy that the download was unarchived to
+	NSString* suggestedFilename;								// The filename suggested for this download in the response
 	long long expectedLength;									// The expected length of the download
 	long long downloadedSoFar;									// The amount downloaded so far
 	
@@ -40,6 +41,7 @@
 // Getting the download directory
 - (NSURL*) url;													// The url for this download
 - (NSString*) downloadDirectory;								// The temporary directory where the download was placed (deleted when this object is dealloced)
+- (NSString*) suggestedFilename;								// The filename suggested for this download in the response
 
 @end
 
