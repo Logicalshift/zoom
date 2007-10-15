@@ -258,9 +258,9 @@ static int lastDownloadId = 0;
 									toDirectory: directory];
 		
 		// Pick the unarchiver to use
-		NSString* unarchiver = @"gzip";
-		if ([pathExtension isEqualToString: @"gz"])		unarchiver = @"gzip";
-		if ([pathExtension isEqualToString: @"bz2"])	unarchiver = @"bzip2";
+		NSString* unarchiver = @"gunzip";
+		if ([pathExtension isEqualToString: @"gz"])		unarchiver = @"gunzip";
+		if ([pathExtension isEqualToString: @"bz2"])	unarchiver = @"bunzip2";
 		if ([pathExtension isEqualToString: @"z"])		unarchiver = @"uncompress";
 		
 		// Create the unarchiver
