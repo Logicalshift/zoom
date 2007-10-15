@@ -18,7 +18,7 @@
 		downloadImage = [[NSImage imageNamed: @"IFDB-downloading"] retain];
 		
 		// Set up the progress indicator
-		progress = [[NSProgressIndicator alloc] initWithFrame: NSMakeRect(NSMinX(frame)+8, NSMinY(frame) + 12, frame.size.width-16, 16)];
+		progress = [[NSProgressIndicator alloc] initWithFrame: NSMakeRect(NSMinX(frame)+14, NSMinY(frame) + 18, frame.size.width-28, 16)];
 		[progress setAutoresizingMask: NSViewWidthSizable|NSViewMaxYMargin];
 		
 		[self addSubview: progress];

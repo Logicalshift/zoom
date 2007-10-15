@@ -210,6 +210,7 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 				[[ZoomStoryOrganiser sharedStoryOrganiser] addStory: filename
 														  withIdent: ident
 														   organise: [[ZoomPreferences globalPreferences] keepGamesOrganised]];					
+				filename = [[ZoomStoryOrganiser sharedStoryOrganiser] filenameForIdent: ident];
 			}
 			
 			// ... we've managed to load this file with the given plug-in, so display it

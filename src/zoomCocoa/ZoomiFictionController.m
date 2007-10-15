@@ -238,8 +238,8 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	[[ifdbView mainFrame] loadRequest: [NSURLRequest requestWithURL: loadingPage]];		
 	[ifdbView setCustomUserAgent: @"Mozilla/5.0 (Macintosh; U; Mac OS X; en-us) AppleWebKit (KHTML like Gecko) uk.org.logicalshift.zoom/1.1.2"];
 	
-	downloadView = [[ZoomDownloadView alloc] initWithFrame: NSMakeRect(0,0,218,54)];
-	downloadWindow = [[ZoomWindowThatIsKey alloc] initWithContentRect: NSMakeRect(0,0,218,54)
+	downloadView = [[ZoomDownloadView alloc] initWithFrame: NSMakeRect(0,0,230,65)];
+	downloadWindow = [[ZoomWindowThatIsKey alloc] initWithContentRect: NSMakeRect(0,0,230,65)
 															styleMask: NSBorderlessWindowMask
 															  backing: NSBackingStoreBuffered
 																defer: NO];
@@ -2361,6 +2361,10 @@ int tableSorter(id a, id b, void* context) {
 			
 			story = [self createStoryCopy: story];
 			[story setGroup: groupName];
+
+			[[ZoomStoryOrganiser sharedStoryOrganiser] addStory: [[ZoomStoryOrganiser sharedStoryOrganiser] filenameForIdent: storyId]
+													  withIdent: storyId
+													   organise: YES];
 		}
 		
 		// Set the filters to filter by group
@@ -2504,6 +2508,12 @@ int tableSorter(id a, id b, void* context) {
 	[self hideDownloadWindow];
 	
 	// TODO: notify that the download has failed for some reason
+}
+
+- (void) downloadUnarchiving: (ZoomDownload*) download {
+	if (download != activeDownload) return;
+	
+	[[downloadView progress] setIndeterminate: YES];
 }
 
 - (void) download: (ZoomDownload*) download
@@ -2654,6 +2664,14 @@ int tableSorter(id a, id b, void* context) {
 		if (url) [currentUrl setStringValue: url];
 		
 		[progressIndicator startAnimation: self];
+		
+		// Cancel any running download
+		if (activeDownload != nil) {
+			[activeDownload setDelegate: nil];
+			[activeDownload autorelease];
+			activeDownload = nil;
+			[self hideDownloadWindow];
+		}
 	}
 }
 
