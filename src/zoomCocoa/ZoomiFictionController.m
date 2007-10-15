@@ -2504,10 +2504,12 @@ int tableSorter(id a, id b, void* context) {
 	[activeDownload setDelegate: nil];
 	[activeDownload autorelease]; activeDownload = nil;	
 	[[downloadView progress] stopAnimation: self];
+
+	NSBeginAlertSheet(@"Could not complete the download.", @"Cancel", nil, nil, 
+					  [self window], nil, nil, nil, nil, 
+					  @"An error was encountered while trying to download the requested file.");
 	
 	[self hideDownloadWindow];
-	
-	// TODO: notify that the download has failed for some reason
 }
 
 - (void) downloadUnarchiving: (ZoomDownload*) download {
