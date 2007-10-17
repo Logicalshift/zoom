@@ -421,6 +421,13 @@ static int lastDownloadId = 0;
 	
 	suggestedFilename = [[response suggestedFilename] copy];
 	
+	if ([[suggestedFilename pathExtension] isEqualToString: @"txt"]) {
+		// Some servers produce .zblorb.txt files, etc.
+		if ([[[suggestedFilename stringByDeletingPathExtension] pathExtension] length] > 0) {
+			suggestedFilename = [suggestedFilename stringByDeletingPathExtension];
+		}
+	}
+	
 	if (downloadFile) {
 		[downloadFile closeFile];
 		[downloadFile release];
