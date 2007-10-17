@@ -2392,6 +2392,9 @@ int tableSorter(id a, id b, void* context) {
 		// Switch back to the browser view
 		if (browserOn) [self showLocalGames: self];		
 	}
+
+	// Write any new metadata
+	[[[NSApp delegate] userMetadata] writeToDefaultFile];
 }
 
 - (void) cancelFadeTimer {
@@ -2583,6 +2586,15 @@ int tableSorter(id a, id b, void* context) {
 	}
 }
 
+- (NSString*) queryEncode: (NSString*) string {
+	NSString* result = CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
+															   (CFStringRef)string,
+															   NULL,
+															   (CFStringRef)@"&?/=",
+															   kCFStringEncodingUTF8);
+	return [result autorelease];
+}
+
 - (IBAction) showIfDb: (id) sender {
 	ZoomFlipView* fv = [[[ZoomFlipView alloc] init] autorelease];
 	[fv setAnimationTime: 0.35];
@@ -2608,13 +2620,17 @@ int tableSorter(id a, id b, void* context) {
 		ZoomStoryID* ident = [storyList objectAtIndex: [mainTableView selectedRow]];
 		if (ident) {
 			NSString* identString = [ident description];
+			ZoomStory* story = [self storyForID: ident];
 			if ([identString hasPrefix: @"UUID://"]) {
 				identString = [identString substringFromIndex: 7];
 				identString = [identString substringToIndex: [identString length]-2];
 			}
 			
 			ifdbUrl = [NSString stringWithFormat: @"%@viewgame?ifid=%@&findmore", 
-				ifdbUrl, [identString stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding]];
+				ifdbUrl, [self queryEncode: identString]];
+			if (story != nil) {
+				ifdbUrl = [ifdbUrl stringByAppendingFormat: @"&title=%@", [self queryEncode: [story title]]];
+			}
 			findMore = YES;
 		}
 	}

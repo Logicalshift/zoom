@@ -135,7 +135,7 @@
 		4B84FDDE0CAFC9970071F3B3 /* ZoomDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B84FDDC0CAFC9970071F3B3 /* ZoomDownload.m */; };
 		4B87BA7309C9AB13005D6722 /* ifmetabase-internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B87BA7109C9AAE1005D6722 /* ifmetabase-internal.h */; };
 		4B8CE6F40AD95A3A008235D2 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B8CE6F20AD95A3A008235D2 /* md5.c */; };
-		4B8CE6F50AD95A3A008235D2 /* md5.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8CE6F30AD95A3A008235D2 /* md5.h */; };
+		4B8CE6F50AD95A3A008235D2 /* md5.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8CE6F30AD95A3A008235D2 /* md5.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B8CE6F80AD95A6C008235D2 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B8CE6F20AD95A3A008235D2 /* md5.c */; };
 		4B95CDA1C5B03AD500FD9F27 /* ZoomSkeinController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B18852906987AC6004D8501 /* ZoomSkeinController.h */; };
 		4B95CDA2C5B03AD500FD9F27 /* ZoomSkeinController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B18852A06987AC6004D8501 /* ZoomSkeinController.m */; };
