@@ -77,7 +77,11 @@ struct IFID {
 	
 	union {
 		unsigned char uuid[16];
-		unsigned char md5[16];
+		
+		struct {
+			unsigned char* systemId;
+			unsigned char md5[16];			
+		} md5;
 		
 		struct {
 			int release;

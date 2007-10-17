@@ -1238,7 +1238,10 @@ static int SortPlugInInfo(id a, id b, void* context) {
 	[self downloadNextUpdate];	
 }
 
-- (void) downloadFailed: (ZoomDownload*) download {
+- (void) downloadFailed: (ZoomDownload*) download 
+				 reason: (NSString*) reason {
+	NSLog(@"Download failed: %@", reason);
+	
 	[downloadInfo setStatus: ZoomPlugInDownloadFailed];
 	[self sortInformation];
 	[self pluginInformationChanged];

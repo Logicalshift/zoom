@@ -181,11 +181,12 @@ static int lastDownloadId = 0;
 	[subtasks release]; subtasks = nil;
 }
 
-- (void) failed {
+- (void) failed: (NSString*) reason {
 	[self finished];
 
-	if (delegate && [delegate respondsToSelector: @selector(downloadFailed:)]) {
-		[delegate downloadFailed: self];
+	if (delegate && [delegate respondsToSelector: @selector(downloadFailed:reason:)]) {
+		[delegate downloadFailed: self
+						  reason: reason];
 	}
 }
 
@@ -313,12 +314,12 @@ static int lastDownloadId = 0;
 	
 	if (task == nil) {
 		// Oops: couldn't create the task
-		[self failed];
+		[self failed: @"Could not decompress the downloaded file."];
 		return;
 	}
 	if (![[NSFileManager defaultManager] fileExistsAtPath: tmpFile]) {
 		// Oops, the download file doesn't exist
-		[self failed];
+		[self failed: @"The downloaded file was deleted before it could be unarchived."];
 		return;
 	}
 	
@@ -379,7 +380,30 @@ static int lastDownloadId = 0;
 		// Failure: give up
 		NSLog(@"Error: %i", status);
 		
-		[self failed];
+		switch (status)
+		{
+			case 403:
+				[self failed: @"The server forbade access to the file"];
+				break;
+				
+			case 404:
+				[self failed: @"The file was not found on the server"];
+				break;
+				
+			case 410:
+				[self failed: @"The file is no longer available on the server"];
+				break;
+				
+			case 500:
+				[self failed: @"The server is suffering from a fault"];
+				break;
+				
+			case 503:
+				[self failed: @"The server is currently unavailable"];
+				
+			default:
+				[self failed: [NSString stringWithFormat: @"Server reported code %i", status]];
+		}
 		return;
 	}
 	
@@ -412,7 +436,7 @@ static int lastDownloadId = 0;
 		// Failed to create the download file
 		NSLog(@"...Could not create file");
 		
-		[self failed];
+		[self failed: @"Unable to save the download to disk"];
 		return;
 	}
 	
@@ -439,7 +463,7 @@ static int lastDownloadId = 0;
 	NSLog(@"Download failed with error: %@", error);
 	
 	// Inform the delegate, and give up
-	[self failed];
+	[self failed: [NSString stringWithFormat: @"Connection failed: %@", [error localizedDescription]]];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
@@ -475,7 +499,7 @@ static int lastDownloadId = 0;
 			
 			NSFileHandle* readDownload = [NSFileHandle fileHandleForReadingAtPath: tmpFile];
 			if (readDownload == nil) {
-				[self failed];
+				[self failed: @"The downloaded file was deleted before it could be processed"];
 				return;
 			}
 			
@@ -500,7 +524,7 @@ static int lastDownloadId = 0;
 			
 			if (![digestData isEqual: md5]) {
 				NSLog(@"Could not verify download");
-				[self failed];
+				[self failed: @"The downloaded file has an invalid checksum"];
 				return;
 			}
 		}
@@ -509,7 +533,7 @@ static int lastDownloadId = 0;
 		NSString* directory = [self directoryForUnarchiving];
 		if (directory == nil) {
 			// Couldn't create the directory
-			[self failed];
+			[self failed: @"Could not create a directory to decompress the downloaded file"];
 			return;
 		}
 		
@@ -548,7 +572,7 @@ static int lastDownloadId = 0;
 	if (!succeeded) {
 		// Oops, failed
 		NSLog(@"Failed to unarchive %@", tmpFile);
-		[self failed];
+		[self failed: @"The downloaded file failed to decompress"];
 		return;
 	} else if (finished) {
 		// Download has successfully completed

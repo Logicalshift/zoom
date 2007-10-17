@@ -72,7 +72,7 @@ extern IFID IFMB_GlulxId(int release, const char* serial, unsigned int checksum)
 extern IFID IFMB_GlulxIdNotInform(unsigned int memsize, unsigned int checksum);
 
 /* Returns an IFID based on a MD5 identifier */
-extern IFID IFMB_Md5Id(const unsigned char* md5);
+extern IFID IFMB_Md5Id(const unsigned char* md5, const char* systemId);
 
 /* Merges a set of IFIDs into a single ID */
 extern IFID IFMB_CompoundId(int count, IFID* identifiers);

@@ -52,7 +52,8 @@
 
 - (void) downloadStarting: (ZoomDownload*) download;			// A download is starting
 - (void) downloadComplete: (ZoomDownload*) download;			// The download has completed
-- (void) downloadFailed: (ZoomDownload*) download;				// The download failed for some reason
+- (void) downloadFailed: (ZoomDownload*) download				// The download failed for some reason
+				 reason: (NSString*) reason;
 
 - (void) downloadConnecting: (ZoomDownload*) download;			// The download is connecting
 - (void) downloading: (ZoomDownload*) download;					// The download is reading data

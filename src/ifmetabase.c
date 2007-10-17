@@ -194,10 +194,11 @@ IFID IFMB_IdFromString(const char* idString) {
 	int x;
 	int idLen;
 	char lowerPrefix[10];
-	int isTads;
-	int isHugo;
+	int systemLen;
 	int pos;
 	unsigned char md5[16];
+	IFID md5Id;
+	char system[16];
 	
 	/* NULL string indicates a NULL ID */
 	if (idString == NULL) return NULL;
@@ -387,20 +388,14 @@ IFID IFMB_IdFromString(const char* idString) {
 	/* MD5sum identifiers are treated identically */
 	pos = 0;
 	
-	isTads = 0;
-	isHugo = 0;
-	
-	/* Might be a TADS specifier */
-	if (lowerPrefix[0] == 't' && lowerPrefix[1] == 'a' && lowerPrefix[2] == 'd' && lowerPrefix[3] == 's' && lowerPrefix[4] == '-') {
-		pos += 5;
-		isTads = 1;
+	/* Work out how long the system specifier is */
+	systemLen = 0;
+	for (; systemLen < 8 && idString[systemLen] != 0 && idString[systemLen] != '-'; systemLen++) {
+		system[systemLen] = idString[systemLen];
 	}
-	
-	/* Might be a Hugo specifier */
-	if (lowerPrefix[0] == 'h' && lowerPrefix[1] == 'u' && lowerPrefix[2] == 'g' && lowerPrefix[3] == 'o' && lowerPrefix[4] == '-') {
-		pos += 5;
-		isHugo = 1;
-	}
+	system[systemLen] = 0;
+	if (idString[systemLen] != '-') systemLen = 0;
+	pos += systemLen;
 	
 	/* Rest of the string should be an MD5 specifier (32 hexadecimal characters). If not, treat this as a generic ID */
 	for (x=0; x<16; x++) md5[x] = 0;
@@ -425,7 +420,8 @@ IFID IFMB_IdFromString(const char* idString) {
 	}
 	
 	/* Is a TADS/generic MD5 string */
-	return IFMB_Md5Id(md5);
+	md5Id = IFMB_Md5Id(md5, systemLen>0?system:NULL);
+	return md5Id;
 }
 
 static char* Append(char* string, char* toAppend) {
@@ -482,8 +478,12 @@ char* IFMB_IdToString(IFID id) {
 			break;
 			
 		case ID_MD5:
+			if (id->data.md5.systemId != NULL) {
+				snprintf(buffer, 128, "%s-", id->data.md5.systemId);
+				result = Append(result, buffer);
+			}
 			for (x=0; x<16; x++) {
-				snprintf(buffer, 128, "%02X", id->data.md5[x]);
+				snprintf(buffer, 128, "%02X", id->data.md5.md5[x]);
 				result = Append(result, buffer);
 			}
 			break;
@@ -554,13 +554,18 @@ IFID IFMB_GlulxIdNotInform(unsigned int memsize, unsigned int checksum) {
 }
 
 /* Returns an IFID based on a MD5 identifier */
-IFID IFMB_Md5Id(const unsigned char* md5) {
+IFID IFMB_Md5Id(const unsigned char* md5, const char* systemId) {
 	IFID result;
 	
 	result = malloc(sizeof(struct IFID));
 	result->type = ID_MD5;
+	result->data.md5.systemId = NULL;
+	if (systemId) {
+		result->data.md5.systemId = malloc(sizeof(char)*(strlen(systemId)+1));
+		strcpy(result->data.md5.systemId, systemId);
+	}
 	
-	memcpy(result->data.md5, md5, 16);
+	memcpy(result->data.md5.md5, md5, 16);
 	
 	return result;
 }
@@ -663,6 +668,8 @@ IFID* IFMB_SplitId(IFID id, int* count) {
 /* Compares two IDs */
 int IFMB_CompareIds(IFID a, IFID b) {
 	int x;
+	char* useIdent;
+	IFID identId;
 	
 	/* Compare ID types */
 	if (a->type > b->type) return 1;
@@ -682,8 +689,25 @@ int IFMB_CompareIds(IFID a, IFID b) {
 			
 		case ID_MD5:
 			for (x=0; x<16; x++) {
-				if (a->data.md5[x] > b->data.md5[x]) return 1;
-				if (a->data.md5[x] < b->data.md5[x]) return -1;
+				if (a->data.md5.md5[x] > b->data.md5.md5[x]) return 1;
+				if (a->data.md5.md5[x] < b->data.md5.md5[x]) return -1;
+			}
+			
+			/* Hack: older versions of this generated MD5 IDs without a system identifier: this will add one back in */
+			useIdent = NULL;
+			identId = NULL;
+			if (a->data.md5.systemId == NULL) {
+				identId = a;
+				useIdent = b->data.md5.systemId;
+			}
+			if (b->data.md5.systemId == NULL) {
+				identId = b;
+				useIdent = a->data.md5.systemId;
+			}
+				
+			if (useIdent) {
+				identId->data.md5.systemId = malloc(sizeof(char)*(strlen(useIdent)+1));
+				strcpy(identId->data.md5.systemId, useIdent);
 			}
 			break;
 			
@@ -758,6 +782,10 @@ void IFMB_FreeId(IFID ident) {
 		if (ident->data.compound.idsNotNull) free(ident->data.compound.idsNotNull);
 	} else if (ident->type == ID_GENERIC) {
 		free(ident->data.generic.idString);
+	} else if (ident->type == ID_MD5) {
+		if (ident->data.md5.systemId != NULL) {
+			free(ident->data.md5.systemId);
+		}
 	}
 	
 	free(ident);
@@ -781,6 +809,12 @@ IFID IFMB_CopyId(IFID ident) {
 	} else if (ident->type == ID_GENERIC) {
 		result->data.generic.idString = malloc(sizeof(char)*(strlen(ident->data.generic.idString)+1));
 		strcpy(result->data.generic.idString, ident->data.generic.idString);
+	} else if (ident->type == ID_MD5) {
+		if (ident->data.md5.systemId != NULL) {
+			int len = strlen(ident->data.md5.systemId);
+			result->data.md5.systemId = malloc(sizeof(char)*(len+1));
+			strcpy(result->data.md5.systemId, ident->data.md5.systemId);
+		}
 	}
 	
 	return result;

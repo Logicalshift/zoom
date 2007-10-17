@@ -2498,7 +2498,8 @@ int tableSorter(id a, id b, void* context) {
 	[self hideDownloadWindow];
 }
 
-- (void) downloadFailed: (ZoomDownload*) download {
+- (void) downloadFailed: (ZoomDownload*) download 
+				 reason: (NSString*) reason {
 	if (download != activeDownload) return;
 
 	[activeDownload setDelegate: nil];
@@ -2507,7 +2508,8 @@ int tableSorter(id a, id b, void* context) {
 
 	NSBeginAlertSheet(@"Could not complete the download.", @"Cancel", nil, nil, 
 					  [self window], nil, nil, nil, nil, 
-					  @"An error was encountered while trying to download the requested file.");
+					  [NSString stringWithFormat: @"An error was encountered while trying to download the requested file%@%@.",
+						  reason?@".\n\n":@"", reason]);
 	
 	[self hideDownloadWindow];
 }
@@ -2611,16 +2613,17 @@ int tableSorter(id a, id b, void* context) {
 				identString = [identString substringToIndex: [identString length]-2];
 			}
 			
-			ifdbUrl = [NSString stringWithFormat: @"%@viewgame?ifid=%@", ifdbUrl, [identString stringByAddingPercentEscapesUsingEncoding: NSISOLatin1StringEncoding]];
+			ifdbUrl = [NSString stringWithFormat: @"%@viewgame?ifid=%@&findmore", 
+				ifdbUrl, [identString stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding]];
 			findMore = YES;
 		}
 	}
 	
 	// Reload the main page if the user has strayed off the main ifdb site
-	// TODO: add a splash page to display while the very first page is loading (the white page is a bit dull...)
 	NSURL* ifdb = [NSURL URLWithString: ifdbUrl];
 	if (findMore || !usedBrowser || [[[[[[ifdbView mainFrame] dataSource] request] URL] host] caseInsensitiveCompare: [ifdb host]] != 0) {
 		if (!usedBrowser) {
+			// Hacky way of clearing the history
 			[[ifdbView backForwardList] setCapacity: 0];
 			[[ifdbView backForwardList] setCapacity: 256];
 		}
