@@ -104,7 +104,7 @@
 	
 	ZoomStoryID* signpostId;					// Story to open after the download has completed
 	NSString* installPlugin;					// The name of the plugin to install
-	NSData* activeSignpost;						// The active signpost file
+	NSDictionary* activeSignpost;				// The active signpost file
 	BOOL downloadUpdateList;					// YES if we're trying to download an update list
 	BOOL downloadPlugin;						// YES if we're trying to download a .zoomplugin file
 }

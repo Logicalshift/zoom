@@ -27,5 +27,6 @@
 // Actions
 - (IBAction) installUpdates: (id) sender;							// 'Install' button clicked
 - (IBAction) checkForUpdates: (id) sender;							// 'Check for updates' button clicked
+- (void) restartZoom;												// Forces Zoom to restart
 
 @end

@@ -22,6 +22,7 @@
 #import "ZoomRatingCell.h"
 #import "ZoomHQImageView.h"
 #import "ZoomPlugInManager.h"
+#import "ZoomPlugInController.h"
 #import "ZoomPlugIn.h"
 #import "ZoomWindowThatIsKey.h"
 
@@ -34,6 +35,8 @@
 @interface ZoomiFictionController(PrivateMethods)
 
 - (NSString*) queryEncode: (NSString*) string;
+- (void) installSignpostPluginFrom: (NSData*) signpostXml;
+- (void) installPluginFrom: (ZoomDownload*) downloadedPlugin;
 
 @end
 
@@ -2548,14 +2551,44 @@ int tableSorter(id a, id b, void* context) {
 - (void) downloadComplete: (ZoomDownload*) download {
 	if (download != activeDownload) return;
 	
-	[self addFilesFromDirectory: [download downloadDirectory]
-					  groupName: [[[download suggestedFilename] lastPathComponent] stringByDeletingPathExtension]];
+	if (downloadUpdateList) {
+		// We've downloaded a list of plugins, and we want to pick one to install as part of a signpost file
+		downloadUpdateList = NO;
+		NSString* xmlFile;
+		NSString* extension = [[activeDownload suggestedFilename] pathExtension];
+		
+		NSEnumerator* dirEnum = [[[NSFileManager defaultManager] directoryContentsAtPath: [activeDownload downloadDirectory]] objectEnumerator];
+		NSString* path;
+		while (path = [dirEnum nextObject]) {
+			if ([[path pathExtension] isEqualToString: extension]) {
+				xmlFile = [[activeDownload downloadDirectory] stringByAppendingPathComponent: path];
+			}
+		}
+		
+		if (xmlFile) {
+			[self installSignpostPluginFrom: [NSData dataWithContentsOfFile: xmlFile]];
+		} else {
+			// Butterfingers
+			NSBeginAlertSheet(@"Could not download the plug-in", @"Cancel", nil, nil, 
+							  [self window], nil, nil, nil, nil,
+							  @"Zoom succesfully downloaded a plugin update file, but was unable to locate it after the download had completed.");
+		}
+	} else if (downloadPlugin) {
+		// We've downloaded a plugin and need to install it
+		[self installPluginFrom: activeDownload];
+	} else {
+		// Default: add story files
+		[self addFilesFromDirectory: [download downloadDirectory]
+						  groupName: [[[download suggestedFilename] lastPathComponent] stringByDeletingPathExtension]];		
+	}
 	
-	[activeDownload setDelegate: nil];
-	[activeDownload autorelease]; activeDownload = nil;
-	[[downloadView progress] stopAnimation: self];
-	
-	[self hideDownloadWindow];
+	if (download == activeDownload) {
+		[activeDownload setDelegate: nil];
+		[activeDownload autorelease]; activeDownload = nil;
+		[[downloadView progress] stopAnimation: self];
+		
+		[self hideDownloadWindow];
+	}
 }
 
 - (void) downloadFailed: (ZoomDownload*) download 
@@ -2649,7 +2682,7 @@ int tableSorter(id a, id b, void* context) {
 }
 
 - (NSString*) queryEncode: (NSString*) string {
-	NSString* result = CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
+	NSString* result = (NSString*)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
 															   (CFStringRef)string,
 															   NULL,
 															   (CFStringRef)@"&?/=",
@@ -2753,7 +2786,7 @@ int tableSorter(id a, id b, void* context) {
 		[progressIndicator startAnimation: self];
 		
 		// Cancel any running download
-		if (activeDownload != nil) {
+		if (activeDownload != nil && ![[[[frame dataSource] request] URL] isFileURL]) {
 			[activeDownload setDelegate: nil];
 			[activeDownload autorelease];
 			activeDownload = nil;
@@ -2812,8 +2845,8 @@ int tableSorter(id a, id b, void* context) {
 	}
 	
 	// Check for an installed plugin with the interpreter ID
-	NSString* interpreter = [signpost objectForKey: @"Intepreter"];
-	if (interpreter && [interpreter isKindOfClass: [NSDictionary class]]) {
+	NSString* interpreter = [signpost objectForKey: @"Interpreter"];
+	if (interpreter && [interpreter isKindOfClass: [NSString class]]) {
 		BOOL haveInterpreter = NO;
 		
 		NSEnumerator* pluginEnum = [[[ZoomPlugInManager sharedPlugInManager] pluginBundles] objectEnumerator];
@@ -2838,14 +2871,15 @@ int tableSorter(id a, id b, void* context) {
 			
 			[signpostId autorelease];
 			signpostId = nil;
-			activeSignpost = [signpostFile retain];
+			[activeSignpost release];
+			activeSignpost = [signpost retain];
 			
-			downloadUpdateList = YES;
-			downloadPlugin = NO;
-			
-			activeDownload = [[ZoomDownload alloc] initWithUrl: [NSURL URLWithString: updateUrl]];
-			[activeDownload setDelegate: self];
-			[activeDownload startDownload];		
+			NSBeginAlertSheet(@"Zoom needs to download a new plug-in in order play this story",
+							  @"Install plugin", @"Cancel", nil, [self window], 
+							  self, @selector(downloadPlugIn:returnCode:contextInfo:), nil,
+							  nil,
+							  @"In order to play the story file you have selected, Zoom needs to download and install a new plug-in. If you choose to install this plug-in, Zoom will need to restart before the story can be played.\n\n"
+							  "Plug-ins contain interpreter programs necessary to run certain interactive fiction. Zoom comes with support for Z-Code, HUGO, TADS and Glulx formats but is capable of playing new formats by adding new plug-ins.");
 			return;
 		}
 	}
@@ -2891,6 +2925,178 @@ int tableSorter(id a, id b, void* context) {
 		activeDownload = [[ZoomDownload alloc] initWithUrl: url];
 		[activeDownload setDelegate: self];
 		[activeDownload startDownload];		
+	}
+}
+
+- (void) downloadPlugIn: (NSWindow *)alert 
+			 returnCode: (int)returnCode 
+			contextInfo: (void *)contextInfo {
+	if (activeSignpost && returnCode == NSAlertDefaultReturn) {
+		// Get the update URL
+		NSString* updateUrl = [activeSignpost objectForKey: @"InterpreterURL"];
+		if (!updateUrl || ![updateUrl isKindOfClass: [NSString class]]) {
+			return;
+		}
+
+		// Download the update XML file
+		[activeDownload setDelegate: nil];
+		[activeDownload autorelease]; activeDownload = nil;
+		
+		[signpostId autorelease];
+		signpostId = nil;
+		
+		downloadUpdateList = YES;
+		downloadPlugin = NO;
+		
+		activeDownload = [[ZoomDownload alloc] initWithUrl: [NSURL URLWithString: updateUrl]];
+		[activeDownload setDelegate: self];
+		[activeDownload startDownload];				
+	}
+}
+
+- (void) failedToInstallPlugin: (NSString*) reason {
+	NSBeginAlertSheet(@"Could not install the plug-in", @"Cancel", nil, nil, 
+					  [self window], nil, nil, nil, nil,
+					  reason);
+}
+
+static unsigned int ValueForHexChar(int hex) {
+	if (hex >= '0' && hex <= '9') return hex - '0';
+	if (hex >= 'a' && hex <= 'f') return hex - 'a' + 10;
+	if (hex >= 'A' && hex <= 'F') return hex - 'A' + 10;
+	return 0;
+}
+
+- (void) installSignpostPluginFrom: (NSData*) signpostXml {
+	// Parse the property list
+	NSDictionary* update = [NSPropertyListSerialization propertyListFromData: signpostXml
+															mutabilityOption: NSPropertyListImmutable
+																	  format: nil
+															errorDescription: nil];
+	
+	if (update == nil || ![update isKindOfClass: [NSDictionary class]]) {
+		// Not a valid update file
+		[self failedToInstallPlugin: @"The plugin update file that was download does not appear to contain a valid property list."];
+		return;
+	}
+	
+	// Find a plugin that matches the signpost
+	NSString* interpreter = [activeSignpost objectForKey: @"Interpreter"];
+	if (!interpreter || ![interpreter isKindOfClass: [NSString class]]) {
+		[self failedToInstallPlugin: @"Oops, Zoom forgot which interpreter it was trying to install."];
+		return;		
+	}
+	
+	NSEnumerator* pluginEnum = [[update allValues] objectEnumerator];
+	NSDictionary* plugInDetails;
+	NSDictionary* pluginToInstall = nil;
+	while (plugInDetails = [pluginEnum nextObject]) {
+		if (![plugInDetails isKindOfClass: [NSDictionary class]]) {
+			continue;
+		}
+		
+		NSString* displayName = [plugInDetails objectForKey: @"DisplayName"];
+		if (!displayName || ![displayName isKindOfClass: [NSString class]]) {
+			continue;
+		}
+		
+		if ([displayName isEqualToString: interpreter]) {
+			pluginToInstall = plugInDetails;
+			break;
+		}
+	}
+	
+	if (!pluginToInstall) {
+		[self failedToInstallPlugin: [NSString stringWithFormat: @"Zoom could not find a plugin for %@ at the specified site.", interpreter]];
+		return;
+	}
+	
+	// Get the URL and MD5 for the plugin
+	NSString* urlString = [pluginToInstall objectForKey: @"URL"];
+	NSString* md5raw = [pluginToInstall objectForKey: @"MD5"];
+	
+	if (!urlString || !md5raw || ![urlString isKindOfClass: [NSString class]] || ![md5raw isKindOfClass: [NSString class]]) {
+		[self failedToInstallPlugin: [NSString stringWithFormat: @"Zoom found a plugin for %@ at the specified site, but could not establish a URL to download it from.", interpreter]];
+		return;		
+	}
+	
+	// Build a digest from string values
+	unsigned char digest[16];
+	int x;
+	for (x=0; x<16; x++) {
+		int pos = x*2;
+		if (pos+1 >= [md5raw length]) break;
+		
+		unichar firstChar = [md5raw characterAtIndex: pos];
+		unichar secondChar = [md5raw characterAtIndex: pos+1];
+		
+		digest[x] = (ValueForHexChar(firstChar)<<4)|ValueForHexChar(secondChar);
+	}
+	
+	NSData* md5 = [[[NSData alloc] initWithBytes: digest
+										  length: 16] autorelease];
+	
+	// Download the plugin
+	[activeDownload setDelegate: nil];
+	[activeDownload autorelease]; activeDownload = nil;
+	
+	[signpostId autorelease];
+	signpostId = nil;
+	
+	downloadUpdateList = NO;
+	downloadPlugin = YES;
+	
+	activeDownload = [[ZoomDownload alloc] initWithUrl: [NSURL URLWithString: urlString]];
+	[activeDownload setDelegate: self];
+	[activeDownload setExpectedMD5: md5];
+	[activeDownload startDownload];
+}
+
+- (void) installPluginFrom: (ZoomDownload*) downloadedPlugin {
+	NSEnumerator* downloadDirEnum = [[[NSFileManager defaultManager] directoryContentsAtPath: [downloadedPlugin downloadDirectory]] objectEnumerator];
+	NSString* path;
+	BOOL installed = NO;
+	
+	while (!installed && (path = [downloadDirEnum nextObject])) {
+		NSString* extension = [[path pathExtension] lowercaseString];
+		
+		// Only install plugins
+		if (![extension isEqualToString: @"plugin"] && ![extension isEqualToString: @"zoomplugin"]) {
+			continue;
+		}
+		
+		// We only install one plugin
+		installed = YES;
+		
+		if (![[ZoomPlugInManager sharedPlugInManager] installPlugIn: [[downloadedPlugin downloadDirectory] stringByAppendingPathComponent: path]]) {
+			[self failedToInstallPlugin: @"The plugin was successfully downloaded, but did not install correctly. This usually occurs because you do not have permission to modify the Zoom application."];
+			return;
+		}
+	}
+	
+	if (!installed) {
+		[self failedToInstallPlugin: @"No plugins were found in the file that was downloaded."];		
+	}
+	
+	// Restart if necessary
+	if ([[ZoomPlugInManager sharedPlugInManager] restartRequired]) {
+		// Write out a startup signpost file
+		NSString* startupSignpost = [[[NSApp delegate] zoomConfigDirectory] stringByAppendingPathComponent: @"launch.signpost"];
+		NSData* signpostData = [NSPropertyListSerialization dataFromPropertyList: activeSignpost
+																		  format: NSPropertyListXMLFormat_v1_0
+																errorDescription: nil];
+		
+		[signpostData writeToFile: startupSignpost
+					   atomically: YES];
+		
+		// Restart Zoom
+		[[ZoomPlugInController sharedPlugInController] restartZoom];
+	} else {
+		// Retry the signpost
+		[self openSignPost: [NSPropertyListSerialization dataFromPropertyList: activeSignpost
+																	   format: NSPropertyListXMLFormat_v1_0
+															 errorDescription: nil]
+			 forceDownload: YES];
 	}
 }
 

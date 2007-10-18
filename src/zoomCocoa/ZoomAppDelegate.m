@@ -141,7 +141,7 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 	// If this is a .signpost file, then pass it to the ifiction window
 	if ([[[filename pathExtension] lowercaseString] isEqualToString: @"signpost"]) {
 		[[ZoomiFictionController sharediFictionController] openSignPost: [NSData dataWithContentsOfFile: filename]
-														  forceDownload: YES];
+														  forceDownload: NO];
 		return YES;
 	}
 	
@@ -263,6 +263,29 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 	// Make sure that the plugin manager is finalised
 	[[ZoomPlugInManager sharedPlugInManager] finishedWithObject];
 	[ZoomDownload removeTemporaryDirectory];
+}
+
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+	// See if there's a startup signpost file
+	NSString* startupSignpost = [[[NSApp delegate] zoomConfigDirectory] stringByAppendingPathComponent: @"launch.signpost"];
+	BOOL isDir;
+
+	if ([[NSFileManager defaultManager] fileExistsAtPath: startupSignpost
+											 isDirectory: &isDir]) {
+		// Do nothing if it's a directory
+		if (isDir) return;
+		
+		// Read the file
+		NSData* startupSignpostData = [NSData dataWithContentsOfFile: startupSignpost];
+		
+		// Delete it
+		[[NSFileManager defaultManager] removeFileAtPath: startupSignpost
+												 handler: nil];
+		
+		// Get the iFiction control to handle it
+		[[ZoomiFictionController sharediFictionController] openSignPost: startupSignpostData
+														  forceDownload: YES];
+	}
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)aNotification {

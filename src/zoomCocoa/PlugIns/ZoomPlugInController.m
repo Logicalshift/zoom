@@ -151,44 +151,48 @@
 
 // = Actions =
 
+- (void) restartZoom {
+	// Force Zoom to restart
+	NSMutableString* zoomPath = [[[[NSBundle mainBundle] bundlePath] mutableCopy] autorelease];
+	
+	int x;
+	for (x=0; x<[zoomPath length]; x++) {
+		unichar c = [zoomPath characterAtIndex: x];
+		if (c == '"') {
+			[zoomPath replaceCharactersInRange: NSMakeRange(x, 1)
+									withString: @"\\\""];
+				x++;
+			}
+		}
+
+	// Set some environment variables
+	setenv("ZOOM_PATH", [zoomPath UTF8String], 1);
+	setenv("ZOOM_PID", [[NSString stringWithFormat: @"%u", getpid()] UTF8String], 1);
+
+	// Fork off a simple script to restart Zoom (based on the one in Sparkle)
+	system("/bin/bash -c '{\n"
+		   "echo Will restart\n"
+		   "for ((x = 0; x < 3000 && $(echo $(/bin/ps -xp $ZOOM_PID|/usr/bin/wc -l))-1; x++)); do\n"
+		   "  /bin/sleep .2\n"
+		   "done\n"
+		   "if [[ $(/bin/ps -xp $ZOOM_PID|/usr/bin/wc -l) -lt 2 ]]; then\n"
+		   "  echo Restarting \"${ZOOM_PATH}\"\n"
+		   "  /usr/bin/open \"${ZOOM_PATH}\"\n"
+		   "else\n"
+		   "  echo Not restarting: $(/bin/ps -xp $ZOOM_PID|/usr/bin/wc -l)\n"
+		   "fi\n"
+		   "echo Restart finished\n"
+		   "} &'");
+
+	// I'll be back
+	[NSApp terminate: self];
+}
+
 - (void) finishRestart:(NSWindow *)sheet 
 			returnCode:(int)returnCode 
 		   contextInfo:(void  *)contextInfo {
 	if (returnCode == NSAlertDefaultReturn) {
-		// Force Zoom to restart
-		NSMutableString* zoomPath = [[[[NSBundle mainBundle] bundlePath] mutableCopy] autorelease];
-		
-		int x;
-		for (x=0; x<[zoomPath length]; x++) {
-			unichar c = [zoomPath characterAtIndex: x];
-			if (c == '"') {
-				[zoomPath replaceCharactersInRange: NSMakeRange(x, 1)
-										withString: @"\\\""];
-				x++;
-			}
-		}
-		
-		// Set some environment variables
-		setenv("ZOOM_PATH", [zoomPath UTF8String], 1);
-		setenv("ZOOM_PID", [[NSString stringWithFormat: @"%u", getpid()] UTF8String], 1);
-		
-		// Fork off a simple script to restart Zoom (based on the one in Sparkle)
-		system("/bin/bash -c '{\n"
-			   "echo Will restart\n"
-			   "for ((x = 0; x < 3000 && $(echo $(/bin/ps -xp $ZOOM_PID|/usr/bin/wc -l))-1; x++)); do\n"
-			   "  /bin/sleep .2\n"
-			   "done\n"
-			   "if [[ $(/bin/ps -xp $ZOOM_PID|/usr/bin/wc -l) -lt 2 ]]; then\n"
-			   "  echo Restarting \"${ZOOM_PATH}\"\n"
-			   "  /usr/bin/open \"${ZOOM_PATH}\"\n"
-			   "else\n"
-			   "  echo Not restarting: $(/bin/ps -xp $ZOOM_PID|/usr/bin/wc -l)\n"
-			   "fi\n"
-			   "echo Restart finished\n"
-			   "} &'");
-		
-		// I'll be back
-		[NSApp terminate: self];
+		[self restartZoom];
 	}
 }
 
