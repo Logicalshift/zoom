@@ -2324,7 +2324,7 @@ int tableSorter(id a, id b, void* context) {
 // = Handling downloads =
 
 - (BOOL) canPlayFile: (NSString*) filename {
-	NSArray* fileTypes = [NSArray arrayWithObjects: @"z3", @"z4", @"z5", @"z6", @"z7", @"z8", @"blorb", @"zblorb", @"blb", @"zlb", nil];
+	NSArray* fileTypes = [NSArray arrayWithObjects: @"z3", @"z4", @"z5", @"z6", @"z7", @"z8", @"blorb", @"zblorb", @"blb", @"zlb", @"signpost", nil];
 	NSString* extn = [[filename pathExtension] lowercaseString];
 	
 	if ([fileTypes containsObject: extn]) {
@@ -2345,6 +2345,7 @@ int tableSorter(id a, id b, void* context) {
 	NSMutableArray* addedFiles = [NSMutableArray array];
 	NSDirectoryEnumerator* dirEnum = [[NSFileManager defaultManager] enumeratorAtPath: directory];
 	NSString* path;
+	NSString* signpostFile = nil;
 	while (path = [dirEnum nextObject]) {
 		path = [directory stringByAppendingPathComponent: path];
 		path = [path stringByStandardizingPath];
@@ -2362,6 +2363,12 @@ int tableSorter(id a, id b, void* context) {
 		// Must be playable
 		if (![self canPlayFile: path]) continue;
 		
+		// Could be a signpost
+		if ([[[path pathExtension] lowercaseString] isEqualToString: @"signpost"]) {
+			signpostFile = path;
+			continue;
+		}
+		
 		// Must have an ID
 		ZoomStoryID* storyId = [ZoomStoryID idForFile: path];
 		if (!storyId) continue;
@@ -2375,6 +2382,13 @@ int tableSorter(id a, id b, void* context) {
 	
 	// Either catalogue the files as a group, or load the game that was downloaded if there's only one
 	if ([addedFiles count] == 0) {
+		if (signpostFile != nil) {
+			// Play a signpost file
+			[self openSignPost: [NSData dataWithContentsOfFile: signpostFile]
+				 forceDownload: YES];
+			return;
+		}
+		
 		// Oops: couldn't find any games to add
 		NSBeginAlertSheet(@"The download did not contain any story files", @"Cancel", nil, nil, 
 						  [self window], nil, nil, nil, nil, 
@@ -2626,7 +2640,7 @@ int tableSorter(id a, id b, void* context) {
 							request:(NSURLRequest *)request 
 							  frame:(WebFrame *)frame 
 				   decisionListener:(id<WebPolicyDecisionListener>)listener {
-	NSArray* archiveFiles = [NSArray arrayWithObjects: @"zip", @"tar", @"tgz", @"gz", @"bz2", nil];
+	NSArray* archiveFiles = [NSArray arrayWithObjects: @"zip", @"tar", @"tgz", @"gz", @"bz2", @"z", nil];
 	
 	if ([[actionInformation objectForKey: WebActionNavigationTypeKey] intValue] == 0) {
 		// Get the URL to download
@@ -2857,6 +2871,10 @@ int tableSorter(id a, id b, void* context) {
 				haveInterpreter = YES;
 				break;
 			}
+		}
+		
+		if ([interpreter isEqualToString: @"Z-Code"]) {
+			haveInterpreter = YES;
 		}
 		
 		if (!haveInterpreter) {
