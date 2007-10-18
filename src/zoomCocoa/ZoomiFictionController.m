@@ -31,6 +31,12 @@
 # define NSAppKitVersionNumber10_2 663
 #endif
 
+@interface ZoomiFictionController(PrivateMethods)
+
+- (NSString*) queryEncode: (NSString*) string;
+
+@end
+
 @implementation ZoomiFictionController
 
 static ZoomiFictionController* sharedController = nil;
@@ -635,7 +641,11 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 }
 
 - (IBAction) searchFieldChanged: (id) sender {
-	[self reloadTableData]; [mainTableView reloadData];
+	if (browserOn) {
+		
+	} else {
+		[self reloadTableData]; [mainTableView reloadData];		
+	}
 }
 
 - (IBAction) changeFilter1: (id) sender {
@@ -1089,41 +1099,57 @@ int tableSorter(id a, id b, void* context) {
 	}
 }
 
+- (void) updateButtons {
+	if (browserOn) {
+		// None of the lower row of buttons work when the IFDB browser is displayed
+		[continueButton setEnabled: NO];
+		[newgameButton setEnabled: NO];
+		[addButton setEnabled: NO];
+		[infoButton setEnabled: NO];
+	} else {
+		// The add and info buttons always work
+		[addButton setEnabled: YES];
+		[infoButton setEnabled: YES];		
+
+		// The other buttons depend on the current selection
+		NSEnumerator* rowEnum = [mainTableView selectedRowEnumerator];
+		int numSelected = 0;
+		
+		NSNumber* row;
+		
+		[continueButton setEnabled: NO];
+		[newgameButton setEnabled: NO];
+		
+		while (row = [rowEnum nextObject]) {
+			numSelected++;
+			
+			ZoomStoryID* ident = [storyList objectAtIndex: [row intValue]];
+			NSString* filename = [[ZoomStoryOrganiser sharedStoryOrganiser] filenameForIdent: ident];
+			
+			if ([[NSDocumentController sharedDocumentController] documentForFileName: filename] != nil) {
+				[continueButton setEnabled: YES];
+			} else {
+				[newgameButton setEnabled: YES];
+				
+				NSString* autosaveDir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: ident
+																							  create: NO];
+				NSString* autosaveFile = [autosaveDir stringByAppendingPathComponent: @"autosave.zoomauto"];
+				
+				if ([[NSFileManager defaultManager] fileExistsAtPath: autosaveFile]) {
+					// Can restore an autosave
+					[continueButton setEnabled: YES];
+				}
+			}
+		}
+	}
+}
+
 - (void) configureFromMainTableSelection {
 	ZoomStoryOrganiser* org = [ZoomStoryOrganiser sharedStoryOrganiser];
 
 	if (needsUpdating) [self reloadTableData];
-
-	// selectedRowEnumerator is deprecated, but we want to support 10.2, where it doesn't exist
-	NSEnumerator* rowEnum = [mainTableView selectedRowEnumerator];
-	int numSelected = 0;
-	
-	NSNumber* row;
-	
-	[continueButton setEnabled: NO];
-	[newgameButton setEnabled: NO];
-	
-	while (row = [rowEnum nextObject]) {
-		numSelected++;
-		
-		ZoomStoryID* ident = [storyList objectAtIndex: [row intValue]];
-		NSString* filename = [org filenameForIdent: ident];
-		
-		if ([[NSDocumentController sharedDocumentController] documentForFileName: filename] != nil) {
-			[continueButton setEnabled: YES];
-		} else {
-			[newgameButton setEnabled: YES];
-			
-			NSString* autosaveDir = [[ZoomStoryOrganiser sharedStoryOrganiser] directoryForIdent: ident
-																						  create: NO];
-			NSString* autosaveFile = [autosaveDir stringByAppendingPathComponent: @"autosave.zoomauto"];
-
-			if ([[NSFileManager defaultManager] fileExistsAtPath: autosaveFile]) {
-				// Can restore an autosave
-				[continueButton setEnabled: YES];
-			}
-		}
-	}
+	[self updateButtons];
+	int numSelected = [mainTableView numberOfSelectedRows];
 	
 	NSImage* coverPicture = nil;
 	
@@ -1879,13 +1905,33 @@ int tableSorter(id a, id b, void* context) {
 	}
 }
 
-- (void)textDidEndEditing:(NSNotification *)aNotification {
-	NSTextView* textView = [aNotification object];
+- (void)controlTextDidEndEditing:(NSNotification *)aNotification {
+	NSControl* textView = [aNotification object];
 	
-	if (textView == gameDetailView) {
+	if (textView == searchField) {
+		// Perform a search based on the text in the ifdb field
+		if (browserOn && [[searchField stringValue] length] > 0) {
+			NSString* ifdbUrl = [[[NSBundle mainBundle] infoDictionary] objectForKey: @"ZoomIfdbUrl"];
+			if (!ifdbUrl) {
+				ifdbUrl = @"http://ifdb.tads.org/";
+			}
+			
+			NSString* searchUrl = [NSString stringWithFormat: @"%@search?searchfor=%@",
+				ifdbUrl, [self queryEncode: [searchField stringValue]]];
+			[[ifdbView mainFrame] loadRequest: [NSURLRequest requestWithURL: [NSURL URLWithString: searchUrl]]];
+		}
+	}
+}
+
+- (void)textDidEndEditing:(NSNotification *)aNotification {
+	NSControl* textView = [aNotification object];
+	
+	if (textView == (NSControl*)gameDetailView) {
 		// Update each of the stories in the game detail view
 		[self updateStoriesFromDetailView];
 		[[[NSApp delegate] userMetadata] writeToDefaultFile];
+	} else if (textView == searchField) {
+		[self controlTextDidEndEditing: aNotification];
 	} else {
 		// Mysterious text view of DOOOOM
 		NSLog(@"Unknown text view");
@@ -2648,8 +2694,10 @@ int tableSorter(id a, id b, void* context) {
 		}
 	}
 		
+	[searchField setStringValue: @""];
 	usedBrowser = YES;
 	browserOn = YES; 
+	[self updateButtons];
 }
 
 - (IBAction) showLocalGames: (id) sender {
@@ -2660,10 +2708,12 @@ int tableSorter(id a, id b, void* context) {
 	[fv setFrame: viewFrame];
 	[mainView setFrame: viewFrame];
 	
+	[searchField setStringValue: @""];
 	[fv prepareToAnimateView: browserView];
 	[fv animateTo: mainView
 			style: ZoomAnimateLeft];
 	browserOn = NO;
+	[self updateButtons];
 }
 
 - (void)webView:(WebView *)sender didStartProvisionalLoadForFrame:(WebFrame *)frame {
