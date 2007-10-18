@@ -91,6 +91,7 @@
 		4B71AB6309E300FF00E27876 /* ifmetaxml.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B71AB5F09E300EF00E27876 /* ifmetaxml.c */; };
 		4B7520090CC6A08200F36ECF /* tads.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD79A9C0BA2CABF002C82B2 /* tads.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B7520130CC6A08B00F36ECF /* tads.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BD79AC60BA2CB44002C82B2 /* tads.c */; };
+		4B7522550CC7FAC500F36ECF /* signpost.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4B7522540CC7FAC500F36ECF /* signpost.icns */; };
 		4B77DD1E0B87BBBC000D2504 /* displaySettings.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B77DD1D0B87BBBC000D2504 /* displaySettings.png */; };
 		4B7CB03D09360A7900F3B8F6 /* libExpat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B1888D00935F863003AF62A /* libExpat.a */; };
 		4B7CB03E09360A7C00F3B8F6 /* libExpat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B1888D00935F863003AF62A /* libExpat.a */; };
@@ -865,6 +866,7 @@
 		4B65B3A00979B981002D5534 /* ZoomHQImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomHQImageView.m; sourceTree = "<group>"; };
 		4B71AB5E09E300EF00E27876 /* ifmetaxml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ifmetaxml.h; sourceTree = "<group>"; };
 		4B71AB5F09E300EF00E27876 /* ifmetaxml.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ifmetaxml.c; sourceTree = "<group>"; };
+		4B7522540CC7FAC500F36ECF /* signpost.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = signpost.icns; sourceTree = "<group>"; };
 		4B77DD1D0B87BBBC000D2504 /* displaySettings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = displaySettings.png; sourceTree = "<group>"; };
 		4B7CB0740936278500F3B8F6 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		4B7CB0780936294B00F3B8F6 /* ZoomPlugIn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomPlugIn.h; sourceTree = "<group>"; };
@@ -1516,6 +1518,7 @@
 		4BCF3F42050FB1D800A8E303 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				4B7522540CC7FAC500F36ECF /* signpost.icns */,
 				4B840A390CBECC690071F3B3 /* IFDB-connecting.png */,
 				4B840A3B0CBECC690071F3B3 /* ifdb-loading.html */,
 				4B840A150CBEC1B10071F3B3 /* IFDB-back.png */,
@@ -2267,6 +2270,7 @@
 				4B840A2B0CBEC20E0071F3B3 /* IFDB-downloading.png in Resources */,
 				4B840A450CBECCE60071F3B3 /* IFDB-connecting.png in Resources */,
 				4B840A460CBECCE60071F3B3 /* ifdb-loading.html in Resources */,
+				4B7522550CC7FAC500F36ECF /* signpost.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

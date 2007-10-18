@@ -37,6 +37,26 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>signpost</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>signpost.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>Interactive Fiction signpost file</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.IFsignpost</string>
+			</array>
+			<key>LSTypeIsPackage</key>
+			<false/>
+			<key>NSPersistentStoreTypeKey</key>
+			<string>Binary</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>z3</string>
 				<string>z4</string>
 				<string>z5</string>
@@ -331,6 +351,25 @@
 				<key>public.filename-extension</key>
 				<array>
 					<string>blb</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Interactive Fiction signpost file</string>
+			<key>UTTypeIconFile</key>
+			<string>signpost.icns</string>
+			<key>UTTypeIdentifier</key>
+			<string>public.IFsignpost</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>signpost</string>
 				</array>
 			</dict>
 		</dict>

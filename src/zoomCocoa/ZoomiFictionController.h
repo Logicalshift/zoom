@@ -101,6 +101,12 @@
 	NSTimer* downloadFadeTimer;					// The fade in/out timer for the download window
 	NSDate* downloadFadeStart;					// The time the current fade operation started
 	double initialDownloadOpacity;				// The opacity when the last fade operation started
+	
+	ZoomStoryID* signpostId;					// Story to open after the download has completed
+	NSString* installPlugin;					// The name of the plugin to install
+	NSData* activeSignpost;						// The active signpost file
+	BOOL downloadUpdateList;					// YES if we're trying to download an update list
+	BOOL downloadPlugin;						// YES if we're trying to download a .zoomplugin file
 }
 
 + (ZoomiFictionController*) sharediFictionController;
@@ -135,5 +141,8 @@
 
 - (void) setupSplitView;
 - (void) collapseSplitView;
+
+- (void) openSignPost: (NSData*) signpostFile
+		forceDownload: (BOOL) download;
 
 @end

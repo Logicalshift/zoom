@@ -2435,12 +2435,23 @@ int tableSorter(id a, id b, void* context) {
 			   byExtendingSelection: NO];
 		}
 		
+		// If there's a signpost ID and we have that file, then open it
+		if (signpostId) {
+			NSString* storyFilename = [[ZoomStoryOrganiser sharedStoryOrganiser] filenameForIdent: signpostId];
+			if (storyFilename) {
+				[[NSApp delegate] application: NSApp
+									 openFile: storyFilename];			
+			}
+		}
+		
 		// Switch back to the browser view
 		if (browserOn) [self showLocalGames: self];		
 	}
 
 	// Write any new metadata
 	[[[NSApp delegate] userMetadata] writeToDefaultFile];
+	
+	[signpostId release]; signpostId = nil;
 }
 
 - (void) cancelFadeTimer {
@@ -2602,6 +2613,11 @@ int tableSorter(id a, id b, void* context) {
 			// Download the specified file
 			[activeDownload setDelegate: nil];
 			[activeDownload autorelease]; activeDownload = nil;	
+
+			[signpostId autorelease];
+			signpostId = nil;
+			downloadUpdateList = NO;
+			downloadPlugin = NO;
 			
 			activeDownload = [[ZoomDownload alloc] initWithUrl: url];
 			[activeDownload setDelegate: self];
@@ -2775,6 +2791,107 @@ int tableSorter(id a, id b, void* context) {
 
 - (IBAction) playIfdbGame: (id) sender {
 	
+}
+
+// = Dealing with signposts =
+
+- (void) openSignPost: (NSData*) signpostFile
+		forceDownload: (BOOL) forceDownload {
+	// Ensure that the window is displayed
+	[self showWindow: self];
+	
+	// Parse the property list
+	NSDictionary* signpost = [NSPropertyListSerialization propertyListFromData: signpostFile
+															  mutabilityOption: NSPropertyListImmutable
+																		format: nil
+															  errorDescription: nil];
+	
+	if (signpost == nil || ![signpost isKindOfClass: [NSDictionary class]]) {
+		// Not a valid signpost
+		return;
+	}
+	
+	// Check for an installed plugin with the interpreter ID
+	NSString* interpreter = [signpost objectForKey: @"Intepreter"];
+	if (interpreter && [interpreter isKindOfClass: [NSDictionary class]]) {
+		BOOL haveInterpreter = NO;
+		
+		NSEnumerator* pluginEnum = [[[ZoomPlugInManager sharedPlugInManager] pluginBundles] objectEnumerator];
+		NSBundle* pluginBundle;
+		while (pluginBundle = [pluginEnum nextObject]) {
+			NSString* pluginName = [[ZoomPlugInManager sharedPlugInManager] nameForBundle: [pluginBundle bundlePath]];
+			if ([pluginName isEqualToString: interpreter]) {
+				haveInterpreter = YES;
+				break;
+			}
+		}
+		
+		if (!haveInterpreter) {
+			// Download the update file, then the interpreter
+			NSString* updateUrl = [signpost objectForKey: @"InterpreterURL"];
+			if (!updateUrl || ![updateUrl isKindOfClass: [NSString class]]) {
+				return;
+			}
+			
+			[activeDownload setDelegate: nil];
+			[activeDownload autorelease]; activeDownload = nil;
+			
+			[signpostId autorelease];
+			signpostId = nil;
+			activeSignpost = [signpostFile retain];
+			
+			downloadUpdateList = YES;
+			downloadPlugin = NO;
+			
+			activeDownload = [[ZoomDownload alloc] initWithUrl: [NSURL URLWithString: updateUrl]];
+			[activeDownload setDelegate: self];
+			[activeDownload startDownload];		
+			return;
+		}
+	}
+	
+	// See if the game is already present
+	NSString* ifid = [signpost objectForKey: @"IFID"];
+	ZoomStoryID* downloadId = nil;
+	if (ifid && [ifid isKindOfClass: [NSString class]]) {
+		downloadId = [[[ZoomStoryID alloc] initWithIdString: ifid] autorelease];
+	}
+	
+	// If we're not forcing a download, open the existing file
+	if (downloadId && !forceDownload) {
+		NSString* storyFilename = [[ZoomStoryOrganiser sharedStoryOrganiser] filenameForIdent: downloadId];
+		if (storyFilename) {
+			[[NSApp delegate] application: NSApp
+								 openFile: storyFilename];
+			return;
+		}
+	}
+	
+	// Download the game
+	NSString* urlString = [signpost objectForKey: @"URL"];
+	if (urlString && [urlString isKindOfClass: [NSString class]]) {
+		[activeDownload setDelegate: nil];
+		[activeDownload autorelease]; activeDownload = nil;
+
+		[signpostId autorelease];
+		signpostId = [downloadId retain];
+
+		downloadUpdateList = NO;
+		downloadPlugin = NO;
+		
+		// Use mirror.ifarchive.org, not www.ifarchive.org
+		NSURL* url = [NSURL URLWithString: urlString];
+		NSString* host = [url host];
+		if ([host isEqualToString: @"www.ifarchive.org"]) {
+			url = [[[NSURL alloc] initWithScheme: [url scheme]
+											host: @"mirror.ifarchive.org"
+											path: [url path]] autorelease];
+		}
+		
+		activeDownload = [[ZoomDownload alloc] initWithUrl: url];
+		[activeDownload setDelegate: self];
+		[activeDownload startDownload];		
+	}
 }
 
 @end

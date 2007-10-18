@@ -138,6 +138,13 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 		NSLog(@"WARNING: found a leaked document for '%@'", filename);
 	}
 	
+	// If this is a .signpost file, then pass it to the ifiction window
+	if ([[[filename pathExtension] lowercaseString] isEqualToString: @"signpost"]) {
+		[[ZoomiFictionController sharediFictionController] openSignPost: [NSData dataWithContentsOfFile: filename]
+														  forceDownload: YES];
+		return YES;
+	}
+	
 	// If this is a .zoomplugin file, then install it
 	if ([[[filename pathExtension] lowercaseString] isEqualToString: @"zoomplugin"]) {
 		if ([[ZoomPlugInManager sharedPlugInManager] installPlugIn: filename]) {
@@ -146,7 +153,7 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 				[[ZoomPlugInController sharedPlugInController] needsRestart];
 			}
 		}
-		return;
+		return YES;
 	}
 
 	// If this is a .glksave file, then set up to load the saved story instead
