@@ -19,6 +19,11 @@
 	
 	// ... and we can run blorb files with a Glulx block in them
 	if ([extn isEqualToString: @"blb"] || [extn isEqualToString: @"glb"] || [extn isEqualToString: @"gblorb"] || [extn isEqualToString: @"zblorb"] || [extn isEqualToString: @"blorb"]) {
+		if (![[NSFileManager defaultManager] fileExistsAtPath: path]) {
+			// If no file exists at the path, then claim ownership of it
+			return YES;
+		}
+		
 		ZoomBlorbFile* blorb = [[ZoomBlorbFile alloc] initWithContentsOfFile: path];
 		
 		if (blorb != nil && [blorb dataForChunkWithType: @"GLUL"] != nil) {
