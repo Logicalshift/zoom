@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+	<head>
+		<title>Error</title>
+		<style>
+		div {
+			position: absolute;
+			top: 30%;
+			left: 10%;
+			right: 10%;
+			padding: 8px;
+			background: #cccccc;
+			border: groove;
+		}
+		p#desc {
+			padding-top: 10px;
+		}
+		body {
+			margin: 0;
+			font-family: helvetica;
+			font-size: 20px;
+		}
+		</style>
+	</head>
+	<body>
+		<script language="JavaScript">
+			function ErrorMessage() {
+				try {
+					var errorMessage = window.Errors;
+					if (errorMessage == null) return "Zoom is not running";
+					return errorMessage.LastError();
+				} catch (e) {
+					return "Zoom is not running";
+				}
+			}
+		</script>
+		<div>
+			<img src="IFDB-error.png" align="left" />
+			<p id="desc">
+				An error was encountered while loading the page.
+			</p>
+			<p id="mesg">
+				<script language="JavaScript">
+					document.write(ErrorMessage());
+				</script>.
+			</p>
+		</div>
+	</body>
+</html>

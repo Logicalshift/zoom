@@ -138,6 +138,8 @@
 		4B8CE6F40AD95A3A008235D2 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B8CE6F20AD95A3A008235D2 /* md5.c */; };
 		4B8CE6F50AD95A3A008235D2 /* md5.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8CE6F30AD95A3A008235D2 /* md5.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B8CE6F80AD95A6C008235D2 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B8CE6F20AD95A3A008235D2 /* md5.c */; };
+		4B926A120CD1464B00CE0ADB /* IFDB-error.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B926A0E0CD1464B00CE0ADB /* IFDB-error.png */; };
+		4B926A130CD1464B00CE0ADB /* ifdb-failed.html in Resources */ = {isa = PBXBuildFile; fileRef = 4B926A100CD1464B00CE0ADB /* ifdb-failed.html */; };
 		4B95CDA1C5B03AD500FD9F27 /* ZoomSkeinController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B18852906987AC6004D8501 /* ZoomSkeinController.h */; };
 		4B95CDA2C5B03AD500FD9F27 /* ZoomSkeinController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B18852A06987AC6004D8501 /* ZoomSkeinController.m */; };
 		4B95CDB9C5B03AD500FD9F27 /* ZoomSkeinController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B18852906987AC6004D8501 /* ZoomSkeinController.h */; };
@@ -907,6 +909,8 @@
 		4B87BA7109C9AAE1005D6722 /* ifmetabase-internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ifmetabase-internal.h"; sourceTree = "<group>"; };
 		4B8CE6F20AD95A3A008235D2 /* md5.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = md5.c; sourceTree = "<group>"; };
 		4B8CE6F30AD95A3A008235D2 /* md5.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = md5.h; sourceTree = "<group>"; };
+		4B926A0F0CD1464B00CE0ADB /* English */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = English; path = "English.lproj/IFDB-error.png"; sourceTree = "<group>"; };
+		4B926A110CD1464B00CE0ADB /* English */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = English; path = "English.lproj/ifdb-failed.html"; sourceTree = "<group>"; };
 		4B926F8805E7F9DA00E5C0EA /* ZoomCollapsableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomCollapsableView.h; sourceTree = "<group>"; };
 		4B926F8905E7F9DA00E5C0EA /* ZoomCollapsableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomCollapsableView.m; sourceTree = "<group>"; };
 		4B9ED9CF0602977C0049E468 /* Metal-Title.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Metal-Title.png"; sourceTree = "<group>"; };
@@ -1519,6 +1523,8 @@
 			isa = PBXGroup;
 			children = (
 				4B7522540CC7FAC500F36ECF /* signpost.icns */,
+				4B926A0E0CD1464B00CE0ADB /* IFDB-error.png */,
+				4B926A100CD1464B00CE0ADB /* ifdb-failed.html */,
 				4B840A390CBECC690071F3B3 /* IFDB-connecting.png */,
 				4B840A3B0CBECC690071F3B3 /* ifdb-loading.html */,
 				4B840A150CBEC1B10071F3B3 /* IFDB-back.png */,
@@ -2271,6 +2277,8 @@
 				4B840A450CBECCE60071F3B3 /* IFDB-connecting.png in Resources */,
 				4B840A460CBECCE60071F3B3 /* ifdb-loading.html in Resources */,
 				4B7522550CC7FAC500F36ECF /* signpost.icns in Resources */,
+				4B926A120CD1464B00CE0ADB /* IFDB-error.png in Resources */,
+				4B926A130CD1464B00CE0ADB /* ifdb-failed.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2706,6 +2714,22 @@
 				4B840A3C0CBECC690071F3B3 /* English */,
 			);
 			name = "ifdb-loading.html";
+			sourceTree = "<group>";
+		};
+		4B926A0E0CD1464B00CE0ADB /* IFDB-error.png */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4B926A0F0CD1464B00CE0ADB /* English */,
+			);
+			name = "IFDB-error.png";
+			sourceTree = "<group>";
+		};
+		4B926A100CD1464B00CE0ADB /* ifdb-failed.html */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4B926A110CD1464B00CE0ADB /* English */,
+			);
+			name = "ifdb-failed.html";
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

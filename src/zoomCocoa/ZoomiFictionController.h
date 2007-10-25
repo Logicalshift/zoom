@@ -107,6 +107,8 @@
 	NSDictionary* activeSignpost;				// The active signpost file
 	BOOL downloadUpdateList;					// YES if we're trying to download an update list
 	BOOL downloadPlugin;						// YES if we're trying to download a .zoomplugin file
+	
+	NSString* lastError;						// The last error to occur
 }
 
 + (ZoomiFictionController*) sharediFictionController;

@@ -37,6 +37,7 @@
 - (NSString*) queryEncode: (NSString*) string;
 - (void) installSignpostPluginFrom: (NSData*) signpostXml;
 - (void) installPluginFrom: (ZoomDownload*) downloadedPlugin;
+- (void) updateBackForwardButtons;
 
 @end
 
@@ -1461,7 +1462,7 @@ int tableSorter(id a, id b, void* context) {
 	//if (needsUpdating) [self reloadTableData];
 
 	if (tableView == mainTableView) {		
-		ZoomStoryID* ident = [storyList objectAtIndex: [mainTableView selectedRow]];
+		ZoomStoryID* ident = [storyList objectAtIndex: rowIndex];
 		ZoomStory* story = [self storyForID: ident];
 		
 		story = [self createStoryCopy: story];
@@ -2641,7 +2642,7 @@ int tableSorter(id a, id b, void* context) {
 							  frame:(WebFrame *)frame 
 				   decisionListener:(id<WebPolicyDecisionListener>)listener {
 	NSArray* archiveFiles = [NSArray arrayWithObjects: @"zip", @"tar", @"tgz", @"gz", @"bz2", @"z", nil];
-	
+
 	if ([[actionInformation objectForKey: WebActionNavigationTypeKey] intValue] == 0) {
 		// Get the URL to download
 		NSURL* url = [request URL];
@@ -2677,7 +2678,11 @@ int tableSorter(id a, id b, void* context) {
 	}
 	
 	// Default is to use the request
-	[listener use];
+	if ([NSURLConnection canHandleRequest: request]) {
+		[listener use];		
+	} else {
+		[listener ignore];
+	}
 }
 
 // = Browsing the IFDB =
@@ -2817,6 +2822,36 @@ int tableSorter(id a, id b, void* context) {
 		if (url) [currentUrl setStringValue: url];
 
 		[progressIndicator stopAnimation: self];
+	}	
+}
+
+- (void)webView:(WebView *)sender didFailLoadWithError:(NSError *)error forFrame:(WebFrame *)frame {
+	[self updateBackForwardButtons];
+	
+	if (frame == [ifdbView mainFrame]) {
+		NSString* url = [[[[frame dataSource] request] URL] absoluteString];
+		if (url) [currentUrl setStringValue: url];
+		
+		[progressIndicator stopAnimation: self];
+	}	
+	
+	NSLog(@"Provisional load failed: %@", error);
+}
+
+- (void)webView:(WebView *)sender didFailProvisionalLoadWithError:(NSError *)error forFrame:(WebFrame *)frame {
+	[self updateBackForwardButtons];
+	
+	if (frame == [ifdbView mainFrame]) {
+		NSString* url = [[[[frame dataSource] request] URL] absoluteString];
+		if (url) [currentUrl setStringValue: url];
+		
+		[progressIndicator stopAnimation: self];
+		
+		[lastError release];
+		lastError = [error localizedDescription];
+		
+		[[ifdbView mainFrame] loadRequest: [NSURLRequest requestWithURL: [NSURL fileURLWithPath: [[NSBundle mainBundle] pathForResource: @"ifdb-failed"
+																																 ofType: @"html"]]]];
 	}	
 }
 
