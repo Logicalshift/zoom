@@ -19,6 +19,7 @@
 #import "ZoomFlipView.h"
 #import "ZoomDownloadView.h"
 #import "ZoomDownload.h"
+#import "ZoomJSError.h"
 
 @interface ZoomiFictionController : NSWindowController {
 	IBOutlet ZoomiFButton* addButton;
@@ -108,7 +109,7 @@
 	BOOL downloadUpdateList;					// YES if we're trying to download an update list
 	BOOL downloadPlugin;						// YES if we're trying to download a .zoomplugin file
 	
-	NSString* lastError;						// The last error to occur
+	ZoomJSError* lastError;						// The last error to occur
 }
 
 + (ZoomiFictionController*) sharediFictionController;

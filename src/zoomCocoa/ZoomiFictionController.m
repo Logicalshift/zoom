@@ -2685,6 +2685,23 @@ int tableSorter(id a, id b, void* context) {
 	}
 }
 
+- (void)           webView:(WebView *)sender
+   decidePolicyForMIMEType:(NSString *)type
+				   request:(NSURLRequest *)request 
+					 frame:(WebFrame *)frame 
+		  decisionListener:(id<WebPolicyDecisionListener>)listener {
+	if (![WebView canShowMIMEType: type]) {
+		[listener ignore];
+
+		NSBeginAlertSheet(@"Zoom cannot download this type of file", @"Cancel", nil,
+						  nil, [self window], nil, nil,
+						  nil,nil,
+						  [NSString stringWithFormat: @"You have clicked on a download link that goes to a type of file that Zoom does not know how to handle. This could be because the file is a compressed file in a format that Zoom does not understand, or it could be because you have not installed the plug-in for this file type.\n\nYou can check for new plugins by using the 'Check for Updates' option in the Zoom menu.", type]);
+	} else {
+		[listener use];
+	}
+}
+
 // = Browsing the IFDB =
 
 - (void) updateBackForwardButtons {
@@ -2833,9 +2850,22 @@ int tableSorter(id a, id b, void* context) {
 		if (url) [currentUrl setStringValue: url];
 		
 		[progressIndicator stopAnimation: self];
+		
+		if (lastError == nil) lastError = [[ZoomJSError alloc] init];
+		[lastError setLastError: [error localizedDescription]];
+		
+		switch ([error code]) {
+			case 102:
+				// Ignore these errors
+				break;
+				
+			default:
+				// Open the error page
+				[[ifdbView mainFrame] loadRequest: [NSURLRequest requestWithURL: [NSURL fileURLWithPath: [[NSBundle mainBundle] pathForResource: @"ifdb-failed"
+																																		 ofType: @"html"]]]];
+				break;
+		}
 	}	
-	
-	NSLog(@"Provisional load failed: %@", error);
 }
 
 - (void)webView:(WebView *)sender didFailProvisionalLoadWithError:(NSError *)error forFrame:(WebFrame *)frame {
@@ -2847,12 +2877,32 @@ int tableSorter(id a, id b, void* context) {
 		
 		[progressIndicator stopAnimation: self];
 		
-		[lastError release];
-		lastError = [error localizedDescription];
+		if (lastError == nil) lastError = [[ZoomJSError alloc] init];
+		[lastError setLastError: [error localizedDescription]];
 		
-		[[ifdbView mainFrame] loadRequest: [NSURLRequest requestWithURL: [NSURL fileURLWithPath: [[NSBundle mainBundle] pathForResource: @"ifdb-failed"
-																																 ofType: @"html"]]]];
+		switch ([error code]) {
+			case 102:
+				// Ignore these errors
+				break;
+			
+			default:
+				// Open the error page
+				[[ifdbView mainFrame] loadRequest: [NSURLRequest requestWithURL: [NSURL fileURLWithPath: [[NSBundle mainBundle] pathForResource: @"ifdb-failed"
+																																		 ofType: @"html"]]]];
+				break;
+		}
 	}	
+}
+
+- (void)					webView:(WebView *)sender
+		windowScriptObjectAvailable:(WebScriptObject *)windowScriptObject {
+	// Attach the error object
+	if (lastError == nil) {
+		lastError = [[ZoomJSError alloc] init];
+	}
+	
+	[[sender windowScriptObject] setValue: lastError
+								   forKey: @"Errors"];
 }
 
 - (IBAction) goBack: (id) sender {

@@ -4,7 +4,7 @@
 	<head>
 		<title>Error</title>
 		<style>
-		div {
+		div#message {
 			position: absolute;
 			top: 30%;
 			left: 10%;
@@ -14,7 +14,16 @@
 			border: groove;
 		}
 		p#desc {
-			padding-top: 10px;
+			padding-top: 12px;
+		}
+		div#homepage {
+			position: absolute;
+			border: none;
+			left: 10%;
+			right: 10%;
+			bottom: 5%;
+			background: transparent;
+			font-size: 80%;
 		}
 		body {
 			margin: 0;
@@ -35,7 +44,7 @@
 				}
 			}
 		</script>
-		<div>
+		<div id="message">
 			<img src="IFDB-error.png" align="left" />
 			<p id="desc">
 				An error was encountered while loading the page.
@@ -45,6 +54,9 @@
 					document.write(ErrorMessage());
 				</script>.
 			</p>
+		</div>
+		<div style="text-align: center" id="homepage">
+			<a href="http://ifdb.tads.org">IFDB home page</a>
 		</div>
 	</body>
 </html>
