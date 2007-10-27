@@ -632,7 +632,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4B7286E50CD3CAFF0079D89B /* ZoomSaveQuickLook */;
+			remoteGlobalIDString = 4B7286E50CD3CAFF0079D89B;
 			remoteInfo = ZoomSaveQuickLook;
 		};
 		4BB8C11808C248FF00D7D334 /* PBXContainerItemProxy */ = {

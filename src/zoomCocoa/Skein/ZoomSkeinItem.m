@@ -92,11 +92,15 @@ static NSString* convertCommand(NSString* command) {
 
 - (void) dealloc {
 	// First, mark the old items as having no parent
+	NSMutableArray* childrenToDestroy = [NSMutableArray array];
 	NSEnumerator* objEnum = [children objectEnumerator];
 	ZoomSkeinItem* child;
 	while (child = [objEnum nextObject]) {
-		[child removeFromParent];
+		[childrenToDestroy addObject: child];
 	}
+	
+	// Luke, I am your father
+	[childrenToDestroy makeObjectsPerformSelector: @selector(removeFromParent)];
 	
 	// Then just release everything
 	[children release];
@@ -105,6 +109,7 @@ static NSString* convertCommand(NSString* command) {
 	if (result)		[result release];
 	if (annotation) [annotation release];
 	
+	// NOOOOOOO
 	[super dealloc];
 }
 
