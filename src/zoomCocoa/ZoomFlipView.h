@@ -8,6 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#undef FlipUseCoreAnimation
+
 typedef enum ZoomViewAnimationStyle {
 	ZoomAnimateLeft,
 	ZoomAnimateRight,
@@ -39,6 +41,8 @@ typedef enum ZoomViewAnimationStyle {
 	NSView* originalView;
 	NSView* originalSuperview;
 	NSDate* whenStarted;	
+	
+	BOOL useCoreAnimation;
 }
 
 // Caching views

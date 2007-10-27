@@ -18,6 +18,11 @@
     if (self) {
         // Initialization code here.
 		animationTime = 0.2;
+#ifdef FlipUseCoreAnimation
+		useCoreAnimation = YES;
+#else
+		useCoreAnimation = NO;
+#endif
     }
     return self;
 }
@@ -115,7 +120,7 @@
 - (void) finishAnimation {
 	[[self retain] autorelease];
 	
-	if ([self respondsToSelector: @selector(leopardFinishAnimation)]) {
+	if (useCoreAnimation && [self respondsToSelector: @selector(leopardFinishAnimation)]) {
 		[self leopardFinishAnimation];
 	} else {
 		if (animationTimer) [self autorelease];
@@ -142,7 +147,7 @@
 - (void) prepareToAnimateView: (NSView*) view {
 	[self finishAnimation];
 	
-	if ([self respondsToSelector: @selector(leopardPrepareViewForAnimation:)]) {
+	if (useCoreAnimation && [self respondsToSelector: @selector(leopardPrepareViewForAnimation:)]) {
 		[self leopardPrepareViewForAnimation: view];
 	} else {
 		// Cache the initial view
@@ -175,7 +180,7 @@
 
 - (void) animateTo: (NSView*) view
 			 style: (ZoomViewAnimationStyle) style {
-	if ([self respondsToSelector: @selector(leopardAnimateTo:style:)]) {
+	if (useCoreAnimation && [self respondsToSelector: @selector(leopardAnimateTo:style:)]) {
 		[self leopardAnimateTo: view
 						 style: style];
 	} else {
@@ -250,7 +255,7 @@
 // = Drawing =
 
 - (void)drawRect:(NSRect)rect {
-	if ([self respondsToSelector: @selector(leopardAnimateTo:style:)]) {
+	if (useCoreAnimation && [self respondsToSelector: @selector(leopardAnimateTo:style:)]) {
 		return;
 	}
 		
