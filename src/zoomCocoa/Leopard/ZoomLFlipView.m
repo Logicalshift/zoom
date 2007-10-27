@@ -37,12 +37,18 @@
 	}
 
 	// Set up the layers for this view
-	CALayer* viewLayer = [CALayer layer];
-	viewLayer.backgroundColor = [NSColor whiteColor];
+	CALayer* viewLayer = [view layer];
+	if (viewLayer== nil) {
+		static CGFloat white[4] = { 1.0, 1.0, 1.0, 1.0 };
+		viewLayer = [CALayer layer];
+		viewLayer.backgroundColor = [NSColor whiteColor];		
+
+		[view setLayer: viewLayer];
+	}
 	[viewLayer removeAllAnimations];
 	
-	[view setLayer: viewLayer];
 	[viewLayer setFrame: [[self layer] bounds]];
+	viewLayer.autoresizingMask = kCALayerWidthSizable | kCALayerHeightSizable;
 	
 	if (![view wantsLayer]) {
 		[view setWantsLayer: YES];
@@ -98,6 +104,7 @@
 		return;
 	}
 	
+	// If we're trying to re-animate a view that already has an animation, then continue to use that view
 	if ([[view superview] isKindOfClass: [self class]] && [[view layer] superlayer] != nil) {
 		[(ZoomFlipView*)[view superview] leopardAnimateTo: view
 													style: style];
@@ -108,6 +115,7 @@
 								  forKey: @"FinalView"];
 
 	// Setup the layers for the specified view
+	[self setupLayersForView: originalView];
 	[self setupLayersForView: view];
 
 	// Move the view into this view
@@ -120,7 +128,9 @@
 	//[[self layer] addSublayer: [view layer]];
 	[[self propertyDictionary] setObject: [view layer]
 								  forKey: @"FinalLayer"];
-	
+	[[self propertyDictionary] setObject: [originalView layer]
+								  forKey: @"InitialLayer"];
+		
 	// Set the delegate and layout manager for this object
 	[self layer].delegate = self;
 	[self layer].layoutManager = nil;
@@ -169,20 +179,21 @@
 		[[self retain] autorelease];
 		[[originalView retain] autorelease];
 		[[finalView retain] autorelease];
-		
-		// Move to the final view		
-		[[originalView layer] removeFromSuperlayer];
 
 		// Self destruct
 		[originalView removeFromSuperview];
 		
+		// Move to the final view		
+		[[originalView layer] removeFromSuperlayer];
+		
 		[originalView autorelease];
 		originalView = [finalView retain];
+		[finalView setFrame: [self bounds]];
 		
 		// Set the properties for the new view
-		[[self propertyDictionary] setObject: originalView
+		[[self propertyDictionary] setObject: finalView
 									  forKey: @"StartView"];
-		[[self propertyDictionary] setObject: [originalView layer]
+		[[self propertyDictionary] setObject: [finalView layer]
 									  forKey: @"InitialLayer"];
 		[[self propertyDictionary] removeObjectForKey: @"FinalLayer"];
 		[[self propertyDictionary] removeObjectForKey: @"FinalView"];
@@ -223,7 +234,6 @@
 // = Performing layout =
 
 - (void)layoutSublayersOfLayer:(CALayer *)layer {
-	NSLog(@"Layout: %@", layer);
 	if (layer != [self layer]) return;
 	
 	// Get the layers and percentages
