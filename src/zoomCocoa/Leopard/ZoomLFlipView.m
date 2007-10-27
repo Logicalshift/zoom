@@ -32,6 +32,7 @@
 		[[self propertyDictionary] setObject: rootLayer = [CALayer layer]
 									  forKey: @"RootLayer"];
 		rootLayer.layoutManager = self;
+		rootLayer.backgroundColor = [NSColor whiteColor];
 		[rootLayer removeAllAnimations];
 	}
 
@@ -162,6 +163,7 @@
 - (void) leopardFinishAnimation {
 	if (originalView) {
 		NSView* finalView =[[self propertyDictionary] objectForKey: @"FinalView"];
+		if (finalView == nil) return;
 		
 		// Ensure nothing gets freed prematurely
 		[[self retain] autorelease];
