@@ -19,6 +19,10 @@
 			<true/>
 			<key>NSPersistentStoreTypeKey</key>
 			<string>Binary</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>uk.org.logicalshift.glksave</string>
+			</array>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -114,6 +118,10 @@
 			<true/>
 			<key>NSDocumentClass</key>
 			<string>ZoomClient</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>uk.org.logicalshift.zoomsave</string>
+			</array>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -468,6 +476,44 @@
 				<key>public.filename-extension</key>
 				<array>
 					<string>hex</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>com.apple.package</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Zoom savegame</string>
+			<key>UTTypeIconFile</key>
+			<string>zoom-file.icns</string>
+			<key>UTTypeIdentifier</key>
+			<string>uk.org.logicalshift.glksave</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>glksave</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>com.apple.package</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Zoom savegame</string>
+			<key>UTTypeIconFile</key>
+			<string>zoom-file.icns</string>
+			<key>UTTypeIdentifier</key>
+			<string>uk.org.logicalshift.zoomsave</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>zoomsave</string>
 				</array>
 			</dict>
 		</dict>

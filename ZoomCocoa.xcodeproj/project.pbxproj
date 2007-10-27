@@ -148,6 +148,16 @@
 		4B95CDA1C5B03AD500FD9F27 /* ZoomSkeinController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B18852906987AC6004D8501 /* ZoomSkeinController.h */; };
 		4B95CDA2C5B03AD500FD9F27 /* ZoomSkeinController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B18852A06987AC6004D8501 /* ZoomSkeinController.m */; };
 		4B95CDB9C5B03AD500FD9F27 /* ZoomSkeinController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B18852906987AC6004D8501 /* ZoomSkeinController.h */; };
+		4BA375D30CD3CBA100C7B1D4 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BA373A30CD3CB7B00C7B1D4 /* ApplicationServices.framework */; };
+		4BA375D40CD3CBA100C7B1D4 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BA373A40CD3CB7B00C7B1D4 /* CoreServices.framework */; };
+		4BA375D50CD3CBA100C7B1D4 /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BA373A50CD3CB7B00C7B1D4 /* QuickLook.framework */; };
+		4BA375D60CD3CBA100C7B1D4 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B39CBCA08EF006E00BA5E90 /* CoreFoundation.framework */; };
+		4BA375D70CD3CBA100C7B1D4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B1E3F60050F7BA000A8E303 /* Cocoa.framework */; };
+		4BA375D80CD3CBA100C7B1D4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BCF3F2B050F8E2400A8E303 /* Foundation.framework */; };
+		4BA375E80CD3CC2B00C7B1D4 /* ZoomSaveQuickLook.qlgenerator in Copy QuickLook plugins */ = {isa = PBXBuildFile; fileRef = 4B7286E60CD3CAFF0079D89B /* ZoomSaveQuickLook.qlgenerator */; };
+		4BA377D90CD3CFFD00C7B1D4 /* ZoomSaveQuickLook.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BA377D70CD3CFF700C7B1D4 /* ZoomSaveQuickLook.c */; };
+		4BA377DF0CD3D01600C7B1D4 /* GenerateThumbnailForURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA377DA0CD3D01000C7B1D4 /* GenerateThumbnailForURL.m */; };
+		4BA377E00CD3D01700C7B1D4 /* GeneratePreviewForURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA377DB0CD3D01000C7B1D4 /* GeneratePreviewForURL.m */; };
 		4BA8B5770B1B0479007CD75E /* ZoomInputLine.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3DA12F068DAF9E00B7090F /* ZoomInputLine.h */; };
 		4BA8B5780B1B047A007CD75E /* ZoomTextToSpeech.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BE5F510075121A400C25A70 /* ZoomTextToSpeech.h */; };
 		4BA8B5820B1B053E007CD75E /* ZoomTextToSpeech.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BE5F510075121A400C25A70 /* ZoomTextToSpeech.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -508,7 +518,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4B7284A90CD37FF50079D89B /* LeopardExtns */;
+			remoteGlobalIDString = 4B7284A90CD37FF50079D89B;
 			remoteInfo = LeopardExtns;
 		};
 		4B7CB03909360A6A00F3B8F6 /* PBXContainerItemProxy */ = {
@@ -602,6 +612,13 @@
 			remoteGlobalIDString = 4B51AA5507E877C900576AB9;
 			remoteInfo = GlkClient;
 		};
+		4BA375D90CD3CBF000C7B1D4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4B7286E50CD3CAFF0079D89B /* ZoomSaveQuickLook */;
+			remoteInfo = ZoomSaveQuickLook;
+		};
 		4BB8C11808C248FF00D7D334 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
@@ -689,6 +706,17 @@
 				4B7284C00CD3807D0079D89B /* LeopardExtns.bundle in Copy Leopard executables */,
 			);
 			name = "Copy Leopard executables";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4BA375E60CD3CC1500C7B1D4 /* Copy QuickLook plugins */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = ../Library/QuickLook;
+			dstSubfolderSpec = 7;
+			files = (
+				4BA375E80CD3CC2B00C7B1D4 /* ZoomSaveQuickLook.qlgenerator in Copy QuickLook plugins */,
+			);
+			name = "Copy QuickLook plugins";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		4BB8C20108C249F400D7D334 /* Copy frameworks */ = {
@@ -896,6 +924,8 @@
 		4B7284AA0CD37FF50079D89B /* LeopardExtns.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LeopardExtns.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B7284AB0CD37FF50079D89B /* LeopardExtns-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "LeopardExtns-Info.plist"; sourceTree = "<group>"; };
 		4B7284FA0CD383C80079D89B /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
+		4B7286E60CD3CAFF0079D89B /* ZoomSaveQuickLook.qlgenerator */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ZoomSaveQuickLook.qlgenerator; sourceTree = BUILT_PRODUCTS_DIR; };
+		4B7286E70CD3CAFF0079D89B /* ZoomSaveQuickLook-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ZoomSaveQuickLook-Info.plist"; sourceTree = "<group>"; };
 		4B7522540CC7FAC500F36ECF /* signpost.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = signpost.icns; sourceTree = "<group>"; };
 		4B77DD1D0B87BBBC000D2504 /* displaySettings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = displaySettings.png; sourceTree = "<group>"; };
 		4B7CB0740936278500F3B8F6 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
@@ -948,6 +978,12 @@
 		4BA2BCEC06949E730082C022 /* ZoomSkein.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomSkein.m; sourceTree = "<group>"; };
 		4BA2BCF20694A0830082C022 /* ZoomSkeinItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomSkeinItem.h; sourceTree = "<group>"; };
 		4BA2BCF30694A0830082C022 /* ZoomSkeinItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomSkeinItem.m; sourceTree = "<group>"; };
+		4BA373A30CD3CB7B00C7B1D4 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
+		4BA373A40CD3CB7B00C7B1D4 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = /System/Library/Frameworks/CoreServices.framework; sourceTree = "<absolute>"; };
+		4BA373A50CD3CB7B00C7B1D4 /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = /System/Library/Frameworks/QuickLook.framework; sourceTree = "<absolute>"; };
+		4BA377D70CD3CFF700C7B1D4 /* ZoomSaveQuickLook.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ZoomSaveQuickLook.c; sourceTree = "<group>"; };
+		4BA377DA0CD3D01000C7B1D4 /* GenerateThumbnailForURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenerateThumbnailForURL.m; sourceTree = "<group>"; };
+		4BA377DB0CD3D01000C7B1D4 /* GeneratePreviewForURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratePreviewForURL.m; sourceTree = "<group>"; };
 		4BA66B2A0906538F000A3852 /* ZoomWindowThatCanBecomeKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomWindowThatCanBecomeKey.h; sourceTree = "<group>"; };
 		4BA66B2B0906538F000A3852 /* ZoomWindowThatCanBecomeKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomWindowThatCanBecomeKey.m; sourceTree = "<group>"; };
 		4BA8B8390B1B5F65007CD75E /* typographicSettings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = typographicSettings.png; sourceTree = "<group>"; };
@@ -1105,6 +1141,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4B7286E40CD3CAFF0079D89B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4BA375D30CD3CBA100C7B1D4 /* ApplicationServices.framework in Frameworks */,
+				4BA375D40CD3CBA100C7B1D4 /* CoreServices.framework in Frameworks */,
+				4BA375D50CD3CBA100C7B1D4 /* QuickLook.framework in Frameworks */,
+				4BA375D60CD3CBA100C7B1D4 /* CoreFoundation.framework in Frameworks */,
+				4BA375D70CD3CBA100C7B1D4 /* Cocoa.framework in Frameworks */,
+				4BA375D80CD3CBA100C7B1D4 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4B7CB07F09362A3B00F3B8F6 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1247,6 +1296,7 @@
 				4BB8C20708C249F400D7D334 /* Info-Zoom__Upgraded_.plist */,
 				4B7CB08209362A3B00F3B8F6 /* ZoomPlugIns-Info.plist */,
 				4B7284AB0CD37FF50079D89B /* LeopardExtns-Info.plist */,
+				4B7286E70CD3CAFF0079D89B /* ZoomSaveQuickLook-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1269,6 +1319,7 @@
 				4B36C4540955ED1700874F9F /* Glulxe.plugin */,
 				4BD79A8F0BA2C9AA002C82B2 /* babel */,
 				4B7284AA0CD37FF50079D89B /* LeopardExtns.bundle */,
+				4B7286E60CD3CAFF0079D89B /* ZoomSaveQuickLook.qlgenerator */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1288,6 +1339,9 @@
 		4B1E3F5F050F7B8100A8E303 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4BA373A30CD3CB7B00C7B1D4 /* ApplicationServices.framework */,
+				4BA373A40CD3CB7B00C7B1D4 /* CoreServices.framework */,
+				4BA373A50CD3CB7B00C7B1D4 /* QuickLook.framework */,
 				4B840B0F0CC2C3B10071F3B3 /* WebKit.framework */,
 				4BB27D9F0C592D9100470443 /* Sparkle.framework */,
 				4B39CA8308EEFE8F00BA5E90 /* CoreServices.framework */,
@@ -1426,10 +1480,21 @@
 		4B7284810CD37AF90079D89B /* Leopard */ = {
 			isa = PBXGroup;
 			children = (
+				4B7286BE0CD3B99C0079D89B /* QuickLook */,
 				4B7284880CD37E980079D89B /* ZoomLFlipView.h */,
 				4B7284890CD37E980079D89B /* ZoomLFlipView.m */,
 			);
 			path = Leopard;
+			sourceTree = "<group>";
+		};
+		4B7286BE0CD3B99C0079D89B /* QuickLook */ = {
+			isa = PBXGroup;
+			children = (
+				4BA377DA0CD3D01000C7B1D4 /* GenerateThumbnailForURL.m */,
+				4BA377DB0CD3D01000C7B1D4 /* GeneratePreviewForURL.m */,
+				4BA377D70CD3CFF700C7B1D4 /* ZoomSaveQuickLook.c */,
+			);
+			name = QuickLook;
 			sourceTree = "<group>";
 		};
 		4B7CB0730936276B00F3B8F6 /* PlugIns */ = {
@@ -2047,6 +2112,23 @@
 			productReference = 4B7284AA0CD37FF50079D89B /* LeopardExtns.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
+		4B7286E50CD3CAFF0079D89B /* ZoomSaveQuickLook */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4B7286EC0CD3CB000079D89B /* Build configuration list for PBXNativeTarget "ZoomSaveQuickLook" */;
+			buildPhases = (
+				4B7286E20CD3CAFF0079D89B /* Resources */,
+				4B7286E30CD3CAFF0079D89B /* Sources */,
+				4B7286E40CD3CAFF0079D89B /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ZoomSaveQuickLook;
+			productName = ZoomSaveQuickLook;
+			productReference = 4B7286E60CD3CAFF0079D89B /* ZoomSaveQuickLook.qlgenerator */;
+			productType = "com.apple.product-type.bundle";
+		};
 		4B7CB08009362A3B00F3B8F6 /* ZoomPlugIns */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4B7CB08709362A3B00F3B8F6 /* Build configuration list for PBXNativeTarget "ZoomPlugIns" */;
@@ -2128,6 +2210,7 @@
 				4B36C45C0955ED3F00874F9F /* Copy Glulxe plugin */,
 				4B7FC2380B1F2588004DD113 /* Copy more plugins, if available */,
 				4B7284CA0CD380A50079D89B /* Copy Leopard executables */,
+				4BA375E60CD3CC1500C7B1D4 /* Copy QuickLook plugins */,
 			);
 			buildRules = (
 				4B51A95208FAC71D00232D0B /* PBXBuildRule */,
@@ -2137,6 +2220,7 @@
 				4BB8C18908C249F400D7D334 /* PBXTargetDependency */,
 				4B7CB0A909362A6A00F3B8F6 /* PBXTargetDependency */,
 				4B36C45B0955ED3B00874F9F /* PBXTargetDependency */,
+				4BA375DA0CD3CBF000C7B1D4 /* PBXTargetDependency */,
 				4B7284B50CD380660079D89B /* PBXTargetDependency */,
 				4BB8C18B08C249F400D7D334 /* PBXTargetDependency */,
 				4B39C93508EEF63E00BA5E90 /* PBXTargetDependency */,
@@ -2219,6 +2303,7 @@
 				4B36C4530955ED1700874F9F /* Glulxe */,
 				4BD79A8E0BA2C9AA002C82B2 /* babel */,
 				4B7284A90CD37FF50079D89B /* LeopardExtns */,
+				4B7286E50CD3CAFF0079D89B /* ZoomSaveQuickLook */,
 			);
 		};
 /* End PBXProject section */
@@ -2287,6 +2372,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		4B7284A60CD37FF50079D89B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4B7286E20CD3CAFF0079D89B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -2499,6 +2591,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				4B7284B30CD3805D0079D89B /* ZoomLFlipView.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4B7286E30CD3CAFF0079D89B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4BA377D90CD3CFFD00C7B1D4 /* ZoomSaveQuickLook.c in Sources */,
+				4BA377DF0CD3D01600C7B1D4 /* GenerateThumbnailForURL.m in Sources */,
+				4BA377E00CD3D01700C7B1D4 /* GeneratePreviewForURL.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2747,6 +2849,11 @@
 			isa = PBXTargetDependency;
 			name = GlkClient;
 			targetProxy = 4B7CB1F3093635C400F3B8F6 /* PBXContainerItemProxy */;
+		};
+		4BA375DA0CD3CBF000C7B1D4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4B7286E50CD3CAFF0079D89B /* ZoomSaveQuickLook */;
+			targetProxy = 4BA375D90CD3CBF000C7B1D4 /* PBXContainerItemProxy */;
 		};
 		4BB8C11908C248FF00D7D334 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -3381,6 +3488,80 @@
 			};
 			name = Default;
 		};
+		4B7286E90CD3CB000079D89B /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				INFOPLIST_FILE = "ZoomSaveQuickLook-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = ZoomSaveQuickLook;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+				SDKROOT_ppc = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				WRAPPER_EXTENSION = qlgenerator;
+			};
+			name = Development;
+		};
+		4B7286EA0CD3CB000079D89B /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				INFOPLIST_FILE = "ZoomSaveQuickLook-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = ZoomSaveQuickLook;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+				SDKROOT_ppc = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				WRAPPER_EXTENSION = qlgenerator;
+			};
+			name = Deployment;
+		};
+		4B7286EB0CD3CB000079D89B /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				INFOPLIST_FILE = "ZoomSaveQuickLook-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = ZoomSaveQuickLook;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+				SDKROOT_ppc = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				WRAPPER_EXTENSION = qlgenerator;
+			};
+			name = Default;
+		};
 		4B7CB08809362A3B00F3B8F6 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -3871,6 +4052,16 @@
 				4B7284AC0CD37FF60079D89B /* Development */,
 				4B7284AD0CD37FF60079D89B /* Deployment */,
 				4B7284AE0CD37FF60079D89B /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		4B7286EC0CD3CB000079D89B /* Build configuration list for PBXNativeTarget "ZoomSaveQuickLook" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4B7286E90CD3CB000079D89B /* Development */,
+				4B7286EA0CD3CB000079D89B /* Deployment */,
+				4B7286EB0CD3CB000079D89B /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Default;
