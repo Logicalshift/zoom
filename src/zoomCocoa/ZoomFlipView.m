@@ -118,14 +118,15 @@
 // = Animating =
 
 - (void) finishAnimation {
-	[[self retain] autorelease];
-	
 	if (useCoreAnimation && [self respondsToSelector: @selector(leopardFinishAnimation)]) {
 		[self leopardFinishAnimation];
 	} else {
 		if (animationTimer) [self autorelease];
+		[animationTimer invalidate]; [animationTimer release]; animationTimer = nil;
 		
 		if (originalView != nil) {
+			[[self retain] autorelease];
+
 			[self removeFromSuperview];
 			
 			NSRect frame = originalFrame;
@@ -139,7 +140,6 @@
 			
 			[originalView release]; originalView = nil;
 			[originalSuperview release]; originalSuperview = nil;
-			[animationTimer invalidate]; [animationTimer release]; animationTimer = nil;
 		}		
 	}
 }

@@ -13,10 +13,6 @@
 
 @implementation ZoomFlipView(ZoomLeopardFlipView)
 
-+ (void) initialize {
-	[self exposeBinding: @"percentDone"];
-}
-
 + (id) flipViewClass {
 	static id classId = nil;
 	if (!classId) {
@@ -215,43 +211,11 @@
 	return [(NSNumber*)[[self propertyDictionary] objectForKey: @"AnimationStyle"] intValue];
 }
 
-- (void) setPercentDone: (double) percentage {
-	NSLog(@"Percent Done: %g", percentage);
-	[[self propertyDictionary] setObject: [NSNumber numberWithDouble: percentage]
-								  forKey: @"PercentDone"];
-	[[self layer] setNeedsLayout];
-}
-
-- (double) percentDone {
-	NSNumber* result = [[self propertyDictionary] objectForKey: @"PercentDone"];
-	if (result) {
-		return [result doubleValue];
-	} else {
-		return 0;
-	}
-}
-	 
 // = Performing layout =
 
 - (void)layoutSublayersOfLayer:(CALayer *)layer {
-	if (layer != [self layer]) return;
-	
-	// Get the layers and percentages
-	double percent		= [self percentDone];
-	CALayer* initial	= [[layer sublayers] objectAtIndex: 0];
-	CALayer* final		= [[layer sublayers] objectAtIndex: 1];
-	
-	// Set the size of the layers
-	CGRect initialFrame		= layer.bounds;
-	CGRect finalFrame		= layer.bounds;
-	
-	// Perform the animation
-	initialFrame.origin.x	= self.bounds.size.width * percent;
-	finalFrame.origin.x		= -self.bounds.size.width * (1-percent);
-	
-	// Set the layer positions
-	initial.frame	= initialFrame;
-	final.frame		= finalFrame;
+	// TODO: if we ever make proper use of this, then this could be useful
+	return;
 }
 
 @end
