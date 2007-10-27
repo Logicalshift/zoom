@@ -7,7 +7,7 @@
 //
 
 #import "ZoomFlipView.h"
-
+#import "ZoomLFlipView.h"
 
 @implementation ZoomFlipView
 
@@ -28,6 +28,7 @@
 	[startImage release];
 	[endImage release];
 	[whenStarted release];
+	[props autorelease];
 	
 	[super dealloc];
 }
@@ -101,103 +102,130 @@
 	startImage = [[[self class] cacheView: view] retain];
 }
 
+- (NSMutableDictionary*) propertyDictionary {
+	if (props == nil) {
+		props = [[NSMutableDictionary alloc] init];
+	}
+	
+	return props;
+}
+
 // = Animating =
 
 - (void) finishAnimation {
-	if (animationTimer) [self autorelease];
+	[[self retain] autorelease];
 	
-	if (originalView != nil) {
-		[self removeFromSuperview];
+	if ([self respondsToSelector: @selector(leopardFinishAnimation)]) {
+		[self leopardFinishAnimation];
+	} else {
+		if (animationTimer) [self autorelease];
 		
-		NSRect frame = originalFrame;
-		frame.size = [originalView frame].size;
-		
-		[originalView setFrame: frame];
-		[originalSuperview addSubview: originalView];
-		[originalView setNeedsDisplay: YES];
-		[pixelBuffer release]; pixelBuffer = nil;
-		[ZoomFlipView trackView: originalView];
-		
-		[originalView release]; originalView = nil;
-		[originalSuperview release]; originalSuperview = nil;
-		[animationTimer invalidate]; [animationTimer release]; animationTimer = nil;
+		if (originalView != nil) {
+			[self removeFromSuperview];
+			
+			NSRect frame = originalFrame;
+			frame.size = [originalView frame].size;
+			
+			[originalView setFrame: frame];
+			[originalSuperview addSubview: originalView];
+			[originalView setNeedsDisplay: YES];
+			[pixelBuffer release]; pixelBuffer = nil;
+			[ZoomFlipView trackView: originalView];
+			
+			[originalView release]; originalView = nil;
+			[originalSuperview release]; originalSuperview = nil;
+			[animationTimer invalidate]; [animationTimer release]; animationTimer = nil;
+		}		
 	}
 }
 
 - (void) prepareToAnimateView: (NSView*) view {
 	[self finishAnimation];
 	
-	// Cache the initial view
-	[self cacheStartView: view];
-	
-	// Replace the specified view with the animating view (ie, this view)
-	[originalView autorelease];
-	[originalSuperview release];
-	originalView = [view retain];
-	originalSuperview = [[view superview] retain];
-	originalFrame = [view frame];
-	
-	[ZoomFlipView detrackView: originalView];
-	[originalView removeFromSuperviewWithoutNeedingDisplay];
-	[self setFrame: originalFrame];
-	[originalSuperview addSubview: self];
-	[self setNeedsDisplay: YES];
-	
-	[self setAutoresizingMask: [originalView autoresizingMask]];
+	if ([self respondsToSelector: @selector(leopardPrepareViewForAnimation:)]) {
+		[self leopardPrepareViewForAnimation: view];
+	} else {
+		// Cache the initial view
+		[self cacheStartView: view];
+		
+		// Replace the specified view with the animating view (ie, this view)
+		[originalView autorelease];
+		[originalSuperview release];
+		originalView = [view retain];
+		originalSuperview = [[view superview] retain];
+		originalFrame = [view frame];
+		
+		[ZoomFlipView detrackView: originalView];
+		[originalView removeFromSuperviewWithoutNeedingDisplay];
+		[self setFrame: originalFrame];
+		[originalSuperview addSubview: self];
+		[self setNeedsDisplay: YES];
+		
+		[self setAutoresizingMask: [originalView autoresizingMask]];		
+	}
 }
 
 - (void) setAnimationTime: (NSTimeInterval) newAnimationTime {
 	animationTime = newAnimationTime;
 }
 
+- (NSTimeInterval) animationTime {
+	return animationTime;
+}
+
 - (void) animateTo: (NSView*) view
 			 style: (ZoomViewAnimationStyle) style {
-	[whenStarted release];
-	whenStarted = [[NSDate date] retain];
-	
-	// Create the final image
-	[endImage release];
-	endImage = [[[self class] cacheView: view] retain];
-	
-	
-	// Construct the pixel buffer for this animation
-#if 0
-	switch (style) {
-		case ZoomCubeUp:
-		case ZoomCubeDown:
-			NSRect bounds = [self bounds];
-			
-			pixelBuffer = [[NSOpenGLPixelBuffer alloc] initWithTextureTarget: GL_TEXTURE_RECTANGLE_EXT
-													   textureInternalFormat: GL_RGBA
-													   textureMaxMipMapLevel: 0
-																  pixelsWide: bounds.size.width
-																  pixelsHigh: bounds.size.height];
+	if ([self respondsToSelector: @selector(leopardAnimateTo:style:)]) {
+		[self leopardAnimateTo: view
+						 style: style];
+	} else {
+		[whenStarted release];
+		whenStarted = [[NSDate date] retain];
+		
+		// Create the final image
+		[endImage release];
+		endImage = [[[self class] cacheView: view] retain];
+		
+		
+		// Construct the pixel buffer for this animation
+	#if 0
+		switch (style) {
+			case ZoomCubeUp:
+			case ZoomCubeDown:
+				NSRect bounds = [self bounds];
+				
+				pixelBuffer = [[NSOpenGLPixelBuffer alloc] initWithTextureTarget: GL_TEXTURE_RECTANGLE_EXT
+														   textureInternalFormat: GL_RGBA
+														   textureMaxMipMapLevel: 0
+																	  pixelsWide: bounds.size.width
+																	  pixelsHigh: bounds.size.height];
+		}
+	#endif
+		
+		// Replace the specified view with the animating view (ie, this view)
+		[originalView autorelease];
+		originalView = [view retain];
+		originalFrame = [view frame];
+		
+		[ZoomFlipView detrackView: originalView];
+		[self setFrame: originalFrame];
+		[originalSuperview addSubview: self];
+		[self setNeedsDisplay: YES];
+		
+		// Start running the animation
+		[self retain];
+		animationStyle = style;
+		animationTimer = [[NSTimer timerWithTimeInterval: 0.01
+												  target: self
+												selector: @selector(animationTick)
+												userInfo: nil
+												 repeats: YES] retain];
+		
+		[[NSRunLoop currentRunLoop] addTimer: animationTimer
+									 forMode: NSDefaultRunLoopMode];
+		[[NSRunLoop currentRunLoop] addTimer: animationTimer
+									 forMode: NSEventTrackingRunLoopMode];
 	}
-#endif
-	
-	// Replace the specified view with the animating view (ie, this view)
-	[originalView autorelease];
-	originalView = [view retain];
-	originalFrame = [view frame];
-	
-	[ZoomFlipView detrackView: originalView];
-	[self setFrame: originalFrame];
-	[originalSuperview addSubview: self];
-	[self setNeedsDisplay: YES];
-	
-	// Start running the animation
-	[self retain];
-	animationStyle = style;
-	animationTimer = [[NSTimer timerWithTimeInterval: 0.01
-											  target: self
-											selector: @selector(animationTick)
-											userInfo: nil
-											 repeats: YES] retain];
-	
-	[[NSRunLoop currentRunLoop] addTimer: animationTimer
-								 forMode: NSDefaultRunLoopMode];
-	[[NSRunLoop currentRunLoop] addTimer: animationTimer
-								 forMode: NSEventTrackingRunLoopMode];
 }
 
 - (float) percentDone {

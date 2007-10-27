@@ -295,6 +295,12 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 	LSRegisterURL((CFURLRef)[NSURL fileURLWithPath: [[NSBundle mainBundle] bundlePath]], 1);
 #endif
 	
+	// Load the leopard extensions if we're running on the right version of OS X
+	if (NSAppKitVersionNumber >= 949) {
+		NSLog(@"Loading Leopard extensions");
+		[[NSBundle bundleWithPath: [[NSBundle mainBundle] pathForAuxiliaryExecutable: @"LeopardExtns.bundle"]] load];
+	}
+	
 	// Ensure the shared plugin controller is created
 	[ZoomPlugInController sharedPlugInController];
 	

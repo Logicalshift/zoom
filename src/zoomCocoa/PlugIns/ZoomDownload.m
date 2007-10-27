@@ -227,6 +227,16 @@ static int lastDownloadId = 0;
 
 - (NSTask*) unarchiveFile: (NSString*) filename
 			  toDirectory: (NSString*) directory {
+	// Some ifarchive mirrors give us .tar.Z.tar and .tar.gz.tar type files: replace those
+	if ([[filename lowercaseString] hasSuffix: @".tar.z.tar"]) {
+		filename = [filename substringToIndex: [filename length] - [@".tar.z.tar" length]];
+		filename = [filename stringByAppendingString: @".tar.z"];
+	}
+	if ([[filename lowercaseString] hasSuffix: @".tar.gz.tar"]) {
+		filename = [filename substringToIndex: [filename length] - [@".tar.gz.tar" length]];
+		filename = [filename stringByAppendingString: @".tar.gz"];
+	}
+	
 	// Creates an NSTask that will unarchive the specified filename (which must be supplied as stdin) to the specified directory
 	NSString* pathExtension = [[filename pathExtension] lowercaseString];
 	NSString* withoutExtension = [filename stringByDeletingPathExtension];

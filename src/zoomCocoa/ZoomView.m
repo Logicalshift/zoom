@@ -43,6 +43,8 @@ static void finalizeViews(void);
     for (view=0;view<nAllocatedViews;view++) {
         [allocatedViews[view] killTask];
     }
+	
+	[super finalize];
 }
 
 static void finalizeViews(void) {
