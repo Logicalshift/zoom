@@ -250,6 +250,10 @@
 // = Drawing =
 
 - (void)drawRect:(NSRect)rect {
+	if ([self respondsToSelector: @selector(leopardAnimateTo:style:)]) {
+		return;
+	}
+		
 	float percentDone = [self percentDone];
 	float percentNotDone = 1.0-percentDone;
 	
