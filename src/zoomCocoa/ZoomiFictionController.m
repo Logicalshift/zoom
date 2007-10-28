@@ -25,6 +25,7 @@
 #import "ZoomPlugInController.h"
 #import "ZoomPlugIn.h"
 #import "ZoomWindowThatIsKey.h"
+#import "ZoomClearView.h"
 
 #import "ifmetabase.h"
 
@@ -232,8 +233,8 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	NSRect mainWindowFrame = [[self window] frame];
 	NSRect downloadFrame = [downloadWindow frame];
 	
-	downloadFrame.origin.x = NSMaxX(mainWindowFrame) - downloadFrame.size.width - 32;
-	downloadFrame.origin.y = NSMinY(mainWindowFrame) + 48;
+	downloadFrame.origin.x = NSMaxX(mainWindowFrame) - downloadFrame.size.width - 9;
+	downloadFrame.origin.y = NSMinY(mainWindowFrame) + 42;
 	
 	[downloadWindow setFrameOrigin: downloadFrame.origin];
 }
@@ -248,14 +249,17 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	[[ifdbView mainFrame] loadRequest: [NSURLRequest requestWithURL: loadingPage]];		
 	[ifdbView setCustomUserAgent: @"Mozilla/5.0 (Macintosh; U; Mac OS X; en-us) AppleWebKit (KHTML like Gecko) uk.org.logicalshift.zoom/1.1.2"];
 	
-	downloadView = [[ZoomDownloadView alloc] initWithFrame: NSMakeRect(0,0,230,65)];
-	downloadWindow = [[ZoomWindowThatIsKey alloc] initWithContentRect: NSMakeRect(0,0,230,65)
+	NSView* clearView = [[[ZoomClearView alloc] init] autorelease];
+	downloadView = [[ZoomDownloadView alloc] initWithFrame: NSMakeRect(0,0,276,78)];
+	downloadWindow = [[ZoomWindowThatIsKey alloc] initWithContentRect: NSMakeRect(0,0,276,78)
 															styleMask: NSBorderlessWindowMask
 															  backing: NSBackingStoreBuffered
 																defer: NO];
 	[downloadWindow setOpaque: NO];
 	[downloadWindow setAlphaValue: 0];
-	[downloadWindow setContentView: downloadView];
+	[downloadWindow setContentView: clearView];
+	[downloadView setFrame: [clearView frame]];
+	[clearView addSubview: downloadView];
 
 	[addButton setPushedImage: [NSImage imageNamed: @"add-in"]];
 	[newgameButton setPushedImage: [NSImage imageNamed: @"newgame-in"]];
@@ -2481,24 +2485,14 @@ int tableSorter(id a, id b, void* context) {
 }
 
 - (void) finishPopDownload {
-	//[[[NSApp delegate] leopard] clearLayersForView: [downloadWindow contentView]];
+	[[[NSApp delegate] leopard] clearLayersForView: downloadView];
+	[[downloadView progress] startAnimation: self];
 }
 
 - (void) finishPopOutDownload {
 	[self cancelFadeTimer];
 	[[self window] removeChildWindow: downloadWindow];
 	[downloadWindow orderOut: self];
-
-	[downloadWindow release];
-	downloadWindow = [[ZoomWindowThatIsKey alloc] initWithContentRect: NSMakeRect(0,0,230,65)
-															styleMask: NSBorderlessWindowMask
-															  backing: NSBackingStoreBuffered
-																defer: NO];
-	[downloadWindow setOpaque: NO];
-	[downloadWindow setAlphaValue: 0];
-	[downloadWindow setContentView: downloadView];	
-	
-	//[[[NSApp delegate] leopard] clearLayersForView: [downloadWindow contentView]];
 }
 
 - (void) showDownloadWindow {
@@ -2519,7 +2513,7 @@ int tableSorter(id a, id b, void* context) {
 		[finished setTarget: self];
 		[finished setSelector: @selector(finishPopDownload)];
 		
-		[[[NSApp delegate] leopard] popView: [downloadWindow contentView]
+		[[[NSApp delegate] leopard] popView: downloadView
 								   duration: 0.5
 								   finished: finished];
 		[downloadWindow setAlphaValue: 1.0];
@@ -2541,17 +2535,19 @@ int tableSorter(id a, id b, void* context) {
 - (void) hideDownloadWindow {
 	if (![downloadWindow isVisible]) return;
 
-	
 	// Start the timer to fade the window out
 	[self cancelFadeTimer];
 
 	if ([[NSApp delegate] leopard]) {
 		// Fanicify the animation under leopard
+		[[downloadView progress] stopAnimation: self];
+		[[downloadView progress] setDoubleValue: 0];
+
 		NSInvocation* finished = [NSInvocation invocationWithMethodSignature: [self methodSignatureForSelector: @selector(finishPopOutDownload)]];
 		[finished setTarget: self];
 		[finished setSelector: @selector(finishPopOutDownload)];
 		
-		[[[NSApp delegate] leopard] popOutView: [downloadWindow contentView]
+		[[[NSApp delegate] leopard] popOutView: downloadView
 									  duration: 0.5
 									  finished: finished];
 		[downloadWindow setAlphaValue: 1.0];
@@ -2609,7 +2605,7 @@ int tableSorter(id a, id b, void* context) {
 	[[downloadView progress] setIndeterminate: YES];
 	[[downloadView progress] setMinValue: 0];
 	[[downloadView progress] setMaxValue: 100.0];
-	[[downloadView progress] startAnimation: self];
+	if (![[NSApp delegate] leopard]) [[downloadView progress] startAnimation: self];
 }
 
 - (void) downloadComplete: (ZoomDownload*) download {

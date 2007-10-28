@@ -24,6 +24,22 @@
 	return self;
 }
 
+- (void) prepareToAnimateView: (NSView*) view
+						layer: (CALayer*) layer {
+	NSEnumerator* subviewEnum = [[view subviews] objectEnumerator];
+	NSView* subview;
+	while (subview = [subviewEnum nextObject]) {
+		[self prepareToAnimateView: subview
+							 layer: nil];		
+	}
+
+	if (![view wantsLayer]) {
+		[view setWantsLayer: YES];
+	}
+	
+	[view layer].backgroundColor = CGColorCreateGenericRGB(0, 0,0,0);
+}
+
 - (void) prepareToAnimateView: (NSView*) view {
 	CALayer* viewLayer = [CALayer layer];
 	
@@ -31,23 +47,6 @@
 
 	[self prepareToAnimateView: view
 						 layer: viewLayer];
-}
-
-- (void) prepareToAnimateView: (NSView*) view
-						layer: (CALayer*) layer {
-	NSEnumerator* subviewEnum = [[view subviews] objectEnumerator];
-	NSView* subview;
-	while (subview = [subviewEnum nextObject]) {
-		[self prepareToAnimateView: subview
-							 layer: layer];		
-	}
-	
-	if (![view wantsLayer]) {
-		[view setWantsLayer: YES];
-	}
-	if (![view layer]) {
-		[view setLayer: layer];
-	}
 }
 
 - (void) popView: (NSView*) view 
@@ -95,6 +94,7 @@
 	popBackAnimation.delegate = self;
 
 	// Animate the view's layer
+	[view layer].opacity = 1;
 	[[view layer] removeAllAnimations];
 	[[view layer] addAnimation: popAnimation
 						forKey: @"PopView"];
@@ -177,7 +177,6 @@
 - (void) clearLayersForView: (NSView*) view {
 	if ([view wantsLayer]) {
 		[view setWantsLayer: NO];
-		[view setLayer: nil];
 
 		NSEnumerator* subviewEnum = [[view subviews] objectEnumerator];
 		NSView* subview;
@@ -192,10 +191,8 @@
 - (void)animationDidStop:(CAAnimation *)theAnimation
 				finished:(BOOL)flag {
 	int index = [animationsWillFinish indexOfObject: theAnimation];
-	NSLog(@"Finished animation %@ (willFinish %@)", theAnimation, animationsWillFinish);
 	
 	if (index != NSNotFound) {
-		NSLog(@"Calling finishing invocation");
 		[[finishInvocations objectAtIndex: index] invoke];
 		
 		[animationsWillFinish removeObjectAtIndex: index];

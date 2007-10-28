@@ -18,7 +18,7 @@
 		downloadImage = [[NSImage imageNamed: @"IFDB-downloading"] retain];
 		
 		// Set up the progress indicator
-		progress = [[NSProgressIndicator alloc] initWithFrame: NSMakeRect(NSMinX(frame)+14, NSMinY(frame) + 18, frame.size.width-28, 16)];
+		progress = [[NSProgressIndicator alloc] initWithFrame: NSMakeRect(NSMinX(frame)+37, NSMinY(frame) + 24, frame.size.width-74, 16)];
 		[progress setAutoresizingMask: NSViewWidthSizable|NSViewMaxYMargin];
 		[progress setUsesThreadedAnimation: NO];
 		
@@ -40,7 +40,11 @@
 	[[NSColor clearColor] set];
 	NSRectFill(bounds);
 	
-	[downloadImage drawInRect: bounds
+	NSRect downloadRect;
+	downloadRect.origin.x = NSMinX(bounds) + (bounds.size.width - imageSize.width) / 2;
+	downloadRect.origin.y = NSMinY(bounds) + (bounds.size.height - imageSize.height) / 2;
+	downloadRect.size = imageSize;
+	[downloadImage drawInRect: downloadRect
 					 fromRect: NSMakeRect(0,0, imageSize.width,imageSize.height)
 					operation: NSCompositeSourceOver
 					 fraction: 1.0];
