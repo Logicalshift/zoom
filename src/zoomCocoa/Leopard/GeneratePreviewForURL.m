@@ -4,6 +4,7 @@
 
 #import "ZoomSkein.h"
 #import "ZoomMetadata.h"
+#import "ZoomBabel.h"
 
 /* -----------------------------------------------------------------------------
    Generate a preview for file
@@ -41,6 +42,161 @@ static NSString* zoomConfigDirectory() {
 	}
 	
 	return nil;
+}
+
+OSStatus GeneratePreviewForBabel(void *thisInterface, 
+								 QLPreviewRequestRef preview,
+								 CFURLRef cfUrl, 
+								 CFStringRef contentTypeUTI, 
+								 CFDictionaryRef options) {
+	// Can't deal with file URLs.
+	NSURL* url = (NSURL*)cfUrl;
+	if (![url isFileURL]) return noErr;
+	
+	// Get the metadata for the story
+	ZoomBabel* babel = [[[ZoomBabel alloc] initWithFilename: [url path]] autorelease];
+	ZoomStory* story = [babel metadata];
+	ZoomStoryID* storyID = [story storyID];
+	NSImage* image = [babel coverImage];
+	
+	if (image == nil) {
+		// If there's no image, then we need to use a default one
+		image = [[[NSImage alloc] initWithContentsOfFile: [[NSBundle bundleWithIdentifier: @"uk.org.logicalshift.zoom.save.quicklook"] pathForResource: @"zoom-game"
+																																				ofType: @"icns"]] autorelease];
+	}
+
+	// Try to use babel to work out the story ID, if we have no metadata
+	if (!story || !storyID) {
+		storyID = [babel storyID];
+	}
+	
+	// Give up if the ID is still nil
+	if (storyID == nil) {
+		return noErr;
+	}
+	
+	// Try to load Zoom's built-in metadata if we can
+	ZoomMetadata* metadata = nil;
+	NSData* userData = [NSData dataWithContentsOfFile: [zoomConfigDirectory() stringByAppendingPathComponent: @"metadata.iFiction"]];
+	if (userData) metadata = [[[ZoomMetadata alloc] initWithData: userData] autorelease];
+	
+	if (metadata) {
+		story = [metadata containsStoryWithIdent: storyID]?[metadata findOrCreateStory: storyID]:story;
+	}
+	
+	// If there's no metadata returned, then give up
+	if (story == nil) return;
+	
+	// Generate an attributed string describing the story
+	NSFont* titleFont		= [NSFont boldSystemFontOfSize: 24];
+	NSFont* descriptionFont	= [NSFont systemFontOfSize: 11];
+	NSFont* smallFont		= [NSFont systemFontOfSize: 10];
+	NSFont* ifidFont		= [NSFont boldSystemFontOfSize: 9];
+	NSColor* foreground		= [NSColor whiteColor];
+	NSColor* background		= [NSColor clearColor];
+	
+	NSDictionary* titleAttr	= [NSDictionary dictionaryWithObjectsAndKeys:
+							   titleFont, NSFontAttributeName,
+							   foreground, NSForegroundColorAttributeName,
+							   background, NSBackgroundColorAttributeName,
+							   nil];
+	NSDictionary* smallAttr	= [NSDictionary dictionaryWithObjectsAndKeys:
+							   smallFont, NSFontAttributeName,
+							   foreground, NSForegroundColorAttributeName,
+							   background, NSBackgroundColorAttributeName,
+							   nil];
+	NSDictionary* ifidAttr	= [NSDictionary dictionaryWithObjectsAndKeys:
+							   ifidFont, NSFontAttributeName,
+							   foreground, NSForegroundColorAttributeName,
+							   background, NSBackgroundColorAttributeName,
+							   nil];
+	NSDictionary* descrAttr	= [NSDictionary dictionaryWithObjectsAndKeys:
+							   descriptionFont, NSFontAttributeName,
+							   foreground, NSForegroundColorAttributeName,
+							   background, NSBackgroundColorAttributeName,
+							   nil];
+	
+	NSMutableAttributedString* description = [[[NSMutableAttributedString alloc] init] autorelease];
+	
+	if ([story title]) {
+		[description appendAttributedString: [[[NSAttributedString alloc] initWithString: [NSString stringWithFormat: @"%@\n", [story title]]
+																			  attributes: titleAttr] autorelease]];		
+	}
+	[description appendAttributedString: [[[NSAttributedString alloc] initWithString: [NSString stringWithFormat: @"IFID: %@\n", [storyID description]]
+																		  attributes: ifidAttr] autorelease]];
+	if ([story author] && [[story author] length] > 0) {
+		NSString* publication = @"";
+		if ([story year] > 0) {
+			publication = [NSString stringWithFormat: @", published %i", [story year]];
+		}
+		[description appendAttributedString: [[[NSAttributedString alloc] initWithString: [NSString stringWithFormat: @"by %@%@\n", [story author], publication]
+																			  attributes: smallAttr] autorelease]];		
+	}
+	
+	if ([story description] && [[story description] length] > 0) {
+		[description appendAttributedString: [[[NSAttributedString alloc] initWithString: [NSString stringWithFormat: @"\n%@", [story description]]
+																			  attributes: descrAttr] autorelease]];				
+	} else if ([story teaser] && [[story teaser] length] > 0) {
+		[description appendAttributedString: [[[NSAttributedString alloc] initWithString: [NSString stringWithFormat: @"\n%@", [story teaser]]
+																			  attributes: descrAttr] autorelease]];		
+	}
+	
+	// Decide on the size of the graphics context
+	CGSize previewSize;
+	previewSize.width = 760;
+	previewSize.height = 320;
+
+	NSRect descriptionRect = [description boundingRectWithSize: NSMakeSize((previewSize.width - previewSize.height) - 16, 1e8)
+													   options: 0];
+	
+	if (image != nil) {
+		previewSize.height = [image size].height;
+		
+		if (previewSize.height < 180) previewSize.height = 180;
+		if (previewSize.height < descriptionRect.size.height + 32) previewSize.height = descriptionRect.size.height + 32;
+		if (previewSize.height > 320) previewSize.height = 320;
+		
+		previewSize.width *= previewSize.height / 320.0;
+		if (previewSize.width < 560) previewSize.width = 560;
+	}
+	
+	// Create a graphics context to draw into
+	CGContextRef cgContext = QLPreviewRequestCreateContext(preview, previewSize,
+														 false, NULL);
+	
+	NSGraphicsContext* context = [NSGraphicsContext graphicsContextWithGraphicsPort: cgContext
+																			flipped: NO];
+	
+	// Start drawing
+	[NSGraphicsContext saveGraphicsState];
+	[NSGraphicsContext setCurrentContext: context];
+	[context setImageInterpolation: NSImageInterpolationHigh];
+	
+	// Draw the image
+	if (image) {
+		NSSize imageSize = [image size];
+		NSRect imageRect = NSMakeRect(8,8, previewSize.height - 16, previewSize.height - 16);
+		float ratio = imageSize.height / imageSize.width;
+		imageRect.size.width *= ratio;
+		
+		[image drawInRect: imageRect
+				 fromRect: NSMakeRect(0,0, imageSize.width, imageSize.height)
+				operation: NSCompositeSourceOver
+				 fraction: 1.0];
+	}
+	
+	// Draw the description
+	NSRect descRect = NSMakeRect(previewSize.height + 8, 8, (previewSize.width - previewSize.height) - 16, previewSize.height - 16);
+	[description drawInRect: descRect];
+	
+	// Done with the drawing
+	[NSGraphicsContext restoreGraphicsState];
+	
+	// Finish up with the context
+	QLPreviewRequestFlushContext(preview, cgContext);
+	CFRelease(cgContext);
+	
+	return noErr;
 }
 
 OSStatus GeneratePreviewForURL(void *thisInterface, 
@@ -99,6 +255,11 @@ OSStatus GeneratePreviewForURL(void *thisInterface,
 				storyID = [[[ZoomStoryID alloc] initWithIdString: idString] autorelease];
 			}
 		}
+	} else {
+		
+		// Generate a babel preview
+		return GeneratePreviewForBabel(thisInterface, preview, cfUrl, contentTypeUTI, options);
+
 	}
 	
 	// Try to parse the skein

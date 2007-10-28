@@ -148,6 +148,9 @@
 		4B94AF100CD4B53C003C75A6 /* ZoomLeopard.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B94AEF00CD4B2E5003C75A6 /* ZoomLeopard.m */; };
 		4B94B0410CD4DCBD003C75A6 /* ZoomClearView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B94B03F0CD4DCBD003C75A6 /* ZoomClearView.h */; };
 		4B94B0420CD4DCBD003C75A6 /* ZoomClearView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B94B0400CD4DCBD003C75A6 /* ZoomClearView.m */; };
+		4B94B0D20CD4FC52003C75A6 /* ZoomBabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3E766B0BA2D47300661FE8 /* ZoomBabel.m */; };
+		4B94B0D60CD4FCF4003C75A6 /* babel in Copy babel */ = {isa = PBXBuildFile; fileRef = 4BD79A8F0BA2C9AA002C82B2 /* babel */; };
+		4B94B1000CD5063A003C75A6 /* zoom-game.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4BCF3F46050FB21C00A8E303 /* zoom-game.icns */; };
 		4B95CDA1C5B03AD500FD9F27 /* ZoomSkeinController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B18852906987AC6004D8501 /* ZoomSkeinController.h */; };
 		4B95CDA2C5B03AD500FD9F27 /* ZoomSkeinController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B18852A06987AC6004D8501 /* ZoomSkeinController.m */; };
 		4B95CDB9C5B03AD500FD9F27 /* ZoomSkeinController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B18852906987AC6004D8501 /* ZoomSkeinController.h */; };
@@ -631,6 +634,13 @@
 			remoteGlobalIDString = 4B51AA5507E877C900576AB9;
 			remoteInfo = GlkClient;
 		};
+		4B94B0D40CD4FCEE003C75A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4BD79A8E0BA2C9AA002C82B2 /* babel */;
+			remoteInfo = babel;
+		};
 		4BA375D90CD3CBF000C7B1D4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
@@ -725,6 +735,17 @@
 				4B7284C00CD3807D0079D89B /* LeopardExtns.bundle in Copy Leopard executables */,
 			);
 			name = "Copy Leopard executables";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4B94B0D70CD4FD12003C75A6 /* Copy babel */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				4B94B0D60CD4FCF4003C75A6 /* babel in Copy babel */,
+			);
+			name = "Copy babel";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		4BA375E60CD3CC1500C7B1D4 /* Copy QuickLook plugins */ = {
@@ -2150,11 +2171,13 @@
 				4B7286E20CD3CAFF0079D89B /* Resources */,
 				4B7286E30CD3CAFF0079D89B /* Sources */,
 				4B7286E40CD3CAFF0079D89B /* Frameworks */,
+				4B94B0D70CD4FD12003C75A6 /* Copy babel */,
 				4B94AF0E0CD4B512003C75A6 /* ShellScript */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				4B94B0D50CD4FCEE003C75A6 /* PBXTargetDependency */,
 			);
 			name = ZoomSaveQuickLook;
 			productName = ZoomSaveQuickLook;
@@ -2418,6 +2441,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4B94B1000CD5063A003C75A6 /* zoom-game.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2749,6 +2773,7 @@
 				4BA3786B0CD3DCD900C7B1D4 /* ZoomDownload.m in Sources */,
 				4BA3786D0CD3DCE000C7B1D4 /* ZoomPlugInInfo.m in Sources */,
 				4BA3786E0CD3DCE700C7B1D4 /* ZoomProtocol.m in Sources */,
+				4B94B0D20CD4FC52003C75A6 /* ZoomBabel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2998,6 +3023,11 @@
 			isa = PBXTargetDependency;
 			name = GlkClient;
 			targetProxy = 4B7CB1F3093635C400F3B8F6 /* PBXContainerItemProxy */;
+		};
+		4B94B0D50CD4FCEE003C75A6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4BD79A8E0BA2C9AA002C82B2 /* babel */;
+			targetProxy = 4B94B0D40CD4FCEE003C75A6 /* PBXContainerItemProxy */;
 		};
 		4BA375DA0CD3CBF000C7B1D4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

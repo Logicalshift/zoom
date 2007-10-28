@@ -138,10 +138,18 @@ static NSMutableDictionary* babelCache = nil;
 		[babelTask release];
 		babelTask = nil;
 	}
+	
+	if (ifidTask) {
+		[ifidTask terminate];
+		[ifidTask release];
+		ifidTask = nil;
+	}
 
 	[filename release]; filename = nil;
 	[babelStdOut release]; babelStdOut = nil;
+	[ifidStdOut release]; ifidStdOut = nil;
 	
+	[storyID release];
 	[metadata release];
 	[babelImage release];
 	
@@ -154,7 +162,7 @@ static NSMutableDictionary* babelCache = nil;
 	BOOL mustWait = NO;
 	
 	[babelLock lock];
-	mustWait = babelTask != nil;
+	mustWait = babelTask != nil || ifidTask != nil;
 	[babelLock unlock];
 	
 	if (mustWait) {
@@ -169,7 +177,9 @@ static NSMutableDictionary* babelCache = nil;
 		
 		[babelLock unlock];
 		
-		while (babelTask && [babelTask isRunning] && [[NSDate date] compare: terminate] == NSOrderedAscending) {
+		while (((babelTask && [babelTask isRunning])
+				|| (ifidTask && [ifidTask isRunning]))
+			   && [[NSDate date] compare: terminate] == NSOrderedAscending) {
 			// Wait for events from the runloop (poll for the task ending, because the task finished notification fails to arrive while in event tracking mode)
 			[rl runMode: NSEventTrackingRunLoopMode
 			 beforeDate: [NSDate dateWithTimeIntervalSinceNow: 0.03]];
@@ -235,6 +245,43 @@ static NSMutableDictionary* babelCache = nil;
 	}
 	
 	return nil;
+}
+
+// = Story ID =
+
+- (ZoomStoryID*) storyID {
+	if (!storyID) {
+		// Try to read the story ID via babel
+		NSString* babelTaskFolder = [ZoomBabel babelFolder];
+		if (babelTaskFolder != nil && !ifidTask) {
+			[babelLock lock];
+			
+			NSString* babelPath = [[NSBundle bundleForClass: [self class]] pathForResource: @"babel"
+																					ofType: nil]; 
+			
+			ifidTask = [[NSTask alloc] init];
+			ifidStdOut = [[NSPipe alloc] init];
+			
+			[ifidTask setCurrentDirectoryPath: babelTaskFolder];
+			[ifidTask setLaunchPath: babelPath];
+			[ifidTask setStandardOutput: [ifidStdOut fileHandleForWriting]];
+			
+			[ifidTask setArguments: [NSArray arrayWithObjects: @"-ifid", filename, nil]];
+			
+			[[NSNotificationCenter defaultCenter] addObserver: self
+													 selector: @selector(ifidTaskFinished:)
+														 name: NSTaskDidTerminateNotification
+													   object: babelTask];
+			
+			[ifidTask launch];
+
+			[babelLock unlock];
+		}
+		
+		[self waitForBabel];
+	}
+	
+	return storyID;
 }
 
 // = Notifications =
@@ -339,7 +386,7 @@ static NSMutableDictionary* babelCache = nil;
 	[babelStdOut release];
 	babelStdOut = nil;
 }
-
+	
 - (void) babelTaskFinished: (NSNotification*) not {
 	[babelLock lock];
 	[self handleBabelTaskFinished];
@@ -360,6 +407,38 @@ static NSMutableDictionary* babelCache = nil;
 						  NSDefaultRunLoopMode, NSEventTrackingRunLoopMode, nil]];
 	}
 #endif
+}
+
+
+- (void) ifidTaskFinished: (NSNotification*) not {
+	[babelLock lock];
+	
+	// Get the output
+	[[ifidStdOut fileHandleForWriting] closeFile];
+	
+	NSData* output = [[ifidStdOut fileHandleForReading] readDataToEndOfFile];
+	NSString* outputString = [[[NSString alloc] initWithData: output encoding: NSUTF8StringEncoding] autorelease];
+	NSLog(@"Babel> %@", outputString);
+	
+	// Check the return code
+	if ([babelTask terminationStatus] == 0) {
+		NSArray* lines = [outputString componentsSeparatedByString: @"\n"];
+		NSEnumerator* lineEnum = [lines objectEnumerator];
+		NSString* line;
+		while (line = [lineEnum nextObject]) {
+			// IFIDs must be 3 characters long
+			if ([line length] < 3) continue;
+			
+			// If the line begins with IFID: then strip it out
+			if ([line hasPrefix: @"IFID: "]) {
+				line = [line substringFromIndex: 6];
+				storyID = [[ZoomStoryID alloc] initWithIdString: line];
+				break;
+			}
+		}
+	}
+		
+	[babelLock unlock];
 }
 
 @end

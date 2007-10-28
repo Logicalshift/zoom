@@ -315,6 +315,7 @@
 			<key>UTTypeConformsTo</key>
 			<array>
 				<string>public.data</string>
+				<string>uk.org.logicalshift.zoom</string>
 			</array>
 			<key>UTTypeDescription</key>
 			<string>ZCode story</string>
@@ -343,6 +344,7 @@
 			<key>UTTypeConformsTo</key>
 			<array>
 				<string>public.data</string>
+				<string>uk.org.logicalshift.zoom</string>
 			</array>
 			<key>UTTypeDescription</key>
 			<string>Blorb resource file</string>
@@ -385,6 +387,7 @@
 			<key>UTTypeConformsTo</key>
 			<array>
 				<string>public.data</string>
+				<string>uk.org.logicalshift.zoom</string>
 			</array>
 			<key>UTTypeDescription</key>
 			<string>ZCode story</string>
@@ -405,6 +408,7 @@
 			<key>UTTypeConformsTo</key>
 			<array>
 				<string>public.data</string>
+				<string>uk.org.logicalshift.zoom</string>
 			</array>
 			<key>UTTypeDescription</key>
 			<string>Glulx Story</string>
@@ -425,6 +429,7 @@
 			<key>UTTypeConformsTo</key>
 			<array>
 				<string>public.data</string>
+				<string>uk.org.logicalshift.zoom</string>
 			</array>
 			<key>UTTypeDescription</key>
 			<string>Glulx Story</string>
@@ -444,6 +449,7 @@
 			<key>UTTypeConformsTo</key>
 			<array>
 				<string>public.data</string>
+				<string>uk.org.logicalshift.zoom</string>
 			</array>
 			<key>UTTypeDescription</key>
 			<string>TADS Story</string>
@@ -464,6 +470,7 @@
 			<key>UTTypeConformsTo</key>
 			<array>
 				<string>public.data</string>
+				<string>uk.org.logicalshift.zoom</string>
 			</array>
 			<key>UTTypeDescription</key>
 			<string>Hugo Story</string>

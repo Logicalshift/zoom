@@ -25,6 +25,10 @@
 	NSData* babelImage;										// The raw cover image
 	
 	NSMutableArray* waitingForTask;							// Tasks waiting for babel to finish
+
+	NSTask* ifidTask;										// Task waiting for the IFID
+	NSPipe* ifidStdOut;										// Stdout from the ifid task
+	ZoomStoryID* storyID;									// Story ID that we last read
 }
 
 // = Initialisation =
@@ -40,6 +44,7 @@
 
 // = Interpreted reading =
 
+- (ZoomStoryID*) storyID;									// Requests the IFID for the story file
 - (ZoomStory*) metadata;									// Retrieves the metadata for this file
 - (NSImage*) coverImage;									// Retrieves the cover image for this file
 
