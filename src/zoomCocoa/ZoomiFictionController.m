@@ -26,6 +26,7 @@
 #import "ZoomPlugIn.h"
 #import "ZoomWindowThatIsKey.h"
 #import "ZoomClearView.h"
+#import "ZoomSignPost.h"
 
 #import "ifmetabase.h"
 
@@ -2978,18 +2979,15 @@ int tableSorter(id a, id b, void* context) {
 	[self showWindow: self];
 	
 	// Parse the property list
-	NSDictionary* signpost = [NSPropertyListSerialization propertyListFromData: signpostFile
-															  mutabilityOption: NSPropertyListImmutable
-																		format: nil
-															  errorDescription: nil];
+	ZoomSignPost* signpost = [[[ZoomSignPost alloc] initWithData: signpostFile] autorelease];
 	
-	if (signpost == nil || ![signpost isKindOfClass: [NSDictionary class]]) {
+	if (signpost == nil) {
 		// Not a valid signpost
 		return;
 	}
 	
 	// Check for an installed plugin with the interpreter ID
-	NSString* interpreter = [signpost objectForKey: @"Interpreter"];
+	NSString* interpreter = [signpost interpreterDisplayName];
 	if (interpreter && [interpreter isKindOfClass: [NSString class]]) {
 		BOOL haveInterpreter = NO;
 		
@@ -3009,7 +3007,7 @@ int tableSorter(id a, id b, void* context) {
 		
 		if (!haveInterpreter) {
 			// Download the update file, then the interpreter
-			NSString* updateUrl = [signpost objectForKey: @"InterpreterURL"];
+			NSString* updateUrl = [[signpost interpreterURL] absoluteString];
 			if (!updateUrl || ![updateUrl isKindOfClass: [NSString class]]) {
 				return;
 			}
@@ -3033,25 +3031,24 @@ int tableSorter(id a, id b, void* context) {
 	}
 	
 	// See if the game is already present
-	NSString* ifid = [signpost objectForKey: @"IFID"];
 	ZoomStoryID* downloadId = nil;
-	if (ifid && [ifid isKindOfClass: [NSString class]]) {
-		downloadId = [[[ZoomStoryID alloc] initWithIdString: ifid] autorelease];
-	}
-	
-	// If we're not forcing a download, open the existing file
-	if (downloadId && !forceDownload) {
-		NSString* storyFilename = [[ZoomStoryOrganiser sharedStoryOrganiser] filenameForIdent: downloadId];
-		if (storyFilename) {
-			[[NSApp delegate] application: NSApp
-								 openFile: storyFilename];
-			return;
+	NSEnumerator* idEnum = [[signpost ifids] objectEnumerator];
+	while (downloadId = [idEnum nextObject]) {
+		// If we're not forcing a download, open the existing file
+		if (downloadId && !forceDownload) {
+			NSString* storyFilename = [[ZoomStoryOrganiser sharedStoryOrganiser] filenameForIdent: downloadId];
+			if (storyFilename) {
+				[[NSApp delegate] application: NSApp
+									 openFile: storyFilename];
+				return;
+			}
 		}
 	}
+	if ([[signpost ifids] count] > 0) downloadId = [[signpost ifids] objectAtIndex: 0];
 	
 	// Download the game
-	NSString* urlString = [signpost objectForKey: @"URL"];
-	if (urlString && [urlString isKindOfClass: [NSString class]]) {
+	NSURL* url = [signpost downloadURL];
+	if (url) {
 		[activeDownload setDelegate: nil];
 		[activeDownload autorelease]; activeDownload = nil;
 
@@ -3062,7 +3059,6 @@ int tableSorter(id a, id b, void* context) {
 		downloadPlugin = NO;
 		
 		// Use mirror.ifarchive.org, not www.ifarchive.org
-		NSURL* url = [NSURL URLWithString: urlString];
 		NSString* host = [url host];
 		if ([host isEqualToString: @"www.ifarchive.org"]) {
 			url = [[[NSURL alloc] initWithScheme: [url scheme]
@@ -3081,11 +3077,19 @@ int tableSorter(id a, id b, void* context) {
 			contextInfo: (void *)contextInfo {
 	if (activeSignpost && returnCode == NSAlertDefaultReturn) {
 		// Get the update URL
-		NSString* updateUrl = [activeSignpost objectForKey: @"InterpreterURL"];
-		if (!updateUrl || ![updateUrl isKindOfClass: [NSString class]]) {
+		NSURL* updateUrl = [activeSignpost interpreterURL];
+		if (!updateUrl) {
 			return;
 		}
-
+		
+		// Use mirror.ifarchive.org, not www.ifarchive.org
+		NSString* host = [updateUrl host];
+		if ([host isEqualToString: @"www.ifarchive.org"]) {
+			updateUrl = [[[NSURL alloc] initWithScheme: [updateUrl scheme]
+												  host: @"mirror.ifarchive.org"
+												  path: [updateUrl path]] autorelease];
+		}
+		
 		// Download the update XML file
 		[activeDownload setDelegate: nil];
 		[activeDownload autorelease]; activeDownload = nil;
@@ -3096,7 +3100,7 @@ int tableSorter(id a, id b, void* context) {
 		downloadUpdateList = YES;
 		downloadPlugin = NO;
 		
-		activeDownload = [[ZoomDownload alloc] initWithUrl: [NSURL URLWithString: updateUrl]];
+		activeDownload = [[ZoomDownload alloc] initWithUrl: updateUrl];
 		[activeDownload setDelegate: self];
 		[activeDownload startDownload];				
 	}
@@ -3129,7 +3133,7 @@ static unsigned int ValueForHexChar(int hex) {
 	}
 	
 	// Find a plugin that matches the signpost
-	NSString* interpreter = [activeSignpost objectForKey: @"Interpreter"];
+	NSString* interpreter = [activeSignpost interpreterDisplayName];
 	if (!interpreter || ![interpreter isKindOfClass: [NSString class]]) {
 		[self failedToInstallPlugin: @"Oops, Zoom forgot which interpreter it was trying to install."];
 		return;		
@@ -3230,9 +3234,7 @@ static unsigned int ValueForHexChar(int hex) {
 	if ([[ZoomPlugInManager sharedPlugInManager] restartRequired]) {
 		// Write out a startup signpost file
 		NSString* startupSignpost = [[[NSApp delegate] zoomConfigDirectory] stringByAppendingPathComponent: @"launch.signpost"];
-		NSData* signpostData = [NSPropertyListSerialization dataFromPropertyList: activeSignpost
-																		  format: NSPropertyListXMLFormat_v1_0
-																errorDescription: nil];
+		NSData* signpostData = [activeSignpost data];
 		
 		[signpostData writeToFile: startupSignpost
 					   atomically: YES];
@@ -3241,9 +3243,7 @@ static unsigned int ValueForHexChar(int hex) {
 		[[ZoomPlugInController sharedPlugInController] restartZoom];
 	} else {
 		// Retry the signpost
-		[self openSignPost: [NSPropertyListSerialization dataFromPropertyList: activeSignpost
-																	   format: NSPropertyListXMLFormat_v1_0
-															 errorDescription: nil]
+		[self openSignPost: [activeSignpost data]
 			 forceDownload: YES];
 	}
 }

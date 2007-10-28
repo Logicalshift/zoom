@@ -151,6 +151,8 @@
 		4B94B0D20CD4FC52003C75A6 /* ZoomBabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3E766B0BA2D47300661FE8 /* ZoomBabel.m */; };
 		4B94B0D60CD4FCF4003C75A6 /* babel in Copy babel */ = {isa = PBXBuildFile; fileRef = 4BD79A8F0BA2C9AA002C82B2 /* babel */; };
 		4B94B1000CD5063A003C75A6 /* zoom-game.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4BCF3F46050FB21C00A8E303 /* zoom-game.icns */; };
+		4B94B1600CD537B8003C75A6 /* ZoomSignPost.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B94B15E0CD537B8003C75A6 /* ZoomSignPost.h */; };
+		4B94B1610CD537B8003C75A6 /* ZoomSignPost.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B94B15F0CD537B8003C75A6 /* ZoomSignPost.m */; };
 		4B95CDA1C5B03AD500FD9F27 /* ZoomSkeinController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B18852906987AC6004D8501 /* ZoomSkeinController.h */; };
 		4B95CDA2C5B03AD500FD9F27 /* ZoomSkeinController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B18852A06987AC6004D8501 /* ZoomSkeinController.m */; };
 		4B95CDB9C5B03AD500FD9F27 /* ZoomSkeinController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B18852906987AC6004D8501 /* ZoomSkeinController.h */; };
@@ -638,7 +640,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4BD79A8E0BA2C9AA002C82B2 /* babel */;
+			remoteGlobalIDString = 4BD79A8E0BA2C9AA002C82B2;
 			remoteInfo = babel;
 		};
 		4BA375D90CD3CBF000C7B1D4 /* PBXContainerItemProxy */ = {
@@ -1017,6 +1019,8 @@
 		4B94AEF00CD4B2E5003C75A6 /* ZoomLeopard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomLeopard.m; sourceTree = "<group>"; };
 		4B94B03F0CD4DCBD003C75A6 /* ZoomClearView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomClearView.h; sourceTree = "<group>"; };
 		4B94B0400CD4DCBD003C75A6 /* ZoomClearView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomClearView.m; sourceTree = "<group>"; };
+		4B94B15E0CD537B8003C75A6 /* ZoomSignPost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomSignPost.h; sourceTree = "<group>"; };
+		4B94B15F0CD537B8003C75A6 /* ZoomSignPost.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomSignPost.m; sourceTree = "<group>"; };
 		4B9ED9CF0602977C0049E468 /* Metal-Title.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Metal-Title.png"; sourceTree = "<group>"; };
 		4BA2BCEB06949E730082C022 /* ZoomSkein.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomSkein.h; sourceTree = "<group>"; };
 		4BA2BCEC06949E730082C022 /* ZoomSkein.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomSkein.m; sourceTree = "<group>"; };
@@ -1573,6 +1577,8 @@
 				4B12431A0CAE9B2500CA3374 /* ZoomPlugInInfo.m */,
 				4B84FDDB0CAFC9970071F3B3 /* ZoomDownload.h */,
 				4B84FDDC0CAFC9970071F3B3 /* ZoomDownload.m */,
+				4B94B15E0CD537B8003C75A6 /* ZoomSignPost.h */,
+				4B94B15F0CD537B8003C75A6 /* ZoomSignPost.m */,
 			);
 			path = PlugIns;
 			sourceTree = "<group>";
@@ -1943,6 +1949,7 @@
 				4B12431B0CAE9B2500CA3374 /* ZoomPlugInInfo.h in Headers */,
 				4B84FDDD0CAFC9970071F3B3 /* ZoomDownload.h in Headers */,
 				4B7520090CC6A08200F36ECF /* tads.h in Headers */,
+				4B94B1600CD537B8003C75A6 /* ZoomSignPost.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2803,6 +2810,7 @@
 				4B12431C0CAE9B2500CA3374 /* ZoomPlugInInfo.m in Sources */,
 				4B84FDDE0CAFC9970071F3B3 /* ZoomDownload.m in Sources */,
 				4B7520130CC6A08B00F36ECF /* tads.c in Sources */,
+				4B94B1610CD537B8003C75A6 /* ZoomSignPost.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

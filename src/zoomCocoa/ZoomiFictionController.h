@@ -20,6 +20,7 @@
 #import "ZoomDownloadView.h"
 #import "ZoomDownload.h"
 #import "ZoomJSError.h"
+#import "ZoomSignPost.h"
 
 @interface ZoomiFictionController : NSWindowController {
 	IBOutlet ZoomiFButton* addButton;
@@ -105,7 +106,7 @@
 	
 	ZoomStoryID* signpostId;					// Story to open after the download has completed
 	NSString* installPlugin;					// The name of the plugin to install
-	NSDictionary* activeSignpost;				// The active signpost file
+	ZoomSignPost* activeSignpost;				// The active signpost file
 	BOOL downloadUpdateList;					// YES if we're trying to download an update list
 	BOOL downloadPlugin;						// YES if we're trying to download a .zoomplugin file
 	
