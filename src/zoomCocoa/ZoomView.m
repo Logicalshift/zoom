@@ -37,18 +37,16 @@ static void finalizeViews(void);
     atexit(finalizeViews);
 }
 
-+ (void) finalize {
++ (void) selfDestruct {
     int view;
     
     for (view=0;view<nAllocatedViews;view++) {
         [allocatedViews[view] killTask];
     }
-	
-	[super finalize];
 }
 
 static void finalizeViews(void) {
-    [ZoomView finalize];
+    [ZoomView selfDestruct];
 }
 
 - (id)initWithFrame:(NSRect)frame {

@@ -2532,7 +2532,7 @@ int tableSorter(id a, id b, void* context) {
 	}
 }
 
-- (void) hideDownloadWindow {
+- (void) hideDownloadWindow: (double) duration {
 	if (![downloadWindow isVisible]) return;
 
 	// Start the timer to fade the window out
@@ -2548,7 +2548,7 @@ int tableSorter(id a, id b, void* context) {
 		[finished setSelector: @selector(finishPopOutDownload)];
 		
 		[[[NSApp delegate] leopard] popOutView: downloadView
-									  duration: 0.5
+									  duration: duration
 									  finished: finished];
 		[downloadWindow setAlphaValue: 1.0];
 	} else {		
@@ -2647,7 +2647,7 @@ int tableSorter(id a, id b, void* context) {
 		[activeDownload autorelease]; activeDownload = nil;
 		[[downloadView progress] stopAnimation: self];
 		
-		[self hideDownloadWindow];
+		[self hideDownloadWindow: 0.5];
 	}
 }
 
@@ -2664,7 +2664,7 @@ int tableSorter(id a, id b, void* context) {
 					  [NSString stringWithFormat: @"An error was encountered while trying to download the requested file%@%@.",
 						  reason?@".\n\n":@"", reason]);
 	
-	[self hideDownloadWindow];
+	[self hideDownloadWindow: 0.25];
 }
 
 - (void) downloadUnarchiving: (ZoomDownload*) download {
@@ -2871,7 +2871,7 @@ int tableSorter(id a, id b, void* context) {
 			[activeDownload setDelegate: nil];
 			[activeDownload autorelease];
 			activeDownload = nil;
-			[self hideDownloadWindow];
+			[self hideDownloadWindow: 0.25];
 		}
 	}
 }
