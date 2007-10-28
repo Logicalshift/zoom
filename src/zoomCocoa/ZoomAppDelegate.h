@@ -14,6 +14,7 @@
 #import "ZoomStory.h"
 #import "ZoomiFictionController.h"
 #import "ZoomView.h"
+#import "ZoomLeopard.h"
 
 @class SUUpdater;
 @interface ZoomAppDelegate : NSObject {
@@ -21,6 +22,7 @@
 	IBOutlet SUUpdater* updater;
 	
 	NSMutableArray* gameIndices;
+	id<ZoomLeopard> leopard;
 }
 
 - (NSArray*) gameIndices;
@@ -28,6 +30,7 @@
 - (ZoomMetadata*) userMetadata;
 
 - (NSString*) zoomConfigDirectory;
+- (id<ZoomLeopard>) leopard;
 
 - (IBAction) fixedOpenDocument: (id) sender;
 - (IBAction) showPluginManager: (id) sender;

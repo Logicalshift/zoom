@@ -2480,6 +2480,27 @@ int tableSorter(id a, id b, void* context) {
 	downloadFadeTimer = nil;
 }
 
+- (void) finishPopDownload {
+	//[[[NSApp delegate] leopard] clearLayersForView: [downloadWindow contentView]];
+}
+
+- (void) finishPopOutDownload {
+	[self cancelFadeTimer];
+	[[self window] removeChildWindow: downloadWindow];
+	[downloadWindow orderOut: self];
+
+	[downloadWindow release];
+	downloadWindow = [[ZoomWindowThatIsKey alloc] initWithContentRect: NSMakeRect(0,0,230,65)
+															styleMask: NSBorderlessWindowMask
+															  backing: NSBackingStoreBuffered
+																defer: NO];
+	[downloadWindow setOpaque: NO];
+	[downloadWindow setAlphaValue: 0];
+	[downloadWindow setContentView: downloadView];	
+	
+	//[[[NSApp delegate] leopard] clearLayersForView: [downloadWindow contentView]];
+}
+
 - (void) showDownloadWindow {
 	if ([downloadWindow isVisible]) return;
 	
@@ -2491,16 +2512,30 @@ int tableSorter(id a, id b, void* context) {
 	
 	// Start the timer to fade the window in
 	[self cancelFadeTimer];
-	initialDownloadOpacity = [downloadWindow alphaValue];
-	[downloadFadeStart release];
-	downloadFadeStart = [[NSDate date] retain];
-	downloadFadeTimer = [[NSTimer timerWithTimeInterval: 0.02
-												 target: self
-											   selector: @selector(fadeDownloadIn)
-											   userInfo: nil
-												repeats: YES] retain];
-	[[NSRunLoop currentRunLoop] addTimer: downloadFadeTimer
-								 forMode: NSDefaultRunLoopMode];
+	
+	if ([[NSApp delegate] leopard]) {
+		// Fanicify the animation under leopard
+		NSInvocation* finished = [NSInvocation invocationWithMethodSignature: [self methodSignatureForSelector: @selector(finishPopDownload)]];
+		[finished setTarget: self];
+		[finished setSelector: @selector(finishPopDownload)];
+		
+		[[[NSApp delegate] leopard] popView: [downloadWindow contentView]
+								   duration: 0.5
+								   finished: finished];
+		[downloadWindow setAlphaValue: 1.0];
+	} else {
+		// Use a more prosaic animation on Tiger
+		initialDownloadOpacity = [downloadWindow alphaValue];
+		[downloadFadeStart release];
+		downloadFadeStart = [[NSDate date] retain];
+		downloadFadeTimer = [[NSTimer timerWithTimeInterval: 0.02
+													 target: self
+												   selector: @selector(fadeDownloadIn)
+												   userInfo: nil
+													repeats: YES] retain];
+		[[NSRunLoop currentRunLoop] addTimer: downloadFadeTimer
+									 forMode: NSDefaultRunLoopMode];
+	}
 }
 
 - (void) hideDownloadWindow {
@@ -2509,16 +2544,30 @@ int tableSorter(id a, id b, void* context) {
 	
 	// Start the timer to fade the window out
 	[self cancelFadeTimer];
-	initialDownloadOpacity = [downloadWindow alphaValue];
-	[downloadFadeStart release];
-	downloadFadeStart = [[NSDate date] retain];
-	downloadFadeTimer = [[NSTimer timerWithTimeInterval: 0.02
-												 target: self
-											   selector: @selector(fadeDownloadOut)
-											   userInfo: nil
-												repeats: YES] retain];
-	[[NSRunLoop currentRunLoop] addTimer: downloadFadeTimer
-								 forMode: NSDefaultRunLoopMode];
+
+	if ([[NSApp delegate] leopard]) {
+		// Fanicify the animation under leopard
+		NSInvocation* finished = [NSInvocation invocationWithMethodSignature: [self methodSignatureForSelector: @selector(finishPopOutDownload)]];
+		[finished setTarget: self];
+		[finished setSelector: @selector(finishPopOutDownload)];
+		
+		[[[NSApp delegate] leopard] popOutView: [downloadWindow contentView]
+									  duration: 0.5
+									  finished: finished];
+		[downloadWindow setAlphaValue: 1.0];
+	} else {		
+		// Tiger animation
+		initialDownloadOpacity = [downloadWindow alphaValue];
+		[downloadFadeStart release];
+		downloadFadeStart = [[NSDate date] retain];
+		downloadFadeTimer = [[NSTimer timerWithTimeInterval: 0.02
+													 target: self
+												   selector: @selector(fadeDownloadOut)
+												   userInfo: nil
+													repeats: YES] retain];
+		[[NSRunLoop currentRunLoop] addTimer: downloadFadeTimer
+									 forMode: NSDefaultRunLoopMode];
+	}
 }
 
 - (void) fadeDownloadIn {

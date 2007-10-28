@@ -297,7 +297,9 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 	
 	// Load the leopard extensions if we're running on the right version of OS X
 	if (NSAppKitVersionNumber >= 949) {
-		//[[NSBundle bundleWithPath: [[NSBundle mainBundle] pathForAuxiliaryExecutable: @"LeopardExtns.bundle"]] load];
+		NSBundle* leopardBundle = [NSBundle bundleWithPath: [[NSBundle mainBundle] pathForAuxiliaryExecutable: @"LeopardExtns.bundle"]];
+		[leopardBundle load];
+		leopard = [[[leopardBundle principalClass] alloc] init];
 	}
 	
 	// Ensure the shared plugin controller is created
@@ -327,6 +329,10 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 			NSLog(@"Zoom will next check for plugin updates on %@", nextCheck);
 		}
 	}
+}
+
+- (id<ZoomLeopard>) leopard {
+	return leopard;
 }
 
 // = General actions =

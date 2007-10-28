@@ -145,6 +145,7 @@
 		4B926A130CD1464B00CE0ADB /* ifdb-failed.html in Resources */ = {isa = PBXBuildFile; fileRef = 4B926A100CD1464B00CE0ADB /* ifdb-failed.html */; };
 		4B926A1F0CD1480B00CE0ADB /* ZoomJSError.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B926A1D0CD1480B00CE0ADB /* ZoomJSError.h */; };
 		4B926A200CD1480B00CE0ADB /* ZoomJSError.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B926A1E0CD1480B00CE0ADB /* ZoomJSError.m */; };
+		4B94AF100CD4B53C003C75A6 /* ZoomLeopard.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B94AEF00CD4B2E5003C75A6 /* ZoomLeopard.m */; };
 		4B95CDA1C5B03AD500FD9F27 /* ZoomSkeinController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B18852906987AC6004D8501 /* ZoomSkeinController.h */; };
 		4B95CDA2C5B03AD500FD9F27 /* ZoomSkeinController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B18852A06987AC6004D8501 /* ZoomSkeinController.m */; };
 		4B95CDB9C5B03AD500FD9F27 /* ZoomSkeinController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B18852906987AC6004D8501 /* ZoomSkeinController.h */; };
@@ -989,6 +990,8 @@
 		4B926A1E0CD1480B00CE0ADB /* ZoomJSError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomJSError.m; sourceTree = "<group>"; };
 		4B926F8805E7F9DA00E5C0EA /* ZoomCollapsableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomCollapsableView.h; sourceTree = "<group>"; };
 		4B926F8905E7F9DA00E5C0EA /* ZoomCollapsableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomCollapsableView.m; sourceTree = "<group>"; };
+		4B94AEEF0CD4B2E5003C75A6 /* ZoomLeopard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomLeopard.h; sourceTree = "<group>"; };
+		4B94AEF00CD4B2E5003C75A6 /* ZoomLeopard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomLeopard.m; sourceTree = "<group>"; };
 		4B9ED9CF0602977C0049E468 /* Metal-Title.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Metal-Title.png"; sourceTree = "<group>"; };
 		4BA2BCEB06949E730082C022 /* ZoomSkein.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomSkein.h; sourceTree = "<group>"; };
 		4BA2BCEC06949E730082C022 /* ZoomSkein.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomSkein.m; sourceTree = "<group>"; };
@@ -1500,6 +1503,8 @@
 				4B7286BE0CD3B99C0079D89B /* QuickLook */,
 				4B7284880CD37E980079D89B /* ZoomLFlipView.h */,
 				4B7284890CD37E980079D89B /* ZoomLFlipView.m */,
+				4B94AEEF0CD4B2E5003C75A6 /* ZoomLeopard.h */,
+				4B94AEF00CD4B2E5003C75A6 /* ZoomLeopard.m */,
 			);
 			path = Leopard;
 			sourceTree = "<group>";
@@ -2082,6 +2087,7 @@
 				4B36C4510955ED1700874F9F /* Sources */,
 				4B36C4520955ED1700874F9F /* Frameworks */,
 				4B36C5080955EE2900874F9F /* ShellScript */,
+				4B94AF040CD4B4D2003C75A6 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -2119,6 +2125,7 @@
 				4B7284A60CD37FF50079D89B /* Resources */,
 				4B7284A70CD37FF50079D89B /* Sources */,
 				4B7284A80CD37FF50079D89B /* Frameworks */,
+				4B94AF0C0CD4B4FE003C75A6 /* All done */,
 			);
 			buildRules = (
 			);
@@ -2136,6 +2143,7 @@
 				4B7286E20CD3CAFF0079D89B /* Resources */,
 				4B7286E30CD3CAFF0079D89B /* Sources */,
 				4B7286E40CD3CAFF0079D89B /* Frameworks */,
+				4B94AF0E0CD4B512003C75A6 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -2155,6 +2163,7 @@
 				4B7CB07E09362A3B00F3B8F6 /* Sources */,
 				4B7CB07F09362A3B00F3B8F6 /* Frameworks */,
 				4B3E77590BA2EFED00661FE8 /* Copy babel */,
+				4B94AF080CD4B4E9003C75A6 /* All done */,
 			);
 			buildRules = (
 			);
@@ -2196,6 +2205,7 @@
 				4BB8C14608C2497700D7D334 /* Sources */,
 				4BB8C16108C2497700D7D334 /* Frameworks */,
 				4BB8C16508C2497700D7D334 /* Rez */,
+				4B94AEFC0CD4B481003C75A6 /* All done */,
 			);
 			buildRules = (
 				4B51A94D08FAC6B300232D0B /* PBXBuildRule */,
@@ -2228,6 +2238,7 @@
 				4B7FC2380B1F2588004DD113 /* Copy more plugins, if available */,
 				4B7284CA0CD380A50079D89B /* Copy Leopard executables */,
 				4BA375E60CD3CC1500C7B1D4 /* Copy QuickLook plugins */,
+				4B94AEE20CD4AF3A003C75A6 /* All Done */,
 			);
 			buildRules = (
 				4B51A95208FAC71D00232D0B /* PBXBuildRule */,
@@ -2258,6 +2269,7 @@
 				4BD2749008701E6700C1AE15 /* Resources */,
 				4BD274A008701E6700C1AE15 /* Sources */,
 				4BD274B808701E6700C1AE15 /* Frameworks */,
+				4B94AEFE0CD4B4AE003C75A6 /* All done */,
 			);
 			buildRules = (
 				4B51A95C08FAC74000232D0B /* PBXBuildRule */,
@@ -2565,6 +2577,102 @@
 			shellPath = /bin/sh;
 			shellScript = "if [ -e ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE} ]; then\n\techo Installing plugin bundles from ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE}\n\tls ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE}/*.plugin\n\tcp -Rf ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE}/*.plugin ${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/PlugIns\nfi\n";
 		};
+		4B94AEE20CD4AF3A003C75A6 /* All Done */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "All Done";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "echo Notifying that we\\'re done\n\nif [ -e /sw/bin/growlnotify ]; then\n  /sw/bin/growlnotify Finished building <<END\nZoom has finished building\nEND\nfi\n";
+		};
+		4B94AEFC0CD4B481003C75A6 /* All done */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "All done";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "echo Notifying that we\\'re done\n\nif [ -e /sw/bin/growlnotify ]; then\n  /sw/bin/growlnotify Finished building <<END\nBuilt ZoomServer\nEND\nfi\n";
+		};
+		4B94AEFE0CD4B4AE003C75A6 /* All done */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "All done";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ -e /sw/bin/growlnotify ]; then\n  /sw/bin/growlnotify Finished building <<END\nBuilt ZoomView\nEND\nfi\n";
+		};
+		4B94AF040CD4B4D2003C75A6 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ -e /sw/bin/growlnotify ]; then\n  /sw/bin/growlnotify Finished building <<END\nBuilt Glulxe\nEND\nfi\n";
+		};
+		4B94AF080CD4B4E9003C75A6 /* All done */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "All done";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ -e /sw/bin/growlnotify ]; then\n  /sw/bin/growlnotify Finished building <<END\nBuilt ZoomPlugIns\nEND\nfi\n";
+		};
+		4B94AF0C0CD4B4FE003C75A6 /* All done */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "All done";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ -e /sw/bin/growlnotify ]; then\n  /sw/bin/growlnotify Finished building <<END\nBuilt LeopardExtns\nEND\nfi\n";
+		};
+		4B94AF0E0CD4B512003C75A6 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ -e /sw/bin/growlnotify ]; then\n  /sw/bin/growlnotify Finished building <<END\nBuilt ZoomSaveQuickLook\nEND\nfi\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -2608,6 +2716,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4B7284B30CD3805D0079D89B /* ZoomLFlipView.m in Sources */,
+				4B94AF100CD4B53C003C75A6 /* ZoomLeopard.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

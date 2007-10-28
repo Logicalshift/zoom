@@ -20,6 +20,7 @@
 		// Set up the progress indicator
 		progress = [[NSProgressIndicator alloc] initWithFrame: NSMakeRect(NSMinX(frame)+14, NSMinY(frame) + 18, frame.size.width-28, 16)];
 		[progress setAutoresizingMask: NSViewWidthSizable|NSViewMaxYMargin];
+		[progress setUsesThreadedAnimation: NO];
 		
 		[self addSubview: progress];
     }

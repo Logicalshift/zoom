@@ -174,7 +174,7 @@ static int lastDownloadId = 0;
 	}
 
 	[connection cancel];
-	[connection release]; connection = nil;
+	[connection autorelease]; connection = nil;
 	[tmpFile release]; tmpFile = nil;
 	[downloadFile release]; downloadFile = nil;	
 	[task release]; task = nil;
