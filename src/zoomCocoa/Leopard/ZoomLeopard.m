@@ -88,7 +88,7 @@
 	fadeAnimation.toValue		= [NSNumber numberWithDouble: 1];
 	fadeAnimation.repeatCount	= 1;
 	fadeAnimation.timingFunction= [CAMediaTimingFunction functionWithName: kCAMediaTimingFunctionEaseInEaseOut];
-	fadeAnimation.duration		= seconds*0.8;
+	fadeAnimation.duration		= seconds*0.5;
 	fadeAnimation.fillMode		= kCAFillModeBoth;
 	
 	popBackAnimation.delegate = self;
