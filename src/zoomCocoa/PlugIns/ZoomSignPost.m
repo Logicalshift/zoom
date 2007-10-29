@@ -122,7 +122,6 @@
 		[pathString appendString: pathComponent];
 	}
 	
-	NSLog(@"%@ = %@", pathString, cData);
 	pathString = [[[pathString lowercaseString] mutableCopy] autorelease];
 	
 	// Perform an action if this is a recognised path string
