@@ -173,11 +173,17 @@ OSStatus GeneratePreviewForBabel(void *thisInterface,
 	[context setImageInterpolation: NSImageInterpolationHigh];
 	
 	// Draw the image
+	NSRect imageRect = NSMakeRect(8,8, 0,0);
 	if (image) {
 		NSSize imageSize = [image size];
-		NSRect imageRect = NSMakeRect(8,8, previewSize.height - 16, previewSize.height - 16);
+		imageRect = NSMakeRect(8,8, previewSize.height - 16, previewSize.height - 16);
 		float ratio = imageSize.height / imageSize.width;
-		imageRect.size.width *= ratio;
+		if (ratio < 1) {
+			imageRect.size.height *= ratio;			
+		} else {
+			double oldWidth = imageRect.size.width;
+			imageRect.size.width /= ratio;
+		}
 		
 		[image drawInRect: imageRect
 				 fromRect: NSMakeRect(0,0, imageSize.width, imageSize.height)
@@ -186,7 +192,7 @@ OSStatus GeneratePreviewForBabel(void *thisInterface,
 	}
 	
 	// Draw the description
-	NSRect descRect = NSMakeRect(previewSize.height + 8, 8, (previewSize.width - previewSize.height) - 16, previewSize.height - 16);
+	NSRect descRect = NSMakeRect(imageRect.size.width + 24, 8, (previewSize.width - previewSize.height) - 16, previewSize.height - 16);
 	[description drawInRect: descRect];
 	
 	// Done with the drawing
