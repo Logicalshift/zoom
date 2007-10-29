@@ -75,12 +75,14 @@
     if( ([theEvent clickCount] == 1) &&				// if its a single click and
 		([self selectedRow] != -1) &&				// if its in a row and
 		([self selectedRow] == selectedRow) )		// if the row is already selected
-	{		
+	{
+		willEdit = YES;
 		[self startEditTimer];						// start the edit timer
     }
 
     if ([theEvent clickCount] == 2) 
 	{
+		willEdit = NO;
 		[self sendAction:[self doubleAction] to:[self target]];
 
     }
@@ -119,7 +121,7 @@
 
 - (void)editSelectedCell:(id)sender
 {
-	if( [self selectedRow] == selectedRow )
+	if( [self selectedRow] == selectedRow && willEdit )
 	{
 		[self editColumn:selectedColumn row:selectedRow withEvent:NULL select:YES];
 	}

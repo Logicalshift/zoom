@@ -13,6 +13,8 @@
 
 	int selectedRow;
 	int selectedColumn;
+	
+	BOOL willEdit;
 }
 
 - (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal;
