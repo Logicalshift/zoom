@@ -2824,6 +2824,21 @@ int tableSorter(id a, id b, void* context) {
 			[[ifdbView mainFrame] loadRequest: [NSURLRequest requestWithURL: ifdb]];			
 		}
 	}
+	
+	if (!browserOn && [[NSApp delegate] leopard]) {
+		[[[NSApp delegate] leopard] popOutView: continueButton
+									  duration: 0.25
+									  finished: nil];
+		[[[NSApp delegate] leopard] popOutView: newgameButton
+									  duration: 0.20
+									  finished: nil];
+		[[[NSApp delegate] leopard] popOutView: addButton
+									  duration: 0.15
+									  finished: nil];
+		[[[NSApp delegate] leopard] popOutView: infoButton
+									  duration: 0.20
+									  finished: nil];
+	}
 		
 	[searchField setStringValue: @""];
 	usedBrowser = YES;
@@ -2845,6 +2860,21 @@ int tableSorter(id a, id b, void* context) {
 			style: ZoomAnimateLeft];
 	browserOn = NO;
 	[self updateButtons];
+	
+	if (!browserOn && [[NSApp delegate] leopard]) {
+		[[[NSApp delegate] leopard] popView: continueButton
+									  duration: 0.15
+									  finished: nil];
+		[[[NSApp delegate] leopard] popView: newgameButton
+									  duration: 0.25
+									  finished: nil];
+		[[[NSApp delegate] leopard] popView: addButton
+									  duration: 0.35
+									  finished: nil];
+		[[[NSApp delegate] leopard] popView: infoButton
+									  duration: 0.25
+									  finished: nil];
+	}
 }
 
 - (void)webView:(WebView *)sender didStartProvisionalLoadForFrame:(WebFrame *)frame {
