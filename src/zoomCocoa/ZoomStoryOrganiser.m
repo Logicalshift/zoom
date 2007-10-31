@@ -1278,7 +1278,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		   toFilename: (NSString*) filename {
 	if (ident == nil) return;
 	
-	filename = [[filename copy] autorelease];
+	filename = [NSString stringWithString: filename];
 	
 	[storyLock lock];
 	

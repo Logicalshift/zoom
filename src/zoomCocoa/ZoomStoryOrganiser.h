@@ -15,6 +15,8 @@
 @protocol ZoomStoryIDFetcherProtocol
 
 - (out bycopy ZoomStoryID*) idForFile: (in bycopy NSString*) filename;
+- (void) renamedIdent: (in bycopy ZoomStoryID*) ident
+		   toFilename: (in bycopy NSString*) filename;
 
 @end
 

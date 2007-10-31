@@ -115,9 +115,9 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	
 	// Shadow creates an engraved look
 	NSObject *shadow = [[objc_lookUpClass("NSShadow") alloc] init];
-	[shadow setShadowOffset:NSMakeSize(1.1, -1.5)];
-	[shadow setShadowBlurRadius:0.2];
-	[shadow setShadowColor:[NSColor colorWithCalibratedWhite:1.0 alpha:0.6]];
+	[(id)shadow setShadowOffset:NSMakeSize(1.1, -1.5)];
+	[(id)shadow setShadowBlurRadius:0.2];
+	[(id)shadow setShadowColor:[NSColor colorWithCalibratedWhite:1.0 alpha:0.6]];
 		
 	// The title text
 	NSMutableAttributedString *headerString = [[NSMutableAttributedString alloc] initWithString:@"Title"];
