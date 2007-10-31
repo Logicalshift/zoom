@@ -1012,7 +1012,7 @@ NSString* ZBufferScrollRegion = @"ZBSR";
 - (int) fileSize {
 	if (forWriting) {
 		[NSException raise: @"ZoomFileReadException" format: @"Tried to read from a file open for writing"];
-		return nil;
+		return 0;
 	}
 	
 	return [[data regularFileContents] length];

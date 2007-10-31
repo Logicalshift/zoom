@@ -222,6 +222,9 @@ NSString* ZoomPlugInInformationChangedNotification = @"ZoomPlugInInformationChan
 			lastPos = x+1;
 		}
 	}
+	if (x != lastPos) {
+		[result addObject: [version substringWithRange: NSMakeRange(lastPos, x-lastPos)]];		
+	}
 	
 	return result;
 }
@@ -1060,6 +1063,7 @@ static int SortPlugInInfo(id a, id b, void* context) {
 			// If there's no matching entry, then add the entry from the plugin
 			if (!alreadyExists && [fileDict objectForKey: @"CFBundleTypeExtensions"]) {
 				plistChanged = YES;
+				restartRequired = YES;
 				[zoomFiles addObject: [[fileDict copy] autorelease]];
 			}
 		}
@@ -1095,6 +1099,7 @@ static int SortPlugInInfo(id a, id b, void* context) {
 			// If there is no UTI entry for this file, then add the entry from the plugin
 			if (!alreadyExists)  {
 				plistChanged = YES;
+				restartRequired = YES;
 				[zoomUti addObject: [[utiDict copy] autorelease]];
 			}
 		}
