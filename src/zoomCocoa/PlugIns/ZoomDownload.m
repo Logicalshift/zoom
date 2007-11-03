@@ -21,6 +21,8 @@ static int lastDownloadId = 0;
 + (void) initialize {
 	// Pick a directory to store downloads in
 	NSString* tempDir = NSTemporaryDirectory();
+	if (tempDir == nil || [@"" isEqualToString: tempDir] || [@"/" isEqualToString: tempDir] || [tempDir characterAtIndex: 0] != '/') return;
+	
 	int pid = (int)getpid();
 	
 	downloadDirectory = [[tempDir stringByAppendingPathComponent: [NSString stringWithFormat: @"Zoom-Downloads-%i", pid]] retain];
@@ -29,6 +31,8 @@ static int lastDownloadId = 0;
 + (void) removeTemporaryDirectory {
 	BOOL exists;
 	BOOL isDir;
+	
+	if (downloadDirectory == nil) return;
 	
 	exists = [[NSFileManager defaultManager] fileExistsAtPath: downloadDirectory
 												  isDirectory: &isDir];
@@ -139,6 +143,8 @@ static int lastDownloadId = 0;
 }
 
 - (void) createDownloadDirectory {
+	if (!downloadDirectory) return;
+	
 	BOOL exists;
 	BOOL isDir;
 	
@@ -207,6 +213,7 @@ static int lastDownloadId = 0;
 
 - (NSString*) directoryForUnarchiving {
 	if (tmpDirectory != nil) return tmpDirectory;
+	if (!downloadDirectory) return nil;
 	
 	NSString* directory = [downloadDirectory stringByAppendingPathComponent: [NSString stringWithFormat: @"unarchived-%i", lastDownloadId]];
 	
@@ -422,6 +429,9 @@ static int lastDownloadId = 0;
 	
 	// Create the download directory if it doesn't exist
 	[self createDownloadDirectory];
+	if (!downloadDirectory || ![[NSFileManager defaultManager] fileExistsAtPath: downloadDirectory]) {
+		[self failed: [NSString stringWithFormat: @"Couldn't create download directory"]];
+	}
 	
 	// Create the download file
 	[tmpFile release];
