@@ -325,7 +325,7 @@ static int lastDownloadId = 0;
 
 - (void) unarchiveFile {
 	if (![self directoryForUnarchiving]) {
-		[self failed: @"Couldn't create directory for unarchving"];
+		[self failed: @"Couldn't create directory for unarchiving"];
 	}
 	
 	// Create the unarchiving task
