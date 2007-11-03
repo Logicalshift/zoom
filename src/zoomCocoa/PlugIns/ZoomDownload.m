@@ -324,6 +324,10 @@ static int lastDownloadId = 0;
 }
 
 - (void) unarchiveFile {
+	if (![self directoryForUnarchiving]) {
+		[self failed: @"Couldn't create directory for unarchving"];
+	}
+	
 	// Create the unarchiving task
 	[task release]; task = nil;
 	task = [[self unarchiveFile: tmpFile
