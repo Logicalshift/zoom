@@ -3218,6 +3218,7 @@
 				);
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					DEVELOPMENT_BUILD,
 					APPLE_IS_ARBITRARY,
 					"XMLCALL=",
 				);
@@ -3946,7 +3947,7 @@
 					APPLE_IS_ARBITRARY,
 					HAVE_COREFOUNDATION,
 					"XMLCALL=",
-					DEVELOPMENTBUILD,
+					DEVELOPMENT_BUILD,
 				);
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				INFOPLIST_FILE = "Info-Zoom__Upgraded_.plist";

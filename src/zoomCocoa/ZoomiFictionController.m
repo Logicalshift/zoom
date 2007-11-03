@@ -247,8 +247,12 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 
 	NSURL* loadingPage = [NSURL fileURLWithPath: [[NSBundle mainBundle] pathForResource: @"ifdb-loading"
 																				 ofType: @"html"]];
-	[[ifdbView mainFrame] loadRequest: [NSURLRequest requestWithURL: loadingPage]];		
+	[[ifdbView mainFrame] loadRequest: [NSURLRequest requestWithURL: loadingPage]];
+#ifdef DEVELOPMENT_BUILD
+	[ifdbView setCustomUserAgent: @"Mozilla/5.0 (Macintosh; U; Mac OS X; en-us) AppleWebKit (KHTML like Gecko) uk.org.logicalshift.zoom/1.1.2/development"];
+#else
 	[ifdbView setCustomUserAgent: @"Mozilla/5.0 (Macintosh; U; Mac OS X; en-us) AppleWebKit (KHTML like Gecko) uk.org.logicalshift.zoom/1.1.2"];
+#endif
 	
 	NSView* clearView = [[[ZoomClearView alloc] init] autorelease];
 	downloadView = [[ZoomDownloadView alloc] initWithFrame: NSMakeRect(0,0,276,78)];
