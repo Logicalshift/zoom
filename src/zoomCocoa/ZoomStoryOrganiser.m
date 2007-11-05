@@ -916,7 +916,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	if (currentDir == nil) return NO;
 
 #ifdef DEVELOPMENT_BUILD
-	NSLog(@"Moving %@ to it's preferred path (currently at %@)", ident, currentDir);
+	NSLog(@"Moving %@ to its preferred path (currently at %@)", ident, currentDir);
 #endif
 	
 	// Get the 'ideal' directory
@@ -1037,7 +1037,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 				changed = YES;
 			
 				// Store the new location of the game, if necessary
-				if ([oldGameLoc isEqualToString: oldGameFile]) {
+				if (YES || [oldGameLoc isEqualToString: oldGameFile]) {
 					NSString* newGameFile = [[self directoryForIdent: ident create: NO] stringByAppendingPathComponent: [oldGameLoc lastPathComponent]];
 					newGameFile = [newGameFile stringByStandardizingPath];
 					
