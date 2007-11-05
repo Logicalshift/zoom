@@ -914,6 +914,10 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	currentDir = [currentDir stringByStandardizingPath];
 	
 	if (currentDir == nil) return NO;
+
+#ifdef DEVELOPMENT_BUILD
+	NSLog(@"Moving %@ to it's preferred path (currently at %@)", ident, currentDir);
+#endif
 	
 	// Get the 'ideal' directory
 	NSString* idealDir = [self findDirectoryForIdent: ident
@@ -924,6 +928,10 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	// See if they already match
 	if ([[idealDir lowercaseString] isEqualToString: [currentDir lowercaseString]]) 
 		return YES;
+	
+#ifdef DEVELOPMENT_BUILD
+	NSLog(@"Ideal location is %@", idealDir);
+#endif
 	
 	// If they don't match, then idealDir should be new (or something weird has just occured)
 	// Hmph. HFS+ is case-insensitve, and stringByStandardizingPath does not take account of this. This could
@@ -973,6 +981,10 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 - (void) someStoryHasChanged: (NSNotification*) not {
 	ZoomStory* story = [not object];
 	
+#ifdef DEVELOPMENT_BUILD
+	NSLog(@"Story %@ has changed", [story title]);
+#endif
+	
 	if (![story isKindOfClass: [ZoomStory class]]) {
 		NSLog(@"someStoryHasChanged: called with a non-story object (too many spoons?)");
 		return; // Unlikely but possible. If I'm a spoon, that is.
@@ -997,6 +1009,10 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	ZoomStoryID* ident;
 	BOOL changed = NO;
 	
+#ifdef DEVELOPMENT_BUILD
+	NSLog(@"Finishing changing %@", [story title]);
+#endif
+	
 	while (ident = [identEnum nextObject]) {
 		int identID = [storyIdents indexOfObject: ident];
 		
@@ -1011,16 +1027,24 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 			
 			oldGameFile = [oldGameFile stringByStandardizingPath];
 			oldGameLoc = [oldGameLoc stringByStandardizingPath];
-
+			
+#ifdef DEVELOPMENT_BUILD
+			NSLog(@"ID %@ (%@) is located at %@ (%@)", ident, realID, oldGameFile, oldGameLoc);
+#endif
+			
 			// Actually perform the move
 			if ([self moveStoryToPreferredDirectoryWithIdent: [storyIdents objectAtIndex: identID]]) {
 				changed = YES;
 			
 				// Store the new location of the game, if necessary
-				if (YES || [oldGameLoc isEqualToString: oldGameFile]) {
+				if ([oldGameLoc isEqualToString: oldGameFile]) {
 					NSString* newGameFile = [[self directoryForIdent: ident create: NO] stringByAppendingPathComponent: [oldGameLoc lastPathComponent]];
 					newGameFile = [newGameFile stringByStandardizingPath];
-
+					
+#ifdef DEVELOPMENT_BUILD
+					NSLog(@"Have moved to %@", newGameFile);
+#endif
+					
 					if (![oldGameFile isEqualToString: newGameFile]) {
 						[filenamesToIdents removeObjectForKey: oldGameFile];
 						
