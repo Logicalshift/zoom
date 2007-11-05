@@ -514,8 +514,12 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	if (filename != nil) {
 		[filenamesToIdents removeObjectForKey: filename];
 		[identsToFilenames removeObjectForKey: ident];
-		[storyIdents removeObjectIdenticalTo: ident];
-		[storyFilenames removeObject: filename];
+		
+		int index = [storyFilenames indexOfObject: filename];
+		if (index != NSNotFound) {
+			[storyIdents removeObjectAtIndex: index];
+			[storyFilenames removeObjectAtIndex: index];			
+		}
 	}
 	
 	if (delete) {
@@ -543,6 +547,13 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	// Get the story from the metadata database
 	ZoomStory* theStory = [[NSApp delegate] findStory: ident];
 	
+#if DEVELOPMENT_BUILD
+	NSLog(@"Adding %@ (IFID %@)", filename, ident);
+	if (oldFilename) {
+		NSLog(@"... previously %@ (%@)", oldFilename, oldIdent);
+	}
+#endif
+	
 	// If there's no story registered, then we need to create one
 	if (theStory == nil) {
 		// theStory = [[[NSApp delegate] userMetadata] findOrCreateStory: ident];
@@ -564,7 +575,9 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	if (oldFilename && oldIdent && [oldFilename isEqualToString: filename] && [oldIdent isEqualTo: ident]) {
 		// Nothing to do
 		[storyLock unlock];
-
+#if DEVELOPMENT_BUILD
+		NSLog(@"... looks OK");
+#endif
 		
 		if (organise) {
 			[self organiseStory: theStory
@@ -573,16 +586,31 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		return;
 	}
 	
+	[[ident retain] autorelease];
+	[[filename retain] autorelease];
+	[[oldFilename retain] autorelease];
+	[[oldIdent retain] autorelease];
+	
 	if (oldFilename) {
 		[identsToFilenames removeObjectForKey: ident];
 		[filenamesToIdents removeObjectForKey: oldFilename];
-		[storyFilenames removeObject: oldFilename];
+		
+		int index = [storyFilenames indexOfObject: oldFilename];
+		if (index != NSNotFound) {
+			[storyFilenames removeObjectAtIndex: index];			
+			[storyIdents removeObjectAtIndex: index];
+		}
 	}
 
 	if (oldIdent) {
 		[filenamesToIdents removeObjectForKey: filename];
 		[identsToFilenames removeObjectForKey: oldIdent];
-		[storyIdents removeObject: oldIdent];
+	
+		int index = [storyIdents indexOfObject: oldIdent];
+		if (index != NSNotFound) {
+			[storyFilenames removeObjectAtIndex: index];			
+			[storyIdents removeObjectAtIndex: index];
+		}
 	}
 	
 	[filenamesToIdents removeObjectForKey: filename];
@@ -593,6 +621,8 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		
 	[storyFilenames addObject: newFilename];
 	[storyIdents addObject: newIdent];
+	
+	NSLog(@"... now %@ (%@)", newFilename, newIdent);
 	
 	if (newIdent != nil) {
 		[identsToFilenames setObject: newFilename forKey: newIdent];
@@ -1078,9 +1108,17 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		return;
 	}
 	
+#if DEVELOPMENT_BUILD
+	NSLog(@"Organising %@ (%@)", [story title], ident);
+#endif
+	
 	[storyLock lock];
 	
 	NSString* oldFilename = [[filename retain] autorelease];
+
+#if DEVELOPMENT_BUILD
+	NSLog(@"... currently at %@", oldFilename);
+#endif
 	
 	// Copy to a standard directory, change the filename we're using
 	filename = [filename stringByStandardizingPath];
@@ -1088,7 +1126,11 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	NSString* fileDir = [self directoryForIdent: ident create: YES];
 	NSString* destFile = [fileDir stringByAppendingPathComponent: [oldFilename lastPathComponent]];
 	destFile = [destFile stringByStandardizingPath];
-		
+	
+#if DEVELOPMENT_BUILD
+	NSLog(@"... best directory %@ (file will be %@)", fileDir, destFile);
+#endif
+	
 	if (![filename isEqualToString: destFile]) {
 		BOOL moved = NO;
 		
@@ -1134,13 +1176,17 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		}
 		
 		if (!outsideOrganisation) {
-			// Have to move the file from the directory it's in to the new directory
+			// Have to move the file from the directory its in to the new directory
 			// Really want to move resources and savegames too... Hmm
 			NSString* oldDir = [filename stringByDeletingLastPathComponent];
 			NSEnumerator* dirEnum = [[[NSFileManager defaultManager] directoryContentsAtPath: oldDir] objectEnumerator];
 			
 			NSString* fileToMove;
 			while (fileToMove = [dirEnum nextObject]) {
+#if DEVELOPMENT_BUILD
+				NSLog(@"... reorganising %@ to %@", [oldDir stringByAppendingPathComponent: fileToMove], [fileDir stringByAppendingPathComponent: fileToMove]);
+#endif
+
 				[[NSFileManager defaultManager] movePath: [oldDir stringByAppendingPathComponent: fileToMove]
 												  toPath: [fileDir stringByAppendingPathComponent: fileToMove]
 												 handler: nil];
@@ -1168,24 +1214,26 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	}
 	
 	// Update the indexes
-	if (ident != nil) {
-		[identsToFilenames setObject: filename
-							  forKey: ident];
-		[filenamesToIdents removeObjectForKey: oldFilename];
-		[filenamesToIdents setObject: ident
-							  forKey: filename];
-	}
-	
-	/* --??
 	int filenameIndex = [storyFilenames indexOfObject: oldFilename];
 	if (filenameIndex != NSNotFound) {
 		[storyFilenames removeObjectAtIndex: filenameIndex];
 		[storyIdents removeObjectAtIndex: filenameIndex];
 	}
-	*/
-	
-	[storyFilenames addObject: filename];
-	/* [storyIdents	addObject: ident]; */
+
+	if (ident != nil) {
+#if DEVELOPMENT_BUILD
+		NSLog(@"... %@ <=> %@", ident, filename);
+#endif		
+		
+		[identsToFilenames setObject: filename
+							  forKey: ident];
+		[filenamesToIdents removeObjectForKey: oldFilename];
+		[filenamesToIdents setObject: ident
+							  forKey: filename];
+		
+		[storyFilenames addObject: filename];
+		[storyIdents	addObject: ident];
+	}
 	
 	// Organise the story's resources
 	NSString* resources = [story objectForKey: @"ResourceFilename"];
