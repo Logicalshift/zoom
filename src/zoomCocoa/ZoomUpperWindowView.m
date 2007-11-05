@@ -254,4 +254,62 @@
 	}
 }
 
+// = Accessibility =
+
+
+- (NSArray*) accessibilityAttributeNames {
+	NSMutableArray* result = [[super accessibilityAttributeNames] mutableCopy];
+	
+	[result addObjectsFromArray:[NSArray arrayWithObjects: 
+								 NSAccessibilityRoleDescriptionAttribute,
+								 NSAccessibilityTitleAttribute,
+								 nil]];
+	
+	return result;
+}
+
+- (id)accessibilityAttributeValue:(NSString *)attribute {
+	if ([attribute isEqualToString: NSAccessibilityTitleAttribute]) {
+		NSEnumerator* upperEnum = [[zoomView upperWindows] objectEnumerator];
+		NSMutableString* status = [NSMutableString string];
+		
+		ZoomUpperWindow* win;
+		while (win = [upperEnum nextObject]) {
+			NSArray* lines = [win lines];
+			NSEnumerator* linesEnum = [lines objectEnumerator];
+			NSMutableAttributedString* lineText;
+			while (lineText = [linesEnum nextObject]) {
+				[status appendString: [lineText string]];
+				[status appendString: @" "];
+			}
+		}
+		
+		return status;
+	} else if ([attribute isEqualToString: NSAccessibilityRoleDescriptionAttribute]) {
+		NSEnumerator* upperEnum = [[zoomView upperWindows] objectEnumerator];
+		NSMutableString* status = [NSMutableString string];
+		
+		ZoomUpperWindow* win;
+		while (win = [upperEnum nextObject]) {
+			NSArray* lines = [win lines];
+			NSEnumerator* linesEnum = [lines objectEnumerator];
+			NSMutableAttributedString* lineText;
+			while (lineText = [linesEnum nextObject]) {
+				[status appendString: [lineText string]];
+				[status appendString: @"%@"];
+			}
+		}
+
+		return [NSString stringWithFormat: @"Status bar"];
+	} else if ([attribute isEqualToString: NSAccessibilityParentAttribute]) {
+		return zoomView;
+	}
+	
+	return [super accessibilityAttributeValue: attribute];
+}
+
+- (BOOL)accessibilityIsIgnored {
+	return NO;
+}
+
 @end

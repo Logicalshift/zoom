@@ -328,4 +328,16 @@
 	pastedLines = newLines;
 }
 
+- (id)accessibilityAttributeValue:(NSString *)attribute {
+	if ([attribute isEqualToString: NSAccessibilityParentAttribute]) {
+		NSView* parent = [self superview];
+		while (parent != nil && ![parent isKindOfClass: [ZoomView class]]) {
+			parent = [parent superview];
+		}
+		if (parent) return parent;
+	}
+	
+	return [super accessibilityAttributeValue: attribute];
+}
+
 @end
