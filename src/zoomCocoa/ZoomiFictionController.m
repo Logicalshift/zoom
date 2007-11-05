@@ -595,6 +595,17 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	if (returnCode == NSAlertAlternateReturn) {
 		NSString* filename = [self selectedFilename];
 		
+		if (![[NSFileManager defaultManager] fileExistsAtPath: filename]) {
+			NSLog(@"Couldn't find anything at %@ (looking for IFID: %@)", filename, [self selectedStoryID]);
+			
+			NSBeginAlertSheet(@"Zoom cannot find this story", 
+							  @"Cancel", nil, nil, [self window], nil, nil, nil, 
+							  nil,
+							  [NSString stringWithFormat: @"Zoom was expecting to find the story file for %@ at %@, but it is no longer there. You will need to locate the story in the Finder and load it manually.",
+									[[self selectedStory] title], filename]);
+			return;
+		}
+		
 		// FIXME: multiple selections?
 		if (filename) {
 			[[NSApp delegate] application: NSApp
@@ -2435,9 +2446,11 @@ int tableSorter(id a, id b, void* context) {
 			story = [self createStoryCopy: story];
 			[story setGroup: groupName];
 
+			/*
 			[[ZoomStoryOrganiser sharedStoryOrganiser] addStory: [[ZoomStoryOrganiser sharedStoryOrganiser] filenameForIdent: storyId]
 													  withIdent: storyId
 													   organise: YES];
+			 */
 		}
 		
 		// Set the filters to filter by group
