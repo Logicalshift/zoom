@@ -346,6 +346,7 @@ static int familyComparer(id a, id b, void* context) {
 		[sampleImage lockFocus];
 		[[[prefs colours] objectAtIndex: col] set];
 		NSRectFill(NSMakeRect(0,0,16,12));
+		[sampleImage unlockFocus];
 		
 		// Build the actual menu item
 		NSMenuItem* colourItem = [[NSMenuItem alloc] initWithTitle: [self colourNameAtIndex: col]
@@ -358,8 +359,8 @@ static int familyComparer(id a, id b, void* context) {
 		[newColourMenu addItem: colourItem];
 		
 		// Release our resources
-		[colourItem release];
-		[sampleImage release];
+		[colourItem autorelease];
+		[sampleImage autorelease];
 	}
 	
 	// Set the menu as the menu for both the popup buttons

@@ -20,9 +20,9 @@
   <editor scroll-position="{0, 102}" ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="g6k_HrnO-h8"/>
+    <selected-rows ids="lHfWBcrjfyd"/>
     <selected-columns ids=":941128d340f2709e21a6e303"/>
-    <selected-characters range="{81, 0}"/>
+    <selected-characters range="{177, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -1733,6 +1733,51 @@
               <p>
                 <run>
                   <lit>Seems to have fixed itself??</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="kOv60FtOjeX">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>&apos;Symbol&apos; font not being set properly</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
+        <item id="bW9CHTdrVNI">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>System number not being set correctly?</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+        </item>
+        <item id="lHfWBcrjfyd" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Crash while mucking about in preferences?</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>Caused by releasing an image while unlockFocus has not been called: would happen whenever the &apos;Display&apos; pane was visited, and particularly when one of the colour menus was used.</lit>
                 </run>
               </p>
             </text>
