@@ -157,6 +157,8 @@
 	}
 
     // OK, we can now set up the ZMachine and get running
+	rc_defgame->interpreter = [display interpreterVersion];
+	rc_defgame->revision	= [display interpreterRevision];
 
     // Setup the display
     windows[0] = NULL;

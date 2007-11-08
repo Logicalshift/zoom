@@ -362,6 +362,14 @@ static void finalizeViews(void) {
 
 // = ZDisplay functions =
 
+- (int) interpreterVersion {
+	return [viewPrefs interpreter];
+}
+
+- (int) interpreterRevision {
+	return [viewPrefs revision];
+}
+
 - (void) beep {
 	// All the sound we support at the moment
 	if (delegate && [delegate respondsToSelector: @selector(beep)]) {

@@ -230,6 +230,9 @@ enum ZValueTypeMasks {
 - (int) foregroundColour;
 - (int) backgroundColour;
 
+- (int) interpreterVersion;
+- (int) interpreterRevision;
+
 // Functions to create the standard windows
 - (byref NSObject<ZLowerWindow>*) createLowerWindow;
 - (byref NSObject<ZUpperWindow>*) createUpperWindow;
