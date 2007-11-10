@@ -17,6 +17,7 @@
 #import "ZoomConnector.h"
 #import "ZoomWindowThatCanBecomeKey.h"
 #import "ZoomAppDelegate.h"
+#import "ZoomClearView.h"
 
 @implementation ZoomClientController
 
@@ -536,7 +537,6 @@
 
 		[fullscreenWindow setWindowController: self];
 		[self setWindow: fullscreenWindow];
-		[normalWindow orderOut: self];
 		
 		// Start being fullscreen
 		[[self window] makeKeyAndOrderFront: self];
@@ -553,12 +553,22 @@
 				
 		// Resize the window
 		NSRect frame = [[[self window] screen] frame];
-		[[self window] setShowsResizeIndicator: NO];
-		frame = [NSWindow frameRectForContentRect: frame
-										styleMask: NSBorderlessWindowMask];
-		[[self window] setFrame: frame
-						display: YES
-						animate: YES];
+		if (![[NSApp delegate] leopard]) {
+			[[self window] setShowsResizeIndicator: NO];
+			frame = [NSWindow frameRectForContentRect: frame
+											styleMask: NSBorderlessWindowMask];
+			[[self window] setFrame: frame
+							display: YES
+							animate: YES];			
+			[normalWindow orderOut: self];
+		} else {
+			[fullscreenWindow setOpaque: NO];
+			[fullscreenWindow setBackgroundColor: [NSColor clearColor]];
+			[[self window] setContentView: [[[ZoomClearView alloc] init] autorelease]];
+			[[self window] setFrame: frame
+							display: YES
+							animate: NO];
+		}
 		
 		// Resize, reposition the zoomView
 		NSRect newZoomViewFrame = [[[self window] contentView] bounds];
@@ -574,6 +584,13 @@
 		// Add it back in again
 		[[[self window] contentView] addSubview: zoomView];
 		[zoomView release];
+		
+		// Perform an animation in Leopard
+		if ([[NSApp delegate] leopard]) {
+			[[[NSApp delegate] leopard] fullScreenView: zoomView
+											 fromFrame: oldWindowFrame
+											   toFrame: frame];			
+		}
 		
 		isFullscreen = YES;
 	}
