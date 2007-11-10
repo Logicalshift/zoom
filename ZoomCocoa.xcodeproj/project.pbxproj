@@ -85,6 +85,8 @@
 		4B43DA8409364C7400F03009 /* GlkWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4B43DA8309364C7400F03009 /* GlkWindow.nib */; };
 		4B43DAB109364CD700F03009 /* ZoomGlkWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B43DAAD09364CD100F03009 /* ZoomGlkWindowController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B43DAB209364CD800F03009 /* ZoomGlkWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B43DAAE09364CD100F03009 /* ZoomGlkWindowController.m */; };
+		4B4D65FF0CE3CA2C00943422 /* ZoomClearView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B94B03F0CD4DCBD003C75A6 /* ZoomClearView.h */; };
+		4B4D66000CE3CA2C00943422 /* ZoomClearView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B94B0400CD4DCBD003C75A6 /* ZoomClearView.m */; };
 		4B65B3A10979B981002D5534 /* ZoomHQImageView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B65B39F0979B981002D5534 /* ZoomHQImageView.h */; };
 		4B65B3A20979B981002D5534 /* ZoomHQImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B65B3A00979B981002D5534 /* ZoomHQImageView.m */; };
 		4B71AB6209E300FF00E27876 /* ifmetaxml.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B71AB5E09E300EF00E27876 /* ifmetaxml.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -146,8 +148,6 @@
 		4B926A1F0CD1480B00CE0ADB /* ZoomJSError.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B926A1D0CD1480B00CE0ADB /* ZoomJSError.h */; };
 		4B926A200CD1480B00CE0ADB /* ZoomJSError.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B926A1E0CD1480B00CE0ADB /* ZoomJSError.m */; };
 		4B94AF100CD4B53C003C75A6 /* ZoomLeopard.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B94AEF00CD4B2E5003C75A6 /* ZoomLeopard.m */; };
-		4B94B0410CD4DCBD003C75A6 /* ZoomClearView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B94B03F0CD4DCBD003C75A6 /* ZoomClearView.h */; };
-		4B94B0420CD4DCBD003C75A6 /* ZoomClearView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B94B0400CD4DCBD003C75A6 /* ZoomClearView.m */; };
 		4B94B0D20CD4FC52003C75A6 /* ZoomBabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3E766B0BA2D47300661FE8 /* ZoomBabel.m */; };
 		4B94B0D60CD4FCF4003C75A6 /* babel in Copy babel */ = {isa = PBXBuildFile; fileRef = 4BD79A8F0BA2C9AA002C82B2 /* babel */; };
 		4B94B1000CD5063A003C75A6 /* zoom-game.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4BCF3F46050FB21C00A8E303 /* zoom-game.icns */; };
@@ -1950,6 +1950,7 @@
 				4B84FDDD0CAFC9970071F3B3 /* ZoomDownload.h in Headers */,
 				4B7520090CC6A08200F36ECF /* tads.h in Headers */,
 				4B94B1600CD537B8003C75A6 /* ZoomSignPost.h in Headers */,
+				4B4D65FF0CE3CA2C00943422 /* ZoomClearView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2045,7 +2046,6 @@
 				4B840ACF0CC2BB9A0071F3B3 /* ZoomDownloadView.h in Headers */,
 				4B840AD10CC2BB9B0071F3B3 /* ZoomWindowThatIsKey.h in Headers */,
 				4B926A1F0CD1480B00CE0ADB /* ZoomJSError.h in Headers */,
-				4B94B0410CD4DCBD003C75A6 /* ZoomClearView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2811,6 +2811,7 @@
 				4B84FDDE0CAFC9970071F3B3 /* ZoomDownload.m in Sources */,
 				4B7520130CC6A08B00F36ECF /* tads.c in Sources */,
 				4B94B1610CD537B8003C75A6 /* ZoomSignPost.m in Sources */,
+				4B4D66000CE3CA2C00943422 /* ZoomClearView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2883,7 +2884,6 @@
 				4B840AD00CC2BB9B0071F3B3 /* ZoomDownloadView.m in Sources */,
 				4B840AD20CC2BB9C0071F3B3 /* ZoomWindowThatIsKey.m in Sources */,
 				4B926A200CD1480B00CE0ADB /* ZoomJSError.m in Sources */,
-				4B94B0420CD4DCBD003C75A6 /* ZoomClearView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

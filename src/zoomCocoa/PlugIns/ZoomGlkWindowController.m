@@ -16,6 +16,8 @@
 #import "ZoomNotesController.h"
 #import "ZoomWindowThatCanBecomeKey.h"
 #import "ZoomGlkSaveRef.h"
+#import "ZoomAppDelegate.h"
+#import "ZoomClearView.h"
 
 #import <GlkView/GlkHub.h>
 #import <GlkView/GlkView.h>
@@ -546,6 +548,10 @@
 			[fullscreenWindow setLevel: NSFloatingWindowLevel];
 			[fullscreenWindow setHidesOnDeactivate: YES];
 			[fullscreenWindow setReleasedWhenClosed: NO];
+			[fullscreenWindow setOpaque: NO];
+			if ([[NSApp delegate] leopard]) {
+				[fullscreenWindow setBackgroundColor: [NSColor clearColor]];				
+			}
 			
 			if (![fullscreenWindow canBecomeKeyWindow]) {
 				[NSException raise: @"ZoomProgrammerIsASpoon"
@@ -573,7 +579,6 @@
 		
 		[fullscreenWindow setWindowController: self];
 		[self setWindow: fullscreenWindow];
-		[normalWindow orderOut: self];
 		
 		// Start being fullscreen
 		[[self window] makeKeyAndOrderFront: self];
@@ -590,12 +595,20 @@
 		
 		// Resize the window
 		NSRect frame = [[[self window] screen] frame];
-		[[self window] setShowsResizeIndicator: NO];
-		frame = [NSWindow frameRectForContentRect: frame
-										styleMask: NSBorderlessWindowMask];
-		[[self window] setFrame: frame
-						display: YES
-						animate: YES];
+		if (![[NSApp delegate] leopard]) {
+			[[self window] setShowsResizeIndicator: NO];
+			frame = [NSWindow frameRectForContentRect: frame
+											styleMask: NSBorderlessWindowMask];
+			[[self window] setFrame: frame
+							display: YES
+							animate: YES];			
+			[normalWindow orderOut: self];
+		} else {
+			[[self window] setContentView: [[[ZoomClearView alloc] init] autorelease]];
+			[[self window] setFrame: frame
+							display: YES
+							animate: NO];
+		}
 		
 		// Resize, reposition the glkView
 		NSRect newGlkViewFrame = [[[self window] contentView] bounds];
@@ -611,6 +624,13 @@
 		// Add it back in again
 		[[[self window] contentView] addSubview: glkView];
 		[glkView release];
+		
+		// Perform an animation in Leopard
+		if ([[NSApp delegate] leopard]) {
+			[[[NSApp delegate] leopard] fullScreenView: glkView
+											 fromFrame: oldWindowFrame
+											   toFrame: frame];			
+		}
 		
 		isFullscreen = YES;
 	}

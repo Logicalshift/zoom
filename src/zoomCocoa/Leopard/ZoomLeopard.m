@@ -186,17 +186,73 @@
 	}
 }
 
+- (void) removeLayerForView {
+	NSLog(@"Well OK then");
+}
+
+- (void) removeLayerForView: (NSView*) view {
+	NSLog(@"Removing layer...");
+	[view setWantsLayer: NO];
+}
+
+- (void) fullScreenView: (NSView*) view								// Animates a view to full screen
+			  fromFrame: (NSRect) oldWindowFrame
+				toFrame: (NSRect) newWindowFrame {
+	[view setWantsLayer: YES];
+	[[view layer] display];
+	
+	float ratioX = oldWindowFrame.size.width / newWindowFrame.size.width;
+	float ratioY = oldWindowFrame.size.height / newWindowFrame.size.height;
+	
+	CATransform3D scaleFrom = CATransform3DIdentity;
+	scaleFrom = CATransform3DScale(scaleFrom, ratioX, ratioY, 1.0);
+	scaleFrom = CATransform3DTranslate(scaleFrom, 
+									   oldWindowFrame.size.width - newWindowFrame.size.width,
+									   oldWindowFrame.size.height - newWindowFrame.size.height, 0.0);
+	scaleFrom = CATransform3DTranslate(scaleFrom, 
+									   (oldWindowFrame.origin.x - newWindowFrame.origin.x)/ratioX,
+									   (oldWindowFrame.origin.y - newWindowFrame.origin.y)/ratioY, 0.0);
+	
+	CABasicAnimation* scaleAnimation = [CABasicAnimation animation];
+	
+	scaleAnimation.keyPath			= @"transform";
+	scaleAnimation.fromValue		= [NSValue valueWithCATransform3D: scaleFrom];
+	scaleAnimation.toValue			= [NSValue valueWithCATransform3D: CATransform3DIdentity];
+	scaleAnimation.duration			= 0.35;
+	scaleAnimation.repeatCount		= 1;
+	scaleAnimation.timingFunction	= [CAMediaTimingFunction functionWithName: kCAMediaTimingFunctionEaseInEaseOut];
+	scaleAnimation.delegate			= self;
+
+	// Animate the view's layer
+	[[view layer] removeAllAnimations];
+	[[view layer] addAnimation: scaleAnimation
+						forKey: @"ScaleView"];
+	scaleAnimation = (CABasicAnimation*)[[view layer] animationForKey: @"ScaleView"];
+	
+	// Invocations don't work when this is loaded as a bundle (no idea why: appears to be an Apple
+	// bug).
+	[animationsWillFinish addObject: scaleAnimation];
+	[finishInvocations addObject: view];
+}
+
 // = Animation delegate functions =
 
 - (void)animationDidStop:(CAAnimation *)theAnimation
 				finished:(BOOL)flag {
 	int index = [animationsWillFinish indexOfObject: theAnimation];
-	
-	if (index != NSNotFound) {
-		[[finishInvocations objectAtIndex: index] invoke];
+
+	while (index != NSNotFound) {
+		id invocation = [finishInvocations objectAtIndex: index];
+		if ([invocation isKindOfClass: [NSInvocation class]]) {
+			[invocation invoke];
+		} else if ([invocation isKindOfClass: [NSView class]]) {
+			[invocation setWantsLayer: NO];
+		}
 		
 		[animationsWillFinish removeObjectAtIndex: index];
 		[finishInvocations removeObjectAtIndex: index];
+
+		index = [animationsWillFinish indexOfObject: theAnimation];
 	}
 }
 

@@ -20,6 +20,9 @@
 		   finished: (NSInvocation*) finished;
 - (void) clearLayersForView: (NSView*) view;						// Removes the layers for the specified view
 
+- (void) fullScreenView: (NSView*) view								// Animates a view to full screen
+			  fromFrame: (NSRect) oldWindowFrame
+				toFrame: (NSRect) newWindowFrame;
 @end
 
 ///
