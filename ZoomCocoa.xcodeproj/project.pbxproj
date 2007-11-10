@@ -57,7 +57,6 @@
 		4B1FEA510ACB1690008B9EFE /* ifmetaxml.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B71AB5F09E300EF00E27876 /* ifmetaxml.c */; };
 		4B1FEA590ACB1713008B9EFE /* ZoomPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B418ED905961D2C009C44DE /* ZoomPreferences.m */; };
 		4B1FEA5C0ACB1723008B9EFE /* ZoomMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BACEA9705B4597500A9B6DC /* ZoomMetadata.m */; };
-		4B1FEB760ACDBC44008B9EFE /* GlkClient.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4B1FEB750ACDBC44008B9EFE /* GlkClient.icns */; };
 		4B36C4100955E7EB00874F9F /* GlkView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B7CB1C5093634DD00F3B8F6 /* GlkView.framework */; };
 		4B36C4440955EC2600874F9F /* GlkView.framework in Copy frameworks */ = {isa = PBXBuildFile; fileRef = 4B7CB1C5093634DD00F3B8F6 /* GlkView.framework */; };
 		4B36C45F0955ED5400874F9F /* Glulxe.plugin in Copy Glulxe plugin */ = {isa = PBXBuildFile; fileRef = 4B36C4540955ED1700874F9F /* Glulxe.plugin */; };
@@ -87,6 +86,7 @@
 		4B43DAB209364CD800F03009 /* ZoomGlkWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B43DAAE09364CD100F03009 /* ZoomGlkWindowController.m */; };
 		4B4D65FF0CE3CA2C00943422 /* ZoomClearView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B94B03F0CD4DCBD003C75A6 /* ZoomClearView.h */; };
 		4B4D66000CE3CA2C00943422 /* ZoomClearView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B94B0400CD4DCBD003C75A6 /* ZoomClearView.m */; };
+		4B4D67490CE60F9E00943422 /* GlkClient.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4B1FEB750ACDBC44008B9EFE /* GlkClient.icns */; };
 		4B65B3A10979B981002D5534 /* ZoomHQImageView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B65B39F0979B981002D5534 /* ZoomHQImageView.h */; };
 		4B65B3A20979B981002D5534 /* ZoomHQImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B65B3A00979B981002D5534 /* ZoomHQImageView.m */; };
 		4B71AB6209E300FF00E27876 /* ifmetaxml.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B71AB5E09E300EF00E27876 /* ifmetaxml.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -2506,7 +2506,6 @@
 				4BB8C1C208C249F400D7D334 /* infocom.iFiction in Resources */,
 				4BB8C1DF08C249F400D7D334 /* archive.iFiction in Resources */,
 				4B0D81E20AC5A3C0003E8CCA /* top-shading.png in Resources */,
-				4B1FEB760ACDBC44008B9EFE /* GlkClient.icns in Resources */,
 				4B84304C0B139F6000679417 /* TADS.icns in Resources */,
 				4B84304E0B139F7200679417 /* HUGO.icns in Resources */,
 				4BA8B83A0B1B5F65007CD75E /* typographicSettings.png in Resources */,
@@ -2521,6 +2520,7 @@
 				4B7522550CC7FAC500F36ECF /* signpost.icns in Resources */,
 				4B926A120CD1464B00CE0ADB /* IFDB-error.png in Resources */,
 				4B926A130CD1464B00CE0ADB /* ifdb-failed.html in Resources */,
+				4B4D67490CE60F9E00943422 /* GlkClient.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
