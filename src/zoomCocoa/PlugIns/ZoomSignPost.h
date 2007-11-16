@@ -20,6 +20,7 @@
 	NSString* interpreterVersion;
 	NSString* pluginVersion;
 	NSString* downloadURL;
+	NSString* errorMessage;
 	
 	// Parsing state
 	BOOL reparseAsPlist;
@@ -41,6 +42,7 @@
 - (NSString*) interpreterVersion;								// The requested interpreter version
 - (NSString*) pluginVersion;									// The requested plugin version
 - (NSURL*) downloadURL;											// The download URL for the game
+- (NSString*) errorMessage;										// The error contained in this signpost (or nil)
 
 - (NSData*) data;												// Returns a serialized NSData object for this signpost (can be passed back to initWithData: to reload the signpost later)
 

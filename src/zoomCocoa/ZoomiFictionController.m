@@ -245,14 +245,15 @@ static NSString* ZoomNSShadowAttributeName = @"NSShadow";
 	[ifdbView setFrameLoadDelegate: self];
 	[ifdbView setPolicyDelegate: self];
 
-	NSURL* loadingPage = [NSURL fileURLWithPath: [[NSBundle mainBundle] pathForResource: @"ifdb-loading"
-																				 ofType: @"html"]];
-	[[ifdbView mainFrame] loadRequest: [NSURLRequest requestWithURL: loadingPage]];
 #ifdef DEVELOPMENT_BUILD
 	[ifdbView setCustomUserAgent: @"Mozilla/5.0 (Macintosh; U; Mac OS X; en-us) AppleWebKit (KHTML like Gecko) uk.org.logicalshift.zoom/1.1.2/development"];
 #else
-	[ifdbView setCustomUserAgent: @"Mozilla/5.0 (Macintosh; U; Mac OS X; en-us) AppleWebKit (KHTML like Gecko) uk.org.logicalshift.zoom/1.1.2"];
-#endif
+	[ifdbView setCustomUserAgent: @"Mozilla/5.0 (Macintosh; U; Mac OS X; en-us) AppleWebKit (KHTML like Gecko) uk.org.logicalshift.zoom/1.1.2/release"];
+#endif	
+	
+	NSURL* loadingPage = [NSURL fileURLWithPath: [[NSBundle mainBundle] pathForResource: @"ifdb-loading"
+																				 ofType: @"html"]];
+	[[ifdbView mainFrame] loadRequest: [NSURLRequest requestWithURL: loadingPage]];
 	
 	NSView* clearView = [[[ZoomClearView alloc] init] autorelease];
 	downloadView = [[ZoomDownloadView alloc] initWithFrame: NSMakeRect(0,0,276,78)];
@@ -2354,6 +2355,10 @@ int tableSorter(id a, id b, void* context) {
 		return YES;
 	}
 	
+	if ([extn isEqualToString: @"xml"] && [[[[filename stringByDeletingPathExtension] pathExtension] lowercaseString] isEqualToString: @"signpost"]) {
+		return YES;
+	}
+	
 	return NO;
 }
 
@@ -2386,6 +2391,9 @@ int tableSorter(id a, id b, void* context) {
 		
 		// Could be a signpost
 		if ([[[path pathExtension] lowercaseString] isEqualToString: @"signpost"]) {
+			signpostFile = path;
+			continue;
+		} else if ([[[path pathExtension] lowercaseString] isEqualToString: @"xml"] && [[[[path stringByDeletingPathExtension] pathExtension] lowercaseString] isEqualToString: @"signpost"]) {
 			signpostFile = path;
 			continue;
 		}
@@ -2707,6 +2715,13 @@ int tableSorter(id a, id b, void* context) {
 	NSArray* archiveFiles = [NSArray arrayWithObjects: @"zip", @"tar", @"tgz", @"gz", @"bz2", @"z", nil];
 
 	if ([[actionInformation objectForKey: WebActionNavigationTypeKey] intValue] == 0) {
+#ifdef DEVELOPMENT_BUILD
+		NSLog(@"Deciding policy for %@", [request URL]);
+		NSLog(@"User-agent is %@", [ifdbView userAgentForURL: [request URL]]);
+		NSLog(@"(Custom agent is %@)", [ifdbView customUserAgent]);
+		NSLog(@"Header fields are %@", [request allHTTPHeaderFields]);
+#endif
+		
 		// Get the URL to download
 		NSURL* url = [request URL];
 		
@@ -3030,6 +3045,14 @@ int tableSorter(id a, id b, void* context) {
 	
 	if (signpost == nil) {
 		// Not a valid signpost
+		return;
+	}
+	
+	if ([signpost errorMessage]) {
+		// Signpost is OK but just contains an error message
+		NSBeginAlertSheet(@"IFDB has reported a problem with this game", @"Cancel", nil, nil, 
+						  [self window], nil, nil, nil, nil, 
+						  [NSString stringWithFormat: @"%@", [signpost errorMessage]]);
 		return;
 	}
 	

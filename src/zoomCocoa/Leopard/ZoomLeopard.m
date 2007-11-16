@@ -186,12 +186,7 @@
 	}
 }
 
-- (void) removeLayerForView {
-	NSLog(@"Well OK then");
-}
-
 - (void) removeLayerForView: (NSView*) view {
-	NSLog(@"Removing layer...");
 	[view setWantsLayer: NO];
 }
 

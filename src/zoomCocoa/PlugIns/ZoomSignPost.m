@@ -35,6 +35,7 @@
 	[interpreterVersion release];		interpreterVersion		= nil;
 	[pluginVersion release];			pluginVersion			= nil;
 	[downloadURL release];				downloadURL				= nil;
+	[errorMessage release];				errorMessage			= nil;
 	
 	reparseAsPlist = NO;
 	parseError = NO;
@@ -73,6 +74,7 @@
 	}
 
 	// Check that we have the minimal properties required of a valid signpost
+	if (errorMessage) return YES;
 	if (!downloadURL || [downloadURL length] <= 0) return NO;
 	
 	return YES;
@@ -155,6 +157,11 @@
 		[pluginVersion release];
 		pluginVersion = [cData copy];
 		
+	} else if ([pathString isEqualToString: @"/autoinstall/error/message"]) {
+		
+		[errorMessage release];
+		errorMessage = [cData copy];
+		
 	}
 	
 	// Finish up: pop from the path stack and the cData stack
@@ -200,6 +207,10 @@
 - (NSURL*) downloadURL {
 	if (!downloadURL) return nil;
 	return [NSURL URLWithString: downloadURL];
+}
+
+- (NSString*) errorMessage {
+	return errorMessage;
 }
 
 // = Serializing =

@@ -2,19 +2,19 @@
  *  A Z-Machine
  *  Copyright (C) 2000 Andrew Hunter
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
+ *  This library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 /*
@@ -280,8 +280,8 @@ int zoom_main(int argc, char** argv)
   display_set_style(2);
   display_prints_c("FITNESS FOR A PARTICULAR PURPOSE");
   display_set_style(0);
-  display_prints_c(". See the GNU General Public Licence for more details.\n\n");
-  display_prints_c("You should have received a copy of the GNU General Public License along with this program. If not, write to the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.\n");
+  display_prints_c(". See the GNU Lesser General Public Licence for more details.\n\n");
+  display_prints_c("You should have received a copy of the GNU Lesser General Public License along with this program. If not, write to the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.\n");
   display_prints_c("\nThe Zoom homepage can be located at ");
   display_set_style(4);
   display_prints_c("http://www.logicalshift.co.uk/unix/zoom/");
