@@ -17,12 +17,12 @@
     </style-attribute>
   </style-attribute-registry>
   <settings/>
-  <editor scroll-position="{0, 102}" ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
+  <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
-    <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="lHfWBcrjfyd"/>
+    <hoisted-rows ids="gnoX6zDBav8"/>
+    <selected-rows ids="o8eJFUtxrKe"/>
     <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{21, 0}"/>
+    <selected-characters range="{24, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -833,7 +833,7 @@
         </item>
       </children>
     </item>
-    <item id="gnoX6zDBav8" expanded="yes" state="indeterminate">
+    <item id="gnoX6zDBav8" expanded="yes">
       <values>
         <text>
           <p>
@@ -845,7 +845,7 @@
         <null/>
       </values>
       <children>
-        <item id="dtT7Hxkdg01" state="checked">
+        <item id="dtT7Hxkdg01">
           <values>
             <text>
               <p>
@@ -857,7 +857,7 @@
             <null/>
           </values>
         </item>
-        <item id="n2AYaW1NWJO" expanded="yes" state="checked">
+        <item id="n2AYaW1NWJO" expanded="yes">
           <values>
             <text>
               <p>
@@ -869,7 +869,7 @@
             <null/>
           </values>
           <children>
-            <item id="iXJNFzK2E-k" state="checked">
+            <item id="iXJNFzK2E-k">
               <values>
                 <text>
                   <p>
@@ -881,12 +881,24 @@
                 <null/>
               </values>
             </item>
-            <item id="m-SM77DX85J" state="checked">
+            <item id="m-SM77DX85J">
               <values>
                 <text>
                   <p>
                     <run>
                       <lit>In plist files</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="c0jQq-h5HYv">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Update redirect in .htaccess</lit>
                     </run>
                   </p>
                 </text>
@@ -983,7 +995,7 @@
             </item>
           </children>
         </item>
-        <item id="ksB-BbKSplq" expanded="yes" state="indeterminate">
+        <item id="ksB-BbKSplq" expanded="yes">
           <values>
             <text>
               <p>
@@ -995,7 +1007,7 @@
             <null/>
           </values>
           <children>
-            <item id="mzCrN9iZ-5K" state="checked">
+            <item id="mzCrN9iZ-5K">
               <values>
                 <text>
                   <p>
@@ -1007,7 +1019,7 @@
                 <null/>
               </values>
             </item>
-            <item id="cvJbKqozPIB" state="checked">
+            <item id="cvJbKqozPIB">
               <values>
                 <text>
                   <p>
@@ -1019,7 +1031,7 @@
                 <null/>
               </values>
             </item>
-            <item id="mg1vvXA-uZS" state="checked">
+            <item id="mg1vvXA-uZS">
               <values>
                 <text>
                   <p>
@@ -1031,7 +1043,7 @@
                 <null/>
               </values>
             </item>
-            <item id="b1mie9swETR" state="checked">
+            <item id="b1mie9swETR">
               <values>
                 <text>
                   <p>
@@ -1178,7 +1190,7 @@
             <null/>
           </values>
           <children>
-            <item id="eJI45oszJZD">
+            <item id="eJI45oszJZD" expanded="yes">
               <values>
                 <text>
                   <p>
@@ -1189,6 +1201,56 @@
                 </text>
                 <null/>
               </values>
+              <children>
+                <item id="dm-v9CcoVTo">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>Redirect</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
+                <item id="m5ONFiIhUYx">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>/unix/zoom/</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
+                <item id="okGWwPNh-hk">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>/mac/</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
+                <item id="cDc0GHgPQ_u">
+                  <values>
+                    <text>
+                      <p>
+                        <run>
+                          <lit>/mac/zoom.html</lit>
+                        </run>
+                      </p>
+                    </text>
+                    <null/>
+                  </values>
+                </item>
+              </children>
             </item>
             <item id="o8eJFUtxrKe">
               <values>
@@ -1688,6 +1750,27 @@
               <p>
                 <run>
                   <lit>Should be done, but for some reason the Adrift format isn&apos;t being recognised</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="lejNrld0PBo">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Failure to restart after downloading adrift plugin via a signpost</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>(Appears to be a phantom problem: related to the &apos;won&apos;t quit in XCode&apos; bug?)</lit>
                 </run>
               </p>
             </text>
