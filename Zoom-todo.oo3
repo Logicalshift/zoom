@@ -17,12 +17,12 @@
     </style-attribute>
   </style-attribute-registry>
   <settings/>
-  <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
+  <editor scroll-position="{0, 86}" ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
-    <hoisted-rows ids="gnoX6zDBav8"/>
-    <selected-rows ids="o8eJFUtxrKe"/>
+    <hoisted-rows ids="bnN6VeEFG6A"/>
+    <selected-rows ids="p8IvMuqlBHL"/>
     <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{24, 0}"/>
+    <selected-characters range="{52, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -73,7 +73,7 @@
         <color r="0.815686" g="0.870588" b="1"/>
       </value>
     </style>
-    <item id="bnN6VeEFG6A" expanded="yes" state="indeterminate">
+    <item id="bnN6VeEFG6A" expanded="yes">
       <values>
         <text>
           <p>
@@ -85,7 +85,7 @@
         <null/>
       </values>
       <children>
-        <item id="cX1ERxGuRmJ" state="checked">
+        <item id="cX1ERxGuRmJ">
           <values>
             <text>
               <p>
@@ -97,7 +97,7 @@
             <null/>
           </values>
         </item>
-        <item id="h7lREaDCL9j" state="checked">
+        <item id="h7lREaDCL9j">
           <values>
             <text>
               <p>
@@ -121,7 +121,7 @@
             <null/>
           </values>
         </item>
-        <item id="oKbRTDUKBiX" state="checked">
+        <item id="oKbRTDUKBiX">
           <values>
             <text>
               <p>
@@ -133,7 +133,7 @@
             <null/>
           </values>
         </item>
-        <item id="iSppD39MdZG" state="checked">
+        <item id="iSppD39MdZG">
           <values>
             <text>
               <p>
@@ -145,7 +145,7 @@
             <null/>
           </values>
         </item>
-        <item id="kYt2td6uCFb" state="checked">
+        <item id="kYt2td6uCFb">
           <values>
             <text>
               <p>
@@ -157,7 +157,7 @@
             <null/>
           </values>
         </item>
-        <item id="eWq9ovja9g8" state="checked">
+        <item id="eWq9ovja9g8">
           <values>
             <text>
               <p>
@@ -169,7 +169,7 @@
             <null/>
           </values>
         </item>
-        <item id="bIyu88trc52" state="checked">
+        <item id="bIyu88trc52">
           <values>
             <text>
               <p>
@@ -181,7 +181,7 @@
             <null/>
           </values>
         </item>
-        <item id="iimL6lniu2_" state="checked">
+        <item id="iimL6lniu2_">
           <values>
             <text>
               <p>
@@ -193,7 +193,7 @@
             <null/>
           </values>
         </item>
-        <item id="btW6FfOgszw" state="checked">
+        <item id="btW6FfOgszw">
           <values>
             <text>
               <p>
@@ -205,7 +205,7 @@
             <null/>
           </values>
           <children>
-            <item id="mAnvodPlGsJ" state="checked">
+            <item id="mAnvodPlGsJ">
               <values>
                 <text>
                   <p>
@@ -217,7 +217,7 @@
                 <null/>
               </values>
               <children>
-                <item id="g8Jma1i-8qM" state="checked">
+                <item id="g8Jma1i-8qM">
                   <values>
                     <text>
                       <p>
@@ -229,7 +229,7 @@
                     <null/>
                   </values>
                 </item>
-                <item id="d1m3IBlkZ29" state="checked">
+                <item id="d1m3IBlkZ29">
                   <values>
                     <text>
                       <p>
@@ -243,7 +243,7 @@
                 </item>
               </children>
             </item>
-            <item id="eOfdd2xJST9" state="checked">
+            <item id="eOfdd2xJST9">
               <values>
                 <text>
                   <p>
@@ -255,7 +255,7 @@
                 <null/>
               </values>
             </item>
-            <item id="dqA_pUYKTqc" state="checked">
+            <item id="dqA_pUYKTqc">
               <values>
                 <text>
                   <p>
@@ -267,7 +267,7 @@
                 <null/>
               </values>
             </item>
-            <item id="b3UoJXVW4mC" state="checked">
+            <item id="b3UoJXVW4mC">
               <values>
                 <text>
                   <p>
@@ -281,7 +281,7 @@
             </item>
           </children>
         </item>
-        <item id="asQxOYMaNdB" state="checked">
+        <item id="asQxOYMaNdB">
           <values>
             <text>
               <p>
@@ -293,7 +293,7 @@
             <null/>
           </values>
           <children>
-            <item id="co8i2g2Uh1c" state="checked">
+            <item id="co8i2g2Uh1c">
               <values>
                 <text>
                   <p>
@@ -305,7 +305,7 @@
                 <null/>
               </values>
               <children>
-                <item id="hFqg58KyEn3" state="checked">
+                <item id="hFqg58KyEn3">
                   <values>
                     <text>
                       <p>
@@ -317,7 +317,7 @@
                     <null/>
                   </values>
                 </item>
-                <item id="g9TV75lFVND" state="checked">
+                <item id="g9TV75lFVND">
                   <values>
                     <text>
                       <p>
@@ -329,7 +329,7 @@
                     <null/>
                   </values>
                 </item>
-                <item id="czJe9uLuSPO" expanded="yes" state="checked">
+                <item id="czJe9uLuSPO" expanded="yes">
                   <values>
                     <text>
                       <p>
@@ -341,7 +341,7 @@
                     <null/>
                   </values>
                   <children>
-                    <item id="oE_XQR8zuNS" state="checked">
+                    <item id="oE_XQR8zuNS">
                       <values>
                         <text>
                           <p>
@@ -353,7 +353,7 @@
                         <null/>
                       </values>
                     </item>
-                    <item id="oJiC-BRqvIo" state="checked">
+                    <item id="oJiC-BRqvIo">
                       <values>
                         <text>
                           <p>
@@ -367,7 +367,7 @@
                     </item>
                   </children>
                 </item>
-                <item id="fPi3j_7bpGY" state="checked">
+                <item id="fPi3j_7bpGY">
                   <values>
                     <text>
                       <p>
@@ -381,7 +381,7 @@
                 </item>
               </children>
             </item>
-            <item id="cS3fNvJkZs-" expanded="yes" state="checked">
+            <item id="cS3fNvJkZs-" expanded="yes">
               <values>
                 <text>
                   <p>
@@ -393,7 +393,7 @@
                 <null/>
               </values>
               <children>
-                <item id="ePPEV2924Oz" state="checked">
+                <item id="ePPEV2924Oz">
                   <values>
                     <text>
                       <p>
@@ -405,7 +405,7 @@
                     <null/>
                   </values>
                 </item>
-                <item id="bu1zoLYRd6T" state="checked">
+                <item id="bu1zoLYRd6T">
                   <values>
                     <text>
                       <p>
@@ -417,7 +417,7 @@
                     <null/>
                   </values>
                 </item>
-                <item id="gwRcRHA42fO" expanded="yes" state="checked">
+                <item id="gwRcRHA42fO" expanded="yes">
                   <values>
                     <text>
                       <p>
@@ -429,7 +429,7 @@
                     <null/>
                   </values>
                   <children>
-                    <item id="dj2cX5YcHvi" state="checked">
+                    <item id="dj2cX5YcHvi">
                       <values>
                         <text>
                           <p>
@@ -441,7 +441,7 @@
                         <null/>
                       </values>
                     </item>
-                    <item id="ahr5cUpjDq-" state="checked">
+                    <item id="ahr5cUpjDq-">
                       <values>
                         <text>
                           <p>
@@ -455,7 +455,7 @@
                     </item>
                   </children>
                 </item>
-                <item id="f8Fnu9tSDk5" state="checked">
+                <item id="f8Fnu9tSDk5">
                   <values>
                     <text>
                       <p>
@@ -471,7 +471,7 @@
             </item>
           </children>
         </item>
-        <item id="gVNcfEW6HfL" state="checked">
+        <item id="gVNcfEW6HfL" expanded="yes">
           <values>
             <text>
               <p>
@@ -483,7 +483,7 @@
             <null/>
           </values>
           <children>
-            <item id="bJQN1VpDd4c" state="checked">
+            <item id="bJQN1VpDd4c">
               <values>
                 <text>
                   <p>
@@ -495,7 +495,7 @@
                 <null/>
               </values>
               <children>
-                <item id="aGLtSoc2GLL" state="checked">
+                <item id="aGLtSoc2GLL">
                   <values>
                     <text>
                       <p>
@@ -507,7 +507,7 @@
                     <null/>
                   </values>
                 </item>
-                <item id="kc1bG-fmpFF" state="checked">
+                <item id="kc1bG-fmpFF">
                   <values>
                     <text>
                       <p>
@@ -519,7 +519,7 @@
                     <null/>
                   </values>
                 </item>
-                <item id="gChoGwXBo6K" state="checked">
+                <item id="gChoGwXBo6K">
                   <values>
                     <text>
                       <p>
@@ -531,7 +531,7 @@
                     <null/>
                   </values>
                 </item>
-                <item id="mLDvxeDRLyk" state="checked">
+                <item id="mLDvxeDRLyk">
                   <values>
                     <text>
                       <p>
@@ -545,7 +545,7 @@
                 </item>
               </children>
             </item>
-            <item id="dnM4xEkwJPJ" state="checked">
+            <item id="dnM4xEkwJPJ">
               <values>
                 <text>
                   <p>
@@ -557,7 +557,7 @@
                 <null/>
               </values>
               <children>
-                <item id="lYjTpGte7wL" state="checked">
+                <item id="lYjTpGte7wL">
                   <values>
                     <text>
                       <p>
@@ -569,7 +569,7 @@
                     <null/>
                   </values>
                 </item>
-                <item id="kSGthNE3LYt" state="checked">
+                <item id="kSGthNE3LYt">
                   <values>
                     <text>
                       <p>
@@ -581,7 +581,7 @@
                     <null/>
                   </values>
                 </item>
-                <item id="hql90SZN2qJ" state="checked">
+                <item id="hql90SZN2qJ">
                   <values>
                     <text>
                       <p>
@@ -593,7 +593,7 @@
                     <null/>
                   </values>
                 </item>
-                <item id="b_LBE3r_qwF" state="checked">
+                <item id="b_LBE3r_qwF">
                   <values>
                     <text>
                       <p>
@@ -607,7 +607,7 @@
                 </item>
               </children>
             </item>
-            <item id="cGiaBfwmzVF" state="checked">
+            <item id="cGiaBfwmzVF">
               <values>
                 <text>
                   <p>
@@ -619,7 +619,7 @@
                 <null/>
               </values>
               <children>
-                <item id="hzCsF2mI5r8" state="checked">
+                <item id="hzCsF2mI5r8">
                   <values>
                     <text>
                       <p>
@@ -631,7 +631,7 @@
                     <null/>
                   </values>
                 </item>
-                <item id="nVdSYTmCbV6" state="checked">
+                <item id="nVdSYTmCbV6">
                   <values>
                     <text>
                       <p>
@@ -643,7 +643,7 @@
                     <null/>
                   </values>
                 </item>
-                <item id="jebmFtNy9yy" state="checked">
+                <item id="jebmFtNy9yy">
                   <values>
                     <text>
                       <p>
@@ -655,7 +655,7 @@
                     <null/>
                   </values>
                 </item>
-                <item id="e2xrdWMR_UA" state="checked">
+                <item id="e2xrdWMR_UA">
                   <values>
                     <text>
                       <p>
@@ -669,9 +669,21 @@
                 </item>
               </children>
             </item>
+            <item id="j-IbCZgihis">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>&apos;Check for updates&apos; finds new plugins</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
           </children>
         </item>
-        <item id="lDW9D8lX0Op" state="checked">
+        <item id="lDW9D8lX0Op" expanded="yes">
           <values>
             <text>
               <p>
@@ -682,6 +694,82 @@
             </text>
             <null/>
           </values>
+          <children>
+            <item id="p7HGTbVH9bj">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Z-Code</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="hYvHtb3Y-Co">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Glulx</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="p8IvMuqlBHL">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Glulx and close the game without typing &apos;script off&apos;</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+          </children>
+        </item>
+        <item id="edN6eZ21Fdn" expanded="yes">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Full screen mode works</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <children>
+            <item id="op4qiKQUVI4">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Glk</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="gGukPICk7B7">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Z-Code</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+          </children>
         </item>
         <item id="dVKcRp7v-1q">
           <values>
@@ -757,7 +845,7 @@
             </item>
           </children>
         </item>
-        <item id="c6ziRYi0qmz" expanded="yes" state="checked">
+        <item id="c6ziRYi0qmz" expanded="yes">
           <values>
             <text>
               <p>
@@ -769,7 +857,7 @@
             <null/>
           </values>
           <children>
-            <item id="l3pmWbEAxCh" state="checked">
+            <item id="l3pmWbEAxCh">
               <values>
                 <text>
                   <p>
@@ -781,7 +869,7 @@
                 <null/>
               </values>
             </item>
-            <item id="aROiTe1prPG" state="checked">
+            <item id="aROiTe1prPG">
               <values>
                 <text>
                   <p>
@@ -793,7 +881,7 @@
                 <null/>
               </values>
             </item>
-            <item id="evWksbqMaVt" state="checked">
+            <item id="evWksbqMaVt">
               <values>
                 <text>
                   <p>
@@ -805,7 +893,7 @@
                 <null/>
               </values>
             </item>
-            <item id="eOzreNtqNyn" state="checked">
+            <item id="eOzreNtqNyn">
               <values>
                 <text>
                   <p>

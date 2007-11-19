@@ -8,4 +8,6 @@ EXTRA_DIST = THANKS ProjectBuilder/config.h ProjectBuilder/etc/ztypes.h \
 	Info-Zoom__Upgraded_.plist \
 	ZoomMetadataImporter-Info.plist \
 	ZoomPlugIns-Info.plist \
-	Glulxe-Info.plist
+	Glulxe-Info.plist \
+	LeopardExtns-Info.plist \
+	ZoomSaveQuickLook-Info.plist

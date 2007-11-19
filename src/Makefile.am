@@ -56,6 +56,14 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/ZoomTextToSpeech.h	  zoomCocoa/ZoomTextToSpeech.m \
 	zoomCocoa/ZoomHQImageView.h	  zoomCocoa/ZoomHQImageView.m \
 	zoomCocoa/ZoomNotesController.h	  zoomCocoa/ZoomNotesController.m \
+	zoomCocoa/ZoomClearView.h \
+	zoomCocoa/ZoomClearView.m \
+	zoomCocoa/ZoomDownloadView.h \
+	zoomCocoa/ZoomDownloadView.m \
+	zoomCocoa/ZoomJSError.h \
+	zoomCocoa/ZoomJSError.m \
+	zoomCocoa/ZoomWindowThatIsKey.h \
+	zoomCocoa/ZoomWindowThatIsKey.m \
 	zoomCocoa/PlugIns/ZoomGlkDocument.h \
 	zoomCocoa/PlugIns/ZoomGlkDocument.m \
 	zoomCocoa/PlugIns/ZoomGlkPlugIn.h \
@@ -70,10 +78,29 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/PlugIns/ZoomBabel.m \
 	zoomCocoa/PlugIns/ZoomGlkSaveRef.h \
 	zoomCocoa/PlugIns/ZoomGlkSaveRef.m \
+	zoomCocoa/PlugIns/ZoomDownload.h \
+	zoomCocoa/PlugIns/ZoomDownload.m \
+	zoomCocoa/PlugIns/ZoomPlugInCell.h \
+	zoomCocoa/PlugIns/ZoomPlugInCell.m \
+	zoomCocoa/PlugIns/ZoomPlugInController.h \
+	zoomCocoa/PlugIns/ZoomPlugInController.m \
+	zoomCocoa/PlugIns/ZoomPlugInInfo.h \
+	zoomCocoa/PlugIns/ZoomPlugInInfo.m \
+	zoomCocoa/PlugIns/ZoomPlugInManager.h \
+	zoomCocoa/PlugIns/ZoomPlugInManager.m \
+	zoomCocoa/PlugIns/ZoomSignPost.h \
+	zoomCocoa/PlugIns/ZoomSignPost.m \
 	zoomCocoa/ZoomWindowThatCanBecomeKey.h \
 	zoomCocoa/ZoomWindowThatCanBecomeKey.m \
 	zoomCocoa/Spotlight/MetadataImporter.h \
 	zoomCocoa/Spotlight/MetadataImporter.m \
+	zoomCocoa/Leopard/GeneratePreviewForURL.m \
+	zoomCocoa/Leopard/GenerateThumbnailForURL.m \
+	zoomCocoa/Leopard/ZoomLFlipView.h \
+	zoomCocoa/Leopard/ZoomLFlipView.m \
+	zoomCocoa/Leopard/ZoomLeopard.h \
+	zoomCocoa/Leopard/ZoomLeopard.m \
+	zoomCocoa/Leopard/ZoomSaveQuickLook.c \
 	zoomCocoa/ZoomFadeView.h	zoomCocoa/ZoomFadeView.m \
 	zoomCocoa/ZoomFlipView.h	zoomCocoa/ZoomFlipView.m \
 	zoomCocoa/ZoomWhiteView.h	zoomCocoa/ZoomWhiteView.m \
@@ -85,18 +112,18 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/ZoomClient.nib/classes.nib zoomCocoa/ZoomClient.nib/info.nib \
 	zoomCocoa/ZoomClient.nib/keyedobjects.nib \
 	zoomCocoa/ZoomClient.nib/objects.nib \
-        zoomCocoa/GameInfo.nib/classes.nib \
-        zoomCocoa/GameInfo.nib/info.nib \
-        zoomCocoa/GameInfo.nib/keyedobjects.nib \
-        zoomCocoa/GameInfo.nib/objects.nib \
+    zoomCocoa/GameInfo.nib/classes.nib \
+    zoomCocoa/GameInfo.nib/info.nib \
+    zoomCocoa/GameInfo.nib/keyedobjects.nib \
+    zoomCocoa/GameInfo.nib/objects.nib \
 	zoomCocoa/Preferences.nib/classes.nib \
 	zoomCocoa/Preferences.nib/info.nib \
 	zoomCocoa/Preferences.nib/keyedobjects.nib \
 	zoomCocoa/Preferences.nib/objects.nib \
 	zoomCocoa/iFiction.nib/classes.nib \
-        zoomCocoa/iFiction.nib/info.nib \
-        zoomCocoa/iFiction.nib/keyedobjects.nib \
-        zoomCocoa/iFiction.nib/objects.nib \
+    zoomCocoa/iFiction.nib/info.nib \
+    zoomCocoa/iFiction.nib/keyedobjects.nib \
+    zoomCocoa/iFiction.nib/objects.nib \
 	zoomCocoa/iFiction-10.2.nib/classes.nib \
 	zoomCocoa/iFiction-10.2.nib/info.nib \
 	zoomCocoa/iFiction-10.2.nib/keyedobjects.nib \
@@ -112,6 +139,9 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/PlugIns/English.lproj/GlkWindow.nib/info.nib \
 	zoomCocoa/PlugIns/English.lproj/GlkWindow.nib/keyedobjects.nib \
 	zoomCocoa/PlugIns/English.lproj/GlkWindow.nib/objects.nib \
+	zoomCocoa/PluginManager.nib/classes.nib \
+	zoomCocoa/PluginManager.nib/info.nib \
+	zoomCocoa/PluginManager.nib/keyedobjects.nib \
 	infocom.iFiction archive.iFiction ifmetadata.c ifmetadata.h \
 	ifmetabase.c ifmetabase.h \
 	ifmetaxml.c ifmetaxml.h \
@@ -130,6 +160,7 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/saveHighlightActive.png zoomCocoa/saveHighlightInactive.png \
 	zoomCocoa/Blorb.icns		zoomCocoa/Resources/NeedDrop.png \
 	zoomCocoa/GlkClient.icns	zoomCocoa/HUGO.icns \
+	zoomCocoa/signpost.icns \
 	zoomCocoa/TADS.icns		zoomCocoa/top-shading.png \
 	zoomCocoa/typographicSettings.png zoomCocoa/displaySettings.png \
 	zoomCocoa/Skein/Skein-active.png zoomCocoa/Skein/Skein-changed.png \
@@ -140,6 +171,14 @@ EXTRA_DIST = zcode.ops zoomrc zoom.rc.in zoom.ico zoomsmall.ico \
 	zoomCocoa/Skein/SkeinUnlocked.png \
 	zoomCocoa/Skein-annotation.png \
 	zoomCocoa/SkeinDiffersBadge.png \
+	zoomCocoa/IFDB-back.png \
+	zoomCocoa/English.lproj/IFDB-connecting.png \
+	zoomCocoa/IFDB-downloading.png \
+	zoomCocoa/English.lproj/IFDB-error.png \
+	zoomCocoa/English.lproj/ifdb-failed.html \
+	zoomCocoa/IFDB-forward.png \
+	zoomCocoa/IFDB-home.png \
+	zoomCocoa/English.lproj/ifdb-loading.html \
 	zoomCocoa/English.lproj/Credits.rtf
 
 zoom_SOURCES = \
