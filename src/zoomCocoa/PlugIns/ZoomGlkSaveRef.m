@@ -277,4 +277,12 @@
 	return [[NSFileManager defaultManager] fileExistsAtPath: path];	
 }
 
+- (BOOL) autoflushStream {
+	return autoflush;
+}
+
+- (void) setAutoflush: (BOOL) newAutoflush {
+	autoflush = newAutoflush;
+}
+
 @end

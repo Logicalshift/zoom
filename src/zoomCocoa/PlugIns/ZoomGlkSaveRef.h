@@ -22,6 +22,7 @@
 	ZoomSkein* skein;										// The skein to save for this object (or the skein loaded for this object)
 	
 	id delegate;											// The delegate for this object
+	BOOL autoflush;											// The autoflush flag
 }
 
 // Initialisation
