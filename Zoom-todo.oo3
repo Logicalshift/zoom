@@ -17,9 +17,12 @@
     </style-attribute>
   </style-attribute-registry>
   <settings/>
-  <editor scroll-position="{0, 86}" ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
+  <editor scroll-position="{0, 84}" ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="gnoX6zDBav8"/>
+    <selected-rows ids="obT0v4eBmJp"/>
+    <selected-columns ids=":078928d440f2709e21a6e303"/>
+    <selected-characters range="{8, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -1080,7 +1083,7 @@
             </item>
           </children>
         </item>
-        <item id="ksB-BbKSplq" expanded="yes">
+        <item id="ksB-BbKSplq" expanded="yes" state="checked">
           <values>
             <text>
               <p>
@@ -1092,7 +1095,7 @@
             <null/>
           </values>
           <children>
-            <item id="mzCrN9iZ-5K">
+            <item id="mzCrN9iZ-5K" state="checked">
               <values>
                 <text>
                   <p>
@@ -1104,7 +1107,7 @@
                 <null/>
               </values>
             </item>
-            <item id="cvJbKqozPIB">
+            <item id="cvJbKqozPIB" state="checked">
               <values>
                 <text>
                   <p>
@@ -1116,7 +1119,7 @@
                 <null/>
               </values>
             </item>
-            <item id="mg1vvXA-uZS">
+            <item id="mg1vvXA-uZS" state="checked">
               <values>
                 <text>
                   <p>
@@ -1128,7 +1131,7 @@
                 <null/>
               </values>
             </item>
-            <item id="b1mie9swETR">
+            <item id="b1mie9swETR" state="checked">
               <values>
                 <text>
                   <p>
@@ -1140,7 +1143,7 @@
                 <null/>
               </values>
             </item>
-            <item id="kXpQVxsOvqL" expanded="yes">
+            <item id="kXpQVxsOvqL" expanded="yes" state="checked">
               <values>
                 <text>
                   <p>
@@ -1152,36 +1155,24 @@
                 <null/>
               </values>
               <children>
-                <item id="fxaG5Qeun6L">
+                <item id="nCZOeczf19i" state="checked">
                   <values>
                     <text>
                       <p>
                         <run>
-                          <lit>Zoom</lit>
+                          <lit>Update version number</lit>
                         </run>
                       </p>
                     </text>
                     <null/>
                   </values>
                 </item>
-                <item id="evlGj5aXwdZ">
+                <item id="obT0v4eBmJp" state="checked">
                   <values>
                     <text>
                       <p>
                         <run>
-                          <lit>Readme</lit>
-                        </run>
-                      </p>
-                    </text>
-                    <null/>
-                  </values>
-                </item>
-                <item id="dqE3e1lcPN2">
-                  <values>
-                    <text>
-                      <p>
-                        <run>
-                          <lit>Compress</lit>
+                          <lit>Finalize</lit>
                         </run>
                       </p>
                     </text>
@@ -1208,6 +1199,27 @@
               <p>
                 <run>
                   <lit>No machine to test on any more</lit>
+                </run>
+              </p>
+            </text>
+          </note>
+        </item>
+        <item id="dFR3hvzV9OO">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Test under Tiger</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <note expanded="yes">
+            <text>
+              <p>
+                <run>
+                  <lit>Powerbook on last legs :-/</lit>
                 </run>
               </p>
             </text>
