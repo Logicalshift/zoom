@@ -19,10 +19,7 @@
   <settings/>
   <editor scroll-position="{0, 86}" ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
-    <hoisted-rows ids="bnN6VeEFG6A"/>
-    <selected-rows ids="p8IvMuqlBHL"/>
-    <selected-columns ids=":078928d440f2709e21a6e303"/>
-    <selected-characters range="{52, 0}"/>
+    <hoisted-rows ids="gnoX6zDBav8"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -921,7 +918,7 @@
         </item>
       </children>
     </item>
-    <item id="gnoX6zDBav8" expanded="yes">
+    <item id="gnoX6zDBav8" expanded="yes" state="indeterminate">
       <values>
         <text>
           <p>
@@ -995,7 +992,7 @@
             </item>
           </children>
         </item>
-        <item id="gz-QZt6wJ7Y" expanded="yes">
+        <item id="gz-QZt6wJ7Y" expanded="yes" state="indeterminate">
           <values>
             <text>
               <p>
@@ -1007,7 +1004,7 @@
             <null/>
           </values>
           <children>
-            <item id="e5U-RC5kuFx">
+            <item id="e5U-RC5kuFx" state="checked">
               <values>
                 <text>
                   <p>
@@ -1019,7 +1016,7 @@
                 <null/>
               </values>
             </item>
-            <item id="pKo1tNW0Jwg">
+            <item id="pKo1tNW0Jwg" state="checked">
               <values>
                 <text>
                   <p>
@@ -1031,7 +1028,7 @@
                 <null/>
               </values>
             </item>
-            <item id="eksw0iFErpr" expanded="yes">
+            <item id="eksw0iFErpr" expanded="yes" state="indeterminate">
               <values>
                 <text>
                   <p>
@@ -1043,7 +1040,7 @@
                 <null/>
               </values>
               <children>
-                <item id="lVYQMdIjnin">
+                <item id="lVYQMdIjnin" state="checked">
                   <values>
                     <text>
                       <p>
@@ -1067,7 +1064,7 @@
                     <null/>
                   </values>
                 </item>
-                <item id="gMepCX64Q0p">
+                <item id="gMepCX64Q0p" state="checked">
                   <values>
                     <text>
                       <p>
