@@ -293,6 +293,11 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 	// Tell launch services to re-register the application (ensures that all the icons are always up to date)
 	NSLog(@"Re-registering");
 	LSRegisterURL((CFURLRef)[NSURL fileURLWithPath: [[NSBundle mainBundle] bundlePath]], 1);
+#else
+	/*
+	NSLog(@"Re-registering");
+	LSRegisterURL((CFURLRef)[NSURL fileURLWithPath: [[NSBundle mainBundle] bundlePath]], 1);
+	 */
 #endif
 	
 	// Load the leopard extensions if we're running on the right version of OS X

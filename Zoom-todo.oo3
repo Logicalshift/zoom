@@ -19,8 +19,10 @@
   <settings/>
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
-    <hoisted-rows ids="bnN6VeEFG6A"/>
-    <selected-rows ids="asQxOYMaNdB"/>
+    <hoisted-rows ids="kzPdhsKinRx"/>
+    <selected-rows ids="eV_yWfGnddl"/>
+    <selected-columns ids=":941128d340f2709e21a6e303"/>
+    <selected-characters range="{122, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -905,6 +907,44 @@
             </item>
           </children>
         </item>
+        <item id="btrol-aY2NB" expanded="yes" state="checked">
+          <values>
+            <text>
+              <p>
+                <run>
+                  <lit>Quicklook works</lit>
+                </run>
+              </p>
+            </text>
+            <null/>
+          </values>
+          <children>
+            <item id="gQIpExGzZos" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>save games</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+            <item id="iLYbrQRAJfc" state="checked">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>story files</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
+          </children>
+        </item>
         <item id="fjkK3hjN1OQ">
           <values>
             <text>
@@ -1375,7 +1415,7 @@
         <null/>
       </values>
       <children>
-        <item id="gMke-ziNo2M" state="indeterminate">
+        <item id="gMke-ziNo2M" expanded="yes" state="indeterminate">
           <values>
             <text>
               <p>
@@ -1398,6 +1438,27 @@
                 </text>
                 <null/>
               </values>
+            </item>
+            <item id="eV_yWfGnddl">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>Sometimes we get a one-line status bar</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+              <note expanded="yes">
+                <text>
+                  <p>
+                    <run>
+                      <lit>See Aaron Reed&apos;s bug report. Looks like this might be partially down to the error text that&apos;s showing up in the status bar</lit>
+                    </run>
+                  </p>
+                </text>
+              </note>
             </item>
             <item id="eC278xHfH33">
               <values>
