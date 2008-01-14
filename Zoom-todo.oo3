@@ -20,9 +20,9 @@
   <editor ruler-units="Centimeters" should-edit-text-folded="yes" is-spellchecking-enabled="yes">
     <drawer display="sections"/>
     <hoisted-rows ids="kzPdhsKinRx"/>
-    <selected-rows ids="eV_yWfGnddl"/>
-    <selected-columns ids=":941128d340f2709e21a6e303"/>
-    <selected-characters range="{122, 0}"/>
+    <selected-rows ids="atEQizq-D1i"/>
+    <selected-columns ids=":078928d440f2709e21a6e303"/>
+    <selected-characters range="{57, 0}"/>
   </editor>
   <columns>
     <column id=":941128d340f2709e21a6e303" type="text" width="18" minimum-width="18" maximum-width="18" text-export-width="1" is-note-column="yes">
@@ -1439,6 +1439,18 @@
                 <null/>
               </values>
             </item>
+            <item id="atEQizq-D1i">
+              <values>
+                <text>
+                  <p>
+                    <run>
+                      <lit>&apos;More&apos; windows showing up as &apos;untitled&apos; in VoiceOver list</lit>
+                    </run>
+                  </p>
+                </text>
+                <null/>
+              </values>
+            </item>
             <item id="eV_yWfGnddl">
               <values>
                 <text>
@@ -1454,7 +1466,7 @@
                 <text>
                   <p>
                     <run>
-                      <lit>See Aaron Reed&apos;s bug report. Looks like this might be partially down to the error text that&apos;s showing up in the status bar</lit>
+                      <lit>See Aaron Reed&apos;s bug report. Looks like this might be partially down to the error text that&apos;s showing up in the status barre</lit>
                     </run>
                   </p>
                 </text>
