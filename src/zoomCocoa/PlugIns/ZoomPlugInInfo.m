@@ -172,6 +172,8 @@ static unsigned int ValueForHexChar(int hex) {
 	newInfo->status 			= status;
 	newInfo->updated 			= [updated copy];
 	newInfo->updateUrl 			= [updateUrl copy];
+	
+	return newInfo;
 }
 
 // = Retrieving the information =
