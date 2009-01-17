@@ -306,7 +306,7 @@
 	<key>ZoomPluginFeedURL</key>
 	<string>http://www.logicalshift.co.uk/unix/zoom/plugins.xml</string>
 	<key>ZoomPluginFeedTestURL</key>
-	<string>http://www.logicalshift.co.uk/unix/zoom/plugins-test.xml</string>
+	<string>http://www.logicalshift.co.uk/unix/zoom/plugins-test2.xml</string>
 	<key>ZoomIfdbUrl</key>
 	<string>http://ifdb.tads.org/</string>
 	<key>UTExportedTypeDeclarations</key>

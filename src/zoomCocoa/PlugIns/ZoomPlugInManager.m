@@ -1219,7 +1219,7 @@ static int SortPlugInInfo(id a, id b, void* context) {
 	}
 	
 	// Work out the paths to use
-	NSString* plugins = [[NSBundle mainBundle] builtInPlugInsPath];
+	NSString* plugins = [[self class] plugInsPath];
 	NSString* pendingPlugIns = [[self class] pendingPlugInsPath]; // [[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent: @"Contents"] stringByAppendingPathComponent: @"Pending PlugIns"];
 	
 	if (![[NSFileManager defaultManager] fileExistsAtPath: pendingPlugIns]) {
