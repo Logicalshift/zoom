@@ -21,17 +21,17 @@ by Andrew Hunter
 Versions
 ========
 
-   This is version 1.1.2 of Zoom. As the components have gained an increasing
+   This is version 1.1.3 of Zoom. As the components have gained an increasing
    tendency to change at different rates, I've given them seperate versions:
    
-   Zoom interpreter core: 1.1.2
-   X11 interface: 1.1.2
+   Zoom interpreter core: 1.1.3
+   X11 interface: 1.1.3
    Windows interface: 0.9.99beta5
    Carbon interface: 1.0.1
-   Cocoa interface: 2.1.2
-   ZoomPlugins: 1.1.2
-   Spotlight importer: 1.2
-   QuickLook plugin: 1.1.2
+   Cocoa interface: 2.1.3
+   ZoomPlugins: 1.1.3
+   Spotlight importer: 1.3
+   QuickLook plugin: 1.1.3
    CocoaGlk version: 1.0.4
    Glulxe version: 0.4.2
    

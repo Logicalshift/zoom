@@ -45,7 +45,7 @@
 			mainBundlePath = [mainBundlePath stringByAppendingString: @"/"];
 		}
 		
-		if ([standardPath hasPrefix: mainBundlePath]) {
+		if ([standardPath hasPrefix: mainBundlePath] || [standardPath hasPrefix: [ZoomPlugInManager plugInsPath]]) {
 			status = ZoomPlugInInstalled;
 		} else {
 			status = ZoomPlugInDownloaded;

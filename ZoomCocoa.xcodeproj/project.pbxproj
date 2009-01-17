@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 44;
+	objectVersion = 45;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -692,6 +692,13 @@
 			remoteGlobalIDString = 4BB8C12208C2497700D7D334;
 			remoteInfo = ZoomServer;
 		};
+		4BF6A8C40E2D5F8800A9CD10 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4BF0852A0E166E8300DB5C6B;
+			remoteInfo = GlkSound;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -910,11 +917,11 @@
 		4B2EAFAD05B08D1E0021A5E6 /* ZoomGameInfoController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ZoomGameInfoController.h; sourceTree = "<group>"; };
 		4B2EAFAE05B08D1E0021A5E6 /* ZoomGameInfoController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = ZoomGameInfoController.m; sourceTree = "<group>"; };
 		4B36C4540955ED1700874F9F /* Glulxe.plugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Glulxe.plugin; sourceTree = BUILT_PRODUCTS_DIR; };
-		4B36C4550955ED1700874F9F /* Glulxe-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = "Glulxe-Info.plist"; path = "../../../Glulxe-Info.plist"; sourceTree = "<group>"; };
+		4B36C4550955ED1700874F9F /* Glulxe-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Glulxe-Info.plist"; path = "../../../Glulxe-Info.plist"; sourceTree = "<group>"; };
 		4B36C4670955EDB600874F9F /* ZoomGlulxe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomGlulxe.h; sourceTree = "<group>"; };
 		4B36C4680955EDB600874F9F /* ZoomGlulxe.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomGlulxe.m; sourceTree = "<group>"; };
 		4B39C92B08EEF63400BA5E90 /* ZoomMetadataImporter.mdimporter */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ZoomMetadataImporter.mdimporter; sourceTree = BUILT_PRODUCTS_DIR; };
-		4B39C92C08EEF63400BA5E90 /* ZoomMetadataImporter-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = "ZoomMetadataImporter-Info.plist"; path = "../../../ZoomMetadataImporter-Info.plist"; sourceTree = "<group>"; };
+		4B39C92C08EEF63400BA5E90 /* ZoomMetadataImporter-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ZoomMetadataImporter-Info.plist"; path = "../../../ZoomMetadataImporter-Info.plist"; sourceTree = "<group>"; };
 		4B39C94008EEF75600BA5E90 /* MetadataImporter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MetadataImporter.h; sourceTree = "<group>"; };
 		4B39C94108EEF75600BA5E90 /* MetadataImporter.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = MetadataImporter.m; sourceTree = "<group>"; };
 		4B39C94208EEF75600BA5E90 /* schema.xml */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = schema.xml; sourceTree = "<group>"; };
@@ -974,7 +981,7 @@
 		4B7CB0780936294B00F3B8F6 /* ZoomPlugIn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomPlugIn.h; sourceTree = "<group>"; };
 		4B7CB0790936294B00F3B8F6 /* ZoomPlugIn.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomPlugIn.m; sourceTree = "<group>"; };
 		4B7CB08109362A3B00F3B8F6 /* ZoomPlugIns.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ZoomPlugIns.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4B7CB08209362A3B00F3B8F6 /* ZoomPlugIns-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "ZoomPlugIns-Info.plist"; sourceTree = "<group>"; };
+		4B7CB08209362A3B00F3B8F6 /* ZoomPlugIns-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ZoomPlugIns-Info.plist"; sourceTree = "<group>"; };
 		4B7CB1AF0936345D00F3B8F6 /* ZoomGlkPlugIn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomGlkPlugIn.h; sourceTree = "<group>"; };
 		4B7CB1B00936345D00F3B8F6 /* ZoomGlkPlugIn.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomGlkPlugIn.m; sourceTree = "<group>"; };
 		4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CocoaGlk.xcodeproj; path = ../CocoaGlk/CocoaGlk.xcodeproj; sourceTree = "<group>"; };
@@ -1051,7 +1058,7 @@
 		4BB8BED408B785B200D7D334 /* ifmetabase.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ifmetabase.c; sourceTree = "<group>"; };
 		4BB8C0E908C2452F00D7D334 /* Builder */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Builder; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BB8C16A08C2497700D7D334 /* ZoomServer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ZoomServer; sourceTree = BUILT_PRODUCTS_DIR; };
-		4BB8C20708C249F400D7D334 /* Info-Zoom__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Info-Zoom__Upgraded_.plist"; sourceTree = "<group>"; };
+		4BB8C20708C249F400D7D334 /* Info-Zoom__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Zoom__Upgraded_.plist"; sourceTree = "<group>"; };
 		4BB8C20808C249F400D7D334 /* Zoom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Zoom.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BBC1F69062F41E300FE547F /* stars-grey.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stars-grey.png"; sourceTree = "<group>"; };
 		4BBC1F6A062F41E300FE547F /* stars-none.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stars-none.png"; sourceTree = "<group>"; };
@@ -1089,7 +1096,7 @@
 		4BCF3F5E050FBAAF00A8E303 /* v6display.c */ = {isa = PBXFileReference; fileEncoding = 30; indentWidth = 2; lastKnownFileType = sourcecode.c.c; path = v6display.c; sourceTree = "<group>"; tabWidth = 8; };
 		4BCF3F5F050FBAAF00A8E303 /* v6display.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = v6display.h; sourceTree = "<group>"; };
 		4BCF3F62050FBB3F00A8E303 /* image.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = image.h; sourceTree = "<group>"; };
-		4BD274C408701E6700C1AE15 /* Info-ZoomView__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Info-ZoomView__Upgraded_.plist"; sourceTree = "<group>"; };
+		4BD274C408701E6700C1AE15 /* Info-ZoomView__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-ZoomView__Upgraded_.plist"; sourceTree = "<group>"; };
 		4BD274C508701E6800C1AE15 /* ZoomView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ZoomView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BD79A8F0BA2C9AA002C82B2 /* babel */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = babel; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BD79A980BA2CABF002C82B2 /* babel_handler.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = babel_handler.h; sourceTree = "<group>"; };
@@ -1589,6 +1596,7 @@
 				4B7CB1C3093634DD00F3B8F6 /* CocoaGlk.app */,
 				4B7CB1C5093634DD00F3B8F6 /* GlkView.framework */,
 				4B7CB1C7093634DD00F3B8F6 /* GlkClient.framework */,
+				4BF6A8C50E2D5F8800A9CD10 /* GlkSound.framework */,
 				4B7CB1C9093634DD00F3B8F6 /* multiwin */,
 				4B7CB1CB093634DD00F3B8F6 /* glulxe */,
 				4B7CB1CD093634DD00F3B8F6 /* imagetest */,
@@ -2417,6 +2425,13 @@
 			remoteRef = 4B7CB1CC093634DD00F3B8F6 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		4BF6A8C50E2D5F8800A9CD10 /* GlkSound.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = GlkSound.framework;
+			remoteRef = 4BF6A8C40E2D5F8800A9CD10 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -3145,7 +3160,6 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.3;
-				OPTIMIZATION_CFLAGS = "-O0";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -3177,7 +3191,6 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.2;
-				OPTIMIZATION_CFLAGS = "-O3";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -3224,7 +3237,7 @@
 				);
 				GCC_WARN_ABOUT_POINTER_SIGNEDNESS = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.3;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.4u.sdk";
+				SDKROOT = macosx10.4;
 				"SDKROOT[arch=ppc]" = "$(DEVELOPER_SDK_DIR)/MacOSX10.3.9.sdk";
 			};
 			name = Development;
@@ -3246,7 +3259,7 @@
 				);
 				GCC_WARN_ABOUT_POINTER_SIGNEDNESS = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.3;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.4u.sdk";
+				SDKROOT = macosx10.4;
 				"SDKROOT[arch=ppc]" = "$(DEVELOPER_SDK_DIR)/MacOSX10.3.9.sdk";
 				SDKROOT_ppc = /Developer/SDKs/MacOSX10.3.9.sdk;
 			};
@@ -3269,7 +3282,7 @@
 				);
 				GCC_WARN_ABOUT_POINTER_SIGNEDNESS = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.3;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.4u.sdk";
+				SDKROOT = macosx10.4;
 				"SDKROOT[arch=ppc]" = "$(DEVELOPER_SDK_DIR)/MacOSX10.3.9.sdk";
 			};
 			name = Default;
@@ -3620,7 +3633,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = LeopardExtns;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				SDKROOT = macosx10.5;
 				SDKROOT_ppc = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 				WRAPPER_EXTENSION = bundle;
 				ZERO_LINK = YES;
@@ -3647,7 +3660,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = LeopardExtns;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				SDKROOT = macosx10.5;
 				SDKROOT_ppc = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 				WRAPPER_EXTENSION = bundle;
 				ZERO_LINK = NO;
@@ -3672,7 +3685,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = LeopardExtns;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				SDKROOT = macosx10.5;
 				SDKROOT_ppc = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 				WRAPPER_EXTENSION = bundle;
 				ZERO_LINK = YES;
@@ -3699,7 +3712,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = ZoomSaveQuickLook;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				SDKROOT = macosx10.5;
 				SDKROOT_ppc = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 				WRAPPER_EXTENSION = qlgenerator;
 			};
@@ -3728,7 +3741,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = ZoomSaveQuickLook;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				SDKROOT = macosx10.5;
 				SDKROOT_ppc = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 				WRAPPER_EXTENSION = qlgenerator;
 			};
@@ -3751,7 +3764,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = ZoomSaveQuickLook;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				SDKROOT = macosx10.5;
 				SDKROOT_ppc = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 				WRAPPER_EXTENSION = qlgenerator;
 			};

@@ -42,6 +42,7 @@ extern NSString* ZoomPlugInInformationChangedNotification;	// Notification that 
 }
 
 + (ZoomPlugInManager*) sharedPlugInManager;					// The shared plug-in manager
++ (NSString*) plugInsPath;									// The plug-in installation directory
 
 // Setting the delegate
 - (void) setDelegate: (id) delegate;						// Sets a new plug-in delegate

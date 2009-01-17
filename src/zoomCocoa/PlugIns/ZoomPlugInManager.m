@@ -25,6 +25,61 @@ NSString* ZoomPlugInInformationChangedNotification = @"ZoomPlugInInformationChan
 	return sharedManager;
 }
 
++ (NSString*) appSupport {
+	BOOL isDir;
+	
+	// Start with the library directory
+	NSArray* libDirs = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+	if ([libDirs count] == 0) {
+		NSLog(@"Could not locate library directory!");
+		return nil;
+	}
+	
+	// App support is in there somewhere (not going to bother with localisation)
+	NSString* supportDir = [[libDirs objectAtIndex: 0] stringByAppendingPathComponent: @"Application Support"];
+	if (![[NSFileManager defaultManager] fileExistsAtPath: supportDir isDirectory: &isDir]) {
+		isDir = YES;
+		[[NSFileManager defaultManager] createDirectoryAtPath: supportDir attributes: nil];
+	}
+	
+	if (!isDir) {
+		NSLog(@"%@ is not a directory!", supportDir);
+		return nil;
+	}
+	
+	// Use a Zoom directory inside for the rest of the contents
+	supportDir = [supportDir stringByAppendingPathComponent: @"Zoom"];
+	if (![[NSFileManager defaultManager] fileExistsAtPath: supportDir isDirectory: &isDir]) {
+		isDir = YES;
+		[[NSFileManager defaultManager] createDirectoryAtPath: supportDir attributes: nil];
+	}
+	
+	if (![[NSFileManager defaultManager] fileExistsAtPath: supportDir]) {
+		NSLog(@"Could not locate Zoom's app support directory");
+		return nil;
+	}
+	
+	if (!isDir) {
+		NSLog(@"%@ is not a directory!", supportDir);
+		return nil;
+	}
+	
+	// Got the result
+	return supportDir;
+}
+
++ (NSString*) plugInsPath {
+	return [[[self class] appSupport] stringByAppendingPathComponent: @"PlugIns"];
+}
+
++ (NSString*) pendingPlugInsPath {
+	return [[[self class] appSupport] stringByAppendingPathComponent: @"Pending PlugIns"];
+}
+
++ (NSString*) disabledPlugInsPath {
+	return [[[self class] appSupport] stringByAppendingPathComponent: @"Disabled PlugIns"];
+}
+
 - (id) init {
 	self = [super init];
 	
@@ -101,13 +156,9 @@ NSString* ZoomPlugInInformationChangedNotification = @"ZoomPlugInInformationChan
 }
 
 - (void) loadPluginsFrom: (NSString*) pluginPath {
-	[pluginBundles release];
-	[pluginClasses release];
-	[pluginsToVersions release];
-	
-	pluginBundles = [[NSMutableArray alloc] init];
-	pluginClasses = [[NSMutableArray alloc] init];
-	pluginsToVersions = [[NSMutableDictionary alloc] init];
+	if (!pluginBundles) pluginBundles = [[NSMutableArray alloc] init];
+	if (!pluginClasses) pluginClasses = [[NSMutableArray alloc] init];
+	if (!pluginsToVersions) pluginsToVersions = [[NSMutableDictionary alloc] init];
 	
 	[pluginInformation release];
 	pluginInformation = nil;
@@ -149,6 +200,15 @@ NSString* ZoomPlugInInformationChangedNotification = @"ZoomPlugInInformationChan
 			NSLog(@"= Trying harder to load plugins");
 #endif
 			[self loadPluginsFrom: pluginPath];
+		}
+		
+		NSString* morePlugInsPath = [[self class] plugInsPath];
+		if (morePlugInsPath) {
+			if (![[NSFileManager defaultManager] fileExistsAtPath: morePlugInsPath]) {
+				[[NSFileManager defaultManager] createDirectoryAtPath: morePlugInsPath 
+														   attributes: nil];
+			}
+			[self loadPluginsFrom: morePlugInsPath];
 		}
 	}	
 }
@@ -479,10 +539,18 @@ static int SortPlugInInfo(id a, id b, void* context) {
 	NSString* disabledPath = [[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent: @"Contents"] stringByAppendingPathComponent: @"PlugIns Disabled"];
 	[self addPlugInsFromDirectory: disabledPath
 						   status: ZoomPlugInDisabled];
+
+	NSString* disabledPath2 = [[self class] disabledPlugInsPath];
+	[self addPlugInsFromDirectory: disabledPath2
+						   status: ZoomPlugInDisabled];
 	
 	// Get the information for any plugins that are waiting to be installed
 	NSString* waitingPath = [[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent: @"Contents"] stringByAppendingPathComponent: @"PlugIns Upgraded"];
 	[self addPlugInsFromDirectory: waitingPath
+						   status: ZoomPlugInUpdated];
+
+	NSString* waitingPath2 = [[self class] pendingPlugInsPath];
+	[self addPlugInsFromDirectory: waitingPath2
 						   status: ZoomPlugInUpdated];
 	
 	// Sort the plugin array
@@ -923,7 +991,7 @@ static int SortPlugInInfo(id a, id b, void* context) {
 		// Create the pending plugins directory if needed
 		BOOL exists;
 		BOOL isDir;
-		NSString* pendingPlugIns = [[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent: @"Contents"] stringByAppendingPathComponent: @"Pending PlugIns"];
+		NSString* pendingPlugIns = [[self class] pendingPlugInsPath]; // [[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent: @"Contents"] stringByAppendingPathComponent: @"Pending PlugIns"];
 		
 		exists = [[NSFileManager defaultManager] fileExistsAtPath: pendingPlugIns
 													  isDirectory: &isDir];
@@ -965,7 +1033,7 @@ static int SortPlugInInfo(id a, id b, void* context) {
 		// Create the plugins directory if needed
 		BOOL exists;
 		BOOL isDir;
-		NSString* plugins = [[NSBundle mainBundle] builtInPlugInsPath];
+		NSString* plugins = [[self class] plugInsPath];
 		
 		if (!plugins) {
 			plugins = [[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent: @"Contents"] stringByAppendingPathComponent: @"PlugIns"];			
@@ -1152,7 +1220,7 @@ static int SortPlugInInfo(id a, id b, void* context) {
 	
 	// Work out the paths to use
 	NSString* plugins = [[NSBundle mainBundle] builtInPlugInsPath];
-	NSString* pendingPlugIns = [[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent: @"Contents"] stringByAppendingPathComponent: @"Pending PlugIns"];
+	NSString* pendingPlugIns = [[self class] pendingPlugInsPath]; // [[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent: @"Contents"] stringByAppendingPathComponent: @"Pending PlugIns"];
 	
 	if (![[NSFileManager defaultManager] fileExistsAtPath: pendingPlugIns]) {
 		return;

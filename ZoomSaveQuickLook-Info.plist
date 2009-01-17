@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
@@ -24,13 +24,13 @@
 	<key>CFBundleIconFile</key>
 	<string></string>
 	<key>CFBundleIdentifier</key>
-        <string>uk.org.logicalshift.zoom.save.quicklook</string>
+	<string>uk.org.logicalshift.zoom.save.quicklook</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleVersion</key>
-	<string>1.1.2</string>
-    <key>CFBundleShortVersionString</key>
-    <string>1</string>
+	<string>1.1.3</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1</string>
 	<key>CFPlugInDynamicRegisterFunction</key>
 	<string></string>
 	<key>CFPlugInDynamicRegistration</key>
@@ -49,22 +49,15 @@
 	</dict>
 	<key>CFPlugInUnloadFunction</key>
 	<string></string>
-    <!-- Change following property to <true/> if the generators supports
-         multiple concurrent requests -->
-    <key>QLSupportsConcurrentRequests</key>
-    <false/>
-    <!-- Change following property to <true/> if the generators needs
-         to be run on main thread -->
-    <key>QLNeedsToBeRunInMainThread</key>
-    <true/>
-    <!-- Change following property to indicate the minimum useful size for a thumbnail the generator
-     can produce. If your generator is fast enough, you can remove the minimum size so to appear in lists -->
-    <key>QLThumbnailMinimumSize</key>
-    <real>64</real>
-    <!-- Change following properites to indicate the preview size to use if preview generation takes too long -->
-    <key>QLPreviewWidth</key>
-    <real>800</real>
-    <key>QLPreviewHeight</key>
-    <real>600</real>
+	<key>QLSupportsConcurrentRequests</key>
+	<false/>
+	<key>QLNeedsToBeRunInMainThread</key>
+	<true/>
+	<key>QLThumbnailMinimumSize</key>
+	<real>64</real>
+	<key>QLPreviewWidth</key>
+	<real>800</real>
+	<key>QLPreviewHeight</key>
+	<real>600</real>
 </dict>
 </plist>
