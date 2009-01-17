@@ -969,7 +969,7 @@ static int SortPlugInInfo(id a, id b, void* context) {
 			
 			if ([info status] == ZoomPlugInInstalled
 				|| [info status] == ZoomPlugInUpdated
-				|| ([[info location] isFileURL] && [[[info location] path] hasPrefix: [[NSBundle mainBundle] bundlePath]])) {
+				|| ([[info location] isFileURL] && ([[[info location] path] hasPrefix: [[NSBundle mainBundle] bundlePath]] || [[[info location] path] hasPrefix: [[self class] plugInsPath]]))) {
 				alreadyInstalled = YES;
 				existingPlugIn = info;
 			}
