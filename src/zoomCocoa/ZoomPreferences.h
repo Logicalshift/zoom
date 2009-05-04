@@ -11,6 +11,11 @@
 
 extern NSString* ZoomPreferencesHaveChangedNotification;
 
+enum GlulxInterpreter {
+	GlulxGit		= 0,
+	GlulxGlulxe		= 1
+};
+
 @interface ZoomPreferences : NSObject<NSCoding> {
 	NSMutableDictionary* prefs;
 	NSLock* prefLock;
@@ -36,6 +41,7 @@ extern NSString* ZoomPreferencesHaveChangedNotification;
 // Interpreter preferences
 - (NSString*)     gameTitle;
 - (int)           interpreter;
+- (enum GlulxInterpreter) glulxInterpreter;
 - (unsigned char) revision;
 
 // Typographical preferences
@@ -75,6 +81,7 @@ extern NSString* ZoomPreferencesHaveChangedNotification;
 - (void) setSpeakGameText: (BOOL) flag;
 - (void) setConfirmGameClose: (BOOL) flag;
 - (void) setScrollbackLength: (float) value;
+- (void) setGlulxInterpreter: (enum GlulxInterpreter) value;
 
 - (void) setGameTitle: (NSString*) title;
 - (void) setInterpreter: (int) interpreter;

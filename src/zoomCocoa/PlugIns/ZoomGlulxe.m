@@ -8,6 +8,7 @@
 
 #import "ZoomGlulxe.h"
 #import "ZoomBlorbFile.h"
+#import "ZoomPreferences.h"
 
 @implementation ZoomGlulxe
 
@@ -54,8 +55,17 @@
 	self = [super initWithFilename: gameFile];
 	
 	if (self) {
+		// Work out which client to use
+		NSString*			client = @"glulxe-client";
+		ZoomPreferences*	zPrefs = [ZoomPreferences globalPreferences];
+		
+		switch ([zPrefs glulxInterpreter]) {
+			case GlulxGit:		client = @"git-client"; break;
+			case GlulxGlulxe:	client = @"glulxe-client"; break;
+		}
+
 		// Set the client to be glulxe
-		[self setClientPath: [[NSBundle bundleForClass: [self class]] pathForAuxiliaryExecutable: @"glulxe-client"]];
+		[self setClientPath: [[NSBundle bundleForClass: [self class]] pathForAuxiliaryExecutable: client]];
 	}
 	
 	return self;

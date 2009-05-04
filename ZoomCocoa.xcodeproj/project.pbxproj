@@ -692,6 +692,20 @@
 			remoteGlobalIDString = 4BB8C12208C2497700D7D334;
 			remoteInfo = ZoomServer;
 		};
+		4BD093960FACAEEE001F7EF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4B3C3B790F3DAB850066A760 /* git */;
+			remoteInfo = git;
+		};
+		4BD093980FACAF0B001F7EF0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4B3C3B780F3DAB850066A760 /* git */;
+			remoteInfo = git;
+		};
 		4BF6A8C40E2D5F8800A9CD10 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
@@ -1600,6 +1614,7 @@
 				4B7CB1C9093634DD00F3B8F6 /* multiwin */,
 				4B7CB1CB093634DD00F3B8F6 /* glulxe */,
 				4B7CB1CD093634DD00F3B8F6 /* imagetest */,
+				4BD093970FACAEEE001F7EF0 /* git */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2137,6 +2152,7 @@
 			dependencies = (
 				4B36C46C0955EDC900874F9F /* PBXTargetDependency */,
 				4B36C4630955ED7A00874F9F /* PBXTargetDependency */,
+				4BD093990FACAF0B001F7EF0 /* PBXTargetDependency */,
 			);
 			name = Glulxe;
 			productName = Glulxe;
@@ -2425,6 +2441,13 @@
 			remoteRef = 4B7CB1CC093634DD00F3B8F6 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		4BD093970FACAEEE001F7EF0 /* git */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = git;
+			remoteRef = 4BD093960FACAEEE001F7EF0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		4BF6A8C50E2D5F8800A9CD10 /* GlkSound.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -2600,7 +2623,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#\n# Fix for xcode thickness\n#\n\necho \"Copying plugin (${PROJECT_DIR}/../CocoaGlk/build/${BUILD_STYLE}/glulxe)\"\ncp -R ${PROJECT_DIR}/../CocoaGlk/build/${BUILD_STYLE}/glulxe ${TARGET_BUILD_DIR}/glulxe-client || exit 1\n\ncp -R ${TARGET_BUILD_DIR}/glulxe-client ${TARGET_BUILD_DIR}/Glulxe.plugin/Contents/MacOS/glulxe-client";
+			shellScript = "#\n# Fix for xcode thickness\n#\n\necho \"Copying plugin (${PROJECT_DIR}/../CocoaGlk/build/${BUILD_STYLE}/glulxe)\"\ncp -R ${PROJECT_DIR}/../CocoaGlk/build/${BUILD_STYLE}/glulxe ${TARGET_BUILD_DIR}/glulxe-client || exit 1\ncp -R ${PROJECT_DIR}/../CocoaGlk/build/${BUILD_STYLE}/git ${TARGET_BUILD_DIR}/git-client || exit 1\n\ncp -R ${TARGET_BUILD_DIR}/glulxe-client ${TARGET_BUILD_DIR}/Glulxe.plugin/Contents/MacOS/glulxe-client\ncp -R ${TARGET_BUILD_DIR}/git-client ${TARGET_BUILD_DIR}/Glulxe.plugin/Contents/MacOS/git-client\n";
 		};
 		4B43DA6209363A4000F03009 /* Fix XCode stupidity */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -3086,6 +3109,11 @@
 			isa = PBXTargetDependency;
 			target = 4BB8C12208C2497700D7D334 /* ZoomServer */;
 			targetProxy = 4BB8C18C08C249F400D7D334 /* PBXContainerItemProxy */;
+		};
+		4BD093990FACAF0B001F7EF0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = git;
+			targetProxy = 4BD093980FACAF0B001F7EF0 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

@@ -385,6 +385,7 @@ static int familyComparer(id a, id b, void* context) {
 	[autosaveGames setState: [prefs autosaveGames]?NSOnState:NSOffState];
 	[reorganiseGames setEnabled: [prefs keepGamesOrganised]];
 	[confirmGameClose setState: [prefs confirmGameClose]?NSOnState:NSOffState];
+	[glulxInterpreter selectItemAtIndex: [glulxInterpreter indexOfItemWithTag: [prefs glulxInterpreter]]];
 	
 	// a kind of chessy way to get the current alpha setting
 	float red, green, blue, alpha;
@@ -605,6 +606,10 @@ static void appendStyle(NSMutableString* styleName,
 
 - (IBAction) interpreterChanged: (id) sender {
 	[prefs setInterpreter: [interpreter indexOfSelectedItem]+1];
+}
+
+- (IBAction) glulxInterpreterChanged: (id) sender {
+	[prefs setGlulxInterpreter: [[glulxInterpreter selectedItem] tag]];
 }
 
 - (IBAction) revisionChanged: (id) sender {

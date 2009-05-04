@@ -25,6 +25,7 @@ static NSString* autosaveGames		= @"autosaveGames";
 
 static NSString* gameTitle			= @"GameTitle";
 static NSString* interpreter		= @"Interpreter";
+static NSString* glulxInterpreter	= @"GlulxInterpreter";
 static NSString* revision			= @"Revision";
 
 static NSString* fonts				= @"Fonts";
@@ -186,6 +187,8 @@ static NSArray* DefaultColours(void) {
 				  forKey: interpreter];
 		[prefs setObject: [NSNumber numberWithInt: 'Z']
 				  forKey: revision];
+		[prefs setObject: [NSNumber numberWithInt: GlulxGit]
+				  forKey: glulxInterpreter];
 		
 		[prefs setObject: DefaultFonts()
 				  forKey: fonts];
@@ -339,6 +342,19 @@ static NSArray* DefaultColours(void) {
 - (int) interpreter {
 	[prefLock lock];
 	BOOL result = [[prefs objectForKey: interpreter] intValue];
+	[prefLock unlock];
+	
+	return result;
+}
+
+- (enum GlulxInterpreter) glulxInterpreter {
+	[prefLock lock];
+	NSNumber* glulxInterpreterNum = (NSNumber*)[prefs objectForKey: glulxInterpreter];
+	
+	enum GlulxInterpreter result;
+	if (glulxInterpreterNum)	result = [glulxInterpreterNum intValue];
+	else						result = GlulxGit;
+	
 	[prefLock unlock];
 	
 	return result;
@@ -528,6 +544,12 @@ static NSArray* DefaultColours(void) {
 - (void) setGameTitle: (NSString*) title {
 	[prefs setObject: [[title copy] autorelease]
 			  forKey: gameTitle];
+	[self preferencesHaveChanged];
+}
+
+- (void) setGlulxInterpreter: (enum GlulxInterpreter) value {
+	[prefs setObject: [NSNumber numberWithInt: value]
+			  forKey: glulxInterpreter];
 	[self preferencesHaveChanged];
 }
 

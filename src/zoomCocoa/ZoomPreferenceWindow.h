@@ -36,6 +36,7 @@
 	IBOutlet NSTextField* fontSizeDisplay;
 	IBOutlet NSTextField* fontPreview;
 		
+	IBOutlet NSPopUpButton* glulxInterpreter;
 	IBOutlet NSPopUpButton* interpreter;
 	IBOutlet NSTextField* revision;
 	IBOutlet NSButton* reorganiseGames;
@@ -69,6 +70,7 @@
 - (void) setPreferences: (ZoomPreferences*) prefs;
 
 // Interface actions
+- (IBAction) glulxInterpreterChanged: (id) sender;
 - (IBAction) interpreterChanged: (id) sender;
 - (IBAction) revisionChanged: (id) sender;
 - (IBAction) displayWarningsChanged: (id) sender;
