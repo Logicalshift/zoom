@@ -696,14 +696,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 4B3C3B790F3DAB850066A760 /* git */;
+			remoteGlobalIDString = 4B3C3B790F3DAB850066A760;
 			remoteInfo = git;
 		};
 		4BD093980FACAF0B001F7EF0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 4B3C3B780F3DAB850066A760 /* git */;
+			remoteGlobalIDString = 4B3C3B780F3DAB850066A760;
 			remoteInfo = git;
 		};
 		4BF6A8C40E2D5F8800A9CD10 /* PBXContainerItemProxy */ = {
