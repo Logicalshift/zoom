@@ -631,16 +631,16 @@ OPCODE "store"        2OP:0x0d        VERSION all
 OPCODE "loadw"        2OP:0x0f STORE  VERSION all
 %{
 #ifdef DEBUG
-  printf_debug("Loading word at #%x\n", (ZUWord)arg1+((ZUWord)arg2*2));
+  printf_debug("Loading word at #%x\n", (ZUWord)arg1+((ZWord)arg2*2));
 #endif
-  store(stack, st, Word((ZUWord)((ZUWord)arg1+((ZUWord)arg2*2))));
+  store(stack, st, Word((ZUWord)((ZUWord)arg1+((ZWord)arg2*2))));
 %}
 OPCODE "loadb"        2OP:0x10 STORE  VERSION all
 %{
 #ifdef DEBUG
-  printf_debug("Loading byte at #%x\n", (ZUWord)arg1+(ZUWord)arg2);
+  printf_debug("Loading byte at #%x\n", (ZUWord)arg1+(ZWord)arg2);
 #endif
-  store(stack, st, ReadByte((ZUWord)((ZUWord)arg1+(ZUWord)arg2)));
+  store(stack, st, ReadByte((ZUWord)((ZUWord)arg1+(ZWord)arg2)));
 %}
 
 OPCODE "or"           2OP:0x08 STORE  VERSION all
@@ -1319,14 +1319,14 @@ OPCODE "storew"         VAR:0x01 ARGS:3               VERSION all
 	 ((ZUWord) argblock.arg[0] + (ZUWord) (argblock.arg[1]*2))&0xffff);
 #endif
 #ifdef SAFE
-  if (((ZUWord) argblock.arg[0] + ((ZUWord) argblock.arg[1]*2)+1) >
+  if (((ZUWord) argblock.arg[0] + ((ZWord) argblock.arg[1]*2)+1) >
       machine.dynamic_ceiling)
     zmachine_fatal("Out of range storew (tried to store at $%x, but ceiling is at $%x)",
 		   ((ZUWord) argblock.arg[0] + ((ZUWord) argblock.arg[1]*2)),
 		   machine.dynamic_ceiling);
 #endif
   
-  if ((ZUWord) argblock.arg[0] + ((ZUWord) argblock.arg[1]*2) == ZH_flags2)
+  if ((ZUWord) argblock.arg[0] + ((ZWord) argblock.arg[1]*2) == ZH_flags2)
     {
       ZArgblock a;
 
@@ -1341,7 +1341,7 @@ OPCODE "storew"         VAR:0x01 ARGS:3               VERSION all
       argblock.arg[2] |= Word(ZH_flags2)&1;
     }
 
-  mem = Address(((ZUWord) argblock.arg[0] + ((ZUWord) argblock.arg[1]*2))&0xffff);
+  mem = Address(((ZUWord) argblock.arg[0] + ((ZWord) argblock.arg[1]*2))&0xffff);
   mem[0] = argblock.arg[2]>>8;
   mem[1] = argblock.arg[2];  
 %}
@@ -1353,15 +1353,15 @@ OPCODE "storeb"         VAR:0x02 ARGS:3               VERSION all
 #ifdef DEBUG
   printf_debug("Storing byte value %i at #%x\n",
 	 argblock.arg[2],
-	 ((ZUWord) argblock.arg[0] + (ZUWord) argblock.arg[1])&0xffff);
+	 ((ZUWord) argblock.arg[0] + (ZWord) argblock.arg[1])&0xffff);
 #endif
 #ifdef SAFE
-  if (((ZUWord) argblock.arg[0] + (ZUWord) argblock.arg[1]) >
+  if (((ZUWord) argblock.arg[0] + (ZWord) argblock.arg[1]) >
       machine.dynamic_ceiling)
     zmachine_fatal("Out of range storeb (store to $%x, ceiling at $%x)", ((ZUWord) argblock.arg[0] + (ZUWord) argblock.arg[1]), machine.dynamic_ceiling);
 #endif
 
-  mem = Address(((ZUWord) argblock.arg[0] + (ZUWord) argblock.arg[1])&0xffff);
+  mem = Address(((ZUWord) argblock.arg[0] + (ZWord) argblock.arg[1])&0xffff);
   mem[0] = argblock.arg[2];
 %}
 
