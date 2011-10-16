@@ -2371,6 +2371,12 @@
 			buildConfigurationList = 4B11039608606E2600253E87 /* Build configuration list for PBXProject "ZoomCocoa" */;
 			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 4B1E3F47050F7AD000A8E303;
 			productRefGroup = 4B1E3F55050F7B0E00A8E303 /* Products */;
 			projectDirPath = "";
@@ -3591,7 +3597,6 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = ZoomMetadataImporter;
-				SDKROOT_ppc = /Developer/SDKs/MacOSX10.4u.sdk;
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
