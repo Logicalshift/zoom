@@ -27,6 +27,7 @@ static NSImage* fade = nil;
 	[[NSColor colorWithPatternImage: fade] set];
 	[[NSGraphicsContext currentContext] setPatternPhase: [self convertPoint: NSMakePoint(0,0)
 																	 toView: nil]];
+
 	NSRectFill(rect);
 }
 

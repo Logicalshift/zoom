@@ -133,10 +133,24 @@
 - (void) scrollRegion: (NSRect) region
 			  toPoint: (NSPoint) where {
 	[pixmap lockFocus];
+	
+	// Used to use NSCopyBits but Apple randomly broke it sometime in Snow Leopard. The docs lied anyway.
+	// This is much slower :-(
+	NSBitmapImageRep*	copiedBits	= [[NSBitmapImageRep alloc] initWithFocusedViewRect: region];
+	NSImage*			copiedImage	= [[NSImage alloc] init];
+	[copiedImage addRepresentation: copiedBits];
+	[copiedImage setFlipped: YES];
+	[copiedImage drawInRect: NSMakeRect(where.x, where.y, region.size.width, region.size.height)
+				   fromRect: NSMakeRect(0,0, region.size.width, region.size.height)
+				  operation: NSCompositeSourceOver
+				   fraction: 1.0];
+	
+	[copiedBits release];
+	
 	// Uh, docs say we should use NSNullObject here, but it's not defined. Making a guess at its value (sigh)
 	// This would be less of a problem in a view, because we can get the view's own graphics state. But you
 	// can't get the graphics state for an image (in general).
-	NSCopyBits(0, region, where);
+	// NSCopyBits(0, region, where);
 	[pixmap unlockFocus];
 }
 

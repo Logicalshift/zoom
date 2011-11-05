@@ -798,6 +798,7 @@ void zmachine_fatal(char* format, ...) {
 	display_flush();
 	
 	[[mainMachine display] displayFatalError: [NSString stringWithFormat: @"%s (PC=#%x)", fatalBuf, machine.zpc]];
+	NSLog(@"%s (PC=#%x)", fatalBuf, machine.zpc);
 	
 	display_exit(1);
 }

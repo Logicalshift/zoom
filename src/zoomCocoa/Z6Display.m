@@ -132,6 +132,9 @@ void display_pixmap_cols(int fore, int back) {
 void display_scroll_region(int x, int y,
 						   int width, int height,
 						   int xoff, int yoff) {
+	if (xoff == 0 && yoff == 0) return;
+	if (width == 0 || height == 0) return;
+	
 	[[mainMachine buffer] scrollRegion: NSMakeRect(x, y, width, height)
 							   toPoint: NSMakePoint(x+xoff, y+yoff)
 							  inWindow: (NSObject<ZPixmapWindow>*)[mainMachine windowNumber: 0]];
