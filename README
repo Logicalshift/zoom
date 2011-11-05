@@ -103,12 +103,11 @@ Compiling Zoom (Cocoa)
    versions may also work. (Zoom is statically linked against expat
    as it was an optional install on versions of OS X prior to 10.3)
 
-   You will also need the dependencies in the depend directory:
-   these are CocoaGlk and ZoomPlugins at the moment. The easiest way
-   to get these is to use git: in the depends directory type this:
+   You will also need the dependencies in the depend directory: this means 
+   CocoaGlk at the moment. The easiest way to get these is to use git: in 
+   the depends directory type this:
 
       git clone http://code.logicalshift.co.uk/zoom/cocoaglk.git CocoaGlk
-      git clone http://code.logicalshift.co.uk/zoom/zoomplugins.git ZoomPlugins
    
    If you want to use the versions that correspond to a specific release, 
    use git checkout with the version number. For example, git checkout 
