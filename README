@@ -40,7 +40,7 @@ Versions
    ZoomPlugins: 1.1.5
    Spotlight importer: 1.5
    QuickLook plugin: 1.1.5
-   CocoaGlk version: 1.0.7
+   CocoaGlk version: 1.0.8
    Glulxe version: 0.4.2
    
    Note that Zoom's display system underwent a fairly major change
@@ -112,7 +112,8 @@ Compiling Zoom (Cocoa)
    
    If you want to use the versions that correspond to a specific release, 
    use git checkout with the version number. For example, git checkout 
-   v1.1.5.
+   v1.1.5. Note that CocoaGlk requires you to download versions of the
+   git and glulxe interpreters to compile it.
 
    Rather than use the configure/automake process for this, I have
    elected to use Xcode: to compile the new version of Zoom, load the

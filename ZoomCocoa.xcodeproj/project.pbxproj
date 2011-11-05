@@ -998,7 +998,7 @@
 		4B7CB08209362A3B00F3B8F6 /* ZoomPlugIns-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ZoomPlugIns-Info.plist"; sourceTree = "<group>"; };
 		4B7CB1AF0936345D00F3B8F6 /* ZoomGlkPlugIn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomGlkPlugIn.h; sourceTree = "<group>"; };
 		4B7CB1B00936345D00F3B8F6 /* ZoomGlkPlugIn.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomGlkPlugIn.m; sourceTree = "<group>"; };
-		4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CocoaGlk.xcodeproj; path = ../CocoaGlk/CocoaGlk.xcodeproj; sourceTree = "<group>"; };
+		4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CocoaGlk.xcodeproj; path = depends/CocoaGlk/CocoaGlk.xcodeproj; sourceTree = "<group>"; };
 		4B7D1DAD0534999E00A8E303 /* ZoomLowerWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomLowerWindow.h; sourceTree = "<group>"; };
 		4B7D1DAE0534999E00A8E303 /* ZoomLowerWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomLowerWindow.m; sourceTree = "<group>"; };
 		4B7FA9CC06B99EE400EE766A /* NeedDrop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = NeedDrop.png; path = Resources/NeedDrop.png; sourceTree = "<group>"; };
@@ -2629,7 +2629,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#\n# Fix for xcode thickness\n#\n\necho \"Copying plugin (${PROJECT_DIR}/../CocoaGlk/build/${BUILD_STYLE}/glulxe)\"\ncp -R ${PROJECT_DIR}/../CocoaGlk/build/${BUILD_STYLE}/glulxe ${TARGET_BUILD_DIR}/glulxe-client || exit 1\ncp -R ${PROJECT_DIR}/../CocoaGlk/build/${BUILD_STYLE}/git ${TARGET_BUILD_DIR}/git-client || exit 1\n\ncp -R ${TARGET_BUILD_DIR}/glulxe-client ${TARGET_BUILD_DIR}/Glulxe.plugin/Contents/MacOS/glulxe-client\ncp -R ${TARGET_BUILD_DIR}/git-client ${TARGET_BUILD_DIR}/Glulxe.plugin/Contents/MacOS/git-client\n";
+			shellScript = "#\n# Fix for xcode thickness\n#\n\necho \"Copying plugin (${PROJECT_DIR}/depends/CocoaGlk/build/${BUILD_STYLE}/glulxe)\"\ncp -R ${PROJECT_DIR}/depends/CocoaGlk/build/${BUILD_STYLE}/glulxe ${TARGET_BUILD_DIR}/glulxe-client || exit 1\ncp -R ${PROJECT_DIR}/depends/CocoaGlk/build/${BUILD_STYLE}/git ${TARGET_BUILD_DIR}/git-client || exit 1\n\ncp -R ${TARGET_BUILD_DIR}/glulxe-client ${TARGET_BUILD_DIR}/Glulxe.plugin/Contents/MacOS/glulxe-client\ncp -R ${TARGET_BUILD_DIR}/git-client ${TARGET_BUILD_DIR}/Glulxe.plugin/Contents/MacOS/git-client\n";
 		};
 		4B43DA6209363A4000F03009 /* Fix XCode stupidity */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2643,7 +2643,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# XCode is too stupid to work out that CocoaGlk binaries live in the CocoaGlk directory. Sigh.\nrm -rf ${TARGET_BUILD_DIR}/GlkView.framework\nrm -rf ${TARGET_BUILD_DIR}/GlkClient.framework\n\ncp -R ${PROJECT_DIR}/../CocoaGlk/build/${BUILD_STYLE}/GlkView.framework ${TARGET_BUILD_DIR}/GlkView.framework || exit 1\ncp -R ${PROJECT_DIR}/../CocoaGlk/build/${BUILD_STYLE}/GlkClient.framework ${TARGET_BUILD_DIR}/GlkClient.framework || exit 1\n#cp -R ${PROJECT_DIR}/../CocoaGlk/build/${BUILD_STYLE}/glulxe ${TARGET_BUILD_DIR}/glulxe || exit 1\n";
+			shellScript = "# XCode is too stupid to work out that CocoaGlk binaries live in the CocoaGlk directory. Sigh.\nrm -rf ${TARGET_BUILD_DIR}/GlkView.framework\nrm -rf ${TARGET_BUILD_DIR}/GlkClient.framework\n\ncp -R ${PROJECT_DIR}/depends/CocoaGlk/build/${BUILD_STYLE}/GlkView.framework ${TARGET_BUILD_DIR}/GlkView.framework || exit 1\ncp -R ${PROJECT_DIR}/depends/CocoaGlk/build/${BUILD_STYLE}/GlkClient.framework ${TARGET_BUILD_DIR}/GlkClient.framework || exit 1\n#cp -R ${PROJECT_DIR}/depends/CocoaGlk/build/${BUILD_STYLE}/glulxe ${TARGET_BUILD_DIR}/glulxe || exit 1\n";
 		};
 		4B7FC2380B1F2588004DD113 /* Copy more plugins, if available */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2657,7 +2657,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ -e ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE} ]; then\n\techo Installing plugin bundles from ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE}\n\tls ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE}/*.plugin\n\tcp -Rf ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE}/*.plugin ${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/PlugIns\nfi\n";
+			shellScript = "if [ -e ${SRCROOT}/depends/ZoomPlugins/build/${BUILD_STYLE} ]; then\n\techo Installing plugin bundles from ${SRCROOT}/depends/ZoomPlugins/build/${BUILD_STYLE}\n\tls ${SRCROOT}/depends/ZoomPlugins/build/${BUILD_STYLE}/*.plugin\n\tcp -Rf ${SRCROOT}/depends/ZoomPlugins/build/${BUILD_STYLE}/*.plugin ${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/PlugIns\nfi\n";
 		};
 		4B94AEE20CD4AF3A003C75A6 /* All Done */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -3260,7 +3260,7 @@
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH)";
 				FRAMEWORK_SEARCH_PATHS = (
-					../CocoaGlk/build/Development,
+					depends/CocoaGlk/build/Development,
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -3285,7 +3285,7 @@
 					i386,
 				);
 				FRAMEWORK_SEARCH_PATHS = (
-					../CocoaGlk/build/Deployment,
+					depends/CocoaGlk/build/Deployment,
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3308,7 +3308,7 @@
 					i386,
 				);
 				FRAMEWORK_SEARCH_PATHS = (
-					../CocoaGlk/build,
+					depends/CocoaGlk/build,
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3491,7 +3491,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
-					../CocoaGlk/build/Default,
+					depends/CocoaGlk/build/Default,
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -3874,7 +3874,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 5;
 				FRAMEWORK_SEARCH_PATHS = (
-					../CocoaGlk/build/Default,
+					depends/CocoaGlk/build/Default,
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
 				FRAMEWORK_VERSION = A;
