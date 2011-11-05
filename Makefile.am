@@ -9,5 +9,5 @@ EXTRA_DIST = THANKS ProjectBuilder/config.h ProjectBuilder/etc/ztypes.h \
 	ZoomPlugIns-Info.plist \
 	Glulxe-Info.plist \
 	LeopardExtns-Info.plist \
-	depends\README \
+	depends/README \
 	ZoomSaveQuickLook-Info.plist
