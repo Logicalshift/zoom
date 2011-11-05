@@ -1,0 +1,3 @@
+[submodule "depends/ZoomPlugins"]
+	path = depends/ZoomPlugins
+	url = http://code.logicalshift.co.uk/zoom/zoomplugins.git
