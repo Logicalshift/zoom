@@ -41,7 +41,7 @@ Versions
    Spotlight importer: 1.5
    QuickLook plugin: 1.1.5
    CocoaGlk version: 1.0.8
-   Glulxe version: 0.4.2
+   Glulxe version: 0.4.7
    
    Note that Zoom's display system underwent a fairly major change
    between 1.0.0 and 1.0.1 due to the addition of version 6 support. This
