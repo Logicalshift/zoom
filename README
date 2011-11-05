@@ -17,6 +17,13 @@ by Andrew Hunter
    Send any bug reports to andrew@logicalshift.co.uk, and anything
    else to andrew@logicalshift.co.uk. Zoom's homepage can be
    located at http://www.logicalshift.co.uk/unix/zoom/
+
+   You can get the latest version of the source code at any time
+   using git:
+
+      git clone http://code.logicalshift.co.uk/zoom/zoom.git
+      git submodule init
+      git submodule update
    
 Versions
 ========
@@ -95,6 +102,17 @@ Compiling Zoom (Cocoa)
    Currently, the Zoom binaries link against expat 1.95.8: later
    versions may also work. (Zoom is statically linked against expat
    as it was an optional install on versions of OS X prior to 10.3)
+
+   You will also need the dependencies in the depend directory:
+   these are CocoaGlk and ZoomPlugins at the moment. The easiest way
+   to get these is to use git: in the depends directory type this:
+
+      git clone http://code.logicalshift.co.uk/zoom/cocoaglk.git CocoaGlk
+      git clone http://code.logicalshift.co.uk/zoom/zoomplugins.git ZoomPlugins
+   
+   If you want to use the versions that correspond to a specific release, 
+   use git checkout with the version number. For example, git checkout 
+   v1.1.5.
 
    Rather than use the configure/automake process for this, I have
    elected to use Xcode: to compile the new version of Zoom, load the
