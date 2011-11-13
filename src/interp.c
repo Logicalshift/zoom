@@ -1057,6 +1057,7 @@ static void zcode_op_aread_5678(ZDWord* pc,
 	{
 	  mem[1] = 0;
 	  free(buf);
+	  return;
 	}
     }
   
@@ -1151,7 +1152,7 @@ static void zcode_op_aread_5678(ZDWord* pc,
 	  int x;
 
 	  mem[1] = 0;
-	  for (x=0; buf[x] != 0; x++)
+	  for (x=0; buf[x] != 0 && x < bufLen; x++)
 	    {
 	      mem[1]++;
 	      buf[x] = unicode_to_lower(buf[x]);
