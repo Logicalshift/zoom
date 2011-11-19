@@ -15,14 +15,14 @@
 			<string>Zoom savegame</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
-			<key>LSTypeIsPackage</key>
-			<true/>
-			<key>NSPersistentStoreTypeKey</key>
-			<string>Binary</string>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>uk.org.logicalshift.glksave</string>
 			</array>
+			<key>LSTypeIsPackage</key>
+			<true/>
+			<key>NSPersistentStoreTypeKey</key>
+			<string>Binary</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -114,14 +114,14 @@
 			<string>Zoom savegame</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
-			<key>LSTypeIsPackage</key>
-			<true/>
-			<key>NSDocumentClass</key>
-			<string>ZoomClient</string>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>uk.org.logicalshift.zoomsave</string>
 			</array>
+			<key>LSTypeIsPackage</key>
+			<true/>
+			<key>NSDocumentClass</key>
+			<string>ZoomClient</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -253,7 +253,7 @@
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>public.tads</string>
+				<string>org.tads.tads-game</string>
 			</array>
 			<key>LSTypeIsPackage</key>
 			<false/>
@@ -287,12 +287,8 @@
 	<string>uk.org.logicalshift.zoom</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string></string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string></string>
 	<key>CFBundleSignature</key>
 	<string>YZZY</string>
 	<key>CFBundleVersion</key>
@@ -303,13 +299,7 @@
 	<string>NSApplication</string>
 	<key>SUFeedURL</key>
 	<string>http://www.logicalshift.co.uk/unix/zoom/update.xml</string>
-	<key>ZoomPluginFeedURL</key>
-	<string>http://www.logicalshift.co.uk/unix/zoom/plugins.xml</string>
-	<key>ZoomPluginFeedTestURL</key>
-	<string>http://www.logicalshift.co.uk/unix/zoom/plugins-test2.xml</string>
-	<key>ZoomIfdbUrl</key>
-	<string>http://ifdb.tads.org/</string>
-	<key>UTExportedTypeDeclarations</key>
+	<key>UTImportedTypeDeclarations</key>
 	<array>
 		<dict>
 			<key>UTTypeConformsTo</key>
@@ -452,27 +442,6 @@
 				<string>uk.org.logicalshift.zoom</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>TADS Story</string>
-			<key>UTTypeIconFile</key>
-			<string>TADS.icns</string>
-			<key>UTTypeIdentifier</key>
-			<string>public.tads</string>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>gam</string>
-					<string>t3</string>
-				</array>
-			</dict>
-		</dict>
-		<dict>
-			<key>UTTypeConformsTo</key>
-			<array>
-				<string>public.data</string>
-				<string>uk.org.logicalshift.zoom</string>
-			</array>
-			<key>UTTypeDescription</key>
 			<string>Hugo Story</string>
 			<key>UTTypeIconFile</key>
 			<string>HUGO.icns</string>
@@ -486,6 +455,70 @@
 				</array>
 			</dict>
 		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>TADS Executable</string>
+			<key>UTTypeIconFile</key>
+			<string>GameFile.icns</string>
+			<key>UTTypeIdentifier</key>
+			<string>org.tads.tads-game</string>
+			<key>UTTypeReferenceURL</key>
+			<string>http://www.tads.org/howto/mediatypes.htm</string>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>org.tads.tads-game</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>TADS 2 Game</string>
+			<key>UTTypeIconFile</key>
+			<string>GameFile.icns</string>
+			<key>UTTypeIdentifier</key>
+			<string>org.tads.tads2-game</string>
+			<key>UTTypeReferenceURL</key>
+			<string>http://www.tads.org/howto/mediatypes.htm</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>com.apple.ostype</key>
+				<string>TADG</string>
+				<key>public.filename-extension</key>
+				<array>
+					<string>gam</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>org.tads.tads-game</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>TADS 3 Executable</string>
+			<key>UTTypeIconFile</key>
+			<string>GameFile.icns</string>
+			<key>UTTypeIdentifier</key>
+			<string>org.tads.tads3-game</string>
+			<key>UTTypeReferenceURL</key>
+			<string>http://www.tads.org/howto/mediatypes.htm</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>com.apple.ostype</key>
+				<string>.T3X</string>
+				<key>public.filename-extension</key>
+				<array>
+					<string>t3x</string>
+					<string>t3</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
 		<dict>
 			<key>UTTypeConformsTo</key>
 			<array>
@@ -525,5 +558,11 @@
 			</dict>
 		</dict>
 	</array>
+	<key>ZoomIfdbUrl</key>
+	<string>http://ifdb.tads.org/</string>
+	<key>ZoomPluginFeedTestURL</key>
+	<string>http://www.logicalshift.co.uk/unix/zoom/plugins-test2.xml</string>
+	<key>ZoomPluginFeedURL</key>
+	<string>http://www.logicalshift.co.uk/unix/zoom/plugins.xml</string>
 </dict>
 </plist>
