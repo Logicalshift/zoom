@@ -156,6 +156,7 @@
 		4B9DC7EB15027DF0003DF057 /* ZoomLFlipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7284890CD37E980079D89B /* ZoomLFlipView.m */; };
 		4B9DC7EC15027DF0003DF057 /* ZoomLeopard.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B94AEEF0CD4B2E5003C75A6 /* ZoomLeopard.h */; };
 		4B9DC7ED15027DF0003DF057 /* ZoomLeopard.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B94AEF00CD4B2E5003C75A6 /* ZoomLeopard.m */; };
+		4B9DC7F11502877B003DF057 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B7284FA0CD383C80079D89B /* QuartzCore.framework */; };
 		4BA375D30CD3CBA100C7B1D4 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BA373A30CD3CB7B00C7B1D4 /* ApplicationServices.framework */; };
 		4BA375D40CD3CBA100C7B1D4 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BA373A40CD3CB7B00C7B1D4 /* CoreServices.framework */; };
 		4BA375D50CD3CBA100C7B1D4 /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BA373A50CD3CB7B00C7B1D4 /* QuickLook.framework */; };
@@ -1245,6 +1246,7 @@
 				4BB8C1FB08C249F400D7D334 /* Carbon.framework in Frameworks */,
 				4BB8C1FC08C249F400D7D334 /* ZoomView.framework in Frameworks */,
 				4B7CB0AB09362A7900F3B8F6 /* ZoomPlugIns.framework in Frameworks */,
+				4B9DC7F11502877B003DF057 /* QuartzCore.framework in Frameworks */,
 				4B36C4100955E7EB00874F9F /* GlkView.framework in Frameworks */,
 				4B18890D0935FB4F003AF62A /* libExpat.a in Frameworks */,
 				4BB27DA00C592D9100470443 /* Sparkle.framework in Frameworks */,
