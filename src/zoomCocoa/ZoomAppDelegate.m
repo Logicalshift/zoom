@@ -12,6 +12,7 @@
 #import "ZoomGameInfoController.h"
 #import "ZoomNotesController.h"
 #import "ZoomSkeinController.h"
+#import "ZoomLeopard.h"
 
 #import "ZoomMetadata.h"
 #import "ZoomiFictionController.h"
@@ -301,11 +302,7 @@ NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 #endif
 	
 	// Load the leopard extensions if we're running on the right version of OS X
-	if (NSAppKitVersionNumber >= 949) {
-		NSBundle* leopardBundle = [NSBundle bundleWithPath: [[NSBundle mainBundle] pathForAuxiliaryExecutable: @"LeopardExtns.bundle"]];
-		[leopardBundle load];
-		leopard = [[[leopardBundle principalClass] alloc] init];
-	}
+    leopard = [[ZoomLeopard alloc] init];
 	
 	// Ensure the shared plugin controller is created
 	[ZoomPlugInController sharedPlugInController];
