@@ -1214,8 +1214,8 @@
 				4B7CB0D709362DDD00F3B8F6 /* Foundation.framework in Frameworks */,
 				4B7CB0D409362DDB00F3B8F6 /* Cocoa.framework in Frameworks */,
 				4B7CB09209362A5600F3B8F6 /* ZoomView.framework in Frameworks */,
-				4B7CB08D09362A4E00F3B8F6 /* libExpat.a in Frameworks */,
 				4B7CB2130936361800F3B8F6 /* GlkView.framework in Frameworks */,
+				4B7CB08D09362A4E00F3B8F6 /* libExpat.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
