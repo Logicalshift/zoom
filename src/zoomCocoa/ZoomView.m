@@ -768,10 +768,11 @@ static void finalizeViews(void) {
 		*width = 1;
 		*height = 1;
 	} else {
-		NSFont* font = [self fontWithStyle: ZFixedStyle];
+		NSFont*             font            = [self fontWithStyle: ZFixedStyle];
+        NSLayoutManager*    layoutManager   = [textView layoutManager];
 	
-		*width = [font widthOfString: @"M"];
-		*height = ceilf([font defaultLineHeightForFont])+1.0;
+		*width  = [@"m" sizeWithAttributes: [NSDictionary dictionaryWithObjectsAndKeys: font, NSFontAttributeName, nil]].width;
+		*height = ceilf([layoutManager defaultLineHeightForFont: font])+1.0;
 	}
 }
 

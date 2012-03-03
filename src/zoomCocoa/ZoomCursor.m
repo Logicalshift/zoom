@@ -111,6 +111,20 @@
 }
 
 // = Positioning =
+
+- (NSSize) sizeOfFont: (NSFont*) font {
+    // Hack: require a layout manager for OS X 10.6, but we don't have the entire text system to fall back on
+    NSLayoutManager* layoutManager = [[NSLayoutManager alloc] init];
+    
+    // Width is one 'en'
+    float width = [@"n" sizeWithAttributes: [NSDictionary dictionaryWithObjectsAndKeys: NSFontAttributeName, font, nil]].width;
+    
+    // Height is decided by the layout manager
+    float height = [layoutManager defaultLineHeightForFont: font];
+    
+    return NSMakeSize(width, height);
+}
+
 - (void) positionAt: (NSPoint) pt
 		   withFont: (NSFont*) font {
 	// Cause the delegate to undraw any previous cursor
@@ -119,10 +133,9 @@
 	[self ZCblunk];
 	
 	// Move the cursor
-	float width = [font widthOfString: @"n"]; // One 'en'
-	float height = [font defaultLineHeightForFont];
+    NSSize fontSize = [self sizeOfFont: font];
 		
-	cursorRect = NSMakeRect(pt.x, pt.y, width, height);
+	cursorRect = NSMakeRect(pt.x, pt.y, fontSize.width, fontSize.height);
 	
 	cursorRect.origin.x = floor(cursorRect.origin.x + 0.5) + 0.5;
 	cursorRect.origin.y = floor(cursorRect.origin.y + 0.5) + 0.5;
@@ -147,11 +160,10 @@
 	NSFont* font = [attributes objectForKey: NSFontAttributeName];
 	
 	// Move the cursor
-	float width = [font widthOfString: @"n"]; // One 'en'
-	float height = [font defaultLineHeightForFont];
+    NSSize fontSize = [self sizeOfFont: font];
 	float offset = [[string substringToIndex: index] sizeWithAttributes: attributes].width;
 	
-	cursorRect = NSMakeRect(cursorPos.x+offset, cursorPos.y, width, height);
+	cursorRect = NSMakeRect(cursorPos.x+offset, cursorPos.y, fontSize.width, fontSize.height);
 
 	// Redraw
 	isShown = wasShown;

@@ -81,14 +81,11 @@ static NSImage* unchangedDark, *activeDark;
 }
 
 + (void) initialize {
-	NSObject* labelShadow = nil;
+    NSShadow* labelShadow = [[NSShadow alloc] init];
 	
-	if (objc_lookUpClass("NSShadow") != nil) {
-		labelShadow = [[objc_lookUpClass("NSShadow") alloc] init];
-		[labelShadow setShadowOffset: NSMakeSize(0.4, -1)];
-		[labelShadow setShadowBlurRadius: 1.5];
-		[labelShadow setShadowColor: [NSColor colorWithCalibratedWhite:0.0 alpha:0.7]];
-	}
+    [labelShadow setShadowOffset: NSMakeSize(0.4, -1)];
+    [labelShadow setShadowBlurRadius: 1.5];
+    [labelShadow setShadowColor: [NSColor colorWithCalibratedWhite:0.0 alpha:0.7]];
 	
 	unplayed   = [[[self class] imageNamed: @"Skein-unplayed"] retain];
 	selected   = [[[self class] imageNamed: @"Skein-selected"] retain];
@@ -515,13 +512,15 @@ static NSImage* unchangedDark, *activeDark;
 	float ypos = ((float)[item level]) * itemHeight + (itemHeight/2.0);
 	float position = [item position];
 	float width = [item width];
+    
+    NSLayoutManager* layoutManager = [[[NSLayoutManager alloc] init] autorelease];
 	
 	// Basic rect
 	itemRect.origin.x = position + globalOffset - (width/2.0);
 	itemRect.origin.y = ypos + 1;
 	itemRect.size.width = width;
-	itemRect.size.height = [[NSFont systemFontOfSize: 10] defaultLineHeightForFont];
-	
+	itemRect.size.height = [layoutManager defaultLineHeightForFont: [NSFont systemFontOfSize: 10]];
+    
 	// Move it down by a few pixels if this is a selected item
 	if ([item item] == selectedItem) {
 		itemRect.origin.y += 2;

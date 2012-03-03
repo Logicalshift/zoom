@@ -58,6 +58,19 @@
 - (void) setFocus {
 }
 
+- (NSSize) sizeOfFont: (NSFont*) font {
+    // Hack: require a layout manager for OS X 10.6, but we don't have the entire text system to fall back on
+    NSLayoutManager* layoutManager = [[NSLayoutManager alloc] init];
+    
+    // Width is one 'em'
+    float width = [@"M" sizeWithAttributes: [NSDictionary dictionaryWithObjectsAndKeys: NSFontAttributeName, font, nil]].width;
+    
+    // Height is decided by the layout manager
+    float height = [layoutManager defaultLineHeightForFont: font];
+    
+    return NSMakeSize(width, height);
+}
+
 - (void) writeString: (NSString*) string
 		   withStyle: (ZStyle*) style {
 	[pixmap lockFocus];
@@ -99,7 +112,7 @@
 	NSMutableDictionary* attr = [[zView attributesForStyle: style] mutableCopy];
 	
 	// Draw the background
-	float height = [[attr objectForKey: NSFontAttributeName] defaultLineHeightForFont];
+	float height = [self sizeOfFont: [attr objectForKey: NSFontAttributeName]].height;
 	float descender = [[attr objectForKey: NSFontAttributeName] descender];
 	NSSize size = [text sizeWithAttributes: attr];
 	
@@ -170,11 +183,12 @@
         ([style symbolic]?8:0);
 
 	NSFont* font = [zView fontWithStyle: fontnum];
+    NSSize fontSize = [self sizeOfFont: font];
 	
-	*width = [font widthOfString: @"M"];
+	*width = fontSize.width;
 	*ascent = [font ascender];
 	*descent = [font descender];
-	*height = floor([font defaultLineHeightForFont])+1;
+	*height = fontSize.height+1;
 }
 
 - (out bycopy NSDictionary*) attributesForStyle: (in bycopy ZStyle*) style {
