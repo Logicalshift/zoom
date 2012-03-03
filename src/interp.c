@@ -232,7 +232,7 @@ ZFrame* call_routine(ZDWord* pc, ZStack* stack, ZDWord start)
   return newframe;
 }
 
-inline void store(ZStack* stack, int var, ZWord value)
+static inline void store(ZStack* stack, int var, ZWord value)
 {
 #ifdef DEBUG
   printf_debug("Storing %i in Variable #%x\n", value, var);
@@ -253,7 +253,7 @@ inline void store(ZStack* stack, int var, ZWord value)
     }
 }
 
-inline void store_nopush(ZStack* stack, int var, ZWord value)
+static inline void store_nopush(ZStack* stack, int var, ZWord value)
 {
 #ifdef DEBUG
     printf_debug("Storing %i in Variable #%x\n", value, var);
