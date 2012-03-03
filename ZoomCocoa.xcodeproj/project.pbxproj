@@ -2602,7 +2602,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ -e ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE} ]; then\n\techo Installing plugin bundles from ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE}\n\tls ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE}/*.plugin\n\tcp -Rf ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE}/*.plugin ${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/PlugIns\nfi\n";
+			shellScript = "if [ -e ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE} ]; then\n\techo Installing plugin bundles from ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE}\n    #ls ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE}/*.plugin\n    #cp -Rf ${SRCROOT}/../ZoomPlugins/build/${BUILD_STYLE}/*.plugin ${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/PlugIns\nfi\n";
 		};
 		4B94AEE20CD4AF3A003C75A6 /* All Done */ = {
 			isa = PBXShellScriptBuildPhase;
