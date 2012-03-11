@@ -2588,7 +2588,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#\n# Fix for xcode thickness\n#\n\necho \"Copying plugin (${BUILT_PRODUCTS_DIR}/glulxe)\"\ncp -R ${BUILT_PRODUCTS_DIR}/glulxe ${BUILT_PRODUCTS_DIR}/glulxe-client || exit 1\ncp -R ${BUILT_PRODUCTS_DIR}/git ${BUILT_PRODUCTS_DIR}/git-client || exit 1\n\ncp -R ${BUILT_PRODUCTS_DIR}/glulxe-client ${BUILT_PRODUCTS_DIR}/Glulxe.plugin/Contents/MacOS/glulxe-client\ncp -R ${BUILT_PRODUCTS_DIR}/git-client ${BUILT_PRODUCTS_DIR}/Glulxe.plugin/Contents/MacOS/git-client\n";
+			shellScript = "#\n# Fix for xcode thickness\n#\n\necho \"Copying plugin (${BUILT_PRODUCTS_DIR}/glulxe)\"\ncp -RH ${BUILT_PRODUCTS_DIR}/glulxe ${BUILT_PRODUCTS_DIR}/glulxe-client || exit 1\ncp -RH ${BUILT_PRODUCTS_DIR}/git ${BUILT_PRODUCTS_DIR}/git-client || exit 1\n\ncp -RH ${BUILT_PRODUCTS_DIR}/glulxe-client ${BUILT_PRODUCTS_DIR}/Glulxe.plugin/Contents/MacOS/glulxe-client\ncp -RH ${BUILT_PRODUCTS_DIR}/git-client ${BUILT_PRODUCTS_DIR}/Glulxe.plugin/Contents/MacOS/git-client\n";
 		};
 		4B7FC2380B1F2588004DD113 /* Copy more plugins, if available */ = {
 			isa = PBXShellScriptBuildPhase;
