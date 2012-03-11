@@ -3820,6 +3820,7 @@
 					"XMLCALL=",
 					DEVELOPMENT_BUILD,
 				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				INFOPLIST_FILE = "Info-Zoom__Upgraded_.plist";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
@@ -3842,6 +3843,7 @@
 					HAVE_COREFOUNDATION,
 					"XMLCALL=",
 				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				INFOPLIST_FILE = "Info-Zoom__Upgraded_.plist";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
@@ -3866,6 +3868,7 @@
 					HAVE_COREFOUNDATION,
 					"XMLCALL=",
 				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				INFOPLIST_FILE = "Info-Zoom__Upgraded_.plist";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
