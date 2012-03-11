@@ -27,7 +27,7 @@ extern NSString* ZoomStyleAttributeName;
 @class ZoomScrollView;
 @class ZoomTextView;
 @class ZoomPixmapWindow;
-@interface ZoomView : NSView<ZDisplay, NSCoding> {
+@interface ZoomView : NSView<ZDisplay, NSCoding, NSTextStorageDelegate, NSTextViewDelegate> {
     NSObject<ZMachine>* zMachine;
 
     // Subviews
