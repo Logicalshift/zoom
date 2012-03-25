@@ -1324,7 +1324,7 @@
 				4B1888EA0935F912003AF62A /* xmltok.h */,
 			);
 			name = Expat;
-			path = ../expat;
+			path = depends/expat;
 			sourceTree = "<group>";
 		};
 		4B1E3F47050F7AD000A8E303 = {
@@ -2416,6 +2416,7 @@
 		4BD093970FACAEEE001F7EF0 /* git */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
+			name = depends/git;
 			path = git;
 			remoteRef = 4BD093960FACAEEE001F7EF0 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
