@@ -12,7 +12,7 @@
 @class ZoomSavePreview;
 @interface ZoomSavePreviewView : NSView {
 	NSMutableArray* upperWindowViews;
-	int selected;
+	NSInteger selected;
 	BOOL saveGamesAvailable;
 }
 

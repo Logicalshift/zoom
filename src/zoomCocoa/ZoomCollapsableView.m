@@ -130,7 +130,7 @@
 
 - (void) setSubview: (NSView*) subview
 		   isHidden: (BOOL) isHidden {
-	int subviewIndex = [views indexOfObjectIdenticalTo: subview];
+	NSInteger subviewIndex = [views indexOfObjectIdenticalTo: subview];
 	
 	if (subviewIndex != NSNotFound) {
 		[states replaceObjectAtIndex: subviewIndex

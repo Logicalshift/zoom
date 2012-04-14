@@ -515,7 +515,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		[filenamesToIdents removeObjectForKey: filename];
 		[identsToFilenames removeObjectForKey: ident];
 		
-		int index = [storyFilenames indexOfObject: filename];
+		NSInteger index = [storyFilenames indexOfObject: filename];
 		if (index != NSNotFound) {
 			[storyIdents removeObjectAtIndex: index];
 			[storyFilenames removeObjectAtIndex: index];			
@@ -606,7 +606,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 		[filenamesToIdents removeObjectForKey: filename];
 		[identsToFilenames removeObjectForKey: oldIdent];
 	
-		int index = [storyIdents indexOfObject: oldIdent];
+		NSInteger index = [storyIdents indexOfObject: oldIdent];
 		if (index != NSNotFound) {
 			[storyFilenames removeObjectAtIndex: index];			
 			[storyIdents removeObjectAtIndex: index];
@@ -1044,7 +1044,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 #endif
 	
 	while (ident = [identEnum nextObject]) {
-		int identID = [storyIdents indexOfObject: ident];
+		NSInteger identID = [storyIdents indexOfObject: ident];
 		
 		if (identID != NSNotFound) {
 			// Get the old location of the game
@@ -1214,7 +1214,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 	}
 	
 	// Update the indexes
-	int filenameIndex = [storyFilenames indexOfObject: oldFilename];
+	NSInteger filenameIndex = [storyFilenames indexOfObject: oldFilename];
 	if (filenameIndex != NSNotFound) {
 		[storyFilenames removeObjectAtIndex: filenameIndex];
 		[storyIdents removeObjectAtIndex: filenameIndex];
@@ -1790,7 +1790,7 @@ static ZoomStoryOrganiser* sharedOrganiser = nil;
 			
 			// Change the storyFilenames array
 			/* -- ??
-			int oldIndex = [storyFilenames indexOfObject: filename];
+			NSInteger oldIndex = [storyFilenames indexOfObject: filename];
 			
 			if (oldIndex != NSNotFound) {
 				[storyFilenames removeObjectAtIndex: oldIndex];

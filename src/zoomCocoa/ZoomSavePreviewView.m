@@ -193,7 +193,7 @@
 
 - (void) previewMouseUp: (NSEvent*) evt
 				 inView: (ZoomSavePreview*) view {
-	int clicked = [upperWindowViews indexOfObjectIdenticalTo: view];
+	NSInteger clicked = [upperWindowViews indexOfObjectIdenticalTo: view];
 	
 	if (clicked == NSNotFound) {
 		NSLog(@"BUG: save preview not found");

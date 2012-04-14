@@ -234,7 +234,7 @@
 
 - (void)animationDidStop:(CAAnimation *)theAnimation
 				finished:(BOOL)flag {
-	int index = [animationsWillFinish indexOfObject: theAnimation];
+	NSInteger index = [animationsWillFinish indexOfObject: theAnimation];
 
 	while (index != NSNotFound) {
 		id invocation = [finishInvocations objectAtIndex: index];

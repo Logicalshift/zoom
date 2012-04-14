@@ -1019,7 +1019,7 @@ int tableSorter(id a, id b, void* context) {
 	ZoomStoryID* selID;
 	
 	while (selID = [selEnum nextObject]) {
-		unsigned index = [storyList indexOfObject: selID];
+		NSUInteger index = [storyList indexOfObject: selID];
 		
 		if (index != NSNotFound) {
 			[mainTableView selectRow: index
@@ -2434,7 +2434,7 @@ int tableSorter(id a, id b, void* context) {
 		
 		// Select the story in the main table
 		[mainTableView deselectAll: self];
-		int storyRow = [storyList indexOfObject: storyToPlay];
+		NSUInteger storyRow = [storyList indexOfObject: storyToPlay];
 		if (storyRow != NSNotFound) {
 			[mainTableView selectRow: storyRow
 				byExtendingSelection: NO];
@@ -2477,7 +2477,7 @@ int tableSorter(id a, id b, void* context) {
 		[self reloadTableData]; [mainTableView reloadData];
 		
 		// Filter by the group we just added
-		int filterRow = [filterSet1 indexOfObject: groupName];
+		NSUInteger filterRow = [filterSet1 indexOfObject: groupName];
 		if (filterRow != NSNotFound) {
 			[filterTable1 selectRow: filterRow+1
 			   byExtendingSelection: NO];
