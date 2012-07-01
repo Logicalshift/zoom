@@ -1598,7 +1598,7 @@
 				4B7CB1C9093634DD00F3B8F6 /* multiwin */,
 				4B7CB1CB093634DD00F3B8F6 /* glulxe */,
 				4B7CB1CD093634DD00F3B8F6 /* imagetest */,
-				4BD093970FACAEEE001F7EF0 /* git */,
+				4BD093970FACAEEE001F7EF0 /* depends/git */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2413,7 +2413,7 @@
 			remoteRef = 4B7CB1CC093634DD00F3B8F6 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		4BD093970FACAEEE001F7EF0 /* git */ = {
+		4BD093970FACAEEE001F7EF0 /* depends/git */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
 			name = depends/git;

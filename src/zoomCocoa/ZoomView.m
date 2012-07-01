@@ -927,7 +927,10 @@ static void finalizeViews(void) {
     [self setShowsMorePrompt: moreOn];
 
     [self setNeedsDisplay: YES];
-    [textView setEditable: NO];
+    
+    if ([textView isEditable] && moreOn) {
+        [textView setEditable: NO];
+    }
 }
 
 - (void) resetMorePrompt {
