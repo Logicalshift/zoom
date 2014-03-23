@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 42;
+	objectVersion = 45;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -3810,6 +3810,7 @@
 		4BB8C20408C249F400D7D334 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
 					"$(SRCROOT)/build/Development",
@@ -3826,6 +3827,7 @@
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				INFOPLIST_FILE = "Info-Zoom__Upgraded_.plist";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_NAME = Zoom;
 				WRAPPER_EXTENSION = app;
 			};
@@ -3834,6 +3836,7 @@
 		4BB8C20508C249F400D7D334 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
 					"$(SRCROOT)/build/Deployment",
@@ -3849,6 +3852,7 @@
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				INFOPLIST_FILE = "Info-Zoom__Upgraded_.plist";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_NAME = Zoom;
 				STRIP_INSTALLED_PRODUCT = YES;
 				STRIP_STYLE = "non-global";
@@ -3859,6 +3863,7 @@
 		4BB8C20608C249F400D7D334 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
 					"$(SRCROOT)/build/Development",
@@ -3874,6 +3879,7 @@
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				INFOPLIST_FILE = "Info-Zoom__Upgraded_.plist";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_NAME = Zoom;
 				WRAPPER_EXTENSION = app;
 			};
