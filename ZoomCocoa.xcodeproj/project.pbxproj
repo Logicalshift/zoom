@@ -1598,7 +1598,7 @@
 				4B7CB1C9093634DD00F3B8F6 /* multiwin */,
 				4B7CB1CB093634DD00F3B8F6 /* glulxe */,
 				4B7CB1CD093634DD00F3B8F6 /* imagetest */,
-				4BD093970FACAEEE001F7EF0 /* depends/git */,
+				4BD093970FACAEEE001F7EF0 /* git */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2334,6 +2334,8 @@
 /* Begin PBXProject section */
 		4B1E3F4B050F7AD000A8E303 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = 4B11039608606E2600253E87 /* Build configuration list for PBXProject "ZoomCocoa" */;
 			compatibilityVersion = "Xcode 2.4";
 			developmentRegion = English;
@@ -2413,10 +2415,9 @@
 			remoteRef = 4B7CB1CC093634DD00F3B8F6 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		4BD093970FACAEEE001F7EF0 /* depends/git */ = {
+		4BD093970FACAEEE001F7EF0 /* git */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
-			name = depends/git;
 			path = git;
 			remoteRef = 4BD093960FACAEEE001F7EF0 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
@@ -3178,8 +3179,7 @@
 		4B11039708606E2600253E87 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				FRAMEWORK_SEARCH_PATHS = (
 					depends/CocoaGlk/build/Development,
 					"$(FRAMEWORK_SEARCH_PATHS)",
@@ -3193,15 +3193,14 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_POINTER_SIGNEDNESS = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx10.8;
 			};
 			name = Development;
 		};
 		4B11039808606E2600253E87 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				FRAMEWORK_SEARCH_PATHS = (
 					depends/CocoaGlk/build/Deployment,
 					"$(FRAMEWORK_SEARCH_PATHS)",
@@ -3213,15 +3212,14 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_POINTER_SIGNEDNESS = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx10.8;
 			};
 			name = Deployment;
 		};
 		4B11039908606E2600253E87 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				FRAMEWORK_SEARCH_PATHS = (
 					depends/CocoaGlk/build,
 					"$(FRAMEWORK_SEARCH_PATHS)",
@@ -3233,7 +3231,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_POINTER_SIGNEDNESS = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx10.8;
 			};
 			name = Default;
 		};
@@ -3772,6 +3770,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PRODUCT_NAME = ZoomServer;
+				SDKROOT = macosx10.8;
 				YACC_GENERATED_FILE_STEM = InputFileStem;
 			};
 			name = Development;
@@ -3786,6 +3785,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PRODUCT_NAME = ZoomServer;
+				SDKROOT = macosx10.8;
 				STRIP_INSTALLED_PRODUCT = YES;
 				STRIP_STYLE = "non-global";
 				YACC_GENERATED_FILE_STEM = InputFileStem;
@@ -3802,6 +3802,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PRODUCT_NAME = ZoomServer;
+				SDKROOT = macosx10.8;
 				YACC_GENERATED_FILE_STEM = InputFileStem;
 			};
 			name = Default;

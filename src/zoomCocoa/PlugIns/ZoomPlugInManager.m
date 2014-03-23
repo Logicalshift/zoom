@@ -565,6 +565,13 @@ static int SortPlugInInfo(id a, id b, void* context) {
 
 - (void) startNextCheck {
 	if (lastRequest != nil) return;
+
+    // Plug-in updates are disabled for now
+    [checkUrls removeAllObjects];
+    if (delegate && [delegate respondsToSelector: @selector(finishedCheckingForUpdates)]) {
+        [delegate finishedCheckingForUpdates];
+    }
+    return;
 	
 	// Get the next URL to check
 	NSURL* nextUrl = nil;
@@ -640,6 +647,9 @@ static int SortPlugInInfo(id a, id b, void* context) {
 }
 
 - (BOOL) addUpdatedPlugin: (ZoomPlugInInfo*) plugin {
+    // This is disabled for now
+    return nil;
+    
 	// Find the old plugin that matches this one
 	ZoomPlugInInfo* oldPlugIn = nil;
 	
