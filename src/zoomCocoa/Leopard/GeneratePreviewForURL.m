@@ -85,7 +85,7 @@ OSStatus GeneratePreviewForBabel(void *thisInterface,
 	}
 	
 	// If there's no metadata returned, then give up
-	if (story == nil) return;
+	if (story == nil) return noErr;
 	
 	// Generate an attributed string describing the story
 	NSFont* titleFont		= [NSFont boldSystemFontOfSize: 24];
