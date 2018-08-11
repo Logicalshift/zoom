@@ -58,8 +58,8 @@
 		4B1FEA590ACB1713008B9EFE /* ZoomPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B418ED905961D2C009C44DE /* ZoomPreferences.m */; };
 		4B1FEA5C0ACB1723008B9EFE /* ZoomMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BACEA9705B4597500A9B6DC /* ZoomMetadata.m */; };
 		4B36C4100955E7EB00874F9F /* GlkView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B7CB1C5093634DD00F3B8F6 /* GlkView.framework */; };
-		4B36C4440955EC2600874F9F /* GlkView.framework in Copy frameworks */ = {isa = PBXBuildFile; fileRef = 4B7CB1C5093634DD00F3B8F6 /* GlkView.framework */; };
-		4B36C45F0955ED5400874F9F /* Glulxe.plugin in Copy Glulxe plugin */ = {isa = PBXBuildFile; fileRef = 4B36C4540955ED1700874F9F /* Glulxe.plugin */; };
+		4B36C4440955EC2600874F9F /* GlkView.framework in Copy frameworks */ = {isa = PBXBuildFile; fileRef = 4B7CB1C5093634DD00F3B8F6 /* GlkView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		4B36C45F0955ED5400874F9F /* Glulxe.plugin in Copy Glulxe plugin */ = {isa = PBXBuildFile; fileRef = 4B36C4540955ED1700874F9F /* Glulxe.plugin */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		4B36C46A0955EDB600874F9F /* ZoomGlulxe.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B36C4680955EDB600874F9F /* ZoomGlulxe.m */; };
 		4B36C5000955EDD800874F9F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BCF3F2B050F8E2400A8E303 /* Foundation.framework */; };
 		4B36C5010955EDD800874F9F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B1E3F60050F7BA000A8E303 /* Cocoa.framework */; };
@@ -72,13 +72,13 @@
 		4B39C94708EEF79300BA5E90 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BCF3F2B050F8E2400A8E303 /* Foundation.framework */; };
 		4B39C9FD08EEF84D00BA5E90 /* infocom.iFiction in Resources */ = {isa = PBXBuildFile; fileRef = 4BACE9FA05B428C700A9B6DC /* infocom.iFiction */; };
 		4B39C9FE08EEF84D00BA5E90 /* archive.iFiction in Resources */ = {isa = PBXBuildFile; fileRef = 4B5983DA070F059E0078165F /* archive.iFiction */; };
-		4B39CA0708EEF8DE00BA5E90 /* ZoomMetadataImporter.mdimporter in Copy Metadata importer */ = {isa = PBXBuildFile; fileRef = 4B39C92B08EEF63400BA5E90 /* ZoomMetadataImporter.mdimporter */; };
+		4B39CA0708EEF8DE00BA5E90 /* ZoomMetadataImporter.mdimporter in Copy Metadata importer */ = {isa = PBXBuildFile; fileRef = 4B39C92B08EEF63400BA5E90 /* ZoomMetadataImporter.mdimporter */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		4B39CA8408EEFE8F00BA5E90 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B39CA8308EEFE8F00BA5E90 /* CoreServices.framework */; };
 		4B39CBCB08EF006E00BA5E90 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B39CBCA08EF006E00BA5E90 /* CoreFoundation.framework */; };
 		4B3E766C0BA2D47300661FE8 /* ZoomBabel.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3E766A0BA2D47300661FE8 /* ZoomBabel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3E766D0BA2D47300661FE8 /* ZoomBabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3E766B0BA2D47300661FE8 /* ZoomBabel.m */; };
 		4B3E76DD0BA2DF8E00661FE8 /* ZoomResourceDrop.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC5562006B83F4600F0DD4A /* ZoomResourceDrop.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B3E775B0BA2F00000661FE8 /* babel in Copy babel */ = {isa = PBXBuildFile; fileRef = 4BD79A8F0BA2C9AA002C82B2 /* babel */; };
+		4B3E775B0BA2F00000661FE8 /* babel in Copy babel */ = {isa = PBXBuildFile; fileRef = 4BD79A8F0BA2C9AA002C82B2 /* babel */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		4B3E79D90BA31FA800661FE8 /* ZoomStoryOrganiser.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B807BA905BFEE7200681653 /* ZoomStoryOrganiser.h */; };
 		4B3E79DA0BA31FA800661FE8 /* ZoomStoryOrganiser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B807BAA05BFEE7200681653 /* ZoomStoryOrganiser.m */; };
 		4B43DA8409364C7400F03009 /* GlkWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4B43DA8309364C7400F03009 /* GlkWindow.nib */; };
@@ -100,7 +100,7 @@
 		4B7CB04709360AC100F3B8F6 /* libExpat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B1888D00935F863003AF62A /* libExpat.a */; };
 		4B7CB08D09362A4E00F3B8F6 /* libExpat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B1888D00935F863003AF62A /* libExpat.a */; };
 		4B7CB09209362A5600F3B8F6 /* ZoomView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BD274C508701E6800C1AE15 /* ZoomView.framework */; };
-		4B7CB0AA09362A7200F3B8F6 /* ZoomPlugIns.framework in Copy frameworks */ = {isa = PBXBuildFile; fileRef = 4B7CB08109362A3B00F3B8F6 /* ZoomPlugIns.framework */; };
+		4B7CB0AA09362A7200F3B8F6 /* ZoomPlugIns.framework in Copy frameworks */ = {isa = PBXBuildFile; fileRef = 4B7CB08109362A3B00F3B8F6 /* ZoomPlugIns.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		4B7CB0AB09362A7900F3B8F6 /* ZoomPlugIns.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B7CB08109362A3B00F3B8F6 /* ZoomPlugIns.framework */; };
 		4B7CB0AC09362A8D00F3B8F6 /* ZoomStory.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BACEAB505B45BF400A9B6DC /* ZoomStory.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B7CB0AD09362A8D00F3B8F6 /* ZoomStory.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BACEAB605B45BF400A9B6DC /* ZoomStory.m */; };
@@ -116,7 +116,7 @@
 		4B7CB15809362DFB00F3B8F6 /* ZoomMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BACEA9705B4597500A9B6DC /* ZoomMetadata.m */; };
 		4B7CB1B10936345D00F3B8F6 /* ZoomGlkPlugIn.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7CB1AF0936345D00F3B8F6 /* ZoomGlkPlugIn.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B7CB1B20936345D00F3B8F6 /* ZoomGlkPlugIn.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7CB1B00936345D00F3B8F6 /* ZoomGlkPlugIn.m */; };
-		4B7CB1D00936350E00F3B8F6 /* GlkClient.framework in Copy frameworks */ = {isa = PBXBuildFile; fileRef = 4B7CB1C7093634DD00F3B8F6 /* GlkClient.framework */; };
+		4B7CB1D00936350E00F3B8F6 /* GlkClient.framework in Copy frameworks */ = {isa = PBXBuildFile; fileRef = 4B7CB1C7093634DD00F3B8F6 /* GlkClient.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		4B7CB1E90936357900F3B8F6 /* ZoomPlugIn.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7CB0790936294B00F3B8F6 /* ZoomPlugIn.m */; };
 		4B7CB1EA0936357900F3B8F6 /* ZoomPlugIn.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7CB0780936294B00F3B8F6 /* ZoomPlugIn.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B7CB2130936361800F3B8F6 /* GlkView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B7CB1C5093634DD00F3B8F6 /* GlkView.framework */; };
@@ -145,7 +145,7 @@
 		4B926A1F0CD1480B00CE0ADB /* ZoomJSError.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B926A1D0CD1480B00CE0ADB /* ZoomJSError.h */; };
 		4B926A200CD1480B00CE0ADB /* ZoomJSError.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B926A1E0CD1480B00CE0ADB /* ZoomJSError.m */; };
 		4B94B0D20CD4FC52003C75A6 /* ZoomBabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3E766B0BA2D47300661FE8 /* ZoomBabel.m */; };
-		4B94B0D60CD4FCF4003C75A6 /* babel in Copy babel */ = {isa = PBXBuildFile; fileRef = 4BD79A8F0BA2C9AA002C82B2 /* babel */; };
+		4B94B0D60CD4FCF4003C75A6 /* babel in Copy babel */ = {isa = PBXBuildFile; fileRef = 4BD79A8F0BA2C9AA002C82B2 /* babel */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		4B94B1000CD5063A003C75A6 /* zoom-game.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4BCF3F46050FB21C00A8E303 /* zoom-game.icns */; };
 		4B94B1600CD537B8003C75A6 /* ZoomSignPost.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B94B15E0CD537B8003C75A6 /* ZoomSignPost.h */; };
 		4B94B1610CD537B8003C75A6 /* ZoomSignPost.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B94B15F0CD537B8003C75A6 /* ZoomSignPost.m */; };
@@ -163,7 +163,7 @@
 		4BA375D60CD3CBA100C7B1D4 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B39CBCA08EF006E00BA5E90 /* CoreFoundation.framework */; };
 		4BA375D70CD3CBA100C7B1D4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B1E3F60050F7BA000A8E303 /* Cocoa.framework */; };
 		4BA375D80CD3CBA100C7B1D4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BCF3F2B050F8E2400A8E303 /* Foundation.framework */; };
-		4BA375E80CD3CC2B00C7B1D4 /* ZoomSaveQuickLook.qlgenerator in Copy QuickLook plugins */ = {isa = PBXBuildFile; fileRef = 4B7286E60CD3CAFF0079D89B /* ZoomSaveQuickLook.qlgenerator */; };
+		4BA375E80CD3CC2B00C7B1D4 /* ZoomSaveQuickLook.qlgenerator in Copy QuickLook plugins */ = {isa = PBXBuildFile; fileRef = 4B7286E60CD3CAFF0079D89B /* ZoomSaveQuickLook.qlgenerator */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		4BA377D90CD3CFFD00C7B1D4 /* ZoomSaveQuickLook.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BA377D70CD3CFF700C7B1D4 /* ZoomSaveQuickLook.c */; };
 		4BA377DF0CD3D01600C7B1D4 /* GenerateThumbnailForURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA377DA0CD3D01000C7B1D4 /* GenerateThumbnailForURL.m */; };
 		4BA377E00CD3D01700C7B1D4 /* GeneratePreviewForURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA377DB0CD3D01000C7B1D4 /* GeneratePreviewForURL.m */; };
@@ -190,7 +190,7 @@
 		4BA8B83A0B1B5F65007CD75E /* typographicSettings.png in Resources */ = {isa = PBXBuildFile; fileRef = 4BA8B8390B1B5F65007CD75E /* typographicSettings.png */; };
 		4BA8B9530B1BB3F4007CD75E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BCF3F4B050FB2C500A8E303 /* main.m */; };
 		4BB27DA00C592D9100470443 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BB27D9F0C592D9100470443 /* Sparkle.framework */; };
-		4BB27DB40C592D9D00470443 /* Sparkle.framework in Copy frameworks */ = {isa = PBXBuildFile; fileRef = 4BB27D9F0C592D9100470443 /* Sparkle.framework */; };
+		4BB27DB40C592D9D00470443 /* Sparkle.framework in Copy frameworks */ = {isa = PBXBuildFile; fileRef = 4BB27D9F0C592D9100470443 /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		4BB65ACE08EF02D600E7E28E /* ZoomBlorbFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF1576406BAD034001A3C27 /* ZoomBlorbFile.m */; };
 		4BB65AD408EF02DF00E7E28E /* ZoomProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BCF3F29050F8E0000A8E303 /* ZoomProtocol.m */; };
 		4BB8C0DE08C2452E00D7D334 /* operation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B1E3F82050F7CC500A8E303 /* operation.h */; };
@@ -343,7 +343,7 @@
 		4BB8C1F908C249F400D7D334 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BCF3F2B050F8E2400A8E303 /* Foundation.framework */; };
 		4BB8C1FB08C249F400D7D334 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5CBB9B069D671200C0AA88 /* Carbon.framework */; };
 		4BB8C1FC08C249F400D7D334 /* ZoomView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BD274C508701E6800C1AE15 /* ZoomView.framework */; };
-		4BB8C20208C249F400D7D334 /* ZoomView.framework in Copy frameworks */ = {isa = PBXBuildFile; fileRef = 4BD274C508701E6800C1AE15 /* ZoomView.framework */; };
+		4BB8C20208C249F400D7D334 /* ZoomView.framework in Copy frameworks */ = {isa = PBXBuildFile; fileRef = 4BD274C508701E6800C1AE15 /* ZoomView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		4BD2747C08701E6700C1AE15 /* ZoomView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B4EF623050FDC6800A8E303 /* ZoomView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BD2747D08701E6700C1AE15 /* ZoomLowerWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7D1DAD0534999E00A8E303 /* ZoomLowerWindow.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BD2747E08701E6700C1AE15 /* ZoomUpperWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BDFA46305358F1200A8E303 /* ZoomUpperWindow.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -2335,6 +2335,7 @@
 		4B1E3F4B050F7AD000A8E303 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastUpgradeCheck = 0920;
 			};
 			buildConfigurationList = 4B11039608606E2600253E87 /* Build configuration list for PBXProject "ZoomCocoa" */;
 			compatibilityVersion = "Xcode 2.4";
@@ -3114,7 +3115,7 @@
 				GCC_WARN_UNUSED_PARAMETER = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.3;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -3145,7 +3146,7 @@
 				GCC_WARN_UNUSED_PARAMETER = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.2;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -3179,11 +3180,30 @@
 		4B11039708606E2600253E87 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					depends/CocoaGlk/build/Development,
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					DEVELOPMENT_BUILD,
@@ -3191,47 +3211,102 @@
 					"XMLCALL=",
 				);
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_POINTER_SIGNEDNESS = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				SDKROOT = macosx10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
 			};
 			name = Development;
 		};
 		4B11039808606E2600253E87 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					depends/CocoaGlk/build/Deployment,
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					APPLE_IS_ARBITRARY,
 					"XMLCALL=",
 				);
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_POINTER_SIGNEDNESS = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 			};
 			name = Deployment;
 		};
 		4B11039908606E2600253E87 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					depends/CocoaGlk/build,
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					APPLE_IS_ARBITRARY,
 					"XMLCALL=",
 				);
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_POINTER_SIGNEDNESS = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 			};
 			name = Default;
 		};
@@ -3366,6 +3441,7 @@
 					AppKit,
 				);
 				PREBINDING = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.Glulxe;
 				PRODUCT_NAME = Glulxe;
 				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = plugin;
@@ -3391,6 +3467,7 @@
 					AppKit,
 				);
 				PREBINDING = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.Glulxe;
 				PRODUCT_NAME = Glulxe;
 				SKIP_INSTALL = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -3419,6 +3496,7 @@
 					AppKit,
 				);
 				PREBINDING = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.Glulxe;
 				PRODUCT_NAME = Glulxe;
 				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = plugin;
@@ -3461,6 +3539,7 @@
 					"-L/usr/local/lib",
 				);
 				PREBINDING = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.ZoomMetadataImporter;
 				PRODUCT_NAME = ZoomMetadataImporter;
 				WARNING_CFLAGS = (
 					"-Wmost",
@@ -3506,6 +3585,7 @@
 					"-L/usr/local/lib",
 				);
 				PREBINDING = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.ZoomMetadataImporter;
 				PRODUCT_NAME = ZoomMetadataImporter;
 				WARNING_CFLAGS = (
 					"-Wmost",
@@ -3546,6 +3626,7 @@
 					"-L/usr/local/lib",
 				);
 				PREBINDING = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.ZoomMetadataImporter;
 				PRODUCT_NAME = ZoomMetadataImporter;
 				WARNING_CFLAGS = (
 					"-Wmost",
@@ -3574,6 +3655,7 @@
 					AppKit,
 				);
 				PREBINDING = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.zoom.save.quicklook;
 				PRODUCT_NAME = ZoomSaveQuickLook;
 				SDKROOT_ppc = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 				WRAPPER_EXTENSION = qlgenerator;
@@ -3597,6 +3679,7 @@
 					AppKit,
 				);
 				PREBINDING = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.zoom.save.quicklook;
 				PRODUCT_NAME = ZoomSaveQuickLook;
 				SDKROOT_ppc = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 				WRAPPER_EXTENSION = qlgenerator;
@@ -3618,6 +3701,7 @@
 					AppKit,
 				);
 				PREBINDING = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.zoom.save.quicklook;
 				PRODUCT_NAME = ZoomSaveQuickLook;
 				SDKROOT_ppc = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 				WRAPPER_EXTENSION = qlgenerator;
@@ -3649,6 +3733,7 @@
 					AppKit,
 				);
 				PREBINDING = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.ZoomPlugIns;
 				PRODUCT_NAME = ZoomPlugIns;
 				SKIP_INSTALL = YES;
 				ZERO_LINK = YES;
@@ -3679,6 +3764,7 @@
 					AppKit,
 				);
 				PREBINDING = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.ZoomPlugIns;
 				PRODUCT_NAME = ZoomPlugIns;
 				SKIP_INSTALL = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -3715,6 +3801,7 @@
 					AppKit,
 				);
 				PREBINDING = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.ZoomPlugIns;
 				PRODUCT_NAME = ZoomPlugIns;
 				SKIP_INSTALL = YES;
 				ZERO_LINK = YES;
@@ -3724,7 +3811,6 @@
 		4BB8C0E608C2452E00D7D334 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH)";
 				HEADER_SEARCH_PATHS = (
 					ProjectBuilder/etc,
 					build,
@@ -3737,7 +3823,6 @@
 		4BB8C0E708C2452E00D7D334 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH)";
 				HEADER_SEARCH_PATHS = (
 					ProjectBuilder/etc,
 					build,
@@ -3750,7 +3835,6 @@
 		4BB8C0E808C2452E00D7D334 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH)";
 				HEADER_SEARCH_PATHS = (
 					ProjectBuilder/etc,
 					build,
@@ -3770,7 +3854,6 @@
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PRODUCT_NAME = ZoomServer;
-				SDKROOT = macosx10.8;
 				YACC_GENERATED_FILE_STEM = InputFileStem;
 			};
 			name = Development;
@@ -3785,7 +3868,6 @@
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PRODUCT_NAME = ZoomServer;
-				SDKROOT = macosx10.8;
 				STRIP_INSTALLED_PRODUCT = YES;
 				STRIP_STYLE = "non-global";
 				YACC_GENERATED_FILE_STEM = InputFileStem;
@@ -3802,7 +3884,6 @@
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PRODUCT_NAME = ZoomServer;
-				SDKROOT = macosx10.8;
 				YACC_GENERATED_FILE_STEM = InputFileStem;
 			};
 			name = Default;
@@ -3828,6 +3909,7 @@
 				INFOPLIST_FILE = "Info-Zoom__Upgraded_.plist";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
+				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.zoom;
 				PRODUCT_NAME = Zoom;
 				WRAPPER_EXTENSION = app;
 			};
@@ -3836,7 +3918,7 @@
 		4BB8C20508C249F400D7D334 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
 					"$(SRCROOT)/build/Deployment",
@@ -3853,6 +3935,7 @@
 				INFOPLIST_FILE = "Info-Zoom__Upgraded_.plist";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
+				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.zoom;
 				PRODUCT_NAME = Zoom;
 				STRIP_INSTALLED_PRODUCT = YES;
 				STRIP_STYLE = "non-global";
@@ -3880,6 +3963,7 @@
 				INFOPLIST_FILE = "Info-Zoom__Upgraded_.plist";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
+				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.zoom;
 				PRODUCT_NAME = Zoom;
 				WRAPPER_EXTENSION = app;
 			};
