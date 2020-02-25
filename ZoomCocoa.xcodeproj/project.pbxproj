@@ -436,6 +436,8 @@
 			isa = PBXBuildRule;
 			compilerSpec = com.apple.compilers.gcc;
 			fileType = sourcecode.c;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 			);
@@ -444,6 +446,8 @@
 			isa = PBXBuildRule;
 			compilerSpec = com.apple.compilers.gcc;
 			fileType = sourcecode.asm;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 			);
@@ -452,6 +456,8 @@
 			isa = PBXBuildRule;
 			compilerSpec = com.apple.compilers.gcc;
 			fileType = sourcecode.c;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 			);
@@ -460,6 +466,8 @@
 			isa = PBXBuildRule;
 			compilerSpec = com.apple.compilers.gcc;
 			fileType = sourcecode.asm;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 			);
@@ -468,6 +476,8 @@
 			isa = PBXBuildRule;
 			compilerSpec = com.apple.compilers.gcc;
 			fileType = sourcecode.c;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 			);
@@ -476,6 +486,8 @@
 			isa = PBXBuildRule;
 			compilerSpec = com.apple.compilers.gcc;
 			fileType = sourcecode.c;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 			);
@@ -524,13 +536,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 4B7CB08009362A3B00F3B8F6;
 			remoteInfo = ZoomPlugIns;
-		};
-		4B39C93408EEF63E00BA5E90 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4B39C92A08EEF63400BA5E90;
-			remoteInfo = ZoomMetadataImporter;
 		};
 		4B3E77550BA2EFDD00661FE8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -699,6 +704,27 @@
 			proxyType = 1;
 			remoteGlobalIDString = 4B3C3B780F3DAB850066A760;
 			remoteInfo = git;
+		};
+		4BE81C6623D45C5E00085D09 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4B39C92A08EEF63400BA5E90;
+			remoteInfo = ZoomMetadataImporter;
+		};
+		4BE81C6A23D45C7A00085D09 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4B51AA4607E8770600576AB9;
+			remoteInfo = GlkView;
+		};
+		4BE81C6C23D45C8C00085D09 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4B51AA4607E8770600576AB9;
+			remoteInfo = GlkView;
 		};
 		4BF6A8C40E2D5F8800A9CD10 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -2156,6 +2182,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				4BE81C6B23D45C7A00085D09 /* PBXTargetDependency */,
 				4B7CB03C09360A6D00F3B8F6 /* PBXTargetDependency */,
 			);
 			name = ZoomMetadataImporter;
@@ -2176,6 +2203,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				4BE81C6D23D45C8C00085D09 /* PBXTargetDependency */,
 				4B94B0D50CD4FCEE003C75A6 /* PBXTargetDependency */,
 			);
 			name = ZoomSaveQuickLook;
@@ -2277,8 +2305,8 @@
 				4B7CB0A909362A6A00F3B8F6 /* PBXTargetDependency */,
 				4B36C45B0955ED3B00874F9F /* PBXTargetDependency */,
 				4BA375DA0CD3CBF000C7B1D4 /* PBXTargetDependency */,
+				4BE81C6723D45C5E00085D09 /* PBXTargetDependency */,
 				4BB8C18B08C249F400D7D334 /* PBXTargetDependency */,
-				4B39C93508EEF63E00BA5E90 /* PBXTargetDependency */,
 				4B18890C0935FB46003AF62A /* PBXTargetDependency */,
 				4B7CB1F4093635C400F3B8F6 /* PBXTargetDependency */,
 			);
@@ -2953,11 +2981,6 @@
 			target = 4B7CB08009362A3B00F3B8F6 /* ZoomPlugIns */;
 			targetProxy = 4B36C46B0955EDC900874F9F /* PBXContainerItemProxy */;
 		};
-		4B39C93508EEF63E00BA5E90 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4B39C92A08EEF63400BA5E90 /* ZoomMetadataImporter */;
-			targetProxy = 4B39C93408EEF63E00BA5E90 /* PBXContainerItemProxy */;
-		};
 		4B3E77560BA2EFDD00661FE8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 4BD79A8E0BA2C9AA002C82B2 /* babel */;
@@ -3042,6 +3065,21 @@
 			isa = PBXTargetDependency;
 			name = git;
 			targetProxy = 4BD093980FACAF0B001F7EF0 /* PBXContainerItemProxy */;
+		};
+		4BE81C6723D45C5E00085D09 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4B39C92A08EEF63400BA5E90 /* ZoomMetadataImporter */;
+			targetProxy = 4BE81C6623D45C5E00085D09 /* PBXContainerItemProxy */;
+		};
+		4BE81C6B23D45C7A00085D09 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GlkView;
+			targetProxy = 4BE81C6A23D45C7A00085D09 /* PBXContainerItemProxy */;
+		};
+		4BE81C6D23D45C8C00085D09 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GlkView;
+			targetProxy = 4BE81C6C23D45C8C00085D09 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
