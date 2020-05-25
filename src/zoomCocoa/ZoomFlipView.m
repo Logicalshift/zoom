@@ -331,10 +331,10 @@
 						  fromRect: startFrom
 						 operation: NSCompositeSourceOver
 						  fraction: 1.0];
-			[endImage drawInRect: endTo
-						fromRect: endFrom
-					   operation: NSCompositeSourceOver
-						fraction: percentDone];			
+			//[endImage drawInRect: endTo
+			//			fromRect: endFrom
+			//		   operation: NSCompositeSourceOver
+			//			fraction: percentDone];
 			break;
 	}
 }
