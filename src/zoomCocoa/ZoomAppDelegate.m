@@ -22,7 +22,7 @@
 #import "ZoomPlugInController.h"
 #import "ZoomStoryOrganiser.h"
 
-#import <Sparkle/Sparkle.h>
+// #import <Sparkle/Sparkle.h>
 
 NSString* ZoomOpenPanelLocation = @"ZoomOpenPanelLocation";
 
