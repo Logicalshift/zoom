@@ -58,27 +58,34 @@
 	
 	// Create the cached representation of the view
 	NSRect viewFrame = [view frame];
-	NSCachedImageRep* cacheRep = [[NSCachedImageRep alloc] initWithSize: viewFrame.size
+    NSImage* cacheRep =     [[NSImage alloc] initWithSize:viewFrame.size];
+	/*NSCachedImageRep* cacheRep = [[NSCachedImageRep alloc] initWithSize: viewFrame.size
 																  depth: [[NSScreen deepestScreen] depth]
 															   separate: YES
-																  alpha: YES];
+																  alpha: YES];*/
 	
 	// Move the view to the cached rep's window
 	NSView* oldParent = [view superview];
 	[ZoomFlipView detrackView: view];
 	[view removeFromSuperviewWithoutNeedingDisplay];
 	
+    /*
 	if ([[cacheRep window] contentView] == nil) {
 		[[cacheRep window] setContentView: [[[NSView alloc] init] autorelease]];
 	}
-	[[cacheRep window] setBackgroundColor: [NSColor clearColor]];
+     */
+    cacheRep.cacheMode = NSImageCacheAlways;
+    cacheRep. backgroundColor = [NSColor clearColor];
+	//[[cacheRep window] setBackgroundColor: [NSColor clearColor]];
 	
-	[view setFrame: [cacheRep rect]];
-	[[[cacheRep window] contentView] addSubview: view];
+	//[view setFrame: [cacheRep rect]];
+    [view setFrame: [cacheRep alignmentRect]];
+	//[[[cacheRep window] contentView] addSubview: view];
 	[view setNeedsDisplay: YES];
 	
 	// Draw the view (initialising the image)
-	[[[cacheRep window] contentView] display];
+    [cacheRep drawInRect:viewFrame fromRect:viewFrame operation:NSCompositingOperationSourceOver fraction:(CGFloat)1.0];
+	//[[[cacheRep window] contentView] display];
 	
 	// Move the view back to where it belongs
 	[ZoomFlipView detrackView: view];
@@ -98,7 +105,7 @@
 		[result removeRepresentation: rep];
 	}
 	
-	[result addRepresentation: [cacheRep autorelease]];
+	//[result addRepresentation: [cacheRep autorelease]];
 	return [result autorelease];
 }
 
@@ -284,11 +291,11 @@
 			// Draw them
 			[startImage drawInRect: startTo
 						  fromRect: startFrom
-						 operation: NSCompositeSourceOver
+						 operation: NSCompositingOperationSourceOver
 						  fraction: 1.0];
 			[endImage drawInRect: endTo
 						fromRect: endFrom
-					   operation: NSCompositeSourceOver
+					   operation: NSCompositingOperationSourceOver
 						fraction: 1.0];
 			break;
 			
@@ -307,11 +314,11 @@
 			// Draw them
 			[startImage drawInRect: startTo
 						  fromRect: startFrom
-						 operation: NSCompositeSourceOver
+						 operation: NSCompositingOperationSourceOver
 						  fraction: 1.0];
 			[endImage drawInRect: endTo
 						fromRect: endFrom
-					   operation: NSCompositeSourceOver
+					   operation: NSCompositingOperationSourceOver
 						fraction: 1.0];
 			break;
 			
@@ -329,14 +336,14 @@
 
 			[startImage drawInRect: startTo
 						  fromRect: startFrom
-						 operation: NSCompositeSourceOver
-						  fraction: 1.0];
-			//[endImage drawInRect: endTo
-			//			fromRect: endFrom
-			//		   operation: NSCompositeSourceOver
-			//			fraction: percentDone];
+						 operation: NSCompositingOperationSourceOver
+						  fraction: (CGFloat)1.0];
+			/*[endImage drawInRect: endTo
+						fromRect: endFrom
+					   operation: NSCompositingOperationSourceOver
+						fraction: (CGFloat)percentDone];*/
 			break;
-	}
+    }
 }
 
 @end

@@ -35,8 +35,8 @@ typedef enum ZoomViewAnimationStyle {
 	NSMutableDictionary* props;
 	
 	// Information used while animating
-	NSOpenGLPixelBuffer* pixelBuffer;
-	NSTimer* animationTimer;
+    NSOpenGLPixelBuffer* pixelBuffer;
+    NSTimer* animationTimer;
 	NSRect originalFrame;
 	NSView* originalView;
 	NSView* originalSuperview;

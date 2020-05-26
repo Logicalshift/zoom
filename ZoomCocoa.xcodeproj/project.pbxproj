@@ -535,6 +535,13 @@
 			remoteGlobalIDString = 4B7CB08009362A3B00F3B8F6;
 			remoteInfo = ZoomPlugIns;
 		};
+		4B39C93408EEF63E00BA5E90 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4B39C92A08EEF63400BA5E90;
+			remoteInfo = ZoomMetadataImporter;
+		};
 		4B3E77550BA2EFDD00661FE8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
@@ -703,27 +710,6 @@
 			remoteGlobalIDString = 4B3C3B780F3DAB850066A760;
 			remoteInfo = git;
 		};
-		4BE81C6623D45C5E00085D09 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4B1E3F4B050F7AD000A8E303 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4B39C92A08EEF63400BA5E90;
-			remoteInfo = ZoomMetadataImporter;
-		};
-		4BE81C6A23D45C7A00085D09 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 4B51AA4607E8770600576AB9;
-			remoteInfo = GlkView;
-		};
-		4BE81C6C23D45C8C00085D09 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 4B51AA4607E8770600576AB9;
-			remoteInfo = GlkView;
-		};
 		4BF6A8C40E2D5F8800A9CD10 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B7CB1B7093634DD00F3B8F6 /* CocoaGlk.xcodeproj */;
@@ -813,6 +799,16 @@
 			name = "Copy frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A481A7052378B10D00FB5FC1 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -880,7 +876,6 @@
 		4B1888E80935F912003AF62A /* xmltok_ns.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = xmltok_ns.c; path = lib/xmltok_ns.c; sourceTree = "<group>"; };
 		4B1888E90935F912003AF62A /* xmltok.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = xmltok.c; path = lib/xmltok.c; sourceTree = "<group>"; };
 		4B1888EA0935F912003AF62A /* xmltok.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = xmltok.h; path = lib/xmltok.h; sourceTree = "<group>"; };
-		4B1C13F905C5A94300E5796D /* English */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = English; path = English.lproj/Credits.rtf; sourceTree = "<group>"; };
 		4B1C14D205C69CAD00E5796D /* iFiction-10.2.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = "iFiction-10.2.nib"; sourceTree = "<group>"; };
 		4B1E3F60050F7BA000A8E303 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		4B1E3F68050F7C2000A8E303 /* interp_z3.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = interp_z3.h; path = build/interp_z3.h; sourceTree = SOURCE_ROOT; };
@@ -971,7 +966,6 @@
 		4B418E140594FCDB009C44DE /* Preferences.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = Preferences.nib; sourceTree = "<group>"; };
 		4B418ED805961D2C009C44DE /* ZoomPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomPreferences.h; sourceTree = "<group>"; };
 		4B418ED905961D2C009C44DE /* ZoomPreferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomPreferences.m; sourceTree = "<group>"; };
-		4B43DA7709364C6400F03009 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = PlugIns/English.lproj/GlkWindow.nib; sourceTree = "<group>"; };
 		4B43DAAD09364CD100F03009 /* ZoomGlkWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomGlkWindowController.h; sourceTree = "<group>"; };
 		4B43DAAE09364CD100F03009 /* ZoomGlkWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomGlkWindowController.m; sourceTree = "<group>"; };
 		4B4B98E40733EE2400E40F96 /* Skein-annotation.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Skein-annotation.png"; sourceTree = "<group>"; };
@@ -1031,8 +1025,6 @@
 		4B840A160CBEC1B10071F3B3 /* IFDB-forward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "IFDB-forward.png"; sourceTree = "<group>"; };
 		4B840A170CBEC1B10071F3B3 /* IFDB-home.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "IFDB-home.png"; sourceTree = "<group>"; };
 		4B840A290CBEC2050071F3B3 /* IFDB-downloading.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "IFDB-downloading.png"; sourceTree = "<group>"; };
-		4B840A3A0CBECC690071F3B3 /* English */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = English; path = "English.lproj/IFDB-connecting.png"; sourceTree = "<group>"; };
-		4B840A3C0CBECC690071F3B3 /* English */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = English; path = "English.lproj/ifdb-loading.html"; sourceTree = "<group>"; };
 		4B840AC70CC2BB970071F3B3 /* ZoomDownloadView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ZoomDownloadView.h; sourceTree = "<group>"; };
 		4B840AC80CC2BB970071F3B3 /* ZoomDownloadView.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = ZoomDownloadView.m; sourceTree = "<group>"; };
 		4B840AC90CC2BB970071F3B3 /* ZoomWindowThatIsKey.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ZoomWindowThatIsKey.h; sourceTree = "<group>"; };
@@ -1045,8 +1037,6 @@
 		4B87BA7109C9AAE1005D6722 /* ifmetabase-internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ifmetabase-internal.h"; sourceTree = "<group>"; };
 		4B8CE6F20AD95A3A008235D2 /* md5.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = md5.c; sourceTree = "<group>"; };
 		4B8CE6F30AD95A3A008235D2 /* md5.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = md5.h; sourceTree = "<group>"; };
-		4B926A0F0CD1464B00CE0ADB /* English */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = English; path = "English.lproj/IFDB-error.png"; sourceTree = "<group>"; };
-		4B926A110CD1464B00CE0ADB /* English */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = English; path = "English.lproj/ifdb-failed.html"; sourceTree = "<group>"; };
 		4B926A1D0CD1480B00CE0ADB /* ZoomJSError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomJSError.h; sourceTree = "<group>"; };
 		4B926A1E0CD1480B00CE0ADB /* ZoomJSError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomJSError.m; sourceTree = "<group>"; };
 		4B926F8805E7F9DA00E5C0EA /* ZoomCollapsableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomCollapsableView.h; sourceTree = "<group>"; };
@@ -1081,7 +1071,6 @@
 		4BACEABB05B45C0500A9B6DC /* ZoomStoryID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomStoryID.h; sourceTree = "<group>"; };
 		4BACEABC05B45C0500A9B6DC /* ZoomStoryID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomStoryID.m; sourceTree = "<group>"; };
 		4BAE0EF6062ADA19009426D5 /* iFiction.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = iFiction.icns; sourceTree = "<group>"; };
-		4BB27D9F0C592D9100470443 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = "../Sparkle-1.1/Extras/English-Only Framework/Sparkle.framework"; sourceTree = SOURCE_ROOT; };
 		4BB515B405BC615F00D00C96 /* iFiction.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = iFiction.nib; sourceTree = "<group>"; };
 		4BB8BED308B785B200D7D334 /* ifmetabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ifmetabase.h; sourceTree = "<group>"; };
 		4BB8BED408B785B200D7D334 /* ifmetabase.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ifmetabase.c; sourceTree = "<group>"; };
@@ -1183,6 +1172,14 @@
 		4BF02D1F0C4A8141006FC32E /* ZoomGlkSaveRef.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomGlkSaveRef.m; sourceTree = "<group>"; };
 		4BF1576306BAD034001A3C27 /* ZoomBlorbFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomBlorbFile.h; sourceTree = "<group>"; };
 		4BF1576406BAD034001A3C27 /* ZoomBlorbFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomBlorbFile.m; sourceTree = "<group>"; };
+		A43898512383085500B6CA45 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = ../../Sparkle/DerivedData/Sparkle/Build/Products/Release/Sparkle.framework; sourceTree = "<group>"; };
+		A47895792378B96E00B9C63B /* Base */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Base; path = PlugIns/Base.lproj/GlkWindow.nib; sourceTree = "<group>"; };
+		A481A6FD2378B02400FB5FC1 /* libexpat.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libexpat.a; path = ../../libexpat/lib/libexpat.a; sourceTree = "<group>"; };
+		A481A70A2378B15C00FB5FC1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		A481A70C2378B16300FB5FC1 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/IFDB-connecting.png"; sourceTree = "<group>"; };
+		A481A70D2378B16400FB5FC1 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/IFDB-error.png"; sourceTree = "<group>"; };
+		A481A70E2378B16600FB5FC1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = en; path = "en.lproj/ifdb-failed.html"; sourceTree = "<group>"; };
+		A481A70F2378B16800FB5FC1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = en; path = "en.lproj/ifdb-loading.html"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1417,11 +1414,12 @@
 		4B1E3F5F050F7B8100A8E303 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A43898512383085500B6CA45 /* Sparkle.framework */,
+				A481A6FD2378B02400FB5FC1 /* libexpat.a */,
 				4BA373A30CD3CB7B00C7B1D4 /* ApplicationServices.framework */,
 				4BA373A40CD3CB7B00C7B1D4 /* CoreServices.framework */,
 				4BA373A50CD3CB7B00C7B1D4 /* QuickLook.framework */,
 				4B840B0F0CC2C3B10071F3B3 /* WebKit.framework */,
-				4BB27D9F0C592D9100470443 /* Sparkle.framework */,
 				4B39CA8308EEFE8F00BA5E90 /* CoreServices.framework */,
 				4BECA7F705B194AA006840BA /* libexpat.a */,
 				4B5CBB9B069D671200C0AA88 /* Carbon.framework */,
@@ -1438,7 +1436,6 @@
 		4B1E3F7F050F7C9500A8E303 /* builder */ = {
 			isa = PBXGroup;
 			children = (
-				4B1E3F80050F7CC500A8E303 /* main.c */,
 				4B1E3F81050F7CC500A8E303 /* lex.l */,
 				4B1E3F82050F7CC500A8E303 /* operation.h */,
 				4B1E3F83050F7CC500A8E303 /* gram.y */,
@@ -1724,6 +1721,7 @@
 		4BCF3F42050FB1D800A8E303 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				4B1E3F80050F7CC500A8E303 /* main.c */,
 				4B7522540CC7FAC500F36ECF /* signpost.icns */,
 				4B926A0E0CD1464B00CE0ADB /* IFDB-error.png */,
 				4B926A100CD1464B00CE0ADB /* ifdb-failed.html */,
@@ -2178,7 +2176,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				4BE81C6B23D45C7A00085D09 /* PBXTargetDependency */,
 				4B7CB03C09360A6D00F3B8F6 /* PBXTargetDependency */,
 			);
 			name = ZoomMetadataImporter;
@@ -2199,7 +2196,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				4BE81C6D23D45C8C00085D09 /* PBXTargetDependency */,
 				4B94B0D50CD4FCEE003C75A6 /* PBXTargetDependency */,
 			);
 			name = ZoomSaveQuickLook;
@@ -2259,6 +2255,7 @@
 				4BB8C16108C2497700D7D334 /* Frameworks */,
 				4BB8C16508C2497700D7D334 /* Rez */,
 				4B94AEFC0CD4B481003C75A6 /* All done */,
+				A481A7052378B10D00FB5FC1 /* Embed Frameworks */,
 			);
 			buildRules = (
 				4B51A94D08FAC6B300232D0B /* PBXBuildRule */,
@@ -2301,8 +2298,8 @@
 				4B7CB0A909362A6A00F3B8F6 /* PBXTargetDependency */,
 				4B36C45B0955ED3B00874F9F /* PBXTargetDependency */,
 				4BA375DA0CD3CBF000C7B1D4 /* PBXTargetDependency */,
-				4BE81C6723D45C5E00085D09 /* PBXTargetDependency */,
 				4BB8C18B08C249F400D7D334 /* PBXTargetDependency */,
+				4B39C93508EEF63E00BA5E90 /* PBXTargetDependency */,
 				4B18890C0935FB46003AF62A /* PBXTargetDependency */,
 				4B7CB1F4093635C400F3B8F6 /* PBXTargetDependency */,
 			);
@@ -2359,17 +2356,18 @@
 		4B1E3F4B050F7AD000A8E303 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0920;
+				LastUpgradeCheck = 1120;
 			};
 			buildConfigurationList = 4B11039608606E2600253E87 /* Build configuration list for PBXProject "ZoomCocoa" */;
 			compatibilityVersion = "Xcode 2.4";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 1;
 			knownRegions = (
-				English,
-				Japanese,
-				French,
-				German,
+				ja,
+				en,
+				fr,
+				de,
+				Base,
 			);
 			mainGroup = 4B1E3F47050F7AD000A8E303;
 			productRefGroup = 4B1E3F55050F7B0E00A8E303 /* Products */;
@@ -2977,6 +2975,11 @@
 			target = 4B7CB08009362A3B00F3B8F6 /* ZoomPlugIns */;
 			targetProxy = 4B36C46B0955EDC900874F9F /* PBXContainerItemProxy */;
 		};
+		4B39C93508EEF63E00BA5E90 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4B39C92A08EEF63400BA5E90 /* ZoomMetadataImporter */;
+			targetProxy = 4B39C93408EEF63E00BA5E90 /* PBXContainerItemProxy */;
+		};
 		4B3E77560BA2EFDD00661FE8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 4BD79A8E0BA2C9AA002C82B2 /* babel */;
@@ -3062,28 +3065,13 @@
 			name = git;
 			targetProxy = 4BD093980FACAF0B001F7EF0 /* PBXContainerItemProxy */;
 		};
-		4BE81C6723D45C5E00085D09 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4B39C92A08EEF63400BA5E90 /* ZoomMetadataImporter */;
-			targetProxy = 4BE81C6623D45C5E00085D09 /* PBXContainerItemProxy */;
-		};
-		4BE81C6B23D45C7A00085D09 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = GlkView;
-			targetProxy = 4BE81C6A23D45C7A00085D09 /* PBXContainerItemProxy */;
-		};
-		4BE81C6D23D45C8C00085D09 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = GlkView;
-			targetProxy = 4BE81C6C23D45C8C00085D09 /* PBXContainerItemProxy */;
-		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		4B1C13FD05C5A94B00E5796D /* Credits.rtf */ = {
 			isa = PBXVariantGroup;
 			children = (
-				4B1C13F905C5A94300E5796D /* English */,
+				A481A70A2378B15C00FB5FC1 /* en */,
 			);
 			name = Credits.rtf;
 			sourceTree = "<group>";
@@ -3091,7 +3079,7 @@
 		4B43DA8309364C7400F03009 /* GlkWindow.nib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				4B43DA7709364C6400F03009 /* English */,
+				A47895792378B96E00B9C63B /* Base */,
 			);
 			name = GlkWindow.nib;
 			sourceTree = "<group>";
@@ -3099,7 +3087,7 @@
 		4B840A390CBECC690071F3B3 /* IFDB-connecting.png */ = {
 			isa = PBXVariantGroup;
 			children = (
-				4B840A3A0CBECC690071F3B3 /* English */,
+				A481A70C2378B16300FB5FC1 /* en */,
 			);
 			name = "IFDB-connecting.png";
 			sourceTree = "<group>";
@@ -3107,7 +3095,7 @@
 		4B840A3B0CBECC690071F3B3 /* ifdb-loading.html */ = {
 			isa = PBXVariantGroup;
 			children = (
-				4B840A3C0CBECC690071F3B3 /* English */,
+				A481A70F2378B16800FB5FC1 /* en */,
 			);
 			name = "ifdb-loading.html";
 			sourceTree = "<group>";
@@ -3115,7 +3103,7 @@
 		4B926A0E0CD1464B00CE0ADB /* IFDB-error.png */ = {
 			isa = PBXVariantGroup;
 			children = (
-				4B926A0F0CD1464B00CE0ADB /* English */,
+				A481A70D2378B16400FB5FC1 /* en */,
 			);
 			name = "IFDB-error.png";
 			sourceTree = "<group>";
@@ -3123,7 +3111,7 @@
 		4B926A100CD1464B00CE0ADB /* ifdb-failed.html */ = {
 			isa = PBXVariantGroup;
 			children = (
-				4B926A110CD1464B00CE0ADB /* English */,
+				A481A70E2378B16600FB5FC1 /* en */,
 			);
 			name = "ifdb-failed.html";
 			sourceTree = "<group>";
@@ -3134,9 +3122,9 @@
 		4B11038708606E2600253E87 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = "";
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -3167,8 +3155,8 @@
 		4B11038808606E2600253E87 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = "MAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_3";
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
@@ -3198,6 +3186,7 @@
 		4B11038908606E2600253E87 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -3215,23 +3204,27 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_REPEATED_USE_OF_WEAK = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "";
-				DEVELOPMENT_TEAM = FYA69RFVHB;
+				DEVELOPMENT_TEAM = V978VMAA56;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3253,8 +3246,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				ONLY_ACTIVE_ARCH = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = macosx;
 			};
 			name = Development;
@@ -3263,23 +3256,27 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_REPEATED_USE_OF_WEAK = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "";
-				DEVELOPMENT_TEAM = FYA69RFVHB;
+				DEVELOPMENT_TEAM = V978VMAA56;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					depends/CocoaGlk/build/Deployment,
@@ -3298,7 +3295,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = macosx;
 			};
 			name = Deployment;
@@ -3307,23 +3305,27 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_REPEATED_USE_OF_WEAK = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "";
-				DEVELOPMENT_TEAM = FYA69RFVHB;
+				DEVELOPMENT_TEAM = V978VMAA56;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					depends/CocoaGlk/build,
@@ -3342,7 +3344,9 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				"HEADER_SEARCH_PATHS[arch=*]" = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = macosx;
 			};
 			name = Default;
@@ -3350,9 +3354,9 @@
 		4B1888D30935F870003AF62A /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -3380,7 +3384,6 @@
 					"$(GCC_PREPROCESSOR_DEFINITIONS)",
 				);
 				INSTALL_PATH = /usr/local/lib;
-				PREBINDING = NO;
 				PRODUCT_NAME = Expat;
 				ZERO_LINK = YES;
 			};
@@ -3389,8 +3392,8 @@
 		4B1888D40935F870003AF62A /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3417,7 +3420,6 @@
 					"$(GCC_PREPROCESSOR_DEFINITIONS)",
 				);
 				INSTALL_PATH = /usr/local/lib;
-				PREBINDING = NO;
 				PRODUCT_NAME = Expat;
 				ZERO_LINK = NO;
 			};
@@ -3426,7 +3428,7 @@
 		4B1888D50935F870003AF62A /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"PTRCALL=",
@@ -3452,7 +3454,6 @@
 					"$(GCC_PREPROCESSOR_DEFINITIONS)",
 				);
 				INSTALL_PATH = /usr/local/lib;
-				PREBINDING = NO;
 				PRODUCT_NAME = Expat;
 				ZERO_LINK = YES;
 			};
@@ -3461,9 +3462,9 @@
 		4B36C4570955ED1700874F9F /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -3477,7 +3478,6 @@
 					"-framework",
 					AppKit,
 				);
-				PREBINDING = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.Glulxe;
 				PRODUCT_NAME = Glulxe;
 				SKIP_INSTALL = YES;
@@ -3489,8 +3489,8 @@
 		4B36C4580955ED1700874F9F /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -3503,7 +3503,6 @@
 					"-framework",
 					AppKit,
 				);
-				PREBINDING = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.Glulxe;
 				PRODUCT_NAME = Glulxe;
 				SKIP_INSTALL = YES;
@@ -3516,11 +3515,11 @@
 		4B36C4590955ED1700874F9F /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					depends/CocoaGlk/build/Default,
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
@@ -3532,7 +3531,6 @@
 					"-framework",
 					AppKit,
 				);
-				PREBINDING = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.Glulxe;
 				PRODUCT_NAME = Glulxe;
 				SKIP_INSTALL = YES;
@@ -3544,6 +3542,7 @@
 		4B39C93108EEF63500BA5E90 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -3575,7 +3574,6 @@
 					AppKit,
 					"-L/usr/local/lib",
 				);
-				PREBINDING = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.ZoomMetadataImporter;
 				PRODUCT_NAME = ZoomMetadataImporter;
 				WARNING_CFLAGS = (
@@ -3590,6 +3588,7 @@
 		4B39C93208EEF63500BA5E90 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -3621,7 +3620,6 @@
 					AppKit,
 					"-L/usr/local/lib",
 				);
-				PREBINDING = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.ZoomMetadataImporter;
 				PRODUCT_NAME = ZoomMetadataImporter;
 				WARNING_CFLAGS = (
@@ -3636,6 +3634,7 @@
 		4B39C93308EEF63500BA5E90 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(PREFIX_HEADER)";
@@ -3662,7 +3661,6 @@
 					AppKit,
 					"-L/usr/local/lib",
 				);
-				PREBINDING = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.ZoomMetadataImporter;
 				PRODUCT_NAME = ZoomMetadataImporter;
 				WARNING_CFLAGS = (
@@ -3677,9 +3675,9 @@
 		4B7286E90CD3CB000079D89B /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -3691,7 +3689,6 @@
 					"-framework",
 					AppKit,
 				);
-				PREBINDING = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.zoom.save.quicklook;
 				PRODUCT_NAME = ZoomSaveQuickLook;
 				SDKROOT_ppc = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
@@ -3702,9 +3699,9 @@
 		4B7286EA0CD3CB000079D89B /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				INFOPLIST_FILE = "ZoomSaveQuickLook-Info.plist";
@@ -3715,7 +3712,6 @@
 					"-framework",
 					AppKit,
 				);
-				PREBINDING = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.zoom.save.quicklook;
 				PRODUCT_NAME = ZoomSaveQuickLook;
 				SDKROOT_ppc = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
@@ -3726,7 +3722,7 @@
 		4B7286EB0CD3CB000079D89B /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				INFOPLIST_FILE = "ZoomSaveQuickLook-Info.plist";
@@ -3737,7 +3733,6 @@
 					"-framework",
 					AppKit,
 				);
-				PREBINDING = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.zoom.save.quicklook;
 				PRODUCT_NAME = ZoomSaveQuickLook;
 				SDKROOT_ppc = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
@@ -3748,6 +3743,7 @@
 		4B7CB08809362A3B00F3B8F6 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 5;
 				FRAMEWORK_VERSION = A;
@@ -3769,7 +3765,6 @@
 					"-framework",
 					AppKit,
 				);
-				PREBINDING = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.ZoomPlugIns;
 				PRODUCT_NAME = ZoomPlugIns;
 				SKIP_INSTALL = YES;
@@ -3780,6 +3775,7 @@
 		4B7CB08909362A3B00F3B8F6 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 5;
 				FRAMEWORK_VERSION = A;
@@ -3800,7 +3796,6 @@
 					"-framework",
 					AppKit,
 				);
-				PREBINDING = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.ZoomPlugIns;
 				PRODUCT_NAME = ZoomPlugIns;
 				SKIP_INSTALL = YES;
@@ -3813,6 +3808,7 @@
 		4B7CB08A09362A3B00F3B8F6 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 5;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3837,7 +3833,6 @@
 					"-framework",
 					AppKit,
 				);
-				PREBINDING = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.ZoomPlugIns;
 				PRODUCT_NAME = ZoomPlugIns;
 				SKIP_INSTALL = YES;
@@ -3848,6 +3843,8 @@
 		4BB8C0E608C2452E00D7D334 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				HEADER_SEARCH_PATHS = (
 					ProjectBuilder/etc,
 					build,
@@ -3860,6 +3857,8 @@
 		4BB8C0E708C2452E00D7D334 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				HEADER_SEARCH_PATHS = (
 					ProjectBuilder/etc,
 					build,
@@ -3872,6 +3871,8 @@
 		4BB8C0E808C2452E00D7D334 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				HEADER_SEARCH_PATHS = (
 					ProjectBuilder/etc,
 					build,
@@ -3884,6 +3885,12 @@
 		4BB8C16708C2497700D7D334 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/src",
+				);
 				HEADER_SEARCH_PATHS = (
 					ProjectBuilder/etc,
 					build,
@@ -3898,6 +3905,12 @@
 		4BB8C16808C2497700D7D334 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/src",
+				);
 				HEADER_SEARCH_PATHS = (
 					ProjectBuilder/etc,
 					build,
@@ -3914,6 +3927,12 @@
 		4BB8C16908C2497700D7D334 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/src",
+				);
 				HEADER_SEARCH_PATHS = (
 					ProjectBuilder/etc,
 					build,
@@ -3928,11 +3947,15 @@
 		4BB8C20408C249F400D7D334 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_IDENTITY = "Mac Developer";
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
 					"$(SRCROOT)/build/Development",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
+					"$(PROJECT_DIR)/src",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../Sparkle-1.1\"";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3944,6 +3967,7 @@
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				INFOPLIST_FILE = "Info-Zoom__Upgraded_.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.zoom;
@@ -3955,11 +3979,15 @@
 		4BB8C20508C249F400D7D334 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
 					"$(SRCROOT)/build/Deployment",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
+					"$(PROJECT_DIR)/src",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../Sparkle-1.1\"";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3970,6 +3998,7 @@
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				INFOPLIST_FILE = "Info-Zoom__Upgraded_.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.zoom;
@@ -3983,11 +4012,15 @@
 		4BB8C20608C249F400D7D334 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_IDENTITY = "Mac Developer";
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
 					"$(SRCROOT)/build/Development",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
+					"$(PROJECT_DIR)/src",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../Sparkle-1.1\"";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3998,6 +4031,7 @@
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				INFOPLIST_FILE = "Info-Zoom__Upgraded_.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.zoom;
@@ -4009,12 +4043,12 @@
 		4BD274BF08701E6700C1AE15 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = NO;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 3;
 				FRAMEWORK_VERSION = A;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = "";
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -4060,11 +4094,11 @@
 		4BD274C008701E6700C1AE15 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 3;
 				FRAMEWORK_VERSION = A;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
@@ -4111,6 +4145,7 @@
 		4BD274C108701E6700C1AE15 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 3;
 				FRAMEWORK_VERSION = A;
@@ -4148,14 +4183,14 @@
 		4BD79A920BA2C9C9002C82B2 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = "$(HOME)/bin";
-				PREBINDING = NO;
 				PRODUCT_NAME = babel;
 				ZERO_LINK = NO;
 			};
@@ -4164,12 +4199,12 @@
 		4BD79A930BA2C9C9002C82B2 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "$(HOME)/bin";
-				PREBINDING = NO;
 				PRODUCT_NAME = babel;
 				STRIP_INSTALLED_PRODUCT = YES;
 				ZERO_LINK = NO;
@@ -4179,10 +4214,10 @@
 		4BD79A940BA2C9C9002C82B2 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "$(HOME)/bin";
-				PREBINDING = NO;
 				PRODUCT_NAME = babel;
 				ZERO_LINK = YES;
 			};
