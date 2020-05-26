@@ -127,8 +127,6 @@ NSString* ZoomPlugInInformationChangedNotification = @"ZoomPlugInInformationChan
 // = Dealing with existing plugins =
 
 - (void) loadPlugIn: (NSString*) pluginBundlePath {
-    return;
-    
 	NSBundle* pluginBundle = [NSBundle bundleWithPath: pluginBundlePath];
 	
 	NSString* version = [self versionForBundle: pluginBundlePath];
@@ -149,14 +147,10 @@ NSString* ZoomPlugInInformationChangedNotification = @"ZoomPlugInInformationChan
 								  forKey: name];
 			
 			Class primaryClass = [pluginBundle principalClass];
-            if (primaryClass != nil) {
-                [pluginClasses addObject: primaryClass];
+			[pluginClasses addObject: primaryClass];
 #if VERBOSITY >= 2
-                NSLog(@"=== Principal class: %@", [primaryClass description]);
+			NSLog(@"=== Principal class: %@", [primaryClass description]);
 #endif
-            } else {
-                NSLog(@"=== Unable to load principle class for plugin %@", name);
-            }
 		}
 	}	
 }
