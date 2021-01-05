@@ -2359,7 +2359,7 @@
 		4B1E3F4B050F7AD000A8E303 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0920;
+				LastUpgradeCheck = 1230;
 			};
 			buildConfigurationList = 4B11039608606E2600253E87 /* Build configuration list for PBXProject "ZoomCocoa" */;
 			compatibilityVersion = "Xcode 2.4";
@@ -3134,9 +3134,9 @@
 		4B11038708606E2600253E87 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = "";
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -3167,8 +3167,8 @@
 		4B11038808606E2600253E87 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = "MAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_3";
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
@@ -3198,6 +3198,7 @@
 		4B11038908606E2600253E87 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -3219,12 +3220,15 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -3253,8 +3257,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				ONLY_ACTIVE_ARCH = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				SDKROOT = macosx;
 			};
 			name = Development;
@@ -3267,12 +3270,15 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -3298,7 +3304,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				SDKROOT = macosx;
 			};
 			name = Deployment;
@@ -3311,12 +3317,15 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -3342,7 +3351,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				SDKROOT = macosx;
 			};
 			name = Default;
@@ -3350,9 +3359,9 @@
 		4B1888D30935F870003AF62A /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -3380,7 +3389,6 @@
 					"$(GCC_PREPROCESSOR_DEFINITIONS)",
 				);
 				INSTALL_PATH = /usr/local/lib;
-				PREBINDING = NO;
 				PRODUCT_NAME = Expat;
 				ZERO_LINK = YES;
 			};
@@ -3389,8 +3397,8 @@
 		4B1888D40935F870003AF62A /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3417,7 +3425,6 @@
 					"$(GCC_PREPROCESSOR_DEFINITIONS)",
 				);
 				INSTALL_PATH = /usr/local/lib;
-				PREBINDING = NO;
 				PRODUCT_NAME = Expat;
 				ZERO_LINK = NO;
 			};
@@ -3426,7 +3433,7 @@
 		4B1888D50935F870003AF62A /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"PTRCALL=",
@@ -3452,7 +3459,6 @@
 					"$(GCC_PREPROCESSOR_DEFINITIONS)",
 				);
 				INSTALL_PATH = /usr/local/lib;
-				PREBINDING = NO;
 				PRODUCT_NAME = Expat;
 				ZERO_LINK = YES;
 			};
@@ -3461,9 +3467,9 @@
 		4B36C4570955ED1700874F9F /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -3477,7 +3483,6 @@
 					"-framework",
 					AppKit,
 				);
-				PREBINDING = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.Glulxe;
 				PRODUCT_NAME = Glulxe;
 				SKIP_INSTALL = YES;
@@ -3489,8 +3494,8 @@
 		4B36C4580955ED1700874F9F /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -3503,7 +3508,6 @@
 					"-framework",
 					AppKit,
 				);
-				PREBINDING = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.Glulxe;
 				PRODUCT_NAME = Glulxe;
 				SKIP_INSTALL = YES;
@@ -3516,11 +3520,11 @@
 		4B36C4590955ED1700874F9F /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					depends/CocoaGlk/build/Default,
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
@@ -3532,7 +3536,6 @@
 					"-framework",
 					AppKit,
 				);
-				PREBINDING = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.Glulxe;
 				PRODUCT_NAME = Glulxe;
 				SKIP_INSTALL = YES;
@@ -3544,6 +3547,7 @@
 		4B39C93108EEF63500BA5E90 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -3575,7 +3579,6 @@
 					AppKit,
 					"-L/usr/local/lib",
 				);
-				PREBINDING = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.ZoomMetadataImporter;
 				PRODUCT_NAME = ZoomMetadataImporter;
 				WARNING_CFLAGS = (
@@ -3590,6 +3593,7 @@
 		4B39C93208EEF63500BA5E90 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -3621,7 +3625,6 @@
 					AppKit,
 					"-L/usr/local/lib",
 				);
-				PREBINDING = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.ZoomMetadataImporter;
 				PRODUCT_NAME = ZoomMetadataImporter;
 				WARNING_CFLAGS = (
@@ -3636,6 +3639,7 @@
 		4B39C93308EEF63500BA5E90 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(PREFIX_HEADER)";
@@ -3662,7 +3666,6 @@
 					AppKit,
 					"-L/usr/local/lib",
 				);
-				PREBINDING = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.ZoomMetadataImporter;
 				PRODUCT_NAME = ZoomMetadataImporter;
 				WARNING_CFLAGS = (
@@ -3677,9 +3680,9 @@
 		4B7286E90CD3CB000079D89B /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -3691,10 +3694,8 @@
 					"-framework",
 					AppKit,
 				);
-				PREBINDING = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.zoom.save.quicklook;
 				PRODUCT_NAME = ZoomSaveQuickLook;
-				SDKROOT_ppc = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 				WRAPPER_EXTENSION = qlgenerator;
 			};
 			name = Development;
@@ -3702,9 +3703,9 @@
 		4B7286EA0CD3CB000079D89B /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				INFOPLIST_FILE = "ZoomSaveQuickLook-Info.plist";
@@ -3715,10 +3716,8 @@
 					"-framework",
 					AppKit,
 				);
-				PREBINDING = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.zoom.save.quicklook;
 				PRODUCT_NAME = ZoomSaveQuickLook;
-				SDKROOT_ppc = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 				WRAPPER_EXTENSION = qlgenerator;
 			};
 			name = Deployment;
@@ -3726,7 +3725,7 @@
 		4B7286EB0CD3CB000079D89B /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				INFOPLIST_FILE = "ZoomSaveQuickLook-Info.plist";
@@ -3737,10 +3736,8 @@
 					"-framework",
 					AppKit,
 				);
-				PREBINDING = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.zoom.save.quicklook;
 				PRODUCT_NAME = ZoomSaveQuickLook;
-				SDKROOT_ppc = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 				WRAPPER_EXTENSION = qlgenerator;
 			};
 			name = Default;
@@ -3748,6 +3745,7 @@
 		4B7CB08809362A3B00F3B8F6 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 5;
 				FRAMEWORK_VERSION = A;
@@ -3769,7 +3767,6 @@
 					"-framework",
 					AppKit,
 				);
-				PREBINDING = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.ZoomPlugIns;
 				PRODUCT_NAME = ZoomPlugIns;
 				SKIP_INSTALL = YES;
@@ -3780,6 +3777,7 @@
 		4B7CB08909362A3B00F3B8F6 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 5;
 				FRAMEWORK_VERSION = A;
@@ -3800,7 +3798,6 @@
 					"-framework",
 					AppKit,
 				);
-				PREBINDING = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.ZoomPlugIns;
 				PRODUCT_NAME = ZoomPlugIns;
 				SKIP_INSTALL = YES;
@@ -3813,6 +3810,7 @@
 		4B7CB08A09362A3B00F3B8F6 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 5;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3837,7 +3835,6 @@
 					"-framework",
 					AppKit,
 				);
-				PREBINDING = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = uk.org.logicalshift.ZoomPlugIns;
 				PRODUCT_NAME = ZoomPlugIns;
 				SKIP_INSTALL = YES;
@@ -3848,6 +3845,8 @@
 		4BB8C0E608C2452E00D7D334 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				HEADER_SEARCH_PATHS = (
 					ProjectBuilder/etc,
 					build,
@@ -3860,6 +3859,8 @@
 		4BB8C0E708C2452E00D7D334 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				HEADER_SEARCH_PATHS = (
 					ProjectBuilder/etc,
 					build,
@@ -3872,6 +3873,8 @@
 		4BB8C0E808C2452E00D7D334 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				HEADER_SEARCH_PATHS = (
 					ProjectBuilder/etc,
 					build,
@@ -3884,6 +3887,8 @@
 		4BB8C16708C2497700D7D334 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				HEADER_SEARCH_PATHS = (
 					ProjectBuilder/etc,
 					build,
@@ -3898,6 +3903,8 @@
 		4BB8C16808C2497700D7D334 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				HEADER_SEARCH_PATHS = (
 					ProjectBuilder/etc,
 					build,
@@ -3914,6 +3921,8 @@
 		4BB8C16908C2497700D7D334 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				HEADER_SEARCH_PATHS = (
 					ProjectBuilder/etc,
 					build,
@@ -3928,7 +3937,9 @@
 		4BB8C20408C249F400D7D334 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_IDENTITY = "Mac Developer";
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
 					"$(SRCROOT)/build/Development",
@@ -3955,7 +3966,9 @@
 		4BB8C20508C249F400D7D334 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
 					"$(SRCROOT)/build/Deployment",
@@ -3983,7 +3996,9 @@
 		4BB8C20608C249F400D7D334 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_IDENTITY = "Mac Developer";
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
 					"$(SRCROOT)/build/Development",
@@ -4009,12 +4024,12 @@
 		4BD274BF08701E6700C1AE15 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = NO;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 3;
 				FRAMEWORK_VERSION = A;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = "";
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -4060,11 +4075,11 @@
 		4BD274C008701E6700C1AE15 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 3;
 				FRAMEWORK_VERSION = A;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
@@ -4111,6 +4126,7 @@
 		4BD274C108701E6700C1AE15 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 3;
 				FRAMEWORK_VERSION = A;
@@ -4148,14 +4164,14 @@
 		4BD79A920BA2C9C9002C82B2 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = "$(HOME)/bin";
-				PREBINDING = NO;
 				PRODUCT_NAME = babel;
 				ZERO_LINK = NO;
 			};
@@ -4164,12 +4180,12 @@
 		4BD79A930BA2C9C9002C82B2 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "$(HOME)/bin";
-				PREBINDING = NO;
 				PRODUCT_NAME = babel;
 				STRIP_INSTALLED_PRODUCT = YES;
 				ZERO_LINK = NO;
@@ -4179,10 +4195,10 @@
 		4BD79A940BA2C9C9002C82B2 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "$(HOME)/bin";
-				PREBINDING = NO;
 				PRODUCT_NAME = babel;
 				ZERO_LINK = YES;
 			};
