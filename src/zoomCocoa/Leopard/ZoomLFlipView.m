@@ -6,6 +6,7 @@
 //  Copyright 2007 Andrew Hunter. All rights reserved.
 //
 
+#import <objc/objc-runtime.h>
 #import <QuartzCore/QuartzCore.h>
 #import "ZoomLFlipView.h"
 
