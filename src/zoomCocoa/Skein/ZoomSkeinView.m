@@ -1215,17 +1215,17 @@ NSString* ZoomSkeinItemPboardType = @"ZoomSkeinItemPboardType";
 	ZoomSkeinItem* item = [layout itemAtPoint: dragPoint];
 	
 	if (item == nil || item == clickedItem || [item hasChildWithCommand: [clickedItem command]]) {
-		SetThemeCursor(kThemeNotAllowedCursor);
+		//SetThemeCursor(kThemeNotAllowedCursor);
 		
 		return NSDragOperationNone;
 	} else {
 		if ([sender draggingSourceOperationMask]&NSDragOperationMove &&
 			![clickedItem hasChild: item]) {
-			SetThemeCursor(kThemeArrowCursor);
+			//SetThemeCursor(kThemeArrowCursor);
 			
 			return NSDragOperationMove;
 		} else {
-			SetThemeCursor(kThemeCopyArrowCursor);
+			//SetThemeCursor(kThemeCopyArrowCursor);
 			
 			return NSDragOperationCopy;
 		}

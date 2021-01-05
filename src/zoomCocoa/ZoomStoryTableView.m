@@ -101,7 +101,7 @@
 {
 	[self performSelector:@selector(editSelectedCell:)
 		withObject:NULL
-		afterDelay:(GetDblTime()/60.0)];
+		afterDelay: 250.0];
 }
 
 // cancelEditTimer
