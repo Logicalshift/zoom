@@ -16,6 +16,7 @@
 #include "zmachine.h"
 #include "blorb.h"
 #include "zscii.h"
+#include "rc.h"
 
 #ifdef DEBUG
 # define NOTE(x) NSLog(@"ZDisplay: %@", x)
