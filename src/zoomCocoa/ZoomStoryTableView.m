@@ -101,7 +101,7 @@
 {
 	[self performSelector:@selector(editSelectedCell:)
 		withObject:NULL
-		afterDelay: 250.0];
+		afterDelay:[NSEvent doubleClickInterval]];
 }
 
 // cancelEditTimer
