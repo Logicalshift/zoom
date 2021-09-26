@@ -25,6 +25,10 @@ by Andrew Hunter
       git submodule init
       git submodule update
       aclocal -Im4 && autoconf && autoheader && automake --add-missing
+
+   The latest binary release for Mac OS X is available from
+
+      <http://www.logicalshift.io/zoom/Zoom-20210926.zip>
    
 Versions
 ========
