@@ -44,17 +44,17 @@ static NSDictionary*  itemDictionary = nil;
 	
 	// Set up the items
 	[generalSettingsItem setLabel: @"General"];
-	[generalSettingsItem setImage: [[[NSImage alloc] initWithContentsOfFile: [[NSBundle mainBundle] pathForImageResource: @"generalSettings"]] autorelease]];
+	[generalSettingsItem setImage: [NSImage imageNamed: @"generalSettings"]];
 	[gameSettingsItem setLabel: @"Game"];
-	[gameSettingsItem setImage: [[[NSImage alloc] initWithContentsOfFile: [[NSBundle mainBundle] pathForImageResource: @"gameSettings"]] autorelease]];
+	[gameSettingsItem setImage: [NSImage imageNamed: @"gameSettings"]];
 	[displaySettingsItem setLabel: @"Display"];
-	[displaySettingsItem setImage: [[[NSImage alloc] initWithContentsOfFile: [[NSBundle mainBundle] pathForImageResource: @"displaySettings"]] autorelease]];
+	[displaySettingsItem setImage: [NSImage imageNamed: @"displaySettings"]];
 	[fontSettingsItem setLabel: @"Fonts"];
-	[fontSettingsItem setImage: [[[NSImage alloc] initWithContentsOfFile: [[NSBundle mainBundle] pathForImageResource: @"fontSettings"]] autorelease]];
+	[fontSettingsItem setImage: [NSImage imageNamed: @"fontSettings"]];
 	[colourSettingsItem setLabel: @"Colour"];
-	[colourSettingsItem setImage: [[[NSImage alloc] initWithContentsOfFile: [[NSBundle mainBundle] pathForImageResource: @"colourSettings"]] autorelease]];
+	[colourSettingsItem setImage: [NSImage imageNamed: NSImageNameColorPanel]];
 	[typographicSettingsItem setLabel: @"Typography"];
-	[typographicSettingsItem setImage: [[[NSImage alloc] initWithContentsOfFile: [[NSBundle mainBundle] pathForImageResource: @"typographicSettings"]] autorelease]];
+	[typographicSettingsItem setImage: [NSImage imageNamed: @"typographicSettings"]];
 	
 	// And the actions
 	[generalSettingsItem setAction: @selector(generalSettings:)];
