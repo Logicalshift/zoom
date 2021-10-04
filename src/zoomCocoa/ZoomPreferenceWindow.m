@@ -135,7 +135,10 @@ static int familyComparer(id a, id b, void* context) {
 	[toolbar setAllowsUserCustomization: NO];
 	
 	[[self window] setToolbar: toolbar];
-	
+	if (@available(macOS 11.0, *)) {
+		self.window.toolbarStyle = NSWindowToolbarStylePreference;
+	}
+
 	[[self window] setContentSize: [generalSettingsView frame].size];
 	[[self window] setContentView: generalSettingsView];
 
