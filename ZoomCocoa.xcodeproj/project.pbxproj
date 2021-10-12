@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 45;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -427,6 +427,7 @@
 		4BE175950B792BD90094B73D /* ZoomWindowThatCanBecomeKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA66B2B0906538F000A3852 /* ZoomWindowThatCanBecomeKey.m */; };
 		4BF02D200C4A8141006FC32E /* ZoomGlkSaveRef.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF02D1E0C4A8141006FC32E /* ZoomGlkSaveRef.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BF02D210C4A8141006FC32E /* ZoomGlkSaveRef.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF02D1F0C4A8141006FC32E /* ZoomGlkSaveRef.m */; };
+		553C835E27111658002782C0 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 553C835D27111658002782C0 /* Sparkle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -1269,6 +1270,7 @@
 				4BB8C1FB08C249F400D7D334 /* Carbon.framework in Frameworks */,
 				4BB8C1FC08C249F400D7D334 /* ZoomView.framework in Frameworks */,
 				4B7CB0AB09362A7900F3B8F6 /* ZoomPlugIns.framework in Frameworks */,
+				553C835E27111658002782C0 /* Sparkle in Frameworks */,
 				4B9DC7F11502877B003DF057 /* QuartzCore.framework in Frameworks */,
 				4B36C4100955E7EB00874F9F /* GlkView.framework in Frameworks */,
 				4B18890D0935FB4F003AF62A /* libExpat.a in Frameworks */,
@@ -1618,9 +1620,9 @@
 				4B7CB1C7093634DD00F3B8F6 /* GlkClient.framework */,
 				4BF6A8C50E2D5F8800A9CD10 /* GlkSound.framework */,
 				4B7CB1C9093634DD00F3B8F6 /* multiwin */,
-				4B7CB1CB093634DD00F3B8F6 /* glulxe */,
+				4B7CB1CB093634DD00F3B8F6 /* glulxe-client */,
 				4B7CB1CD093634DD00F3B8F6 /* imagetest */,
-				4BD093970FACAEEE001F7EF0 /* git */,
+				4BD093970FACAEEE001F7EF0 /* git-client */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2307,6 +2309,9 @@
 				4B7CB1F4093635C400F3B8F6 /* PBXTargetDependency */,
 			);
 			name = Zoom;
+			packageProductDependencies = (
+				553C835D27111658002782C0 /* Sparkle */,
+			);
 			productInstallPath = "$(USER_APPS_DIR)";
 			productName = Zoom;
 			productReference = 4BB8C20808C249F400D7D334 /* Zoom.app */;
@@ -2362,7 +2367,7 @@
 				LastUpgradeCheck = 1230;
 			};
 			buildConfigurationList = 4B11039608606E2600253E87 /* Build configuration list for PBXProject "ZoomCocoa" */;
-			compatibilityVersion = "Xcode 2.4";
+			compatibilityVersion = "Xcode 11.0";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
@@ -2372,6 +2377,9 @@
 				German,
 			);
 			mainGroup = 4B1E3F47050F7AD000A8E303;
+			packageReferences = (
+				553C835C27111658002782C0 /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
 			productRefGroup = 4B1E3F55050F7B0E00A8E303 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
@@ -2426,10 +2434,10 @@
 			remoteRef = 4B7CB1C8093634DD00F3B8F6 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		4B7CB1CB093634DD00F3B8F6 /* glulxe */ = {
+		4B7CB1CB093634DD00F3B8F6 /* glulxe-client */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
-			path = glulxe;
+			path = "glulxe-client";
 			remoteRef = 4B7CB1CA093634DD00F3B8F6 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -2440,10 +2448,10 @@
 			remoteRef = 4B7CB1CC093634DD00F3B8F6 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		4BD093970FACAEEE001F7EF0 /* git */ = {
+		4BD093970FACAEEE001F7EF0 /* git-client */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
-			path = git;
+			path = "git-client";
 			remoteRef = 4BD093960FACAEEE001F7EF0 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -4328,6 +4336,25 @@
 			defaultConfigurationName = Default;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		553C835C27111658002782C0 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = exactVersion;
+				version = 1.27.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		553C835D27111658002782C0 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 553C835C27111658002782C0 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 4B1E3F4B050F7AD000A8E303 /* Project object */;
 }
