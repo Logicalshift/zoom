@@ -6,6 +6,7 @@
 //  Copyright (c) 2004 Andrew Hunter. All rights reserved.
 //
 
+#include <tgmath.h>
 #import "ZoomPixmapWindow.h"
 
 
@@ -16,9 +17,9 @@
 	self = [super init];
 	
 	if (self) {
-		pixmap = [[NSImage alloc] initWithSize: NSMakeSize(640, 480)];
-		[pixmap setFlipped: YES];
+		pixmap = [[NSImage alloc] initWithSize: NSMakeSize(640, 400)];
 		zView = view;
+		[zView.window setContentSize: NSMakeSize(640, 400)];
 		
 		inputStyle = nil;
 	}
@@ -39,9 +40,7 @@
 	return [pixmap size];
 }
 
-- (NSImage*) pixmap {
-	return pixmap;
-}
+@synthesize pixmap;
 
 // = Standard window commands =
 
@@ -63,10 +62,10 @@
     NSLayoutManager* layoutManager = [[NSLayoutManager alloc] init];
     
     // Width is one 'em'
-    float width = [@"M" sizeWithAttributes: [NSDictionary dictionaryWithObjectsAndKeys: NSFontAttributeName, font, nil]].width;
+	CGFloat width = [@"M" sizeWithAttributes: [NSDictionary dictionaryWithObjectsAndKeys: NSFontAttributeName, font, nil]].width;
     
     // Height is decided by the layout manager
-    float height = [layoutManager defaultLineHeightForFont: font];
+	CGFloat height = [layoutManager defaultLineHeightForFont: font];
     
     return NSMakeSize(width, height);
 }
@@ -94,7 +93,7 @@
 
 - (void) plotRect: (NSRect) rect
 		withStyle: (ZStyle*) style {
-	[pixmap lockFocus];
+	[pixmap lockFocusFlipped:YES];
 	
     NSColor* foregroundColour = [zView foregroundColourForStyle: style];
 	[foregroundColour set];
@@ -107,16 +106,16 @@
 - (void) plotText: (NSString*) text
 		  atPoint: (NSPoint) point
 		withStyle: (ZStyle*) style {
-	[pixmap lockFocus];
+	[pixmap lockFocusFlipped:YES];
 		
 	NSMutableDictionary* attr = [[zView attributesForStyle: style] mutableCopy];
 	
 	// Draw the background
-	float height = [self sizeOfFont: [attr objectForKey: NSFontAttributeName]].height;
-	float descender = [[attr objectForKey: NSFontAttributeName] descender];
+	CGFloat height = [self sizeOfFont: [attr objectForKey: NSFontAttributeName]].height;
+	CGFloat descender = [[attr objectForKey: NSFontAttributeName] descender];
 	NSSize size = [text sizeWithAttributes: attr];
 	
-	point.y -= ceilf(height)+1.0;
+	point.y -= ceil(height)+1.0;
 	
 	size.height = height;
 	NSRect backgroundRect;
@@ -124,12 +123,12 @@
 	backgroundRect.size = size;
 	backgroundRect.origin.y -= descender;
 	
-	backgroundRect.origin.x = floorf(backgroundRect.origin.x);
-	backgroundRect.origin.y = floorf(backgroundRect.origin.y);
-	backgroundRect.size.width = ceilf(backgroundRect.size.width);
-	backgroundRect.size.height = ceilf(backgroundRect.size.height) + 1.0;
+	backgroundRect.origin.x = floor(backgroundRect.origin.x);
+	backgroundRect.origin.y = floor(backgroundRect.origin.y);
+	backgroundRect.size.width = ceil(backgroundRect.size.width);
+	backgroundRect.size.height = ceil(backgroundRect.size.height) + 1.0;
 	
-	[[attr objectForKey: NSBackgroundColorAttributeName] set];
+	[(NSColor*)[attr objectForKey: NSBackgroundColorAttributeName] set];
 	NSRectFill(backgroundRect);
 	
 	// Draw the text
@@ -145,20 +144,22 @@
 
 - (void) scrollRegion: (NSRect) region
 			  toPoint: (NSPoint) where {
-	[pixmap lockFocus];
+	[pixmap lockFocusFlipped:YES];
 	
 	// Used to use NSCopyBits but Apple randomly broke it sometime in Snow Leopard. The docs lied anyway.
 	// This is much slower :-(
 	NSBitmapImageRep*	copiedBits	= [[NSBitmapImageRep alloc] initWithFocusedViewRect: region];
 	NSImage*			copiedImage	= [[NSImage alloc] init];
 	[copiedImage addRepresentation: copiedBits];
-	[copiedImage setFlipped: YES];
+	[copiedBits release];
 	[copiedImage drawInRect: NSMakeRect(where.x, where.y, region.size.width, region.size.height)
 				   fromRect: NSMakeRect(0,0, region.size.width, region.size.height)
-				  operation: NSCompositeSourceOver
-				   fraction: 1.0];
+				  operation: NSCompositingOperationSourceOver
+				   fraction: 1.0
+			 respectFlipped: YES
+					  hints: nil];
 	
-	[copiedBits release];
+	[copiedImage release];
 	
 	// Uh, docs say we should use NSNullObject here, but it's not defined. Making a guess at its value (sigh)
 	// This would be less of a problem in a view, because we can get the view's own graphics state. But you
@@ -203,7 +204,7 @@
 }
 
 - (NSColor*) colourAtPixel: (NSPoint) point {
-	[pixmap lockFocus];
+	[pixmap lockFocusFlipped:YES];
 	
 	if (point.x <= 0) point.x = 1;
 	if (point.y <= 0) point.y = 1;
@@ -222,13 +223,11 @@
 	inputPos = point;
 	if (inputStyle) {
 		[inputStyle release];
-		inputStyle = style;
 	}
+	inputStyle = [style copy];
 }
 
-- (NSPoint) inputPos {
-	return inputPos;
-}
+@synthesize inputPos;
 
 - (ZStyle*) inputStyle {
 	return inputStyle;
@@ -238,21 +237,18 @@
 					 atPoint: (NSPoint) point {
 	NSImage* img = [[zView resources] imageWithNumber: number];
 
-	NSRect imgRect;
-	imgRect.origin = NSMakePoint(0,0);
-	imgRect.size = [img size];
-	
 	NSRect destRect;
 	destRect.origin = point;
 	destRect.size = [[zView resources] sizeForImageWithNumber: number
 												forPixmapSize: [pixmap size]];
 	
-	[pixmap lockFocus];
-	[img setFlipped: [pixmap isFlipped]];
+	[pixmap lockFocusFlipped:YES];
 	[img drawInRect: destRect
-		   fromRect: imgRect
-		  operation: NSCompositeSourceOver
-		   fraction: 1.0];
+		   fromRect: NSZeroRect
+		  operation: NSCompositingOperationSourceOver
+		   fraction: 1.0
+	 respectFlipped: YES
+			  hints: nil];
 	[pixmap unlockFocus];
 	
 	[zView setNeedsDisplay: YES];
@@ -278,9 +274,7 @@
     return self;
 }
 
-- (void) setZoomView: (ZoomView*) view {
-	zView = view;
-}
+@synthesize zoomView=zView;
 
 // = Input styles =
 
