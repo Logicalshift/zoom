@@ -16,9 +16,9 @@
 	self = [super init];
 	
 	if (self) {
-		pixmap = [[NSImage alloc] initWithSize: NSMakeSize(640, 480)];
-		[pixmap setFlipped: YES];
+		pixmap = [[NSImage alloc] initWithSize: NSMakeSize(640, 400)];
 		zView = view;
+		[zView.window setContentSize: NSMakeSize(640, 400)];
 		
 		inputStyle = nil;
 	}
@@ -94,7 +94,7 @@
 
 - (void) plotRect: (NSRect) rect
 		withStyle: (ZStyle*) style {
-	[pixmap lockFocus];
+	[pixmap lockFocusFlipped:YES];
 	
     NSColor* foregroundColour = [zView foregroundColourForStyle: style];
 	[foregroundColour set];
@@ -107,7 +107,7 @@
 - (void) plotText: (NSString*) text
 		  atPoint: (NSPoint) point
 		withStyle: (ZStyle*) style {
-	[pixmap lockFocus];
+	[pixmap lockFocusFlipped:YES];
 		
 	NSMutableDictionary* attr = [[zView attributesForStyle: style] mutableCopy];
 	
@@ -129,7 +129,7 @@
 	backgroundRect.size.width = ceilf(backgroundRect.size.width);
 	backgroundRect.size.height = ceilf(backgroundRect.size.height) + 1.0;
 	
-	[[attr objectForKey: NSBackgroundColorAttributeName] set];
+	[(NSColor*)[attr objectForKey: NSBackgroundColorAttributeName] set];
 	NSRectFill(backgroundRect);
 	
 	// Draw the text
@@ -145,18 +145,19 @@
 
 - (void) scrollRegion: (NSRect) region
 			  toPoint: (NSPoint) where {
-	[pixmap lockFocus];
+	[pixmap lockFocusFlipped:YES];
 	
 	// Used to use NSCopyBits but Apple randomly broke it sometime in Snow Leopard. The docs lied anyway.
 	// This is much slower :-(
 	NSBitmapImageRep*	copiedBits	= [[NSBitmapImageRep alloc] initWithFocusedViewRect: region];
 	NSImage*			copiedImage	= [[NSImage alloc] init];
 	[copiedImage addRepresentation: copiedBits];
-	[copiedImage setFlipped: YES];
 	[copiedImage drawInRect: NSMakeRect(where.x, where.y, region.size.width, region.size.height)
 				   fromRect: NSMakeRect(0,0, region.size.width, region.size.height)
 				  operation: NSCompositeSourceOver
-				   fraction: 1.0];
+				   fraction: 1.0
+			 respectFlipped: YES
+					  hints: nil];
 	
 	[copiedBits release];
 	
@@ -203,7 +204,7 @@
 }
 
 - (NSColor*) colourAtPixel: (NSPoint) point {
-	[pixmap lockFocus];
+	[pixmap lockFocusFlipped:YES];
 	
 	if (point.x <= 0) point.x = 1;
 	if (point.y <= 0) point.y = 1;
@@ -222,8 +223,8 @@
 	inputPos = point;
 	if (inputStyle) {
 		[inputStyle release];
-		inputStyle = style;
 	}
+	inputStyle = [style copy];
 }
 
 - (NSPoint) inputPos {
@@ -247,12 +248,13 @@
 	destRect.size = [[zView resources] sizeForImageWithNumber: number
 												forPixmapSize: [pixmap size]];
 	
-	[pixmap lockFocus];
-	[img setFlipped: [pixmap isFlipped]];
+	[pixmap lockFocusFlipped:YES];
 	[img drawInRect: destRect
 		   fromRect: imgRect
 		  operation: NSCompositeSourceOver
-		   fraction: 1.0];
+		   fraction: 1.0
+	 respectFlipped: YES
+			  hints: nil];
 	[pixmap unlockFocus];
 	
 	[zView setNeedsDisplay: YES];
