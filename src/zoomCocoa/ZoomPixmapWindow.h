@@ -20,14 +20,14 @@
 
 // Initialisation
 - (id) initWithZoomView: (ZoomView*) view;
-- (void) setZoomView: (ZoomView*) view;
+@property (assign) ZoomView* zoomView;
 
 // Getting the pixmap
-- (NSSize) size;
-- (NSImage*) pixmap;
+@property (readonly) NSSize size;
+@property (readonly, retain) NSImage *pixmap;
 
 // Input information
-- (NSPoint) inputPos;
+@property (readonly) NSPoint inputPos;
 - (ZStyle*) inputStyle;
 
 @end
